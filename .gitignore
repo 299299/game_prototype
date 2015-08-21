@@ -1,0 +1,87 @@
+# Output directories
+/bin/*
+!/bin/**/
+
+/lib*/
+generated/
+
+# Output files
+/Source/**/*.a
+/Source/ThirdParty/LuaJIT/src/host/buildvm_arch.h
+/Source/Urho3D/Urho3D.h
+/Source/Urho3D/Urho3D.pc
+/Source/Urho3D/librevision.h
+/Source/Urho3D/Precompiled.cpp
+
+# Compiled shaders
+*.vs2
+*.vs3
+*.vs4
+*.ps2
+*.ps3
+*.ps4
+
+# Compiled AngelScript
+*.asc
+
+# Compiled Lua script
+*.luc
+
+# Generated documentation
+/Docs/html/
+/Docs/qch/
+/Docs/Doxyfile
+
+# Eclipse project settings
+/.*project
+/.settings
+
+# KDevelop project settings
+/*.kdev?
+
+# Qt Creator project settings
+/CMakeLists.txt.user
+
+# JetBrains IDE project settings
+/.idea/
+
+# Custom rake tasks
+/.rake/
+
+# Android project settings
+/Android/project.properties
+/Android/local.properties
+/Android/proguard-project.txt
+
+# Android output directories
+/Android/Urho3D/
+/Android/ThirdParty/
+/Android/libs/
+
+# CMake generated build files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+/Source/**/*.cmake
+/Docs/**/*.cmake
+
+# Precompiled header files
+*.gch/
+*.pch/
+*.pch.*
+
+# Misc.
+configure*
+*~
+*.swp
+.DS_Store
+*.log
+*.bak
+Thumbs.db
+.build
