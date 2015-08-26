@@ -29,7 +29,7 @@ class ScriptAnimation
                     float t = child.GetFloat("time");
                     Vector3 translation = child.GetVector3("translation");
                     float rotation = child.GetFloat("rotation");
-                    Print("time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
+                    //Print("time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
                     motion_times.Push(t);
                     Vector4 v(translation.x, translation.y, translation.z, rotation);
                     motion_keys.Push(v);
@@ -39,31 +39,45 @@ class ScriptAnimation
         }
     }
 
-    void GetMotion(float t, float dt, bool loop, Vector3& out translation, float& out rotation)
+    void GetMotion(float t, float dt, bool loop, Vector4& out_motion)
     {
         if (motion_times.empty)
             return;
 
         float future_time = t + dt;
         if (future_time > animation.length && loop) {
-            Vector3 t1 = Vector3(0,0,0);
-            Vector3 t2 = Vector3(0,0,0);
-            float r1 = 0, r2 = 0;
-            GetMotion(t, animation.length - t, false, t1, r1);
-            GetMotion(0, t + dt - animation.length, false, t2, r2);
-            translation = t1 + t2;
-            rotation = r1 + r2;
+            Vector4 t1 = Vector4(0,0,0,0);
+            Vector4 t2 = Vector4(0,0,0,0);
+            GetMotion(t, animation.length - t, false, t1);
+            GetMotion(0, t + dt - animation.length, false, t2);
+            out_motion = t1 + t2;
         }
         else
         {
-            int i = t * 30.0f;
+            Vector4 k1 = GetKey(t);
+            Vector4 k2 = GetKey(future_time);
+            out_motion = k2 - k1;
         }
+    }
+
+    Vector4 GetKey(float t)
+    {
+        int i = t * 30.0f;
+        Vector4 k1 = motion_keys[i];
+        int next_i = i + 1;
+        if (next_i >= motion_keys.length)
+            next_i = motion_keys.length - 1;
+        Vector4 k2 = motion_keys[next_i];
+        return k1.Lerp(k2, t - i/30.0f);
     }
 
     Animation@              animation;
     Array<float>            motion_times;
     Array<Vector4>          motion_keys;
 };
+
+Node@ characterNode;
+ScriptAnimation@ scriptAnimation;
 
 void Start()
 {
@@ -104,22 +118,19 @@ void CreateScene()
     cameraNode.position = Vector3(0.0f, 10.0f, -10.0f);
     pitch = 45;
 
-    Node@ characterNode = scene_.GetChild("1", true);
+    characterNode = scene_.GetChild("1", true);
     AnimatedModel@ object = characterNode.GetComponent("AnimatedModel");
-    object.skeleton.GetBone("Bip01_$AssimpFbx$_Translation").animated = false;
-    object.skeleton.GetBone("Bip01_$AssimpFbx$_Rotation").animated = false;
-
     AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-    ctrl.Play("Models/1.ani", 0, true);
+    ctrl.Play("Animation/1.ani", 0, false);
 
-    ScriptAnimation@ sa = ScriptAnimation();
-    sa.Load("Models/1.ani");
+    @scriptAnimation = ScriptAnimation();
+    scriptAnimation.Load("Animation/1.ani");
 }
 
 void CreateInstructions()
 {
     // Construct new Text object, set string to display and font to use
-    Text@ instructionText = ui.root.CreateChild("Text");
+    Text@ instructionText = ui.root.CreateChild("Text", "instruction");
     instructionText.text = "Use WASD keys and mouse to move";
     instructionText.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 15);
 
@@ -168,6 +179,12 @@ void MoveCamera(float timeStep)
         cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
     if (input.keyDown['D'])
         cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
+
+    if (input.keyPress['R'])
+    {
+        AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+        ctrl.SetTime("Animation/1.ani", 0);
+    }
 }
 
 void SubscribeToEvents()
@@ -176,6 +193,10 @@ void SubscribeToEvents()
     SubscribeToEvent("Update", "HandleUpdate");
 
     SubscribeToEvent("SceneUpdate", "HandleSceneUpdate");
+
+    // Subscribe HandlePostRenderUpdate() function for processing the post-render update event, during which we request
+    // debug geometry
+    SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -185,6 +206,24 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     // Move the camera, scale movement with time step
     MoveCamera(timeStep);
+
+
+    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+    float t = ctrl.GetTime("Animation/1.ani");
+
+    Vector4 motion_out = Vector4(0, 0, 0, 0);
+    scriptAnimation.GetMotion(t, timeStep, false, motion_out);
+
+    Vector3 t1(motion_out.x, motion_out.y, motion_out.z);
+    // characterNode.Translate(t1);
+    characterNode.Yaw(motion_out.w);
+    Print(motion_out.ToString());
+}
+
+void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
+{
+    DebugRenderer@ debug = scene_.debugRenderer;
+    debug.AddNode(characterNode, 1.0f, false);
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app

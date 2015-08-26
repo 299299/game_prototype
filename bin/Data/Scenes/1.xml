@@ -45,7 +45,7 @@
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="6">
-			<attribute name="Model" value="Model;Models/1.mdl" />
+			<attribute name="Model" value="Model;Animation/1.mdl" />
 			<attribute name="Material" value="Material;Materials/JackEnvMap.xml;Materials/JackEnvMap.xml" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />
@@ -127,7 +127,7 @@
 			</attribute>
 			<attribute name="Animation States">
 				<variant type="Int" value="1" />
-				<variant type="ResourceRef" value="Animation;Models/1_AnimStackTake 001.ani" />
+				<variant type="ResourceRef" value="Animation;Animation/1.ani" />
 				<variant type="String" value="RootNode" />
 				<variant type="Bool" value="true" />
 				<variant type="Float" value="1" />
