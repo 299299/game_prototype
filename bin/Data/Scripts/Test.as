@@ -6,19 +6,82 @@
 
 #include "Scripts/Utilities/Sample.as"
 
+class ScriptAnimation
+{
+    void Load(String anim)
+    {
+        animation = cache.GetResource("Animation", anim);
+        String motion_file = "Data/" + GetPath(anim) + GetFileName(anim) + "_motion.xml";
+
+        File@ file = File();
+        if (file.Open(motion_file))
+        {
+            XMLFile@ xml = XMLFile();
+            if (xml.Load(file))
+            {
+                Print(anim + " has motion " + motion_file + "!");
+
+                XMLElement root = xml.GetRoot();
+                XMLElement child = root.GetChild();
+
+                while (!child.isNull)
+                {
+                    float t = child.GetFloat("time");
+                    Vector3 translation = child.GetVector3("translation");
+                    float rotation = child.GetFloat("rotation");
+                    Print("time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
+                    motion_times.Push(t);
+                    Vector4 v(translation.x, translation.y, translation.z, rotation);
+                    motion_keys.Push(v);
+                    child = child.GetNext();
+                }
+            }
+        }
+    }
+
+    void GetMotion(float t, float dt, bool loop, Vector3& out translation, float& out rotation)
+    {
+        if (motion_times.empty)
+            return;
+
+        float future_time = t + dt;
+        if (future_time > animation.length && loop) {
+            Vector3 t1 = Vector3(0,0,0);
+            Vector3 t2 = Vector3(0,0,0);
+            float r1 = 0, r2 = 0;
+            GetMotion(t, animation.length - t, false, t1, r1);
+            GetMotion(0, t + dt - animation.length, false, t2, r2);
+            translation = t1 + t2;
+            rotation = r1 + r2;
+        }
+        else
+        {
+            int i = t * 30.0f;
+        }
+    }
+
+    Animation@              animation;
+    Array<float>            motion_times;
+    Array<Vector4>          motion_keys;
+};
+
 void Start()
 {
     // Execute the common startup for samples
-    SampleStart();
+    if (!engine.headless) {
+        SampleStart();
+    }
 
     // Create the scene content
     CreateScene();
 
-    // Create the UI content
-    CreateInstructions();
+    if (!engine.headless) {
+        // Create the UI content
+        CreateInstructions();
 
-    // Setup the viewport for displaying the scene
-    SetupViewport();
+        // Setup the viewport for displaying the scene
+        SetupViewport();
+    }
 
     // Hook up to the frame update events
     SubscribeToEvents();
@@ -47,7 +110,10 @@ void CreateScene()
     object.skeleton.GetBone("Bip01_$AssimpFbx$_Rotation").animated = false;
 
     AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-    ctrl.Play("Models/1_AnimStackTake 001.ani", 0, true);
+    ctrl.Play("Models/1.ani", 0, true);
+
+    ScriptAnimation@ sa = ScriptAnimation();
+    sa.Load("Models/1.ani");
 }
 
 void CreateInstructions()
@@ -108,6 +174,8 @@ void SubscribeToEvents()
 {
     // Subscribe HandleUpdate() function for processing update events
     SubscribeToEvent("Update", "HandleUpdate");
+
+    SubscribeToEvent("SceneUpdate", "HandleSceneUpdate");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
