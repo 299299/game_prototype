@@ -23,13 +23,14 @@ class ScriptAnimation
 
                 XMLElement root = xml.GetRoot();
                 XMLElement child = root.GetChild();
+                int i = 0;
 
                 while (!child.isNull)
                 {
                     float t = child.GetFloat("time");
                     Vector3 translation = child.GetVector3("translation");
                     float rotation = child.GetFloat("rotation");
-                    //Print("time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
+                    Print("frame:" + String(i++) + " time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
                     motion_times.Push(t);
                     Vector4 v(translation.x, translation.y, translation.z, rotation);
                     motion_keys.Push(v);
@@ -39,12 +40,14 @@ class ScriptAnimation
         }
     }
 
-    void GetMotion(float t, float dt, bool loop, Vector4& out_motion)
+    void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
     {
         if (motion_times.empty)
             return;
 
         float future_time = t + dt;
+        // Print("GetMotion(" + String(t) + "," + String(dt) + ") future=" + String(future_time));
+
         if (future_time > animation.length && loop) {
             Vector4 t1 = Vector4(0,0,0,0);
             Vector4 t2 = Vector4(0,0,0,0);
@@ -57,18 +60,23 @@ class ScriptAnimation
             Vector4 k1 = GetKey(t);
             Vector4 k2 = GetKey(future_time);
             out_motion = k2 - k1;
+            //Print("k1=" + k1.ToString());
+            //Print("k2=" + k2.ToString());
+            //Print("out_motion=" + out_motion.ToString());
         }
     }
 
     Vector4 GetKey(float t)
     {
-        int i = t * 30.0f;
+        uint i = uint(t * 30.0f);
         Vector4 k1 = motion_keys[i];
-        int next_i = i + 1;
+        uint next_i = i + 1;
         if (next_i >= motion_keys.length)
             next_i = motion_keys.length - 1;
         Vector4 k2 = motion_keys[next_i];
-        return k1.Lerp(k2, t - i/30.0f);
+        Vector4 ret = k1.Lerp(k2, t*30 - float(i));
+        // Print("GetKey t=" + String(t) + " key=" + String(i) + "~" + String(next_i) + " ret=" + ret.ToString() + " a=" + String(t*30 - float(i)));
+        return ret;
     }
 
     Animation@              animation;
@@ -78,6 +86,10 @@ class ScriptAnimation
 
 Node@ characterNode;
 ScriptAnimation@ scriptAnimation;
+float totalYaw = 0;
+float targetYaw = 90;
+Vector3 startPosition;
+Quaternion startRotation;
 
 void Start()
 {
@@ -101,6 +113,17 @@ void Start()
     SubscribeToEvents();
 }
 
+void StartPlayMotion()
+{
+    totalYaw = 0;
+    startPosition = characterNode.worldPosition;
+    startRotation = characterNode.worldRotation;
+
+    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+    ctrl.Play("Animation/1.ani", 0, false);
+    ctrl.SetTime("Animation/1.ani", 0);
+}
+
 void CreateScene()
 {
     scene_ = Scene();
@@ -119,12 +142,11 @@ void CreateScene()
     pitch = 45;
 
     characterNode = scene_.GetChild("1", true);
-    AnimatedModel@ object = characterNode.GetComponent("AnimatedModel");
-    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-    ctrl.Play("Animation/1.ani", 0, false);
 
     @scriptAnimation = ScriptAnimation();
     scriptAnimation.Load("Animation/1.ani");
+
+    StartPlayMotion();
 }
 
 void CreateInstructions()
@@ -182,8 +204,7 @@ void MoveCamera(float timeStep)
 
     if (input.keyPress['R'])
     {
-        AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-        ctrl.SetTime("Animation/1.ani", 0);
+        StartPlayMotion();
     }
 }
 
@@ -207,17 +228,32 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     // Move the camera, scale movement with time step
     MoveCamera(timeStep);
 
-
     AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
     float t = ctrl.GetTime("Animation/1.ani");
+
+    if (t >= ctrl.GetLength("Animation/1.ani"))
+        return;
 
     Vector4 motion_out = Vector4(0, 0, 0, 0);
     scriptAnimation.GetMotion(t, timeStep, false, motion_out);
 
-    Vector3 t1(motion_out.x, motion_out.y, motion_out.z);
-    // characterNode.Translate(t1);
-    characterNode.Yaw(motion_out.w);
-    Print(motion_out.ToString());
+    Vector3 t_local(motion_out.x, motion_out.y, motion_out.z);
+    float yaw = motion_out.w;
+    if (yaw < 0)
+        yaw = 0;
+
+    if (totalYaw + yaw > targetYaw)
+        yaw = targetYaw - totalYaw;
+
+    characterNode.Yaw(yaw);
+    totalYaw += yaw;
+
+    //Print("motion=" + motion_out.ToString() + " totalYaw=" + String(totalYaw) + " yaw=" + String(yaw) + " t=" + String(t));
+
+    Vector3 t_world = startRotation * t_local;
+    characterNode.Translate(t_world, TS_WORLD);
+
+    // Print("start=" + startPosition.ToString() + " cur=" + characterNode.worldPosition.ToString());
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
