@@ -46,8 +46,6 @@ class ScriptAnimation
             return;
 
         float future_time = t + dt;
-        // Print("GetMotion(" + String(t) + "," + String(dt) + ") future=" + String(future_time));
-
         if (future_time > animation.length && loop) {
             Vector4 t1 = Vector4(0,0,0,0);
             Vector4 t2 = Vector4(0,0,0,0);
@@ -60,9 +58,6 @@ class ScriptAnimation
             Vector4 k1 = GetKey(t);
             Vector4 k2 = GetKey(future_time);
             out_motion = k2 - k1;
-            //Print("k1=" + k1.ToString());
-            //Print("k2=" + k2.ToString());
-            //Print("out_motion=" + out_motion.ToString());
         }
     }
 
@@ -75,7 +70,6 @@ class ScriptAnimation
             next_i = motion_keys.length - 1;
         Vector4 k2 = motion_keys[next_i];
         Vector4 ret = k1.Lerp(k2, t*30 - float(i));
-        // Print("GetKey t=" + String(t) + " key=" + String(i) + "~" + String(next_i) + " ret=" + ret.ToString() + " a=" + String(t*30 - float(i)));
         return ret;
     }
 
@@ -88,6 +82,7 @@ Node@ characterNode;
 ScriptAnimation@ scriptAnimation;
 float totalYaw = 0;
 float targetYaw = 90;
+float startYaw = 0;
 Vector3 startPosition;
 Quaternion startRotation;
 
@@ -118,10 +113,12 @@ void StartPlayMotion()
     totalYaw = 0;
     startPosition = characterNode.worldPosition;
     startRotation = characterNode.worldRotation;
+    startYaw = startRotation.eulerAngles.y;
 
     AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
     ctrl.Play("Animation/1.ani", 0, false);
     ctrl.SetTime("Animation/1.ani", 0);
+    ctrl.SetSpeed("Animation/1.ani", 1);
 }
 
 void CreateScene()
@@ -234,32 +231,42 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (t >= ctrl.GetLength("Animation/1.ani"))
         return;
 
+    if (t >= 0.74)
+    {
+        if (ctrl.GetSpeed("Animation/1.ani") > 0)
+        {
+            float final_yaw = characterNode.worldRotation.eulerAngles.y;
+            characterNode.Yaw(targetYaw + startYaw - final_yaw);
+            Print("FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            ctrl.SetSpeed("Animation/1.ani", 0);
+            Print("FINAL YAW = " + String(final_yaw));
+        }
+        return;
+    }
+
     Vector4 motion_out = Vector4(0, 0, 0, 0);
-    scriptAnimation.GetMotion(t, timeStep, false, motion_out);
+    motion_out = scriptAnimation.GetKey(t);
 
     Vector3 t_local(motion_out.x, motion_out.y, motion_out.z);
-    float yaw = motion_out.w;
-    if (yaw < 0)
-        yaw = 0;
+    float yaw = motion_out.w + 22.63 * t;
+    characterNode.worldRotation = Quaternion(0, yaw + startYaw, 0);
+    characterNode.worldPosition =  startRotation * t_local + startPosition;
 
-    if (totalYaw + yaw > targetYaw)
-        yaw = targetYaw - totalYaw;
-
-    characterNode.Yaw(yaw);
-    totalYaw += yaw;
-
-    //Print("motion=" + motion_out.ToString() + " totalYaw=" + String(totalYaw) + " yaw=" + String(yaw) + " t=" + String(t));
-
-    Vector3 t_world = startRotation * t_local;
-    characterNode.Translate(t_world, TS_WORLD);
-
-    // Print("start=" + startPosition.ToString() + " cur=" + characterNode.worldPosition.ToString());
+    Print("motion=" + motion_out.ToString() + " yaw=" + String(yaw) + " t=" + String(t));
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
     DebugRenderer@ debug = scene_.debugRenderer;
+
+    debug.AddNode(scene_, 2.0f, false);
     debug.AddNode(characterNode, 1.0f, false);
+
+    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+    Vector4 finnal_pos = scriptAnimation.GetKey(ctrl.GetLength("Animation/1.ani"));
+    Vector3 t_local(finnal_pos.x, finnal_pos.y, finnal_pos.z);
+
+    debug.AddLine(startRotation * t_local + startPosition, characterNode.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
