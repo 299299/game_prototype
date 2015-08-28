@@ -5,86 +5,10 @@
 //     - Handling keyboard and mouse input to move a freelook camera
 
 #include "Scripts/Utilities/Sample.as"
+#include "Scripts/Motion.as"
 
-class ScriptAnimation
-{
-    void Load(String anim)
-    {
-        animation = cache.GetResource("Animation", anim);
-        String motion_file = "Data/" + GetPath(anim) + GetFileName(anim) + "_motion.xml";
-
-        File@ file = File();
-        if (file.Open(motion_file))
-        {
-            XMLFile@ xml = XMLFile();
-            if (xml.Load(file))
-            {
-                Print(anim + " has motion " + motion_file + "!");
-
-                XMLElement root = xml.GetRoot();
-                XMLElement child = root.GetChild();
-                int i = 0;
-
-                while (!child.isNull)
-                {
-                    float t = child.GetFloat("time");
-                    Vector3 translation = child.GetVector3("translation");
-                    float rotation = child.GetFloat("rotation");
-                    Print("frame:" + String(i++) + " time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
-                    motion_times.Push(t);
-                    Vector4 v(translation.x, translation.y, translation.z, rotation);
-                    motion_keys.Push(v);
-                    child = child.GetNext();
-                }
-            }
-        }
-    }
-
-    void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
-    {
-        if (motion_times.empty)
-            return;
-
-        float future_time = t + dt;
-        if (future_time > animation.length && loop) {
-            Vector4 t1 = Vector4(0,0,0,0);
-            Vector4 t2 = Vector4(0,0,0,0);
-            GetMotion(t, animation.length - t, false, t1);
-            GetMotion(0, t + dt - animation.length, false, t2);
-            out_motion = t1 + t2;
-        }
-        else
-        {
-            Vector4 k1 = GetKey(t);
-            Vector4 k2 = GetKey(future_time);
-            out_motion = k2 - k1;
-        }
-    }
-
-    Vector4 GetKey(float t)
-    {
-        uint i = uint(t * 30.0f);
-        Vector4 k1 = motion_keys[i];
-        uint next_i = i + 1;
-        if (next_i >= motion_keys.length)
-            next_i = motion_keys.length - 1;
-        Vector4 k2 = motion_keys[next_i];
-        Vector4 ret = k1.Lerp(k2, t*30 - float(i));
-        return ret;
-    }
-
-    Animation@              animation;
-    Array<float>            motion_times;
-    Array<Vector4>          motion_keys;
-};
-
+Motion@ motion;
 Node@ characterNode;
-ScriptAnimation@ scriptAnimation;
-float totalYaw = 0;
-float targetYaw = 90;
-float startYaw = 0;
-Vector3 startPosition;
-Quaternion startRotation;
 
 void Start()
 {
@@ -108,17 +32,15 @@ void Start()
     SubscribeToEvents();
 }
 
+void Stop()
+{
+    Print("stop");
+    @motion = null;
+}
+
 void StartPlayMotion()
 {
-    totalYaw = 0;
-    startPosition = characterNode.worldPosition;
-    startRotation = characterNode.worldRotation;
-    startYaw = startRotation.eulerAngles.y;
-
-    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-    ctrl.Play("Animation/1.ani", 0, false);
-    ctrl.SetTime("Animation/1.ani", 0);
-    ctrl.SetSpeed("Animation/1.ani", 1);
+    motion.Start(characterNode);
 }
 
 void CreateScene()
@@ -140,9 +62,7 @@ void CreateScene()
 
     characterNode = scene_.GetChild("1", true);
 
-    @scriptAnimation = ScriptAnimation();
-    scriptAnimation.Load("Animation/1.ani");
-
+    @motion = Motion("Animation/1.ani", 90, 22, false, true);
     StartPlayMotion();
 }
 
@@ -157,6 +77,7 @@ void CreateInstructions()
     instructionText.horizontalAlignment = HA_CENTER;
     instructionText.verticalAlignment = VA_CENTER;
     instructionText.SetPosition(0, ui.root.height / 4);
+    instructionText.color = Color(1, 0, 0);
 }
 
 void SetupViewport()
@@ -200,9 +121,7 @@ void MoveCamera(float timeStep)
         cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
 
     if (input.keyPress['R'])
-    {
         StartPlayMotion();
-    }
 }
 
 void SubscribeToEvents()
@@ -217,6 +136,7 @@ void SubscribeToEvents()
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
 }
 
+float golbal_time = 0;
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
     // Take the frame time step, which is stored as a float
@@ -225,34 +145,56 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     // Move the camera, scale movement with time step
     MoveCamera(timeStep);
 
-    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-    float t = ctrl.GetTime("Animation/1.ani");
+    motion.Move(timeStep, characterNode);
 
-    if (t >= ctrl.GetLength("Animation/1.ani"))
-        return;
+    Vector3 dir = characterNode.worldRotation * Vector3(0, 0, 1);
+    float a = Atan2(dir.x, dir.z);
+    Print("dir="+dir.ToString()+" angle="+String(a));
 
-    if (t >= 0.74)
+    golbal_time += timeStep;
+    if (golbal_time > 1.0)
     {
-        if (ctrl.GetSpeed("Animation/1.ani") > 0)
-        {
-            float final_yaw = characterNode.worldRotation.eulerAngles.y;
-            characterNode.Yaw(targetYaw + startYaw - final_yaw);
-            Print("FINISHED!!!!!!!!!!!!!!!!!!!!!!!!!!");
-            ctrl.SetSpeed("Animation/1.ani", 0);
-            Print("FINAL YAW = " + String(final_yaw));
-        }
-        return;
+        float x = 0;
+        float y = 0;
+        float angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = 1; x = 0;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = 1; x = 1;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = 0; x = 1;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = -1; x = 1;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = -1; x = 0;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = -1; x = -1;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = 0; x = -1;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        y = 1; x = -1;
+        angle = Atan2(x, y);
+        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+        // engine.Exit();
+        golbal_time -= 1.0f;
+        StartPlayMotion();
     }
-
-    Vector4 motion_out = Vector4(0, 0, 0, 0);
-    motion_out = scriptAnimation.GetKey(t);
-
-    Vector3 t_local(motion_out.x, motion_out.y, motion_out.z);
-    float yaw = motion_out.w + 22.63 * t;
-    characterNode.worldRotation = Quaternion(0, yaw + startYaw, 0);
-    characterNode.worldPosition =  startRotation * t_local + startPosition;
-
-    Print("motion=" + motion_out.ToString() + " yaw=" + String(yaw) + " t=" + String(t));
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
@@ -262,11 +204,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     debug.AddNode(scene_, 2.0f, false);
     debug.AddNode(characterNode, 1.0f, false);
 
-    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-    Vector4 finnal_pos = scriptAnimation.GetKey(ctrl.GetLength("Animation/1.ani"));
-    Vector3 t_local(finnal_pos.x, finnal_pos.y, finnal_pos.z);
-
-    debug.AddLine(startRotation * t_local + startPosition, characterNode.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
+    motion.DebugDraw(debug, characterNode);
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
