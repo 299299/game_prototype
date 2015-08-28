@@ -1,6 +1,5 @@
 
 
-
 class Motion
 {
     Motion(String animName, float targetYaw, int endFrame, bool loop, bool fixYaw)
@@ -97,7 +96,7 @@ class Motion
         start_yaw = start_rotation.eulerAngles.y;
 
         AnimationController@ ctrl = node.GetComponent("AnimationController");
-        ctrl.Play(name, 0, looped);
+        ctrl.PlayExclusive(name, 0, looped, 0.1);
         ctrl.SetTime(name, 0);
         ctrl.SetSpeed(name, 1);
 
@@ -112,7 +111,7 @@ class Motion
         {
             Vector4 motion_out = Vector4(0, 0, 0, 0);
             GetMotion(local_time, dt, looped, motion_out);
-            node->Yaw(motion_out.w);
+            node.Yaw(motion_out.w);
             Vector3 t_local(motion_out.x, motion_out.y, motion_out.z);
             Vector3 t_world = node.worldRotation * t_local + node.worldPosition;
             MoveNode(node, t_world, dt);
@@ -136,7 +135,7 @@ class Motion
             Vector3 t_local(motion_out.x, motion_out.y, motion_out.z);
             float yaw = motion_out.w + fix_yaw_per_second * local_time + start_yaw;
             node.worldRotation = Quaternion(0, yaw, 0);
-            MoveNode(start_rotation * t_local + start_position);
+            MoveNode(node, start_rotation * t_local + start_position, dt);
             Print("motion=" + motion_out.ToString() + " yaw=" + String(yaw) + " t=" + String(local_time));
         }
         return false;

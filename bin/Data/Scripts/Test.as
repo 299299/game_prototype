@@ -9,6 +9,7 @@
 
 Motion@ motion;
 Node@ characterNode;
+int state = 0;
 
 void Start()
 {
@@ -32,15 +33,10 @@ void Start()
     SubscribeToEvents();
 }
 
-void Stop()
-{
-    Print("stop");
-    @motion = null;
-}
-
 void StartPlayMotion()
 {
     motion.Start(characterNode);
+    state = 1;
 }
 
 void CreateScene()
@@ -60,10 +56,12 @@ void CreateScene()
     cameraNode.position = Vector3(0.0f, 10.0f, -10.0f);
     pitch = 45;
 
-    characterNode = scene_.GetChild("1", true);
+    characterNode = scene_.GetChild("bruce", true);
 
-    @motion = Motion("Animation/1.ani", 90, 22, false, true);
-    StartPlayMotion();
+    @motion = Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 26, false, true);
+
+    AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+    ctrl.PlayExclusive("Animation/Stand_Idle.ani", 0, true, 0.1);
 }
 
 void CreateInstructions()
@@ -145,56 +143,68 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     // Move the camera, scale movement with time step
     MoveCamera(timeStep);
 
-    motion.Move(timeStep, characterNode);
-
-    Vector3 dir = characterNode.worldRotation * Vector3(0, 0, 1);
-    float a = Atan2(dir.x, dir.z);
-    Print("dir="+dir.ToString()+" angle="+String(a));
-
-    golbal_time += timeStep;
-    if (golbal_time > 1.0)
+    if (state == 1)
     {
-        float x = 0;
-        float y = 0;
-        float angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = 1; x = 0;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = 1; x = 1;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = 0; x = 1;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = -1; x = 1;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = -1; x = 0;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = -1; x = -1;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = 0; x = -1;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        y = 1; x = -1;
-        angle = Atan2(x, y);
-        Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
-
-        // engine.Exit();
-        golbal_time -= 1.0f;
-        StartPlayMotion();
+        if (motion.Move(timeStep, characterNode))
+        {
+            state = 0;
+            AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+            ctrl.PlayExclusive("Animation/Stand_Idle.ani", 0, true, 0.1);
+        }
     }
+
+    if (engine.headless)
+    {
+        Vector3 dir = characterNode.worldRotation * Vector3(0, 0, 1);
+        float a = Atan2(dir.x, dir.z);
+        Print("dir="+dir.ToString()+" angle="+String(a));
+
+        golbal_time += timeStep;
+        if (golbal_time > 1.0)
+        {
+            float x = 0;
+            float y = 0;
+            float angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = 1; x = 0;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = 1; x = 1;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = 0; x = 1;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = -1; x = 1;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = -1; x = 0;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = -1; x = -1;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = 0; x = -1;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            y = 1; x = -1;
+            angle = Atan2(x, y);
+            Print("x="+String(x)+" y="+String(y)+" angle="+String(angle));
+
+            // engine.Exit();
+            golbal_time -= 1.0f;
+            StartPlayMotion();
+        }
+    }
+
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
@@ -205,6 +215,14 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     debug.AddNode(characterNode, 1.0f, false);
 
     motion.DebugDraw(debug, characterNode);
+
+    Vector3 dir = cameraNode.worldRotation * Vector3(0, 0, 1);
+    float angle = Atan2(dir.x, dir.z);
+    float radius = 1.0f;
+    Vector3 start = characterNode.worldPosition;
+    //start.y = 1.0f;
+    Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
+    debug.AddLine(start, end, Color(1,1,0), false);
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
