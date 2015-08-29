@@ -54,6 +54,10 @@ void CreateScene()
 
     characterNode = scene_.GetChild("bruce", true);
     characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player");
+    characterNode.Translate(Vector3(5, 0, 0));
+
+    Node@ rootBone = characterNode.GetChild("RootNode", true);
+    rootBone.Yaw(180);
 }
 
 void CreateInstructions()
@@ -167,65 +171,13 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     //Print("cameraAngle=" + String(cameraAngle) + " characterAngle=" + String(characterAngle) + " inputAngle=" + String(gInput.m_leftStickAngle));
     float diff = computeDifference();
     //Print("diff="+String(diff));
+    Text@ text = ui.root.GetChild("instruction", true);
+    text.text = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
 
-    float targetAngle = cameraAngle + characterAngle;
-    DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0));
-    DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1));
+    float targetAngle = cameraAngle + gInput.m_leftStickAngle;
+    DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0), 4.0);
+    DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1), 4.0);
 }
-
-// clamps an angle to the rangle of [-2PI, 2PI]
-float angleDiff( float diff )
-{
-    if (diff > 180)
-        diff = diff - 360;
-    if (diff < -180)
-        diff = diff + 360;
-    return diff;
-}
-
-//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
-//  contains the gamepad's angle relative to the camera.
-int RadialSelectAnimation( int numSlices )
-{
-    Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = cameraNode.worldRotation * fwd;
-    float cameraAngle = Atan2(camDir.x, camDir.z);
-    Vector3 characterDir = characterNode.worldRotation * fwd;
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-
-    // compute the angle that the character wants to go relative to the camera
-    float angle = cameraAngle + gInput.m_leftStickAngle + characterAngle + (360 / (numSlices * numSlices) );
-
-    // map the angle into the range 0 to 2 pi
-    if ( angle < 0 )
-        angle = angle + 360;
-    else
-        angle = angle - 360 * Floor( angle / 360 );
-
-    // select the segement that points in that direction
-    return int(Floor(angle / 360 * numSlices ));
-}
-
-
-// computes the difference between the characters current heading and the
-// heading the user wants them to go in.
-float computeDifference()
-{
-    // if the user is not pushing the stick anywhere return.  this prevents the character from turning while stopping (which
-    // looks bad - like the skid to stop animation)
-    if( gInput.m_leftStickMagnitude < 0.5f )
-        return 0;
-
-    Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = cameraNode.worldRotation * fwd;
-    float cameraAngle = Atan2(camDir.x, camDir.z);
-    Vector3 characterDir = characterNode.worldRotation * fwd;
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-
-    // check the difference between the characters current heading and the desired heading from the gamepad
-    return angleDiff( -gInput.m_leftStickAngle - cameraAngle - characterAngle );
-}
-
 
 
 

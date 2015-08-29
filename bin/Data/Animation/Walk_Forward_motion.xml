@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<motion_keys>
+	<key time="0" translation="0 0 0" rotation="0" />
+	<key time="0.0333333" translation="0 0 0.214384" rotation="0" />
+	<key time="0.0666667" translation="0 0 0.42886" rotation="0" />
+	<key time="0.1" translation="0 0 0.64215" rotation="0" />
+	<key time="0.133333" translation="0 0 0.853525" rotation="0" />
+	<key time="0.166667" translation="0 0 1.06372" rotation="0" />
+	<key time="0.2" translation="0 0 1.27454" rotation="0" />
+	<key time="0.233333" translation="0 0 1.48765" rotation="0" />
+	<key time="0.266667" translation="0 0 1.70641" rotation="0" />
+	<key time="0.3" translation="0 0 1.92837" rotation="0" />
+	<key time="0.333333" translation="0 0 2.14594" rotation="0" />
+	<key time="0.366667" translation="0 0 2.35641" rotation="0" />
+	<key time="0.4" translation="0 0 2.56349" rotation="0" />
+	<key time="0.433333" translation="0 0 2.77004" rotation="0" />
+	<key time="0.466667" translation="0 0 2.97859" rotation="0" />
+	<key time="0.5" translation="0 0 3.19069" rotation="0" />
+	<key time="0.533333" translation="0 0 3.40489" rotation="0" />
+	<key time="0.566667" translation="0 0 3.61982" rotation="0" />
+	<key time="0.6" translation="0 0 3.83466" rotation="0" />
+	<key time="0.633333" translation="0 0 4.04987" rotation="0" />
+	<key time="0.666667" translation="0 0 4.26535" rotation="0" />
+	<key time="0.7" translation="0 0 4.48128" rotation="0" />
+	<key time="0.733333" translation="0 0 4.69858" rotation="0" />
+	<key time="0.766667" translation="0 0 4.91653" rotation="0" />
+	<key time="0.8" translation="0 0 5.13209" rotation="0" />
+	<key time="0.833333" translation="0 0 5.34456" rotation="0" />
+	<key time="0.866667" translation="0 0 5.5553" rotation="0" />
+	<key time="0.9" translation="0 0 5.76549" rotation="0" />
+	<key time="0.933333" translation="0 0 5.97595" rotation="0" />
+</motion_keys>

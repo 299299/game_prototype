@@ -14,9 +14,6 @@ class GameInput
     float m_lastLeftStickY;
     float m_leftStickHoldTime;
 
-    float m_previousLeftStickX;
-    float m_previousLeftStickY;
-
     float m_smooth;
 
     GameInput()
@@ -35,9 +32,6 @@ class GameInput
 
         m_leftStickHoldTime = 0;
 
-        m_previousLeftStickX = 0;
-        m_previousLeftStickY = 0;
-
         m_smooth = 0.9f;
     }
 
@@ -48,8 +42,8 @@ class GameInput
 
     void Update(float dt)
     {
-        m_previousLeftStickX = m_leftStickX;
-        m_previousLeftStickY = m_leftStickY;
+        m_lastLeftStickX = m_leftStickX;
+        m_lastLeftStickY = m_leftStickY;
 
         Vector2 leftStick = GetLeftStick();
         Vector2 rightStick = GetRightStick();
@@ -87,6 +81,10 @@ class GameInput
                 ret.y += 1.0f;
             if (input.keyDown[KEY_DOWN])
                 ret.y -= 1.0f;
+            if (input.keyDown[KEY_RIGHT])
+                ret.x += 1.0f;
+            if (input.keyDown[KEY_LEFT])
+                ret.x -= 1.0f;
         }
         return ret;
     }

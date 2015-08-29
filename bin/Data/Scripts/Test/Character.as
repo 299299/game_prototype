@@ -3,13 +3,15 @@
 
 class CharacterState : State
 {
-    Node@       characterNode;
-    Character@  ownner;
+    Node@                       characterNode;
+    Character@                  ownner;
+    AnimationController@        ctrl;
 
     CharacterState(Node@ n, Character@ c)
     {
         characterNode = n;
         @ownner = c;
+        ctrl = characterNode.GetComponent("AnimationController");
     }
 
     ~CharacterState()
@@ -44,6 +46,6 @@ class Character : GameObject
 
     void Update(float dt)
     {
-
+        GameObject::Update(dt);
     }
 };
