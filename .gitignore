@@ -1,6 +1,3 @@
-# Output directories
-/bin/*
-!/bin/**/
 
 /lib*/
 generated/
@@ -85,3 +82,7 @@ configure*
 *.bak
 Thumbs.db
 .build
+
+/bin/Data/Asset
+/bin/Data/Animation/Materials
+/bin/Data/Animation/Textures

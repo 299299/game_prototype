@@ -496,7 +496,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (!gameScene.updateEnabled)
         {
             SetMessage("PAUSED");
-            
+
             // Open the settings joystick only if the controls screen joystick was already open
             if (screenJoystickID >= 0)
             {
