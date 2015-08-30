@@ -12,6 +12,8 @@
 Node@ characterNode;
 int state = 0;
 GameInput@ gInput = GameInput();
+Player@ player;
+bool slowMotion = true;
 
 void Start()
 {
@@ -53,7 +55,7 @@ void CreateScene()
     pitch = 45;
 
     characterNode = scene_.GetChild("bruce", true);
-    characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player");
+    @player = cast<Player>(characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player"));
     characterNode.Translate(Vector3(5, 0, 0));
 
     Node@ rootBone = characterNode.GetChild("RootNode", true);
@@ -128,6 +130,8 @@ void SubscribeToEvents()
 }
 
 float golbal_time = 0;
+
+
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
     // Take the frame time step, which is stored as a float
@@ -138,6 +142,12 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     gInput.Update(timeStep);
 
+    if (input.keyPress['T'])
+    {
+        scene_.timeScale = slowMotion ? 0.05f : 1.0f;
+        slowMotion = !slowMotion;
+    }
+
     if (engine.headless)
     {
         golbal_time += timeStep;
@@ -145,6 +155,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (golbal_time > 2.0)
         {
             state = 3;
+            //@player = null;
             characterNode.RemoveAllComponents();
         }
 
@@ -152,6 +163,23 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         {
             engine.Exit();
         }
+    }
+    else
+    {
+        Vector3 fwd = Vector3(0, 0, 1);
+        Vector3 camDir = cameraNode.worldRotation * fwd;
+        float cameraAngle = Atan2(camDir.x, camDir.z);
+        Vector3 characterDir = characterNode.worldRotation * fwd;
+        float characterAngle = Atan2(characterDir.x, characterDir.z);
+
+        //Print("cameraAngle=" + String(cameraAngle) + " characterAngle=" + String(characterAngle) + " inputAngle=" + String(gInput.m_leftStickAngle));
+        float diff = computeDifference();
+        //Print("diff="+String(diff));
+        Text@ text = ui.root.GetChild("instruction", true);
+        String debugText = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
+        if (player.stateMachine.currentState !is null)
+            debugText += "\n" + "current-state=" + player.stateMachine.currentState.name;
+        text.text = debugText;
     }
 }
 
@@ -161,19 +189,13 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 
     debug.AddNode(scene_, 2.0f, false);
     debug.AddNode(characterNode, 1.0f, false);
+    player.DebugDraw(debug);
 
     Vector3 fwd = Vector3(0, 0, 1);
     Vector3 camDir = cameraNode.worldRotation * fwd;
     float cameraAngle = Atan2(camDir.x, camDir.z);
     Vector3 characterDir = characterNode.worldRotation * fwd;
     float characterAngle = Atan2(characterDir.x, characterDir.z);
-
-    //Print("cameraAngle=" + String(cameraAngle) + " characterAngle=" + String(characterAngle) + " inputAngle=" + String(gInput.m_leftStickAngle));
-    float diff = computeDifference();
-    //Print("diff="+String(diff));
-    Text@ text = ui.root.GetChild("instruction", true);
-    text.text = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
-
     float targetAngle = cameraAngle + gInput.m_leftStickAngle;
     DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0), 4.0);
     DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1), 4.0);

@@ -22,36 +22,57 @@ class PlayerStandState : CharacterState
     void Update(float dt)
     {
         if (!gInput.inLeftStickInDeadZone() && gInput.isLeftStickStationary())
-            ownner.stateMachine.ChangeState("MoveState");
+        {
+            int index = RadialSelectAnimation(4);
+            Print("StandToMove index = " + String(index));
+            characterNode.vars["AnimationIndex"] = index;
+
+            if (index == 0)
+                ownner.stateMachine.ChangeState("MoveState");
+            else
+                ownner.stateMachine.ChangeState("StandToMoveState");
+        }
     }
 };
 
 class PlayerStandToMoveState : CharacterState
 {
-    Motion@ motion;
+    Array<Motion@> motions;
+    int selectIndex;
 
     PlayerStandToMoveState(Node@ n, Character@ c)
     {
         super(n, c);
         name = "StandToMoveState";
-        @motion = Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 26, false, true);
+        selectIndex = 0;
+
+        motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 40, false, true, 1.5));
+        motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 24, false, true, 1.0));
+        motions.Push(Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 27, false, true, 1.5));
+        // motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 17, false, true));
     }
 
     void Update(float dt)
     {
-        if (motion.Move(dt, characterNode))
-            ownner.stateMachine.ChangeState("StandState");
+        if (motions[selectIndex].Move(dt, characterNode))
+        {
+            if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
+                ownner.stateMachine.ChangeState("StandState");
+            else
+                ownner.stateMachine.ChangeState("MoveState");
+        }
     }
 
     void Enter(State@ lastState)
     {
-        if (ctrl !is null)
-            ctrl.PlayExclusive("Animation/Stand_To_Walk_Left_90.ani", 0, false, 0.1);
+        selectIndex = characterNode.vars["AnimationIndex"].GetInt() - 1;
+        motions[selectIndex].Start(characterNode, ctrl);
+        Print("Pick StandToMove " + motions[selectIndex].name);
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        motion.DebugDraw(debug, characterNode);
+        motions[selectIndex].DebugDraw(debug, characterNode);
     }
 };
 
@@ -87,7 +108,7 @@ class PlayerMoveState : CharacterState
 
     void Enter(State@ lastState)
     {
-        motion.Start(characterNode);
+        motion.Start(characterNode, ctrl, 0.0f, 0.1);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -125,25 +146,23 @@ float angleDiff( float diff )
 
 //  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
 //  contains the gamepad's angle relative to the camera.
-int RadialSelectAnimation( int numSlices )
+int RadialSelectAnimation( int numDirections )
 {
     Vector3 fwd = Vector3(0, 0, 1);
     Vector3 camDir = cameraNode.worldRotation * fwd;
     float cameraAngle = Atan2(camDir.x, camDir.z);
     Vector3 characterDir = characterNode.worldRotation * fwd;
     float characterAngle = Atan2(characterDir.x, characterDir.z);
+    float directionDifference = angleDiff(gInput.m_leftStickAngle + cameraAngle - characterAngle);
 
-    // compute the angle that the character wants to go relative to the camera
-    float angle = cameraAngle + gInput.m_leftStickAngle + characterAngle + (360 / (numSlices * numSlices) );
+    float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
 
-    // map the angle into the range 0 to 2 pi
-    if ( angle < 0 )
-        angle = angle + 360;
-    else
-        angle = angle - 360 * Floor( angle / 360 );
+    // since the range of the direction variable is [-3, 3] we need to map negative
+    // values to the animation index range in our selector which is [0,7]
+    if( directionVariable < 0 )
+        directionVariable += numDirections;
 
-    // select the segement that points in that direction
-    return int(Floor(angle / 360 * numSlices ));
+    return int(directionVariable);
 }
 
 
@@ -153,8 +172,8 @@ float computeDifference()
 {
     // if the user is not pushing the stick anywhere return.  this prevents the character from turning while stopping (which
     // looks bad - like the skid to stop animation)
-    //if( gInput.m_leftStickMagnitude < 0.5f )
-    //    return 0;
+    if( gInput.m_leftStickMagnitude < 0.5f )
+        return 0;
 
     Vector3 fwd = Vector3(0, 0, 1);
     Vector3 camDir = cameraNode.worldRotation * fwd;

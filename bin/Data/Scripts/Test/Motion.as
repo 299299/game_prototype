@@ -14,8 +14,9 @@ class Motion
     float                   fixYawPerSec;
     bool                    looped;
     bool                    fixYaw;
+    float                   speed;
 
-    Motion(const String&in animName, float _targetYaw, int _endFrame, bool _loop, bool _fixYaw)
+    Motion(const String&in animName, float _targetYaw, int _endFrame, bool _loop, bool _fixYaw, float _speed = 1.0f)
     {
         Load(animName);
         targetYaw = _targetYaw;
@@ -27,6 +28,7 @@ class Motion
         name = animName;
         fixYawPerSec = 0.0f;
         fixYaw = _fixYaw;
+        speed = _speed;
         if (fixYaw)
         {
             float endYaw = motionKeys[endFrame].w;
@@ -46,8 +48,6 @@ class Motion
             XMLFile@ xml = XMLFile();
             if (xml.Load(file))
             {
-                Print(anim + " has motion " + motion_file + "!");
-
                 XMLElement root = xml.GetRoot("motion_keys");
                 XMLElement child = root.GetChild();
                 int i = 0;
@@ -64,6 +64,9 @@ class Motion
                 }
             }
         }
+
+        if (motionKeys.empty)
+            Print("Error " + anim + " no motion " + motion_file + "!");
     }
 
     void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
@@ -90,6 +93,8 @@ class Motion
     Vector4 GetKey(float t)
     {
         uint i = uint(t * 30.0f);
+        if (i >= motionKeys.length)
+            i = motionKeys.length - 1;
         Vector4 k1 = motionKeys[i];
         uint next_i = i + 1;
         if (next_i >= motionKeys.length)
@@ -99,18 +104,17 @@ class Motion
         return ret;
     }
 
-    void Start(Node@ node)
+    void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
     {
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
         startYaw = startRotation.eulerAngles.y;
 
-        AnimationController@ ctrl = node.GetComponent("AnimationController");
-        ctrl.PlayExclusive(name, 0, looped, 0.1);
-        ctrl.SetTime(name, 0);
-        ctrl.SetSpeed(name, 1);
+        ctrl.PlayExclusive(name, 0, looped, blendTime);
+        ctrl.SetTime(name, localTime);
+        ctrl.SetSpeed(name, speed);
 
-        Print("startPosition=" + startPosition.ToString() + " startYaw=" + String(startYaw));
+        Print("name=" + name + " startPosition=" + startPosition.ToString() + " startYaw=" + String(startYaw));
     }
 
     bool Move(float dt, Node@ node)
@@ -123,7 +127,9 @@ class Motion
             GetMotion(localTime, dt, looped, motionOut);
             node.Yaw(motionOut.w);
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
+            tLocal = tLocal * ctrl.GetWeight(name);
             Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
+            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(motionOut.w) + " t=" + String(localTime));
             MoveNode(node, tWorld, dt);
         }
         else
@@ -143,10 +149,12 @@ class Motion
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             motionOut = GetKey(localTime);
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
+            tLocal = tLocal * ctrl.GetWeight(name);
             float yaw = motionOut.w + fixYawPerSec * localTime + startYaw;
             node.worldRotation = Quaternion(0, yaw, 0);
-            MoveNode(node, startRotation * tLocal + startPosition, dt);
-            Print("motion=" + motionOut.ToString() + " yaw=" + String(yaw) + " t=" + String(localTime));
+            Vector3 tWorld = startRotation * tLocal + startPosition;
+            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime));
+            MoveNode(node, tWorld, dt);
         }
         return false;
     }

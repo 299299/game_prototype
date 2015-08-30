@@ -11,7 +11,7 @@ class State
 
     ~State()
     {
-        Print("~State()");
+        Print("~State() " + String(name));
     }
 
     void Enter(State@ lastState)
@@ -33,8 +33,6 @@ class State
     {
 
     }
-
-    bool opEquals(State &in other){return (name == other.name);}
 };
 
 
@@ -73,15 +71,8 @@ class FSM
     void ChangeState(const String&in name)
     {
         State@ newState = FindState(name);
-        if (newState is null && currentState is null)
+        if (currentState is newState)
             return;
-
-        if (currentState !is null && newState !is null) {
-            if (newState == currentState) {
-                Print("Same state = " + name);
-                return;
-            }
-        }
 
         State@ oldState = currentState;
         if (oldState !is null)
@@ -90,7 +81,7 @@ class FSM
         if (newState !is null)
             newState.Enter(oldState);
 
-        @currentState = newState;
+        @currentState = @newState;
 
         String oldStateName = "null";
         if (oldState !is null)

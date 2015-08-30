@@ -106,4 +106,9 @@ class GameObject : ScriptObject
             isSliding = false;
         }
     }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        stateMachine.DebugDraw(debug);
+    }
 };
