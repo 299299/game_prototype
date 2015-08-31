@@ -49,7 +49,7 @@ class PlayerStandToMoveState : CharacterState
         motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 40, false, true, 1.5));
         motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 24, false, true, 1.0));
         motions.Push(Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 27, false, true, 1.5));
-        // motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 17, false, true));
+        motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 18, false, true));
     }
 
     void Update(float dt)
@@ -104,6 +104,13 @@ class PlayerMoveState : CharacterState
         characterNode.Yaw(characterDifference * turnSpeed * dt);
 
         motion.Move(dt, characterNode, ctrl);
+
+        // if the difference is large, then turn 180 degrees
+        if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.isLeftStickStationary() )
+        {
+            Print("Turn 180!!!");
+            // ownner.stateMachine.ChangeState("StandState");
+        }
     }
 
     void Enter(State@ lastState)
@@ -112,7 +119,8 @@ class PlayerMoveState : CharacterState
         float startTime = 0.0f;
         if (standToMoveState !is null)
         {
-
+            Array<float> startTimes = {12.0f/30.0f, 12.0f/30.0f, 2.0f/30.0f, 2.0f/30.0f};
+            startTime = startTimes[standToMoveState.selectIndex];
         }
         motion.Start(characterNode, ctrl, startTime);
     }
@@ -160,14 +168,12 @@ int RadialSelectAnimation( int numDirections )
     Vector3 characterDir = characterNode.worldRotation * fwd;
     float characterAngle = Atan2(characterDir.x, characterDir.z);
     float directionDifference = angleDiff(gInput.m_leftStickAngle + cameraAngle - characterAngle);
-
     float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
 
     // since the range of the direction variable is [-3, 3] we need to map negative
     // values to the animation index range in our selector which is [0,7]
     if( directionVariable < 0 )
         directionVariable += numDirections;
-
     return int(directionVariable);
 }
 

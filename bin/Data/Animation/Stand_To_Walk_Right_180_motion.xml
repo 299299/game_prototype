@@ -1,82 +1,82 @@
 <?xml version="1.0"?>
 <motion_keys>
-	<key time="0" translation="0 0 0" rotation="0" />
-	<key time="0.0333333" translation="0 0 0.0100607" rotation="-2.98172" />
-	<key time="0.0666667" translation="0 0 0.0201215" rotation="-5.97384" />
-	<key time="0.1" translation="0 0 0.0276369" rotation="-7.35142" />
-	<key time="0.133333" translation="0 0 0.0327812" rotation="-6.36592" />
-	<key time="0.166667" translation="0 0 0.0373838" rotation="-3.09485" />
-	<key time="0.2" translation="0 0 0.0436718" rotation="1.43501" />
-	<key time="0.233333" translation="0 0 0.0471221" rotation="6.73936" />
-	<key time="0.266667" translation="0 0 0.0444027" rotation="12.2836" />
-	<key time="0.3" translation="0 0 0.0326286" rotation="17.7332" />
-	<key time="0.333333" translation="0 0 0.00758209" rotation="22.8853" />
-	<key time="0.366667" translation="0 0 -0.0361004" rotation="27.7425" />
-	<key time="0.4" translation="0 0 -0.106665" rotation="32.7549" />
-	<key time="0.433333" translation="0 0 -0.200286" rotation="38.2836" />
-	<key time="0.466667" translation="0 0 -0.313788" rotation="43.9436" />
-	<key time="0.5" translation="0 0 -0.444134" rotation="49.5768" />
-	<key time="0.533333" translation="0 0 -0.5875" rotation="55.3004" />
-	<key time="0.566667" translation="0 0 -0.739808" rotation="61.5987" />
-	<key time="0.6" translation="0 0 -0.895419" rotation="69.3777" />
-	<key time="0.633333" translation="0 0 -1.05484" rotation="80.4774" />
-	<key time="0.666667" translation="0 0 -1.22058" rotation="94.3082" />
-	<key time="0.7" translation="0 0 -1.39248" rotation="108.518" />
-	<key time="0.733333" translation="0 0 -1.56869" rotation="120.037" />
-	<key time="0.766667" translation="0 0 -1.74797" rotation="126.938" />
-	<key time="0.8" translation="0 0 -1.93029" rotation="131.731" />
-	<key time="0.833333" translation="0 0 -2.11399" rotation="135.379" />
-	<key time="0.866667" translation="0 0 -2.29795" rotation="138.323" />
-	<key time="0.9" translation="0 0 -2.48105" rotation="140.96" />
-	<key time="0.933333" translation="0 0 -2.66223" rotation="143.637" />
-	<key time="0.966667" translation="0 0 -2.84249" rotation="146.44" />
-	<key time="1" translation="0 0 -3.02274" rotation="148.941" />
-	<key time="1.03333" translation="0 0 -3.20016" rotation="151.078" />
-	<key time="1.06667" translation="0 0 -3.372" rotation="152.807" />
-	<key time="1.1" translation="0 0 -3.5351" rotation="154.044" />
-	<key time="1.13333" translation="0 0 -3.68475" rotation="154.551" />
-	<key time="1.16667" translation="0 0 -3.82032" rotation="154.31" />
-	<key time="1.2" translation="0 0 -3.95155" rotation="153.768" />
-	<key time="1.23333" translation="0 0 -4.08443" rotation="153.256" />
-	<key time="1.26667" translation="0 0 -4.2243" rotation="153.038" />
-	<key time="1.3" translation="0 0 -4.37465" rotation="153.268" />
-	<key time="1.33333" translation="0 0 -4.53422" rotation="153.889" />
-	<key time="1.36667" translation="0 0 -4.69592" rotation="154.732" />
-	<key time="1.4" translation="0 0 -4.85456" rotation="155.752" />
-	<key time="1.43333" translation="0 0 -5.00994" rotation="156.943" />
-	<key time="1.46667" translation="0 0 -5.16378" rotation="158.283" />
-	<key time="1.5" translation="0 0 -5.31909" rotation="159.731" />
-	<key time="1.53333" translation="0 0 -5.48076" rotation="161.271" />
-	<key time="1.56667" translation="0 0 -5.65519" rotation="162.915" />
-	<key time="1.6" translation="0 0 -5.84207" rotation="164.698" />
-	<key time="1.63333" translation="0 0 -6.03553" rotation="166.555" />
-	<key time="1.66667" translation="0 0 -6.22752" rotation="168.395" />
-	<key time="1.7" translation="0 0 -6.41057" rotation="170.2" />
-	<key time="1.73333" translation="0 0 -6.58695" rotation="172.029" />
-	<key time="1.76667" translation="0 0 -6.76137" rotation="173.777" />
-	<key time="1.8" translation="0 0 -6.93534" rotation="175.259" />
-	<key time="1.83333" translation="0 0 -7.11009" rotation="176.273" />
-	<key time="1.86667" translation="0 0 -7.28644" rotation="176.632" />
-	<key time="1.9" translation="0 0 -7.46418" rotation="176.154" />
-	<key time="1.93333" translation="0 0 -7.64106" rotation="175.2" />
-	<key time="1.96667" translation="0 0 -7.81615" rotation="174.066" />
-	<key time="2" translation="0 0 -7.98947" rotation="172.781" />
-	<key time="2.03333" translation="0 0 -8.16146" rotation="171.354" />
-	<key time="2.06667" translation="0 0 -8.3329" rotation="169.842" />
-	<key time="2.1" translation="0 0 -8.50422" rotation="168.321" />
-	<key time="2.13333" translation="0 0 -8.67698" rotation="166.704" />
-	<key time="2.16667" translation="0 0 -8.85109" rotation="164.971" />
-	<key time="2.2" translation="0 0 -9.0259" rotation="163.207" />
-	<key time="2.23333" translation="0 0 -9.20047" rotation="161.494" />
-	<key time="2.26667" translation="0 0 -9.37373" rotation="159.739" />
-	<key time="2.3" translation="0 0 -9.54556" rotation="157.901" />
-	<key time="2.33333" translation="0 0 -9.71709" rotation="156.098" />
-	<key time="2.36667" translation="0 0 -9.88904" rotation="154.527" />
-	<key time="2.4" translation="0 0 -10.0624" rotation="153.39" />
-	<key time="2.43333" translation="0 0 -10.2386" rotation="152.873" />
-	<key time="2.46667" translation="0 0 -10.4185" rotation="153.275" />
-	<key time="2.5" translation="0 0 -10.5985" rotation="154.21" />
-	<key time="2.53333" translation="0 0 -10.7752" rotation="155.323" />
-	<key time="2.56667" translation="0 0 -10.9481" rotation="156.518" />
-	<key time="2.6" translation="0 0 -11.0815" rotation="157.487" />
+	<key frame="0" time="0" translation="0 0 0" rotation="0" />
+	<key frame="1" time="0.0333333" translation="0 0 0.0100607" rotation="-2.98171" />
+	<key frame="2" time="0.0666667" translation="0 0 0.0201215" rotation="-5.97385" />
+	<key frame="3" time="0.1" translation="0 0 0.0276369" rotation="-7.35142" />
+	<key frame="4" time="0.133333" translation="0 0 0.0327813" rotation="-6.36592" />
+	<key frame="5" time="0.166667" translation="0 0 0.0373838" rotation="-3.09485" />
+	<key frame="6" time="0.2" translation="0 0 0.0436718" rotation="1.435" />
+	<key frame="7" time="0.233333" translation="0 0 0.0471221" rotation="6.73936" />
+	<key frame="8" time="0.266667" translation="0 0 0.0444027" rotation="12.2836" />
+	<key frame="9" time="0.3" translation="0 0 0.0326287" rotation="17.7332" />
+	<key frame="10" time="0.333333" translation="0 0 0.00758215" rotation="22.8853" />
+	<key frame="11" time="0.366667" translation="0 0 -0.0361003" rotation="27.7425" />
+	<key frame="12" time="0.4" translation="0 0 -0.106665" rotation="32.7549" />
+	<key frame="13" time="0.433333" translation="0 0 -0.200286" rotation="38.2836" />
+	<key frame="14" time="0.466667" translation="0 0 -0.313788" rotation="43.9436" />
+	<key frame="15" time="0.5" translation="0 0 -0.444134" rotation="49.5768" />
+	<key frame="16" time="0.533333" translation="0 0 -0.5875" rotation="55.3004" />
+	<key frame="17" time="0.566667" translation="0 0 -0.739808" rotation="61.5987" />
+	<key frame="18" time="0.6" translation="0 0 -0.895419" rotation="69.3777" />
+	<key frame="19" time="0.633333" translation="0 0 -1.05484" rotation="80.4774" />
+	<key frame="20" time="0.666667" translation="0 0 -1.22058" rotation="94.3082" />
+	<key frame="21" time="0.7" translation="0 0 -1.39248" rotation="108.518" />
+	<key frame="22" time="0.733333" translation="0 0 -1.56869" rotation="120.037" />
+	<key frame="23" time="0.766667" translation="0 0 -1.74797" rotation="126.938" />
+	<key frame="24" time="0.8" translation="0 0 -1.93029" rotation="131.731" />
+	<key frame="25" time="0.833333" translation="0 0 -2.11399" rotation="135.379" />
+	<key frame="26" time="0.866667" translation="0 0 -2.29795" rotation="138.323" />
+	<key frame="27" time="0.9" translation="0 0 -2.48105" rotation="140.96" />
+	<key frame="28" time="0.933333" translation="0 0 -2.66223" rotation="143.637" />
+	<key frame="29" time="0.966667" translation="0 0 -2.84249" rotation="146.44" />
+	<key frame="30" time="1" translation="0 0 -3.02274" rotation="148.941" />
+	<key frame="31" time="1.03333" translation="0 0 -3.20016" rotation="151.078" />
+	<key frame="32" time="1.06667" translation="0 0 -3.372" rotation="152.807" />
+	<key frame="33" time="1.1" translation="0 0 -3.5351" rotation="154.044" />
+	<key frame="34" time="1.13333" translation="0 0 -3.68475" rotation="154.551" />
+	<key frame="35" time="1.16667" translation="0 0 -3.82032" rotation="154.31" />
+	<key frame="36" time="1.2" translation="0 0 -3.95155" rotation="153.768" />
+	<key frame="37" time="1.23333" translation="0 0 -4.08443" rotation="153.256" />
+	<key frame="38" time="1.26667" translation="0 0 -4.2243" rotation="153.038" />
+	<key frame="39" time="1.3" translation="0 0 -4.37465" rotation="153.268" />
+	<key frame="40" time="1.33333" translation="0 0 -4.53422" rotation="153.889" />
+	<key frame="41" time="1.36667" translation="0 0 -4.69592" rotation="154.732" />
+	<key frame="42" time="1.4" translation="0 0 -4.85456" rotation="155.752" />
+	<key frame="43" time="1.43333" translation="0 0 -5.00994" rotation="156.943" />
+	<key frame="44" time="1.46667" translation="0 0 -5.16378" rotation="158.283" />
+	<key frame="45" time="1.5" translation="0 0 -5.31909" rotation="159.731" />
+	<key frame="46" time="1.53333" translation="0 0 -5.48076" rotation="161.271" />
+	<key frame="47" time="1.56667" translation="0 0 -5.65519" rotation="162.915" />
+	<key frame="48" time="1.6" translation="0 0 -5.84207" rotation="164.698" />
+	<key frame="49" time="1.63333" translation="0 0 -6.03553" rotation="166.555" />
+	<key frame="50" time="1.66667" translation="0 0 -6.22752" rotation="168.395" />
+	<key frame="51" time="1.7" translation="0 0 -6.41057" rotation="170.2" />
+	<key frame="52" time="1.73333" translation="0 0 -6.58695" rotation="172.029" />
+	<key frame="53" time="1.76667" translation="0 0 -6.76137" rotation="173.777" />
+	<key frame="54" time="1.8" translation="0 0 -6.93534" rotation="175.259" />
+	<key frame="55" time="1.83333" translation="0 0 -7.11009" rotation="176.272" />
+	<key frame="56" time="1.86667" translation="0 0 -7.28644" rotation="176.632" />
+	<key frame="57" time="1.9" translation="0 0 -7.46418" rotation="176.154" />
+	<key frame="58" time="1.93333" translation="0 0 -7.64106" rotation="175.2" />
+	<key frame="59" time="1.96667" translation="0 0 -7.81615" rotation="174.066" />
+	<key frame="60" time="2" translation="0 0 -7.98947" rotation="172.781" />
+	<key frame="61" time="2.03333" translation="0 0 -8.16146" rotation="171.354" />
+	<key frame="62" time="2.06667" translation="0 0 -8.3329" rotation="169.842" />
+	<key frame="63" time="2.1" translation="0 0 -8.50422" rotation="168.321" />
+	<key frame="64" time="2.13333" translation="0 0 -8.67698" rotation="166.704" />
+	<key frame="65" time="2.16667" translation="0 0 -8.85109" rotation="164.971" />
+	<key frame="66" time="2.2" translation="0 0 -9.0259" rotation="163.207" />
+	<key frame="67" time="2.23333" translation="0 0 -9.20047" rotation="161.494" />
+	<key frame="68" time="2.26667" translation="0 0 -9.37373" rotation="159.739" />
+	<key frame="69" time="2.3" translation="0 0 -9.54556" rotation="157.901" />
+	<key frame="70" time="2.33333" translation="0 0 -9.71709" rotation="156.098" />
+	<key frame="71" time="2.36667" translation="0 0 -9.88904" rotation="154.527" />
+	<key frame="72" time="2.4" translation="0 0 -10.0624" rotation="153.39" />
+	<key frame="73" time="2.43333" translation="0 0 -10.2386" rotation="152.873" />
+	<key frame="74" time="2.46667" translation="0 0 -10.4185" rotation="153.275" />
+	<key frame="75" time="2.5" translation="0 0 -10.5985" rotation="154.21" />
+	<key frame="76" time="2.53333" translation="0 0 -10.7752" rotation="155.323" />
+	<key frame="77" time="2.56667" translation="0 0 -10.9481" rotation="156.518" />
+	<key frame="78" time="2.6" translation="0 0 -11.0815" rotation="157.487" />
 </motion_keys>

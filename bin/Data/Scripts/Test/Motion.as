@@ -32,6 +32,16 @@ class Motion
         if (fixYaw)
         {
             float endYaw = motionKeys[endFrame].w;
+            bool flipSign =  (_targetYaw < 0 && endYaw > 0) || (_targetYaw > 0 && endYaw < 0);
+            if (flipSign)
+            {
+                float oldYaw = endYaw;
+                if (_targetYaw < 0)
+                    endYaw -= 360;
+                if (_targetYaw > 0)
+                    endYaw += 360;
+                Print("end frame yaw needs to flip from " + String(oldYaw) + " to" + String(endYaw));
+            }
             fixYawPerSec = (targetYaw - endYaw) / endTime;
             Print("endTime=" + String(endTime) + " fixYawPerSec=" + String(fixYawPerSec) + " targetYaw=" + String(targetYaw));
         }
@@ -114,7 +124,7 @@ class Motion
         ctrl.SetTime(name, localTime);
         ctrl.SetSpeed(name, speed);
 
-        Print("name=" + name + " startPosition=" + startPosition.ToString() + " startYaw=" + String(startYaw));
+        Print("name=" + name + " startPosition=" + startPosition.ToString() + " startYaw=" + String(startYaw) + " localTime=" + String(localTime));
     }
 
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
@@ -138,9 +148,10 @@ class Motion
                 if (fixYaw && ctrl.GetSpeed(name) > 0)
                 {
                     float finnalYaw = node.worldRotation.eulerAngles.y;
-                    node.Yaw(targetYaw + startYaw - finnalYaw);
+                    float yaw = targetYaw + startYaw - finnalYaw;
+                    node.Yaw(yaw);
                     // ctrl.SetSpeed(name, 0);
-                    Print("FINISHED FINAL YAW = " + String(finnalYaw));
+                    Print("FINISHED FINAL-YAW = " + String(finnalYaw) + " YAW=" + String(yaw));
                 }
                 return true;
             }
@@ -152,7 +163,7 @@ class Motion
             float yaw = motionOut.w + fixYawPerSec * localTime + startYaw;
             node.worldRotation = Quaternion(0, yaw, 0);
             Vector3 tWorld = startRotation * tLocal + startPosition;
-            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime));
+            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
             MoveNode(node, tWorld, dt);
         }
         return false;

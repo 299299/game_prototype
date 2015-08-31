@@ -86,3 +86,5 @@ Thumbs.db
 /bin/Data/Asset
 /bin/Data/Animation/Materials
 /bin/Data/Animation/Textures
+/bin/Urho3DPlayer
+/bin/tool/AssetImporter

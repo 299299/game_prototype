@@ -58,8 +58,8 @@ void CreateScene()
     @player = cast<Player>(characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player"));
     characterNode.Translate(Vector3(5, 0, 0));
 
-    Node@ rootBone = characterNode.GetChild("RootNode", true);
-    rootBone.Yaw(180);
+    characterNode.vars["AnimationIndex"] = 4;
+    player.stateMachine.ChangeState("StandToMoveState");
 }
 
 void CreateInstructions()
@@ -126,7 +126,8 @@ void SubscribeToEvents()
 
     // Subscribe HandlePostRenderUpdate() function for processing the post-render update event, during which we request
     // debug geometry
-    SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
+    if (!engine.headless)
+        SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
 }
 
 float golbal_time = 0;
@@ -155,7 +156,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (golbal_time > 2.0)
         {
             state = 3;
-            //@player = null;
+            @player = null;
             characterNode.RemoveAllComponents();
         }
 
