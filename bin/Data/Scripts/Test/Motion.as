@@ -117,9 +117,8 @@ class Motion
         Print("name=" + name + " startPosition=" + startPosition.ToString() + " startYaw=" + String(startYaw));
     }
 
-    bool Move(float dt, Node@ node)
+    bool Move(float dt, Node@ node, AnimationController@ ctrl)
     {
-        AnimationController@ ctrl = node.GetComponent("AnimationController");
         float localTime = ctrl.GetTime(name);
         if (looped)
         {
@@ -140,7 +139,7 @@ class Motion
                 {
                     float finnalYaw = node.worldRotation.eulerAngles.y;
                     node.Yaw(targetYaw + startYaw - finnalYaw);
-                    ctrl.SetSpeed(name, 0);
+                    // ctrl.SetSpeed(name, 0);
                     Print("FINISHED FINAL YAW = " + String(finnalYaw));
                 }
                 return true;

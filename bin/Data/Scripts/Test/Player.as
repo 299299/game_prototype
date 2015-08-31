@@ -54,7 +54,7 @@ class PlayerStandToMoveState : CharacterState
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, characterNode))
+        if (motions[selectIndex].Move(dt, characterNode, ctrl))
         {
             if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
@@ -103,12 +103,18 @@ class PlayerMoveState : CharacterState
 
         characterNode.Yaw(characterDifference * turnSpeed * dt);
 
-        motion.Move(dt, characterNode);
+        motion.Move(dt, characterNode, ctrl);
     }
 
     void Enter(State@ lastState)
     {
-        motion.Start(characterNode, ctrl, 0.0f, 0.1);
+        PlayerStandToMoveState@ standToMoveState = cast<PlayerStandToMoveState@>(lastState);
+        float startTime = 0.0f;
+        if (standToMoveState !is null)
+        {
+
+        }
+        motion.Start(characterNode, ctrl, startTime);
     }
 
     void DebugDraw(DebugRenderer@ debug)
