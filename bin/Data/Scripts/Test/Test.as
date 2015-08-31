@@ -8,12 +8,14 @@
 #include "Scripts/Test/Motion.as"
 #include "Scripts/Test/Player.as"
 #include "Scripts/Test/Input.as"
+#include "Scripts/Test/Thug.as"
 
 Node@ characterNode;
 int state = 0;
 GameInput@ gInput = GameInput();
 Player@ player;
 bool slowMotion = true;
+EnemyManager@ gEnemyMgr;
 
 void Start()
 {
@@ -55,9 +57,15 @@ void CreateScene()
     pitch = 45;
 
     characterNode = scene_.GetChild("bruce", true);
-    @player = cast<Player>(characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player"));
     characterNode.Translate(Vector3(5, 0, 0));
 
+    @gEnemyMgr = EnemyManager();
+    @player = cast<Player>(characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player"));
+    if (player is null) {
+        Print("player is null!!");
+        engine.Exit();
+        return;
+    }
     player.stateMachine.ChangeState("StandToMoveState");
 }
 
@@ -156,6 +164,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         {
             state = 3;
             @player = null;
+            @gEnemyMgr = null;
             characterNode.RemoveAllComponents();
         }
 
@@ -186,19 +195,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
     DebugRenderer@ debug = scene_.debugRenderer;
-
     debug.AddNode(scene_, 2.0f, false);
-    debug.AddNode(characterNode, 1.0f, false);
     player.DebugDraw(debug);
-
-    Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = cameraNode.worldRotation * fwd;
-    float cameraAngle = Atan2(camDir.x, camDir.z);
-    Vector3 characterDir = characterNode.worldRotation * fwd;
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-    float targetAngle = cameraAngle + gInput.m_leftStickAngle;
-    DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0), 4.0);
-    DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1), 4.0);
 }
 
 

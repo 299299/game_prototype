@@ -88,3 +88,4 @@ Thumbs.db
 /bin/Data/Animation/Textures
 /bin/Urho3DPlayer
 /bin/tool/AssetImporter
+/bin/tool/ScriptCompiler

@@ -87,7 +87,6 @@ class PlayerMoveState : CharacterState
         float turnSpeed = 5;
 
         characterNode.Yaw(characterDifference * turnSpeed * dt);
-
         motion.Move(dt, characterNode, ctrl);
 
         // if the difference is large, then turn 180 degrees
@@ -146,6 +145,19 @@ class Player : Character
     {
         // Print("Player::Update " + String(dt));
         Character::Update(dt);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        // debug.AddNode(characterNode, 1.0f, false);
+        Vector3 fwd = Vector3(0, 0, 1);
+        Vector3 camDir = cameraNode.worldRotation * fwd;
+        float cameraAngle = Atan2(camDir.x, camDir.z);
+        Vector3 characterDir = characterNode.worldRotation * fwd;
+        float characterAngle = Atan2(characterDir.x, characterDir.z);
+        float targetAngle = cameraAngle + gInput.m_leftStickAngle;
+        DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0), gInput.m_leftStickMagnitude);
+        DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1), 1.0);
     }
 };
 
