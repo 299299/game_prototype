@@ -60,14 +60,6 @@ class Motion
                     float t = child.GetFloat("time");
                     Vector3 translation = child.GetVector3("translation");
                     float rotation = child.GetFloat("rotation");
-
-                    bool flipSign =  Abs(_targetYaw - rotation) > 180;
-                    if (flipSign && _fixYaw && Abs(_endFrame - i) < 5)
-                    {
-                        rotation = -rotation;
-                        Print("end frame " + String(i) + " yaw needs to flip from " + String(-rotation) + " to " + String(rotation));
-                    }
-
                     // Print("frame:" + String(i) + " time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
                     Vector4 v(translation.x, translation.y, translation.z, rotation);
                     motionKeys.Push(v);
@@ -153,7 +145,6 @@ class Motion
                     float finnalYaw = node.worldRotation.eulerAngles.y;
                     float yaw = targetYaw + startYaw - finnalYaw;
                     node.Yaw(yaw);
-                    ctrl.SetSpeed(name, 1);
                     Print("FINISHED FINAL-YAW = " + String(finnalYaw) + " YAW=" + String(yaw));
                 }
                 status = 1;

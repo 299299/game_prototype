@@ -195,6 +195,18 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         String debugText = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
         if (player.stateMachine.currentState !is null)
             debugText += "\n" + "current-state=" + player.stateMachine.currentState.name;
+
+        AnimatedModel@ model = characterNode.GetComponent("AnimatedModel");
+        AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+        for (uint i=0; i<model.numAnimationStates ; ++i)
+        {
+            AnimationState@ state = model.GetAnimationState(i);
+            String name = state.animation.name;
+            if (!ctrl.IsPlaying(name))
+                continue;
+            debugText += "\n" + name + " time=" + String(ctrl.GetTime(name)) + " weight=" + String(ctrl.GetWeight(name));
+        }
+
         text.text = debugText;
     }
 }

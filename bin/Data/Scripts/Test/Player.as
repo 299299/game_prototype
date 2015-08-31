@@ -15,8 +15,12 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
+        float blendTime = 1.0f;
+        if (lastState !is null && lastState.name == "MoveState")
+            blendTime = 0.25f;
+        Print("Play IDLE ANIM");
         if (ctrl !is null)
-            ctrl.PlayExclusive(animations[RandomInt(animations.length)], 0, true, 1.0);
+            ctrl.PlayExclusive(animations[RandomInt(animations.length)], 0, true, blendTime);
     }
 
     void Update(float dt)
@@ -38,10 +42,10 @@ class PlayerStandToMoveState : MultiMotionState
     {
         super(n, c);
         name = "StandToMoveState";
-        motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 40, false, true, 1.5));
-        motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 24, false, true, 1.0));
-        motions.Push(Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 27, false, true, 1.5));
-        motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 17, false, true));
+        motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 36, false, true, 1.5));
+        motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 22, false, true, 1.0));
+        motions.Push(Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 26, false, true, 1.5));
+        // motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 17, false, true));
     }
 
     void Update(float dt)
@@ -50,8 +54,10 @@ class PlayerStandToMoveState : MultiMotionState
         {
             if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
-            else
+            else {
+                ctrl.SetSpeed(motions[selectIndex].name, 1);
                 ownner.stateMachine.ChangeState("MoveState");
+            }
         }
     }
 
@@ -101,12 +107,14 @@ class PlayerMoveState : CharacterState
     {
         PlayerStandToMoveState@ standToMoveState = cast<PlayerStandToMoveState@>(lastState);
         float startTime = 0.0f;
+        float blendTime = 0.25f;
         if (standToMoveState !is null)
         {
-            Array<float> startTimes = {13.0f/30.0f, 2.0f/30.0f, 13.0f/30.0f, 2.0f/30.0f};
+            Array<float> startTimes = {13.0f/30.0f, 13.0f/30.0f, 2.0f/30.0f};
             startTime = startTimes[standToMoveState.selectIndex];
+            blendTime = 0.25f;
         }
-        motion.Start(characterNode, ctrl, startTime);
+        motion.Start(characterNode, ctrl, startTime, blendTime);
     }
 
     void DebugDraw(DebugRenderer@ debug)
