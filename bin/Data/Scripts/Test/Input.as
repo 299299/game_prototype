@@ -1,4 +1,7 @@
 
+int screenJoystickID = -1;
+int screenJoystickSettingsID = -1;
+
 class GameInput
 {
     float m_leftStickX = 0;
@@ -71,9 +74,14 @@ class GameInput
     Vector2 GetLeftStick()
     {
         Vector2 ret;
-        if (input.numJoysticks > 0)
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
         {
-
+            if (joystick.numAxes >= 2)
+            {
+                ret.x = joystick.axisPosition[0];
+                ret.y = joystick.axisPosition[1];
+            }
         }
         else
         {
@@ -92,9 +100,14 @@ class GameInput
     Vector2 GetRightStick()
     {
         Vector2 ret;
-        if (input.numJoysticks > 0)
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
         {
-
+            if (joystick.numAxes >= 4)
+            {
+                ret.x = joystick.axisPosition[2];
+                ret.y = joystick.axisPosition[3];
+            }
         }
         else
         {
@@ -102,6 +115,15 @@ class GameInput
             ret.y = input.mouseMoveY;
         }
         return ret;
+    }
+
+    JoystickState@ GetJoystick()
+    {
+        if (input.numJoysticks > 0)
+        {
+            return touchEnabled ? input.joysticks[screenJoystickID] : input.joysticksByIndex[0];
+        }
+        return null;
     }
 
     // Returns true if the left game pad hasn't moved since the last update
@@ -126,5 +148,14 @@ class GameInput
     bool isRightStickInDeadZone()
     {
         return m_rightStickMagnitude < 0.1;
+    }
+
+    bool isAttackPressed()
+    {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+            return joystick.buttonPress[1];
+        else
+            return input.mouseButtonPress[MOUSEB_LEFT];
     }
 };

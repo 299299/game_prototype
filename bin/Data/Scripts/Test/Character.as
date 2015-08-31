@@ -21,6 +21,40 @@ class CharacterState : State
     }
 };
 
+class MultiMotionState : CharacterState
+{
+    Array<Motion@> motions;
+    int selectIndex;
+
+    MultiMotionState(Node@ n, Character@ c)
+    {
+        super(n, c);
+        selectIndex = 0;
+    }
+
+    void Update(float dt)
+    {
+
+    }
+
+    void Enter(State@ lastState)
+    {
+        selectIndex = PickIndex();
+        motions[selectIndex].Start(characterNode, ctrl);
+        Print(name + " pick " + motions[selectIndex].name);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        motions[selectIndex].DebugDraw(debug, characterNode);
+    }
+
+    int PickIndex()
+    {
+        return 0;
+    }
+};
+
 class Character : GameObject
 {
     Character()

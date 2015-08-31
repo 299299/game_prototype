@@ -1,5 +1,9 @@
 #include "Scripts/Test/FSM.as"
 
+const int CTRL_ATTACK = (1 << 0);
+const int CTRL_JUMP = (1 << 1);
+const int CTRL_ALL = (1 << 16);
+
 class GameObject : ScriptObject
 {
     FSM@ stateMachine;

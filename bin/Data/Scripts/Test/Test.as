@@ -58,7 +58,6 @@ void CreateScene()
     @player = cast<Player>(characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player"));
     characterNode.Translate(Vector3(5, 0, 0));
 
-    characterNode.vars["AnimationIndex"] = 4;
     player.stateMachine.ChangeState("StandToMoveState");
 }
 

@@ -24,9 +24,6 @@ class PlayerStandState : CharacterState
         if (!gInput.inLeftStickInDeadZone() && gInput.isLeftStickStationary())
         {
             int index = RadialSelectAnimation(4);
-            Print("StandToMove index = " + String(index));
-            characterNode.vars["AnimationIndex"] = index;
-
             if (index == 0)
                 ownner.stateMachine.ChangeState("MoveState");
             else
@@ -35,17 +32,12 @@ class PlayerStandState : CharacterState
     }
 };
 
-class PlayerStandToMoveState : CharacterState
+class PlayerStandToMoveState : MultiMotionState
 {
-    Array<Motion@> motions;
-    int selectIndex;
-
     PlayerStandToMoveState(Node@ n, Character@ c)
     {
         super(n, c);
         name = "StandToMoveState";
-        selectIndex = 0;
-
         motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 40, false, true, 1.5));
         motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 24, false, true, 1.0));
         motions.Push(Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 27, false, true, 1.5));
@@ -63,16 +55,9 @@ class PlayerStandToMoveState : CharacterState
         }
     }
 
-    void Enter(State@ lastState)
+    int PickIndex()
     {
-        selectIndex = characterNode.vars["AnimationIndex"].GetInt() - 1;
-        motions[selectIndex].Start(characterNode, ctrl);
-        Print("Pick StandToMove " + motions[selectIndex].name);
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        motions[selectIndex].DebugDraw(debug, characterNode);
+        return 3; //return RadialSelectAnimation(4) - 1;
     }
 };
 
@@ -131,6 +116,21 @@ class PlayerMoveState : CharacterState
     }
 };
 
+class PlayerAttackState : MultiMotionState
+{
+    PlayerAttackState(Node@ n, Character@ c)
+    {
+        super(n, c);
+        name = "AttackState";
+    }
+
+    void Update(float dt)
+    {
+
+    }
+
+};
+
 class Player : Character
 {
     void Start()
@@ -138,11 +138,13 @@ class Player : Character
         stateMachine.AddState(PlayerStandState(node, this));
         stateMachine.AddState(PlayerStandToMoveState(node, this));
         stateMachine.AddState(PlayerMoveState(node, this));
+        stateMachine.AddState(PlayerAttackState(node, this));
         stateMachine.ChangeState("StandState");
     }
 
     void Update(float dt)
     {
+        // Print("Player::Update " + String(dt));
         Character::Update(dt);
     }
 };
