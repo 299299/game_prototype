@@ -14,7 +14,8 @@ Node@ characterNode;
 int state = 0;
 GameInput@ gInput = GameInput();
 Player@ player;
-bool slowMotion = true;
+bool slowMotion = false;
+bool pauseGame = false;
 EnemyManager@ gEnemyMgr;
 
 void Start()
@@ -66,7 +67,6 @@ void CreateScene()
         engine.Exit();
         return;
     }
-    player.stateMachine.ChangeState("StandToMoveState");
 }
 
 void CreateInstructions()
@@ -152,8 +152,15 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['T'])
     {
-        scene_.timeScale = slowMotion ? 0.05f : 1.0f;
         slowMotion = !slowMotion;
+        scene_.timeScale = slowMotion ? 0.05f : 1.0f;
+    }
+
+    if (input.keyPress['R'])
+    {
+        pauseGame = !pauseGame;
+        float speed = slowMotion ? 0.1f : 1.0f;
+        scene_.timeScale = pauseGame ? 0 : speed;
     }
 
     if (engine.headless)

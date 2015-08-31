@@ -15,10 +15,12 @@ class Motion
     bool                    looped;
     bool                    fixYaw;
     float                   speed;
+    int                     status;
 
     Motion(const String&in animName, float _targetYaw, int _endFrame, bool _loop, bool _fixYaw, float _speed = 1.0f)
     {
-        Load(animName);
+        Print("Motion(" + animName + "," + String(_targetYaw) + "," + String(_endFrame) + ")");
+        Load(animName, _targetYaw, _fixYaw, _endFrame);
         targetYaw = _targetYaw;
         if (_endFrame < 0 && !_loop)
             _endFrame = motionKeys.length - 1;
@@ -29,25 +31,16 @@ class Motion
         fixYawPerSec = 0.0f;
         fixYaw = _fixYaw;
         speed = _speed;
+        status = 0;
         if (fixYaw)
         {
             float endYaw = motionKeys[endFrame].w;
-            bool flipSign =  (_targetYaw < 0 && endYaw > 0) || (_targetYaw > 0 && endYaw < 0);
-            if (flipSign)
-            {
-                float oldYaw = endYaw;
-                if (_targetYaw < 0)
-                    endYaw -= 360;
-                if (_targetYaw > 0)
-                    endYaw += 360;
-                Print("end frame yaw needs to flip from " + String(oldYaw) + " to" + String(endYaw));
-            }
             fixYawPerSec = (targetYaw - endYaw) / endTime;
             Print("endTime=" + String(endTime) + " fixYawPerSec=" + String(fixYawPerSec) + " targetYaw=" + String(targetYaw));
         }
     }
 
-    void Load(const String&in anim)
+    void Load(const String&in anim, float _targetYaw, bool _fixYaw, int _endFrame)
     {
         animation = cache.GetResource("Animation", anim);
         String motion_file = "Data/" + GetPath(anim) + GetFileName(anim) + "_motion.xml";
@@ -67,10 +60,19 @@ class Motion
                     float t = child.GetFloat("time");
                     Vector3 translation = child.GetVector3("translation");
                     float rotation = child.GetFloat("rotation");
-                    // Print("frame:" + String(i++) + " time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
+
+                    bool flipSign =  Abs(_targetYaw - rotation) > 180;
+                    if (flipSign && _fixYaw && Abs(_endFrame - i) < 5)
+                    {
+                        rotation = -rotation;
+                        Print("end frame " + String(i) + " yaw needs to flip from " + String(-rotation) + " to " + String(rotation));
+                    }
+
+                    // Print("frame:" + String(i) + " time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
                     Vector4 v(translation.x, translation.y, translation.z, rotation);
                     motionKeys.Push(v);
                     child = child.GetNext();
+                    ++i;
                 }
             }
         }
@@ -116,6 +118,7 @@ class Motion
 
     void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
     {
+        status = 0;
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
         startYaw = startRotation.eulerAngles.y;
@@ -145,14 +148,15 @@ class Motion
         {
             if (localTime >= endTime)
             {
-                if (fixYaw && ctrl.GetSpeed(name) > 0)
+                if (fixYaw && status == 0)
                 {
                     float finnalYaw = node.worldRotation.eulerAngles.y;
                     float yaw = targetYaw + startYaw - finnalYaw;
                     node.Yaw(yaw);
-                    // ctrl.SetSpeed(name, 0);
+                    ctrl.SetSpeed(name, 1);
                     Print("FINISHED FINAL-YAW = " + String(finnalYaw) + " YAW=" + String(yaw));
                 }
+                status = 1;
                 return true;
             }
 

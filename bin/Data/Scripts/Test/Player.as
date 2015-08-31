@@ -16,7 +16,7 @@ class PlayerStandState : CharacterState
     void Enter(State@ lastState)
     {
         if (ctrl !is null)
-            ctrl.PlayExclusive(animations[RandomInt(animations.length)], 0, true, 0.1);
+            ctrl.PlayExclusive(animations[RandomInt(animations.length)], 0, true, 1.0);
     }
 
     void Update(float dt)
@@ -41,7 +41,7 @@ class PlayerStandToMoveState : MultiMotionState
         motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 40, false, true, 1.5));
         motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 24, false, true, 1.0));
         motions.Push(Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 27, false, true, 1.5));
-        motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 18, false, true));
+        motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 17, false, true));
     }
 
     void Update(float dt)
@@ -57,7 +57,7 @@ class PlayerStandToMoveState : MultiMotionState
 
     int PickIndex()
     {
-        return 3; //return RadialSelectAnimation(4) - 1;
+        return RadialSelectAnimation(4) - 1;
     }
 };
 
@@ -103,7 +103,7 @@ class PlayerMoveState : CharacterState
         float startTime = 0.0f;
         if (standToMoveState !is null)
         {
-            Array<float> startTimes = {12.0f/30.0f, 12.0f/30.0f, 2.0f/30.0f, 2.0f/30.0f};
+            Array<float> startTimes = {13.0f/30.0f, 2.0f/30.0f, 13.0f/30.0f, 2.0f/30.0f};
             startTime = startTimes[standToMoveState.selectIndex];
         }
         motion.Start(characterNode, ctrl, startTime);
@@ -149,15 +149,16 @@ class Player : Character
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        // debug.AddNode(characterNode, 1.0f, false);
+        debug.AddNode(characterNode, 1.0f, false);
         Vector3 fwd = Vector3(0, 0, 1);
         Vector3 camDir = cameraNode.worldRotation * fwd;
         float cameraAngle = Atan2(camDir.x, camDir.z);
         Vector3 characterDir = characterNode.worldRotation * fwd;
         float characterAngle = Atan2(characterDir.x, characterDir.z);
         float targetAngle = cameraAngle + gInput.m_leftStickAngle;
-        DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0), gInput.m_leftStickMagnitude);
-        DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1), 1.0);
+        float baseLen = 2.0f;
+        DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0), baseLen * gInput.m_leftStickMagnitude);
+        DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1), baseLen);
     }
 };
 

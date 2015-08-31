@@ -32,6 +32,6 @@ class EnemyManager
 
     Node@ CreateEnemy()
     {
-
+        return null;
     }
 };
