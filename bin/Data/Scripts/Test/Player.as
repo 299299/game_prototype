@@ -27,6 +27,7 @@ class PlayerStandState : CharacterState
         if (!gInput.inLeftStickInDeadZone() && gInput.isLeftStickStationary())
         {
             int index = RadialSelectAnimation(4);
+            characterNode.vars["AnimationIndex"] = index;
             if (index == 0)
                 ownner.stateMachine.ChangeState("MoveState");
             else
@@ -62,7 +63,7 @@ class PlayerStandToMoveState : MultiMotionState
 
     int PickIndex()
     {
-        return RadialSelectAnimation(4) - 1;
+        return characterNode.vars["AnimationIndex"].GetInt() - 1;
     }
 };
 
