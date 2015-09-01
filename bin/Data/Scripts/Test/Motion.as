@@ -1,4 +1,14 @@
 
+const int LAYER_MOVE = 0;
+const int LAYER_ATTACK = 1;
+
+void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer, bool loop, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
+{
+    ctrl.StopLayer(layer, blendTime);
+    ctrl.PlayExclusive(name, layer, loop, blendTime);
+    ctrl.SetTime(name, startTime);
+    ctrl.SetSpeed(name, speed);
+}
 
 class Motion
 {
@@ -38,6 +48,11 @@ class Motion
             fixYawPerSec = (targetYaw - endYaw) / endTime;
             Print("endTime=" + String(endTime) + " fixYawPerSec=" + String(fixYawPerSec) + " targetYaw=" + String(targetYaw));
         }
+    }
+
+    ~Motion()
+    {
+        @animation = null;
     }
 
     void Load(const String&in anim, float _targetYaw, bool _fixYaw, int _endFrame)
@@ -114,11 +129,7 @@ class Motion
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
         startYaw = startRotation.eulerAngles.y;
-
-        ctrl.PlayExclusive(name, 0, looped, blendTime);
-        ctrl.SetTime(name, localTime);
-        ctrl.SetSpeed(name, speed);
-
+        PlayAnimation(ctrl, name, LAYER_MOVE, looped, blendTime, localTime, speed);
         Print("name=" + name + " startPosition=" + startPosition.ToString() + " startYaw=" + String(startYaw) + " localTime=" + String(localTime));
     }
 
@@ -133,7 +144,7 @@ class Motion
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
             tLocal = tLocal * ctrl.GetWeight(name);
             Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
-            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(motionOut.w) + " t=" + String(localTime));
+            // Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(motionOut.w) + " t=" + String(localTime));
             MoveNode(node, tWorld, dt);
         }
         else
@@ -158,7 +169,7 @@ class Motion
             float yaw = motionOut.w + fixYawPerSec * localTime + startYaw;
             node.worldRotation = Quaternion(0, yaw, 0);
             Vector3 tWorld = startRotation * tLocal + startPosition;
-            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
+            // Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
             MoveNode(node, tWorld, dt);
         }
         return false;
@@ -168,13 +179,9 @@ class Motion
     {
         RigidBody@ body = node.GetComponent("RigidBody");
         if (body is null)
-        {
             node.worldPosition = tWorld;
-        }
         else
-        {
             body.linearVelocity = (tWorld - node.worldPosition) / dt;
-        }
     }
 
     void DebugDraw(DebugRenderer@ debug, Node@ node)

@@ -11,12 +11,13 @@
 #include "Scripts/Test/Thug.as"
 
 Node@ characterNode;
-int state = 0;
 GameInput@ gInput = GameInput();
 Player@ player;
 bool slowMotion = false;
 bool pauseGame = false;
 EnemyManager@ gEnemyMgr;
+int globalState = 0;
+float globalTime = 0;
 
 void Start()
 {
@@ -137,9 +138,6 @@ void SubscribeToEvents()
         SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
 }
 
-float golbal_time = 0;
-
-
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
     // Take the frame time step, which is stored as a float
@@ -163,24 +161,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         scene_.timeScale = pauseGame ? 0 : speed;
     }
 
-    if (engine.headless)
-    {
-        golbal_time += timeStep;
+    String debugText = "";
 
-        if (golbal_time > 2.0)
-        {
-            state = 3;
-            @player = null;
-            @gEnemyMgr = null;
-            characterNode.RemoveAllComponents();
-        }
-
-        if (golbal_time > 4.0)
-        {
-            engine.Exit();
-        }
-    }
-    else
+    if (player !is null)
     {
         Vector3 fwd = Vector3(0, 0, 1);
         Vector3 camDir = cameraNode.worldRotation * fwd;
@@ -190,23 +173,51 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
         //Print("cameraAngle=" + String(cameraAngle) + " characterAngle=" + String(characterAngle) + " inputAngle=" + String(gInput.m_leftStickAngle));
         float diff = computeDifference();
-        //Print("diff="+String(diff));
-        Text@ text = ui.root.GetChild("instruction", true);
-        String debugText = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
+        // debugText = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
         if (player.stateMachine.currentState !is null)
-            debugText += "\n" + "current-state=" + player.stateMachine.currentState.name;
-
+            debugText += "current-state=" + player.stateMachine.currentState.name;
         AnimatedModel@ model = characterNode.GetComponent("AnimatedModel");
         AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
         for (uint i=0; i<model.numAnimationStates ; ++i)
         {
             AnimationState@ state = model.GetAnimationState(i);
-            String name = state.animation.name;
-            if (!ctrl.IsPlaying(name))
-                continue;
-            debugText += "\n" + name + " time=" + String(ctrl.GetTime(name)) + " weight=" + String(ctrl.GetWeight(name));
+            debugText += "\n" + state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight);
+        }
+    }
+
+    if (engine.headless)
+    {
+        if (!debugText.empty)
+            Print(debugText);
+
+        globalTime += timeStep;
+
+         if (globalTime > 1.0)
+        {
+            if (player !is null && globalState != 1)
+                player.stateMachine.ChangeState("MoveState");
+            globalState = 1;
         }
 
+        if (globalTime > 2.0)
+        {
+            if (globalState != 2)
+            {
+                @player = null;
+                @gEnemyMgr = null;
+                characterNode.RemoveAllComponents();
+                globalState = 2;
+            }
+        }
+
+        if (globalTime > 4.0)
+        {
+            engine.Exit();
+        }
+    }
+    else
+    {
+        Text@ text = ui.root.GetChild("instruction", true);
         text.text = debugText;
     }
 }

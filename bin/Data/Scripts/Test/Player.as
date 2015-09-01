@@ -15,12 +15,11 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        float blendTime = 1.0f;
+        float blendTime = 0.5f;
         if (lastState !is null && lastState.name == "MoveState")
             blendTime = 0.25f;
-        Print("Play IDLE ANIM");
-        if (ctrl !is null)
-            ctrl.PlayExclusive(animations[RandomInt(animations.length)], 0, true, blendTime);
+
+        PlayAnimation(ctrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
     }
 
     void Update(float dt)

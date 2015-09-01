@@ -1,6 +1,8 @@
 #include "Scripts/Test/GameObject.as"
 #include "Scripts/Test/Motion.as"
 
+
+
 class CharacterState : State
 {
     Node@                       characterNode;
