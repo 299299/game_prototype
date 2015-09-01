@@ -1,7 +1,0 @@
-Materials/BruceWayne_Suit_Torso_MIC.xml
-Materials/BruceWayne_Suit_Legs_MIC.xml
-Materials/BruceWayne_Head_MIC.xml
-Materials/BruceWayne_OZ_Eyes_MIC.xml
-Materials/JoinedMaterial_#6.xml
-Materials/Character_FakeShadow.xml
-Materials/JoinedMaterial_#6.xml
