@@ -80,7 +80,7 @@ class GameInput
             if (joystick.numAxes >= 2)
             {
                 ret.x = joystick.axisPosition[0];
-                ret.y = joystick.axisPosition[1];
+                ret.y = -joystick.axisPosition[1];
             }
         }
         else

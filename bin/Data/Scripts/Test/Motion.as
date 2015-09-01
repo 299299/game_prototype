@@ -136,11 +136,12 @@ class Motion
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
     {
         float localTime = ctrl.GetTime(name);
-        if (looped)
+        if (looped && status == 1)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             GetMotion(localTime, dt, looped, motionOut);
-            node.Yaw(motionOut.w);
+            if (status == 0)
+                node.Yaw(motionOut.w);
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
             tLocal = tLocal * ctrl.GetWeight(name);
             Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
@@ -159,7 +160,6 @@ class Motion
                     Print("FINISHED FINAL-YAW = " + String(finnalYaw) + " YAW=" + String(yaw));
                 }
                 status = 1;
-                return true;
             }
 
             Vector4 motionOut = Vector4(0, 0, 0, 0);
@@ -172,7 +172,8 @@ class Motion
             // Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
             MoveNode(node, tWorld, dt);
         }
-        return false;
+
+        return status == 1;
     }
 
     void MoveNode(Node@ node, const Vector3&in tWorld, float dt)

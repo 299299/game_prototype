@@ -15,11 +15,7 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        float blendTime = 0.5f;
-        if (lastState !is null && lastState.name == "MoveState")
-            blendTime = 0.25f;
-
-        PlayAnimation(ctrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        PlayAnimation(ctrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.25f);
     }
 
     void Update(float dt)
@@ -107,7 +103,7 @@ class PlayerMoveState : CharacterState
     {
         PlayerStandToMoveState@ standToMoveState = cast<PlayerStandToMoveState@>(lastState);
         float startTime = 0.0f;
-        float blendTime = 0.25f;
+        float blendTime = 0.1f;
         if (standToMoveState !is null)
         {
             Array<float> startTimes = {13.0f/30.0f, 13.0f/30.0f, 2.0f/30.0f};
