@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="7" />
 	<attribute name="Next Replicated Component ID" value="10" />
-	<attribute name="Next Local Node ID" value="16777418" />
-	<attribute name="Next Local Component ID" value="16777312" />
+	<attribute name="Next Local Node ID" value="16777422" />
+	<attribute name="Next Local Component ID" value="16777350" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -1104,5 +1104,18 @@
 				</node>
 			</node>
 		</node>
+	</node>
+	<node id="16777419">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Thug_001" />
+		<attribute name="Position" value="-4.94635 0.0292277 -6.37109" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="AnimatedModel" id="16777337">
+			<attribute name="Animation States">
+				<variant type="Int" value="0" />
+			</attribute>
+		</component>
 	</node>
 </scene>

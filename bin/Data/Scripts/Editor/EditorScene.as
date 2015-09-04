@@ -229,6 +229,7 @@ bool LoadScene(const String&in fileName)
     UpdateWindowTitle();
     DisableInspectorLock();
     UpdateHierarchyItem(editorScene, true);
+    CollapseHierarchy();
     ClearEditActions();
 
     suppressSceneChanges = false;
@@ -522,7 +523,10 @@ bool ToggleSceneUpdate()
 
 bool ShowLayerMover()
 {
-  return ShowLayerEditor();
+    if (ui.focusElement is null)
+        return ShowLayerEditor();
+    else
+        return false;
 }
 
 void SetSceneModified()
