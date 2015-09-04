@@ -29,6 +29,11 @@ class PlayerStandState : CharacterState
             else
                 ownner.stateMachine.ChangeState("StandToMoveState");
         }
+
+        if (gInput.isAttackPressed()) {
+            Print("Attack!!");
+            ownner.stateMachine.ChangeState("AttackState");
+        }
     }
 };
 
@@ -95,7 +100,7 @@ class PlayerMoveState : CharacterState
         if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.isLeftStickStationary() )
         {
             Print("Turn 180!!!");
-            // ownner.stateMachine.ChangeState("StandState");
+            ownner.stateMachine.ChangeState("MoveTurn180State");
         }
     }
 
@@ -103,14 +108,53 @@ class PlayerMoveState : CharacterState
     {
         PlayerStandToMoveState@ standToMoveState = cast<PlayerStandToMoveState@>(lastState);
         float startTime = 0.0f;
-        float blendTime = 0.1f;
+        float blendTime = 0.2f;
         if (standToMoveState !is null)
         {
             Array<float> startTimes = {13.0f/30.0f, 13.0f/30.0f, 2.0f/30.0f};
             startTime = startTimes[standToMoveState.selectIndex];
             blendTime = 0.25f;
         }
+        else {
+            PlayerMoveTurn180State@ turn180State = cast<PlayerMoveTurn180State>(lastState);
+            if (turn180State !is null)
+                startTime = 13.0f/30.0f;
+        }
         motion.Start(characterNode, ctrl, startTime, blendTime);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        motion.DebugDraw(debug, characterNode);
+    }
+};
+
+class PlayerMoveTurn180State : CharacterState
+{
+    Motion@ motion;
+
+    PlayerMoveTurn180State(Node@ n, Character@ c)
+    {
+        super(n, c);
+        name = "MoveTurn180State";
+        @motion = Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 22, false, true, 1.0);
+    }
+
+    void Update(float dt)
+    {
+        if (motion.Move(dt, characterNode, ctrl))
+        {
+            if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
+                ownner.stateMachine.ChangeState("StandState");
+            else {
+                ownner.stateMachine.ChangeState("MoveState");
+            }
+        }
+    }
+
+    void Enter(State@ lastState)
+    {
+        motion.Start(characterNode, ctrl, 0.0f, 0.1f);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -125,13 +169,20 @@ class PlayerAttackState : MultiMotionState
     {
         super(n, c);
         name = "AttackState";
+        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
     }
 
     void Update(float dt)
     {
-
+        if (motions[selectIndex].Move(dt, characterNode, ctrl))
+            ownner.stateMachine.ChangeState("StandState");
     }
 
+    int PickIndex()
+    {
+        return RandomInt(motions.length);
+    }
 };
 
 class Player : Character
@@ -141,6 +192,7 @@ class Player : Character
         stateMachine.AddState(PlayerStandState(node, this));
         stateMachine.AddState(PlayerStandToMoveState(node, this));
         stateMachine.AddState(PlayerMoveState(node, this));
+        stateMachine.AddState(PlayerMoveTurn180State(node, this));
         stateMachine.AddState(PlayerAttackState(node, this));
         stateMachine.ChangeState("StandState");
     }

@@ -12,3 +12,5 @@ tool\AssetImporter model Asset\Stand_To_Walk_Left_180.FBX Data\Animation\Stand_T
 tool\AssetImporter model Asset\Stand_To_Walk_Right_90.FBX Data\Animation\Stand_To_Walk_Right_90.mdl -nomodel -nm -nt -motion rx -flipbone
 tool\AssetImporter model Asset\Stand_To_Walk_Right_180.FBX Data\Animation\Stand_To_Walk_Right_180.mdl -nomodel -nm -nt -motion rz -flipbone
 
+tool\AssetImporter model Asset\Attack_Close_Forward_07.FBX Data\Animation\Attack_Close_Forward_07.mdl -nomodel -nm -nt -motion z -flipbone
+tool\AssetImporter model Asset\Attack_Close_Forward_08.FBX Data\Animation\Attack_Close_Forward_08.mdl -nomodel -nm -nt -motion z -flipbone

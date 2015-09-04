@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="7" />
 	<attribute name="Next Replicated Component ID" value="10" />
-	<attribute name="Next Local Node ID" value="16777422" />
-	<attribute name="Next Local Component ID" value="16777350" />
+	<attribute name="Next Local Node ID" value="16777424" />
+	<attribute name="Next Local Component ID" value="16777374" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -27,8 +27,8 @@
 	</node>
 	<node id="3">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="" />
-		<attribute name="Position" value="0.57866 6.72287 -4.92664" />
+		<attribute name="Name" value="Light" />
+		<attribute name="Position" value="0.57866 6.72287 6.86629" />
 		<attribute name="Rotation" value="0.92737 0.374147 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
@@ -41,7 +41,7 @@
 	<node id="6">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="bruce" />
-		<attribute name="Position" value="0 0 0" />
+		<attribute name="Position" value="0 0 0.0990772" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
