@@ -36,6 +36,8 @@ class Motion
             _endFrame = motionKeys.length - 1;
         endFrame = _endFrame;
         endTime = float(endFrame) / 30.0f;
+        if (endTime < 0)
+            endTime = animation.length;
         looped = _loop;
         name = animName;
         fixYawPerSec = 0.0f;
@@ -111,6 +113,9 @@ class Motion
 
     Vector4 GetKey(float t)
     {
+        if (motionKeys.empty)
+            return Vector4(0, 0, 0, 0);
+
         uint i = uint(t * 30.0f);
         if (i >= motionKeys.length)
             i = motionKeys.length - 1;
@@ -136,7 +141,7 @@ class Motion
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
     {
         float localTime = ctrl.GetTime(name);
-        if (looped && status == 1)
+        if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             GetMotion(localTime, dt, looped, motionOut);

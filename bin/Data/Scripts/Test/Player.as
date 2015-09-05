@@ -169,8 +169,10 @@ class PlayerAttackState : MultiMotionState
     {
         super(n, c);
         name = "AttackState";
-        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
-        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
+        //motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
+        //motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", 0, -1, false, false));
     }
 
     void Update(float dt)
@@ -206,6 +208,7 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddNode(characterNode, 1.0f, false);
+        debug.AddNode(characterNode.GetChild("Bip01"), 1.0f, false);
         Vector3 fwd = Vector3(0, 0, 1);
         Vector3 camDir = cameraNode.worldRotation * fwd;
         float cameraAngle = Atan2(camDir.x, camDir.z);
