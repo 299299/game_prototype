@@ -187,6 +187,15 @@ class PlayerAttackState : MultiMotionState
     }
 };
 
+class PlayerAlignState : CharacterAlignState
+{
+    PlayerAlignState(Node@ n, Character@ c)
+    {
+        super(n, c);
+        name = "AttackState";
+    }
+};
+
 class Player : Character
 {
     void Start()
@@ -196,6 +205,7 @@ class Player : Character
         stateMachine.AddState(PlayerMoveState(node, this));
         stateMachine.AddState(PlayerMoveTurn180State(node, this));
         stateMachine.AddState(PlayerAttackState(node, this));
+        stateMachine.AddState(PlayerAlignState(node, this));
         stateMachine.ChangeState("StandState");
     }
 

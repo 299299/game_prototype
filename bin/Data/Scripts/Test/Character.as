@@ -57,6 +57,46 @@ class MultiMotionState : CharacterState
     }
 };
 
+class CharacterAlignState : CharacterState
+{
+    Vector3         targetPosition;
+    float           targetYaw;
+
+    float           syncTime;
+    float           curTime;
+    String          nextState;
+
+    CharacterAlignState(Node@ n, Character@ c)
+    {
+        super(n, c);
+        name = "AlignState";
+        syncTime = 0.5f;
+    }
+
+    void Enter(State@ lastState)
+    {
+        curTime = 0;
+    }
+
+    void Update(float dt)
+    {
+        curTime += dt;
+        if (curTime >= syncTime) {
+            Print("FINISHED Align!!!");
+            characterNode.worldPosition = targetPosition;
+            characterNode.worldRotation = Quaternion(0, targetYaw, 0);
+            ownner.stateMachine.ChangeState(nextState);
+            return;
+        }
+
+        Vector3 curPos = node.worldPosition;
+        node.worldPosition = curPos.Lerp(targetPosition, curTime);
+        float curYaw = node.worldRotation.eulerAngles.y;
+        float yaw = Lerp(curYaw, targetYaw, curTime);
+        node.worldRotation = Quaternion(0, yaw, 0);
+    }
+};
+
 class Character : GameObject
 {
     Character()
