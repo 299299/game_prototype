@@ -4,9 +4,9 @@ class EnemyStandState : CharacterState
 {
     Array<String>           animations;
 
-    EnemyStandState(Node@ n, Character@ c)
+    EnemyStandState(Character@ c)
     {
-        super(n, c);
+        super(c);
         name = "StandState";
         animations.Push("Animation/Stand_Idle.ani");
         animations.Push("Animation/Stand_Idle_01.ani");
@@ -18,7 +18,7 @@ class EnemyStandState : CharacterState
         float blendTime = 0.5f;
         if (lastState !is null && lastState.name == "MoveState")
             blendTime = 0.25f;
-        PlayAnimation(ctrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
     }
 
     void Update(float dt)
@@ -32,7 +32,7 @@ class Enemy : Character
 {
     void Start()
     {
-
+        Character::Start();
     }
 
     void Update(float dt)

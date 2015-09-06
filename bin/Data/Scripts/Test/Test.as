@@ -11,8 +11,11 @@
 #include "Scripts/Test/Thug.as"
 
 Node@ characterNode;
+Node@ thugNode;
+
 GameInput@ gInput = GameInput();
 Player@ player;
+Thug@ thug;
 bool slowMotion = false;
 bool pauseGame = false;
 EnemyManager@ gEnemyMgr;
@@ -60,12 +63,20 @@ void CreateScene()
 
     characterNode = scene_.GetChild("bruce", true);
     characterNode.Translate(Vector3(5, 0, 0));
-    characterNode.Yaw(-180);
+    // characterNode.Yaw(180);
 
     @gEnemyMgr = EnemyManager();
     @player = cast<Player>(characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player"));
     if (player is null) {
         Print("player is null!!");
+        engine.Exit();
+        return;
+    }
+
+    thugNode = scene_.GetChild("bruce2", true);
+    @thug = cast<Thug>(thugNode.CreateScriptObject("Scripts/Test/Test.as", "Thug"));
+    if (thug is null) {
+        Print("thug is null!!");
         engine.Exit();
         return;
     }
@@ -133,6 +144,8 @@ void SubscribeToEvents()
     // debug geometry
     if (!engine.headless)
         SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
+
+    SubscribeToEvent("ALIGN_FINISED", "HandleAlignFinised");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -160,11 +173,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['Q'])
     {
-        Node@ node1 = scene_.GetChild("Box", true);
-        if (node1 !is null)
-        {
-            player.LineUpdateWithObject(node1, "MoveState", -90, 2.0f, 1.0f);
-        }
+        player.LineUpdateWithObject(thugNode, "AttackState", 180, -3.0f, 0.2f);
     }
 
     String debugText = "";
@@ -246,8 +255,16 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     DebugRenderer@ debug = scene_.debugRenderer;
     debug.AddNode(scene_, 2.0f, false);
     player.DebugDraw(debug);
+    thug.DebugDraw(debug);
 }
 
+void HandleAlignFinised(StringHash eventType, VariantMap& eventData)
+{
+    Print("HandleAlignFinised");
+    Node@ meNode = scene_.GetNode(eventData["ME"].GetUInt());
+    Node@ alignWithNode = scene_.GetNode(eventData["ALIGN"].GetUInt());
+    thug.stateMachine.ChangeState("CounterState");
+}
 
 
 // Create XML patch instructions for screen joystick layout specific to this sample app

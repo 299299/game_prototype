@@ -4,9 +4,9 @@ class PlayerStandState : CharacterState
 {
     Array<String>           animations;
 
-    PlayerStandState(Node@ n, Character@ c)
+    PlayerStandState(Character@ c)
     {
-        super(n, c);
+        super(c);
         name = "StandState";
         animations.Push("Animation/Stand_Idle.ani");
         animations.Push("Animation/Stand_Idle_01.ani");
@@ -15,7 +15,7 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        PlayAnimation(ctrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.25f);
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.25f);
     }
 
     void Update(float dt)
@@ -23,7 +23,7 @@ class PlayerStandState : CharacterState
         if (!gInput.inLeftStickInDeadZone() && gInput.isLeftStickStationary())
         {
             int index = RadialSelectAnimation(4);
-            characterNode.vars["AnimationIndex"] = index;
+            ownner.sceneNode.vars["AnimationIndex"] = index;
             if (index == 0)
                 ownner.stateMachine.ChangeState("MoveState");
             else
@@ -39,9 +39,9 @@ class PlayerStandState : CharacterState
 
 class PlayerStandToMoveState : MultiMotionState
 {
-    PlayerStandToMoveState(Node@ n, Character@ c)
+    PlayerStandToMoveState(Character@ c)
     {
-        super(n, c);
+        super(c);
         name = "StandToMoveState";
         motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 36, false, true, 1.5));
         motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 22, false, true, 1.0));
@@ -51,12 +51,12 @@ class PlayerStandToMoveState : MultiMotionState
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, characterNode, ctrl))
+        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
         {
             if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
             else {
-                ctrl.SetSpeed(motions[selectIndex].name, 1);
+                ownner.animCtrl.SetSpeed(motions[selectIndex].name, 1);
                 ownner.stateMachine.ChangeState("MoveState");
             }
         }
@@ -64,7 +64,7 @@ class PlayerStandToMoveState : MultiMotionState
 
     int PickIndex()
     {
-        return characterNode.vars["AnimationIndex"].GetInt() - 1;
+        return ownner.sceneNode.vars["AnimationIndex"].GetInt() - 1;
     }
 };
 
@@ -72,9 +72,9 @@ class PlayerMoveState : CharacterState
 {
     Motion@ motion;
 
-    PlayerMoveState(Node@ n, Character@ c)
+    PlayerMoveState(Character@ c)
     {
-        super(n, c);
+        super(c);
         name = "MoveState";
         @motion = Motion("Animation/Walk_Forward.ani", 0, -1, true, false);
     }
@@ -93,8 +93,8 @@ class PlayerMoveState : CharacterState
         float fullTurnThreashold = 115;
         float turnSpeed = 5;
 
-        characterNode.Yaw(characterDifference * turnSpeed * dt);
-        motion.Move(dt, characterNode, ctrl);
+        ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
+        motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
 
         // if the difference is large, then turn 180 degrees
         if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.isLeftStickStationary() )
@@ -120,12 +120,12 @@ class PlayerMoveState : CharacterState
             if (turn180State !is null)
                 startTime = 13.0f/30.0f;
         }
-        motion.Start(characterNode, ctrl, startTime, blendTime);
+        motion.Start(ownner.sceneNode, ownner.animCtrl, startTime, blendTime);
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        motion.DebugDraw(debug, characterNode);
+        motion.DebugDraw(debug, ownner.sceneNode);
     }
 };
 
@@ -133,16 +133,16 @@ class PlayerMoveTurn180State : CharacterState
 {
     Motion@ motion;
 
-    PlayerMoveTurn180State(Node@ n, Character@ c)
+    PlayerMoveTurn180State(Character@ c)
     {
-        super(n, c);
+        super(c);
         name = "MoveTurn180State";
         @motion = Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 22, false, true, 1.0);
     }
 
     void Update(float dt)
     {
-        if (motion.Move(dt, characterNode, ctrl))
+        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
         {
             if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
@@ -154,30 +154,30 @@ class PlayerMoveTurn180State : CharacterState
 
     void Enter(State@ lastState)
     {
-        motion.Start(characterNode, ctrl, 0.0f, 0.1f);
+        motion.Start(ownner.sceneNode, ownner.animCtrl, 0.0f, 0.1f);
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        motion.DebugDraw(debug, characterNode);
+        motion.DebugDraw(debug, ownner.sceneNode);
     }
 };
 
 class PlayerAttackState : MultiMotionState
 {
-    PlayerAttackState(Node@ n, Character@ c)
+    PlayerAttackState(Character@ c)
     {
-        super(n, c);
+        super(c);
         name = "AttackState";
         //motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
         //motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
         motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", 0, -1, false, false));
-        motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", 0, -1, false, false));
+        // motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", 0, -1, false, false));
     }
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, characterNode, ctrl))
+        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.stateMachine.ChangeState("StandState");
     }
 
@@ -189,9 +189,9 @@ class PlayerAttackState : MultiMotionState
 
 class PlayerAlignState : CharacterAlignState
 {
-    PlayerAlignState(Node@ n, Character@ c)
+    PlayerAlignState(Character@ c)
     {
-        super(n, c);
+        super(c);
     }
 };
 
@@ -199,12 +199,13 @@ class Player : Character
 {
     void Start()
     {
-        stateMachine.AddState(PlayerStandState(node, this));
-        stateMachine.AddState(PlayerStandToMoveState(node, this));
-        stateMachine.AddState(PlayerMoveState(node, this));
-        stateMachine.AddState(PlayerMoveTurn180State(node, this));
-        stateMachine.AddState(PlayerAttackState(node, this));
-        stateMachine.AddState(PlayerAlignState(node, this));
+        Character::Start();
+        stateMachine.AddState(PlayerStandState(this));
+        stateMachine.AddState(PlayerStandToMoveState(this));
+        stateMachine.AddState(PlayerMoveState(this));
+        stateMachine.AddState(PlayerMoveTurn180State(this));
+        stateMachine.AddState(PlayerAttackState(this));
+        stateMachine.AddState(PlayerAlignState(this));
         stateMachine.ChangeState("StandState");
     }
 
@@ -216,49 +217,19 @@ class Player : Character
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddNode(characterNode, 1.0f, false);
-        debug.AddNode(characterNode.GetChild("Bip01"), 1.0f, false);
+        debug.AddNode(sceneNode, 1.0f, false);
+        debug.AddNode(sceneNode.GetChild("Bip01", true), 1.0f, false);
         Vector3 fwd = Vector3(0, 0, 1);
         Vector3 camDir = cameraNode.worldRotation * fwd;
         float cameraAngle = Atan2(camDir.x, camDir.z);
-        Vector3 characterDir = characterNode.worldRotation * fwd;
+        Vector3 characterDir = sceneNode.worldRotation * fwd;
         float characterAngle = Atan2(characterDir.x, characterDir.z);
         float targetAngle = cameraAngle + gInput.m_leftStickAngle;
         float baseLen = 2.0f;
-        DebugDrawDirection(debug, characterNode, targetAngle, Color(1, 1, 0), baseLen * gInput.m_leftStickMagnitude);
-        DebugDrawDirection(debug, characterNode, characterAngle, Color(1, 0, 1), baseLen);
+        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen * gInput.m_leftStickMagnitude);
+        DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
     }
 };
-
-
-// clamps an angle to the rangle of [-2PI, 2PI]
-float angleDiff( float diff )
-{
-    if (diff > 180)
-        diff = diff - 360;
-    if (diff < -180)
-        diff = diff + 360;
-    return diff;
-}
-
-//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
-//  contains the gamepad's angle relative to the camera.
-int RadialSelectAnimation( int numDirections )
-{
-    Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = cameraNode.worldRotation * fwd;
-    float cameraAngle = Atan2(camDir.x, camDir.z);
-    Vector3 characterDir = characterNode.worldRotation * fwd;
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-    float directionDifference = angleDiff(gInput.m_leftStickAngle + cameraAngle - characterAngle);
-    float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
-
-    // since the range of the direction variable is [-3, 3] we need to map negative
-    // values to the animation index range in our selector which is [0,7]
-    if( directionVariable < 0 )
-        directionVariable += numDirections;
-    return int(directionVariable);
-}
 
 
 // computes the difference between the characters current heading and the
@@ -278,4 +249,23 @@ float computeDifference()
 
     // check the difference between the characters current heading and the desired heading from the gamepad
     return angleDiff(gInput.m_leftStickAngle + cameraAngle - characterAngle);
+}
+
+//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
+//  contains the gamepad's angle relative to the camera.
+int RadialSelectAnimation(int numDirections)
+{
+    Vector3 fwd = Vector3(0, 0, 1);
+    Vector3 camDir = characterNode.worldRotation * fwd;
+    float cameraAngle = Atan2(camDir.x, camDir.z);
+    Vector3 characterDir = characterNode.worldRotation * fwd;
+    float characterAngle = Atan2(characterDir.x, characterDir.z);
+    float directionDifference = angleDiff(gInput.m_leftStickAngle + cameraAngle - characterAngle);
+    float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
+
+    // since the range of the direction variable is [-3, 3] we need to map negative
+    // values to the animation index range in our selector which is [0,7]
+    if( directionVariable < 0 )
+        directionVariable += numDirections;
+    return int(directionVariable);
 }

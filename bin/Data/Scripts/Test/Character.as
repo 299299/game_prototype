@@ -5,20 +5,15 @@
 
 class CharacterState : State
 {
-    Node@                       characterNode;
     Character@                  ownner;
-    AnimationController@        ctrl;
 
-    CharacterState(Node@ n, Character@ c)
+    CharacterState(Character@ c)
     {
-        characterNode = n;
         @ownner = c;
-        ctrl = characterNode.GetComponent("AnimationController");
     }
 
     ~CharacterState()
     {
-        @characterNode = null;
         @ownner = null;
     }
 };
@@ -28,27 +23,28 @@ class MultiMotionState : CharacterState
     Array<Motion@> motions;
     int selectIndex;
 
-    MultiMotionState(Node@ n, Character@ c)
+    MultiMotionState(Character@ c)
     {
-        super(n, c);
+        super(c);
         selectIndex = 0;
     }
 
     void Update(float dt)
     {
-
+        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
+            ownner.stateMachine.ChangeState("StandState");
     }
 
     void Enter(State@ lastState)
     {
         selectIndex = PickIndex();
-        motions[selectIndex].Start(characterNode, ctrl);
+        motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl);
         Print(name + " pick " + motions[selectIndex].name);
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        motions[selectIndex].DebugDraw(debug, characterNode);
+        motions[selectIndex].DebugDraw(debug, ownner.sceneNode);
     }
 
     int PickIndex()
@@ -67,9 +63,11 @@ class CharacterAlignState : CharacterState
     float           curTime;
     String          nextState;
 
-    CharacterAlignState(Node@ n, Character@ c)
+    uint            alignNodeId;
+
+    CharacterAlignState(Character@ c)
     {
-        super(n, c);
+        super(c);
         name = "AlignState";
         alignTime = 0.5f;
     }
@@ -78,45 +76,54 @@ class CharacterAlignState : CharacterState
     {
         curTime = 0;
 
-        float curYaw = characterNode.worldRotation.eulerAngles.y;
+        float curYaw = ownner.sceneNode.worldRotation.eulerAngles.y;
         float diff = targetYaw - curYaw;
-        float absDiff = Abs(diff);
-        if (absDiff > 180) {
-            diff = 360 - absDiff;
-            if (curYaw > targetYaw)
-                diff = -diff;
-        }
+        diff = angleDiff(diff);
+
+        targetPosition.y = ownner.sceneNode.worldPosition.y;
+
         yawPerSec = diff / alignTime;
         Print("curYaw=" + String(curYaw) + " targetYaw=" + String(targetYaw) + " yaw per second = " + String(yawPerSec));
     }
 
     void Update(float dt)
     {
+        Node@ sceneNode = ownner.sceneNode;
+
         curTime += dt;
         if (curTime >= alignTime) {
             Print("FINISHED Align!!!");
-            characterNode.worldPosition = targetPosition;
-            characterNode.worldRotation = Quaternion(0, targetYaw, 0);
+            ownner.sceneNode.worldPosition = targetPosition;
+            ownner.sceneNode.worldRotation = Quaternion(0, targetYaw, 0);
             ownner.stateMachine.ChangeState(nextState);
+
+            VariantMap eventData;
+            eventData["ALIGN"] = alignNodeId;
+            eventData["ME"] = sceneNode.id;
+            SendEvent("ALIGN_FINISED", eventData);
+
             return;
         }
 
         float lerpValue = curTime / alignTime;
-        Vector3 curPos = characterNode.worldPosition;
-        characterNode.worldPosition = curPos.Lerp(targetPosition, lerpValue);
+        Vector3 curPos = sceneNode.worldPosition;
+        sceneNode.worldPosition = curPos.Lerp(targetPosition, lerpValue);
 
         float yawEd = yawPerSec * dt;
-        characterNode.Yaw(yawEd);
+        sceneNode.Yaw(yawEd);
 
         Print("Character align status at " + String(curTime) +
-            " t=" + characterNode.worldPosition.ToString() +
-            " r=" + String(characterNode.worldRotation.eulerAngles.y) +
+            " t=" + sceneNode.worldPosition.ToString() +
+            " r=" + String(sceneNode.worldRotation.eulerAngles.y) +
             " dyaw=" + String(yawEd));
     }
 };
 
 class Character : GameObject
 {
+    Node@                   sceneNode;
+    AnimationController@    animCtrl;
+
     Character()
     {
         Print("Character()");
@@ -125,11 +132,13 @@ class Character : GameObject
     ~Character()
     {
         Print("~Character()");
+        @this.sceneNode = null;
     }
 
     void Start()
     {
-
+        @this.sceneNode = node;
+        animCtrl = sceneNode.GetComponent("AnimationController");
     }
 
     void Update(float dt)
@@ -151,6 +160,18 @@ class Character : GameObject
         state.targetYaw = targetYaw;
         state.alignTime = t;
         state.nextState = nextState;
+        state.alignNodeId = lineUpWith.id;
         stateMachine.ChangeState("AlignState");
     }
 };
+
+// clamps an angle to the rangle of [-2PI, 2PI]
+float angleDiff( float diff )
+{
+    if (diff > 180)
+        diff -= 360;
+    if (diff < -180)
+        diff += 360;
+    return diff;
+}
+

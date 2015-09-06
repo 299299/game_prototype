@@ -15,5 +15,8 @@ tool\AssetImporter model Asset\Stand_To_Walk_Right_180.FBX Data\Animation\Stand_
 tool\AssetImporter model Asset\Attack_Close_Forward_07.FBX Data\Animation\Attack_Close_Forward_07.mdl -nomodel -nm -nt -motion z -flipbone
 tool\AssetImporter model Asset\Attack_Close_Forward_08.FBX Data\Animation\Attack_Close_Forward_08.mdl -nomodel -nm -nt -motion z -flipbone
 
-tool\AssetImporter model Asset\Counter_Arm_Front_01.FBX Data\Animation\Counter_Arm_Front_01.mdl -nomodel -nm -nt -origin xz -motion z -flipbone
-tool\AssetImporter model Asset\Counter_Arm_Front_01_TG.FBX Data\Animation\Counter_Arm_Front_01_TG.mdl -nomodel -nm -nt -origin xzr -motion z -flipbone
+rm Data\Animation\Counter_Arm_Front_01_motion.xml
+tool\AssetImporter model Asset\Counter_Arm_Front_01.FBX Data\Animation\Counter_Arm_Front_01.mdl -nomodel -nm -nt -origin xz -motion xz -flipbone
+
+rm Data\Animation\Counter_Arm_Front_01_TG_motion.xml
+tool\AssetImporter model Asset\Counter_Arm_Front_01_TG.FBX Data\Animation\Counter_Arm_Front_01_TG.mdl -nomodel -nm -nt -origin xzr -motion xz -flipbone
