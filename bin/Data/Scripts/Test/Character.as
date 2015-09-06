@@ -61,6 +61,7 @@ class CharacterAlignState : CharacterState
 {
     Vector3         targetPosition;
     float           targetYaw;
+    float           yawPerSec;
 
     float           alignTime;
     float           curTime;
@@ -76,6 +77,17 @@ class CharacterAlignState : CharacterState
     void Enter(State@ lastState)
     {
         curTime = 0;
+
+        float curYaw = characterNode.worldRotation.eulerAngles.y;
+        float diff = targetYaw - curYaw;
+        float absDiff = Abs(diff);
+        if (absDiff > 180) {
+            diff = 360 - absDiff;
+            if (curYaw > targetYaw)
+                diff = -diff;
+        }
+        yawPerSec = diff / alignTime;
+        Print("curYaw=" + String(curYaw) + " targetYaw=" + String(targetYaw) + " yaw per second = " + String(yawPerSec));
     }
 
     void Update(float dt)
@@ -89,13 +101,17 @@ class CharacterAlignState : CharacterState
             return;
         }
 
+        float lerpValue = curTime / alignTime;
         Vector3 curPos = characterNode.worldPosition;
-        characterNode.worldPosition = curPos.Lerp(targetPosition, curTime);
-        float curYaw = characterNode.worldRotation.eulerAngles.y;
-        float yaw = Lerp(curYaw, targetYaw, curTime);
-        characterNode.worldRotation = Quaternion(0, yaw, 0);
+        characterNode.worldPosition = curPos.Lerp(targetPosition, lerpValue);
 
-        Print("Character align status t=" + characterNode.worldPosition.ToString() + " r=" + String(characterNode.worldRotation.eulerAngles.y));
+        float yawEd = yawPerSec * dt;
+        characterNode.Yaw(yawEd);
+
+        Print("Character align status at " + String(curTime) +
+            " t=" + characterNode.worldPosition.ToString() +
+            " r=" + String(characterNode.worldRotation.eulerAngles.y) +
+            " dyaw=" + String(yawEd));
     }
 };
 

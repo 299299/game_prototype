@@ -60,6 +60,7 @@ void CreateScene()
 
     characterNode = scene_.GetChild("bruce", true);
     characterNode.Translate(Vector3(5, 0, 0));
+    characterNode.Yaw(-180);
 
     @gEnemyMgr = EnemyManager();
     @player = cast<Player>(characterNode.CreateScriptObject("Scripts/Test/Test.as", "Player"));
@@ -157,6 +158,15 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         scene_.timeScale = pauseGame ? 0 : speed;
     }
 
+    if (input.keyPress['Q'])
+    {
+        Node@ node1 = scene_.GetChild("Box", true);
+        if (node1 !is null)
+        {
+            player.LineUpdateWithObject(node1, "MoveState", -90, 2.0f, 1.0f);
+        }
+    }
+
     String debugText = "";
 
     if (player !is null)
@@ -202,7 +212,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
                 Node@ node1 = scene_.GetChild("Box", true);
                 if (node1 !is null)
                 {
-                    player.LineUpdateWithObject(node1, "MoveState", 180, 2.0f, 0.5f);
+                    player.LineUpdateWithObject(node1, "MoveState", -90, 2.0f, 0.5f);
                 }
             }
             globalState = 1;
