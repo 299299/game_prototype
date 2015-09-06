@@ -16,6 +16,12 @@ class GameObject : ScriptObject
         onGround = false;
         isSliding = false;
         duration = -1; // Infinite
+        @stateMachine = FSM();
+    }
+
+    void Stop()
+    {
+        @stateMachine = null;
     }
 
     void FixedUpdate(float timeStep)
@@ -31,8 +37,7 @@ class GameObject : ScriptObject
 
     void Update(float timeStep)
     {
-        if (stateMachine !is null)
-            stateMachine.Update(timeStep);
+        stateMachine.Update(timeStep);
     }
 
     void PlaySound(const String&in soundName)
@@ -114,5 +119,10 @@ class GameObject : ScriptObject
     void DebugDraw(DebugRenderer@ debug)
     {
         stateMachine.DebugDraw(debug);
+    }
+
+    String GetDebugText()
+    {
+        return stateMachine.GetDebugText();
     }
 };

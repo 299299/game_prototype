@@ -192,7 +192,6 @@ class PlayerAlignState : CharacterAlignState
     PlayerAlignState(Node@ n, Character@ c)
     {
         super(n, c);
-        name = "AttackState";
     }
 };
 

@@ -62,7 +62,7 @@ class CharacterAlignState : CharacterState
     Vector3         targetPosition;
     float           targetYaw;
 
-    float           syncTime;
+    float           alignTime;
     float           curTime;
     String          nextState;
 
@@ -70,7 +70,7 @@ class CharacterAlignState : CharacterState
     {
         super(n, c);
         name = "AlignState";
-        syncTime = 0.5f;
+        alignTime = 0.5f;
     }
 
     void Enter(State@ lastState)
@@ -81,7 +81,7 @@ class CharacterAlignState : CharacterState
     void Update(float dt)
     {
         curTime += dt;
-        if (curTime >= syncTime) {
+        if (curTime >= alignTime) {
             Print("FINISHED Align!!!");
             characterNode.worldPosition = targetPosition;
             characterNode.worldRotation = Quaternion(0, targetYaw, 0);
@@ -89,11 +89,13 @@ class CharacterAlignState : CharacterState
             return;
         }
 
-        Vector3 curPos = node.worldPosition;
-        node.worldPosition = curPos.Lerp(targetPosition, curTime);
-        float curYaw = node.worldRotation.eulerAngles.y;
+        Vector3 curPos = characterNode.worldPosition;
+        characterNode.worldPosition = curPos.Lerp(targetPosition, curTime);
+        float curYaw = characterNode.worldRotation.eulerAngles.y;
         float yaw = Lerp(curYaw, targetYaw, curTime);
-        node.worldRotation = Quaternion(0, yaw, 0);
+        characterNode.worldRotation = Quaternion(0, yaw, 0);
+
+        Print("Character align status t=" + characterNode.worldPosition.ToString() + " r=" + String(characterNode.worldRotation.eulerAngles.y));
     }
 };
 
@@ -102,7 +104,6 @@ class Character : GameObject
     Character()
     {
         Print("Character()");
-        @stateMachine = FSM();
     }
 
     ~Character()
@@ -115,13 +116,25 @@ class Character : GameObject
 
     }
 
-    void Stop()
-    {
-        @stateMachine = null;
-    }
-
     void Update(float dt)
     {
         GameObject::Update(dt);
+    }
+
+    void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, float yawAdjust, float distance, float t)
+    {
+        float targetYaw = lineUpWith.worldRotation.eulerAngles.y + yawAdjust;
+        Quaternion targetRotation(0, targetYaw, 0);
+        Vector3 targetPosition = lineUpWith.worldPosition + targetRotation * Vector3(0, 0, distance);
+        CharacterAlignState@ state = cast<CharacterAlignState@>(stateMachine.FindState("AlignState"));
+        if (state is null)
+            return;
+
+        Print("LineUpdateWithObject targetPosition=" + targetPosition.ToString() + " targetYaw=" + String(targetYaw));
+        state.targetPosition = targetPosition;
+        state.targetYaw = targetYaw;
+        state.alignTime = t;
+        state.nextState = nextState;
+        stateMachine.ChangeState("AlignState");
     }
 };

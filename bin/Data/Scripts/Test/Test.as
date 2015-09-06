@@ -72,15 +72,11 @@ void CreateScene()
 
 void CreateInstructions()
 {
-    // Construct new Text object, set string to display and font to use
     Text@ instructionText = ui.root.CreateChild("Text", "instruction");
-    instructionText.text = "Use WASD keys and mouse to move";
-    instructionText.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 15);
-
-    // Position the text relative to the screen center
-    instructionText.horizontalAlignment = HA_CENTER;
-    instructionText.verticalAlignment = VA_CENTER;
-    instructionText.SetPosition(0, ui.root.height / 4);
+    instructionText.SetFont(cache.GetResource("Font", "Fonts/life-savers.extrabold.ttf"), 15);
+    instructionText.horizontalAlignment = HA_LEFT;
+    instructionText.verticalAlignment = VA_TOP;
+    instructionText.SetPosition(0, 0);
     instructionText.color = Color(1, 0, 0);
 }
 
@@ -165,6 +161,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (player !is null)
     {
+        debugText = player.GetDebugText();
+
+        /*
         Vector3 fwd = Vector3(0, 0, 1);
         Vector3 camDir = cameraNode.worldRotation * fwd;
         float cameraAngle = Atan2(camDir.x, camDir.z);
@@ -174,14 +173,18 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         //Print("cameraAngle=" + String(cameraAngle) + " characterAngle=" + String(characterAngle) + " inputAngle=" + String(gInput.m_leftStickAngle));
         float diff = computeDifference();
         // debugText = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
-        if (player.stateMachine.currentState !is null)
-            debugText += "current-state=" + player.stateMachine.currentState.name;
-        AnimatedModel@ model = characterNode.GetComponent("AnimatedModel");
-        AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-        for (uint i=0; i<model.numAnimationStates ; ++i)
+        */
+
+        if (!engine.headless)
         {
-            AnimationState@ state = model.GetAnimationState(i);
-            debugText += "\n" + state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight);
+            AnimatedModel@ model = characterNode.GetComponent("AnimatedModel");
+            AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
+
+            for (uint i=0; i<model.numAnimationStates ; ++i)
+            {
+                AnimationState@ state = model.GetAnimationState(i);
+                debugText += "\n" + state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight);
+            }
         }
     }
 
@@ -195,7 +198,13 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
          if (globalTime > 1.0)
         {
             if (player !is null && globalState != 1)
-                player.stateMachine.ChangeState("MoveState");
+            {
+                Node@ node1 = scene_.GetChild("Box", true);
+                if (node1 !is null)
+                {
+                    player.LineUpdateWithObject(node1, "MoveState", 180, 2.0f, 0.5f);
+                }
+            }
             globalState = 1;
         }
 

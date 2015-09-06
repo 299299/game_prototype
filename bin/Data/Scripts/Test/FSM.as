@@ -33,6 +33,11 @@ class State
     {
 
     }
+
+    String GetDebugText()
+    {
+        return "";
+    }
 };
 
 
@@ -104,5 +109,18 @@ class FSM
     {
         if (currentState !is null)
             currentState.DebugDraw(debug);
+    }
+
+    String GetDebugText()
+    {
+        String ret = "current-state = ";
+        if (currentState !is null)
+        {
+            ret += currentState.name;
+            ret += currentState.GetDebugText();
+        }
+        else
+            ret += "null";
+        return ret;
     }
 };
