@@ -26,7 +26,7 @@ class Motion
     bool                    fixYaw;
     float                   speed;
     int                     status;
-    float                   distanceToOrign;
+    Vector3                 startFromOrigin;
 
     Motion(const String&in animName, float _targetYaw, int _endFrame, bool _loop, bool _fixYaw, float _speed = 1.0f)
     {
@@ -72,7 +72,9 @@ class Motion
                 XMLElement root = xml.GetRoot();
                 XMLElement child1 = root.GetChild("motion_keys");
                 XMLElement child2 = root.GetChild("property");
-                distanceToOrign = child2.GetFloat("distanceToOrign");
+                startFromOrigin = child2.GetVector3("startFromOrigin");
+
+                Print("motion: " + anim + " startFromOrigin=" + startFromOrigin.ToString());
 
                 XMLElement child = child1.GetChild();
                 int i = 0;

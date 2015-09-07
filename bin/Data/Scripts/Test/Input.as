@@ -158,4 +158,14 @@ class GameInput
         else
             return input.mouseButtonPress[MOUSEB_LEFT];
     }
+
+    bool isCounterPressed()
+    {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+            return joystick.buttonPress[2];
+        else
+            return input.mouseButtonPress[MOUSEB_RIGHT];
+    }
+
 };

@@ -55,7 +55,8 @@ void CreateScene()
     // Create a scene node for the camera, which we will move around
     // The camera will use default settings (1000 far clip distance, 45 degrees FOV, set aspect ratio automatically)
     cameraNode = scene_.CreateChild("Camera");
-    cameraNode.CreateComponent("Camera");
+    Camera@ cam = cameraNode.CreateComponent("Camera");
+    // cam.fillMode = FILL_WIREFRAME;
 
     // Set an initial position for the camera scene node above the plane
     cameraNode.position = Vector3(0.0f, 10.0f, -10.0f);
@@ -90,6 +91,7 @@ void CreateInstructions()
     instructionText.verticalAlignment = VA_TOP;
     instructionText.SetPosition(0, 0);
     instructionText.color = Color(1, 0, 0);
+    SetLogoVisible(false);
 }
 
 void SetupViewport()
@@ -99,6 +101,8 @@ void SetupViewport()
     // use, but now we just use full screen and default render path configured in the engine command line options
     Viewport@ viewport = Viewport(scene_, cameraNode.GetComponent("Camera"));
     renderer.viewports[0] = viewport;
+
+    graphics.windowPosition = IntVector2(0, 800);
 }
 
 void MoveCamera(float timeStep)
@@ -173,7 +177,11 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['Q'])
     {
-        player.LineUpdateWithObject(thugNode, "AttackState", 180, -3.0f, 0.2f);
+        Vector3 pos1(0.212521, 2.55542, 3.35318);
+        Vector3 pos2(-0.554306, 2.18358, 0.74401);
+        Vector3 diff = pos1 - pos2;
+        diff.y = 0;
+        player.LineUpdateWithObject(thugNode, "CounterState", 180, diff, 0.2f);
     }
 
     String debugText = "";
@@ -193,18 +201,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         float diff = computeDifference();
         // debugText = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
         */
-
-        if (!engine.headless)
-        {
-            AnimatedModel@ model = characterNode.GetComponent("AnimatedModel");
-            AnimationController@ ctrl = characterNode.GetComponent("AnimationController");
-
-            for (uint i=0; i<model.numAnimationStates ; ++i)
-            {
-                AnimationState@ state = model.GetAnimationState(i);
-                debugText += "\n" + state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight);
-            }
-        }
     }
 
     if (engine.headless)
@@ -221,7 +217,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
                 Node@ node1 = scene_.GetChild("Box", true);
                 if (node1 !is null)
                 {
-                    player.LineUpdateWithObject(node1, "MoveState", -90, 2.0f, 0.5f);
+                    // player.LineUpdateWithObject(node1, "MoveState", -90, 2.0f, 0.5f);
                 }
             }
             globalState = 1;
@@ -263,7 +259,11 @@ void HandleAlignFinised(StringHash eventType, VariantMap& eventData)
     Print("HandleAlignFinised");
     Node@ meNode = scene_.GetNode(eventData["ME"].GetUInt());
     Node@ alignWithNode = scene_.GetNode(eventData["ALIGN"].GetUInt());
-    thug.stateMachine.ChangeState("CounterState");
+    String stateName = eventData["NEXT_STATE"].GetString();
+    GameObject@ object = cast<GameObject>(alignWithNode.scriptObject);
+    if (object !is null) {
+        object.stateMachine.ChangeState(stateName);
+    }
 }
 
 

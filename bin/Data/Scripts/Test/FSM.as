@@ -121,6 +121,6 @@ class FSM
         }
         else
             ret += "null";
-        return ret;
+        return ret + "\n";
     }
 };

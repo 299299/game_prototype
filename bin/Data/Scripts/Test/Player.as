@@ -22,7 +22,7 @@ class PlayerStandState : CharacterState
     {
         if (!gInput.inLeftStickInDeadZone() && gInput.isLeftStickStationary())
         {
-            int index = RadialSelectAnimation(4);
+            int index = RadialSelectAnimation_Player(ownner.sceneNode, 4);
             ownner.sceneNode.vars["AnimationIndex"] = index;
             if (index == 0)
                 ownner.stateMachine.ChangeState("MoveState");
@@ -33,6 +33,10 @@ class PlayerStandState : CharacterState
         if (gInput.isAttackPressed()) {
             Print("Attack!!");
             ownner.stateMachine.ChangeState("AttackState");
+        }
+        else if(gInput.isCounterPressed()) {
+            Print("Counter");
+            ownner.stateMachine.ChangeState("CounterState");
         }
     }
 };
@@ -87,7 +91,7 @@ class PlayerMoveState : CharacterState
 
         // compute the difference between the direction the character is facing
         // and the direction the user wants to go in
-        float characterDifference = computeDifference();
+        float characterDifference = ComputeDifference_Player(ownner.sceneNode)  ;
 
         // if the difference is greater than this about, turn the character
         float fullTurnThreashold = 115;
@@ -169,10 +173,31 @@ class PlayerAttackState : MultiMotionState
     {
         super(c);
         name = "AttackState";
-        //motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
-        //motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
-        motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", 0, -1, false, false));
-        // motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
+    }
+
+    void Update(float dt)
+    {
+        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
+            ownner.stateMachine.ChangeState("StandState");
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(motions.length);
+    }
+};
+
+
+class PlayerEvadeState : MultiMotionState
+{
+    PlayerEvadeState(Character@ c)
+    {
+        super(c);
+        name = "EvadeState";
+        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
     }
 
     void Update(float dt)
@@ -195,8 +220,40 @@ class PlayerAlignState : CharacterAlignState
     }
 };
 
+class PlayerCounterState : MultiMotionState
+{
+    PlayerCounterState(Character@ c)
+    {
+        super(c);
+        name = "CounterState";
+        //motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
+        //motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", 0, -1, false, false));
+        // motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", 0, -1, false, false));
+    }
+
+    void Update(float dt)
+    {
+        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
+            ownner.stateMachine.ChangeState("StandState");
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(motions.length);
+    }
+};
+
 class Player : Character
 {
+    int combo;
+
+    Player()
+    {
+        super();
+        combo = 0;
+    }
+
     void Start()
     {
         Character::Start();
@@ -206,6 +263,8 @@ class Player : Character
         stateMachine.AddState(PlayerMoveTurn180State(this));
         stateMachine.AddState(PlayerAttackState(this));
         stateMachine.AddState(PlayerAlignState(this));
+        stateMachine.AddState(PlayerCounterState(this));
+        stateMachine.AddState(PlayerEvadeState(this));
         stateMachine.ChangeState("StandState");
     }
 
@@ -229,43 +288,40 @@ class Player : Character
         DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen * gInput.m_leftStickMagnitude);
         DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
     }
+
+    void Attack()
+    {
+
+    }
+
+    String GetDebugText()
+    {
+        return Character::GetDebugText() +  "player combo=" + String(combo) + "\n";
+    }
 };
 
 
 // computes the difference between the characters current heading and the
 // heading the user wants them to go in.
-float computeDifference()
+float ComputeDifference_Player(Node@ n)
 {
     // if the user is not pushing the stick anywhere return.  this prevents the character from turning while stopping (which
     // looks bad - like the skid to stop animation)
     if( gInput.m_leftStickMagnitude < 0.5f )
         return 0;
 
-    Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = cameraNode.worldRotation * fwd;
+    Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
     float cameraAngle = Atan2(camDir.x, camDir.z);
-    Vector3 characterDir = characterNode.worldRotation * fwd;
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-
     // check the difference between the characters current heading and the desired heading from the gamepad
-    return angleDiff(gInput.m_leftStickAngle + cameraAngle - characterAngle);
+    return computeDifference(n, gInput.m_leftStickAngle + cameraAngle);
 }
 
 //  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
 //  contains the gamepad's angle relative to the camera.
-int RadialSelectAnimation(int numDirections)
+int RadialSelectAnimation_Player(Node@ n, int numDirections)
 {
     Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = characterNode.worldRotation * fwd;
+    Vector3 camDir = n.worldRotation * fwd;
     float cameraAngle = Atan2(camDir.x, camDir.z);
-    Vector3 characterDir = characterNode.worldRotation * fwd;
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-    float directionDifference = angleDiff(gInput.m_leftStickAngle + cameraAngle - characterAngle);
-    float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
-
-    // since the range of the direction variable is [-3, 3] we need to map negative
-    // values to the animation index range in our selector which is [0,7]
-    if( directionVariable < 0 )
-        directionVariable += numDirections;
-    return int(directionVariable);
+    return RadialSelectAnimation(n, numDirections, gInput.m_leftStickAngle + cameraAngle);
 }

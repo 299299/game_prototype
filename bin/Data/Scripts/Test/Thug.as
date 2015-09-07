@@ -8,9 +8,9 @@ class ThugStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        animations.Push("Animation/Stand_Idle.ani");
-        animations.Push("Animation/Stand_Idle_01.ani");
-        animations.Push("Animation/Stand_Idle_02.ani");
+        animations.Push("Animation/Stand_Idle_Mirror.ani");
+        //animations.Push("Animation/Stand_Idle_01.ani");
+        //animations.Push("Animation/Stand_Idle_02.ani");
     }
 
     void Enter(State@ lastState)

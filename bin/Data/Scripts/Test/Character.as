@@ -84,6 +84,15 @@ class CharacterAlignState : CharacterState
 
         yawPerSec = diff / alignTime;
         Print("curYaw=" + String(curYaw) + " targetYaw=" + String(targetYaw) + " yaw per second = " + String(yawPerSec));
+
+        float posDiff = (targetPosition - ownner.sceneNode.worldPosition).length;
+        Print("angleDiff=" + String(diff) + " posDiff=" + String(posDiff));
+
+        if (Abs(diff) < 15 && posDiff < 0.5f)
+        {
+            Print("cut alignTime half");
+            alignTime /= 2;
+        }
     }
 
     void Update(float dt)
@@ -100,6 +109,7 @@ class CharacterAlignState : CharacterState
             VariantMap eventData;
             eventData["ALIGN"] = alignNodeId;
             eventData["ME"] = sceneNode.id;
+            eventData["NEXT_STATE"] = nextState;
             SendEvent("ALIGN_FINISED", eventData);
 
             return;
@@ -146,11 +156,11 @@ class Character : GameObject
         GameObject::Update(dt);
     }
 
-    void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, float yawAdjust, float distance, float t)
+    void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, float yawAdjust, const Vector3&in posDiff, float t)
     {
         float targetYaw = lineUpWith.worldRotation.eulerAngles.y + yawAdjust;
         Quaternion targetRotation(0, targetYaw, 0);
-        Vector3 targetPosition = lineUpWith.worldPosition + targetRotation * Vector3(0, 0, distance);
+        Vector3 targetPosition = lineUpWith.worldPosition + lineUpWith.worldRotation * posDiff;
         CharacterAlignState@ state = cast<CharacterAlignState@>(stateMachine.FindState("AlignState"));
         if (state is null)
             return;
@@ -162,6 +172,11 @@ class Character : GameObject
         state.nextState = nextState;
         state.alignNodeId = lineUpWith.id;
         stateMachine.ChangeState("AlignState");
+    }
+
+    String GetDebugText()
+    {
+        return GameObject::GetDebugText() + GetAnimationDebugText(sceneNode);
     }
 };
 
@@ -175,3 +190,45 @@ float angleDiff( float diff )
     return diff;
 }
 
+
+// computes the difference between the characters current heading and the
+// heading the user wants them to go in.
+float computeDifference(Node@ n, float desireAngle)
+{
+    Vector3 characterDir = n.worldRotation * Vector3(0, 0, 1);
+    float characterAngle = Atan2(characterDir.x, characterDir.z);
+    return angleDiff(desireAngle - characterAngle);
+}
+
+//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
+//  contains the gamepad's angle relative to the camera.
+int RadialSelectAnimation(Node@ n, int numDirections, float desireAngle)
+{
+    Vector3 fwd = Vector3(0, 0, 1);
+    Vector3 camDir = n.worldRotation * fwd;
+    float cameraAngle = Atan2(camDir.x, camDir.z);
+    Vector3 characterDir = n.worldRotation * fwd;
+    float characterAngle = Atan2(characterDir.x, characterDir.z);
+    float directionDifference = angleDiff(desireAngle - characterAngle);
+    float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
+
+    // since the range of the direction variable is [-3, 3] we need to map negative
+    // values to the animation index range in our selector which is [0,7]
+    if( directionVariable < 0 )
+        directionVariable += numDirections;
+    return int(directionVariable);
+}
+
+String GetAnimationDebugText(Node@ n)
+{
+    AnimatedModel@ model = n.GetComponent("AnimatedModel");
+    if (model is null)
+        return "";
+    String debugText = "Debug-Animations:\n";
+    for (uint i=0; i<model.numAnimationStates ; ++i)
+    {
+        AnimationState@ state = model.GetAnimationState(i);
+        debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
+    }
+    return debugText;
+}
