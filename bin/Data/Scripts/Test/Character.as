@@ -204,10 +204,7 @@ float computeDifference(Node@ n, float desireAngle)
 //  contains the gamepad's angle relative to the camera.
 int RadialSelectAnimation(Node@ n, int numDirections, float desireAngle)
 {
-    Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = n.worldRotation * fwd;
-    float cameraAngle = Atan2(camDir.x, camDir.z);
-    Vector3 characterDir = n.worldRotation * fwd;
+    Vector3 characterDir = n.worldRotation * Vector3(0, 0, 1);
     float characterAngle = Atan2(characterDir.x, characterDir.z);
     float directionDifference = angleDiff(desireAngle - characterAngle);
     float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);

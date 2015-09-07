@@ -17,3 +17,10 @@ tool\AssetImporter model Asset\Attack_Close_Forward_08.FBX Data\Animation\Attack
 
 tool\AssetImporter model Asset\Counter_Arm_Front_01.FBX Data\Animation\Counter_Arm_Front_01.mdl -nomodel -nm -nt -origin xz -motion xz -flipbone
 tool\AssetImporter model Asset\Counter_Arm_Front_01_TG.FBX Data\Animation\Counter_Arm_Front_01_TG.mdl -nomodel -nm -nt -origin xzr -motion xz -flipbone
+
+::tool\AssetImporter model Asset\Stand_Idle.FBX Data\Animation\Stand_Idle_Mirror.mdl -nomodel -nm -nt -flipbone -dumpbone -mirror
+
+tool\AssetImporter model Asset\Evade_Left_01.FBX Data\Animation\Evade_Left_01.mdl -nomodel -nm -nt -motion rxz -flipbone
+tool\AssetImporter model Asset\Evade_Right_01.FBX Data\Animation\Evade_Right_01.mdl -nomodel -nm -nt -motion rxz -flipbone
+tool\AssetImporter model Asset\Evade_Forward_01.FBX Data\Animation\Evade_Forward_01.mdl -nomodel -nm -nt -motion xz -flipbone
+tool\AssetImporter model Asset\Evade_Back_01.FBX Data\Animation\Evade_Back_01.mdl -nomodel -nm -nt -motion rxz -flipbone

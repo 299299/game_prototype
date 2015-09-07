@@ -102,7 +102,8 @@ void SetupViewport()
     Viewport@ viewport = Viewport(scene_, cameraNode.GetComponent("Camera"));
     renderer.viewports[0] = viewport;
 
-    graphics.windowPosition = IntVector2(0, 800);
+    if (GetPlatform() == "Linux")
+        graphics.windowPosition = IntVector2(0, 800);
 }
 
 void MoveCamera(float timeStep)

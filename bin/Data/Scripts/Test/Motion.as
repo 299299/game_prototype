@@ -162,6 +162,7 @@ class Motion
         }
         else
         {
+            float yawTime = localTime;
             if (localTime >= endTime)
             {
                 if (fixYaw && status == 0)
@@ -172,16 +173,17 @@ class Motion
                     Print("FINISHED FINAL-YAW = " + String(finnalYaw) + " YAW=" + String(yaw));
                 }
                 status = 1;
+                yawTime = endTime;
             }
 
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             motionOut = GetKey(localTime);
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
             tLocal = tLocal * ctrl.GetWeight(name);
-            float yaw = motionOut.w + fixYawPerSec * localTime + startYaw;
+            float yaw = motionOut.w + fixYawPerSec * yawTime + startYaw;
             node.worldRotation = Quaternion(0, yaw, 0);
             Vector3 tWorld = startRotation * tLocal + startPosition;
-            // Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
+            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
             MoveNode(node, tWorld, dt);
         }
 

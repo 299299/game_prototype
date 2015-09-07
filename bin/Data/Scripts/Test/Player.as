@@ -3,6 +3,7 @@
 class PlayerStandState : CharacterState
 {
     Array<String>           animations;
+    int                     selectIndex;
 
     PlayerStandState(Character@ c)
     {
@@ -15,12 +16,20 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.25f);
+        float blendTime = 1.0f;
+        if (lastState is null)
+            blendTime = 0.1f;
+        else if(lastState.name == "MoveState")
+            blendTime = 0.2f;
+        else if(lastState.name == "EvadeState")
+            blendTime = 0.25f;
+        selectIndex = RandomInt(animations.length);
+        PlayAnimation(ownner.animCtrl, animations[selectIndex], LAYER_MOVE, true, blendTime);
     }
 
     void Update(float dt)
     {
-        if (!gInput.inLeftStickInDeadZone() && gInput.isLeftStickStationary())
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
             int index = RadialSelectAnimation_Player(ownner.sceneNode, 4);
             ownner.sceneNode.vars["AnimationIndex"] = index;
@@ -30,13 +39,19 @@ class PlayerStandState : CharacterState
                 ownner.stateMachine.ChangeState("StandToMoveState");
         }
 
-        if (gInput.isAttackPressed()) {
+        if (gInput.IsAttackPressed()) {
             Print("Attack!!");
             ownner.stateMachine.ChangeState("AttackState");
         }
-        else if(gInput.isCounterPressed()) {
-            Print("Counter");
+        else if(gInput.IsCounterPressed()) {
+            Print("Counter!!");
             ownner.stateMachine.ChangeState("CounterState");
+        }
+        else if(gInput.IsEvadePressed()) {
+            int index = RadialSelectAnimation_Player(ownner.sceneNode, 4);
+            ownner.sceneNode.vars["AnimationIndex"] = index;
+            Print("Evade=" + String(index) + "!!");
+            ownner.stateMachine.ChangeState("EvadeState");
         }
     }
 };
@@ -57,7 +72,7 @@ class PlayerStandToMoveState : MultiMotionState
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
         {
-            if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
+            if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
             else {
                 ownner.animCtrl.SetSpeed(motions[selectIndex].name, 1);
@@ -86,7 +101,7 @@ class PlayerMoveState : CharacterState
     void Update(float dt)
     {
         // check if we should return to the idle state
-        if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
             ownner.stateMachine.ChangeState("StandState");
 
         // compute the difference between the direction the character is facing
@@ -101,7 +116,7 @@ class PlayerMoveState : CharacterState
         motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
 
         // if the difference is large, then turn 180 degrees
-        if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.isLeftStickStationary() )
+        if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
         {
             Print("Turn 180!!!");
             ownner.stateMachine.ChangeState("MoveTurn180State");
@@ -148,7 +163,7 @@ class PlayerMoveTurn180State : CharacterState
     {
         if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
         {
-            if (gInput.inLeftStickInDeadZone() && gInput.hasLeftStickBeenStationary(0.1))
+            if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
             else {
                 ownner.stateMachine.ChangeState("MoveState");
@@ -196,19 +211,22 @@ class PlayerEvadeState : MultiMotionState
     {
         super(c);
         name = "EvadeState";
-        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
-        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Evade_Forward_01.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Evade_Right_01.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Evade_Back_01.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Evade_Left_01.ani", 0, -1, false, false));
     }
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
+        bool b = motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl);
+        if (b)
             ownner.stateMachine.ChangeState("StandState");
     }
 
     int PickIndex()
     {
-        return RandomInt(motions.length);
+        return ownner.sceneNode.vars["AnimationIndex"].GetInt();
     }
 };
 
@@ -285,7 +303,7 @@ class Player : Character
         float characterAngle = Atan2(characterDir.x, characterDir.z);
         float targetAngle = cameraAngle + gInput.m_leftStickAngle;
         float baseLen = 2.0f;
-        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen * gInput.m_leftStickMagnitude);
+        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
         DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
     }
 
@@ -320,8 +338,7 @@ float ComputeDifference_Player(Node@ n)
 //  contains the gamepad's angle relative to the camera.
 int RadialSelectAnimation_Player(Node@ n, int numDirections)
 {
-    Vector3 fwd = Vector3(0, 0, 1);
-    Vector3 camDir = n.worldRotation * fwd;
+    Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
     float cameraAngle = Atan2(camDir.x, camDir.z);
     return RadialSelectAnimation(n, numDirections, gInput.m_leftStickAngle + cameraAngle);
 }

@@ -126,31 +126,31 @@ class GameInput
         return null;
     }
 
-    // Returns true if the left game pad hasn't moved since the last update
-    bool isLeftStickStationary()
-    {
-        return m_leftStickHoldTime > 0.01f;
-    }
-
     // Returns true if the left game stick hasn't moved in the given time frame
-    bool hasLeftStickBeenStationary(float value)
+    bool HasLeftStickBeenStationary(float value)
     {
         return m_leftStickHoldTime > value;
     }
 
+    // Returns true if the left game pad hasn't moved since the last update
+    bool IsLeftStickStationary()
+    {
+        return HasLeftStickBeenStationary(0.01f);
+    }
+
     // Returns true if the left stick is the dead zone, false otherwise
-    bool inLeftStickInDeadZone()
+    bool IsLeftStickInDeadZone()
     {
         return m_leftStickMagnitude < 0.1;
     }
 
     // Returns true if the right stick is the dead zone, false otherwise
-    bool isRightStickInDeadZone()
+    bool IsRightStickInDeadZone()
     {
         return m_rightStickMagnitude < 0.1;
     }
 
-    bool isAttackPressed()
+    bool IsAttackPressed()
     {
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
@@ -159,7 +159,7 @@ class GameInput
             return input.mouseButtonPress[MOUSEB_LEFT];
     }
 
-    bool isCounterPressed()
+    bool IsCounterPressed()
     {
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
@@ -168,4 +168,12 @@ class GameInput
             return input.mouseButtonPress[MOUSEB_RIGHT];
     }
 
+    bool IsEvadePressed()
+    {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+            return joystick.buttonPress[3];
+        else
+            return input.keyPress[KEY_SPACE];
+    }
 };
