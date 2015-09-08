@@ -16,6 +16,11 @@ class CharacterState : State
     {
         @ownner = null;
     }
+
+    Motion@ GetMotion(int i)
+    {
+        return null;
+    }
 };
 
 class MultiMotionState : CharacterState
@@ -50,6 +55,11 @@ class MultiMotionState : CharacterState
     int PickIndex()
     {
         return 0;
+    }
+
+    Motion@ GetMotion(int i)
+    {
+        return motions[i];
     }
 };
 
@@ -142,13 +152,21 @@ class Character : GameObject
     ~Character()
     {
         Print("~Character()");
-        @this.sceneNode = null;
     }
 
     void Start()
     {
-        @this.sceneNode = node;
+        @sceneNode = node;
+        Print("Character::Start " + sceneNode.name);
         animCtrl = sceneNode.GetComponent("AnimationController");
+    }
+
+    void Stop()
+    {
+        Print("Character::Stop " + sceneNode.name);
+        @stateMachine = null;
+        @sceneNode = null;
+        @animCtrl = null;
     }
 
     void Update(float dt)
@@ -177,6 +195,18 @@ class Character : GameObject
     String GetDebugText()
     {
         return GameObject::GetDebugText() + GetAnimationDebugText(sceneNode);
+    }
+
+    void Attack()
+    {
+    }
+
+    void Counter()
+    {
+    }
+
+    void Evade()
+    {
     }
 };
 

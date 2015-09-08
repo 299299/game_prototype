@@ -18,7 +18,6 @@ Player@ player;
 Thug@ thug;
 bool slowMotion = false;
 bool pauseGame = false;
-EnemyManager@ gEnemyMgr;
 int globalState = 0;
 float globalTime = 0;
 
@@ -206,36 +205,34 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (engine.headless)
     {
-        if (!debugText.empty)
-            Print(debugText);
+        //if (!debugText.empty)
+        //    Print(debugText);
 
         globalTime += timeStep;
 
-         if (globalTime > 1.0)
+         if (globalTime > 0.5)
         {
             if (player !is null && globalState != 1)
             {
-                Node@ node1 = scene_.GetChild("Box", true);
-                if (node1 !is null)
-                {
-                    // player.LineUpdateWithObject(node1, "MoveState", -90, 2.0f, 0.5f);
-                }
+                player.Counter();
             }
             globalState = 1;
         }
 
-        if (globalTime > 2.0)
+        if (globalTime > 1)
         {
             if (globalState != 2)
             {
                 @player = null;
-                @gEnemyMgr = null;
+                @thug = null;
                 characterNode.RemoveAllComponents();
+                thugNode.RemoveAllComponents();
+                @gEnemyMgr = null;
                 globalState = 2;
             }
         }
 
-        if (globalTime > 4.0)
+        if (globalTime > 3.0)
         {
             engine.Exit();
         }
@@ -251,8 +248,10 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
     DebugRenderer@ debug = scene_.debugRenderer;
     debug.AddNode(scene_, 2.0f, false);
-    player.DebugDraw(debug);
-    thug.DebugDraw(debug);
+    if (player !is null)
+        player.DebugDraw(debug);
+    if (thug !is null)
+        thug.DebugDraw(debug);
 }
 
 void HandleAlignFinised(StringHash eventType, VariantMap& eventData)
@@ -261,7 +260,7 @@ void HandleAlignFinised(StringHash eventType, VariantMap& eventData)
     Node@ meNode = scene_.GetNode(eventData["ME"].GetUInt());
     Node@ alignWithNode = scene_.GetNode(eventData["ALIGN"].GetUInt());
     String stateName = eventData["NEXT_STATE"].GetString();
-    GameObject@ object = cast<GameObject>(alignWithNode.scriptObject);
+    GameObject@ object = cast<GameObject@>(alignWithNode.scriptObject);
     if (object !is null) {
         object.stateMachine.ChangeState(stateName);
     }

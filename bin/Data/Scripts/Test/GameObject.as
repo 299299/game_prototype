@@ -4,19 +4,29 @@ const int CTRL_ATTACK = (1 << 0);
 const int CTRL_JUMP = (1 << 1);
 const int CTRL_ALL = (1 << 16);
 
+const int FLAGS_ATTACK  = (1 << 0);
+const int FLAGS_COUNTER = (1 << 1);
+
 class GameObject : ScriptObject
 {
     FSM@ stateMachine;
     bool onGround;
     bool isSliding;
     float duration;
+    int   flags;
 
     GameObject()
     {
         onGround = false;
         isSliding = false;
         duration = -1; // Infinite
+        flags = 0;
         @stateMachine = FSM();
+    }
+
+    void Start()
+    {
+
     }
 
     void Stop()
@@ -124,5 +134,20 @@ class GameObject : ScriptObject
     String GetDebugText()
     {
         return stateMachine.GetDebugText();
+    }
+
+    void AddFlag(int flag)
+    {
+        flags |= flag;
+    }
+
+    void RemoveFlag(int flag)
+    {
+        flags &= ~flag;
+    }
+
+    bool HasFlag(int flag)
+    {
+        return flags & flag != 0;
     }
 };

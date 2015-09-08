@@ -41,7 +41,7 @@ class ThugCounterState : MultiMotionState
 
     int PickIndex()
     {
-        return RandomInt(motions.length);
+        return ownner.sceneNode.vars["CounterIndex"].GetInt();
     }
 };
 
@@ -64,6 +64,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugAlignState(this));
         stateMachine.ChangeState("StandState");
     }
+
 
     void Update(float dt)
     {

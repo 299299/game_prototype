@@ -25,10 +25,11 @@ class Motion
     bool                    looped;
     bool                    fixYaw;
     float                   speed;
+    bool                    doRotate;
     int                     status;
     Vector3                 startFromOrigin;
 
-    Motion(const String&in animName, float _targetYaw, int _endFrame, bool _loop, bool _fixYaw, float _speed = 1.0f)
+    Motion(const String&in animName, float _targetYaw, int _endFrame, bool _loop, bool _fixYaw, float _speed = 1.0f, bool _doRotate = true)
     {
         Print("Motion(" + animName + "," + String(_targetYaw) + "," + String(_endFrame) + ")");
         Load(animName, _targetYaw, _fixYaw, _endFrame);
@@ -45,6 +46,7 @@ class Motion
         fixYaw = _fixYaw;
         speed = _speed;
         status = 0;
+        doRotate = _doRotate;
         if (fixYaw)
         {
             float endYaw = motionKeys[endFrame].w;
@@ -75,7 +77,6 @@ class Motion
                 startFromOrigin = child2.GetVector3("startFromOrigin");
 
                 Print("motion: " + anim + " startFromOrigin=" + startFromOrigin.ToString());
-
                 XMLElement child = child1.GetChild();
                 int i = 0;
 
@@ -152,7 +153,7 @@ class Motion
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             GetMotion(localTime, dt, looped, motionOut);
-            if (status == 0)
+            if (status == 0 && doRotate)
                 node.Yaw(motionOut.w);
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
             tLocal = tLocal * ctrl.GetWeight(name);
@@ -169,7 +170,8 @@ class Motion
                 {
                     float finnalYaw = node.worldRotation.eulerAngles.y;
                     float yaw = targetYaw + startYaw - finnalYaw;
-                    node.Yaw(yaw);
+                    if (doRotate)
+                        node.Yaw(yaw);
                     Print("FINISHED FINAL-YAW = " + String(finnalYaw) + " YAW=" + String(yaw));
                 }
                 status = 1;
@@ -181,9 +183,10 @@ class Motion
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
             tLocal = tLocal * ctrl.GetWeight(name);
             float yaw = motionOut.w + fixYawPerSec * yawTime + startYaw;
-            node.worldRotation = Quaternion(0, yaw, 0);
+            if (doRotate)
+                node.worldRotation = Quaternion(0, yaw, 0);
             Vector3 tWorld = startRotation * tLocal + startPosition;
-            Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
+            // Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
             MoveNode(node, tWorld, dt);
         }
 
