@@ -43,8 +43,6 @@ class PlayerStandState : CharacterState
             ownner.Attack();
         else if(gInput.IsCounterPressed())
             ownner.Counter();
-        else if(gInput.IsEvadePressed())
-            ownner.Evade();
     }
 };
 
@@ -113,6 +111,9 @@ class PlayerMoveState : CharacterState
             Print("Turn 180!!!");
             ownner.stateMachine.ChangeState("MoveTurn180State");
         }
+
+        if(gInput.IsEvadePressed())
+            ownner.Evade();
     }
 
     void Enter(State@ lastState)
@@ -229,9 +230,7 @@ class PlayerEvadeState : MultiMotionState
         super(c);
         name = "EvadeState";
         motions.Push(Motion("Animation/Evade_Forward_01.ani", 0, -1, false, false));
-        motions.Push(Motion("Animation/Evade_Right_01.ani", 0, -1, false, false, 1.0f, false));
-        motions.Push(Motion("Animation/Evade_Back_01.ani", 0, -1, false, false, 1.0f, false));
-        motions.Push(Motion("Animation/Evade_Left_01.ani", 0, -1, false, false, 1.0f, false));
+        motions.Push(Motion("Animation/Evade_Back_01.ani", 0, -1, false, false));
     }
 
     void Update(float dt)
@@ -362,7 +361,7 @@ class Player : Character
 
     void Evade()
     {
-        int index = RadialSelectAnimation_Player(sceneNode, 4);
+        int index = RadialSelectAnimation_Player(sceneNode, 2);
         sceneNode.vars["AnimationIndex"] = index;
         Print("Evade=" + String(index) + "!!");
         stateMachine.ChangeState("EvadeState");
