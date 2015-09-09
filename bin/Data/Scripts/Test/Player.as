@@ -10,8 +10,6 @@ class PlayerStandState : CharacterState
         super(c);
         name = "StandState";
         animations.Push("Animation/Stand_Idle.ani");
-        animations.Push("Animation/Stand_Idle_01.ani");
-        animations.Push("Animation/Stand_Idle_02.ani");
     }
 
     void Enter(State@ lastState)
@@ -52,9 +50,9 @@ class PlayerStandToMoveState : MultiMotionState
     {
         super(c);
         name = "StandToMoveState";
-        motions.Push(Motion("Animation/Stand_To_Walk_Right_90.ani", 90, 36, false, true, 1.75));
-        motions.Push(Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 22, false, true, 1.0));
-        motions.Push(Motion("Animation/Stand_To_Walk_Left_90.ani", -90, 26, false, true, 1.75));
+        motions.Push(Motion("Animation/Turn_Right_90.ani", 90, 15, false, false));
+        motions.Push(Motion("Animation/Turn_Right_180.ani", 180, 23, false, false));
+        motions.Push(Motion("Animation/Turn_Left_90.ani", -90, 16, false, false));
         // motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 17, false, true));
     }
 
@@ -129,20 +127,7 @@ class PlayerMoveState : CharacterState
     void Enter(State@ lastState)
     {
         PlayerStandToMoveState@ standToMoveState = cast<PlayerStandToMoveState@>(lastState);
-        float startTime = 0.0f;
-        float blendTime = 0.2f;
-        if (standToMoveState !is null)
-        {
-            Array<float> startTimes = {13.0f/30.0f, 13.0f/30.0f, 2.0f/30.0f};
-            startTime = startTimes[standToMoveState.selectIndex];
-            blendTime = 0.25f;
-        }
-        else {
-            PlayerMoveTurn180State@ turn180State = cast<PlayerMoveTurn180State>(lastState);
-            if (turn180State !is null)
-                startTime = 13.0f/30.0f;
-        }
-        motion.Start(ownner.sceneNode, ownner.animCtrl, startTime, blendTime);
+        motion.Start(ownner.sceneNode, ownner.animCtrl, 0.0, 0.2);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -159,7 +144,7 @@ class PlayerMoveTurn180State : CharacterState
     {
         super(c);
         name = "MoveTurn180State";
-        @motion = Motion("Animation/Stand_To_Walk_Right_180.ani", 180, 22, false, true, 1.0);
+        @motion = Motion("Animation/Turn_Right_180.ani", 180, 22, false, true, 1.0);
     }
 
     void Update(float dt)
