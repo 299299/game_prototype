@@ -208,6 +208,10 @@ class Character : GameObject
     void Evade()
     {
     }
+
+    void CommonStateFinishedOnGroud()
+    {
+    }
 };
 
 // clamps an angle to the rangle of [-2PI, 2PI]
@@ -223,7 +227,7 @@ float angleDiff( float diff )
 
 // computes the difference between the characters current heading and the
 // heading the user wants them to go in.
-float computeDifference(Node@ n, float desireAngle)
+float ComputeDifference(Node@ n, float desireAngle)
 {
     Vector3 characterDir = n.worldRotation * Vector3(0, 0, 1);
     float characterAngle = Atan2(characterDir.x, characterDir.z);

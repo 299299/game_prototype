@@ -110,8 +110,6 @@ class EnemyManager
     Array<Enemy@>             attackerList;
     int                       numMaxAttackers;
 
-    Array<float>              distacneCache;
-    Array<float>              directionCache;
     Array<int>                scoreCache;
 };
 
