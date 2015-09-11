@@ -1,6 +1,7 @@
 
 const int LAYER_MOVE = 0;
 const int LAYER_ATTACK = 1;
+const float FRAME_PER_SEC = 30.0f;
 
 void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer, bool loop, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
 {
@@ -15,44 +16,21 @@ class Motion
     String                  name;
     Animation@              animation;
     Array<Vector4>          motionKeys;
-    Vector3                 startPosition;
-    Quaternion              startRotation;
-    float                   targetYaw;
-    float                   startYaw;
-    int                     endFrame;
     float                   endTime;
-    float                   fixYawPerSec;
     bool                    looped;
-    bool                    fixYaw;
     float                   speed;
-    bool                    doRotate;
-    int                     status;
     Vector3                 startFromOrigin;
 
-    Motion(const String&in animName, float _targetYaw, int _endFrame, bool _loop, bool _fixYaw, float _speed = 1.0f, bool _doRotate = true)
+    Motion(const String&in animName, int _endFrame, bool _loop, float _speed = 1.0f)
     {
-        Print("Motion(" + animName + "," + String(_targetYaw) + "," + String(_endFrame) + ")");
-        Load(animName, _targetYaw, _fixYaw, _endFrame);
-        targetYaw = _targetYaw;
-        if (_endFrame < 0 && !_loop)
+        Print("Motion(" + animName + "," + String(_endFrame) + "," + String(_loop) + "," + String(_speed) + ")");
+        Load(animName);
+        if (_endFrame < 0)
             _endFrame = motionKeys.length - 1;
-        endFrame = _endFrame;
-        endTime = float(endFrame) / 30.0f;
-        if (endTime < 0)
-            endTime = animation.length;
+        endTime = float(_endFrame) / FRAME_PER_SEC;
         looped = _loop;
         name = animName;
-        fixYawPerSec = 0.0f;
-        fixYaw = _fixYaw;
         speed = _speed;
-        status = 0;
-        doRotate = _doRotate;
-        if (fixYaw)
-        {
-            float endYaw = motionKeys[endFrame].w;
-            fixYawPerSec = (targetYaw - endYaw) / endTime;
-            Print("endTime=" + String(endTime) + " fixYawPerSec=" + String(fixYawPerSec) + " targetYaw=" + String(targetYaw));
-        }
     }
 
     ~Motion()
@@ -60,13 +38,12 @@ class Motion
         @animation = null;
     }
 
-    void Load(const String&in anim, float _targetYaw, bool _fixYaw, int _endFrame)
+    void Load(const String&in anim)
     {
         animation = cache.GetResource("Animation", anim);
-        String motion_file = "Data/" + GetPath(anim) + GetFileName(anim) + "_motion.xml";
-
         File@ file = File();
-        if (file.Open(motion_file))
+        String motionFile = "Data/" + GetPath(anim) + GetFileName(anim) + "_motion.xml";
+        if (file.Open(motionFile))
         {
             XMLFile@ xml = XMLFile();
             if (xml.Load(file))
@@ -95,7 +72,7 @@ class Motion
         }
 
         if (motionKeys.empty)
-            Print("Error " + anim + " no motion " + motion_file + "!");
+            Print("Error " + anim + " no motion " + motionFile + "!");
     }
 
     void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
@@ -138,59 +115,20 @@ class Motion
 
     void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
     {
-        status = 0;
-        startPosition = node.worldPosition;
-        startRotation = node.worldRotation;
-        startYaw = startRotation.eulerAngles.y;
         PlayAnimation(ctrl, name, LAYER_MOVE, looped, blendTime, localTime, speed);
-        Print("name=" + name + " startPosition=" + startPosition.ToString() + " startYaw=" + String(startYaw) + " localTime=" + String(localTime));
     }
 
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
     {
         float localTime = ctrl.GetTime(name);
-        if (looped)
-        {
-            Vector4 motionOut = Vector4(0, 0, 0, 0);
-            GetMotion(localTime, dt, looped, motionOut);
-            if (status == 0 && doRotate)
-                node.Yaw(motionOut.w);
-            Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-            tLocal = tLocal * ctrl.GetWeight(name);
-            Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
-            // Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(motionOut.w) + " t=" + String(localTime));
-            MoveNode(node, tWorld, dt);
-        }
-        else
-        {
-            float yawTime = localTime;
-            if (localTime >= endTime)
-            {
-                if (fixYaw && status == 0)
-                {
-                    float finnalYaw = node.worldRotation.eulerAngles.y;
-                    float yaw = targetYaw + startYaw - finnalYaw;
-                    if (doRotate)
-                        node.Yaw(yaw);
-                    Print("FINISHED FINAL-YAW = " + String(finnalYaw) + " YAW=" + String(yaw));
-                }
-                status = 1;
-                yawTime = endTime;
-            }
-
-            Vector4 motionOut = Vector4(0, 0, 0, 0);
-            motionOut = GetKey(localTime);
-            Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-            tLocal = tLocal * ctrl.GetWeight(name);
-            float yaw = motionOut.w + fixYawPerSec * yawTime + startYaw;
-            if (doRotate)
-                node.worldRotation = Quaternion(0, yaw, 0);
-            Vector3 tWorld = startRotation * tLocal + startPosition;
-            // Print("name=" + name + " translate=" + (tWorld - startPosition).ToString() + " yaw=" + String(yaw) + " t=" + String(localTime) + " frame=" + String(int(localTime*30.0f)));
-            MoveNode(node, tWorld, dt);
-        }
-
-        return status == 1;
+        Vector4 motionOut = Vector4(0, 0, 0, 0);
+        GetMotion(localTime, dt, looped, motionOut);
+        node.Yaw(motionOut.w);
+        Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
+        tLocal = tLocal * ctrl.GetWeight(name);
+        Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
+        MoveNode(node, tWorld, dt);
+        return localTime >= endTime;
     }
 
     void MoveNode(Node@ node, const Vector3&in tWorld, float dt)
@@ -206,7 +144,7 @@ class Motion
     {
         Vector4 finnalPos = GetKey(endTime);
         Vector3 tLocal(finnalPos.x, finnalPos.y, finnalPos.z);
-        debug.AddLine(startRotation * tLocal + startPosition, node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
+        debug.AddLine(node.worldRotation * tLocal + node.worldPosition, node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
     }
 };
 

@@ -175,15 +175,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         scene_.timeScale = pauseGame ? 0 : speed;
     }
 
-    if (input.keyPress['Q'])
-    {
-        Vector3 pos1(0.212521, 2.55542, 3.35318);
-        Vector3 pos2(-0.554306, 2.18358, 0.74401);
-        Vector3 diff = pos1 - pos2;
-        diff.y = 0;
-        player.LineUpdateWithObject(thugNode, "CounterState", 180, diff, 0.2f);
-    }
-
     String debugText = "";
 
     if (player !is null)

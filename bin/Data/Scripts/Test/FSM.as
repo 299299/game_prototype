@@ -3,6 +3,7 @@
 class State
 {
     String name;
+    float timeInState;
 
     State()
     {
@@ -21,12 +22,12 @@ class State
 
     void Exit(State@ nextState)
     {
-
+        timeInState = 0;
     }
 
     void Update(float dt)
     {
-
+        timeInState += dt;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -36,7 +37,7 @@ class State
 
     String GetDebugText()
     {
-        return "";
+        return " name=" + name + " timeInState=" + String(timeInState);
     }
 };
 
@@ -115,10 +116,7 @@ class FSM
     {
         String ret = "current-state = ";
         if (currentState !is null)
-        {
-            ret += currentState.name;
             ret += currentState.GetDebugText();
-        }
         else
             ret += "null";
         return ret + "\n";

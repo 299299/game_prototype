@@ -38,6 +38,8 @@ class MultiMotionState : CharacterState
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.stateMachine.ChangeState("StandState");
+
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -65,15 +67,15 @@ class MultiMotionState : CharacterState
 
 class CharacterAlignState : CharacterState
 {
-    Vector3         targetPosition;
-    float           targetYaw;
-    float           yawPerSec;
+    Vector3             targetPosition;
+    float               targetRotation;
+    float               yawPerSec;
 
-    float           alignTime;
-    float           curTime;
-    String          nextState;
+    float               alignTime;
+    float               curTime;
+    String              nextState;
 
-    uint            alignNodeId;
+    uint                alignNodeId;
 
     CharacterAlignState(Character@ c)
     {
@@ -87,13 +89,13 @@ class CharacterAlignState : CharacterState
         curTime = 0;
 
         float curYaw = ownner.sceneNode.worldRotation.eulerAngles.y;
-        float diff = targetYaw - curYaw;
+        float diff = targetRotation - curYaw;
         diff = angleDiff(diff);
 
         targetPosition.y = ownner.sceneNode.worldPosition.y;
 
         yawPerSec = diff / alignTime;
-        Print("curYaw=" + String(curYaw) + " targetYaw=" + String(targetYaw) + " yaw per second = " + String(yawPerSec));
+        Print("curYaw=" + String(curYaw) + " targetRotation=" + String(targetRotation) + " yaw per second = " + String(yawPerSec));
 
         float posDiff = (targetPosition - ownner.sceneNode.worldPosition).length;
         Print("angleDiff=" + String(diff) + " posDiff=" + String(posDiff));
@@ -113,7 +115,7 @@ class CharacterAlignState : CharacterState
         if (curTime >= alignTime) {
             Print("FINISHED Align!!!");
             ownner.sceneNode.worldPosition = targetPosition;
-            ownner.sceneNode.worldRotation = Quaternion(0, targetYaw, 0);
+            ownner.sceneNode.worldRotation = Quaternion(0, targetRotation, 0);
             ownner.stateMachine.ChangeState(nextState);
 
             VariantMap eventData;
@@ -136,6 +138,8 @@ class CharacterAlignState : CharacterState
             " t=" + sceneNode.worldPosition.ToString() +
             " r=" + String(sceneNode.worldRotation.eulerAngles.y) +
             " dyaw=" + String(yawEd));
+
+        CharacterState::Update(dt);
     }
 };
 
@@ -169,23 +173,15 @@ class Character : GameObject
         @animCtrl = null;
     }
 
-    void Update(float dt)
+    void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
     {
-        GameObject::Update(dt);
-    }
-
-    void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, float yawAdjust, const Vector3&in posDiff, float t)
-    {
-        float targetYaw = lineUpWith.worldRotation.eulerAngles.y + yawAdjust;
-        Quaternion targetRotation(0, targetYaw, 0);
-        Vector3 targetPosition = lineUpWith.worldPosition + lineUpWith.worldRotation * posDiff;
         CharacterAlignState@ state = cast<CharacterAlignState@>(stateMachine.FindState("AlignState"));
         if (state is null)
             return;
 
-        Print("LineUpdateWithObject targetPosition=" + targetPosition.ToString() + " targetYaw=" + String(targetYaw));
+        Print("LineUpdateWithObject targetPosition=" + targetPosition.ToString() + " targetRotation=" + String(targetRotation));
         state.targetPosition = targetPosition;
-        state.targetYaw = targetYaw;
+        state.targetRotation = targetRotation;
         state.alignTime = t;
         state.nextState = nextState;
         state.alignNodeId = lineUpWith.id;

@@ -18,7 +18,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-
+        CharacterState::Update(dt);
     }
 };
 
@@ -28,13 +28,15 @@ class ThugCounterState : MultiMotionState
     {
         super(c);
         name = "CounterState";
-        motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", -1, false));
     }
 
     void Update(float dt)
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.stateMachine.ChangeState("StandState");
+
+        CharacterState::Update(dt);
     }
 
     int PickIndex()
@@ -61,12 +63,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugCounterState(this));
         stateMachine.AddState(ThugAlignState(this));
         stateMachine.ChangeState("StandState");
-    }
-
-
-    void Update(float dt)
-    {
-        Character::Update(dt);
     }
 
     void DebugDraw(DebugRenderer@ debug)

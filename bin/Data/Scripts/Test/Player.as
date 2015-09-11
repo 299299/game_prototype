@@ -1,5 +1,7 @@
 #include "Scripts/Test/Character.as"
 
+const float fullTurnThreashold = 125;
+
 class PlayerStandState : CharacterState
 {
     Array<String>           animations;
@@ -41,23 +43,36 @@ class PlayerStandState : CharacterState
             ownner.Attack();
         else if(gInput.IsCounterPressed())
             ownner.Counter();
+
+        CharacterState::Update(dt);
     }
 };
 
 class PlayerStandToMoveState : MultiMotionState
 {
+    float turnSpeed;
+
     PlayerStandToMoveState(Character@ c)
     {
         super(c);
         name = "StandToMoveState";
-        motions.Push(Motion("Animation/Turn_Right_90.ani", 90, 15, false, false));
-        motions.Push(Motion("Animation/Turn_Right_180.ani", 180, 23, false, false));
-        motions.Push(Motion("Animation/Turn_Left_90.ani", -90, 16, false, false));
-        // motions.Push(Motion("Animation/Stand_To_Walk_Left_180.ani", -180, 17, false, true));
+        motions.Push(Motion("Animation/Turn_Right_90.ani", 15, false));
+        motions.Push(Motion("Animation/Turn_Right_180.ani", 23, false));
+        motions.Push(Motion("Animation/Turn_Left_90.ani", 16, false));
+        turnSpeed = 5;
     }
 
     void Update(float dt)
     {
+        float characterDifference = ComputeDifference_Player(ownner.sceneNode) ;
+        ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
+
+        if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
+        {
+            Print("180!!!");
+            ownner.stateMachine.ChangeState("MoveTurn180State");
+        }
+
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
         {
             if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
@@ -67,6 +82,8 @@ class PlayerStandToMoveState : MultiMotionState
                 ownner.stateMachine.ChangeState("MoveState");
             }
         }
+
+        CharacterState::Update(dt);
     }
 
     int PickIndex()
@@ -78,15 +95,13 @@ class PlayerStandToMoveState : MultiMotionState
 class PlayerMoveState : CharacterState
 {
     Motion@ motion;
-    float fullTurnThreashold;
     float turnSpeed;
 
     PlayerMoveState(Character@ c)
     {
         super(c);
         name = "MoveState";
-        @motion = Motion("Animation/Walk_Forward.ani", 0, -1, true, false);
-        fullTurnThreashold = 115;
+        @motion = Motion("Animation/Walk_Forward.ani", -1, true);
         turnSpeed = 5;
     }
 
@@ -122,6 +137,8 @@ class PlayerMoveState : CharacterState
             ownner.sceneNode.vars["AnimationIndex"] = 0;
             ownner.stateMachine.ChangeState("EvadeState");
         }
+
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -144,13 +161,15 @@ class PlayerMoveTurn180State : CharacterState
     {
         super(c);
         name = "MoveTurn180State";
-        @motion = Motion("Animation/Turn_Right_180.ani", 180, 22, false, true, 1.0);
+        @motion = Motion("Animation/Turn_Right_180.ani", 22, false);
     }
 
     void Update(float dt)
     {
         if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.CommonStateFinishedOnGroud();
+
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -170,38 +189,21 @@ class PlayerAttackState : MultiMotionState
     {
         super(c);
         name = "AttackState";
-        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", 0, -1, false, false));
-        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", -1, false));
+        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", -1, false));
     }
 
     void Update(float dt)
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.stateMachine.ChangeState("StandState");
+
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
     {
-        // Find the best enemy
-        Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
-        float cameraAngle = Atan2(camDir.x, camDir.z);
-        float targetAngle = gInput.m_leftStickAngle + cameraAngle;
-        gEnemyMgr.scoreCache.Clear();
 
-        Print("Attack targetAngle=" + String(targetAngle));
-
-        Vector3 myPos = ownner.sceneNode.worldPosition;
-        for (uint i=0; i<gEnemyMgr.enemyList.length; ++i)
-        {
-            Enemy@ e = gEnemyMgr.enemyList[i];
-            Vector3 posDiff = e.sceneNode.worldPosition - myPos;
-            posDiff.y = 0;
-            int enemyScroe = 100;
-
-            float distSQR = posDiff.lengthSquared;
-            float diffAngle = Atan2(posDiff.x, posDiff.z);
-            Print("Enemy distSQR=" + String(distSQR) + " diffAngle=" + String(diffAngle));
-        }
 
         MultiMotionState::Enter(lastState);
     }
@@ -219,14 +221,16 @@ class PlayerEvadeState : MultiMotionState
     {
         super(c);
         name = "EvadeState";
-        motions.Push(Motion("Animation/Evade_Forward_01.ani", 0, -1, false, false));
-        motions.Push(Motion("Animation/Evade_Back_01.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Evade_Forward_01.ani", -1, false));
+        motions.Push(Motion("Animation/Evade_Back_01.ani", -1, false));
     }
 
     void Update(float dt)
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.CommonStateFinishedOnGroud();
+
+        CharacterState::Update(dt);
     }
 
     int PickIndex()
@@ -249,13 +253,15 @@ class PlayerCounterState : MultiMotionState
     {
         super(c);
         name = "CounterState";
-        motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", 0, -1, false, false));
+        motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", -1, false));
     }
 
     void Update(float dt)
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.stateMachine.ChangeState("StandState");
+
+        CharacterState::Update(dt);
     }
 
     int PickIndex()
@@ -266,7 +272,8 @@ class PlayerCounterState : MultiMotionState
 
 class Player : Character
 {
-    int maxAttackDistSQR;
+    float maxAttackDistSQR;
+    float maxCounterDistSQR;
     int combo;
 
     Player()
@@ -274,6 +281,7 @@ class Player : Character
         super();
         combo = 0;
         maxAttackDistSQR = 10.f * 10.0f;
+        maxCounterDistSQR = 3.0f * 3.0f;
     }
 
     void Start()
@@ -288,12 +296,6 @@ class Player : Character
         stateMachine.AddState(PlayerCounterState(this));
         stateMachine.AddState(PlayerEvadeState(this));
         stateMachine.ChangeState("StandState");
-    }
-
-    void Update(float dt)
-    {
-        // Print("Player::Update " + String(dt));
-        Character::Update(dt);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -313,38 +315,68 @@ class Player : Character
 
     void Attack()
     {
-        stateMachine.ChangeState("AttackState");
+        // Find the best enemy
+
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        float myAngle = Atan2(myDir.x, myDir.z);
+        Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
+        float cameraAngle = Atan2(camDir.x, camDir.z);
+        float targetAngle = gInput.m_leftStickAngle + cameraAngle;
+        gEnemyMgr.scoreCache.Clear();
+
+        Enemy@ attackEnemy = null;
+        Print("Attack targetAngle=" + String(targetAngle));
+
+        for (uint i=0; i<gEnemyMgr.enemyList.length; ++i)
+        {
+            Enemy@ e = gEnemyMgr.enemyList[i];
+            Vector3 posDiff = e.sceneNode.worldPosition - myPos;
+            posDiff.y = 0;
+            int enemyScroe = 100;
+            float distSQR = posDiff.lengthSquared;
+            float diffAngle = Atan2(posDiff.x, posDiff.z);
+            Print("Enemy distSQR=" + String(distSQR) + " diffAngle=" + String(diffAngle));
+        }
+
+        // stateMachine.ChangeState("AttackState");
     }
 
     void Counter()
     {
-        Counter(thug, 0, 0.2f); // just for test now
-    }
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        float myAngle = Atan2(myDir.x, myDir.z);
+        float curDistSQR = 999999;
+        Vector3 curPosDiff;
 
-    void Counter(Character@ other, int index, float t)
-    {
-        if (stateMachine.currentState.name == "CounterState" ||
-            stateMachine.currentState.name == "AlignState")
+        Enemy@ counterEnemy = null;
+
+        for (uint i=0; i<gEnemyMgr.attackerList.length; ++i)
         {
-            Print(sceneNode.name + " already in counter|align state!");
-            return;
+            Enemy@ e = gEnemyMgr.attackerList[i];
+            Vector3 posDiff = e.sceneNode.worldPosition - myPos;
+            posDiff.y = 0;
+            float distSQR = posDiff.lengthSquared;
+            if (distSQR > maxCounterDistSQR)
+                continue;
+            if (curDistSQR > distSQR)
+            {
+                counterEnemy = e;
+                curDistSQR = distSQR;
+                curPosDiff = posDiff;
+            }
         }
 
-        if (other.stateMachine.currentState.name == "CounterState")
-        {
-            Print(other.sceneNode.name + " already in counter state!");
+        if (counterEnemy is null)
             return;
-        }
 
-        Print("Counter " + other.sceneNode.name + " index=" + String(index));
-        CharacterState@ thisState = cast<CharacterState@>(stateMachine.FindState("CounterState"));
-        CharacterState@ otherState = cast<CharacterState@>(stateMachine.FindState("CounterState"));
-        Vector3 pos1 = thisState.GetMotion(index).startFromOrigin;
-        Vector3 pos2 = otherState.GetMotion(index).startFromOrigin;
-        sceneNode.vars["CounterIndex"] = index;
-        other.sceneNode.vars["CounterIndex"] = index;
-        float yawDiff = 180; // will change for later back counter
-        LineUpdateWithObject(other.sceneNode, "CounterState", yawDiff, pos1 + pos2, t);
+        float angle = Atan2(curPosDiff.x, curPosDiff.z);
+        float dAngle = angleDiff(angle - myAngle);
+        int front_back = 0;
+        if (Abs(front_back) > 90)
+            front_back = 1;
+
     }
 
     String GetDebugText()
