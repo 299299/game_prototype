@@ -20,6 +20,7 @@ class Motion
     bool                    looped;
     float                   speed;
     Vector3                 startFromOrigin;
+    Vector4                 startKey;
 
     Vector3                 startPosition;
     float                   startRotation;
@@ -67,6 +68,11 @@ class Motion
                     float rotation = child.GetFloat("rotation");
                     // Print("frame:" + String(i) + " time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
                     Vector4 v(translation.x, translation.y, translation.z, rotation);
+                    if (i == 0)
+                    {
+                        startKey = v;
+                        v = Vector4(0, 0, 0, 0);
+                    }
                     motionKeys.Push(v);
                     child = child.GetNext();
                     ++i;
@@ -126,13 +132,23 @@ class Motion
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
     {
         float localTime = ctrl.GetTime(name);
-        Vector4 motionOut = Vector4(0, 0, 0, 0);
-        GetMotion(localTime, dt, looped, motionOut);
-        node.Yaw(motionOut.w);
-        Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-        tLocal = tLocal * ctrl.GetWeight(name);
-        Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
-        MoveNode(node, tWorld, dt);
+        if (looped)
+        {
+            Vector4 motionOut = Vector4(0, 0, 0, 0);
+            GetMotion(localTime, dt, looped, motionOut);
+            node.Yaw(motionOut.w);
+            Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
+            tLocal = tLocal * ctrl.GetWeight(name);
+            Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
+            MoveNode(node, tWorld, dt);
+        }
+        else
+        {
+            Vector4 motionOut = GetKey(localTime);
+            node.worldRotation = Quaternion(0, startRotation + motionOut.w, 0);
+            Vector3 tWorld = Quaternion(0, startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
+            MoveNode(node, tWorld, dt);
+        }
         return localTime >= endTime;
     }
 

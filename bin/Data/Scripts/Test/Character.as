@@ -147,6 +147,8 @@ class Character : GameObject
 {
     Node@                   sceneNode;
     AnimationController@    animCtrl;
+    Vector3                 startPosition;
+    Quaternion              startRotation;
 
     Character()
     {
@@ -163,6 +165,8 @@ class Character : GameObject
         @sceneNode = node;
         Print("Character::Start " + sceneNode.name);
         animCtrl = sceneNode.GetComponent("AnimationController");
+        startPosition = node.worldPosition;
+        startRotation = node.worldRotation;
     }
 
     void Stop()
@@ -207,6 +211,23 @@ class Character : GameObject
 
     void CommonStateFinishedOnGroud()
     {
+    }
+
+    void Reset()
+    {
+        sceneNode.worldPosition = startPosition;
+        sceneNode.worldRotation = startRotation;
+        stateMachine.ChangeState("StandState");
+    }
+
+    bool CanBeAttacked()
+    {
+        return true;
+    }
+
+    bool CanBeCountered()
+    {
+        return true;
     }
 };
 

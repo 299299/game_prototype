@@ -3,9 +3,11 @@ tool\AssetImporter model Asset\bruce.FBX Data\Animation\bruce.mdl -t -na -l -cm 
 ::tool\AssetImporter model Asset\thug_01.FBX Data\Animation\thug_01.mdl -t -na -l -cm -ct -flipbone
 
 tool\AssetImporter model Asset\Stand_Idle.FBX Data\Animation\Stand_Idle.mdl -nomodel -nm -nt -flipbone
+tool\AssetImporter model Asset\Stand_Idle_01.FBX Data\Animation\Stand_Idle_01.mdl -nomodel -nm -nt -flipbone
+tool\AssetImporter model Asset\Stand_Idle_02.FBX Data\Animation\Stand_Idle_02.mdl -nomodel -nm -nt -flipbone
 
+:: Locomotion List
 tool\AssetImporter model Asset\Walk_Forward.FBX Data\Animation\Walk_Forward.mdl -nomodel -nm -nt -motion z -flipbone
-
 tool\AssetImporter model Asset\Turn_Left_90.FBX Data\Animation\Turn_Left_90.mdl -nomodel -nm -nt -motion r -flipbone
 tool\AssetImporter model Asset\Turn_Left_180.FBX Data\Animation\Turn_Left_180.mdl -nomodel -nm -nt -motion r -flipbone
 tool\AssetImporter model Asset\Turn_Right_90.FBX Data\Animation\Turn_Right_90.mdl -nomodel -nm -nt -motion r -flipbone
@@ -19,3 +21,6 @@ tool\AssetImporter model Asset\Counter_Arm_Front_01_TG.FBX Data\Animation\Counte
 
 tool\AssetImporter model Asset\Evade_Forward_01.FBX Data\Animation\Evade_Forward_01.mdl -nomodel -nm -nt -motion rxz -flipbone
 tool\AssetImporter model Asset\Evade_Back_01.FBX Data\Animation\Evade_Back_01.mdl -nomodel -nm -nt -motion rxz -flipbone
+
+:: Attack List
+tool\AssetImporter model Asset\Attack_Close_Left.FBX Data\Animation\Attack_Close_Left.mdl -nomodel -nm -nt -motion rxz -flipbone

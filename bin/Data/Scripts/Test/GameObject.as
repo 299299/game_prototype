@@ -150,4 +150,9 @@ class GameObject : ScriptObject
     {
         return flags & flag != 0;
     }
+
+    void Reset()
+    {
+
+    }
 };

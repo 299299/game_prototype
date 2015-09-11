@@ -5,26 +5,19 @@ const float fullTurnThreashold = 125;
 class PlayerStandState : CharacterState
 {
     Array<String>           animations;
-    int                     selectIndex;
 
     PlayerStandState(Character@ c)
     {
         super(c);
         name = "StandState";
         animations.Push("Animation/Stand_Idle.ani");
+        animations.Push("Animation/Stand_Idle_01.ani");
+        animations.Push("Animation/Stand_Idle_02.ani");
     }
 
     void Enter(State@ lastState)
     {
-        float blendTime = 1.0f;
-        if (lastState is null)
-            blendTime = 0.1f;
-        else if(lastState.name == "MoveState")
-            blendTime = 0.2f;
-        else if(lastState.name == "EvadeState")
-            blendTime = 0.25f;
-        selectIndex = RandomInt(animations.length);
-        PlayAnimation(ownner.animCtrl, animations[selectIndex], LAYER_MOVE, true, blendTime);
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.3);
     }
 
     void Update(float dt)
@@ -56,16 +49,18 @@ class PlayerStandToMoveState : MultiMotionState
     {
         super(c);
         name = "StandToMoveState";
-        motions.Push(Motion("Animation/Turn_Right_90.ani", 15, false));
-        motions.Push(Motion("Animation/Turn_Right_180.ani", 23, false));
-        motions.Push(Motion("Animation/Turn_Left_90.ani", 16, false));
+        motions.Push(Motion("Animation/Turn_Right_90.ani", 16, false));
+        motions.Push(Motion("Animation/Turn_Right_180.ani", 28, false));
+        motions.Push(Motion("Animation/Turn_Left_90.ani", 22, false));
         turnSpeed = 5;
     }
 
     void Update(float dt)
     {
-        float characterDifference = ComputeDifference_Player(ownner.sceneNode) ;
-        ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
+        float characterDifference = ComputeDifference_Player(ownner.sceneNode);
+        float a = timeInState / motions[selectIndex].endTime;
+        float dYaw = characterDifference * turnSpeed * dt * a;
+        motions[selectIndex].startRotation += dYaw;
 
         if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
         {
@@ -176,11 +171,6 @@ class PlayerMoveTurn180State : CharacterState
     {
         motion.Start(ownner.sceneNode, ownner.animCtrl, 0.0f, 0.1f);
     }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        motion.DebugDraw(debug, ownner.sceneNode);
-    }
 };
 
 class PlayerEvadeState : MultiMotionState
@@ -205,6 +195,11 @@ class PlayerEvadeState : MultiMotionState
     {
         return ownner.sceneNode.vars["AnimationIndex"].GetInt();
     }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        motions[selectIndex].DebugDraw(debug, ownner.sceneNode);
+    }
 };
 
 class PlayerAlignState : CharacterAlignState
@@ -224,7 +219,7 @@ class PlayerAttackState : MultiMotionState
     {
         super(c);
         name = "AttackState";
-        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", -1, false));
+        motions.Push(Motion("Animation/Attack_Close_Left.ani", -1, false));
         motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", -1, false));
     }
 
@@ -236,7 +231,7 @@ class PlayerAttackState : MultiMotionState
     void Update(float dt)
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl)) {
-            // ownner.stateMachine.ChangeState("StandState");
+            ownner.stateMachine.ChangeState("StandState");
         }
 
         CharacterState::Update(dt);
@@ -256,6 +251,11 @@ class PlayerAttackState : MultiMotionState
     int PickIndex()
     {
         return attackIndex;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        motions[selectIndex].DebugDraw(debug, ownner.sceneNode);
     }
 };
 
@@ -384,7 +384,7 @@ class Player : Character
     {
         super();
         combo = 0;
-        maxAttackDistSQR = 10.f * 10.0f;
+        maxAttackDistSQR = 15.f * 15.0f;
         maxCounterDistSQR = 3.0f * 3.0f;
     }
 
@@ -416,6 +416,7 @@ class Player : Character
         float baseLen = 2.0f;
         DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
         DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
+        Character::DebugDraw(debug);
     }
 
     void Attack()
@@ -437,12 +438,39 @@ class Player : Character
             Enemy@ e = gEnemyMgr.enemyList[i];
             Vector3 posDiff = e.sceneNode.worldPosition - myPos;
             posDiff.y = 0;
-            int enemyScroe = 100;
+            int score = 0;
             float distSQR = posDiff.lengthSquared;
-            float diffAngle = Atan2(posDiff.x, posDiff.z);
-            Print("Enemy distSQR=" + String(distSQR) + " diffAngle=" + String(diffAngle));
+            Print(String(distSQR));
+            if (distSQR > maxAttackDistSQR || !e.CanBeAttacked())
+            {
+                gEnemyMgr.scoreCache.Push(-1);
+                continue;
+            }
+            float diffAngle = Abs(Atan2(posDiff.x, posDiff.z));
+            int angleScore = (180 - diffAngle)/180 * 50; // angle at 50% percant
+            score += angleScore;
+            gEnemyMgr.scoreCache.Push(score);
+            Print("Enemy " + e.sceneNode.name + " distSQR=" + String(distSQR) + " diffAngle=" + String(diffAngle) + " score=" + String(score));
         }
 
+        int bestScore = 0;
+        for (uint i=0; i<gEnemyMgr.scoreCache.length;++i)
+        {
+            int score = gEnemyMgr.scoreCache[i];
+            if (score >= bestScore) {
+                bestScore = score;
+                @attackEnemy = gEnemyMgr.enemyList[i];
+            }
+        }
+
+        if (attackEnemy is null)
+            return;
+
+        Print("Choose Attack Enemy " + attackEnemy.sceneNode.name);
+        PlayerAttackState@ state = cast<PlayerAttackState@>(stateMachine.FindState("AttackState"));
+        if (state is null)
+            return;
+        @state.attackEnemy = attackEnemy;
         stateMachine.ChangeState("AttackState");
     }
 
@@ -459,6 +487,8 @@ class Player : Character
         for (uint i=0; i<gEnemyMgr.attackerList.length; ++i)
         {
             Enemy@ e = gEnemyMgr.attackerList[i];
+            if (!e.CanBeCountered())
+                continue;
             Vector3 posDiff = e.sceneNode.worldPosition - myPos;
             posDiff.y = 0;
             float distSQR = posDiff.lengthSquared;
@@ -475,10 +505,11 @@ class Player : Character
         if (counterEnemy is null)
             return;
 
-        PlayerCounterState@ s = cast<PlayerCounterState@>(stateMachine.FindState("CounterState"));
-        if (s is null)
+        Print("Choose Couter Enemy " + counterEnemy.sceneNode.name);
+        PlayerCounterState@ state = cast<PlayerCounterState@>(stateMachine.FindState("CounterState"));
+        if (state is null)
             return;
-        s.counterEnemy = counterEnemy;
+        @state.counterEnemy = counterEnemy;
         stateMachine.ChangeState("CounterState");
     }
 
