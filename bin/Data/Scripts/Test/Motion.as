@@ -21,6 +21,9 @@ class Motion
     float                   speed;
     Vector3                 startFromOrigin;
 
+    Vector3                 startPosition;
+    float                   startRotation;
+
     Motion(const String&in animName, int _endFrame, bool _loop, float _speed = 1.0f)
     {
         Print("Motion(" + animName + "," + String(_endFrame) + "," + String(_loop) + "," + String(_speed) + ")");
@@ -116,6 +119,8 @@ class Motion
     void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
     {
         PlayAnimation(ctrl, name, LAYER_MOVE, looped, blendTime, localTime, speed);
+        startPosition = node.worldPosition;
+        startRotation = node.worldRotation.eulerAngles.y;
     }
 
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
@@ -142,9 +147,12 @@ class Motion
 
     void DebugDraw(DebugRenderer@ debug, Node@ node)
     {
-        Vector4 finnalPos = GetKey(endTime);
-        Vector3 tLocal(finnalPos.x, finnalPos.y, finnalPos.z);
-        debug.AddLine(node.worldRotation * tLocal + node.worldPosition, node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
+        Vector4 tFinnal = GetKey(endTime);
+        Vector3 tLocal(tFinnal.x, tFinnal.y, tFinnal.z);
+        if (looped)
+            debug.AddLine(node.worldRotation * tLocal + node.worldPosition, node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
+        else
+            debug.AddLine(Quaternion(0, startRotation, 0) * tLocal + startPosition,  startPosition, Color(0.5f, 0.5f, 0.7f), false);
     }
 };
 

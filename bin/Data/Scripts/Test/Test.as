@@ -148,8 +148,6 @@ void SubscribeToEvents()
     // debug geometry
     if (!engine.headless)
         SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
-
-    SubscribeToEvent("ALIGN_FINISED", "HandleAlignFinised");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -244,19 +242,6 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     if (thug !is null)
         thug.DebugDraw(debug);
 }
-
-void HandleAlignFinised(StringHash eventType, VariantMap& eventData)
-{
-    Print("HandleAlignFinised");
-    Node@ meNode = scene_.GetNode(eventData["ME"].GetUInt());
-    Node@ alignWithNode = scene_.GetNode(eventData["ALIGN"].GetUInt());
-    String stateName = eventData["NEXT_STATE"].GetString();
-    GameObject@ object = cast<GameObject@>(alignWithNode.scriptObject);
-    if (object !is null) {
-        object.stateMachine.ChangeState(stateName);
-    }
-}
-
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
 String patchInstructions = "";

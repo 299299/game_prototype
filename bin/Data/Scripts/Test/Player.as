@@ -183,38 +183,6 @@ class PlayerMoveTurn180State : CharacterState
     }
 };
 
-class PlayerAttackState : MultiMotionState
-{
-    PlayerAttackState(Character@ c)
-    {
-        super(c);
-        name = "AttackState";
-        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", -1, false));
-        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", -1, false));
-    }
-
-    void Update(float dt)
-    {
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
-            ownner.stateMachine.ChangeState("StandState");
-
-        CharacterState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-
-
-        MultiMotionState::Enter(lastState);
-    }
-
-    int PickIndex()
-    {
-        return RandomInt(motions.length);
-    }
-};
-
-
 class PlayerEvadeState : MultiMotionState
 {
     PlayerEvadeState(Character@ c)
@@ -230,7 +198,7 @@ class PlayerEvadeState : MultiMotionState
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
             ownner.CommonStateFinishedOnGroud();
 
-        CharacterState::Update(dt);
+        MultiMotionState::Update(dt);
     }
 
     int PickIndex()
@@ -247,13 +215,144 @@ class PlayerAlignState : CharacterAlignState
     }
 };
 
-class PlayerCounterState : MultiMotionState
+class PlayerAttackState : MultiMotionState
 {
+    Enemy@          attackEnemy;
+    int             attackIndex;
+
+    PlayerAttackState(Character@ c)
+    {
+        super(c);
+        name = "AttackState";
+        motions.Push(Motion("Animation/Attack_Close_Forward_07.ani", -1, false));
+        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", -1, false));
+    }
+
+    ~PlayerAttackState()
+    {
+        @attackEnemy = null;
+    }
+
+    void Update(float dt)
+    {
+        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl)) {
+            // ownner.stateMachine.ChangeState("StandState");
+        }
+
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        CharacterState::Exit(nextState);
+        @attackEnemy = null;
+    }
+
+    int PickIndex()
+    {
+        return attackIndex;
+    }
+};
+
+
+class PlayerCounterState : CharacterState
+{
+    Array<Motion@>      motions;
+    Enemy@              counterEnemy;
+    int                 status;
+    Vector3             positionDiff;
+    float               rotationDiff;
+    int                 counterIndex;
+    float               alignTime;
+
     PlayerCounterState(Character@ c)
     {
         super(c);
         name = "CounterState";
         motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", -1, false));
+        alignTime = 0.2f;
+    }
+
+    ~PlayerCounterState()
+    {
+        @counterEnemy = null;
+    }
+
+    void Update(float dt)
+    {
+        if (status == 0) {
+            // aligning
+            float targetRotation = counterEnemy.sceneNode.worldRotation.eulerAngles.y + rotationDiff;
+            Vector3 targetPos = Quaternion(0, targetRotation, 0) * positionDiff + node.worldPosition;
+            targetPos = node.worldPosition.Lerp(targetPos, timeInState/alignTime);
+            float curRot = node.worldRotation.eulerAngles.y;
+            float dYaw = angleDiff(targetRotation - curRot);
+            float timeLeft = alignTime - timeInState;
+            float yawPerSec = dYaw / timeLeft;
+            node.worldRotation = Quaternion(0, curRot + yawPerSec * dt, 0);
+
+            if (timeInState >= alignTime) {
+                Print("FINISHED ALIGN!!!!");
+                status = 1;
+                counterEnemy.sceneNode.vars["CounterIndex"] = counterIndex;
+                counterEnemy.stateMachine.ChangeState("CounterState");
+                motions[counterIndex].Start(ownner.sceneNode, ownner.animCtrl);
+            }
+        }
+        else {
+            // real counting
+            if (motions[counterIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
+                ownner.stateMachine.ChangeState("StandState");
+        }
+
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        status = 0;
+        Vector3 myPos = ownner.sceneNode.worldPosition;
+        Vector3 myDir = ownner.sceneNode.worldRotation * Vector3(0, 0, 1);
+        float myAngle = Atan2(myDir.x, myDir.z);
+        Vector3 enemyPos = counterEnemy.sceneNode.worldPosition;
+        Vector3 posDiff = enemyPos - myPos;
+        posDiff.y = 0;
+
+        float angle = Atan2(posDiff.x, posDiff.z);
+        float dAngle = angleDiff(angle - myAngle);
+        int front_back = 0;
+        if (Abs(dAngle) > 90)
+            front_back = 1;
+        rotationDiff = (front_back == 0) ? 180 : 0;
+        Print("Counter-align pod-diff=" + posDiff.ToString() + " angle-diff=" + String(dAngle));
+
+        counterIndex = 0; // FIXME TODO
+        ThugCounterState@ enemyCounterState = cast<ThugCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
+        if (enemyCounterState is null)
+            return;
+
+        positionDiff = motions[counterIndex].startFromOrigin - enemyCounterState.motions[counterIndex].startFromOrigin;
+        Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + String(rotationDiff));
+    }
+
+    void Exit(State@ nextState)
+    {
+        CharacterState::Exit(nextState);
+        @counterEnemy = null;
+    }
+};
+
+class PlayerHitState : MultiMotionState
+{
+    PlayerHitState(Character@ c)
+    {
+        super(c);
+        name = "HitState";
     }
 
     void Update(float dt)
@@ -264,9 +363,14 @@ class PlayerCounterState : MultiMotionState
         CharacterState::Update(dt);
     }
 
+    void Enter(State@ lastState)
+    {
+        MultiMotionState::Enter(lastState);
+    }
+
     int PickIndex()
     {
-        return ownner.sceneNode.vars["CounterIndex"].GetInt();
+        return ownner.sceneNode.vars["Hit"].GetInt();
     }
 };
 
@@ -295,6 +399,7 @@ class Player : Character
         stateMachine.AddState(PlayerAlignState(this));
         stateMachine.AddState(PlayerCounterState(this));
         stateMachine.AddState(PlayerEvadeState(this));
+        stateMachine.AddState(PlayerHitState(this));
         stateMachine.ChangeState("StandState");
     }
 
@@ -316,7 +421,6 @@ class Player : Character
     void Attack()
     {
         // Find the best enemy
-
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
         float myAngle = Atan2(myDir.x, myDir.z);
@@ -339,7 +443,7 @@ class Player : Character
             Print("Enemy distSQR=" + String(distSQR) + " diffAngle=" + String(diffAngle));
         }
 
-        // stateMachine.ChangeState("AttackState");
+        stateMachine.ChangeState("AttackState");
     }
 
     void Counter()
@@ -371,13 +475,18 @@ class Player : Character
         if (counterEnemy is null)
             return;
 
-        float angle = Atan2(curPosDiff.x, curPosDiff.z);
-        float dAngle = angleDiff(angle - myAngle);
-        int front_back = 0;
-        if (Abs(front_back) > 90)
-            front_back = 1;
+        PlayerCounterState@ s = cast<PlayerCounterState@>(stateMachine.FindState("CounterState"));
+        if (s is null)
+            return;
+        s.counterEnemy = counterEnemy;
+        stateMachine.ChangeState("CounterState");
+    }
+
+    void Hit()
+    {
 
     }
+
 
     String GetDebugText()
     {
