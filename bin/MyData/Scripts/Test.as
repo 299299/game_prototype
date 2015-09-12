@@ -6,6 +6,7 @@
 
 #include "Scripts/Utilities/Sample.as"
 // ------------------------------------------------
+#include "Scripts/AssetProcess.as"
 #include "Scripts/Motion.as"
 #include "Scripts/Input.as"
 #include "Scripts/FSM.as"
@@ -21,6 +22,7 @@ const String GAME_SCRIPT = "Scripts/Test.as";
 Node@ characterNode;
 Node@ thugNode;
 
+MotionManager@ gMotionMgr = MotionManager();
 GameInput@ gInput = GameInput();
 Player@ player;
 Thug@ thug;
@@ -31,36 +33,32 @@ float globalTime = 0;
 
 void Start()
 {
-    // Execute the common startup for samples
-    if (!engine.headless) {
-        SampleStart();
-    }
+    gMotionMgr.Start();
 
-    // Create the scene content
+    if (!engine.headless)
+        SampleStart();
+
     CreateScene();
 
     if (!engine.headless) {
-        // Create the UI content
         CreateInstructions();
-
-        // Setup the viewport for displaying the scene
         SetupViewport();
     }
 
-    // Hook up to the frame update events
     SubscribeToEvents();
+}
+
+void Stop()
+{
+    gMotionMgr.Stop();
 }
 
 void CreateScene()
 {
     scene_ = Scene();
 
-    // Load scene content prepared in the editor (XML format). GetFile() returns an open file from the resource system
-    // which scene.LoadXML() will read
     scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
 
-    // Create a scene node for the camera, which we will move around
-    // The camera will use default settings (1000 far clip distance, 45 degrees FOV, set aspect ratio automatically)
     cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
     // cam.fillMode = FILL_WIREFRAME;
@@ -71,7 +69,7 @@ void CreateScene()
 
     characterNode = scene_.GetChild("bruce", true);
     characterNode.Translate(Vector3(5, 0, 0));
-    // characterNode.Yaw(180);
+    // characterNode.GetChild("RootNode", true).rotation = Quaternion(0, -180, 0);
 
     @gEnemyMgr = EnemyManager();
     @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
@@ -103,9 +101,6 @@ void CreateInstructions()
 
 void SetupViewport()
 {
-    // Set up a viewport to the Renderer subsystem so that the 3D scene can be seen. We need to define the scene and the camera
-    // at minimum. Additionally we could configure the viewport screen size and the rendering path (eg. forward / deferred) to
-    // use, but now we just use full screen and default render path configured in the engine command line options
     Viewport@ viewport = Viewport(scene_, cameraNode.GetComponent("Camera"));
     renderer.viewports[0] = viewport;
 
@@ -115,26 +110,19 @@ void SetupViewport()
 
 void MoveCamera(float timeStep)
 {
-    // Do not move if the UI has a focused element (the console)
     if (ui.focusElement !is null)
         return;
 
-    // Movement speed as world units per second
     const float MOVE_SPEED = 20.0f;
-    // Mouse sensitivity as degrees per pixel
     const float MOUSE_SENSITIVITY = 0.1f;
 
-    // Use this frame's mouse motion to adjust camera node yaw and pitch. Clamp the pitch between -90 and 90 degrees
     IntVector2 mouseMove = input.mouseMove;
     yaw += MOUSE_SENSITIVITY * mouseMove.x;
     pitch += MOUSE_SENSITIVITY * mouseMove.y;
     pitch = Clamp(pitch, -90.0f, 90.0f);
 
-    // Construct new orientation for the camera scene node from yaw and pitch. Roll is fixed to zero
     cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
 
-    // Read WASD keys and move the camera scene node to the corresponding direction if they are pressed
-    // Use the Translate() function (default local space) to move relative to the node's orientation.
     if (input.keyDown['W'])
         cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * MOVE_SPEED * timeStep);
     if (input.keyDown['S'])
@@ -147,23 +135,15 @@ void MoveCamera(float timeStep)
 
 void SubscribeToEvents()
 {
-    // Subscribe HandleUpdate() function for processing update events
     SubscribeToEvent("Update", "HandleUpdate");
-
     SubscribeToEvent("SceneUpdate", "HandleSceneUpdate");
-
-    // Subscribe HandlePostRenderUpdate() function for processing the post-render update event, during which we request
-    // debug geometry
-    if (!engine.headless)
-        SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
+    SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
-    // Take the frame time step, which is stored as a float
     float timeStep = eventData["TimeStep"].GetFloat();
 
-    // Move the camera, scale movement with time step
     MoveCamera(timeStep);
 
     gInput.Update(timeStep);
@@ -230,6 +210,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
                 characterNode.RemoveAllComponents();
                 thugNode.RemoveAllComponents();
                 @gEnemyMgr = null;
+                gMotionMgr.Stop();
                 globalState = 2;
             }
         }
@@ -256,5 +237,4 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         thug.DebugDraw(debug);
 }
 
-// Create XML patch instructions for screen joystick layout specific to this sample app
 String patchInstructions = "";

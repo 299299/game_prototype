@@ -7,7 +7,7 @@ class ThugStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        animations.Push("Animation/Stand_Idle.ani");
+        animations.Push(GetAnimationName("Stand_Idle"));
     }
 
     void Enter(State@ lastState)
@@ -27,7 +27,7 @@ class ThugCounterState : MultiMotionState
     {
         super(c);
         name = "CounterState";
-        motions.Push(Motion("Animation/Counter_Arm_Front_01_TG.ani", -1, false));
+        motions.Push(gMotionMgr.FindMotion("Counter_Arm_Front_01_TG"));
     }
 
     void Update(float dt)

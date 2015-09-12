@@ -42,7 +42,7 @@ class MultiMotionState : CharacterState
     {
         selectIndex = PickIndex();
         motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl);
-        Print(name + " pick " + motions[selectIndex].name);
+        Print(name + " pick " + motions[selectIndex].animationName);
     }
 
     void DebugDraw(DebugRenderer@ debug)

@@ -9,9 +9,9 @@ class PlayerStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        animations.Push("Animation/Stand_Idle.ani");
-        animations.Push("Animation/Stand_Idle_01.ani");
-        animations.Push("Animation/Stand_Idle_02.ani");
+        animations.Push(GetAnimationName("Stand_Idle"));
+        animations.Push(GetAnimationName("Stand_Idle_01"));
+        animations.Push(GetAnimationName("Stand_Idle_02"));
     }
 
     void Enter(State@ lastState)
@@ -48,9 +48,9 @@ class PlayerStandToMoveState : MultiMotionState
     {
         super(c);
         name = "StandToMoveState";
-        motions.Push(Motion("Animation/Turn_Right_90.ani", 16, false));
-        motions.Push(Motion("Animation/Turn_Right_180.ani", 28, false));
-        motions.Push(Motion("Animation/Turn_Left_90.ani", 22, false));
+        motions.Push(gMotionMgr.FindMotion("Turn_Right_90"));
+        motions.Push(gMotionMgr.FindMotion("Turn_Right_180"));
+        motions.Push(gMotionMgr.FindMotion("Turn_Left_90"));
         turnSpeed = 5;
     }
 
@@ -72,7 +72,7 @@ class PlayerStandToMoveState : MultiMotionState
             if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
             else {
-                ownner.animCtrl.SetSpeed(motions[selectIndex].name, 1);
+                ownner.animCtrl.SetSpeed(motions[selectIndex].animationName, 1);
                 ownner.stateMachine.ChangeState("MoveState");
             }
         }
@@ -95,7 +95,7 @@ class PlayerMoveState : CharacterState
     {
         super(c);
         name = "MoveState";
-        @motion = Motion("Animation/Walk_Forward.ani", -1, true);
+        @motion = gMotionMgr.FindMotion("Walk_Forward");
         turnSpeed = 5;
     }
 
@@ -155,7 +155,7 @@ class PlayerMoveTurn180State : CharacterState
     {
         super(c);
         name = "MoveTurn180State";
-        @motion = Motion("Animation/Turn_Right_180.ani", 22, false);
+        @motion = gMotionMgr.FindMotion("Turn_Right_180");
     }
 
     void Update(float dt)
@@ -178,8 +178,8 @@ class PlayerEvadeState : MultiMotionState
     {
         super(c);
         name = "EvadeState";
-        motions.Push(Motion("Animation/Evade_Forward_01.ani", -1, false));
-        motions.Push(Motion("Animation/Evade_Back_01.ani", -1, false));
+        motions.Push(gMotionMgr.FindMotion("Evade_Forward_01"));
+        motions.Push(gMotionMgr.FindMotion("Evade_Back_01"));
     }
 
     void Update(float dt)
@@ -218,8 +218,8 @@ class PlayerAttackState : MultiMotionState
     {
         super(c);
         name = "AttackState";
-        motions.Push(Motion("Animation/Attack_Close_Left.ani", -1, false));
-        motions.Push(Motion("Animation/Attack_Close_Forward_08.ani", -1, false));
+        motions.Push(gMotionMgr.FindMotion("Attack_Close_Left"));
+        motions.Push(gMotionMgr.FindMotion("Attack_Close_Forward_08"));
     }
 
     ~PlayerAttackState()
@@ -273,7 +273,7 @@ class PlayerCounterState : CharacterState
     {
         super(c);
         name = "CounterState";
-        motions.Push(Motion("Animation/Counter_Arm_Front_01.ani", -1, false));
+        motions.Push(gMotionMgr.FindMotion("Counter_Arm_Front_01"));
         alignTime = 0.2f;
     }
 

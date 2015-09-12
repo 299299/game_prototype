@@ -13,75 +13,27 @@ void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer, 
 
 class Motion
 {
-    String                  name;
+    String                  animationName;
     Animation@              animation;
     Array<Vector4>          motionKeys;
     float                   endTime;
     bool                    looped;
     float                   speed;
+
     Vector3                 startFromOrigin;
     Vector4                 startKey;
 
     Vector3                 startPosition;
     float                   startRotation;
 
-    Motion(const String&in animName, int _endFrame, bool _loop, float _speed = 1.0f)
+    Motion()
     {
-        Print("Motion(" + animName + "," + String(_endFrame) + "," + String(_loop) + "," + String(_speed) + ")");
-        Load(animName);
-        if (_endFrame < 0)
-            _endFrame = motionKeys.length - 1;
-        endTime = float(_endFrame) / FRAME_PER_SEC;
-        looped = _loop;
-        name = animName;
-        speed = _speed;
+
     }
 
     ~Motion()
     {
         @animation = null;
-    }
-
-    void Load(const String&in anim)
-    {
-        animation = cache.GetResource("Animation", anim);
-        File@ file = File();
-        String motionFile = "MyData/" + GetPath(anim) + GetFileName(anim) + "_motion.xml";
-        if (file.Open(motionFile))
-        {
-            XMLFile@ xml = XMLFile();
-            if (xml.Load(file))
-            {
-                XMLElement root = xml.GetRoot();
-                XMLElement child1 = root.GetChild("motion_keys");
-                XMLElement child2 = root.GetChild("property");
-                startFromOrigin = child2.GetVector3("startFromOrigin");
-
-                Print("motion: " + anim + " startFromOrigin=" + startFromOrigin.ToString());
-                XMLElement child = child1.GetChild();
-                int i = 0;
-
-                while (!child.isNull)
-                {
-                    float t = child.GetFloat("time");
-                    Vector3 translation = child.GetVector3("translation");
-                    float rotation = child.GetFloat("rotation");
-                    // Print("frame:" + String(i) + " time: " + String(t) + " translation: " + translation.ToString() + " rotation: " + String(rotation));
-                    Vector4 v(translation.x, translation.y, translation.z, rotation);
-                    if (i == 0)
-                    {
-                        startKey = v;
-                        v = Vector4(0, 0, 0, 0);
-                    }
-                    motionKeys.Push(v);
-                    child = child.GetNext();
-                    ++i;
-                }
-            }
-        }
-
-        if (motionKeys.empty)
-            Print("Error " + anim + " no motion " + motionFile + "!");
     }
 
     void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
@@ -124,21 +76,21 @@ class Motion
 
     void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
     {
-        PlayAnimation(ctrl, name, LAYER_MOVE, looped, blendTime, localTime, speed);
+        PlayAnimation(ctrl, animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
         startPosition = node.worldPosition;
         startRotation = node.worldRotation.eulerAngles.y;
     }
 
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
     {
-        float localTime = ctrl.GetTime(name);
+        float localTime = ctrl.GetTime(animationName);
         if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             GetMotion(localTime, dt, looped, motionOut);
             node.Yaw(motionOut.w);
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-            tLocal = tLocal * ctrl.GetWeight(name);
+            tLocal = tLocal * ctrl.GetWeight(animationName);
             Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
             MoveNode(node, tWorld, dt);
         }
@@ -185,4 +137,93 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ node, float angle, const Col
     start.y = yAdjust;
     Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
     debug.AddLine(start, end, color, false);
+}
+
+
+class MotionManager
+{
+    Array<String>           motionNames;
+    Array<Motion@>          motions;
+
+    int FindMotionIndex(const String&in name)
+    {
+        for (uint i=0; i<motionNames.length; ++i)
+        {
+            if (motionNames[i] == name)
+                return i;
+        }
+        return -1;
+    }
+
+    Motion@ FindMotion(const String&in name)
+    {
+        int i = FindMotionIndex(name);
+        if (i < 0)
+            return null;
+
+        return motions[i];
+    }
+
+    void Start()
+    {
+        uint startTime = time.systemTime;
+
+        PreProcess();
+
+        // Locomotions
+        CreateMotion("Turn_Right_90", kMotion_R, 0, 16, false);
+        CreateMotion("Turn_Right_180", kMotion_R, 0, 28, false);
+        CreateMotion("Turn_Left_90", kMotion_R, 0, 22, false);
+        CreateMotion("Walk_Forward", kMotion_Z, 0, -1, true);
+
+        // Evades
+        CreateMotion("Evade_Forward_01", kMotion_X | kMotion_Z, 0, -1, false);
+        CreateMotion("Evade_Back_01", kMotion_X | kMotion_Z, 0, -1, false);
+
+        // Attacks
+        CreateMotion("Attack_Close_Left", kMotion_X | kMotion_Z | kMotion_R, 0, -1, false);
+        CreateMotion("Attack_Close_Forward_08", kMotion_Z, 0, -1, false);
+        CreateMotion("Attack_Close_Forward_08", kMotion_Z, 0, -1, false);
+
+        // Counters
+        CreateMotion("Counter_Arm_Front_01", kMotion_X | kMotion_Z, kMotion_X | kMotion_Z, -1, false);
+        CreateMotion("Counter_Arm_Front_01_TG", kMotion_X | kMotion_Z, kMotion_X | kMotion_Z | kMotion_R, -1, false);
+
+        PostProcess();
+
+        Print("Motion Process Time Cost = " + String(time.systemTime - startTime));
+    }
+
+    void Stop()
+    {
+        motionNames.Clear();
+        motions.Clear();
+    }
+
+    Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int endFrame, bool loop, float speed = 1.0f)
+    {
+        Motion@ motion = Motion();
+        motion.animationName = "Animation/" + name + "_AnimStackTake 001.ani";
+        motion.animation = cache.GetResource("Animation", motion.animationName);
+        ProcessAnimation(motion.animationName, motionFlag, origninFlag, loop, motion.motionKeys);
+        if (endFrame < 0)
+            endFrame = motion.motionKeys.length - 1;
+        motion.endTime = float(endFrame) / FRAME_PER_SEC;
+        motion.looped = loop;
+        motion.speed = speed;
+        motions.Push(motion);
+        motionNames.Push(name);
+        return motion;
+    }
+};
+
+
+Animation@ FindAnimation(const String&in name)
+{
+   return cache.GetResource("Animation", GetAnimationName(name));
+}
+
+String GetAnimationName(const String&in name)
+{
+    return "Animation/" + name + "_AnimStackTake 001.ani";
 }
