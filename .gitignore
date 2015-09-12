@@ -83,9 +83,11 @@ configure*
 Thumbs.db
 .build
 
-/bin/Data/Animation/Materials
-/bin/Data/Animation/Textures
+
 /bin/Urho3DPlayer
 /bin/tool/AssetImporter
 /bin/tool/ScriptCompiler
-/bin/Data/Animation
+/bin/MyData/Animation
+/bin/MyData/Animation
+/bin/MyData/Models
+/bin/MyData/Textures

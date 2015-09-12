@@ -195,7 +195,6 @@ bool Save(File) const;
 bool Save(VectorBuffer&) const;
 bool SaveXML(XMLElement&) const;
 void SendEvent(const String&, VariantMap& = VariantMap ( ));
-void SetAnimation(AnimationSet2D, const String&, LoopMode2D = LM_DEFAULT);
 void SetAnimation(const String&, LoopMode2D = LM_DEFAULT);
 bool SetAttribute(const String&, const Variant&);
 void SetAttributeAnimation(const String&, ValueAnimation, WrapMode = WM_LOOP, float = 1.0f);
@@ -228,6 +227,7 @@ float drawDistance;
 bool enabled;
 /* readonly */
 bool enabledEffective;
+String entity;
 bool flipX;
 bool flipY;
 Vector2 hotSpot;
@@ -271,23 +271,25 @@ uint zoneMask;
 class Animation
 {
 // Methods:
+void AddTrigger(const AnimationTriggerPoint&);
 void AddTrigger(float, bool, const Variant&);
+AnimationTrack CreateTrack(const String&);
 bool Load(File);
 bool Load(VectorBuffer&);
+bool RemoveAllTracks();
 void RemoveAllTriggers();
+bool RemoveTrack(const String&);
 void RemoveTrigger(uint);
 bool Save(File) const;
 bool Save(VectorBuffer&) const;
 void SendEvent(const String&, VariantMap& = VariantMap ( ));
 
 // Properties:
-/* readonly */
 String animationName;
 /* readonly */
 StringHash baseType;
 /* readonly */
 String category;
-/* readonly */
 float length;
 /* readonly */
 uint memoryUse;
@@ -298,6 +300,7 @@ uint numTriggers;
 /* readonly */
 int refs;
 /* readonly */
+Array<AnimationTrack> tracks;
 Array<AnimationTriggerPoint> triggers;
 /* readonly */
 StringHash type;
@@ -305,22 +308,6 @@ StringHash type;
 String typeName;
 /* readonly */
 uint useTimer;
-/* readonly */
-int weakRefs;
-};
-
-class Animation2D
-{
-
-// Properties:
-/* readonly */
-float length;
-/* readonly */
-bool looped;
-/* readonly */
-String name;
-/* readonly */
-int refs;
 /* readonly */
 int weakRefs;
 };
@@ -341,10 +328,12 @@ WrapMode GetAttributeAnimationWrapMode(const String&) const;
 Variant GetAttributeDefault(const String&) const;
 float GetAutoFade(const String&) const;
 float GetFadeTarget(const String&) const;
+float GetFadeTime(const String&) const;
 bool GetInterceptNetworkUpdate(const String&) const;
 uint8 GetLayer(const String&) const;
 float GetLength(const String&) const;
 bool GetLooped(const String&) const;
+bool GetRemoveOnCompletion(const String&);
 float GetSpeed(const String&) const;
 float GetTime(const String&) const;
 float GetWeight(const String&) const;
@@ -373,6 +362,7 @@ bool SetAutoFade(const String&, float);
 void SetInterceptNetworkUpdate(const String&, bool);
 bool SetLayer(const String&, uint8);
 bool SetLooped(const String&, bool);
+bool SetRemoveOnCompletion(const String&, bool);
 bool SetSpeed(const String&, float);
 bool SetStartBone(const String&, const String&);
 bool SetTime(const String&, float);
@@ -414,11 +404,20 @@ String typeName;
 int weakRefs;
 };
 
+class AnimationKeyFrame
+{
+
+// Properties:
+Vector3 position;
+Quaternion rotation;
+Vector3 scale;
+float time;
+};
+
 class AnimationSet2D
 {
 // Methods:
-Animation2D GetAnimation(const String&) const;
-Animation2D GetAnimation(uint) const;
+String GetAnimation(uint) const;
 bool Load(File);
 bool Load(VectorBuffer&);
 bool Save(File) const;
@@ -482,6 +481,23 @@ float time;
 /* readonly */
 int weakRefs;
 float weight;
+};
+
+class AnimationTrack
+{
+// Methods:
+void AddKeyFrame(const AnimationKeyFrame&);
+void InsertKeyFrame(uint, const AnimationKeyFrame&);
+void RemoveAllKeyFrames();
+void RemoveKeyFrame(uint);
+
+// Properties:
+uint8 channelMask;
+Array<AnimationKeyFrame> keyFrames;
+String name;
+StringHash nameHash;
+/* readonly */
+uint numKeyFrames;
 };
 
 class AnimationTriggerPoint
@@ -9680,6 +9696,8 @@ InterpolationMode interpolationMode;
 /* readonly */
 bool isFinished;
 /* readonly */
+float length;
+/* readonly */
 Node node;
 /* readonly */
 uint numAttributes;
@@ -13360,6 +13378,9 @@ uint AM_NODEIDVECTOR;
 uint AM_NOEDIT;
 Color BLACK;
 Color BLUE;
+uint8 CHANNEL_POSITION;
+uint8 CHANNEL_ROTATION;
+uint8 CHANNEL_SCALE;
 uint CLEAR_COLOR;
 uint CLEAR_DEPTH;
 uint CLEAR_STENCIL;
