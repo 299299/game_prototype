@@ -142,6 +142,8 @@ class CharacterAlignState : CharacterState
 class Character : GameObject
 {
     Node@                   sceneNode;
+    Node@                   renderNode;
+
     AnimationController@    animCtrl;
     Vector3                 startPosition;
     Quaternion              startRotation;
@@ -159,8 +161,9 @@ class Character : GameObject
     void Start()
     {
         @sceneNode = node;
+        renderNode = sceneNode.children[0];
         Print("Character::Start " + sceneNode.name);
-        animCtrl = sceneNode.GetComponent("AnimationController");
+        animCtrl = renderNode.GetComponent("AnimationController");
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
     }

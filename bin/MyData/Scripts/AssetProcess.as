@@ -49,10 +49,13 @@ void PreProcess()
     processNode = processScene.CreateChild("Character");
     AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
     am.model = cache.GetResource("Model", rigName);
-    // processNode.GetChild("RootNode", true).rotation = Quaternion(0, -180, 0);
 
     Skeleton@ skel = am.skeleton;
-    Bone@ bone = skel.GetBone(RotateBoneName);
+    Bone@ bone = skel.GetBone("RootNode");
+    // bone.initialRotation = Quaternion(0, -180, 0);
+    // skel.GetBone("RootNode").initialRotation = Quaternion(0, -180, 0);
+
+    bone = skel.GetBone(RotateBoneName);
     rotateBoneInitQ = bone.initialRotation;
     pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
     Print("pelvisRightAxis = " + pelvisRightAxis.ToString());
@@ -64,6 +67,8 @@ void PreProcess()
 
 void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, bool cutRotation, Array<Vector4>&out outKeys)
 {
+    Print("Processing animation " + animationFile);
+
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
         ErrorDialog(TITLE, animationFile + " not found!");
@@ -75,6 +80,18 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     // ==============================================================
     // pre process key frames
+    if (translateTrack !is null)
+    {
+        Quaternion q(0, 180, 0); // hack !!!
+        for (uint i=0; i<translateTrack.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf(translateTrack.keyFrames[i]);
+            kf.position = q * kf.position;
+            translateTrack.keyFrames[i] = kf;
+            // Print("RotateOrigin change pos from " + oldPos.ToString() + " to " + kf.position_.ToString());
+        }
+    }
+
     if (originFlag & kMotion_R != 0)
     {
         Quaternion q(0, 180, 0); // hack !!!
@@ -103,6 +120,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         }
     }
 
+    outKeys.Resize(translateTrack.numKeyFrames);
+
     if (rotateTrack !is null)
     {
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
@@ -116,20 +135,35 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     // process rotate key frames first
     if ((motionFlag & kMotion_R != 0) && rotateTrack !is null)
     {
-        outKeys.Resize(rotateTrack.numKeyFrames);
         AnimationKeyFrame firstKey(rotateTrack.keyFrames[0]);
+        float lastR = 0.0f;
 
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(rotateTrack.keyFrames[i]);
             Quaternion q;
 
-            if (cutRotation)
+            if (cutRotation || i == 0)
                 q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, kf.rotation);
             else
                 q = GetRotationInXZPlane(rotateNode, firstKey.rotation, kf.rotation);
 
-            outKeys[i].w = q.eulerAngles.y;
+            float w = q.eulerAngles.y;
+            if (i != 0)
+            {
+                float diffR = w - lastR;
+                if (Abs(diffR) > 180) {
+                    float oldW = w;
+                    if (w < 0)
+                        w += 360;
+                    else if (w >= 0)
+                        w -= 360;
+                    Print("WARNING:: rotation diff too large " + String(oldW) + " -> " + String(w));
+                }
+            }
+            outKeys[i].w = w;
+            lastR = w;
+
             Quaternion wq = rotateNode.worldRotation;
             wq = q.Inverse() * wq;
             rotateNode.worldRotation = wq;
@@ -172,7 +206,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     if (motionFlag != 0 && translateTrack !is null)
     {
         Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
-        outKeys.Resize(translateTrack.numKeyFrames);
 
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
@@ -205,12 +238,12 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         }
     }
 
-    /*
+
     for (uint i=0; i<outKeys.length; ++i)
     {
-        Print("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
+        //Print("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
     }
-    */
+
 }
 
 void PostProcess()

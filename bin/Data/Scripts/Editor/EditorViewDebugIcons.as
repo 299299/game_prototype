@@ -1,7 +1,7 @@
 // Editor debug icons
 // to add new std debug icons just add IconType, IconsTypesMaterials and ComponentTypes items
 
-enum IconsTypes
+enum IconsTypes 
 {
     ICON_POINT_LIGHT = 0,
     ICON_SPOT_LIGHT,
@@ -18,7 +18,7 @@ enum IconsTypes
     ICON_COUNT
 }
 
-enum IconsColorType
+enum IconsColorType 
 {
     ICON_COLOR_DEFAULT = 0,
     ICON_COLOR_SPLINE_PATH_BEGIN,
@@ -27,7 +27,7 @@ enum IconsColorType
 
 Array<Color> debugIconsColors = { Color(1,1,1) , Color(1,1,0), Color(0,1,0) };
 
-Array<String> IconsTypesMaterials = {"DebugIconPointLight.xml",
+Array<String> IconsTypesMaterials = {"DebugIconPointLight.xml", 
                                      "DebugIconSpotLight.xml",
                                      "DebugIconLight.xml",
                                      "DebugIconCamera.xml",
@@ -68,24 +68,24 @@ Vector2 debugIconsSizeBig = debugIconsSize * 1.5;
 Vector2 debugIconsMaxSize = debugIconsSize * 50;
 VariantMap debugIconsPlacement;
 const int debugIconsPlacementIndent = 1.0;
-const float debugIconsOrthoDistance = 15.0f;
+const float debugIconsOrthoDistance = 15.0f;   
 
-Vector2 Max(Vector2 a, Vector2 b)
+Vector2 Max(Vector2 a, Vector2 b) 
 {
-    return (a.length > b.length ? a : b);
+    return (a.length > b.length ? a : b); 
 }
 
-Vector2 Clamp(Vector2 a, Vector2 b)
+Vector2 Clamp(Vector2 a, Vector2 b) 
 {
     return Vector2((a.x > b.x ? b.x : a.x),(a.y > b.y ? b.y : a.y));
 }
 
-Vector2 ClampToIconMaxSize(Vector2 a)
+Vector2 ClampToIconMaxSize(Vector2 a) 
 {
     return Clamp(a, debugIconsMaxSize);
 }
 
-void CreateDebugIcons(Node@ tempNode)
+void CreateDebugIcons(Node@ tempNode) 
 {
     if (editorScene is null) return;
     debugIconsSet.Resize(ICON_COUNT);
@@ -105,7 +105,7 @@ void UpdateViewDebugIcons()
 
     debugIconsNode = editorScene.GetChild("DebugIconsContainer", true);
 
-    if (debugIconsNode is null)
+    if (debugIconsNode is null) 
     {
         debugIconsNode = editorScene.CreateChild("DebugIconsContainer", LOCAL);
         debugIconsNode.temporary = true;
@@ -165,7 +165,7 @@ void UpdateViewDebugIcons()
                     {
                         SplinePath@ sp = cast<SplinePath>(component);
                         if (sp !is null)
-                            // if (1)
+                            if (sp.length > 0.01f)
                             {
                                 for(int step=0; step < splinePathResolution; step++)
                                 {

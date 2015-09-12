@@ -59,7 +59,7 @@ class PlayerStandToMoveState : MultiMotionState
         float characterDifference = ComputeDifference_Player(ownner.sceneNode);
         float a = timeInState / motions[selectIndex].endTime;
         float dYaw = characterDifference * turnSpeed * dt * a;
-        motions[selectIndex].startRotation += dYaw;
+        //motions[selectIndex].startRotation += dYaw;
 
         if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
         {
@@ -71,10 +71,8 @@ class PlayerStandToMoveState : MultiMotionState
         {
             if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
                 ownner.stateMachine.ChangeState("StandState");
-            else {
-                ownner.animCtrl.SetSpeed(motions[selectIndex].animationName, 1);
+            else
                 ownner.stateMachine.ChangeState("MoveState");
-            }
         }
 
         CharacterState::Update(dt);

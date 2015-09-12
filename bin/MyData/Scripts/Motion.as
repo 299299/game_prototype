@@ -62,15 +62,17 @@ class Motion
         if (motionKeys.empty)
             return Vector4(0, 0, 0, 0);
 
-        uint i = uint(t * 30.0f);
+        uint i = uint(t * FRAME_PER_SEC);
         if (i >= motionKeys.length)
             i = motionKeys.length - 1;
         Vector4 k1 = motionKeys[i];
         uint next_i = i + 1;
         if (next_i >= motionKeys.length)
             next_i = motionKeys.length - 1;
+        if (i == next_i)
+            return k1;
         Vector4 k2 = motionKeys[next_i];
-        Vector4 ret = k1.Lerp(k2, t*30 - float(i));
+        Vector4 ret = k1.Lerp(k2, t*FRAME_PER_SEC - float(i));
         return ret;
     }
 
@@ -100,6 +102,7 @@ class Motion
             node.worldRotation = Quaternion(0, startRotation + motionOut.w, 0);
             Vector3 tWorld = Quaternion(0, startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
             MoveNode(node, tWorld, dt);
+            // Print("key-yaw=" + String(motionOut.w) + " worldRotation=" + node.worldRotation.eulerAngles.ToString());
         }
         return localTime >= endTime;
     }
@@ -138,7 +141,6 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ node, float angle, const Col
     Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
     debug.AddLine(start, end, color, false);
 }
-
 
 class MotionManager
 {
@@ -191,7 +193,7 @@ class MotionManager
 
         PostProcess();
 
-        Print("Motion Process Time Cost = " + String(time.systemTime - startTime));
+        Print("Motion Process Time Cost = " + String(time.systemTime - startTime) + " ms");
     }
 
     void Stop()
@@ -200,17 +202,21 @@ class MotionManager
         motions.Clear();
     }
 
-    Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int endFrame, bool loop, float speed = 1.0f)
+    Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int endFrame, bool loop, bool cutRotation = false, float speed = 1.0f)
     {
         Motion@ motion = Motion();
         motion.animationName = "Animation/" + name + "_AnimStackTake 001.ani";
         motion.animation = cache.GetResource("Animation", motion.animationName);
-        ProcessAnimation(motion.animationName, motionFlag, origninFlag, loop, motion.motionKeys);
+        ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys);
         if (endFrame < 0)
             endFrame = motion.motionKeys.length - 1;
         motion.endTime = float(endFrame) / FRAME_PER_SEC;
         motion.looped = loop;
         motion.speed = speed;
+        Vector4 v = motion.motionKeys[0];
+        motion.motionKeys[0] = Vector4(0, 0, 0, 0);
+        motion.startFromOrigin = Vector3(v.x, v.y, v.z);
+        motion.startKey = v;
         motions.Push(motion);
         motionNames.Push(name);
         return motion;
