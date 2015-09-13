@@ -7,6 +7,8 @@ enum RootMotionFlag
     kMotion_Y   = (1 << 1),
     kMotion_Z   = (1 << 2),
     kMotion_R   = (1 << 3),
+    kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
+    kMotion_XZ  = kMotion_X | kMotion_Z,
 };
 
 const String TITLE = "AssetProcess";

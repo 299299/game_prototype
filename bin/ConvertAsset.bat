@@ -28,7 +28,38 @@ tool\AssetImporter model Asset\Attack_Close_Forward_05.FBX MyData\Animation\Atta
 tool\AssetImporter model Asset\Attack_Close_Forward_07.FBX MyData\Animation\Attack_Close_Forward_07.mdl -nomodel -nm -nt
 tool\AssetImporter model Asset\Attack_Close_Forward_08.FBX MyData\Animation\Attack_Close_Forward_08.mdl -nomodel -nm -nt
 
+:: Close Right Attack
+tool\AssetImporter model Asset\Attack_Close_Right.FBX MyData\Animation\Attack_Close_Right.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Right_01.FBX MyData\Animation\Attack_Close_Right_01.mdl -nomodel -nm -nt
+:: tool\AssetImporter model Asset\Attack_Close_Right_02.FBX MyData\Animation\Attack_Close_Right_02.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Right_03.FBX MyData\Animation\Attack_Close_Right_03.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Right_04.FBX MyData\Animation\Attack_Close_Right_04.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Right_05.FBX MyData\Animation\Attack_Close_Right_05.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Right_06.FBX MyData\Animation\Attack_Close_Right_06.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Right_07.FBX MyData\Animation\Attack_Close_Right_07.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Right_08.FBX MyData\Animation\Attack_Close_Right_08.mdl -nomodel -nm -nt
+
+:: Close Back Attack
+tool\AssetImporter model Asset\Attack_Close_Back.FBX MyData\Animation\Attack_Close_Back.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_01.FBX MyData\Animation\Attack_Close_Back_01.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_02.FBX MyData\Animation\Attack_Close_Back_02.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_03.FBX MyData\Animation\Attack_Close_Back_03.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_04.FBX MyData\Animation\Attack_Close_Back_04.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_05.FBX MyData\Animation\Attack_Close_Back_05.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_06.FBX MyData\Animation\Attack_Close_Back_06.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_07.FBX MyData\Animation\Attack_Close_Back_07.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Back_08.FBX MyData\Animation\Attack_Close_Back_08.mdl -nomodel -nm -nt
+
+:: Close Left Attack
 tool\AssetImporter model Asset\Attack_Close_Left.FBX MyData\Animation\Attack_Close_Left.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_01.FBX MyData\Animation\Attack_Close_Left_01.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_02.FBX MyData\Animation\Attack_Close_Left_02.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_03.FBX MyData\Animation\Attack_Close_Left_03.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_04.FBX MyData\Animation\Attack_Close_Left_04.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_05.FBX MyData\Animation\Attack_Close_Left_05.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_06.FBX MyData\Animation\Attack_Close_Left_06.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_07.FBX MyData\Animation\Attack_Close_Left_07.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Left_08.FBX MyData\Animation\Attack_Close_Left_08.mdl -nomodel -nm -nt
 
 :: Counter
 tool\AssetImporter model Asset\Counter_Arm_Front_01.FBX MyData\Animation\Counter_Arm_Front_01.mdl -nomodel -nm -nt

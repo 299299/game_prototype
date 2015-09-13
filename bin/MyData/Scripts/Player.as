@@ -214,6 +214,13 @@ class PlayerAttackState : CharacterState
     Array<Motion@>  closeRightAttacks;
     Array<Motion@>  closeBackwardAttacks;
 
+    Array<Vector3>  closeFwdImpactMotion;
+    Array<Vector3>  closeLeftImpactMotion;
+    Array<Vector3>  closeRightImpactMotion;
+    Array<Vector3>  closeBackImpactMotion;
+
+    Vector3         attackImpactPos;
+
     Motion@         currentMotion;
 
     Enemy@          attackEnemy;
@@ -224,9 +231,45 @@ class PlayerAttackState : CharacterState
         name = "AttackState";
         @currentMotion = null;
 
+        // motions
         for (int i=2; i<=8; ++i)
         {
             closeFwdAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Forward_0" + String(i)));
+        }
+
+        closeRightAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Right"));
+        for (int i=1; i<=8; ++i)
+        {
+            if (i == 2)
+                continue;
+            closeRightAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Right_0" + String(i)));
+        }
+
+        closeLeftAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Left"));
+        for (int i=1; i<=8; ++i)
+        {
+            closeLeftAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Left_0" + String(i)));
+        }
+
+        closeBackwardAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Back"));
+        for (int i=1; i<=8; ++i)
+        {
+            closeBackwardAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Back_0" + String(i)));
+        }
+
+        // impact frames for animations
+        Array<int> closeLeftImpactFrames = { 7, 18, 13, 21, 22, 15, 17, 15, 20 };
+        Array<float> closeLeftImpactRadius = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+
+        closeLeftImpactMotion.Resize(closeLeftAttacks.length);
+        for (uint i=0; i<closeLeftImpactFrames.length; ++i)
+        {
+            Vector4 k = closeLeftAttacks[i].motionKeys[closeLeftImpactFrames[i]];
+            Vector3 p(k.x, k.y, k.z);
+            p.x -= closeLeftImpactRadius[i];
+            p.y = 0;
+            closeLeftImpactMotion[i] = p;
+            Print("closeLeftImpactMotion[" + String(i) + "]=" + p.ToString());
         }
     }
 
@@ -247,17 +290,52 @@ class PlayerAttackState : CharacterState
     void Enter(State@ lastState)
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
-        Vector3 enemyPos = counterEnemy.sceneNode.worldPosition;
+        Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
         Vector3 posDiff = enemyPos - myPos;
         posDiff.y = 0;
 
         float angle = Atan2(posDiff.x, posDiff.z);
-        int r = RadialSelectAnimation_Player(ownner.sceneNode, 4, angle);
+        int r = RadialSelectAnimation(ownner.sceneNode, 4, angle);
         Print("Attack-align pod-diff=" + posDiff.ToString() + " r-index=" + String(r));
 
-        int i = RandomInt(closeFwdAttacks.length);
-        i = 1;
-        @currentMotion = closeFwdAttacks[i];
+        int i = 0;
+        if (r == 0)
+        {
+            i = RandomInt(closeFwdAttacks.length);
+            @currentMotion = closeFwdAttacks[i];
+        }
+        else if (r == 1)
+        {
+            i = RandomInt(closeRightAttacks.length);
+            @currentMotion = closeRightAttacks[i];
+        }
+        else if (r == 2)
+        {
+            i = RandomInt(closeBackwardAttacks.length);
+            @currentMotion = closeBackwardAttacks[i];
+        }
+        else if (r == 3)
+        {
+            float minDistSQR = 99999;
+            int bestIndex = -1;
+            for (uint i=0; i<closeLeftImpactMotion.length; ++i)
+            {
+                Vector3 impactPos = myPos + closeLeftImpactMotion[i];
+                Vector3 diff = enemyPos - impactPos;
+                diff.y = 0;
+                float distSQR = diff.lengthSquared;
+                if (distSQR < minDistSQR)
+                {
+                    bestIndex = i;
+                    minDistSQR = distSQR;
+                    attackImpactPos = impactPos;
+                }
+            }
+
+            Print("Best left close attack = " + String(bestIndex));
+            @currentMotion = closeLeftAttacks[bestIndex];
+        }
+
         Print("Pick Attack " + currentMotion.animationName);
         currentMotion.Start(ownner.sceneNode, ownner.animCtrl);
     }
@@ -272,6 +350,7 @@ class PlayerAttackState : CharacterState
     void DebugDraw(DebugRenderer@ debug)
     {
         currentMotion.DebugDraw(debug, ownner.sceneNode);
+        debug.AddLine(currentMotion.startPosition, currentMotion.startPosition + attackImpactPos, Color(1.0f, 0.5f, 0.7f), false);
     }
 };
 
@@ -406,6 +485,7 @@ class Player : Character
 
     void Start()
     {
+        uint startTime = time.systemTime;
         Character::Start();
         stateMachine.AddState(PlayerStandState(this));
         stateMachine.AddState(PlayerStandToMoveState(this));
@@ -417,6 +497,7 @@ class Player : Character
         stateMachine.AddState(PlayerEvadeState(this));
         stateMachine.AddState(PlayerHitState(this));
         stateMachine.ChangeState("StandState");
+        Print("Player::Start time-cose=" + String(time.systemTime - startTime) + " ms");
     }
 
     void DebugDraw(DebugRenderer@ debug)
