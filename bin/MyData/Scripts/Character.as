@@ -279,3 +279,12 @@ String GetAnimationDebugText(Node@ n)
     }
     return debugText;
 }
+
+float FaceAngleDiff(Node@ thisNode, Node@ targetNode)
+{
+    Vector3 posDiff = targetNode.worldPosition - thisNode.worldPosition;
+    Vector3 thisDir = thisNode.worldRotation * Vector3(0, 0, 1);
+    float thisAngle = Atan2(thisDir.x, thisDir.z);
+    float targetAngle = Atan2(posDiff.x, posDiff.y);
+    return angleDiff(targetAngle - thisAngle);
+}

@@ -210,6 +210,10 @@ class PlayerAlignState : CharacterAlignState
 class PlayerAttackState : CharacterState
 {
     Array<Motion@>  closeFwdAttacks;
+    Array<Motion@>  closeLeftAttacks;
+    Array<Motion@>  closeRightAttacks;
+    Array<Motion@>  closeBackwardAttacks;
+
     Motion@         currentMotion;
 
     Enemy@          attackEnemy;
@@ -242,6 +246,15 @@ class PlayerAttackState : CharacterState
 
     void Enter(State@ lastState)
     {
+        Vector3 myPos = ownner.sceneNode.worldPosition;
+        Vector3 enemyPos = counterEnemy.sceneNode.worldPosition;
+        Vector3 posDiff = enemyPos - myPos;
+        posDiff.y = 0;
+
+        float angle = Atan2(posDiff.x, posDiff.z);
+        int r = RadialSelectAnimation_Player(ownner.sceneNode, 4, angle);
+        Print("Attack-align pod-diff=" + posDiff.ToString() + " r-index=" + String(r));
+
         int i = RandomInt(closeFwdAttacks.length);
         i = 1;
         @currentMotion = closeFwdAttacks[i];
