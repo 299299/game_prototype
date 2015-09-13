@@ -19,13 +19,22 @@ tool\AssetImporter model Asset\Turn_Right_90.FBX MyData\Animation\Turn_Right_90.
 tool\AssetImporter model Asset\Turn_Right_180.FBX MyData\Animation\Turn_Right_180.mdl -nomodel -nm -nt
 
 :: Attack
+:: Close Forwad Attacks
+tool\AssetImporter model Asset\Attack_Close_Forward_02.FBX MyData\Animation\Attack_Close_Forward_02.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Forward_03.FBX MyData\Animation\Attack_Close_Forward_03.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Forward_04.FBX MyData\Animation\Attack_Close_Forward_04.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Forward_05.FBX MyData\Animation\Attack_Close_Forward_05.mdl -nomodel -nm -nt
+tool\AssetImporter model Asset\Attack_Close_Forward_05.FBX MyData\Animation\Attack_Close_Forward_06.mdl -nomodel -nm -nt
 tool\AssetImporter model Asset\Attack_Close_Forward_07.FBX MyData\Animation\Attack_Close_Forward_07.mdl -nomodel -nm -nt
 tool\AssetImporter model Asset\Attack_Close_Forward_08.FBX MyData\Animation\Attack_Close_Forward_08.mdl -nomodel -nm -nt
+
 tool\AssetImporter model Asset\Attack_Close_Left.FBX MyData\Animation\Attack_Close_Left.mdl -nomodel -nm -nt
 
+:: Counter
 tool\AssetImporter model Asset\Counter_Arm_Front_01.FBX MyData\Animation\Counter_Arm_Front_01.mdl -nomodel -nm -nt
 tool\AssetImporter model Asset\Counter_Arm_Front_01_TG.FBX MyData\Animation\Counter_Arm_Front_01_TG.mdl -nomodel -nm -nt
 
+:: Evade
 tool\AssetImporter model Asset\Evade_Forward_01.FBX MyData\Animation\Evade_Forward_01.mdl -nomodel -nm -nt
 tool\AssetImporter model Asset\Evade_Back_01.FBX MyData\Animation\Evade_Back_01.mdl -nomodel -nm -nt
 

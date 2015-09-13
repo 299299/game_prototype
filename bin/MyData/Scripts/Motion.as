@@ -21,7 +21,6 @@ class Motion
     float                   speed;
 
     Vector3                 startFromOrigin;
-    Vector4                 startKey;
 
     Vector3                 startPosition;
     float                   startRotation;
@@ -183,9 +182,11 @@ class MotionManager
         CreateMotion("Evade_Back_01", kMotion_X | kMotion_Z, 0, -1, false);
 
         // Attacks
+        for (int i=2; i<=8; ++i)
+        {
+            CreateMotion("Attack_Close_Forward_0" + String(i), kMotion_X | kMotion_Z | kMotion_R, 0, -1, false);
+        }
         CreateMotion("Attack_Close_Left", kMotion_X | kMotion_Z | kMotion_R, 0, -1, false);
-        CreateMotion("Attack_Close_Forward_08", kMotion_Z, 0, -1, false);
-        CreateMotion("Attack_Close_Forward_08", kMotion_Z, 0, -1, false);
 
         // Counters
         CreateMotion("Counter_Arm_Front_01", kMotion_X | kMotion_Z, kMotion_X | kMotion_Z, -1, false);
@@ -204,9 +205,17 @@ class MotionManager
 
     Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int endFrame, bool loop, bool cutRotation = false, float speed = 1.0f)
     {
-        Motion@ motion = Motion();
+        // String dumpName("Attack_Close_Forward_03");
+        Motion@ motion = FindMotion(name);
+        if (motion !is null)
+        {
+            Print("motion " + name + " already exist!");
+            return motion;
+        }
+        @motion = Motion();
         motion.animationName = "Animation/" + name + "_AnimStackTake 001.ani";
         motion.animation = cache.GetResource("Animation", motion.animationName);
+        // ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys, name == dumpName);
         ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys);
         if (endFrame < 0)
             endFrame = motion.motionKeys.length - 1;
@@ -216,7 +225,6 @@ class MotionManager
         Vector4 v = motion.motionKeys[0];
         motion.motionKeys[0] = Vector4(0, 0, 0, 0);
         motion.startFromOrigin = Vector3(v.x, v.y, v.z);
-        motion.startKey = v;
         motions.Push(motion);
         motionNames.Push(name);
         return motion;

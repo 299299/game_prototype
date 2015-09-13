@@ -207,17 +207,23 @@ class PlayerAlignState : CharacterAlignState
     }
 };
 
-class PlayerAttackState : MultiMotionState
+class PlayerAttackState : CharacterState
 {
+    Array<Motion@>  closeFwdAttacks;
+    Motion@         currentMotion;
+
     Enemy@          attackEnemy;
-    int             attackIndex;
 
     PlayerAttackState(Character@ c)
     {
         super(c);
         name = "AttackState";
-        motions.Push(gMotionMgr.FindMotion("Attack_Close_Left"));
-        motions.Push(gMotionMgr.FindMotion("Attack_Close_Forward_08"));
+        @currentMotion = null;
+
+        for (int i=2; i<=8; ++i)
+        {
+            closeFwdAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Forward_0" + String(i)));
+        }
     }
 
     ~PlayerAttackState()
@@ -227,7 +233,7 @@ class PlayerAttackState : MultiMotionState
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl)) {
+        if (currentMotion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
             ownner.stateMachine.ChangeState("StandState");
         }
 
@@ -236,23 +242,23 @@ class PlayerAttackState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        MultiMotionState::Enter(lastState);
+        int i = RandomInt(closeFwdAttacks.length);
+        i = 1;
+        @currentMotion = closeFwdAttacks[i];
+        Print("Pick Attack " + currentMotion.animationName);
+        currentMotion.Start(ownner.sceneNode, ownner.animCtrl);
     }
 
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
         @attackEnemy = null;
-    }
-
-    int PickIndex()
-    {
-        return attackIndex;
+        @currentMotion = null;
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        motions[selectIndex].DebugDraw(debug, ownner.sceneNode);
+        currentMotion.DebugDraw(debug, ownner.sceneNode);
     }
 };
 
@@ -381,7 +387,7 @@ class Player : Character
     {
         super();
         combo = 0;
-        maxAttackDistSQR = 15.f * 15.0f;
+        maxAttackDistSQR = 100.f * 100.0f;
         maxCounterDistSQR = 3.0f * 3.0f;
     }
 

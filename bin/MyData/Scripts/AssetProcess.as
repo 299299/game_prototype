@@ -65,7 +65,7 @@ void PreProcess()
     pelvisOrign = skel.GetBone(TranslateBoneName).initialPosition;
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, bool cutRotation, Array<Vector4>&out outKeys)
+void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, bool cutRotation, Array<Vector4>&out outKeys, bool dump = false)
 {
     Print("Processing animation " + animationFile);
 
@@ -122,6 +122,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     outKeys.Resize(translateTrack.numKeyFrames);
 
+    float firstRotateFromRoot = 0;
     if (rotateTrack !is null)
     {
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
@@ -129,41 +130,28 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[i].rotation);
             if (i == 0 || i == rotateTrack.numKeyFrames - 1)
                 Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
+            if (i == 0)
+                firstRotateFromRoot = q.eulerAngles.y;
         }
     }
 
     // process rotate key frames first
     if ((motionFlag & kMotion_R != 0) && rotateTrack !is null)
     {
-        AnimationKeyFrame firstKey(rotateTrack.keyFrames[0]);
-        float lastR = 0.0f;
-
+        Quaternion lastRot = rotateTrack.keyFrames[0].rotation;
+        float rotateFromStart = cutRotation ? firstRotateFromRoot : 0;
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(rotateTrack.keyFrames[i]);
-            Quaternion q;
+            Quaternion q = GetRotationInXZPlane(rotateNode, lastRot, kf.rotation);
+            lastRot = kf.rotation;
+            if (dump)
+                Print("rotation from last frame = " + String(q.eulerAngles.y));
 
-            if (cutRotation || i == 0)
-                q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, kf.rotation);
-            else
-                q = GetRotationInXZPlane(rotateNode, firstKey.rotation, kf.rotation);
+            outKeys[i].w = rotateFromStart;
+            rotateFromStart += q.eulerAngles.y;
 
-            float w = q.eulerAngles.y;
-            if (i != 0)
-            {
-                float diffR = w - lastR;
-                if (Abs(diffR) > 180) {
-                    float oldW = w;
-                    if (w < 0)
-                        w += 360;
-                    else if (w >= 0)
-                        w -= 360;
-                    Print("WARNING:: rotation diff too large " + String(oldW) + " -> " + String(w));
-                }
-            }
-            outKeys[i].w = w;
-            lastR = w;
-
+            q = Quaternion(0, rotateFromStart, 0);
             Quaternion wq = rotateNode.worldRotation;
             wq = q.Inverse() * wq;
             rotateNode.worldRotation = wq;
@@ -239,10 +227,14 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     }
 
 
-    for (uint i=0; i<outKeys.length; ++i)
+    if (dump)
     {
-        //Print("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
+        for (uint i=0; i<outKeys.length; ++i)
+        {
+            Print("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
+        }
     }
+
 
 }
 
