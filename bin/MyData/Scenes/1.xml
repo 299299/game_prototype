@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="11" />
 	<attribute name="Next Replicated Component ID" value="17" />
-	<attribute name="Next Local Node ID" value="16778477" />
-	<attribute name="Next Local Component ID" value="16777429" />
+	<attribute name="Next Local Node ID" value="16778478" />
+	<attribute name="Next Local Component ID" value="16777441" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -55,6 +55,7 @@
 			<component type="AnimatedModel" id="16777399">
 				<attribute name="Model" value="Model;Models/bruce.mdl" />
 				<attribute name="Material" value="Material;Materials/BruceWayne_Suit_Torso_MIC.xml;Materials/BruceWayne_Suit_Legs_MIC.xml;Materials/BruceWayne_Head_MIC.xml;Materials/BruceWayne_OZ_Eyes_MIC.xml;Materials/JoinedMaterial_#6.xml;Materials/Character_FakeShadow.xml;Materials/JoinedMaterial_#6.xml" />
+				<attribute name="Cast Shadows" value="true" />
 				<attribute name="Bone Animation Enabled">
 					<variant type="Bool" value="true" />
 					<variant type="Bool" value="true" />
@@ -1129,6 +1130,7 @@
 			<component type="AnimatedModel" id="16777402">
 				<attribute name="Model" value="Model;Models/bruce.mdl" />
 				<attribute name="Material" value="Material;Materials/BruceWayne_Suit_Torso_MIC.xml;Materials/BruceWayne_Suit_Legs_MIC.xml;Materials/BruceWayne_Head_MIC.xml;Materials/BruceWayne_OZ_Eyes_MIC.xml;Materials/JoinedMaterial_#6.xml;Materials/Character_FakeShadow.xml;Materials/JoinedMaterial_#6.xml" />
+				<attribute name="Cast Shadows" value="true" />
 				<attribute name="Bone Animation Enabled">
 					<variant type="Bool" value="true" />
 					<variant type="Bool" value="true" />

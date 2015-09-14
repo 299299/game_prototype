@@ -3,12 +3,17 @@ const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
 const String MODEL_ARGS = " -t na -l -cm -ct";
 const String ANIMATION_ARGS = " -nm -nt";
-const bool showOutput = false;
+const bool showOutput = true;
 
 void ExecuteCmd(const String&in cmd)
 {
     Print("[CMD] " + cmd);
-    fileSystem.SystemCommand(cmd, showOutput);
+    String osCmd = cmd;
+    if (GetPlatform() == "Windows")
+    {
+        osCmd.Replace("/", "\\");
+    }
+    fileSystem.SystemCommand(osCmd, showOutput);
 }
 
 void PreProcess()
@@ -52,7 +57,7 @@ void ProcessAnimations()
 
 void PostProcess()
 {
-    fileSystem.SystemCommand("rm -rf MyData/Animations/*.mdl", showOutput);
+
 }
 
 void Start()

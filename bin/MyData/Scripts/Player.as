@@ -1,5 +1,6 @@
 
 const float fullTurnThreashold = 125;
+const float attackRadius = 3;
 
 class PlayerStandState : CharacterState
 {
@@ -16,7 +17,20 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.3);
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.5);
+    }
+
+    void Exit(State@ nextState)
+    {
+        CharacterState::Exit(nextState);
+
+    /*
+        Vector3 leftFootPos = ownner.sceneNode.GetChild("Bip01_L_Foot", true).worldPosition;
+        Vector3 rightFootPos = ownner.sceneNode.GetChild("Bip01_R_Foot", true).worldPosition;
+        Vector3 diff = leftFootPos - rightFootPos;
+        diff.y = 0;
+        Print("Distance from left foot to right foot is " + String(diff.length));
+    */
     }
 
     void Update(float dt)
@@ -209,17 +223,20 @@ class PlayerAlignState : CharacterAlignState
 
 class PlayerAttackState : CharacterState
 {
-    Array<Motion@>  closeFwdAttacks;
-    Array<Motion@>  closeLeftAttacks;
-    Array<Motion@>  closeRightAttacks;
-    Array<Motion@>  closeBackwardAttacks;
+    Array<Motion@>  forwadAttacks;
+    Array<Motion@>  leftAttacks;
+    Array<Motion@>  rightAttacks;
+    Array<Motion@>  backAttacks;
 
-    Array<Vector3>  closeFwdImpactMotion;
-    Array<Vector3>  closeLeftImpactMotion;
-    Array<Vector3>  closeRightImpactMotion;
-    Array<Vector3>  closeBackImpactMotion;
+    Array<Vector3>  forwadImpacts;
+    Array<Vector3>  leftImpacts;
+    Array<Vector3>  rightImpacts;
+    Array<Vector3>  backImpacts;
 
     Vector3         attackImpactPos;
+    float           attackImpactTime;
+
+    float           fixRotatePerSec;
 
     Motion@         currentMotion;
 
@@ -232,44 +249,94 @@ class PlayerAttackState : CharacterState
         @currentMotion = null;
 
         // motions
+        // forward
         for (int i=2; i<=8; ++i)
         {
-            closeFwdAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Forward_0" + String(i)));
+            forwadAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Forward_0" + String(i)));
+        }
+        forwadAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Forward"));
+        for (int i=1; i<=4; ++i)
+        {
+            forwadAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Forward_0" + String(i)));
         }
 
-        closeRightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right"));
+        // right
+        rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right"));
         for (int i=1; i<=8; ++i)
         {
             if (i == 2)
                 continue;
-            closeRightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right_0" + String(i)));
+            rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right_0" + String(i)));
+        }
+        rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Right"));
+        for (int i=1; i<=4; ++i)
+        {
+            rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Right_0" + String(i)));
         }
 
-        closeLeftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left"));
+        // left
+        leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left"));
         for (int i=1; i<=8; ++i)
         {
-            closeLeftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left_0" + String(i)));
+            leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left_0" + String(i)));
+        }
+        leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Left"));
+        for (int i=1; i<=4; ++i)
+        {
+            leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Left_0" + String(i)));
         }
 
-        closeBackwardAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back"));
+        // back
+        backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back"));
         for (int i=1; i<=8; ++i)
         {
-            closeBackwardAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back_0" + String(i)));
+            backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back_0" + String(i)));
         }
 
+        backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Back"));
+        for (int i=1; i<=4; ++i)
+        {
+            backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Back_0" + String(i)));
+        }
+
+        float r = attackRadius;
         // impact frames for animations
-        Array<int> closeLeftImpactFrames = { 7, 18, 13, 21, 22, 15, 17, 15, 20 };
-        Array<float> closeLeftImpactRadius = { 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
+        Array<int> leftImpactFrames = { 7, 18, 13, 21, 22, 15, 17, 15, 20, 19, 23, 22, 21, 23 };
+        Print("Collecting leftImpacts");
+        AssignImpactFrames(leftAttacks, leftImpactFrames, Vector3(-r, 0, 0), leftImpacts);
 
-        closeLeftImpactMotion.Resize(closeLeftAttacks.length);
-        for (uint i=0; i<closeLeftImpactFrames.length; ++i)
+        Array<int> forwardImpactFrames = { 14, 12, 19, 24, 20, 19, 18, 24, 17, 21, 22, 22};
+        Print("Collecting forwadImpacts");
+        AssignImpactFrames(forwadAttacks, forwardImpactFrames, Vector3(0, 0, r), forwadImpacts);
+
+        Array<int> rightImpactFrames = { 16,  18, 11, 19, 15, 21, 16, 18, 25, 15, 21, 29, 22 };
+        Print("Collecting rightImpacts");
+        AssignImpactFrames(rightAttacks, rightImpactFrames, Vector3(r, 0, 0), rightImpacts);
+
+        Array<int> backImpactFrames = { 9, 16, 18, 21, 14, 14, 15, 14, 17, 14, 15, 18, 23, 20 };
+        Print("Collecting backImpacts");
+        AssignImpactFrames(backAttacks, backImpactFrames, Vector3(0, 0, -r), backImpacts);
+    }
+
+    void AssignImpactFrames(const Array<Motion@>&in animations, const Array<int>&in impactFrames, const Vector3&in offset, Array<Vector3>&out outImpacts)
+    {
+        if (animations.length != impactFrames.length)
         {
-            Vector4 k = closeLeftAttacks[i].motionKeys[closeLeftImpactFrames[i]];
+            ErrorDialog("Player", "impact frame num != attack num");
+            return;
+        }
+
+        outImpacts.Resize(animations.length);
+        for (uint i=0; i<impactFrames.length; ++i)
+        {
+            float t = impactFrames[i] * SEC_PER_FRAME;
+            Vector4 k = animations[i].GetKey(t);
             Vector3 p(k.x, k.y, k.z);
-            p.x -= closeLeftImpactRadius[i];
-            p.y = 0;
-            closeLeftImpactMotion[i] = p;
-            Print("closeLeftImpactMotion[" + String(i) + "]=" + p.ToString());
+            p += offset;
+            outImpacts[i] = p;
+            // hack here using y component to store impact time
+            outImpacts[i].y = t;
+            Print("outImpacts[" + String(i) + "]=" + p.ToString());
         }
     }
 
@@ -280,11 +347,57 @@ class PlayerAttackState : CharacterState
 
     void Update(float dt)
     {
+        //if (ownner.animCtrl.GetTime(currentMotion.animationName) >= attackImpactTime)
+        //    ownner.animCtrl.SetSpeed(currentMotion.animationName, 0.0f);
+
         if (currentMotion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
             ownner.stateMachine.ChangeState("StandState");
         }
 
+        if (input.keyPress['F'])
+            ownner.stateMachine.ChangeState("StandState");
+
         CharacterState::Update(dt);
+    }
+
+    void PickBestMotion(const Array<Motion@>&in motions, const Array<Vector3>&in impacts)
+    {
+        Vector3 myPos = ownner.sceneNode.worldPosition;
+        Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
+        Quaternion myRot = ownner.sceneNode.worldRotation;
+        float yaw = myRot.eulerAngles.y;
+        Vector3 impactPosDiff;
+
+        float minDistSQR = 99999;
+        int bestIndex = -1;
+        for (uint i=0; i<impacts.length; ++i)
+        {
+            Vector3 imp = impacts[i];
+            imp.y = 0;
+            Vector3 impactPos = myPos + myRot * imp;
+            Vector3 diff = enemyPos - impactPos;
+            diff.y = 0;
+            float distSQR = diff.lengthSquared;
+            if (distSQR < minDistSQR)
+            {
+                bestIndex = i;
+                minDistSQR = distSQR;
+                attackImpactPos = impactPos;
+                attackImpactTime = impacts[i].y;
+                impactPosDiff = diff;
+            }
+        }
+
+        if (bestIndex < 0)
+            return;
+
+        @currentMotion = motions[bestIndex];
+        float diffAngle = Atan2(impactPosDiff.x, impactPosDiff.z);
+
+        Print("Best attack motion = " + String(currentMotion.animationName) +
+              " impact pos=" + attackImpactPos.ToString() +
+              " minDistSQR=" + String(minDistSQR) +
+              " diffAngle=" + String(diffAngle));
     }
 
     void Enter(State@ lastState)
@@ -293,50 +406,34 @@ class PlayerAttackState : CharacterState
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
         Vector3 posDiff = enemyPos - myPos;
         posDiff.y = 0;
+        Quaternion myRot = ownner.sceneNode.worldRotation;
 
         float angle = Atan2(posDiff.x, posDiff.z);
         int r = RadialSelectAnimation(ownner.sceneNode, 4, angle);
-        Print("Attack-align pod-diff=" + posDiff.ToString() + " r-index=" + String(r));
+        Print("Attack-align pos-diff=" + posDiff.ToString() + " r-index=" + String(r) + " angle=" + String(angle));
+        float targetAngle = 0;
 
         int i = 0;
         if (r == 0)
         {
-            i = RandomInt(closeFwdAttacks.length);
-            @currentMotion = closeFwdAttacks[i];
+            PickBestMotion(forwadAttacks, forwadImpacts);
         }
         else if (r == 1)
         {
-            i = RandomInt(closeRightAttacks.length);
-            @currentMotion = closeRightAttacks[i];
+            PickBestMotion(rightAttacks, rightImpacts);
         }
         else if (r == 2)
         {
-            i = RandomInt(closeBackwardAttacks.length);
-            @currentMotion = closeBackwardAttacks[i];
+            PickBestMotion(backAttacks, backImpacts);
         }
         else if (r == 3)
         {
-            float minDistSQR = 99999;
-            int bestIndex = -1;
-            for (uint i=0; i<closeLeftImpactMotion.length; ++i)
-            {
-                Vector3 impactPos = myPos + closeLeftImpactMotion[i];
-                Vector3 diff = enemyPos - impactPos;
-                diff.y = 0;
-                float distSQR = diff.lengthSquared;
-                if (distSQR < minDistSQR)
-                {
-                    bestIndex = i;
-                    minDistSQR = distSQR;
-                    attackImpactPos = impactPos;
-                }
-            }
-
-            Print("Best left close attack = " + String(bestIndex));
-            @currentMotion = closeLeftAttacks[bestIndex];
+            PickBestMotion(leftAttacks, leftImpacts);
         }
 
-        Print("Pick Attack " + currentMotion.animationName);
+        if (currentMotion is null)
+            return;
+
         currentMotion.Start(ownner.sceneNode, ownner.animCtrl);
     }
 
@@ -349,8 +446,9 @@ class PlayerAttackState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        currentMotion.DebugDraw(debug, ownner.sceneNode);
-        debug.AddLine(currentMotion.startPosition, currentMotion.startPosition + attackImpactPos, Color(1.0f, 0.5f, 0.7f), false);
+        // currentMotion.DebugDraw(debug, ownner.sceneNode);
+        debug.AddLine(currentMotion.startPosition, attackImpactPos, Color(1.0f, 0.0f, 0.7f), false);
+        debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.25f, 0.25f, 0.25f), false);
     }
 };
 

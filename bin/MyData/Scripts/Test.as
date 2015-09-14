@@ -161,11 +161,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         scene_.timeScale = pauseGame ? 0 : speed;
     }
 
-    if (input.keyPress['F'])
-    {
-        player.Reset();
-    }
-
     String debugText = "";
 
     if (player !is null)

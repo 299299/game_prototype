@@ -9,6 +9,8 @@ enum RootMotionFlag
     kMotion_R   = (1 << 3),
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_XZ  = kMotion_X | kMotion_Z,
+    kMotion_XR  = kMotion_X | kMotion_R,
+    kMotion_ZR  = kMotion_Z | kMotion_R,
 };
 
 const String TITLE = "AssetProcess";
@@ -74,6 +76,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
         ErrorDialog(TITLE, animationFile + " not found!");
+        engine.Exit();
         return;
     }
 
