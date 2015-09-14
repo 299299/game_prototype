@@ -172,41 +172,41 @@ class MotionManager
         PreProcess();
 
         // Locomotions
-        CreateMotion("Turn_Right_90", kMotion_R, 0, 16, false);
-        CreateMotion("Turn_Right_180", kMotion_R, 0, 28, false);
-        CreateMotion("Turn_Left_90", kMotion_R, 0, 22, false);
-        CreateMotion("Walk_Forward", kMotion_Z, 0, -1, true);
+        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_R, 0, 16, false);
+        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_R, 0, 28, false);
+        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_R, 0, 22, false);
+        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_Z, 0, -1, true);
 
         // Evades
-        CreateMotion("Evade_Forward_01", kMotion_XZ, 0, -1, false);
-        CreateMotion("Evade_Back_01", kMotion_XZ, 0, -1, false);
+        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZ, 0, -1, false);
+        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZ, 0, -1, false);
 
         // Attacks
         for (int i=2; i<=8; ++i)
         {
-            CreateMotion("Attack_Close_Forward_0" + String(i), kMotion_XZR, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Forward_0" + String(i), kMotion_XZR, 0, -1, false);
         }
-        CreateMotion("Attack_Close_Right", kMotion_XZR, 0, -1, false);
+        CreateMotion("BM_Attack/Attack_Close_Right", kMotion_XZR, 0, -1, false);
         for (int i=1; i<=8; ++i)
         {
             if (i == 2)
                 continue;
-            CreateMotion("Attack_Close_Right_0" + String(i), kMotion_XZR, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Right_0" + String(i), kMotion_XZR, 0, -1, false);
         }
-        CreateMotion("Attack_Close_Back", kMotion_XZR, 0, -1, false);
+        CreateMotion("BM_Attack/Attack_Close_Back", kMotion_XZR, 0, -1, false);
         for (int i=1; i<=8; ++i)
         {
-            CreateMotion("Attack_Close_Back_0" + String(i), kMotion_XZR, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Back_0" + String(i), kMotion_XZR, 0, -1, false);
         }
-        CreateMotion("Attack_Close_Left", kMotion_XZR, 0, -1, false);
+        CreateMotion("BM_Attack/Attack_Close_Left", kMotion_XZR, 0, -1, false);
         for (int i=1; i<=8; ++i)
         {
-            CreateMotion("Attack_Close_Left_0" + String(i), kMotion_XZR, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Left_0" + String(i), kMotion_XZR, 0, -1, false);
         }
 
         // Counters
-        CreateMotion("Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, -1, false);
-        CreateMotion("Counter_Arm_Front_01_TG", kMotion_XZ, kMotion_XZR, -1, false);
+        CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, -1, false);
+        // CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, -1, false);
 
         PostProcess();
 
@@ -229,7 +229,7 @@ class MotionManager
             return motion;
         }
         @motion = Motion();
-        motion.animationName = "Animation/" + name + "_AnimStackTake 001.ani";
+        motion.animationName = "Animations/" + name + "_AnimStackTake 001.ani";
         motion.animation = cache.GetResource("Animation", motion.animationName);
         // ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys, name == dumpName);
         ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys);
@@ -255,5 +255,5 @@ Animation@ FindAnimation(const String&in name)
 
 String GetAnimationName(const String&in name)
 {
-    return "Animation/" + name + "_AnimStackTake 001.ani";
+    return "Animations/" + name + "_AnimStackTake 001.ani";
 }

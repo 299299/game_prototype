@@ -9,9 +9,9 @@ class PlayerStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        animations.Push(GetAnimationName("Stand_Idle"));
-        animations.Push(GetAnimationName("Stand_Idle_01"));
-        animations.Push(GetAnimationName("Stand_Idle_02"));
+        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle"));
+        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_01"));
+        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_02"));
     }
 
     void Enter(State@ lastState)
@@ -48,9 +48,9 @@ class PlayerStandToMoveState : MultiMotionState
     {
         super(c);
         name = "StandToMoveState";
-        motions.Push(gMotionMgr.FindMotion("Turn_Right_90"));
-        motions.Push(gMotionMgr.FindMotion("Turn_Right_180"));
-        motions.Push(gMotionMgr.FindMotion("Turn_Left_90"));
+        motions.Push(gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Right_90"));
+        motions.Push(gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Right_180"));
+        motions.Push(gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Left_90"));
         turnSpeed = 5;
     }
 
@@ -93,7 +93,7 @@ class PlayerMoveState : CharacterState
     {
         super(c);
         name = "MoveState";
-        @motion = gMotionMgr.FindMotion("Walk_Forward");
+        @motion = gMotionMgr.FindMotion("BM_Combat_Movement/Walk_Forward");
         turnSpeed = 5;
     }
 
@@ -153,7 +153,7 @@ class PlayerMoveTurn180State : CharacterState
     {
         super(c);
         name = "MoveTurn180State";
-        @motion = gMotionMgr.FindMotion("Turn_Right_180");
+        @motion = gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Right_180");
     }
 
     void Update(float dt)
@@ -176,8 +176,8 @@ class PlayerEvadeState : MultiMotionState
     {
         super(c);
         name = "EvadeState";
-        motions.Push(gMotionMgr.FindMotion("Evade_Forward_01"));
-        motions.Push(gMotionMgr.FindMotion("Evade_Back_01"));
+        motions.Push(gMotionMgr.FindMotion("BM_Movement/Evade_Forward_01"));
+        motions.Push(gMotionMgr.FindMotion("BM_Movement/Evade_Back_01"));
     }
 
     void Update(float dt)
@@ -234,27 +234,27 @@ class PlayerAttackState : CharacterState
         // motions
         for (int i=2; i<=8; ++i)
         {
-            closeFwdAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Forward_0" + String(i)));
+            closeFwdAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Forward_0" + String(i)));
         }
 
-        closeRightAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Right"));
+        closeRightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right"));
         for (int i=1; i<=8; ++i)
         {
             if (i == 2)
                 continue;
-            closeRightAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Right_0" + String(i)));
+            closeRightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right_0" + String(i)));
         }
 
-        closeLeftAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Left"));
+        closeLeftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left"));
         for (int i=1; i<=8; ++i)
         {
-            closeLeftAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Left_0" + String(i)));
+            closeLeftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left_0" + String(i)));
         }
 
-        closeBackwardAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Back"));
+        closeBackwardAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back"));
         for (int i=1; i<=8; ++i)
         {
-            closeBackwardAttacks.Push(gMotionMgr.FindMotion("Attack_Close_Back_0" + String(i)));
+            closeBackwardAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back_0" + String(i)));
         }
 
         // impact frames for animations
@@ -369,7 +369,7 @@ class PlayerCounterState : CharacterState
     {
         super(c);
         name = "CounterState";
-        motions.Push(gMotionMgr.FindMotion("Counter_Arm_Front_01"));
+        motions.Push(gMotionMgr.FindMotion("BM_TG_Counter/Counter_Arm_Front_01"));
         alignTime = 0.2f;
     }
 
