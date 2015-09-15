@@ -364,9 +364,12 @@ class PlayerAttackState : CharacterState
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
+        Vector3 enemyToMePos = enemyPos - myPos;
+
         Quaternion myRot = ownner.sceneNode.worldRotation;
         float yaw = myRot.eulerAngles.y;
         Vector3 impactPosDiff;
+        float distFromEnemyToMeSQR = enemyToMePos.lengthSquared;
 
         float minDistSQR = 99999;
         int bestIndex = -1;

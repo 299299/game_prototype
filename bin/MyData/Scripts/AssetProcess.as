@@ -69,7 +69,7 @@ void PreProcess()
     pelvisOrign = skel.GetBone(TranslateBoneName).initialPosition;
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, bool cutRotation, Array<Vector4>&out outKeys, bool dump = false)
+void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, bool cutRotation, Array<Vector4>&out outKeys, bool dump = false)
 {
     Print("Processing animation " + animationFile);
 
@@ -223,12 +223,25 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
                 outKeys[i].z = translation.z;
                 t2_ws.z = t1_ws.z;
             }
+
             translateNode.worldPosition = t2_ws;
             Vector3 local_pos = translateNode.position;
             // Print("local position from " + kf.position.ToString() + " to " + local_pos.ToString());
             kf.position = local_pos;
             translateTrack.keyFrames[i] = kf;
         }
+    }
+
+    for (uint i=0; i<outKeys.length; ++i)
+    {
+        if (allowMotion & kMotion_X == 0)
+            outKeys[i].x = 0;
+        if (allowMotion & kMotion_Y == 0)
+            outKeys[i].y = 0;
+        if (allowMotion & kMotion_Z == 0)
+            outKeys[i].z = 0;
+        if (allowMotion & kMotion_R == 0)
+            outKeys[i].w = 0;
     }
 
 

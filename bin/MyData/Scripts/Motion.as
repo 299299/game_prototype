@@ -20,7 +20,6 @@ class Motion
     float                   endTime;
     bool                    looped;
     float                   speed;
-    int                     allowMotion;
 
     Vector3                 startFromOrigin;
 
@@ -30,7 +29,7 @@ class Motion
 
     Motion()
     {
-        allowMotion = kMotion_XZR;
+
     }
 
     ~Motion()
@@ -57,15 +56,6 @@ class Motion
             Vector4 k2 = GetKey(future_time);
             out_motion = k2 - k1;
         }
-
-        if (allowMotion & kMotion_X == 0)
-            out_motion.x = 0;
-        if (allowMotion & kMotion_Z == 0)
-            out_motion.z = 0;
-        if (allowMotion & kMotion_Y == 0)
-            out_motion.y = 0;
-        if (allowMotion & kMotion_R == 0)
-            out_motion.w = 0;
     }
 
     Vector4 GetKey(float t)
@@ -85,16 +75,7 @@ class Motion
         Vector4 k2 = motionKeys[next_i];
         float a = t*FRAME_PER_SEC - float(i);
         // float a =  (t - float(i)*SEC_PER_FRAME)/SEC_PER_FRAME;
-        Vector4 ret = k1.Lerp(k2, a);
-        if (allowMotion & kMotion_X == 0)
-            ret.x = 0;
-        if (allowMotion & kMotion_Z == 0)
-            ret.z = 0;
-        if (allowMotion & kMotion_Y == 0)
-            ret.y = 0;
-        if (allowMotion & kMotion_R == 0)
-            ret.w = 0;
-        return ret;
+        return k1.Lerp(k2, a);
     }
 
     void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
@@ -305,7 +286,7 @@ class MotionManager
         motion.animationName = "Animations/" + name + "_AnimStackTake 001.ani";
         motion.animation = cache.GetResource("Animation", motion.animationName);
         // ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys, name == dumpName);
-        ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys);
+        ProcessAnimation(motion.animationName, motionFlag, origninFlag, allowMotion, cutRotation, motion.motionKeys);
         if (endFrame < 0)
             endFrame = motion.motionKeys.length - 1;
         motion.endTime = float(endFrame) / FRAME_PER_SEC;
@@ -314,7 +295,6 @@ class MotionManager
         Vector4 v = motion.motionKeys[0];
         motion.motionKeys[0] = Vector4(0, 0, 0, 0);
         motion.startFromOrigin = Vector3(v.x, v.y, v.z);
-        motion.allowMotion = allowMotion;
         motions.Push(motion);
         motionNames.Push(name);
         return motion;
