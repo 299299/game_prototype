@@ -20,6 +20,7 @@ class Motion
     float                   endTime;
     bool                    looped;
     float                   speed;
+    int                     allowMotion;
 
     Vector3                 startFromOrigin;
 
@@ -29,7 +30,7 @@ class Motion
 
     Motion()
     {
-
+        allowMotion = kMotion_XZR;
     }
 
     ~Motion()
@@ -56,6 +57,15 @@ class Motion
             Vector4 k2 = GetKey(future_time);
             out_motion = k2 - k1;
         }
+
+        if (allowMotion & kMotion_X == 0)
+            out_motion.x = 0;
+        if (allowMotion & kMotion_Z == 0)
+            out_motion.z = 0;
+        if (allowMotion & kMotion_Y == 0)
+            out_motion.y = 0;
+        if (allowMotion & kMotion_R == 0)
+            out_motion.w = 0;
     }
 
     Vector4 GetKey(float t)
@@ -75,7 +85,16 @@ class Motion
         Vector4 k2 = motionKeys[next_i];
         float a = t*FRAME_PER_SEC - float(i);
         // float a =  (t - float(i)*SEC_PER_FRAME)/SEC_PER_FRAME;
-        return k1.Lerp(k2, a);
+        Vector4 ret = k1.Lerp(k2, a);
+        if (allowMotion & kMotion_X == 0)
+            ret.x = 0;
+        if (allowMotion & kMotion_Z == 0)
+            ret.z = 0;
+        if (allowMotion & kMotion_Y == 0)
+            ret.y = 0;
+        if (allowMotion & kMotion_R == 0)
+            ret.w = 0;
+        return ret;
     }
 
     void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
@@ -189,74 +208,78 @@ class MotionManager
         PreProcess();
 
         // Locomotions
-        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_R, 0, 16, false);
-        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_R, 0, 28, false);
-        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_R, 0, 22, false);
-        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_Z, 0, -1, true);
+        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_R, 0, kMotion_XZR, 16, false);
+        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_R, 0, kMotion_XZR, 28, false);
+        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_R, 0, kMotion_XZR, 22, false);
+        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_Z, 0, kMotion_XZR, -1, true);
 
         // Evades
-        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZ, 0, -1, false);
-        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZ, 0, -1, false);
+        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZ, 0, kMotion_XZR, -1, false);
+        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZ, 0, kMotion_XZR, -1, false);
 
         // Attacks
         // forward
         int foward_motion_flags = kMotion_XZR;
+        int foward_allow_motion = kMotion_ZR;
         for (int i=2; i<=8; ++i)
         {
-            CreateMotion("BM_Attack/Attack_Close_Forward_0" + String(i), foward_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Forward_0" + String(i), foward_motion_flags, 0, foward_allow_motion, -1, false);
         }
-        CreateMotion("BM_Attack/Attack_Far_Forward", foward_motion_flags, 0, -1, false);
+        CreateMotion("BM_Attack/Attack_Far_Forward", foward_motion_flags, 0, foward_allow_motion, -1, false);
         for (int i=1; i<=4; ++i)
         {
-            CreateMotion("BM_Attack/Attack_Far_Forward_0" + String(i), foward_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Far_Forward_0" + String(i), foward_motion_flags, 0, foward_allow_motion, -1, false);
         }
 
         // right
         int right_motion_flags = kMotion_XZR;
-        CreateMotion("BM_Attack/Attack_Close_Right", right_motion_flags, 0, -1, false);
+        int right_allow_motion = kMotion_XR;
+        CreateMotion("BM_Attack/Attack_Close_Right", right_motion_flags, 0, right_allow_motion, -1, false);
         for (int i=1; i<=8; ++i)
         {
             if (i == 2)
                 continue;
-            CreateMotion("BM_Attack/Attack_Close_Right_0" + String(i), right_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Right_0" + String(i), right_motion_flags, 0, right_allow_motion, -1, false);
         }
-        CreateMotion("BM_Attack/Attack_Far_Right", right_motion_flags, 0, -1, false);
+        CreateMotion("BM_Attack/Attack_Far_Right", right_motion_flags, 0, right_allow_motion, -1, false);
         // seems Attack_Far_Right_0 is not start at the origin
-        CreateMotion("BM_Attack/Attack_Far_Right_01", right_motion_flags, kMotion_XZ, -1, false);
+        CreateMotion("BM_Attack/Attack_Far_Right_01", right_motion_flags, kMotion_XZ, right_allow_motion, -1, false);
         for (int i=2; i<=4; ++i)
         {
-            CreateMotion("BM_Attack/Attack_Far_Right_0" + String(i), right_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Far_Right_0" + String(i), right_motion_flags, 0, right_allow_motion, -1, false);
         }
 
         // back
         int back_motion_flags = kMotion_XZR;
-        CreateMotion("BM_Attack/Attack_Close_Back", back_motion_flags, 0, -1, false);
+        int back_allow_motion = kMotion_ZR;
+        CreateMotion("BM_Attack/Attack_Close_Back", back_motion_flags, 0, back_allow_motion, -1, false);
         for (int i=1; i<=8; ++i)
         {
-            CreateMotion("BM_Attack/Attack_Close_Back_0" + String(i), back_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Back_0" + String(i), back_motion_flags, 0, back_allow_motion, -1, false);
         }
-        CreateMotion("BM_Attack/Attack_Far_Back", back_motion_flags, 0, -1, false);
+        CreateMotion("BM_Attack/Attack_Far_Back", back_motion_flags, 0, back_allow_motion, -1, false);
         for (int i=1; i<=4; ++i)
         {
-            CreateMotion("BM_Attack/Attack_Far_Back_0" + String(i), back_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Far_Back_0" + String(i), back_motion_flags, 0, back_allow_motion, -1, false);
         }
 
         // left
         int left_motion_flags = kMotion_XZR;
-        CreateMotion("BM_Attack/Attack_Close_Left", left_motion_flags, 0, -1, false);
+        int left_allow_motion = kMotion_XR;
+        CreateMotion("BM_Attack/Attack_Close_Left", left_motion_flags, 0, left_allow_motion, -1, false);
         for (int i=1; i<=8; ++i)
         {
-            CreateMotion("BM_Attack/Attack_Close_Left_0" + String(i), left_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Close_Left_0" + String(i), left_motion_flags, 0, left_allow_motion, -1, false);
         }
-        CreateMotion("BM_Attack/Attack_Far_Left", left_motion_flags, 0, -1, false);
+        CreateMotion("BM_Attack/Attack_Far_Left", left_motion_flags, 0, left_allow_motion, -1, false);
         for (int i=1; i<=4; ++i)
         {
-            CreateMotion("BM_Attack/Attack_Far_Left_0" + String(i), left_motion_flags, 0, -1, false);
+            CreateMotion("BM_Attack/Attack_Far_Left_0" + String(i), left_motion_flags, 0, left_allow_motion, -1, false);
         }
 
         // Counters
-        CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, -1, false);
-        CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, -1, false);
+        CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, kMotion_XZR, -1, false);
+        // CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, -1, false);
 
         PostProcess();
 
@@ -269,7 +292,7 @@ class MotionManager
         motions.Clear();
     }
 
-    Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int endFrame, bool loop, bool cutRotation = false, float speed = 1.0f)
+    Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int allowMotion, int endFrame, bool loop, bool cutRotation = false, float speed = 1.0f)
     {
         // String dumpName("Attack_Close_Forward_03");
         Motion@ motion = FindMotion(name);
@@ -291,6 +314,7 @@ class MotionManager
         Vector4 v = motion.motionKeys[0];
         motion.motionKeys[0] = Vector4(0, 0, 0, 0);
         motion.startFromOrigin = Vector3(v.x, v.y, v.z);
+        motion.allowMotion = allowMotion;
         motions.Push(motion);
         motionNames.Push(name);
         return motion;

@@ -191,9 +191,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         {
             if (player !is null && globalState != 1)
             {
-                player.Counter();
+                globalState = 1;
+                player.Attack();
             }
-            globalState = 1;
         }
 
         if (globalTime > 1)
@@ -225,11 +225,14 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
     DebugRenderer@ debug = scene_.debugRenderer;
-    debug.AddNode(scene_, 2.0f, false);
-    if (player !is null)
-        player.DebugDraw(debug);
-    if (thug !is null)
-        thug.DebugDraw(debug);
+    if (true)
+    {
+        debug.AddNode(scene_, 2.0f, false);
+        if (player !is null)
+            player.DebugDraw(debug);
+        if (thug !is null)
+            thug.DebugDraw(debug);
+    }
 }
 
 String patchInstructions = "";
