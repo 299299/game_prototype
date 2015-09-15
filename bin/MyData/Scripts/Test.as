@@ -227,7 +227,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     DebugRenderer@ debug = scene_.debugRenderer;
     if (true)
     {
-        debug.AddNode(scene_, 2.0f, false);
+        // debug.AddNode(scene_, 2.0f, false);
         if (player !is null)
             player.DebugDraw(debug);
         if (thug !is null)

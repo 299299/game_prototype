@@ -223,144 +223,141 @@ class PlayerAlignState : CharacterAlignState
 
 class PlayerAttackState : CharacterState
 {
-    Array<Motion@>  forwadAttacks;
-    Array<Motion@>  leftAttacks;
-    Array<Motion@>  rightAttacks;
-    Array<Motion@>  backAttacks;
-
-    Array<Vector3>  forwadImpacts;
-    Array<Vector3>  leftImpacts;
-    Array<Vector3>  rightImpacts;
-    Array<Vector3>  backImpacts;
-
-    Vector3         attackImpactPos;
-    float           attackImpactTime;
+    Array<AttackMotion@>  forwardAttacks;
+    Array<AttackMotion@>  leftAttacks;
+    Array<AttackMotion@>  rightAttacks;
+    Array<AttackMotion@>  backAttacks;
 
     float           fixRotatePerSec;
 
-    Motion@         currentMotion;
+    AttackMotion@    currentAttack;
 
     Enemy@          attackEnemy;
+
+    int             debugStatus;
 
     PlayerAttackState(Character@ c)
     {
         super(c);
         name = "AttackState";
-        @currentMotion = null;
 
-        // motions
-        // forward
-        for (int i=2; i<=8; ++i)
-        {
-            forwadAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Forward_0" + String(i)));
-        }
-        forwadAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Forward"));
-        for (int i=1; i<=4; ++i)
-        {
-            forwadAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Forward_0" + String(i)));
-        }
+        String preFix = "BM_Attack/";
+        // forward close
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_02", 14));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_03", 12));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_04", 19));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_05", 24));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_06", 20));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_07", 19));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_08", 18));
+        // forward far
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward", 24));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_01", 17));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_02", 21));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_03", 22));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_04", 22));
 
-        // right
-        rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right"));
-        for (int i=1; i<=8; ++i)
-        {
-            if (i == 2)
-                continue;
-            rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Right_0" + String(i)));
-        }
-        rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Right"));
-        for (int i=1; i<=4; ++i)
-        {
-            rightAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Right_0" + String(i)));
-        }
+        // right close
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right", 16));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_01", 18));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_03", 11));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_04", 19));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_05", 15));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_06", 21));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_07", 16));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_08", 18));
 
-        // left
-        leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left"));
-        for (int i=1; i<=8; ++i)
-        {
-            leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Left_0" + String(i)));
-        }
-        leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Left"));
-        for (int i=1; i<=4; ++i)
-        {
-            leftAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Left_0" + String(i)));
-        }
+        // right far
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right", 25));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_01", 15));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_02", 21));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_03", 29));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_04", 22));
 
-        // back
-        backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back"));
-        for (int i=1; i<=8; ++i)
-        {
-            backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Close_Back_0" + String(i)));
-        }
+        // left close
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left", 7));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_01", 18));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_02", 13));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_03", 21));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_04", 22));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_05", 15));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_06", 17));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_07", 15));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_08", 20));
 
-        backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Back"));
-        for (int i=1; i<=4; ++i)
-        {
-            backAttacks.Push(gMotionMgr.FindMotion("BM_Attack/Attack_Far_Back_0" + String(i)));
-        }
+        // left far
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left", 19));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_01", 23));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_02", 22));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_03", 21));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_04", 23));
 
-        float r = attackRadius;
-        // impact frames for animations
-        Array<int> leftImpactFrames = { 7, 18, 13, 21, 22, 15, 17, 15, 20, 19, 23, 22, 21, 23 };
-        Print("Collecting leftImpacts");
-        AssignImpactFrames(leftAttacks, leftImpactFrames, Vector3(-r, 0, 0), leftImpacts);
+        // back close
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back", 9));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_01", 16));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_02", 18));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_03", 21));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_04", 14));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_05", 14));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_06", 15));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_07", 14));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_08", 17));
 
-        Array<int> forwardImpactFrames = { 14, 12, 19, 24, 20, 19, 18, 24, 17, 21, 22, 22};
-        Print("Collecting forwadImpacts");
-        AssignImpactFrames(forwadAttacks, forwardImpactFrames, Vector3(0, 0, r), forwadImpacts);
-
-        Array<int> rightImpactFrames = { 16,  18, 11, 19, 15, 21, 16, 18, 25, 15, 21, 29, 22 };
-        Print("Collecting rightImpacts");
-        AssignImpactFrames(rightAttacks, rightImpactFrames, Vector3(r, 0, 0), rightImpacts);
-
-        Array<int> backImpactFrames = { 9, 16, 18, 21, 14, 14, 15, 14, 17, 14, 15, 18, 23, 20 };
-        Print("Collecting backImpacts");
-        AssignImpactFrames(backAttacks, backImpactFrames, Vector3(0, 0, -r), backImpacts);
-    }
-
-    void AssignImpactFrames(const Array<Motion@>&in animations, const Array<int>&in impactFrames, const Vector3&in offset, Array<Vector3>&out outImpacts)
-    {
-        if (animations.length != impactFrames.length)
-        {
-            ErrorDialog("Player", "impact frame num != attack num");
-            return;
-        }
-
-        outImpacts.Resize(animations.length);
-        for (uint i=0; i<impactFrames.length; ++i)
-        {
-            float t = impactFrames[i] * SEC_PER_FRAME;
-            Vector4 k = animations[i].GetKey(t);
-            Vector3 p(k.x, k.y, k.z);
-            p += offset;
-            outImpacts[i] = p;
-            // hack here using y component to store impact time
-            outImpacts[i].y = t;
-            Print("outImpacts[" + String(i) + "]=" + p.ToString());
-        }
+        // back far
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back", 14));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_01", 15));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_02", 18));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_03", 23));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_04", 20));
     }
 
     ~PlayerAttackState()
     {
         @attackEnemy = null;
+        @currentAttack = null;
     }
 
     void Update(float dt)
     {
-        //if (ownner.animCtrl.GetTime(currentMotion.animationName) >= attackImpactTime)
-        //    ownner.animCtrl.SetSpeed(currentMotion.animationName, 0.0f);
+        if (currentAttack is null)
+            return;
 
-        if (currentMotion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
+        Motion@ motion = currentAttack.motion;
+        if (ownner.animCtrl.GetTime(motion.animationName) >= currentAttack.impactTime && debugStatus == 0) {
+            debugStatus = 1;
+            ownner.animCtrl.SetSpeed(motion.animationName, 0.0f);
+        }
+        if (debugStatus == 0)
+        {
+            motion.startRotation += fixRotatePerSec * dt;
+            // Print("motion.startRotation=" + String(motion.startRotation));
+        }
+
+        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
             ownner.stateMachine.ChangeState("StandState");
         }
 
-        if (input.keyPress['F'])
-            ownner.stateMachine.ChangeState("StandState");
+        if (input.keyPress['F'] && debugStatus == 1) {
+            ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
+            // ownner.stateMachine.ChangeState("StandState");
+        }
 
         CharacterState::Update(dt);
     }
 
-    void PickBestMotion(const Array<Motion@>&in motions, const Array<Vector3>&in impacts)
+    AttackMotion@ GetAttack(int dir, int index)
+    {
+        if (dir == 0)
+            return forwardAttacks[index];
+        else if (dir == 1)
+            return rightAttacks[index];
+        else if (dir == 2)
+            return backAttacks[index];
+        else
+            return leftAttacks[index];
+    }
+
+    void PickBestMotion(const Array<AttackMotion@>&in attacks)
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
@@ -373,9 +370,10 @@ class PlayerAttackState : CharacterState
 
         float minDistSQR = 99999;
         int bestIndex = -1;
-        for (uint i=0; i<impacts.length; ++i)
+        for (uint i=0; i<attacks.length; ++i)
         {
-            Vector3 imp = impacts[i];
+            AttackMotion@ attack = attacks[i];
+            Vector3 imp = attack.impactPosition;
             imp.y = 0;
             Vector3 impactPos = myPos + myRot * imp;
             Vector3 diff = enemyPos - impactPos;
@@ -385,26 +383,27 @@ class PlayerAttackState : CharacterState
             {
                 bestIndex = i;
                 minDistSQR = distSQR;
-                attackImpactPos = impactPos;
-                attackImpactTime = impacts[i].y;
                 impactPosDiff = diff;
             }
         }
 
-        if (bestIndex < 0)
+        if (bestIndex < 0) {
+            Print("bestIndex is -1 !!!");
             return;
+        }
 
-        @currentMotion = motions[bestIndex];
+        @currentAttack = attacks[bestIndex];
         float diffAngle = Atan2(impactPosDiff.x, impactPosDiff.z);
 
-        Print("Best attack motion = " + String(currentMotion.animationName) +
-              " impact pos=" + attackImpactPos.ToString() +
+        Print("Best attack motion = " + String(currentAttack.motion.animationName) +
               " minDistSQR=" + String(minDistSQR) +
               " diffAngle=" + String(diffAngle));
     }
 
     void Enter(State@ lastState)
     {
+        fixRotatePerSec = 0;
+
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
         Vector3 posDiff = enemyPos - myPos;
@@ -419,39 +418,51 @@ class PlayerAttackState : CharacterState
         int i = 0;
         if (r == 0)
         {
-            PickBestMotion(forwadAttacks, forwadImpacts);
+            PickBestMotion(forwardAttacks);
+            targetAngle = 0;
         }
         else if (r == 1)
         {
-            PickBestMotion(rightAttacks, rightImpacts);
+            PickBestMotion(rightAttacks);
+            targetAngle = 90;
         }
         else if (r == 2)
         {
-            PickBestMotion(backAttacks, backImpacts);
+            PickBestMotion(backAttacks);
+            targetAngle = angle < 0 ? -180 : 180;
         }
         else if (r == 3)
         {
-            PickBestMotion(leftAttacks, leftImpacts);
+            PickBestMotion(leftAttacks);
+            targetAngle = -90;
         }
 
-        if (currentMotion is null)
+        if (currentAttack is null)
             return;
 
-        currentMotion.Start(ownner.sceneNode, ownner.animCtrl);
+        float a_diff = angleDiff(targetAngle - angle);
+        fixRotatePerSec = a_diff / currentAttack.impactTime;
+        Print("targetAngle=" + String(targetAngle) + " a_diff=" + String(a_diff) + " fixRotatePerSec=" + String(fixRotatePerSec));
+
+
+        currentAttack.motion.Start(ownner.sceneNode, ownner.animCtrl);
+        debugStatus = 0;
     }
 
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
         @attackEnemy = null;
-        @currentMotion = null;
+        @currentAttack = null;
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        // currentMotion.DebugDraw(debug, ownner.sceneNode);
-        debug.AddLine(currentMotion.startPosition, attackImpactPos, Color(1.0f, 0.0f, 0.7f), false);
-        debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.25f, 0.25f, 0.25f), false);
+        if (currentAttack is null)
+            return;
+        currentAttack.motion.DebugDraw(debug, ownner.sceneNode);
+        debug.AddLine(currentAttack.motion.startPosition, currentAttack.motion.GetFuturePosition(currentAttack.impactTime), Color(0.25f, 0.25f, 0.75f), false);
+        debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.25f, 0.75f, 0.25f), false);
     }
 };
 
@@ -605,6 +616,7 @@ class Player : Character
     {
         debug.AddNode(sceneNode, 1.0f, false);
         debug.AddNode(sceneNode.GetChild("Bip01", true), 1.0f, false);
+        /*
         Vector3 fwd = Vector3(0, 0, 1);
         Vector3 camDir = cameraNode.worldRotation * fwd;
         float cameraAngle = Atan2(camDir.x, camDir.z);
@@ -614,6 +626,7 @@ class Player : Character
         float baseLen = 2.0f;
         DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
         DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
+        */
         Character::DebugDraw(debug);
     }
 

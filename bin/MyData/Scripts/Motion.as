@@ -158,6 +158,34 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ node, float angle, const Col
     debug.AddLine(start, end, color, false);
 }
 
+class AttackMotion
+{
+    Motion@         motion;
+    float           impactTime;
+    float           impactDistSQR;
+    Vector3         impactPosition;
+
+    AttackMotion(const String&in name, int impactFrame)
+    {
+        @motion = gMotionMgr.FindMotion(name);
+        impactTime = impactFrame * SEC_PER_FRAME;
+        Vector4 k = motion.motionKeys[impactFrame];
+        impactPosition = Vector3(k.x, k.y, k.z);
+        impactDistSQR = impactPosition.lengthSquared;
+    }
+
+    int opCmp(const AttackMotion&in obj)
+    {
+        if (impactDistSQR > obj.impactDistSQR)
+            return 1;
+        else if (impactDistSQR < obj.impactDistSQR)
+            return -1;
+        else
+            return 0;
+    }
+};
+
+
 class MotionManager
 {
     Array<String>           motionNames;

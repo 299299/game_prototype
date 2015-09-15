@@ -232,9 +232,9 @@ class Character : GameObject
     void DebugDraw(DebugRenderer@ debug)
     {
         GameObject::DebugDraw(debug);
-        Sphere sp;
-        sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, attackRadius/2.0f);
-        debug.AddSphere(sp, Color(0, 1, 0));
+        //Sphere sp;
+        //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, attackRadius/2.0f);
+        //debug.AddSphere(sp, Color(0, 1, 0));
         //AnimatedModel@ am = sceneNode.GetComponent("AnimatedModel");
         //debug.AddSkeleton(am.skeleton, Color(0,1,1), false);
     }
