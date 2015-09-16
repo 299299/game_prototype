@@ -162,7 +162,7 @@ class AttackMotion
 {
     Motion@         motion;
     float           impactTime;
-    float           impactDistSQR;
+    float           impactDist;
     Vector3         impactPosition;
     Vector2         slowMotionTime;
 
@@ -172,16 +172,16 @@ class AttackMotion
         impactTime = impactFrame * SEC_PER_FRAME;
         Vector4 k = motion.motionKeys[impactFrame];
         impactPosition = Vector3(k.x, k.y, k.z);
-        impactDistSQR = impactPosition.lengthSquared;
+        impactDist = impactPosition.length;
         slowMotionTime.x = impactTime - SEC_PER_FRAME * 5;
         slowMotionTime.y = impactTime + SEC_PER_FRAME * 5;
     }
 
     int opCmp(const AttackMotion&in obj)
     {
-        if (impactDistSQR > obj.impactDistSQR)
+        if (impactDist > obj.impactDist)
             return 1;
-        else if (impactDistSQR < obj.impactDistSQR)
+        else if (impactDist < obj.impactDist)
             return -1;
         else
             return 0;

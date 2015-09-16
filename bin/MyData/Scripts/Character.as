@@ -1,4 +1,7 @@
 
+const float fullTurnThreashold = 125;
+const float collisionRadius = 1.5f;
+
 class CharacterState : State
 {
     Character@                  ownner;
@@ -232,11 +235,13 @@ class Character : GameObject
     void DebugDraw(DebugRenderer@ debug)
     {
         GameObject::DebugDraw(debug);
+        debug.AddNode(sceneNode, 1.0f, false);
+        debug.AddNode(sceneNode.GetChild("Bip01", true), 1.0f, false);
         //Sphere sp;
-        //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, attackRadius/2.0f);
+        //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, collisionRadius);
         //debug.AddSphere(sp, Color(0, 1, 0));
         //AnimatedModel@ am = sceneNode.GetComponent("AnimatedModel");
-        //debug.AddSkeleton(am.skeleton, Color(0,1,1), false);
+        //debug.AddSkeleton(am.skeleton, Color(0,0,1), true);
     }
 };
 
@@ -249,7 +254,6 @@ float angleDiff( float diff )
         diff += 360;
     return diff;
 }
-
 
 // computes the difference between the characters current heading and the
 // heading the user wants them to go in.

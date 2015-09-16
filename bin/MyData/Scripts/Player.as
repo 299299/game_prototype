@@ -1,6 +1,4 @@
 
-const float fullTurnThreashold = 125;
-const float attackRadius = 3;
 
 class PlayerStandState : CharacterState
 {
@@ -234,8 +232,12 @@ class PlayerAttackState : CharacterState
 
     Enemy@          attackEnemy;
 
-    int             debugStatus;
     int             status;
+
+    Vector3         predictPosition;
+    Vector3         predictEnemyPosition;
+    Vector3         movePosPerSec;
+    Vector3         predictMotionPosition;
 
     PlayerAttackState(Character@ c)
     {
@@ -310,6 +312,11 @@ class PlayerAttackState : CharacterState
         backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_02", 18));
         backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_03", 23));
         backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_04", 20));
+
+        forwardAttacks.Sort();
+        leftAttacks.Sort();
+        rightAttacks.Sort();
+        backAttacks.Sort();
     }
 
     ~PlayerAttackState()
@@ -335,29 +342,28 @@ class PlayerAttackState : CharacterState
         else if (status == 1)
         {
             if (t >= currentAttack.slowMotionTime.y) {
-                status = 0;
+                status = 2;
                 ownner.sceneNode.scene.timeScale = 1.0f;
+                ownner.animCtrl.SetSpeed(motion.animationName, 0.0f);
             }
         }
 
-        if (t >= currentAttack.slowMotionTime.y && debugStatus == 0) {
-            debugStatus = 1;
-            ownner.animCtrl.SetSpeed(motion.animationName, 0.0f);
+        if (input.keyPress['F']) {
+            ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
+            ownner.sceneNode.scene.timeScale = 1.0f;
         }
 
-        if (debugStatus == 0)
-        {
+        if (status != 2) {
             // motion.startRotation += fixRotatePerSec * dt;
             // Print("motion.startRotation=" + String(motion.startRotation));
+
+            // ownner.sceneNode.worldPosition = ownner.sceneNode.worldPosition + movePosPerSec * dt;
+            motion.startPosition += movePosPerSec * dt;
         }
+
 
         if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
             ownner.stateMachine.ChangeState("StandState");
-        }
-
-        if (input.keyPress['F'] && debugStatus == 1) {
-            ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
-            // ownner.stateMachine.ChangeState("StandState");
         }
 
         CharacterState::Update(dt);
@@ -379,43 +385,47 @@ class PlayerAttackState : CharacterState
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
-        Vector3 enemyToMePos = enemyPos - myPos;
-
         Quaternion myRot = ownner.sceneNode.worldRotation;
         float yaw = myRot.eulerAngles.y;
-        Vector3 impactPosDiff;
-        float distFromEnemyToMeSQR = enemyToMePos.lengthSquared;
+        Vector3 enemyDir = enemyPos - myPos;
+        float enemyDist = enemyDir.length;
+        enemyDir.Normalize();
 
-        float minDistSQR = 99999;
+        float minDistance = 99999;
+        float bestRange = 0;
         int bestIndex = -1;
-        for (uint i=0; i<attacks.length; ++i)
+        float baseDist = collisionRadius * 1.75f;
+
+        for (int i=attacks.length-1; i>=0; --i)
         {
             AttackMotion@ attack = attacks[i];
-            Vector3 imp = attack.impactPosition;
-            imp.y = 0;
-            Vector3 impactPos = myPos + myRot * imp;
-            Vector3 diff = enemyPos - impactPos;
-            diff.y = 0;
-            float distSQR = diff.lengthSquared;
-            if (distSQR < minDistSQR)
-            {
+            float farRange = attack.impactDist + baseDist;
+            Print("farRange = " + String(farRange) + " enemyDist=" + String(enemyDist));
+            if (farRange < enemyDist) {
                 bestIndex = i;
-                minDistSQR = distSQR;
-                impactPosDiff = diff;
+                bestRange = farRange;
+                break;
             }
         }
 
         if (bestIndex < 0) {
             Print("bestIndex is -1 !!!");
-            return;
+            bestIndex = 0;
         }
 
         @currentAttack = attacks[bestIndex];
-        float diffAngle = Atan2(impactPosDiff.x, impactPosDiff.z);
 
-        Print("Best attack motion = " + String(currentAttack.motion.animationName) +
-              " minDistSQR=" + String(minDistSQR) +
-              " diffAngle=" + String(diffAngle));
+        predictEnemyPosition = myPos + enemyDir * bestRange;
+        predictPosition = myPos + enemyDir * (enemyDist -  2 * collisionRadius);
+
+        Vector3 futurePos = currentAttack.motion.GetFuturePosition(ownner.sceneNode, currentAttack.impactTime);
+        movePosPerSec = ( predictPosition - futurePos ) / currentAttack.impactTime;
+
+        if (bestIndex == 0)
+            movePosPerSec = Vector3(0, 0, 0);
+        // attackEnemy.sceneNode.worldPosition = predictEnemyPosition;
+
+        Print("Best attack motion = " + String(currentAttack.motion.animationName) + " movePosPerSec=" + movePosPerSec.ToString());
     }
 
     void Enter(State@ lastState)
@@ -462,9 +472,10 @@ class PlayerAttackState : CharacterState
         fixRotatePerSec = a_diff / currentAttack.impactTime;
         Print("targetAngle=" + String(targetAngle) + " a_diff=" + String(a_diff) + " fixRotatePerSec=" + String(fixRotatePerSec));
 
-
-        currentAttack.motion.Start(ownner.sceneNode, ownner.animCtrl);
-        debugStatus = 0;
+        Motion@ motion = currentAttack.motion;
+        motion.Start(ownner.sceneNode, ownner.animCtrl);
+        predictMotionPosition = motion.GetFuturePosition(currentAttack.impactTime);
+        ownner.sceneNode.scene.timeScale = 0.0f;
         status = 0;
     }
 
@@ -480,8 +491,15 @@ class PlayerAttackState : CharacterState
         if (currentAttack is null)
             return;
         currentAttack.motion.DebugDraw(debug, ownner.sceneNode);
-        debug.AddLine(currentAttack.motion.startPosition, currentAttack.motion.GetFuturePosition(currentAttack.impactTime), Color(0.25f, 0.25f, 0.75f), false);
         debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.25f, 0.75f, 0.25f), false);
+
+        Sphere sp;
+        sp.Define(predictPosition, 0.15f);
+        debug.AddSphere(sp, Color(0, 0, 1), false);
+        sp.Define(predictEnemyPosition, 0.15f);
+        debug.AddSphere(sp, Color(0, 1, 0), false);
+        sp.Define(predictMotionPosition, 0.15f);
+        debug.AddSphere(sp, Color(1, 0, 0), false);
     }
 };
 
@@ -633,18 +651,16 @@ class Player : Character
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddNode(sceneNode, 1.0f, false);
-        debug.AddNode(sceneNode.GetChild("Bip01", true), 1.0f, false);
         /*
-        Vector3 fwd = Vector3(0, 0, 1);
-        Vector3 camDir = cameraNode.worldRotation * fwd;
-        float cameraAngle = Atan2(camDir.x, camDir.z);
-        Vector3 characterDir = sceneNode.worldRotation * fwd;
-        float characterAngle = Atan2(characterDir.x, characterDir.z);
-        float targetAngle = cameraAngle + gInput.m_leftStickAngle;
-        float baseLen = 2.0f;
-        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
-        DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
+            Vector3 fwd = Vector3(0, 0, 1);
+            Vector3 camDir = cameraNode.worldRotation * fwd;
+            float cameraAngle = Atan2(camDir.x, camDir.z);
+            Vector3 characterDir = sceneNode.worldRotation * fwd;
+            float characterAngle = Atan2(characterDir.x, characterDir.z);
+            float targetAngle = cameraAngle + gInput.m_leftStickAngle;
+            float baseLen = 2.0f;
+            DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
+            DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
         */
         Character::DebugDraw(debug);
     }

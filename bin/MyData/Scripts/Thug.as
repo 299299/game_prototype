@@ -112,8 +112,6 @@ class Thug : Enemy
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddNode(this.sceneNode, 1.0f, false);
-        debug.AddNode(this.sceneNode.GetChild("Bip01", true), 1.0f, false);
         Character::DebugDraw(debug);
     }
 };
