@@ -235,6 +235,7 @@ class PlayerAttackState : CharacterState
     Enemy@          attackEnemy;
 
     int             debugStatus;
+    int             status;
 
     PlayerAttackState(Character@ c)
     {
@@ -323,13 +324,30 @@ class PlayerAttackState : CharacterState
             return;
 
         Motion@ motion = currentAttack.motion;
-        if (ownner.animCtrl.GetTime(motion.animationName) >= currentAttack.impactTime && debugStatus == 0) {
+        float t = ownner.animCtrl.GetTime(motion.animationName);
+        if (status == 0)
+        {
+            if (t >= currentAttack.slowMotionTime.x) {
+                status = 1;
+                ownner.sceneNode.scene.timeScale = 0.25f;
+            }
+        }
+        else if (status == 1)
+        {
+            if (t >= currentAttack.slowMotionTime.y) {
+                status = 0;
+                ownner.sceneNode.scene.timeScale = 1.0f;
+            }
+        }
+
+        if (t >= currentAttack.slowMotionTime.y && debugStatus == 0) {
             debugStatus = 1;
             ownner.animCtrl.SetSpeed(motion.animationName, 0.0f);
         }
+
         if (debugStatus == 0)
         {
-            motion.startRotation += fixRotatePerSec * dt;
+            // motion.startRotation += fixRotatePerSec * dt;
             // Print("motion.startRotation=" + String(motion.startRotation));
         }
 
@@ -447,6 +465,7 @@ class PlayerAttackState : CharacterState
 
         currentAttack.motion.Start(ownner.sceneNode, ownner.animCtrl);
         debugStatus = 0;
+        status = 0;
     }
 
     void Exit(State@ nextState)

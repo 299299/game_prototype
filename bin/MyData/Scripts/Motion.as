@@ -164,6 +164,7 @@ class AttackMotion
     float           impactTime;
     float           impactDistSQR;
     Vector3         impactPosition;
+    Vector2         slowMotionTime;
 
     AttackMotion(const String&in name, int impactFrame)
     {
@@ -172,6 +173,8 @@ class AttackMotion
         Vector4 k = motion.motionKeys[impactFrame];
         impactPosition = Vector3(k.x, k.y, k.z);
         impactDistSQR = impactPosition.lengthSquared;
+        slowMotionTime.x = impactTime - SEC_PER_FRAME * 5;
+        slowMotionTime.y = impactTime + SEC_PER_FRAME * 5;
     }
 
     int opCmp(const AttackMotion&in obj)
