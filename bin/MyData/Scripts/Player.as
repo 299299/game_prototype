@@ -493,13 +493,9 @@ class PlayerAttackState : CharacterState
         currentAttack.motion.DebugDraw(debug, ownner.sceneNode);
         debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.25f, 0.75f, 0.25f), false);
 
-        Sphere sp;
-        sp.Define(predictPosition, 0.15f);
-        debug.AddSphere(sp, Color(0, 0, 1), false);
-        sp.Define(predictEnemyPosition, 0.15f);
-        debug.AddSphere(sp, Color(0, 1, 0), false);
-        sp.Define(predictMotionPosition, 0.15f);
-        debug.AddSphere(sp, Color(1, 0, 0), false);
+        AddDebugMark(debug, predictPosition, Color(0, 0, 1));
+        AddDebugMark(debug, predictEnemyPosition, Color(0, 1, 0));
+        AddDebugMark(debug, predictMotionPosition, Color(1, 0, 0));
     }
 };
 
