@@ -239,6 +239,8 @@ class PlayerAttackState : CharacterState
     Vector3         movePosPerSec;
     Vector3         predictMotionPosition;
 
+    bool            standBy;
+
     PlayerAttackState(Character@ c)
     {
         super(c);
@@ -341,15 +343,18 @@ class PlayerAttackState : CharacterState
         }
         else if (status == 1)
         {
+            if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime)) {
+                ownner.sceneNode.scene.timeScale = 0.0f;
+            }
+
             if (t >= currentAttack.slowMotionTime.y) {
                 status = 2;
                 ownner.sceneNode.scene.timeScale = 1.0f;
-                ownner.animCtrl.SetSpeed(motion.animationName, 0.0f);
             }
         }
 
         if (input.keyPress['F']) {
-            ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
+            // ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
             ownner.sceneNode.scene.timeScale = 1.0f;
         }
 
@@ -361,10 +366,18 @@ class PlayerAttackState : CharacterState
             motion.startPosition += movePosPerSec * dt;
         }
 
-
-        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
-            ownner.stateMachine.ChangeState("StandState");
+        bool finished = false;
+        if (standBy) {
+            float localTime = ownner.animCtrl.GetTime(motion.animationName);
+            finished = (localTime >= motion.endTime);
         }
+        else {
+            finished = motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
+        }
+
+        if (finished)
+            ownner.stateMachine.ChangeState("StandState");
+
 
         CharacterState::Update(dt);
     }
@@ -381,7 +394,7 @@ class PlayerAttackState : CharacterState
             return leftAttacks[index];
     }
 
-    void PickBestMotion(const Array<AttackMotion@>&in attacks)
+    bool PickBestMotion(const Array<AttackMotion@>&in attacks)
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
@@ -408,9 +421,11 @@ class PlayerAttackState : CharacterState
             }
         }
 
+        bool isTooClose = false;
         if (bestIndex < 0) {
             Print("bestIndex is -1 !!!");
             bestIndex = 0;
+            isTooClose = true;
         }
 
         @currentAttack = attacks[bestIndex];
@@ -421,11 +436,15 @@ class PlayerAttackState : CharacterState
         Vector3 futurePos = currentAttack.motion.GetFuturePosition(ownner.sceneNode, currentAttack.impactTime);
         movePosPerSec = ( predictPosition - futurePos ) / currentAttack.impactTime;
 
-        if (bestIndex == 0)
+        if (isTooClose) {
             movePosPerSec = Vector3(0, 0, 0);
+            predictEnemyPosition = enemyPos;
+            predictPosition = myPos;
+        }
         // attackEnemy.sceneNode.worldPosition = predictEnemyPosition;
 
         Print("Best attack motion = " + String(currentAttack.motion.animationName) + " movePosPerSec=" + movePosPerSec.ToString());
+        return isTooClose;
     }
 
     void Enter(State@ lastState)
@@ -442,26 +461,27 @@ class PlayerAttackState : CharacterState
         int r = RadialSelectAnimation(ownner.sceneNode, 4, angle);
         Print("Attack-align pos-diff=" + posDiff.ToString() + " r-index=" + String(r) + " angle=" + String(angle));
         float targetAngle = 0;
+        standBy = false;
 
         int i = 0;
         if (r == 0)
         {
-            PickBestMotion(forwardAttacks);
+            standBy = PickBestMotion(forwardAttacks);
             targetAngle = 0;
         }
         else if (r == 1)
         {
-            PickBestMotion(rightAttacks);
+            standBy = PickBestMotion(rightAttacks);
             targetAngle = 90;
         }
         else if (r == 2)
         {
-            PickBestMotion(backAttacks);
+            standBy = PickBestMotion(backAttacks);
             targetAngle = angle < 0 ? -180 : 180;
         }
         else if (r == 3)
         {
-            PickBestMotion(leftAttacks);
+            standBy = PickBestMotion(leftAttacks);
             targetAngle = -90;
         }
 

@@ -233,7 +233,8 @@ class MotionManager
         // forward
         int foward_motion_flags = kMotion_XZR;
         int foward_allow_motion = kMotion_ZR;
-        for (int i=2; i<=8; ++i)
+        CreateMotion("BM_Attack/Attack_Close_Forward_02", foward_motion_flags, kMotion_R, foward_allow_motion, -1, false);
+        for (int i=3; i<=8; ++i)
         {
             CreateMotion("BM_Attack/Attack_Close_Forward_0" + String(i), foward_motion_flags, 0, foward_allow_motion, -1, false);
         }
@@ -249,8 +250,6 @@ class MotionManager
         CreateMotion("BM_Attack/Attack_Close_Right", right_motion_flags, 0, right_allow_motion, -1, false);
         for (int i=1; i<=8; ++i)
         {
-            if (i == 2)
-                continue;
             CreateMotion("BM_Attack/Attack_Close_Right_0" + String(i), right_motion_flags, 0, right_allow_motion, -1, false);
         }
         CreateMotion("BM_Attack/Attack_Far_Right", right_motion_flags, 0, right_allow_motion, -1, false);
@@ -313,8 +312,14 @@ class MotionManager
             Print("motion " + name + " already exist!");
             return motion;
         }
+        String animationName = "Animations/" + name + "_AnimStackTake 001.ani";
+        Animation@ anim = cache.GetResource("Animation", animationName);
+        if (anim is null) {
+            return null;
+        }
+
         @motion = Motion();
-        motion.animationName = "Animations/" + name + "_AnimStackTake 001.ani";
+        motion.animationName = animationName;
         motion.animation = cache.GetResource("Animation", motion.animationName);
         // ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys, name == dumpName);
         ProcessAnimation(motion.animationName, motionFlag, origninFlag, allowMotion, cutRotation, motion.motionKeys);
