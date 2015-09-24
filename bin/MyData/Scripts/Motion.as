@@ -231,8 +231,8 @@ class MotionManager
 
         // Attacks
         // forward
-        int foward_motion_flags = kMotion_XZR;
-        int foward_allow_motion = kMotion_ZR;
+        int foward_motion_flags = kMotion_XZ;
+        int foward_allow_motion = kMotion_Z;
         CreateMotion("BM_Attack/Attack_Close_Forward_02", foward_motion_flags, kMotion_R, foward_allow_motion, -1, false);
         for (int i=3; i<=8; ++i)
         {
@@ -261,8 +261,8 @@ class MotionManager
         }
 
         // back
-        int back_motion_flags = kMotion_XZR;
-        int back_allow_motion = kMotion_ZR;
+        int back_motion_flags = kMotion_XZ;
+        int back_allow_motion = kMotion_Z;
         CreateMotion("BM_Attack/Attack_Close_Back", back_motion_flags, 0, back_allow_motion, -1, false);
         for (int i=1; i<=8; ++i)
         {
@@ -290,7 +290,7 @@ class MotionManager
 
         // Counters
         CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, kMotion_XZR, -1, false);
-        // CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, -1, false);
+        CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZR, kMotion_XZR, -1, false);
 
         PostProcess();
 

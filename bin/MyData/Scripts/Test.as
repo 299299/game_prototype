@@ -33,6 +33,7 @@ float globalTime = 0;
 
 void Start()
 {
+    cache.autoReloadResources = true;
     gMotionMgr.Start();
 
     if (!engine.headless)
@@ -91,7 +92,7 @@ void CreateScene()
 void CreateInstructions()
 {
     Text@ instructionText = ui.root.CreateChild("Text", "instruction");
-    instructionText.SetFont(cache.GetResource("Font", "Fonts/life-savers.extrabold.ttf"), 15);
+    instructionText.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
     instructionText.horizontalAlignment = HA_LEFT;
     instructionText.verticalAlignment = VA_TOP;
     instructionText.SetPosition(0, 0);
@@ -159,6 +160,12 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         pauseGame = !pauseGame;
         float speed = slowMotion ? 0.1f : 1.0f;
         scene_.timeScale = pauseGame ? 0 : speed;
+    }
+
+    if (input.keyPress['E'])
+    {
+        String testName = "BM_Attack/Attack_Close_Forward_02";//"TG_BM_Counter/Counter_Arm_Front_01";
+        player.TestAnimation(testName);
     }
 
     String debugText = "";

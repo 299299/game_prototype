@@ -142,6 +142,52 @@ class CharacterAlignState : CharacterState
     }
 };
 
+class AnimationTestState : CharacterState
+{
+    Motion@ testMotion;
+    String  animationName;
+
+    AnimationTestState(Character@ c)
+    {
+        super(c);
+        name = "AnimationTestState";
+        @testMotion = null;
+    }
+
+    void Enter(State@ lastState)
+    {
+        if (testMotion !is null)
+            testMotion.Start(ownner.sceneNode, ownner.animCtrl);
+    }
+
+    void Exit(State@ nextState)
+    {
+        @testMotion = null;
+        CharacterState::Exit(nextState);
+    }
+
+    void SetTestAnimation(const String&in name)
+    {
+        @testMotion = gMotionMgr.FindMotion(name);
+        animationName = name;
+    }
+
+    void Update(float dt)
+    {
+        if (testMotion !is null)
+        {
+            if (testMotion.Move(dt, ownner.sceneNode, ownner.animCtrl))
+                ownner.stateMachine.ChangeState("StandState");
+        }
+        else
+        {
+
+        }
+
+        CharacterState::Update(dt);
+    }
+};
+
 class Character : GameObject
 {
     Node@                   sceneNode;
@@ -242,6 +288,13 @@ class Character : GameObject
         //debug.AddSphere(sp, Color(0, 1, 0));
         //AnimatedModel@ am = sceneNode.GetComponent("AnimatedModel");
         //debug.AddSkeleton(am.skeleton, Color(0,0,1), true);
+    }
+
+    void TestAnimation(const String&in animationName)
+    {
+        AnimationTestState@ state = cast<AnimationTestState@>(stateMachine.FindState("AnimationTestState"));
+        state.SetTestAnimation(animationName);
+        stateMachine.ChangeState("AnimationTestState");
     }
 };
 

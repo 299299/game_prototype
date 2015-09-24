@@ -661,6 +661,8 @@ class Player : Character
         stateMachine.AddState(PlayerCounterState(this));
         stateMachine.AddState(PlayerEvadeState(this));
         stateMachine.AddState(PlayerHitState(this));
+        stateMachine.AddState(AnimationTestState(this));
+
         stateMachine.ChangeState("StandState");
         Print("Player::Start time-cose=" + String(time.systemTime - startTime) + " ms");
     }
