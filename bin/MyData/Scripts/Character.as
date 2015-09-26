@@ -194,6 +194,8 @@ class Character : GameObject
     Node@                   renderNode;
 
     AnimationController@    animCtrl;
+    AnimatedModel@          animModel;
+
     Vector3                 startPosition;
     Quaternion              startRotation;
 
@@ -213,6 +215,7 @@ class Character : GameObject
         renderNode = sceneNode.children[0];
         Print("Character::Start " + sceneNode.name);
         animCtrl = renderNode.GetComponent("AnimationController");
+        animModel = renderNode.GetComponent("AnimatedModel");
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
     }
@@ -286,8 +289,7 @@ class Character : GameObject
         //Sphere sp;
         //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, collisionRadius);
         //debug.AddSphere(sp, Color(0, 1, 0));
-        //AnimatedModel@ am = sceneNode.GetComponent("AnimatedModel");
-        //debug.AddSkeleton(am.skeleton, Color(0,0,1), true);
+        debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
     }
 
     void TestAnimation(const String&in animationName)
