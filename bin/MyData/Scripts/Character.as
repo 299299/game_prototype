@@ -193,6 +193,11 @@ class Character : GameObject
     Node@                   sceneNode;
     Node@                   renderNode;
 
+    Node@                   handNode_L;
+    Node@                   handNode_R;
+    Node@                   footNode_L;
+    Node@                   footNode_R;
+
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
 
@@ -212,12 +217,22 @@ class Character : GameObject
     void Start()
     {
         @sceneNode = node;
-        renderNode = sceneNode.children[0];
         Print("Character::Start " + sceneNode.name);
+        renderNode = sceneNode.children[0];
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
+
+        handNode_L = node.GetChild("Bip01_L_Hand", true);
+        handNode_R = node.GetChild("Bip01_R_Hand", true);
+        footNode_L = node.GetChild("Bip01_L_Foot", true);
+        footNode_R = node.GetChild("Bip01_R_Foot", true);
+    }
+
+    void DelayedStart()
+    {
+        Print("Character::DelayedStart " + sceneNode.name);
     }
 
     void Stop()
@@ -226,6 +241,7 @@ class Character : GameObject
         @stateMachine = null;
         @sceneNode = null;
         @animCtrl = null;
+        @animModel = null;
     }
 
     void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
@@ -289,7 +305,18 @@ class Character : GameObject
         //Sphere sp;
         //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, collisionRadius);
         //debug.AddSphere(sp, Color(0, 1, 0));
-        debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
+        //debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
+        float handRadius = 0.5f;
+        Sphere sp;
+        sp.Define(handNode_L.worldPosition, handRadius);
+        debug.AddSphere(sp, Color(0, 1, 0));
+        sp.Define(handNode_R.worldPosition, handRadius);
+        debug.AddSphere(sp, Color(0, 1, 0));
+        float footRadius = 0.5f;
+        sp.Define(footNode_L.worldPosition, footRadius);
+        debug.AddSphere(sp, Color(0, 1, 0));
+        sp.Define(footNode_R.worldPosition, footRadius);
+        debug.AddSphere(sp, Color(0, 1, 0));
     }
 
     void TestAnimation(const String&in animationName)

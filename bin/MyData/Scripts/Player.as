@@ -226,9 +226,7 @@ class PlayerAttackState : CharacterState
     Array<AttackMotion@>  rightAttacks;
     Array<AttackMotion@>  backAttacks;
 
-    float           fixRotatePerSec;
-
-    AttackMotion@    currentAttack;
+    AttackMotion@   currentAttack;
 
     Enemy@          attackEnemy;
 
@@ -238,6 +236,8 @@ class PlayerAttackState : CharacterState
     Vector3         predictEnemyPosition;
     Vector3         movePosPerSec;
     Vector3         predictMotionPosition;
+
+    float           targetAngle;
 
     bool            standBy;
 
@@ -333,6 +333,19 @@ class PlayerAttackState : CharacterState
             return;
 
         Motion@ motion = currentAttack.motion;
+
+        Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
+        Vector3 myPos = ownner.sceneNode.worldPosition;
+        Vector3 diff = enemyPos - myPos;
+        diff.y = 0;
+        targetAngle = Atan2(diff.x, diff.z);
+
+        Vector3 myDir = ownner.sceneNode.worldRotation * Vector3(0, 0, 1);
+        float myAngle = Atan2(myDir.x, myDir.z);
+        float diffAngle = angleDiff(targetAngle - myAngle);
+        float turnSpeed = 15.0f;
+        motion.startRotation += diffAngle * turnSpeed * dt;
+
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (status == 0)
         {
@@ -449,8 +462,6 @@ class PlayerAttackState : CharacterState
 
     void Enter(State@ lastState)
     {
-        fixRotatePerSec = 0;
-
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
         Vector3 posDiff = enemyPos - myPos;
@@ -460,37 +471,33 @@ class PlayerAttackState : CharacterState
         float angle = Atan2(posDiff.x, posDiff.z);
         int r = RadialSelectAnimation(ownner.sceneNode, 4, angle);
         Print("Attack-align pos-diff=" + posDiff.ToString() + " r-index=" + String(r) + " angle=" + String(angle));
-        float targetAngle = 0;
+        float turnAngle = 0;
         standBy = false;
 
         int i = 0;
         if (r == 0)
         {
             standBy = PickBestMotion(forwardAttacks);
-            targetAngle = 0;
+            turnAngle = 0;
         }
         else if (r == 1)
         {
             standBy = PickBestMotion(rightAttacks);
-            targetAngle = 90;
+            turnAngle = 90;
         }
         else if (r == 2)
         {
             standBy = PickBestMotion(backAttacks);
-            targetAngle = angle < 0 ? -180 : 180;
+            turnAngle = angle < 0 ? -180 : 180;
         }
         else if (r == 3)
         {
             standBy = PickBestMotion(leftAttacks);
-            targetAngle = -90;
+            turnAngle = -90;
         }
 
         if (currentAttack is null)
             return;
-
-        float a_diff = angleDiff(targetAngle - angle);
-        fixRotatePerSec = a_diff / currentAttack.impactTime;
-        Print("targetAngle=" + String(targetAngle) + " a_diff=" + String(a_diff) + " fixRotatePerSec=" + String(fixRotatePerSec));
 
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner.sceneNode, ownner.animCtrl);
@@ -510,12 +517,14 @@ class PlayerAttackState : CharacterState
     {
         if (currentAttack is null)
             return;
-        currentAttack.motion.DebugDraw(debug, ownner.sceneNode);
-        debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.25f, 0.75f, 0.25f), false);
+        // currentAttack.motion.DebugDraw(debug, ownner.sceneNode);
+        debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.7f, 0.8f, 0.7f), false);
 
-        AddDebugMark(debug, predictPosition, Color(0, 0, 1));
-        AddDebugMark(debug, predictEnemyPosition, Color(0, 1, 0));
-        AddDebugMark(debug, predictMotionPosition, Color(1, 0, 0));
+        //AddDebugMark(debug, predictPosition, Color(0, 0, 1));
+        // AddDebugMark(debug, predictEnemyPosition, Color(0, 1, 0));
+        //AddDebugMark(debug, predictMotionPosition, Color(1, 0, 0));
+
+        DebugDrawDirection(debug, ownner.sceneNode, targetAngle, Color(1, 0, 0), 2);
     }
 };
 
