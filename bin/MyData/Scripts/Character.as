@@ -62,6 +62,13 @@ class MultiMotionState : CharacterState
     {
         return motions[i];
     }
+
+    String GetDebugText()
+    {
+        String r = CharacterState::GetDebugText();
+        r += "\ncurrent motion=" + motions[selectIndex].animationName;
+        return r;
+    }
 };
 
 class CharacterAlignState : CharacterState
@@ -185,6 +192,13 @@ class AnimationTestState : CharacterState
         }
 
         CharacterState::Update(dt);
+    }
+
+    String GetDebugText()
+    {
+        String r = CharacterState::GetDebugText();
+        r += "\nanimation=" + animationName;
+        return r;
     }
 };
 

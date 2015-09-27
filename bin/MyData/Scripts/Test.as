@@ -92,11 +92,11 @@ void CreateScene()
 void CreateInstructions()
 {
     Text@ instructionText = ui.root.CreateChild("Text", "instruction");
-    instructionText.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
+    instructionText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
     instructionText.horizontalAlignment = HA_LEFT;
     instructionText.verticalAlignment = VA_TOP;
     instructionText.SetPosition(0, 0);
-    instructionText.color = Color(1, 0, 0);
+    instructionText.color = Color(0, 1, 0);
     SetLogoVisible(false);
 }
 

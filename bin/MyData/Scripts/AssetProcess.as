@@ -23,10 +23,14 @@ Scene@  processScene;
 Node@   processNode;
 Node@   translateNode;
 Node@   rotateNode;
+Skeleton@ skeleton;
 
 Vector3 pelvisRightAxis = Vector3(1, 0, 0);
 Quaternion rotateBoneInitQ;
 Vector3 pelvisOrign;
+
+const float FRAME_PER_SEC = 30.0f;
+const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 
 Vector3 GetProjectedAxis(Node@ node, const Vector3&in axis)
 {
@@ -54,19 +58,19 @@ void PreProcess()
     AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
     am.model = cache.GetResource("Model", rigName);
 
-    Skeleton@ skel = am.skeleton;
-    Bone@ bone = skel.GetBone("RootNode");
+    skeleton = am.skeleton;
+    Bone@ bone = skeleton.GetBone("RootNode");
     // bone.initialRotation = Quaternion(0, -180, 0);
     // skel.GetBone("RootNode").initialRotation = Quaternion(0, -180, 0);
 
-    bone = skel.GetBone(RotateBoneName);
+    bone = skeleton.GetBone(RotateBoneName);
     rotateBoneInitQ = bone.initialRotation;
     pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
     Print("pelvisRightAxis = " + pelvisRightAxis.ToString());
 
     translateNode = processNode.GetChild(TranslateBoneName, true);
     rotateNode = processNode.GetChild(RotateBoneName, true);
-    pelvisOrign = skel.GetBone(TranslateBoneName).initialPosition;
+    pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 }
 
 void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, bool cutRotation, Array<Vector4>&out outKeys, bool dump = false)
@@ -252,14 +256,50 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             Print("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
         }
     }
+}
 
-
+Animation@ CreateAnimation(const String&in originAnimationName, const String&in name, int start_frame, int num_of_frames)
+{
+    Animation@ originAnimation = FindAnimation(originAnimationName);
+    if (originAnimation is null)
+        return null;
+    Animation@ anim = Animation();
+    anim.name = GetAnimationName(name);
+    anim.animationName = name;
+    anim.length = float(num_of_frames) * SEC_PER_FRAME;
+    for (uint i=0; i<skeleton.numBones; ++i)
+    {
+        AnimationTrack@ originTrack = originAnimation.tracks[skeleton.bones[i].name];
+        if (originTrack is null)
+            continue;
+        AnimationTrack@ track = anim.CreateTrack(skeleton.bones[i].name);
+        track.channelMask = originTrack.channelMask;
+        for (int j=start_frame; j<start_frame+num_of_frames; ++j)
+        {
+            AnimationKeyFrame kf(originTrack.keyFrames[j]);
+            kf.time = float(j-start_frame) * SEC_PER_FRAME;
+            track.AddKeyFrame(kf);
+        }
+    }
+    cache.AddManualResource(anim);
+    return anim;
 }
 
 void PostProcess()
 {
+    @skeleton = null;
     @rotateNode = null;
     @translateNode = null;
     @processNode = null;
     @processScene = null;
+}
+
+Animation@ FindAnimation(const String&in name)
+{
+   return cache.GetResource("Animation", GetAnimationName(name));
+}
+
+String GetAnimationName(const String&in name)
+{
+    return "Animations/" + name + "_AnimStackTake 001.ani";
 }

@@ -1,8 +1,6 @@
 
 const int LAYER_MOVE = 0;
 const int LAYER_ATTACK = 1;
-const float FRAME_PER_SEC = 30.0f;
-const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 
 void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer, bool loop, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
 {
@@ -292,6 +290,8 @@ class MotionManager
         CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, kMotion_XZR, -1, false);
         CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZR, kMotion_XZR, -1, false);
 
+        CreateAnimation("BM_Attack/Attack_Close_Forward_02", "BM_Combat_Movement/Stand_Idle_R", 40, 8);
+
         PostProcess();
 
         Print("Motion Process Time Cost = " + String(time.systemTime - startTime) + " ms");
@@ -338,12 +338,3 @@ class MotionManager
 };
 
 
-Animation@ FindAnimation(const String&in name)
-{
-   return cache.GetResource("Animation", GetAnimationName(name));
-}
-
-String GetAnimationName(const String&in name)
-{
-    return "Animations/" + name + "_AnimStackTake 001.ani";
-}

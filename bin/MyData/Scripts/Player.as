@@ -8,14 +8,15 @@ class PlayerStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle"));
-        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_01"));
-        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_02"));
+        //animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle"));
+        //animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_01"));
+        //animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_02"));
+        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_R"));
     }
 
     void Enter(State@ lastState)
     {
-        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.5);
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.5, 0.0, 0.1);
     }
 
     void Exit(State@ nextState)
@@ -344,7 +345,7 @@ class PlayerAttackState : CharacterState
         float myAngle = Atan2(myDir.x, myDir.z);
         float diffAngle = angleDiff(targetAngle - myAngle);
         float turnSpeed = 15.0f;
-        motion.startRotation += diffAngle * turnSpeed * dt;
+        // motion.startRotation += diffAngle * turnSpeed * dt;
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (status == 0)
@@ -526,6 +527,13 @@ class PlayerAttackState : CharacterState
 
         DebugDrawDirection(debug, ownner.sceneNode, targetAngle, Color(1, 0, 0), 2);
     }
+
+    String GetDebugText()
+    {
+        String r = CharacterState::GetDebugText();
+        r += "\ncurrentAttack=" + currentAttack.motion.animationName;
+        return r;
+    }
 };
 
 
@@ -613,6 +621,13 @@ class PlayerCounterState : CharacterState
     {
         CharacterState::Exit(nextState);
         @counterEnemy = null;
+    }
+
+    String GetDebugText()
+    {
+        String r = CharacterState::GetDebugText();
+        r += "\ncurrent motion=" + motions[counterIndex].animationName;
+        return r;
     }
 };
 
