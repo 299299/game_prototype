@@ -1,4 +1,5 @@
 
+const String movement_group = "BM_Movement/"; //"BM_Combat_Movement/"
 
 class PlayerStandState : CharacterState
 {
@@ -8,15 +9,14 @@ class PlayerStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        //animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle"));
-        //animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_01"));
-        //animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_02"));
-        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle_R"));
+        animations.Push(GetAnimationName(movement_group + "Stand_Idle"));
+        //animations.Push(GetAnimationName(movement_group + "Stand_Idle_01"));
+        //animations.Push(GetAnimationName(movement_group + "Stand_Idle_02"));
     }
 
     void Enter(State@ lastState)
     {
-        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.5, 0.0, 0.1);
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.25, 0.0);
     }
 
     void Exit(State@ nextState)
@@ -61,9 +61,9 @@ class PlayerStandToMoveState : MultiMotionState
     {
         super(c);
         name = "StandToMoveState";
-        motions.Push(gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Right_90"));
-        motions.Push(gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Right_180"));
-        motions.Push(gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Left_90"));
+        motions.Push(gMotionMgr.FindMotion(movement_group + "Turn_Right_90"));
+        motions.Push(gMotionMgr.FindMotion(movement_group + "Turn_Right_180"));
+        motions.Push(gMotionMgr.FindMotion(movement_group + "Turn_Left_90"));
         turnSpeed = 5;
     }
 
@@ -93,7 +93,8 @@ class PlayerStandToMoveState : MultiMotionState
 
     int PickIndex()
     {
-        return ownner.sceneNode.vars["AnimationIndex"].GetInt() - 1;
+        return 2;
+        //return ownner.sceneNode.vars["AnimationIndex"].GetInt() - 1;
     }
 };
 
@@ -106,7 +107,7 @@ class PlayerMoveState : CharacterState
     {
         super(c);
         name = "MoveState";
-        @motion = gMotionMgr.FindMotion("BM_Combat_Movement/Walk_Forward");
+        @motion = gMotionMgr.FindMotion(movement_group + "Walk_Forward");
         turnSpeed = 5;
     }
 
@@ -166,13 +167,15 @@ class PlayerMoveTurn180State : CharacterState
     {
         super(c);
         name = "MoveTurn180State";
-        @motion = gMotionMgr.FindMotion("BM_Combat_Movement/Turn_Right_180");
+        @motion = gMotionMgr.FindMotion(movement_group + "Turn_Right_180");
     }
 
     void Update(float dt)
     {
-        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
-            ownner.CommonStateFinishedOnGroud();
+        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
+            if (input.keyPress['G'])
+                ownner.CommonStateFinishedOnGroud();
+        }
 
         CharacterState::Update(dt);
     }
@@ -672,10 +675,10 @@ class Player : Character
         maxCounterDistSQR = 3.0f * 3.0f;
     }
 
-    void Start()
+    void ObjectStart()
     {
         uint startTime = time.systemTime;
-        Character::Start();
+        Character::ObjectStart();
         stateMachine.AddState(PlayerStandState(this));
         stateMachine.AddState(PlayerStandToMoveState(this));
         stateMachine.AddState(PlayerMoveState(this));
@@ -688,7 +691,7 @@ class Player : Character
         stateMachine.AddState(AnimationTestState(this));
 
         stateMachine.ChangeState("StandState");
-        Print("Player::Start time-cose=" + String(time.systemTime - startTime) + " ms");
+        Print("Player::ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
     }
 
     void DebugDraw(DebugRenderer@ debug)

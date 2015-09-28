@@ -89,18 +89,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     // ==============================================================
     // pre process key frames
-    if (translateTrack !is null)
-    {
-        Quaternion q(0, 180, 0); // hack !!!
-        for (uint i=0; i<translateTrack.numKeyFrames; ++i)
-        {
-            AnimationKeyFrame kf(translateTrack.keyFrames[i]);
-            kf.position = q * kf.position;
-            translateTrack.keyFrames[i] = kf;
-            // Print("RotateOrigin change pos from " + oldPos.ToString() + " to " + kf.position_.ToString());
-        }
-    }
-
     if (originFlag & kMotion_R != 0)
     {
         Quaternion q(0, 180, 0); // hack !!!
@@ -160,11 +148,15 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             outKeys[i].w = rotateFromStart;
             rotateFromStart += q.eulerAngles.y;
 
-            q = Quaternion(0, rotateFromStart, 0);
-            Quaternion wq = rotateNode.worldRotation;
-            wq = q.Inverse() * wq;
-            rotateNode.worldRotation = wq;
-            kf.rotation = rotateNode.rotation;
+            //q = Quaternion(0, rotateFromStart, 0);
+            //Quaternion wq = rotateNode.worldRotation;
+            //wq = q.Inverse() * wq;
+            //rotateNode.worldRotation = wq;
+            //kf.rotation = rotateNode.rotation;
+            rotateNode.rotation = kf.rotation;
+            q.FromRotationTo(GetProjectedAxis(rotateNode, pelvisRightAxis), Vector3(0, 0, -1));
+            kf.rotation = q * kf.rotation;
+
             rotateTrack.keyFrames[i] = kf;
         }
     }
@@ -238,6 +230,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     for (uint i=0; i<outKeys.length; ++i)
     {
+        outKeys[i].z *= -1; // hack
         if (allowMotion & kMotion_X == 0)
             outKeys[i].x = 0;
         if (allowMotion & kMotion_Y == 0)

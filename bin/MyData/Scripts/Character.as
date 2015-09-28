@@ -207,6 +207,7 @@ class Character : GameObject
     Node@                   sceneNode;
     Node@                   renderNode;
 
+    Node@                   hipsNode;
     Node@                   handNode_L;
     Node@                   handNode_R;
     Node@                   footNode_L;
@@ -228,20 +229,26 @@ class Character : GameObject
         Print("~Character()");
     }
 
-    void Start()
+    void ObjectStart()
     {
         @sceneNode = node;
-        Print("Character::Start " + sceneNode.name);
+        Print("NodeStart " + sceneNode.name);
         renderNode = sceneNode.children[0];
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
 
+        hipsNode = node.GetChild("Bip01_Pelvis", true);
         handNode_L = node.GetChild("Bip01_L_Hand", true);
         handNode_R = node.GetChild("Bip01_R_Hand", true);
         footNode_L = node.GetChild("Bip01_L_Foot", true);
         footNode_R = node.GetChild("Bip01_R_Foot", true);
+    }
+
+    void Start()
+    {
+        ObjectStart();
     }
 
     void DelayedStart()
@@ -275,7 +282,17 @@ class Character : GameObject
 
     String GetDebugText()
     {
-        return GameObject::GetDebugText() + GetAnimationDebugText(sceneNode);
+        String debugText = sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + "\n";
+        if (animModel.numAnimationStates > 0)
+        {
+            debugText += "Debug-Animations:\n";
+            for (uint i=0; i<animModel.numAnimationStates ; ++i)
+            {
+                AnimationState@ state = animModel.GetAnimationState(i);
+                debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
+            }
+        }
+        return GameObject::GetDebugText() + debugText;
     }
 
     void Attack()
@@ -320,6 +337,8 @@ class Character : GameObject
         //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, collisionRadius);
         //debug.AddSphere(sp, Color(0, 1, 0));
         //debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
+
+        /*
         float handRadius = 0.5f;
         Sphere sp;
         sp.Define(handNode_L.worldPosition, handRadius);
@@ -331,6 +350,8 @@ class Character : GameObject
         debug.AddSphere(sp, Color(0, 1, 0));
         sp.Define(footNode_R.worldPosition, footRadius);
         debug.AddSphere(sp, Color(0, 1, 0));
+        */
+        debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, Color(1,1,0), false);
     }
 
     void TestAnimation(const String&in animationName)

@@ -218,14 +218,19 @@ class MotionManager
         PreProcess();
 
         // Locomotions
-        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_R, 0, kMotion_XZR, 16, false);
-        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_R, 0, kMotion_XZR, 28, false);
-        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_R, 0, kMotion_XZR, 22, false);
-        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_Z, 0, kMotion_XZR, -1, true);
+        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, 0, kMotion_R, 16, false);
+        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, 0, kMotion_R, 28, false);
+        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, 0, kMotion_R, 22, false);
+        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, 0, kMotion_Z, -1, true);
+
+        CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, 0, kMotion_R, 16, false);
+        CreateMotion("BM_Movement/Turn_Right_180", kMotion_XZR, 0, kMotion_XZR, 25, false);
+        CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, 0, kMotion_R, 14, false);
+        CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, 0, kMotion_Z, -1, true);
 
         // Evades
-        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZ, 0, kMotion_XZR, -1, false);
-        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZ, 0, kMotion_XZR, -1, false);
+        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZR, 0, kMotion_Z, -1, false);
+        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZR, 0, kMotion_Z, -1, false);
 
         // Attacks
         // forward
@@ -290,7 +295,7 @@ class MotionManager
         CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, kMotion_XZR, -1, false);
         CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZR, kMotion_XZR, -1, false);
 
-        CreateAnimation("BM_Attack/Attack_Close_Forward_02", "BM_Combat_Movement/Stand_Idle_R", 40, 8);
+        // CreateAnimation("BM_Attack/Attack_Close_Forward_02", "BM_Combat_Movement/Stand_Idle_R", 40, 8);
 
         PostProcess();
 

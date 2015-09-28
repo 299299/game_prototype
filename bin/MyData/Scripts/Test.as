@@ -164,7 +164,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "BM_Attack/Attack_Close_Forward_02";//"TG_BM_Counter/Counter_Arm_Front_01";
+        String testName = "TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
     }
 
