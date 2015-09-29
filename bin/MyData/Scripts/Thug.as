@@ -9,7 +9,10 @@ class ThugStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Combat.FBX"));
+        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_01"));
+        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_02"));
+        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_03"));
+        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_04"));
     }
 
     void Enter(State@ lastState)

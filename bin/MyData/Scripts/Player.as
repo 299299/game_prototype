@@ -1,5 +1,6 @@
 
 const String movement_group = "BM_Movement/"; //"BM_Combat_Movement/"
+bool attack_timing_test = false;
 
 class PlayerStandState : CharacterState
 {
@@ -93,8 +94,7 @@ class PlayerStandToMoveState : MultiMotionState
 
     int PickIndex()
     {
-        return 2;
-        //return ownner.sceneNode.vars["AnimationIndex"].GetInt() - 1;
+        return ownner.sceneNode.vars["AnimationIndex"].GetInt() - 1;
     }
 };
 
@@ -252,7 +252,6 @@ class PlayerAttackState : CharacterState
 
         String preFix = "BM_Attack/";
         // forward close
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_02", 14));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_03", 12));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_04", 19));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_05", 24));
@@ -360,9 +359,12 @@ class PlayerAttackState : CharacterState
         }
         else if (status == 1)
         {
-            if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime)) {
-                ownner.sceneNode.scene.timeScale = 0.0f;
+            if (attack_timing_test)
+            {
+                if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
+                    ownner.sceneNode.scene.timeScale = 0.0f;
             }
+
 
             if (t >= currentAttack.slowMotionTime.y) {
                 status = 2;
@@ -370,10 +372,8 @@ class PlayerAttackState : CharacterState
             }
         }
 
-        if (input.keyPress['F']) {
-            // ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
+        if (attack_timing_test && input.keyPress['F'])
             ownner.sceneNode.scene.timeScale = 1.0f;
-        }
 
         if (status != 2) {
             // motion.startRotation += fixRotatePerSec * dt;
@@ -383,18 +383,13 @@ class PlayerAttackState : CharacterState
             motion.startPosition += movePosPerSec * dt;
         }
 
-        bool finished = false;
+        bool finished = motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
         if (standBy) {
-            float localTime = ownner.animCtrl.GetTime(motion.animationName);
-            finished = (localTime >= motion.endTime);
-        }
-        else {
-            finished = motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
+            ownner.sceneNode.worldPosition = motion.startPosition;
         }
 
         if (finished)
             ownner.stateMachine.ChangeState("StandState");
-
 
         CharacterState::Update(dt);
     }
@@ -506,8 +501,10 @@ class PlayerAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner.sceneNode, ownner.animCtrl);
         predictMotionPosition = motion.GetFuturePosition(currentAttack.impactTime);
-        ownner.sceneNode.scene.timeScale = 0.0f;
         status = 0;
+
+        if (attack_timing_test)
+            ownner.sceneNode.scene.timeScale = 0.0f;
     }
 
     void Exit(State@ nextState)

@@ -59,11 +59,7 @@ void PreProcess()
     am.model = cache.GetResource("Model", rigName);
 
     skeleton = am.skeleton;
-    Bone@ bone = skeleton.GetBone("RootNode");
-    // bone.initialRotation = Quaternion(0, -180, 0);
-    // skel.GetBone("RootNode").initialRotation = Quaternion(0, -180, 0);
-
-    bone = skeleton.GetBone(RotateBoneName);
+    Bone@ bone = skeleton.GetBone(RotateBoneName);
     rotateBoneInitQ = bone.initialRotation;
     pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
     pelvisRightAxis.Normalize();
@@ -87,12 +83,12 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
+    Quaternion flipZ_Rot(0, 180, 0);
 
     // ==============================================================
     // pre process key frames
     if (originFlag & kMotion_R != 0)
     {
-        Quaternion q(0, 180, 0); // hack !!!
         if (rotateTrack !is null)
         {
             for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
@@ -100,7 +96,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
                 AnimationKeyFrame kf(rotateTrack.keyFrames[i]);
                 rotateNode.rotation = kf.rotation;
                 Quaternion wq = rotateNode.worldRotation;
-                wq = q * wq;
+                wq = flipZ_Rot * wq;
                 rotateNode.worldRotation = wq;
                 kf.rotation = rotateNode.rotation;
                 rotateTrack.keyFrames[i] = kf;
@@ -111,7 +107,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             for (uint i=0; i<translateTrack.numKeyFrames; ++i)
             {
                 AnimationKeyFrame kf(translateTrack.keyFrames[i]);
-                kf.position = q * kf.position;
+                kf.position = flipZ_Rot * kf.position;
                 translateTrack.keyFrames[i] = kf;
                 // Print("RotateOrigin change pos from " + oldPos.ToString() + " to " + kf.position_.ToString());
             }
@@ -234,7 +230,11 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     for (uint i=0; i<outKeys.length; ++i)
     {
-        outKeys[i].z *= -1; // hack
+        Vector3 v_motion(outKeys[i].x, outKeys[i].y, outKeys[i].z);
+        v_motion = flipZ_Rot * v_motion;
+        outKeys[i].x = v_motion.x;
+        outKeys[i].y = v_motion.y;
+        outKeys[i].z = v_motion.z;
         if (allowMotion & kMotion_X == 0)
             outKeys[i].x = 0;
         if (allowMotion & kMotion_Y == 0)

@@ -234,9 +234,8 @@ class MotionManager
 
         // Attacks
         // forward
-        int foward_motion_flags = kMotion_XZ;
-        int foward_allow_motion = kMotion_Z;
-        CreateMotion("BM_Attack/Attack_Close_Forward_02", foward_motion_flags, kMotion_R, foward_allow_motion, -1, false);
+        int foward_motion_flags = kMotion_XZR;
+        int foward_allow_motion = kMotion_ZR;
         for (int i=3; i<=8; ++i)
         {
             CreateMotion("BM_Attack/Attack_Close_Forward_0" + String(i), foward_motion_flags, 0, foward_allow_motion, -1, false);
@@ -264,8 +263,8 @@ class MotionManager
         }
 
         // back
-        int back_motion_flags = kMotion_XZ;
-        int back_allow_motion = kMotion_Z;
+        int back_motion_flags = kMotion_XZR;
+        int back_allow_motion = kMotion_ZR;
         CreateMotion("BM_Attack/Attack_Close_Back", back_motion_flags, 0, back_allow_motion, -1, false);
         for (int i=1; i<=8; ++i)
         {
