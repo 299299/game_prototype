@@ -96,7 +96,7 @@ class CharacterAlignState : CharacterState
 
         float curYaw = ownner.sceneNode.worldRotation.eulerAngles.y;
         float diff = targetRotation - curYaw;
-        diff = angleDiff(diff);
+        diff = AngleDiff(diff);
 
         targetPosition.y = ownner.sceneNode.worldPosition.y;
 
@@ -362,23 +362,13 @@ class Character : GameObject
     }
 };
 
-// clamps an angle to the rangle of [-2PI, 2PI]
-float angleDiff( float diff )
-{
-    if (diff > 180)
-        diff -= 360;
-    if (diff < -180)
-        diff += 360;
-    return diff;
-}
-
 // computes the difference between the characters current heading and the
 // heading the user wants them to go in.
 float ComputeDifference(Node@ n, float desireAngle)
 {
     Vector3 characterDir = n.worldRotation * Vector3(0, 0, 1);
     float characterAngle = Atan2(characterDir.x, characterDir.z);
-    return angleDiff(desireAngle - characterAngle);
+    return AngleDiff(desireAngle - characterAngle);
 }
 
 //  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
@@ -387,7 +377,7 @@ int RadialSelectAnimation(Node@ n, int numDirections, float desireAngle)
 {
     Vector3 characterDir = n.worldRotation * Vector3(0, 0, 1);
     float characterAngle = Atan2(characterDir.x, characterDir.z);
-    float directionDifference = angleDiff(desireAngle - characterAngle);
+    float directionDifference = AngleDiff(desireAngle - characterAngle);
     float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
 
     // since the range of the direction variable is [-3, 3] we need to map negative
@@ -417,5 +407,5 @@ float FaceAngleDiff(Node@ thisNode, Node@ targetNode)
     Vector3 thisDir = thisNode.worldRotation * Vector3(0, 0, 1);
     float thisAngle = Atan2(thisDir.x, thisDir.z);
     float targetAngle = Atan2(posDiff.x, posDiff.y);
-    return angleDiff(targetAngle - thisAngle);
+    return AngleDiff(targetAngle - thisAngle);
 }

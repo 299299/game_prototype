@@ -173,7 +173,7 @@ class PlayerMoveTurn180State : CharacterState
     void Update(float dt)
     {
         if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
-            if (input.keyPress['G'])
+            //if (input.keyPress['G'])
                 ownner.CommonStateFinishedOnGroud();
         }
 
@@ -346,7 +346,7 @@ class PlayerAttackState : CharacterState
 
         Vector3 myDir = ownner.sceneNode.worldRotation * Vector3(0, 0, 1);
         float myAngle = Atan2(myDir.x, myDir.z);
-        float diffAngle = angleDiff(targetAngle - myAngle);
+        float diffAngle = AngleDiff(targetAngle - myAngle);
         float turnSpeed = 15.0f;
         // motion.startRotation += diffAngle * turnSpeed * dt;
 
@@ -571,7 +571,7 @@ class PlayerCounterState : CharacterState
             Vector3 targetPos = Quaternion(0, targetRotation, 0) * positionDiff + node.worldPosition;
             targetPos = node.worldPosition.Lerp(targetPos, timeInState/alignTime);
             float curRot = node.worldRotation.eulerAngles.y;
-            float dYaw = angleDiff(targetRotation - curRot);
+            float dYaw = AngleDiff(targetRotation - curRot);
             float timeLeft = alignTime - timeInState;
             float yawPerSec = dYaw / timeLeft;
             node.worldRotation = Quaternion(0, curRot + yawPerSec * dt, 0);
@@ -604,7 +604,7 @@ class PlayerCounterState : CharacterState
         posDiff.y = 0;
 
         float angle = Atan2(posDiff.x, posDiff.z);
-        float dAngle = angleDiff(angle - myAngle);
+        float dAngle = AngleDiff(angle - myAngle);
         int front_back = 0;
         if (Abs(dAngle) > 90)
             front_back = 1;

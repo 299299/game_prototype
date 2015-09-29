@@ -1,4 +1,6 @@
 
+const String thugMovementGroup = "TG_Combat/";
+
 class ThugStandState : CharacterState
 {
     Array<String>           animations;
@@ -7,7 +9,7 @@ class ThugStandState : CharacterState
     {
         super(c);
         name = "StandState";
-        animations.Push(GetAnimationName("BM_Combat_Movement/Stand_Idle"));
+        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Combat.FBX"));
     }
 
     void Enter(State@ lastState)
@@ -20,6 +22,33 @@ class ThugStandState : CharacterState
         CharacterState::Update(dt);
     }
 };
+
+class ThugTauntState : CharacterState
+{
+    Array<String>           animations;
+
+    ThugTauntState(Character@ c)
+    {
+        super(c);
+        name = "TauntState";
+        animations.Push(GetAnimationName(thugMovementGroup + "Taunt_Idle.FBX"));
+        for (int i=1; i<=6; ++i)
+        {
+            animations.Push(GetAnimationName(thugMovementGroup + "Taunt_Idle_0" + String(i) + ".FBX"));
+        }
+    }
+
+    void Enter(State@ lastState)
+    {
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.25f);
+    }
+
+    void Update(float dt)
+    {
+        CharacterState::Update(dt);
+    }
+};
+
 
 class ThugCounterState : MultiMotionState
 {
@@ -107,6 +136,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugCounterState(this));
         stateMachine.AddState(ThugAlignState(this));
         stateMachine.AddState(ThugHitState(this));
+        stateMachine.AddState(ThugTauntState(this));
         stateMachine.ChangeState("StandState");
     }
 

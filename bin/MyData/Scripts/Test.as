@@ -87,6 +87,13 @@ void CreateScene()
         engine.Exit();
         return;
     }
+
+    Vector3 pos = cameraNode.worldPosition;
+    Vector3 playerPos = characterNode.worldPosition;
+    pos.x = playerPos.x;
+    pos.z = playerPos.z;
+    pos.z -= 5;
+    cameraNode.worldPosition = pos;
 }
 
 void CreateInstructions()

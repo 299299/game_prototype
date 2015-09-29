@@ -66,6 +66,7 @@ void PreProcess()
     bone = skeleton.GetBone(RotateBoneName);
     rotateBoneInitQ = bone.initialRotation;
     pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
+    pelvisRightAxis.Normalize();
     Print("pelvisRightAxis = " + pelvisRightAxis.ToString());
 
     translateNode = processNode.GetChild(TranslateBoneName, true);
@@ -120,13 +121,14 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     outKeys.Resize(translateTrack.numKeyFrames);
 
     float firstRotateFromRoot = 0;
+
     if (rotateTrack !is null)
     {
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
         {
             Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[i].rotation);
             if (i == 0 || i == rotateTrack.numKeyFrames - 1)
-                Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
+               Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
             if (i == 0)
                 firstRotateFromRoot = q.eulerAngles.y;
         }
@@ -148,14 +150,16 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             outKeys[i].w = rotateFromStart;
             rotateFromStart += q.eulerAngles.y;
 
-            //q = Quaternion(0, rotateFromStart, 0);
-            //Quaternion wq = rotateNode.worldRotation;
-            //wq = q.Inverse() * wq;
-            //rotateNode.worldRotation = wq;
-            //kf.rotation = rotateNode.rotation;
-            rotateNode.rotation = kf.rotation;
-            q.FromRotationTo(GetProjectedAxis(rotateNode, pelvisRightAxis), Vector3(0, 0, -1));
-            kf.rotation = q * kf.rotation;
+            q = Quaternion(0, rotateFromStart, 0).Inverse();
+
+            Quaternion wq = rotateNode.worldRotation;
+            wq = q * wq;
+            rotateNode.worldRotation = wq;
+            kf.rotation = rotateNode.rotation;
+
+            // rotateNode.rotation = kf.rotation;
+            //q = GetRotationInXZPlane(rotateNode, kf.rotation, rotateTrack.keyFrames[0].rotation);
+            // kf.rotation = q * kf.rotation;
 
             rotateTrack.keyFrames[i] = kf;
         }
@@ -295,4 +299,14 @@ Animation@ FindAnimation(const String&in name)
 String GetAnimationName(const String&in name)
 {
     return "Animations/" + name + "_AnimStackTake 001.ani";
+}
+
+// clamps an angle to the rangle of [-2PI, 2PI]
+float AngleDiff( float diff )
+{
+    if (diff > 180)
+        diff -= 360;
+    if (diff < -180)
+        diff += 360;
+    return diff;
 }
