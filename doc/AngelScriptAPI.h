@@ -3700,10 +3700,13 @@ class DebugRenderer
 {
 // Methods:
 void AddBoundingBox(const BoundingBox&, const Color&, bool = true);
+void AddCircle(const Vector3&, const Vector3&, float, const Color&, int = 64, bool = true);
+void AddCross(const Vector3&, float, const Color&, bool = true);
 void AddFrustum(const Frustum&, const Color&, bool = true);
 void AddLine(const Vector3&, const Vector3&, const Color&, bool = true);
 void AddNode(Node, float = 1.0, bool = true);
 void AddPolyhedron(const Polyhedron&, const Color&, bool = true);
+void AddQuad(const Vector3&, float, float, const Color&, bool = true);
 void AddSkeleton(Skeleton, const Color&, bool = true);
 void AddSphere(const Sphere&, const Color&, bool = true);
 void AddTriangle(const Vector3&, const Vector3&, const Vector3&, const Color&, bool = true);
@@ -4336,7 +4339,7 @@ bool Load(File, bool = false);
 bool Load(VectorBuffer&, bool = false);
 bool LoadXML(const XMLElement&, bool = false);
 void MarkNetworkUpdate() const;
-Vector3 MoveAlongSurface(const Vector3&, const Vector3&, const Vector3& = Vector3 ( 1.0 , 1.0 , 1.0 ), uint = 3);
+Vector3 MoveAlongSurface(const Vector3&, const Vector3&, const Vector3& = Vector3 ( 1.0 , 1.0 , 1.0 ), int = 3);
 Vector3 Raycast(const Vector3&, const Vector3&, const Vector3& = Vector3 ( 1.0 , 1.0 , 1.0 ));
 void Remove();
 void RemoveInstanceDefault();
@@ -6400,7 +6403,7 @@ bool Load(File, bool = false);
 bool Load(VectorBuffer&, bool = false);
 bool LoadXML(const XMLElement&, bool = false);
 void MarkNetworkUpdate() const;
-Vector3 MoveAlongSurface(const Vector3&, const Vector3&, const Vector3& = Vector3 ( 1.0 , 1.0 , 1.0 ), uint = 3);
+Vector3 MoveAlongSurface(const Vector3&, const Vector3&, const Vector3& = Vector3 ( 1.0 , 1.0 , 1.0 ), int = 3);
 Vector3 Raycast(const Vector3&, const Vector3&, const Vector3& = Vector3 ( 1.0 , 1.0 , 1.0 ));
 void Remove();
 void RemoveInstanceDefault();
@@ -10864,6 +10867,7 @@ class Texture2D
 {
 // Methods:
 void ClearDataLost();
+Image GetImage() const;
 bool Load(File);
 bool Load(VectorBuffer&);
 bool Save(File) const;
@@ -12993,6 +12997,7 @@ enum MouseMode
 MM_ABSOLUTE,
 MM_RELATIVE,
 MM_WRAP,
+MM_FREE,
 };
 
 enum NavigationPushiness
@@ -13855,3 +13860,4 @@ uint VO_LOW_MATERIAL_QUALITY;
 uint VO_NONE;
 Color WHITE;
 Color YELLOW;
+VariantMap globalVars;
