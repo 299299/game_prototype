@@ -1,5 +1,5 @@
 
-const String movement_group = "BM_Movement/"; //"BM_Combat_Movement/"
+const String movement_group = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
 
 class PlayerStandState : CharacterState
@@ -23,7 +23,6 @@ class PlayerStandState : CharacterState
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
-
     /*
         Vector3 leftFootPos = ownner.sceneNode.GetChild("Bip01_L_Foot", true).worldPosition;
         Vector3 rightFootPos = ownner.sceneNode.GetChild("Bip01_R_Foot", true).worldPosition;
@@ -39,6 +38,7 @@ class PlayerStandState : CharacterState
         {
             int index = RadialSelectAnimation_Player(ownner.sceneNode, 4);
             ownner.sceneNode.vars["AnimationIndex"] = index;
+
             if (index == 0)
                 ownner.stateMachine.ChangeState("MoveState");
             else
@@ -57,6 +57,7 @@ class PlayerStandState : CharacterState
 class PlayerStandToMoveState : MultiMotionState
 {
     float turnSpeed;
+    float motionTargetAngle;
 
     PlayerStandToMoveState(Character@ c)
     {
@@ -70,26 +71,42 @@ class PlayerStandToMoveState : MultiMotionState
 
     void Update(float dt)
     {
-        float characterDifference = ComputeDifference_Player(ownner.sceneNode);
-        float a = timeInState / motions[selectIndex].endTime;
+        Motion@ motion = motions[selectIndex];
+
+        Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
+        float cameraAngle = Atan2(camDir.x, camDir.z);
+        float characterDifference = AngleDiff(gInput.m_leftStickAngle + cameraAngle - motionTargetAngle);
+
+        float a = timeInState / motion.endTime;
         float dYaw = characterDifference * turnSpeed * dt * a;
-        //motions[selectIndex].startRotation += dYaw;
+        if (gInput.IsLeftStickStationary())
+            motion.startRotation += dYaw;
 
-        if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
+        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
         {
-            Print("180!!!");
-            ownner.stateMachine.ChangeState("MoveTurn180State");
-        }
-
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
-        {
-            if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
-                ownner.stateMachine.ChangeState("StandState");
+            if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
+            {
+                Print("180!!!");
+                ownner.stateMachine.ChangeState("MoveTurn180State");
+            }
             else
-                ownner.stateMachine.ChangeState("MoveState");
+            {
+                if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
+                    ownner.stateMachine.ChangeState("StandState");
+                else
+                    ownner.stateMachine.ChangeState("MoveState");
+            }
         }
 
         CharacterState::Update(dt);
+    }
+
+    void Enter(CharacterState@ lastState)
+    {
+        MultiMotionState::Enter(lastState);
+        Motion@ motion = motions[selectIndex];
+        Vector4 endKey = motion.GetKey(motion.endTime);
+        motionTargetAngle = motion.startRotation + endKey.w;
     }
 
     int PickIndex()
@@ -173,8 +190,7 @@ class PlayerMoveTurn180State : CharacterState
     void Update(float dt)
     {
         if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl)) {
-            //if (input.keyPress['G'])
-                ownner.CommonStateFinishedOnGroud();
+            ownner.CommonStateFinishedOnGroud();
         }
 
         CharacterState::Update(dt);
@@ -372,9 +388,6 @@ class PlayerAttackState : CharacterState
             }
         }
 
-        if (attack_timing_test && input.keyPress['F'])
-            ownner.sceneNode.scene.timeScale = 1.0f;
-
         if (status != 2) {
             // motion.startRotation += fixRotatePerSec * dt;
             // Print("motion.startRotation=" + String(motion.startRotation));
@@ -522,7 +535,7 @@ class PlayerAttackState : CharacterState
         debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.7f, 0.8f, 0.7f), false);
 
         //AddDebugMark(debug, predictPosition, Color(0, 0, 1));
-        // AddDebugMark(debug, predictEnemyPosition, Color(0, 1, 0));
+        //AddDebugMark(debug, predictEnemyPosition, Color(0, 1, 0));
         //AddDebugMark(debug, predictMotionPosition, Color(1, 0, 0));
 
         DebugDrawDirection(debug, ownner.sceneNode, targetAngle, Color(1, 0, 0), 2);
@@ -693,17 +706,15 @@ class Player : Character
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        /*
-            Vector3 fwd = Vector3(0, 0, 1);
-            Vector3 camDir = cameraNode.worldRotation * fwd;
-            float cameraAngle = Atan2(camDir.x, camDir.z);
-            Vector3 characterDir = sceneNode.worldRotation * fwd;
-            float characterAngle = Atan2(characterDir.x, characterDir.z);
-            float targetAngle = cameraAngle + gInput.m_leftStickAngle;
-            float baseLen = 2.0f;
-            DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
-            DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
-        */
+        Vector3 fwd = Vector3(0, 0, 1);
+        Vector3 camDir = cameraNode.worldRotation * fwd;
+        float cameraAngle = Atan2(camDir.x, camDir.z);
+        Vector3 characterDir = sceneNode.worldRotation * fwd;
+        float characterAngle = Atan2(characterDir.x, characterDir.z);
+        float targetAngle = cameraAngle + gInput.m_leftStickAngle;
+        float baseLen = 2.0f;
+        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
+        DebugDrawDirection(debug, sceneNode, characterAngle, Color(1, 0, 1), baseLen);
         Character::DebugDraw(debug);
     }
 

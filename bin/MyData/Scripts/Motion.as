@@ -136,8 +136,11 @@ class Motion
             Vector3 tLocal(tFinnal.x, tFinnal.y, tFinnal.z);
             debug.AddLine(node.worldRotation * tLocal + node.worldPosition, node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
         }
-        else
-            debug.AddLine(GetFuturePosition(endTime),  startPosition, Color(0.5f, 0.5f, 0.7f), false);
+        else {
+            Vector4 tFinnal = GetKey(endTime);
+            debug.AddLine(startRotationQua * Vector3(tFinnal.x, tFinnal.y, tFinnal.z) + startPosition,  startPosition, Color(0.5f, 0.5f, 0.7f), false);
+            DebugDrawDirection(debug, node, startRotation + tFinnal.w, Color(0,1,0), 4);
+        }
     }
 };
 

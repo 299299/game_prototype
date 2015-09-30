@@ -175,6 +175,10 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         player.TestAnimation(testName);
     }
 
+    if (input.keyPress['F']) {
+        scene_.timeScale = 1.0f;
+    }
+
     String debugText = "";
 
     if (player !is null)
