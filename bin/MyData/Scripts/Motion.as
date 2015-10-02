@@ -24,6 +24,7 @@ class Motion
     Vector3                 startPosition;
     float                   startRotation;
     Quaternion              startRotationQua;
+    float                   deltaRotation;
 
     Motion()
     {
@@ -82,6 +83,7 @@ class Motion
         startPosition = node.worldPosition;
         startRotationQua = node.worldRotation;
         startRotation = startRotationQua.eulerAngles.y;
+        deltaRotation = 0;
     }
 
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
@@ -100,7 +102,7 @@ class Motion
         else
         {
             Vector4 motionOut = GetKey(localTime);
-            node.worldRotation = Quaternion(0, startRotation + motionOut.w, 0);
+            node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
             Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
             MoveNode(node, tWorld, dt);
             // Print("key-yaw=" + String(motionOut.w) + " worldRotation=" + node.worldRotation.eulerAngles.ToString());

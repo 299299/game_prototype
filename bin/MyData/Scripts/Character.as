@@ -371,21 +371,24 @@ float ComputeDifference(Node@ n, float desireAngle)
     return AngleDiff(desireAngle - characterAngle);
 }
 
-//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
-//  contains the gamepad's angle relative to the camera.
-int RadialSelectAnimation(Node@ n, int numDirections, float desireAngle)
+int DirectionMapToIndex(float directionDifference, int numDirections)
 {
-    Vector3 characterDir = n.worldRotation * Vector3(0, 0, 1);
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-    float directionDifference = AngleDiff(desireAngle - characterAngle);
     float directionVariable = Floor(directionDifference / (180 / (numDirections / 2)) + 0.5f);
-
     // since the range of the direction variable is [-3, 3] we need to map negative
     // values to the animation index range in our selector which is [0,7]
     if( directionVariable < 0 )
         directionVariable += numDirections;
     return int(directionVariable);
 }
+
+
+//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
+//  contains the gamepad's angle relative to the camera.
+int RadialSelectAnimation(Node@ n, int numDirections, float desireAngle)
+{
+    return DirectionMapToIndex(ComputeDifference(n, desireAngle), numDirections);
+}
+
 
 String GetAnimationDebugText(Node@ n)
 {

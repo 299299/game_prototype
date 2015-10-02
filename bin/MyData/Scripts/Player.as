@@ -57,7 +57,6 @@ class PlayerStandState : CharacterState
 class PlayerStandToMoveState : MultiMotionState
 {
     float turnSpeed;
-    float motionTargetAngle;
 
     PlayerStandToMoveState(Character@ c)
     {
@@ -66,25 +65,20 @@ class PlayerStandToMoveState : MultiMotionState
         motions.Push(gMotionMgr.FindMotion(movement_group + "Turn_Right_90"));
         motions.Push(gMotionMgr.FindMotion(movement_group + "Turn_Right_180"));
         motions.Push(gMotionMgr.FindMotion(movement_group + "Turn_Left_90"));
-        turnSpeed = 5;
+        turnSpeed = 0.0f;
     }
 
     void Update(float dt)
     {
         Motion@ motion = motions[selectIndex];
 
-        Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
-        float cameraAngle = Atan2(camDir.x, camDir.z);
-        float characterDifference = AngleDiff(gInput.m_leftStickAngle + cameraAngle - motionTargetAngle);
-
         float a = timeInState / motion.endTime;
-        float dYaw = characterDifference * turnSpeed * dt * a;
-        if (gInput.IsLeftStickStationary())
-            motion.startRotation += dYaw;
+        motion.deltaRotation += dt * turnSpeed;
 
         if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
         {
-            if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
+            float diff = ComputeDifference_Player(ownner.sceneNode);
+            if ( (Abs(diff) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
             {
                 Print("180!!!");
                 ownner.stateMachine.ChangeState("MoveTurn180State");
@@ -101,17 +95,26 @@ class PlayerStandToMoveState : MultiMotionState
         CharacterState::Update(dt);
     }
 
-    void Enter(CharacterState@ lastState)
+    void Enter(State@ lastState)
     {
         MultiMotionState::Enter(lastState);
         Motion@ motion = motions[selectIndex];
         Vector4 endKey = motion.GetKey(motion.endTime);
-        motionTargetAngle = motion.startRotation + endKey.w;
+        float motionTargetAngle = motion.startRotation + endKey.w;
+        float targetAngle = GetPlayerTargetAngle();
+        float diff = AngleDiff(targetAngle - motionTargetAngle);
+        turnSpeed = diff / motion.endTime;
+        Print("motionTargetAngle=" + String(motionTargetAngle) + " targetAngle=" + String(targetAngle) + " diff=" + String(diff) + " turnSpeed=" + String(turnSpeed));
     }
 
     int PickIndex()
     {
         return ownner.sceneNode.vars["AnimationIndex"].GetInt() - 1;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        MultiMotionState::DebugDraw(debug);
     }
 };
 
@@ -363,7 +366,7 @@ class PlayerAttackState : CharacterState
         float myAngle = Atan2(myDir.x, myDir.z);
         float diffAngle = AngleDiff(targetAngle - myAngle);
         float turnSpeed = 15.0f;
-        // motion.startRotation += diffAngle * turnSpeed * dt;
+        // motion.deltaRotation += diffAngle * turnSpeed * dt;
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (status == 0)
@@ -389,9 +392,8 @@ class PlayerAttackState : CharacterState
         }
 
         if (status != 2) {
-            // motion.startRotation += fixRotatePerSec * dt;
-            // Print("motion.startRotation=" + String(motion.startRotation));
-
+            // motion.deltaRotation += fixRotatePerSec * dt;
+            // Print("motion.deltaRotation=" + String(motion.deltaRotation));
             // ownner.sceneNode.worldPosition = ownner.sceneNode.worldPosition + movePosPerSec * dt;
             motion.startPosition += movePosPerSec * dt;
         }
@@ -834,26 +836,22 @@ class Player : Character
 };
 
 
-// computes the difference between the characters current heading and the
-// heading the user wants them to go in.
+float GetPlayerTargetAngle()
+{
+    Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
+    float cameraAngle = Atan2(camDir.x, camDir.z);
+    return gInput.m_leftStickAngle + cameraAngle;
+}
+
 float ComputeDifference_Player(Node@ n)
 {
-    // if the user is not pushing the stick anywhere return.  this prevents the character from turning while stopping (which
-    // looks bad - like the skid to stop animation)
     if( gInput.m_leftStickMagnitude < 0.5f )
         return 0;
 
-    Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
-    float cameraAngle = Atan2(camDir.x, camDir.z);
-    // check the difference between the characters current heading and the desired heading from the gamepad
-    return ComputeDifference(n, gInput.m_leftStickAngle + cameraAngle);
+    return ComputeDifference(n, GetPlayerTargetAngle());
 }
 
-//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
-//  contains the gamepad's angle relative to the camera.
 int RadialSelectAnimation_Player(Node@ n, int numDirections)
 {
-    Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
-    float cameraAngle = Atan2(camDir.x, camDir.z);
-    return RadialSelectAnimation(n, numDirections, gInput.m_leftStickAngle + cameraAngle);
+    return DirectionMapToIndex(ComputeDifference_Player(n), numDirections);
 }
