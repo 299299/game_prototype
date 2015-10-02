@@ -197,6 +197,11 @@ class MotionManager
     Array<String>           motionNames;
     Array<Motion@>          motions;
 
+    MotionManager()
+    {
+        Print("MotionManager");
+    }
+
     int FindMotionIndex(const String&in name)
     {
         for (uint i=0; i<motionNames.length; ++i)
@@ -347,3 +352,4 @@ class MotionManager
 };
 
 
+MotionManager@ gMotionMgr = MotionManager();
