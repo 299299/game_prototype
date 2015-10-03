@@ -72,8 +72,8 @@ class PlayerStandToMoveState : MultiMotionState
     {
         Motion@ motion = motions[selectIndex];
 
-        float a = timeInState / motion.endTime;
         motion.deltaRotation += dt * turnSpeed;
+        // Print("deltaRotation = " + String(motion.deltaRotation));
 
         if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
         {

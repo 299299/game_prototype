@@ -69,6 +69,8 @@ class GameInput
             m_leftStickHoldTime += dt;
         else
             m_leftStickHoldTime = 0;
+
+        // Print("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
     }
 
     Vector2 GetLeftStick()
@@ -135,7 +137,7 @@ class GameInput
     // Returns true if the left game pad hasn't moved since the last update
     bool IsLeftStickStationary()
     {
-        return HasLeftStickBeenStationary(0.01f);
+        return HasLeftStickBeenStationary(0.05f);
     }
 
     // Returns true if the left stick is the dead zone, false otherwise
@@ -176,4 +178,13 @@ class GameInput
         else
             return input.keyPress[KEY_SPACE];
     }
+
+    String GetDebugText()
+    {
+        return "leftStick:(" + String(m_leftStickX) + "," + String(m_leftStickY) + ")" +
+               " left-angle=" + String(m_leftStickAngle) + " hold-time-" + String(m_leftStickHoldTime) +
+               "\nrightStick:(" + String(m_rightStickX) + "," + String(m_rightStickY) + ")\n";
+    }
 };
+
+GameInput@ gInput = GameInput();

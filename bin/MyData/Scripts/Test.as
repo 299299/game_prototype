@@ -16,7 +16,6 @@ const String GAME_SCRIPT = "Scripts/Test.as";
 Node@ characterNode;
 Node@ thugNode;
 
-GameInput@ gInput = GameInput();
 Player@ player;
 Thug@ thug;
 bool slowMotion = false;
@@ -172,11 +171,10 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         scene_.timeScale = 1.0f;
     }
 
-    String debugText = "";
-
+    String debugText = gInput.GetDebugText();
     if (player !is null)
     {
-        debugText = player.GetDebugText();
+        debugText += player.GetDebugText();
 
         /*
         Vector3 fwd = Vector3(0, 0, 1);
