@@ -140,11 +140,11 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             AnimationKeyFrame kf(rotateTrack.keyFrames[i]);
             Quaternion q = GetRotationInXZPlane(rotateNode, lastRot, kf.rotation);
             lastRot = kf.rotation;
-            if (dump)
-                Print("rotation from last frame = " + String(q.eulerAngles.y));
-
             outKeys[i].w = rotateFromStart;
             rotateFromStart += q.eulerAngles.y;
+
+            if (dump)
+                Print("rotation from last frame = " + String(q.eulerAngles.y) + " rotateFromStart=" + String(rotateFromStart));
 
             q = Quaternion(0, rotateFromStart, 0).Inverse();
 
@@ -152,10 +152,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             wq = q * wq;
             rotateNode.worldRotation = wq;
             kf.rotation = rotateNode.rotation;
-
-            // rotateNode.rotation = kf.rotation;
-            //q = GetRotationInXZPlane(rotateNode, kf.rotation, rotateTrack.keyFrames[0].rotation);
-            // kf.rotation = q * kf.rotation;
 
             rotateTrack.keyFrames[i] = kf;
         }

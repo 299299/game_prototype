@@ -215,8 +215,10 @@ class MotionManager
     Motion@ FindMotion(const String&in name)
     {
         int i = FindMotionIndex(name);
-        if (i < 0)
+        if (i < 0) {
+            Print("Can not find motion " + name);
             return null;
+        }
 
         return motions[i];
     }
@@ -227,6 +229,9 @@ class MotionManager
 
         PreProcess();
 
+        //========================================================================
+        // PLAYER MOTIONS
+        //========================================================================
         // Locomotions
         CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, 0, kMotion_R, 16, false);
         CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, 0, kMotion_R, 28, false);
@@ -234,13 +239,15 @@ class MotionManager
         CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, 0, kMotion_Z, -1, true);
 
         CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, 0, kMotion_R, 16, false);
-        CreateMotion("BM_Movement/Turn_Right_180", kMotion_XZR, 0, kMotion_XZR, 25, false);
+        CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, 0, kMotion_R, 25, false);
         CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, 0, kMotion_R, 14, false);
         CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, 0, kMotion_Z, -1, true);
 
         // Evades
-        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZR, 0, kMotion_Z, -1, false);
-        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZR, 0, kMotion_Z, -1, false);
+        CreateMotion("BM_Combat/Evade_Forward_01", kMotion_XZR, 0, kMotion_ZR, -1, false);
+        CreateMotion("BM_Combat/Evade_Right_01", kMotion_XZR, 0, kMotion_XR, -1, false, true);
+        CreateMotion("BM_Combat/Evade_Back_01", kMotion_XZR, 0, kMotion_ZR, -1, false);
+        CreateMotion("BM_Combat/Evade_Left_01", kMotion_XZR, 0, kMotion_XR, -1, false, true);
 
         // Attacks
         String preFix = "BM_Attack/";
@@ -330,6 +337,25 @@ class MotionManager
         CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, kMotion_XZR, -1, false);
         CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZR, kMotion_XZR, -1, false);
 
+
+        CreateMotion("BM_Combat/Redirect", kMotion_XZR, 0, kMotion_XZR, -1, false);
+
+        //========================================================================
+        // THUG MOTIONS
+        //========================================================================
+        preFix = "TG_Combat/";
+        CreateMotion(preFix + "Step_Forward", kMotion_Z, 0, kMotion_XZR, -1, false);
+        CreateMotion(preFix + "Step_Right", kMotion_X, 0, kMotion_XZR, -1, false);
+        CreateMotion(preFix + "Step_Back", kMotion_Z, 0, kMotion_XZR, -1, false);
+        CreateMotion(preFix + "Step_Left", kMotion_X, 0, kMotion_XZR, -1, false);
+        CreateMotion(preFix + "Step_Forward_Long", kMotion_Z, 0, kMotion_XZR, -1, false);
+        CreateMotion(preFix + "Step_Right_Long", kMotion_X, 0, kMotion_XZR, -1, false);
+        CreateMotion(preFix + "Step_Back_Long", kMotion_Z, 0, kMotion_XZR, -1, false);
+        CreateMotion(preFix + "Step_Left_Long", kMotion_X, 0, kMotion_XZR, -1, false);
+
+        CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, 0, kMotion_R, 32, false);
+        CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, 0, kMotion_R, 32, false);
+
         PostProcess();
 
         Print("Motion Process Time Cost = " + String(time.systemTime - startTime) + " ms");
@@ -343,7 +369,7 @@ class MotionManager
 
     Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int allowMotion, int endFrame, bool loop, bool cutRotation = false, float speed = 1.0f)
     {
-        // String dumpName("Attack_Close_Forward_03");
+        //String dumpName("BM_Combat/Evade_Left_01");
         Motion@ motion = FindMotion(name);
         if (motion !is null)
         {
@@ -359,7 +385,7 @@ class MotionManager
         @motion = Motion();
         motion.animationName = animationName;
         motion.animation = cache.GetResource("Animation", motion.animationName);
-        // ProcessAnimation(motion.animationName, motionFlag, origninFlag, cutRotation, motion.motionKeys, name == dumpName);
+        //ProcessAnimation(motion.animationName, motionFlag, origninFlag, allowMotion, cutRotation, motion.motionKeys, name == dumpName);
         ProcessAnimation(motion.animationName, motionFlag, origninFlag, allowMotion, cutRotation, motion.motionKeys);
         if (endFrame < 0)
             endFrame = motion.motionKeys.length - 1;

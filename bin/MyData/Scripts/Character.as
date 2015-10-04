@@ -20,6 +20,11 @@ class CharacterState : State
     {
         return null;
     }
+
+    void OnAnimationTrigger(AnimationState@ animState, Node@ boneNode)
+    {
+
+    }
 };
 
 class MultiMotionState : CharacterState
@@ -55,7 +60,7 @@ class MultiMotionState : CharacterState
 
     int PickIndex()
     {
-        return 0;
+        return ownner.sceneNode.vars["AnimationIndex"].GetInt();
     }
 
     Motion@ GetMotion(int i)
@@ -186,7 +191,9 @@ class AnimationTestState : CharacterState
     {
         bool finished = false;
         if (testMotion !is null)
+        {
              finished = testMotion.Move(dt, ownner.sceneNode, ownner.animCtrl);
+        }
         else
         {
 
@@ -194,7 +201,7 @@ class AnimationTestState : CharacterState
 
         if (finished) {
             ownner.stateMachine.ChangeState("StandState");
-            ownner.sceneNode.scene.timeScale = 0.0f;
+            // ownner.sceneNode.scene.timeScale = 0.0f;
         }
 
         CharacterState::Update(dt);
@@ -205,6 +212,21 @@ class AnimationTestState : CharacterState
         String r = CharacterState::GetDebugText();
         r += "\nanimation=" + animationName;
         return r;
+    }
+};
+
+class RandomAnimationState : CharacterState
+{
+    Array<String>           animations;
+
+    RandomAnimationState(Character@ c)
+    {
+        super(c);
+    }
+
+    void StartBlendTime(float blendTime)
+    {
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime, 0.0);
     }
 };
 
@@ -242,14 +264,18 @@ class Character : GameObject
         renderNode = sceneNode.children[0];
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
+
+        hipsNode = renderNode.GetChild("Bip01_Pelvis", true);
+        handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
+        handNode_R = renderNode.GetChild("Bip01_R_Hand", true);
+        footNode_L = renderNode.GetChild("Bip01_L_Foot", true);
+        footNode_R = renderNode.GetChild("Bip01_R_Foot", true);
+
+        // Subscribe to animation triggers, which are sent by the AnimatedModel's node (same as our node)
+        SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
-
-        hipsNode = node.GetChild("Bip01_Pelvis", true);
-        handNode_L = node.GetChild("Bip01_L_Hand", true);
-        handNode_R = node.GetChild("Bip01_R_Hand", true);
-        footNode_L = node.GetChild("Bip01_L_Foot", true);
-        footNode_R = node.GetChild("Bip01_R_Foot", true);
     }
 
     void Start()
@@ -288,7 +314,9 @@ class Character : GameObject
 
     String GetDebugText()
     {
-        String debugText = sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + "\n";
+        String debugText = "========================================================================\n";
+        debugText += stateMachine.GetDebugText();
+        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + "\n";
         if (animModel.numAnimationStates > 0)
         {
             debugText += "Debug-Animations:\n";
@@ -298,7 +326,7 @@ class Character : GameObject
                 debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
             }
         }
-        return GameObject::GetDebugText() + debugText;
+        return debugText;
     }
 
     void Attack()
@@ -367,16 +395,61 @@ class Character : GameObject
             return;
         stateMachine.ChangeState("AnimationTestState");
     }
-};
 
-// computes the difference between the characters current heading and the
-// heading the user wants them to go in.
-float ComputeDifference(Node@ n, float desireAngle)
-{
-    Vector3 characterDir = n.worldRotation * Vector3(0, 0, 1);
-    float characterAngle = Atan2(characterDir.x, characterDir.z);
-    return AngleDiff(desireAngle - characterAngle);
-}
+    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
+    {
+        AnimatedModel@ model = node.GetComponent("AnimatedModel");
+        AnimationState@ state = model.animationStates[eventData["Name"].GetString()];
+        if (state is null)
+            return;
+
+        // If the animation is blended with sufficient weight, instantiate a local particle effect for the footstep.
+        // The trigger data (string) tells the bone scenenode to use. Note: called on both client and server
+        if (state.weight > 0.5f)
+        {
+            Node@ bone = node.GetChild(eventData["Data"].GetString(), true);
+            CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
+            if (cs !is null)
+            {
+                cs.OnAnimationTrigger(state, bone);
+            }
+        }
+    }
+
+    float GetTargetAngle()
+    {
+        return 0;
+    }
+
+    float ComputeAngleDiff()
+    {
+        return AngleDiff(GetTargetAngle() - GetCharacterAngle());
+    }
+
+    int RadialSelectAnimation(int numDirections)
+    {
+        return DirectionMapToIndex(ComputeAngleDiff(), numDirections);
+    }
+
+    float GetTargetAngle(Node@ node)
+    {
+        Vector3 targetPos = node.worldPosition;
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 diff = targetPos - myPos;
+        return Atan2(diff.x, diff.z);
+    }
+
+    float ComputeAngleDiff(Node@ node)
+    {
+        return AngleDiff(GetTargetAngle(node) - GetCharacterAngle());
+    }
+
+    float GetCharacterAngle()
+    {
+        Vector3 characterDir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        return Atan2(characterDir.x, characterDir.z);
+    }
+};
 
 int DirectionMapToIndex(float directionDifference, int numDirections)
 {
@@ -387,15 +460,6 @@ int DirectionMapToIndex(float directionDifference, int numDirections)
         directionVariable += numDirections;
     return int(directionVariable);
 }
-
-
-//  divides a circle into numSlices and returns the index (in clockwise order) of the slice which
-//  contains the gamepad's angle relative to the camera.
-int RadialSelectAnimation(Node@ n, int numDirections, float desireAngle)
-{
-    return DirectionMapToIndex(ComputeDifference(n, desireAngle), numDirections);
-}
-
 
 String GetAnimationDebugText(Node@ n)
 {

@@ -80,6 +80,8 @@ void CreateScene()
         return;
     }
 
+    @thug.target = player;
+
     Vector3 pos = cameraNode.worldPosition;
     Vector3 playerPos = characterNode.worldPosition;
     pos.x = playerPos.x;
@@ -167,7 +169,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "BM_Attack/Attack_Run_Far_Forward"; //"TG_BM_Counter/Counter_Arm_Front_01";
+        String testName = "BM_Combat/Redirect"; //"TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
     }
 
@@ -179,6 +181,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (player !is null)
     {
         debugText += player.GetDebugText();
+        debugText += thug.GetDebugText();
 
         /*
         Vector3 fwd = Vector3(0, 0, 1);
