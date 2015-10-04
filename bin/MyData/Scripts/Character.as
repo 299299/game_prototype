@@ -173,22 +173,28 @@ class AnimationTestState : CharacterState
         CharacterState::Exit(nextState);
     }
 
-    void SetTestAnimation(const String&in name)
+    bool SetTestAnimation(const String&in name)
     {
         @testMotion = gMotionMgr.FindMotion(name);
+        if (testMotion is null)
+            return false;
         animationName = name;
+        return true;
     }
 
     void Update(float dt)
     {
+        bool finished = false;
         if (testMotion !is null)
-        {
-            if (testMotion.Move(dt, ownner.sceneNode, ownner.animCtrl))
-                ownner.stateMachine.ChangeState("StandState");
-        }
+             finished = testMotion.Move(dt, ownner.sceneNode, ownner.animCtrl);
         else
         {
 
+        }
+
+        if (finished) {
+            ownner.stateMachine.ChangeState("StandState");
+            ownner.sceneNode.scene.timeScale = 0.0f;
         }
 
         CharacterState::Update(dt);
@@ -331,8 +337,8 @@ class Character : GameObject
     void DebugDraw(DebugRenderer@ debug)
     {
         GameObject::DebugDraw(debug);
-        debug.AddNode(sceneNode, 1.0f, false);
-        debug.AddNode(sceneNode.GetChild("Bip01", true), 1.0f, false);
+        debug.AddNode(sceneNode, 0.5f, false);
+        debug.AddNode(sceneNode.GetChild("Bip01", true), 0.25f, false);
         //Sphere sp;
         //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, collisionRadius);
         //debug.AddSphere(sp, Color(0, 1, 0));
@@ -357,7 +363,8 @@ class Character : GameObject
     void TestAnimation(const String&in animationName)
     {
         AnimationTestState@ state = cast<AnimationTestState@>(stateMachine.FindState("AnimationTestState"));
-        state.SetTestAnimation(animationName);
+        if (!state.SetTestAnimation(animationName))
+            return;
         stateMachine.ChangeState("AnimationTestState");
     }
 };

@@ -141,7 +141,7 @@ class Motion
         else {
             Vector4 tFinnal = GetKey(endTime);
             debug.AddLine(startRotationQua * Vector3(tFinnal.x, tFinnal.y, tFinnal.z) + startPosition,  startPosition, Color(0.5f, 0.5f, 0.7f), false);
-            DebugDrawDirection(debug, node, startRotation + tFinnal.w, Color(0,1,0), 4);
+            DebugDrawDirection(debug, node, startRotation + tFinnal.w, Color(0,1,0), 2.0);
         }
     }
 };
@@ -243,68 +243,92 @@ class MotionManager
         CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZR, 0, kMotion_Z, -1, false);
 
         // Attacks
-        // forward
+        String preFix = "BM_Attack/";
+        //========================================================================
+        // FORWARD
+        //========================================================================
         int foward_motion_flags = kMotion_XZR;
         int foward_allow_motion = kMotion_ZR;
-        for (int i=3; i<=8; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Close_Forward_0" + String(i), foward_motion_flags, 0, foward_allow_motion, -1, false);
-        }
-        CreateMotion("BM_Attack/Attack_Far_Forward", foward_motion_flags, 0, foward_allow_motion, -1, false);
-        for (int i=1; i<=4; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Far_Forward_0" + String(i), foward_motion_flags, 0, foward_allow_motion, -1, false);
-        }
+        // weak forward
+        CreateMotion(preFix + "Attack_Close_Weak_Forward", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_01", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_03", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_04", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_05", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        // close forward
+        CreateMotion(preFix + "Attack_Close_Forward_04", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Forward_05", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Forward_06", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Run_Forward", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        // far forward
+        CreateMotion(preFix + "Attack_Far_Forward_01", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Forward_02", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Forward_03", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Forward_04", foward_motion_flags, 0, foward_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Run_Far_Forward", foward_motion_flags, 0, foward_allow_motion, -1, false);
 
-        // right
+        //========================================================================
+        // RIGHT
+        //========================================================================
         int right_motion_flags = kMotion_XZR;
         int right_allow_motion = kMotion_XR;
-        CreateMotion("BM_Attack/Attack_Close_Right", right_motion_flags, 0, right_allow_motion, -1, false);
-        for (int i=1; i<=8; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Close_Right_0" + String(i), right_motion_flags, 0, right_allow_motion, -1, false);
-        }
-        CreateMotion("BM_Attack/Attack_Far_Right", right_motion_flags, 0, right_allow_motion, -1, false);
+        // weak right
+        CreateMotion(preFix + "Attack_Close_Weak_Right_01", right_motion_flags, 0, right_allow_motion, -1, false);
+        // close right
+        CreateMotion(preFix + "Attack_Close_Right", right_motion_flags, 0, right_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Right_01", right_motion_flags, 0, right_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Right_03", right_motion_flags, 0, right_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Right_05", right_motion_flags, 0, right_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Right_08", right_motion_flags, 0, right_allow_motion, -1, false);
+        // far right
+        CreateMotion(preFix + "Attack_Far_Right", right_motion_flags, 0, right_allow_motion, -1, false);
         // seems Attack_Far_Right_0 is not start at the origin
-        CreateMotion("BM_Attack/Attack_Far_Right_01", right_motion_flags, kMotion_XZ, right_allow_motion, -1, false);
-        for (int i=2; i<=4; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Far_Right_0" + String(i), right_motion_flags, 0, right_allow_motion, -1, false);
-        }
+        CreateMotion(preFix + "Attack_Far_Right_01", right_motion_flags, kMotion_XZ, right_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Right_02", right_motion_flags, 0, right_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Right_03", right_motion_flags, 0, right_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Right_04", right_motion_flags, 0, right_allow_motion, -1, false);
 
-        // back
+        //========================================================================
+        // BACK
+        //========================================================================
         int back_motion_flags = kMotion_XZR;
         int back_allow_motion = kMotion_ZR;
-        CreateMotion("BM_Attack/Attack_Close_Back", back_motion_flags, 0, back_allow_motion, -1, false);
-        for (int i=1; i<=8; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Close_Back_0" + String(i), back_motion_flags, 0, back_allow_motion, -1, false);
-        }
-        CreateMotion("BM_Attack/Attack_Far_Back", back_motion_flags, 0, back_allow_motion, -1, false);
-        for (int i=1; i<=4; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Far_Back_0" + String(i), back_motion_flags, 0, back_allow_motion, -1, false);
-        }
+        // weak back
+        CreateMotion(preFix + "Attack_Close_Weak_Back", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Weak_Back_01", back_motion_flags, 0, back_allow_motion, -1, false);
+        // close back
+        CreateMotion(preFix + "Attack_Close_Back", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Back_01", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Back_02", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Back_03", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Back_05", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Back_06", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Back_07", back_motion_flags, 0, back_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Back_08", back_motion_flags, 0, back_allow_motion, -1, false);
+        // far back
+        CreateMotion(preFix + "Attack_Far_Back_02", back_motion_flags, 0, back_allow_motion, -1, false);
 
-        // left
+        //========================================================================
+        // LEFT
+        //========================================================================
         int left_motion_flags = kMotion_XZR;
         int left_allow_motion = kMotion_XR;
-        CreateMotion("BM_Attack/Attack_Close_Left", left_motion_flags, 0, left_allow_motion, -1, false);
-        for (int i=1; i<=8; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Close_Left_0" + String(i), left_motion_flags, 0, left_allow_motion, -1, false);
-        }
-        CreateMotion("BM_Attack/Attack_Far_Left", left_motion_flags, 0, left_allow_motion, -1, false);
-        for (int i=1; i<=4; ++i)
-        {
-            CreateMotion("BM_Attack/Attack_Far_Left_0" + String(i), left_motion_flags, 0, left_allow_motion, -1, false);
-        }
+        // weak left
+        CreateMotion(preFix + "Attack_Close_Weak_Left", left_motion_flags, 0, left_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Weak_Left_02", left_motion_flags, 0, left_allow_motion, -1, false);
+
+        // close left
+        CreateMotion(preFix + "Attack_Close_Left_02", left_motion_flags, 0, left_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Left_05", left_motion_flags, 0, left_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Close_Left_08", left_motion_flags, 0, left_allow_motion, -1, false);
+        // far left
+        CreateMotion(preFix + "Attack_Far_Left", left_motion_flags, 0, left_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Left_02", left_motion_flags, 0, left_allow_motion, -1, false);
+        CreateMotion(preFix + "Attack_Far_Left_03", left_motion_flags, 0, left_allow_motion, -1, false);
 
         // Counters
         CreateMotion("BM_TG_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZ, kMotion_XZR, -1, false);
         CreateMotion("TG_BM_Counter/Counter_Arm_Front_01", kMotion_XZ, kMotion_XZR, kMotion_XZR, -1, false);
-
-        // CreateAnimation("BM_Attack/Attack_Close_Forward_02", "BM_Combat_Movement/Stand_Idle_R", 40, 8);
 
         PostProcess();
 

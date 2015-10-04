@@ -116,6 +116,10 @@ void MoveCamera(float timeStep)
     const float MOVE_SPEED = 20.0f;
     const float MOUSE_SENSITIVITY = 0.1f;
 
+    float speed = MOVE_SPEED;
+    if (input.keyDown[KEY_LSHIFT])
+        speed *= 2;
+
     IntVector2 mouseMove = input.mouseMove;
     yaw += MOUSE_SENSITIVITY * mouseMove.x;
     pitch += MOUSE_SENSITIVITY * mouseMove.y;
@@ -124,13 +128,13 @@ void MoveCamera(float timeStep)
     cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
 
     if (input.keyDown['W'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * MOVE_SPEED * timeStep);
+        cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * speed * timeStep);
     if (input.keyDown['S'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, -1.0f) * MOVE_SPEED * timeStep);
+        cameraNode.Translate(Vector3(0.0f, 0.0f, -1.0f) * speed * timeStep);
     if (input.keyDown['A'])
-        cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
+        cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * speed * timeStep);
     if (input.keyDown['D'])
-        cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
+        cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * speed * timeStep);
 }
 
 void SubscribeToEvents()
@@ -163,7 +167,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "BM_Attack/Attack_Close_Forward_03"; //"TG_BM_Counter/Counter_Arm_Front_01";
+        String testName = "BM_Attack/Attack_Run_Far_Forward"; //"TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
     }
 
