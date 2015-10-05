@@ -24,7 +24,9 @@ class Motion
     Vector3                 startPosition;
     float                   startRotation;
     Quaternion              startRotationQua;
+
     float                   deltaRotation;
+    Vector3                 deltaPosition;
 
     Motion()
     {
@@ -84,6 +86,7 @@ class Motion
         startRotationQua = node.worldRotation;
         startRotation = startRotationQua.eulerAngles.y;
         deltaRotation = 0;
+        deltaPosition = Vector3(0, 0, 0);
     }
 
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
@@ -96,14 +99,14 @@ class Motion
             node.Yaw(motionOut.w);
             Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
             tLocal = tLocal * ctrl.GetWeight(animationName);
-            Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
+            Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition + deltaPosition;
             MoveNode(node, tWorld, dt);
         }
         else
         {
             Vector4 motionOut = GetKey(localTime);
             node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
-            Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
+            Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
             MoveNode(node, tWorld, dt);
             // Print("key-yaw=" + String(motionOut.w) + " worldRotation=" + node.worldRotation.eulerAngles.ToString());
         }
@@ -355,6 +358,8 @@ class MotionManager
 
         CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, 0, kMotion_R, 32, false);
         CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, 0, kMotion_R, 32, false);
+
+        CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, 0, kMotion_XZR, -1, true);
 
         PostProcess();
 

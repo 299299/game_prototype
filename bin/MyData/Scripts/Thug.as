@@ -19,7 +19,7 @@ class ThugStandState : RandomAnimationState
         if (lastState !is null)
         {
             if (lastState.name == "AttackState" || lastState.name == "TurnState")
-                blendTime = 10.0f;
+                blendTime = 2.5f;
         }
         StartBlendTime(blendTime);
     }
@@ -68,6 +68,24 @@ class ThugStepMoveState : MultiMotionState
     int PickIndex()
     {
         return ownner.sceneNode.vars["AnimationIndex"].GetInt();
+    }
+};
+
+class ThugRunState : CharacterState
+{
+    Motion@ motion;
+
+    ThugRunState(Character@ c)
+    {
+        super(c);
+        name = "RunState";
+        @motion = gMotionMgr.FindMotion(thugMovementGroup + "Run_Forward_Combat");
+    }
+
+    void Update(float dt)
+    {
+        motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
+        CharacterState::Update(dt);
     }
 };
 
@@ -198,6 +216,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugHitState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
+        stateMachine.AddState(ThugRunState(this));
         stateMachine.ChangeState("StandState");
     }
 

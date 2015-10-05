@@ -439,6 +439,14 @@ class Character : GameObject
         return Atan2(diff.x, diff.z);
     }
 
+    float GetTargetDistance(Node@ node)
+    {
+        Vector3 targetPos = node.worldPosition;
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 diff = targetPos - myPos;
+        return diff.length;
+    }
+
     float ComputeAngleDiff(Node@ node)
     {
         return AngleDiff(GetTargetAngle(node) - GetCharacterAngle());

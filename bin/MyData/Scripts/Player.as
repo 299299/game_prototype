@@ -1,6 +1,7 @@
 
 const String movement_group = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
+const float ATTACK_SAFE_DIST = 3;
 
 class PlayerStandState : RandomAnimationState
 {
@@ -226,6 +227,7 @@ class PlayerAttackState : CharacterState
     Vector3         predictMotionPosition;
 
     float           targetAngle;
+    float           targetDistance;
 
     bool            standBy;
 
@@ -350,19 +352,12 @@ class PlayerAttackState : CharacterState
             return;
 
         Motion@ motion = currentAttack.motion;
+        targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
+        targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
 
-        Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
-        Vector3 myPos = ownner.sceneNode.worldPosition;
-        Vector3 diff = enemyPos - myPos;
-        diff.y = 0;
-        targetAngle = Atan2(diff.x, diff.z);
+        bool standBy = targetDistance < ATTACK_SAFE_DIST;
 
-        Vector3 myDir = ownner.sceneNode.worldRotation * Vector3(0, 0, 1);
-        float myAngle = Atan2(myDir.x, myDir.z);
-        float diffAngle = AngleDiff(targetAngle - myAngle);
-        float turnSpeed = 15.0f;
-        // motion.deltaRotation += diffAngle * turnSpeed * dt;
-
+        Vector3 oldPosition = ownner.sceneNode.worldPosition;
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (status == 0)
         {
@@ -379,7 +374,6 @@ class PlayerAttackState : CharacterState
                     ownner.sceneNode.scene.timeScale = 0.0f;
             }
 
-
             if (t >= currentAttack.slowMotionTime.y) {
                 status = 2;
                 ownner.sceneNode.scene.timeScale = 1.0f;
@@ -390,12 +384,12 @@ class PlayerAttackState : CharacterState
             // motion.deltaRotation += fixRotatePerSec * dt;
             // Print("motion.deltaRotation=" + String(motion.deltaRotation));
             // ownner.sceneNode.worldPosition = ownner.sceneNode.worldPosition + movePosPerSec * dt;
-            motion.startPosition += movePosPerSec * dt;
+            motion.deltaPosition += movePosPerSec * dt;
         }
 
         bool finished = motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
         if (standBy) {
-            ownner.sceneNode.worldPosition = motion.startPosition;
+            ownner.sceneNode.worldPosition = oldPosition;
         }
 
         if (finished) {
@@ -418,7 +412,7 @@ class PlayerAttackState : CharacterState
             return leftAttacks[index];
     }
 
-    bool PickBestMotion(const Array<AttackMotion@>&in attacks)
+    void PickBestMotion(const Array<AttackMotion@>&in attacks)
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
@@ -445,11 +439,9 @@ class PlayerAttackState : CharacterState
             }
         }
 
-        bool isTooClose = false;
         if (bestIndex < 0) {
             Print("bestIndex is -1 !!!");
-            bestIndex = RandomInt(3);
-            isTooClose = true;
+            bestIndex = RandomInt(5);
         }
 
         @currentAttack = attacks[bestIndex];
@@ -460,15 +452,8 @@ class PlayerAttackState : CharacterState
         Vector3 futurePos = currentAttack.motion.GetFuturePosition(ownner.sceneNode, currentAttack.impactTime);
         movePosPerSec = ( predictPosition - futurePos ) / currentAttack.impactTime;
 
-        if (isTooClose) {
-            movePosPerSec = Vector3(0, 0, 0);
-            predictEnemyPosition = enemyPos;
-            predictPosition = myPos;
-        }
         // attackEnemy.sceneNode.worldPosition = predictEnemyPosition;
-
         Print("Best attack motion = " + String(currentAttack.motion.animationName) + " movePosPerSec=" + movePosPerSec.ToString());
-        return isTooClose;
     }
 
     void Enter(State@ lastState)
@@ -477,27 +462,26 @@ class PlayerAttackState : CharacterState
         int r = DirectionMapToIndex(diff, 4);
         Print("Attack-align " + " r-index=" + String(r) + " diff=" + String(diff));
         float turnAngle = 0;
-        standBy = false;
 
         int i = 0;
         if (r == 0)
         {
-            standBy = PickBestMotion(forwardAttacks);
+            PickBestMotion(forwardAttacks);
             turnAngle = 0;
         }
         else if (r == 1)
         {
-            standBy = PickBestMotion(rightAttacks);
+            PickBestMotion(rightAttacks);
             turnAngle = 90;
         }
         else if (r == 2)
         {
-            standBy = PickBestMotion(backAttacks);
+            PickBestMotion(backAttacks);
             turnAngle = diff < 0 ? -180 : 180;
         }
         else if (r == 3)
         {
-            standBy = PickBestMotion(leftAttacks);
+            PickBestMotion(leftAttacks);
             turnAngle = -90;
         }
 
@@ -526,18 +510,16 @@ class PlayerAttackState : CharacterState
             return;
         // currentAttack.motion.DebugDraw(debug, ownner.sceneNode);
         debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.7f, 0.8f, 0.7f), false);
-
         //AddDebugMark(debug, predictPosition, Color(0, 0, 1));
         //AddDebugMark(debug, predictEnemyPosition, Color(0, 1, 0));
         //AddDebugMark(debug, predictMotionPosition, Color(1, 0, 0));
-
         DebugDrawDirection(debug, ownner.sceneNode, targetAngle, Color(1, 0, 0), 2);
     }
 
     String GetDebugText()
     {
         String r = CharacterState::GetDebugText();
-        r += "\ncurrentAttack=" + currentAttack.motion.animationName;
+        r += "\ncurrentAttack=" + currentAttack.motion.animationName + " distToEnemy=" + targetDistance;
         return r;
     }
 };
@@ -599,20 +581,12 @@ class PlayerCounterState : CharacterState
     void Enter(State@ lastState)
     {
         status = 0;
-        Vector3 myPos = ownner.sceneNode.worldPosition;
-        Vector3 myDir = ownner.sceneNode.worldRotation * Vector3(0, 0, 1);
-        float myAngle = Atan2(myDir.x, myDir.z);
-        Vector3 enemyPos = counterEnemy.sceneNode.worldPosition;
-        Vector3 posDiff = enemyPos - myPos;
-        posDiff.y = 0;
-
-        float angle = Atan2(posDiff.x, posDiff.z);
-        float dAngle = AngleDiff(angle - myAngle);
+        float dAngle = ownner.ComputeAngleDiff(counterEnemy.sceneNode);
         int front_back = 0;
         if (Abs(dAngle) > 90)
             front_back = 1;
         rotationDiff = (front_back == 0) ? 180 : 0;
-        Print("Counter-align pod-diff=" + posDiff.ToString() + " angle-diff=" + String(dAngle));
+        Print("Counter-align angle-diff=" + String(dAngle));
 
         counterIndex = 0; // FIXME TODO
         ThugCounterState@ enemyCounterState = cast<ThugCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
