@@ -64,7 +64,6 @@ void CreateScene()
     characterNode.Translate(Vector3(5, 0, 0));
     // characterNode.GetChild("RootNode", true).rotation = Quaternion(0, -180, 0);
 
-    @gEnemyMgr = EnemyManager();
     @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
     if (player is null) {
         Print("player is null!!");
@@ -169,7 +168,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "BM_Combat/Redirect"; //"TG_BM_Counter/Counter_Arm_Front_01";
+        String testName = "BM_Combat_HitReaction/Hit_Reaction_SideLeft"; //"TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
     }
 

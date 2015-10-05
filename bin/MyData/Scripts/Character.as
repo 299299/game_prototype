@@ -27,6 +27,46 @@ class CharacterState : State
     }
 };
 
+
+class SingleMotionState : CharacterState
+{
+    Motion@ motion;
+
+    SingleMotionState(Character@ c)
+    {
+        super(c);
+    }
+
+    void Update(float dt)
+    {
+        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
+            ownner.CommonStateFinishedOnGroud();
+
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        motion.Start(ownner.sceneNode, ownner.animCtrl);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        motion.DebugDraw(debug, ownner.sceneNode);
+    }
+
+    void SetMotion(const String&in name)
+    {
+        Motion@ m = gMotionMgr.FindMotion(name);
+        if (m is null)
+        {
+            Print(name + " can not find motion " + name);
+            return;
+        }
+        @motion = m;
+    }
+};
+
 class MultiMotionState : CharacterState
 {
     Array<Motion@> motions;
@@ -41,7 +81,7 @@ class MultiMotionState : CharacterState
     void Update(float dt)
     {
         if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
-            ownner.stateMachine.ChangeState("StandState");
+            ownner.CommonStateFinishedOnGroud();
 
         CharacterState::Update(dt);
     }
@@ -74,6 +114,17 @@ class MultiMotionState : CharacterState
         r += "\ncurrent motion=" + motions[selectIndex].animationName;
         return r;
     }
+
+    void AddMotion(const String&in name)
+    {
+        Motion@ motion = gMotionMgr.FindMotion(name);
+        if (motion is null)
+        {
+            Print(name + " can not find motion " + name);
+            return;
+        }
+        motions.Push(motion);
+    }
 };
 
 class CharacterAlignState : CharacterState
@@ -91,7 +142,7 @@ class CharacterAlignState : CharacterState
     CharacterAlignState(Character@ c)
     {
         super(c);
-        name = "AlignState";
+        SetName("AlignState");
         alignTime = 0.5f;
     }
 
@@ -162,7 +213,7 @@ class AnimationTestState : CharacterState
     AnimationTestState(Character@ c)
     {
         super(c);
-        name = "AnimationTestState";
+        SetName("AnimationTestState");
         @testMotion = null;
     }
 
@@ -341,8 +392,14 @@ class Character : GameObject
     {
     }
 
+    void Redirect()
+    {
+        stateMachine.ChangeState("RedirectState");
+    }
+
     void CommonStateFinishedOnGroud()
     {
+        stateMachine.ChangeState("StandState");
     }
 
     void Reset()
@@ -417,6 +474,11 @@ class Character : GameObject
     }
 
     float GetTargetAngle()
+    {
+        return 0;
+    }
+
+    float GetTargetDistance()
     {
         return 0;
     }

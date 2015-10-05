@@ -6,7 +6,7 @@ class ThugStandState : RandomAnimationState
     ThugStandState(Character@ c)
     {
         super(c);
-        name = "StandState";
+        SetName("StandState");
         animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_01"));
         animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_02"));
         animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_03"));
@@ -19,7 +19,7 @@ class ThugStandState : RandomAnimationState
         if (lastState !is null)
         {
             if (lastState.name == "AttackState" || lastState.name == "TurnState")
-                blendTime = 2.5f;
+                blendTime = 5.0f;
         }
         StartBlendTime(blendTime);
     }
@@ -42,17 +42,17 @@ class ThugStepMoveState : MultiMotionState
     ThugStepMoveState(Character@ c)
     {
         super(c);
-        name = "StepMoveState";
+        SetName("StepMoveState");
         // short step
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Forward"));
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Right"));
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Back"));
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Right"));
+        AddMotion(thugMovementGroup + "Step_Forward");
+        AddMotion(thugMovementGroup + "Step_Right");
+        AddMotion(thugMovementGroup + "Step_Back");
+        AddMotion(thugMovementGroup + "Step_Right");
         // long step
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Forward_Long"));
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Right_Long"));
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Back_Long"));
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "Step_Right_Long"));
+        AddMotion(thugMovementGroup + "Step_Forward_Long");
+        AddMotion(thugMovementGroup + "Step_Right_Long");
+        AddMotion(thugMovementGroup + "Step_Back_Long");
+        AddMotion(thugMovementGroup + "Step_Right_Long");
     }
 
     void Update(float dt)
@@ -71,21 +71,18 @@ class ThugStepMoveState : MultiMotionState
     }
 };
 
-class ThugRunState : CharacterState
+class ThugRunState : SingleMotionState
 {
-    Motion@ motion;
-
     ThugRunState(Character@ c)
     {
         super(c);
-        name = "RunState";
-        @motion = gMotionMgr.FindMotion(thugMovementGroup + "Run_Forward_Combat");
+        SetName("RunState");
+        SetMotion(thugMovementGroup + "Run_Forward_Combat");
     }
 
     void Update(float dt)
     {
-        motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
-        CharacterState::Update(dt);
+        SingleMotionState::Update(dt);
     }
 };
 
@@ -94,16 +91,13 @@ class ThugCounterState : MultiMotionState
     ThugCounterState(Character@ c)
     {
         super(c);
-        name = "CounterState";
+        SetName("CounterState");
         // motions.Push(gMotionMgr.FindMotion("TG_BM_Counter/Counter_Arm_Front_01"));
     }
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
-            ownner.stateMachine.ChangeState("StandState");
-
-        CharacterState::Update(dt);
+        MultiMotionState::Update(dt);
     }
 
     int PickIndex()
@@ -126,20 +120,19 @@ class ThugAttackState : MultiMotionState
     ThugAttackState(Character@ c)
     {
         super(c);
-        name = "CounterState";
+        SetName("AttackState");
+        String preFix = "TG_Combat/";
+        AddMotion(preFix + "Attack_Kick");
+        AddMotion(preFix + "Attack_Kick_01");
+        AddMotion(preFix + "Attack_Kick_02");
+        AddMotion(preFix + "Attack_Punch");
+        AddMotion(preFix + "Attack_Punch_01");
+        AddMotion(preFix + "Attack_Punch_02");
     }
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
-            ownner.stateMachine.ChangeState("StandState");
-
-        CharacterState::Update(dt);
-    }
-
-    int PickIndex()
-    {
-        return ownner.sceneNode.vars["AttackIndex"].GetInt();
+        MultiMotionState::Update(dt);
     }
 };
 
@@ -148,20 +141,19 @@ class ThugHitState : MultiMotionState
     ThugHitState(Character@ c)
     {
         super(c);
-        name = "CounterState";
+        SetName("HitState");
+        String preFix = "TG_HitReaction/";
+        AddMotion(preFix + "Generic_Hit_Reaction");
+        AddMotion(preFix + "HitReaction_Back_NoTurn");
+        AddMotion(preFix + "HitReaction_Left");
+        AddMotion(preFix + "HitReaction_Right");
+        AddMotion(preFix + "Push_Reaction");
+        AddMotion(preFix + "Push_Reaction_From_Back");
     }
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
-            ownner.stateMachine.ChangeState("StandState");
-
-        CharacterState::Update(dt);
-    }
-
-    int PickIndex()
-    {
-        return ownner.sceneNode.vars["Hit"].GetInt();
+        MultiMotionState::Update(dt);
     }
 };
 
@@ -172,9 +164,9 @@ class ThugTurnState : MultiMotionState
     ThugTurnState(Character@ c)
     {
         super(c);
-        name = "TurnState";
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "135_Turn_Right"));
-        motions.Push(gMotionMgr.FindMotion(thugMovementGroup + "135_Turn_Left"));
+        SetName("TurnState");
+        AddMotion(thugMovementGroup + "135_Turn_Right");
+        AddMotion(thugMovementGroup + "135_Turn_Left");
     }
 
     void Enter(State@ lastState)
@@ -186,7 +178,7 @@ class ThugTurnState : MultiMotionState
         ownner.sceneNode.vars["AnimationIndex"] = index;
         MultiMotionState::Enter(lastState);
         turnSpeed = diff / motions[selectIndex].endTime;
-        Print("ThugTurnState diff=" + String(diff) + " turnSpeed=" + String(turnSpeed) + " time=" + String(motions[selectIndex].endTime));
+        Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
     }
 
     void Update(float dt)
@@ -197,13 +189,36 @@ class ThugTurnState : MultiMotionState
         {
             ownner.CommonStateFinishedOnGroud();
         }
-
         ownner.sceneNode.Yaw(turnSpeed * dt);
-
         CharacterState::Update(dt);
     }
 };
 
+class ThugRedirectState : MultiMotionState
+{
+    ThugRedirectState(Character@ c)
+    {
+        super(c);
+        SetName("RedirectState");
+        AddMotion(thugMovementGroup + "Redirect_push_back");
+        AddMotion(thugMovementGroup + "Redirect_Stumble_JK");
+    }
+
+    void Enter(State@ lastState)
+    {
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Update(float dt)
+    {
+        MultiMotionState::Update(dt);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(2);
+    }
+};
 
 class Thug : Enemy
 {
@@ -217,6 +232,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
         stateMachine.AddState(ThugRunState(this));
+        stateMachine.AddState(ThugRedirectState(this));
         stateMachine.ChangeState("StandState");
     }
 
@@ -226,11 +242,6 @@ class Thug : Enemy
         float targetAngle = GetTargetAngle();
         float baseLen = 2.0f;
         DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
-    }
-
-    void CommonStateFinishedOnGroud()
-    {
-        stateMachine.ChangeState("StandState");
     }
 };
 

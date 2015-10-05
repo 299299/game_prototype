@@ -2,6 +2,8 @@
 class State
 {
     String name;
+    StringHash nameHash;
+
     float timeInState;
 
     State()
@@ -38,6 +40,12 @@ class State
     {
         return " name=" + name + " timeInState=" + String(timeInState);
     }
+
+    void SetName(const String&in s)
+    {
+        name = s;
+        nameHash = StringHash(name);
+    }
 };
 
 
@@ -65,17 +73,22 @@ class FSM
 
     State@ FindState(const String&in name)
     {
+        return FindState(StringHash(name));
+    }
+
+    State@ FindState(const StringHash&in nameHash)
+    {
         for (uint i=0; i<states.length; ++i)
         {
-            if (states[i].name == name)
+            if (states[i].nameHash == nameHash)
                 return states[i];
         }
         return null;
     }
 
-    void ChangeState(const String&in name)
+    void ChangeState(const StringHash&in nameHash)
     {
-        State@ newState = FindState(name);
+        State@ newState = FindState(nameHash);
         if (currentState is newState)
             return;
 
@@ -97,6 +110,11 @@ class FSM
             newStateName = newState.name;
 
         Print("FSM Change State " + oldStateName + " -> " + newStateName);
+    }
+
+    void ChangeState(const String&in name)
+    {
+        ChangeState(StringHash(name));
     }
 
     void Update(float dt)

@@ -154,6 +154,24 @@ class GameObject : ScriptObject
     {
 
     }
+
+    State@ GetState()
+    {
+        return stateMachine.currentState;
+    }
+
+    bool IsInState(const String&in name)
+    {
+        return IsInState(StringHash(name));
+    }
+
+    bool IsInState(const StringHash&in nameHash)
+    {
+        State@ state = stateMachine.currentState;
+        if (state is null)
+            return false;
+        return state.nameHash == nameHash;
+    }
 };
 
 

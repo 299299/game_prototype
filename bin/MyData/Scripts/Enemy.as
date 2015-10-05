@@ -2,7 +2,8 @@
 
 class Enemy : Character
 {
-    Character@  target;
+    Character@          target;
+    float               targetDistance;
 
     void Start()
     {
@@ -19,6 +20,7 @@ class Enemy : Character
 
     void Update(float dt)
     {
+        targetDistance = GetTargetDistance();
         Character::Update(dt);
     }
 
@@ -31,6 +33,26 @@ class Enemy : Character
     {
         return GetTargetAngle(target.sceneNode);
     }
+
+    float GetTargetDistance()
+    {
+        return GetTargetDistance(target.sceneNode);
+    }
+
+    bool CanBeCountered()
+    {
+        return IsInState("AttackState");
+    }
+
+    bool CanBeRedirected()
+    {
+        return IsInState("StandState") || IsInState("TurnState");
+    }
+
+    String GetDebugText()
+    {
+        return Character::GetDebugText() +  "distToPlayer=" + targetDistance + "\n";
+    }
 };
 
 class EnemyManager
@@ -38,7 +60,6 @@ class EnemyManager
     EnemyManager()
     {
         Print("EnemyManager()");
-        numMaxAttackers = 2;
     }
 
     ~EnemyManager()
@@ -58,39 +79,25 @@ class EnemyManager
 
     void UnRegisterEnemy(Enemy@ e)
     {
-        UnRegisterAttacker(e);
         int i = enemyList.FindByRef(e);
         if (i < 0)
             return;
         enemyList.Erase(i);
     }
 
-    bool RegisterAttacker(Enemy@ e)
+    int GetNumOfEnemyInState(const StringHash&in nameHash)
     {
-        if (attackerList.length >= numMaxAttackers)
-            return false;
-        int index = attackerList.FindByRef(e);
-        if (index != -1) {
-            Print("Enemy " + e.sceneNode.name + " already in attack list.");
-            return false;
+        int ret = 0;
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            if (enemyList[i].IsInState(nameHash))
+                ++ret;
         }
-        attackerList.Push(e);
-        return true;
-    }
-
-    void UnRegisterAttacker(Enemy@ e)
-    {
-        int i = attackerList.FindByRef(e);
-        if (i < 0)
-            return;
-        attackerList.Erase(i);
+        return ret;
     }
 
     Array<Enemy@>             enemyList;
-    Array<Enemy@>             attackerList;
-    int                       numMaxAttackers;
-
     Array<int>                scoreCache;
 };
 
-EnemyManager@ gEnemyMgr;
+EnemyManager@ gEnemyMgr = EnemyManager();
