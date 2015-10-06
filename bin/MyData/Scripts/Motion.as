@@ -263,13 +263,13 @@ class MotionManager
 
         CreateMotion("BM_Combat/Redirect", kMotion_XZR, 0, kMotion_XZR, 58, false);
 
-        CreateMotion("BM_Combat_HitReaction/HitReaction_Back", kMotion_XZR, 0, kMotion_XZR, -1, false);
-        CreateMotion("BM_Combat_HitReaction/HitReaction_Face_Left", kMotion_XZR, 0, kMotion_XZR, -1, false);
-        CreateMotion("BM_Combat_HitReaction/HitReaction_Face_Right", kMotion_XZR, 0, kMotion_XZR, -1, false);
-        CreateMotion("BM_Combat_HitReaction/Hit_Reaction_SideLeft", kMotion_XZR, 0, kMotion_XZR, -1, false);
-        CreateMotion("BM_Combat_HitReaction/Hit_Reaction_SideRight", kMotion_XZR, 0, kMotion_XZR, -1, false);
-        CreateMotion("BM_Combat_HitReaction/HitReaction_Stomach", kMotion_XZR, 0, kMotion_XZR, -1, false);
-
+        String hitPrefix = "BM_Combat_HitReaction/";
+        CreateMotion(hitPrefix + "HitReaction_Back", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion(hitPrefix + "HitReaction_Face_Left", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion(hitPrefix + "HitReaction_Face_Right", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion(hitPrefix + "Hit_Reaction_SideLeft", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion(hitPrefix + "Hit_Reaction_SideRight", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion(hitPrefix + "HitReaction_Stomach", kMotion_XZR, 0, kMotion_XZR, -1, false);
 
         // Attacks
         String preFix = "BM_Attack/";

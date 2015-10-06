@@ -1,5 +1,5 @@
 
-const String movement_group = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
+const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
 const float ATTACK_SAFE_DIST = 3;
 
@@ -9,9 +9,9 @@ class PlayerStandState : RandomAnimationState
     {
         super(c);
         SetName("StandState");
-        animations.Push(GetAnimationName(movement_group + "Stand_Idle"));
-        animations.Push(GetAnimationName(movement_group + "Stand_Idle_01"));
-        animations.Push(GetAnimationName(movement_group + "Stand_Idle_02"));
+        animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle"));
+        animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_01"));
+        animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_02"));
     }
 
     void Enter(State@ lastState)
@@ -59,9 +59,9 @@ class PlayerTurnState : MultiMotionState
     {
         super(c);
         SetName("TurnState");
-        AddMotion(movement_group + "Turn_Right_90");
-        AddMotion(movement_group + "Turn_Right_180");
-        AddMotion(movement_group + "Turn_Left_90");
+        AddMotion(MOVEMENT_GROUP + "Turn_Right_90");
+        AddMotion(MOVEMENT_GROUP + "Turn_Right_180");
+        AddMotion(MOVEMENT_GROUP + "Turn_Left_90");
         turnSpeed = 0.0f;
     }
 
@@ -110,7 +110,7 @@ class PlayerMoveState : SingleMotionState
     {
         super(c);
         SetName("MoveState");
-        SetMotion(movement_group + "Walk_Forward");
+        SetMotion(MOVEMENT_GROUP + "Walk_Forward");
         turnSpeed = 5;
     }
 
@@ -603,6 +603,12 @@ class PlayerHitState : MultiMotionState
     {
         super(c);
         SetName("HitState");
+        String hitPrefix = "BM_Combat_HitReaction/";
+        AddMotion(hitPrefix + "HitReaction_Face_Left");
+        AddMotion(hitPrefix + "HitReaction_Face_Right");
+        AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
+        AddMotion(hitPrefix + "Hit_Reaction_SideRight");
+        AddMotion(hitPrefix + "HitReaction_Stomach");
     }
 
     void Update(float dt)
@@ -613,11 +619,6 @@ class PlayerHitState : MultiMotionState
     void Enter(State@ lastState)
     {
         MultiMotionState::Enter(lastState);
-    }
-
-    int PickIndex()
-    {
-        return ownner.sceneNode.vars["Hit"].GetInt();
     }
 };
 

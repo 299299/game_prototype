@@ -1,5 +1,5 @@
 
-const String thugMovementGroup = "TG_Combat/";
+const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 
 class ThugStandState : RandomAnimationState
 {
@@ -7,10 +7,10 @@ class ThugStandState : RandomAnimationState
     {
         super(c);
         SetName("StandState");
-        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_01"));
-        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_02"));
-        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_03"));
-        animations.Push(GetAnimationName(thugMovementGroup + "Stand_Idle_Additive_04"));
+        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_01"));
+        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_02"));
+        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_03"));
+        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_04"));
     }
 
     void Enter(State@ lastState)
@@ -44,15 +44,15 @@ class ThugStepMoveState : MultiMotionState
         super(c);
         SetName("StepMoveState");
         // short step
-        AddMotion(thugMovementGroup + "Step_Forward");
-        AddMotion(thugMovementGroup + "Step_Right");
-        AddMotion(thugMovementGroup + "Step_Back");
-        AddMotion(thugMovementGroup + "Step_Right");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Forward");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Right");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Back");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Right");
         // long step
-        AddMotion(thugMovementGroup + "Step_Forward_Long");
-        AddMotion(thugMovementGroup + "Step_Right_Long");
-        AddMotion(thugMovementGroup + "Step_Back_Long");
-        AddMotion(thugMovementGroup + "Step_Right_Long");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Forward_Long");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Right_Long");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Back_Long");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Right_Long");
     }
 
     void Update(float dt)
@@ -77,7 +77,7 @@ class ThugRunState : SingleMotionState
     {
         super(c);
         SetName("RunState");
-        SetMotion(thugMovementGroup + "Run_Forward_Combat");
+        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
     }
 
     void Update(float dt)
@@ -165,8 +165,8 @@ class ThugTurnState : MultiMotionState
     {
         super(c);
         SetName("TurnState");
-        AddMotion(thugMovementGroup + "135_Turn_Right");
-        AddMotion(thugMovementGroup + "135_Turn_Left");
+        AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Right");
+        AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
     }
 
     void Enter(State@ lastState)
@@ -200,8 +200,8 @@ class ThugRedirectState : MultiMotionState
     {
         super(c);
         SetName("RedirectState");
-        AddMotion(thugMovementGroup + "Redirect_push_back");
-        AddMotion(thugMovementGroup + "Redirect_Stumble_JK");
+        AddMotion(MOVEMENT_GROUP_THUG + "Redirect_push_back");
+        AddMotion(MOVEMENT_GROUP_THUG + "Redirect_Stumble_JK");
     }
 
     void Enter(State@ lastState)

@@ -20,11 +20,6 @@ class CharacterState : State
         @ownner = null;
     }
 
-    Motion@ GetMotion(int i)
-    {
-        return null;
-    }
-
     void OnAnimationTrigger(AnimationState@ animState, Node@ boneNode)
     {
 
@@ -63,10 +58,7 @@ class SingleMotionState : CharacterState
     {
         Motion@ m = gMotionMgr.FindMotion(name);
         if (m is null)
-        {
-            // Print(name + " can not find motion " + name);
             return;
-        }
         @motion = m;
     }
 };
@@ -107,11 +99,6 @@ class MultiMotionState : CharacterState
         return ownner.sceneNode.vars["AnimationIndex"].GetInt();
     }
 
-    Motion@ GetMotion(int i)
-    {
-        return motions[i];
-    }
-
     String GetDebugText()
     {
         String r = CharacterState::GetDebugText();
@@ -123,10 +110,7 @@ class MultiMotionState : CharacterState
     {
         Motion@ motion = gMotionMgr.FindMotion(name);
         if (motion is null)
-        {
-            Print(name + " can not find motion " + name);
             return;
-        }
         motions.Push(motion);
     }
 };
