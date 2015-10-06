@@ -12,12 +12,12 @@ void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer, 
 
 class Motion
 {
+    String                  name;
     String                  animationName;
     Animation@              animation;
     Array<Vector4>          motionKeys;
     float                   endTime;
     bool                    looped;
-    float                   speed;
 
     Vector3                 startFromOrigin;
 
@@ -28,6 +28,12 @@ class Motion
     float                   deltaRotation;
     Vector3                 deltaPosition;
 
+    int                     endFrame;
+    int                     motionFlag;
+    int                     originFlag;
+    int                     allowMotion;
+    bool                    cutRotation;
+
     Motion()
     {
 
@@ -36,6 +42,21 @@ class Motion
     ~Motion()
     {
         @animation = null;
+    }
+
+    void Process()
+    {
+        this.animationName = "Animations/" + this.name + "_AnimStackTake 001.ani";
+        this.animation = cache.GetResource("Animation", animationName);
+        ProcessAnimation(animationName, motionFlag, originFlag, allowMotion, cutRotation, motionKeys);
+        if (endFrame < 0)
+            endFrame = motionKeys.length - 1;
+        endTime = float(endFrame) / FRAME_PER_SEC;
+        Vector4 v = motionKeys[0];
+        motionKeys[0] = Vector4(0, 0, 0, 0);
+        startFromOrigin = Vector3(v.x, v.y, v.z);
+        Vector4 endKey = GetKey(endTime);
+        Print("Motion " + name + " endKey=" + endKey.ToString());
     }
 
     void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
@@ -79,7 +100,7 @@ class Motion
         return k1.Lerp(k2, a);
     }
 
-    void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1)
+    void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
         PlayAnimation(ctrl, animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
         startPosition = node.worldPosition;
@@ -194,10 +215,8 @@ class AttackMotion
     }
 };
 
-
 class MotionManager
 {
-    Array<String>           motionNames;
     Array<Motion@>          motions;
 
     MotionManager()
@@ -205,25 +224,15 @@ class MotionManager
         Print("MotionManager");
     }
 
-    int FindMotionIndex(const String&in name)
-    {
-        for (uint i=0; i<motionNames.length; ++i)
-        {
-            if (motionNames[i] == name)
-                return i;
-        }
-        return -1;
-    }
 
     Motion@ FindMotion(const String&in name)
     {
-        int i = FindMotionIndex(name);
-        if (i < 0) {
-            // Print("Can not find motion " + name);
-            return null;
+        for (uint i=0; i<motions.length; ++i)
+        {
+            if (motions[i].name == name)
+                return motions[i];
         }
-
-        return motions[i];
+        return null;
     }
 
     void Start()
@@ -254,7 +263,13 @@ class MotionManager
 
         CreateMotion("BM_Combat/Redirect", kMotion_XZR, 0, kMotion_XZR, 58, false);
 
+        CreateMotion("BM_Combat_HitReaction/HitReaction_Back", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion("BM_Combat_HitReaction/HitReaction_Face_Left", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion("BM_Combat_HitReaction/HitReaction_Face_Right", kMotion_XZR, 0, kMotion_XZR, -1, false);
         CreateMotion("BM_Combat_HitReaction/Hit_Reaction_SideLeft", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion("BM_Combat_HitReaction/Hit_Reaction_SideRight", kMotion_XZR, 0, kMotion_XZR, -1, false);
+        CreateMotion("BM_Combat_HitReaction/HitReaction_Stomach", kMotion_XZR, 0, kMotion_XZR, -1, false);
+
 
         // Attacks
         String preFix = "BM_Attack/";
@@ -465,42 +480,21 @@ class MotionManager
 
     void Stop()
     {
-        motionNames.Clear();
         motions.Clear();
     }
 
-    Motion@ CreateMotion(const String&in name, int motionFlag, int origninFlag, int allowMotion, int endFrame, bool loop, bool cutRotation = false, float speed = 1.0f)
+    Motion@ CreateMotion(const String&in name, int motionFlag, int originFlag, int allowMotion, int endFrame, bool loop, bool cutRotation = false)
     {
-        //String dumpName("BM_Combat/Evade_Left_01");
-        Motion@ motion = FindMotion(name);
-        if (motion !is null)
-        {
-            Print("motion " + name + " already exist!");
-            return motion;
-        }
-        String animationName = "Animations/" + name + "_AnimStackTake 001.ani";
-        Animation@ anim = cache.GetResource("Animation", animationName);
-        if (anim is null) {
-            return null;
-        }
-
-        @motion = Motion();
-        motion.animationName = animationName;
-        motion.animation = cache.GetResource("Animation", motion.animationName);
-        //ProcessAnimation(motion.animationName, motionFlag, origninFlag, allowMotion, cutRotation, motion.motionKeys, name == dumpName);
-        ProcessAnimation(motion.animationName, motionFlag, origninFlag, allowMotion, cutRotation, motion.motionKeys);
-        if (endFrame < 0)
-            endFrame = motion.motionKeys.length - 1;
-        motion.endTime = float(endFrame) / FRAME_PER_SEC;
+        Motion@ motion = Motion();
+        motion.name = name;
+        motion.motionFlag = motionFlag;
+        motion.originFlag = originFlag;
+        motion.allowMotion = allowMotion;
+        motion.cutRotation = cutRotation;
         motion.looped = loop;
-        motion.speed = speed;
-        Vector4 v = motion.motionKeys[0];
-        motion.motionKeys[0] = Vector4(0, 0, 0, 0);
-        motion.startFromOrigin = Vector3(v.x, v.y, v.z);
+        motion.endFrame = endFrame;
         motions.Push(motion);
-        motionNames.Push(name);
-        Vector4 endKey = motion.GetKey(motion.endTime);
-        Print("Motion " + name + " endKey=" + endKey.ToString());
+        motion.Process();
         return motion;
     }
 };

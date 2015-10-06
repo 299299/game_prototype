@@ -2,6 +2,10 @@
 const float fullTurnThreashold = 125;
 const float collisionRadius = 1.5f;
 
+const StringHash ATTACK_STATE("AttackState");
+const StringHash REDIRECT_STATE("RedirectState");
+const StringHash TURN_STATE("TurnState");
+
 class CharacterState : State
 {
     Character@                  ownner;
@@ -60,7 +64,7 @@ class SingleMotionState : CharacterState
         Motion@ m = gMotionMgr.FindMotion(name);
         if (m is null)
         {
-            Print(name + " can not find motion " + name);
+            // Print(name + " can not find motion " + name);
             return;
         }
         @motion = m;

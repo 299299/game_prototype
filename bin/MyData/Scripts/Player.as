@@ -19,9 +19,9 @@ class PlayerStandState : RandomAnimationState
         float blendTime = 0.25f;
         if (lastState !is null)
         {
-            if (lastState.name == "AttackState")
+            if (lastState.nameHash == ATTACK_STATE)
                 blendTime = 10.0f;
-            if (lastState.name == "RedirectState")
+            if (lastState.nameHash == REDIRECT_STATE)
                 blendTime = 2.5f;
         }
         StartBlendTime(blendTime);
@@ -184,14 +184,6 @@ class PlayerRedirectState : SingleMotionState
     }
 };
 
-class PlayerAlignState : CharacterAlignState
-{
-    PlayerAlignState(Character@ c)
-    {
-        super(c);
-    }
-};
-
 class PlayerAttackState : CharacterState
 {
     Array<AttackMotion@>  forwardAttacks;
@@ -307,19 +299,19 @@ class PlayerAttackState : CharacterState
         rightAttacks.Sort();
         backAttacks.Sort();
 
-        Print("After sort forward attack motions=:\n");
+        Print("\nAfter sort forward attack motions:\n");
         for (uint i=0; i<forwardAttacks.length; ++i)
             Print(forwardAttacks[i].motion.animationName);
 
-        Print("After sort left attack motions=:\n");
+        Print("\nAfter sort left attack motions:\n");
         for (uint i=0; i<leftAttacks.length; ++i)
             Print(leftAttacks[i].motion.animationName);
 
-        Print("After sort right attack motions=:\n");
+        Print("\nAfter sort right attack motions:\n");
         for (uint i=0; i<rightAttacks.length; ++i)
             Print(rightAttacks[i].motion.animationName);
 
-        Print("After sort back attack motions=:\n");
+        Print("\nAfter sort back attack motions:\n");
         for (uint i=0; i<backAttacks.length; ++i)
             Print(backAttacks[i].motion.animationName);
     }
@@ -651,7 +643,6 @@ class Player : Character
         stateMachine.AddState(PlayerTurnState(this));
         stateMachine.AddState(PlayerMoveState(this));
         stateMachine.AddState(PlayerAttackState(this));
-        stateMachine.AddState(PlayerAlignState(this));
         stateMachine.AddState(PlayerCounterState(this));
         stateMachine.AddState(PlayerEvadeState(this));
         stateMachine.AddState(PlayerHitState(this));
@@ -694,7 +685,7 @@ class Player : Character
             posDiff.y = 0;
             int score = 0;
             float distSQR = posDiff.lengthSquared;
-            Print(String(distSQR));
+            // Print(" distSQR=" + distSQR);
             if (distSQR > maxAttackDistSQR || !e.CanBeAttacked())
             {
                 gEnemyMgr.scoreCache.Push(-1);

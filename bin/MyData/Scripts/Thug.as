@@ -18,7 +18,7 @@ class ThugStandState : RandomAnimationState
         float blendTime = 0.25f;
         if (lastState !is null)
         {
-            if (lastState.name == "AttackState" || lastState.name == "TurnState")
+            if (lastState.nameHash == ATTACK_STATE || lastState.nameHash == TURN_STATE)
                 blendTime = 5.0f;
         }
         StartBlendTime(blendTime);
