@@ -1,7 +1,6 @@
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
-const float ATTACK_SAFE_DIST = 3;
 
 class PlayerStandState : RandomAnimationState
 {
@@ -32,7 +31,7 @@ class PlayerStandState : RandomAnimationState
         if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
         {
             int index = ownner.RadialSelectAnimation(4);
-            ownner.sceneNode.vars["AnimationIndex"] = index -1;
+            ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
 
             if (index == 0)
                 ownner.stateMachine.ChangeState("MoveState");
@@ -67,25 +66,7 @@ class PlayerTurnState : MultiMotionState
 
     void Update(float dt)
     {
-        Motion@ motion = motions[selectIndex];
-
-        motion.deltaRotation += dt * turnSpeed;
-        // Print("deltaRotation = " + String(motion.deltaRotation));
-
-        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
-        {
-            float characterDifference = ownner.ComputeAngleDiff();
-            if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
-            {
-                ownner.sceneNode.vars["AnimationIndex"] = 1;
-                ownner.stateMachine.ChangeState("TurnState");
-            }
-            else
-            {
-                ownner.CommonStateFinishedOnGroud();
-            }
-        }
-
+        ownner.sceneNode.Yaw(turnSpeed * dt);
         MultiMotionState::Update(dt);
     }
 
@@ -120,7 +101,6 @@ class PlayerMoveState : SingleMotionState
             ownner.stateMachine.ChangeState("StandState");
 
         float characterDifference = ownner.ComputeAngleDiff();
-
         ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
         motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
 
@@ -129,9 +109,9 @@ class PlayerMoveState : SingleMotionState
         else
         {
             // if the difference is large, then turn 180 degrees
-            if ( (Abs(characterDifference) > fullTurnThreashold) && gInput.IsLeftStickStationary() )
+            if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
             {
-                ownner.sceneNode.vars["AnimationIndex"] = 1;
+                ownner.sceneNode.vars[ANIMATION_INDEX] = 1;
                 ownner.stateMachine.ChangeState("TurnState");
             }
         }
@@ -195,7 +175,7 @@ class PlayerAttackState : CharacterState
 
     Enemy@          attackEnemy;
 
-    int             status;
+    int             state;
 
     Vector3         predictPosition;
     Vector3         predictEnemyPosition;
@@ -204,8 +184,6 @@ class PlayerAttackState : CharacterState
 
     float           targetAngle;
     float           targetDistance;
-
-    bool            standBy;
 
     PlayerAttackState(Character@ c)
     {
@@ -331,18 +309,18 @@ class PlayerAttackState : CharacterState
         targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
         targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
 
-        bool standBy = targetDistance < ATTACK_SAFE_DIST;
+        bool standBy = targetDistance < COLLISION_SAFE_DIST;
 
         Vector3 oldPosition = ownner.sceneNode.worldPosition;
         float t = ownner.animCtrl.GetTime(motion.animationName);
-        if (status == 0)
+        if (state == 0)
         {
             if (t >= currentAttack.slowMotionTime.x) {
-                status = 1;
+                state = 1;
                 ownner.sceneNode.scene.timeScale = 0.25f;
             }
         }
-        else if (status == 1)
+        else if (state == 1)
         {
             if (attack_timing_test)
             {
@@ -351,19 +329,19 @@ class PlayerAttackState : CharacterState
             }
 
             if (t >= currentAttack.slowMotionTime.y) {
-                status = 2;
+                state = 2;
                 ownner.sceneNode.scene.timeScale = 1.0f;
             }
         }
 
-        if (status != 2) {
+        if (state != 2) {
             // motion.deltaRotation += fixRotatePerSec * dt;
             // Print("motion.deltaRotation=" + String(motion.deltaRotation));
             // ownner.sceneNode.worldPosition = ownner.sceneNode.worldPosition + movePosPerSec * dt;
             motion.deltaPosition += movePosPerSec * dt;
         }
 
-        if (status > 0)
+        if (state > 0)
         {
             //float diffAngle = ownner.ComputeAngleDiff(attackEnemy.sceneNode);
             //const float turnSpeed = 15.0f;
@@ -377,7 +355,7 @@ class PlayerAttackState : CharacterState
 
         if (finished) {
             // ownner.sceneNode.scene.timeScale = 0.0f;
-            ownner.stateMachine.ChangeState("StandState");
+            ownner.CommonStateFinishedOnGroud();
         }
 
         CharacterState::Update(dt);
@@ -408,7 +386,7 @@ class PlayerAttackState : CharacterState
         float minDistance = 99999;
         float bestRange = 0;
         int bestIndex = -1;
-        float baseDist = collisionRadius * 1.75f;
+        float baseDist = COLLISION_RADIUS * 1.75f;
 
         for (int i=attacks.length-1; i>=0; --i)
         {
@@ -430,7 +408,7 @@ class PlayerAttackState : CharacterState
         @currentAttack = attacks[bestIndex];
 
         predictEnemyPosition = myPos + enemyDir * bestRange;
-        predictPosition = myPos + enemyDir * (enemyDist -  2 * collisionRadius);
+        predictPosition = myPos + enemyDir * (enemyDist -  2 * COLLISION_RADIUS);
 
         Vector3 futurePos = currentAttack.motion.GetFuturePosition(ownner.sceneNode, currentAttack.impactTime);
         movePosPerSec = ( predictPosition - futurePos ) / currentAttack.impactTime;
@@ -474,7 +452,7 @@ class PlayerAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner.sceneNode, ownner.animCtrl);
         predictMotionPosition = motion.GetFuturePosition(currentAttack.impactTime);
-        status = 0;
+        state = 0;
 
         if (attack_timing_test)
             ownner.sceneNode.scene.timeScale = 0.0f;
@@ -742,7 +720,7 @@ class Player : Character
                 continue;
             if (curDistSQR > distSQR)
             {
-                counterEnemy = e;
+                @counterEnemy = e;
                 curDistSQR = distSQR;
                 curPosDiff = posDiff;
             }
@@ -772,8 +750,10 @@ class Player : Character
         for (uint i=0; i<gEnemyMgr.enemyList.length; ++i)
         {
             Enemy@ e = gEnemyMgr.enemyList[i];
-            if (!e.CanBeRedirected())
+            if (!e.CanBeRedirected()) {
+                Print("Enemy " + e.GetName() + " can not be redirected.");
                 continue;
+            }
 
             float enemyDir = e.GetCharacterAngle();
             float totalDir = Abs(myDir - enemyDir);
@@ -805,7 +785,7 @@ class Player : Character
         {
             if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
             {
-                sceneNode.vars["AnimationIndex"] = RadialSelectAnimation(2);
+                sceneNode.vars[ANIMATION_INDEX] = RadialSelectAnimation(2);
                 stateMachine.ChangeState("EvadeState");
             }
         }
@@ -816,9 +796,19 @@ class Player : Character
 
     }
 
+    bool CanBeAttacked()
+    {
+        return true;
+    }
+
+    bool CanBeCountered()
+    {
+        return false;
+    }
+
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "player combo=" + combo + "\n";
+        return Character::GetDebugText() +  "flags=" + flags + " combo=" + combo + "\n";
     }
 
     void CommonStateFinishedOnGroud()

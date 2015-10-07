@@ -3,7 +3,8 @@ const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
 const String MODEL_ARGS = " -t na -l -cm -ct";
 const String ANIMATION_ARGS = " -nm -nt";
-const bool showOutput = true;
+const bool showOutput = false;
+String exportFolder;
 
 void ExecuteCmd(const String&in cmd)
 {
@@ -18,12 +19,28 @@ void ExecuteCmd(const String&in cmd)
 
 void PreProcess()
 {
+    Array<String>@ arguments = GetArguments();
+    for (uint i=0; i<arguments.length; ++i)
+    {
+        if (arguments[i] == "-folder")
+        {
+            exportFolder = arguments[i + 1];
+        }
+    }
+
+    Print("exportFolder=" + exportFolder);
     fileSystem.CreateDir(OUT_DIR + "Models");
     fileSystem.CreateDir(OUT_DIR + "Animations");
 }
 
 String DoProcess(const String&in name, const String&in folderName, const String&in args)
 {
+    if (!exportFolder.empty)
+    {
+        if (!name.Contains(exportFolder))
+            return "";
+    }
+
     String iname = folderName + name;
     uint pos = name.FindLast('.');
     String oname = OUT_DIR + folderName + name.Substring(0, pos) + ".mdl";
@@ -51,7 +68,8 @@ void ProcessAnimations()
     {
         Print("Found a animation " + animations[i]);
         String outMdlName = DoProcess(animations[i], "Animations/", ANIMATION_ARGS);
-        fileSystem.Delete(outMdlName);
+        if (!outMdlName.empty)
+            fileSystem.Delete(outMdlName);
     }
 }
 

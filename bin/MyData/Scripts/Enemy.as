@@ -3,7 +3,6 @@
 class Enemy : Character
 {
     Character@          target;
-    float               targetDistance;
 
     void Start()
     {
@@ -20,7 +19,6 @@ class Enemy : Character
 
     void Update(float dt)
     {
-        targetDistance = GetTargetDistance();
         Character::Update(dt);
     }
 
@@ -41,17 +39,17 @@ class Enemy : Character
 
     bool CanBeCountered()
     {
-        return IsInState("AttackState");
+        return HasFlag(FLAGS_COUNTER);
     }
 
     bool CanBeRedirected()
     {
-        return IsInState("StandState") || IsInState("TurnState");
+        return HasFlag(FLAGS_REDIRECTED);
     }
 
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "distToPlayer=" + targetDistance + "\n";
+        return Character::GetDebugText() +  "flags=" + flags + " distToPlayer=" + GetTargetDistance() + "\n";
     }
 };
 

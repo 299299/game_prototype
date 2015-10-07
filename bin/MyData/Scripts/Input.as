@@ -181,9 +181,9 @@ class GameInput
 
     String GetDebugText()
     {
-        return "leftStick:(" + String(m_leftStickX) + "," + String(m_leftStickY) + ")" +
-               " left-angle=" + String(m_leftStickAngle) + " hold-time-" + String(m_leftStickHoldTime) +
-               "\nrightStick:(" + String(m_rightStickX) + "," + String(m_rightStickY) + ")\n";
+        return "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
+               " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime +
+               " rightStick:(" + m_rightStickX + "," + m_rightStickY + ")\n";
     }
 };
 

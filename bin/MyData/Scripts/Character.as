@@ -1,10 +1,15 @@
 
-const float fullTurnThreashold = 125;
-const float collisionRadius = 1.5f;
+const float FULLTURN_THRESHOLD = 125;
+const float COLLISION_RADIUS = 1.5f;
+const float COLLISION_SAFE_DIST = 3;
+const float START_TO_ATTACK_DIST = 6;
+
+const int MAX_NUM_OF_ATTACK = 2;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash REDIRECT_STATE("RedirectState");
 const StringHash TURN_STATE("TurnState");
+const StringHash ANIMATION_INDEX("AnimationIndex");
 
 class CharacterState : State
 {
@@ -96,7 +101,7 @@ class MultiMotionState : CharacterState
 
     int PickIndex()
     {
-        return ownner.sceneNode.vars["AnimationIndex"].GetInt();
+        return ownner.sceneNode.vars[ANIMATION_INDEX].GetInt();
     }
 
     String GetDebugText()
@@ -209,6 +214,8 @@ class AnimationTestState : CharacterState
     {
         if (testMotion !is null)
             testMotion.Start(ownner.sceneNode, ownner.animCtrl);
+        else
+            PlayAnimation(ownner.animCtrl, animationName);
     }
 
     void Exit(State@ nextState)
@@ -232,18 +239,23 @@ class AnimationTestState : CharacterState
         if (testMotion !is null)
         {
              finished = testMotion.Move(dt, ownner.sceneNode, ownner.animCtrl);
+
+            if (testMotion.looped && timeInState > 2.0f)
+                finished = true;
         }
         else
-        {
+            finished = ownner.animCtrl.IsAtEnd(animationName);
 
-        }
-
-        if (finished) {
-            ownner.stateMachine.ChangeState("StandState");
-            // ownner.sceneNode.scene.timeScale = 0.0f;
-        }
+        if (finished)
+            ownner.CommonStateFinishedOnGroud();
 
         CharacterState::Update(dt);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        if (testMotion !is null)
+            testMotion.DebugDraw(debug, ownner.sceneNode);
     }
 
     String GetDebugText()
@@ -413,7 +425,7 @@ class Character : GameObject
         debug.AddNode(sceneNode, 0.5f, false);
         debug.AddNode(sceneNode.GetChild("Bip01", true), 0.25f, false);
         //Sphere sp;
-        //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, collisionRadius);
+        //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, COLLISION_RADIUS);
         //debug.AddSphere(sp, Color(0, 1, 0));
         //debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
 
@@ -506,6 +518,11 @@ class Character : GameObject
     {
         Vector3 characterDir = sceneNode.worldRotation * Vector3(0, 0, 1);
         return Atan2(characterDir.x, characterDir.z);
+    }
+
+    String GetName()
+    {
+        return sceneNode.name;
     }
 };
 

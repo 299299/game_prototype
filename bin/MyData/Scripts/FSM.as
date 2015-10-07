@@ -18,7 +18,7 @@ class State
 
     void Enter(State@ lastState)
     {
-
+        timeInState = 0;
     }
 
     void Exit(State@ nextState)
@@ -131,7 +131,7 @@ class FSM
 
     String GetDebugText()
     {
-        String ret = "current-state = ";
+        String ret = "current-state: ";
         if (currentState !is null)
             ret += currentState.GetDebugText();
         else

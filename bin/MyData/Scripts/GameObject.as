@@ -5,6 +5,7 @@ const int CTRL_ALL = (1 << 16);
 
 const int FLAGS_ATTACK  = (1 << 0);
 const int FLAGS_COUNTER = (1 << 1);
+const int FLAGS_REDIRECTED = (1 << 2);
 
 class GameObject : ScriptObject
 {

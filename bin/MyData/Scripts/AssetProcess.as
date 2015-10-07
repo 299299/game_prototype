@@ -27,6 +27,8 @@ Skeleton@ skeleton;
 
 Vector3 pelvisRightAxis = Vector3(1, 0, 0);
 Quaternion rotateBoneInitQ;
+Vector3 translateBoneInitP;
+
 Vector3 pelvisOrign;
 
 const float FRAME_PER_SEC = 30.0f;
@@ -61,6 +63,10 @@ void PreProcess()
     skeleton = am.skeleton;
     Bone@ bone = skeleton.GetBone(RotateBoneName);
     rotateBoneInitQ = bone.initialRotation;
+
+    bone = skeleton.GetBone(TranslateBoneName);
+    translateBoneInitP = bone.initialPosition;
+
     pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
     pelvisRightAxis.Normalize();
     Print("pelvisRightAxis = " + pelvisRightAxis.ToString());
@@ -72,6 +78,7 @@ void PreProcess()
 
 void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, bool cutRotation, Array<Vector4>&out outKeys, bool dump = false)
 {
+    uint startTime = time.systemTime;
     Print("Processing animation " + animationFile);
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
@@ -109,15 +116,14 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
                 AnimationKeyFrame kf(translateTrack.keyFrames[i]);
                 kf.position = flipZ_Rot * kf.position;
                 translateTrack.keyFrames[i] = kf;
-                // Print("RotateOrigin change pos from " + oldPos.ToString() + " to " + kf.position_.ToString());
             }
         }
     }
 
     outKeys.Resize(translateTrack.numKeyFrames);
 
-    float firstRotateFromRoot = 0;
 
+    float firstRotateFromRoot = 0;
     if (rotateTrack !is null)
     {
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
@@ -126,7 +132,9 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             if (i == 0 || i == rotateTrack.numKeyFrames - 1)
                Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
             if (i == 0)
+            {
                 firstRotateFromRoot = q.eulerAngles.y;
+            }
         }
     }
 
@@ -175,18 +183,17 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         translateNode.worldPosition = currentWS;
         Vector3 currentLS = translateNode.position;
         Vector3 originDiffLS = currentLS - firstKeyPos;
-        Print("originDiffLS = " + originDiffLS.ToString() + " oldWS=" + oldWS.ToString());
 
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);
             Vector3 old = kf.position;
             kf.position += originDiffLS;
-            // Print("MoveToOrigin from " + old.ToString() + " to " + kf.position_.ToString());
             translateTrack.keyFrames[i] = kf;
         }
     }
 
+    bool rotateMotion = motionFlag & kMotion_R != 0;
     motionFlag &= (~kMotion_R);
     if (motionFlag != 0 && translateTrack !is null)
     {
@@ -228,6 +235,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     {
         Vector3 v_motion(outKeys[i].x, outKeys[i].y, outKeys[i].z);
         v_motion = flipZ_Rot * v_motion;
+
         outKeys[i].x = v_motion.x;
         outKeys[i].y = v_motion.y;
         outKeys[i].z = v_motion.z;
@@ -241,6 +249,20 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             outKeys[i].w = 0;
     }
 
+    // query first key-out
+    if (translateTrack !is null)
+    {
+        Vector3 key_one_pos = translateTrack.keyFrames[0].position;
+        Vector3 diff = key_one_pos - translateBoneInitP;
+        outKeys[0].x = diff.x;
+        outKeys[0].y = diff.y;
+        outKeys[0].z = diff.z;
+    }
+    if (rotateTrack !is null)
+    {
+        Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation);
+        outKeys[0].w = q.eulerAngles.y;
+    }
 
     if (dump)
     {
@@ -294,7 +316,7 @@ Animation@ FindAnimation(const String&in name)
 
 String GetAnimationName(const String&in name)
 {
-    return "Animations/" + name + "_AnimStackTake 001.ani";
+    return "Animations/" + name + "_Take 001.ani";
 }
 
 // clamps an angle to the rangle of [-2PI, 2PI]
