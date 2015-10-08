@@ -247,8 +247,9 @@ class ThugAttackState : CharacterState
 
         Motion@ motion = currentAttack.motion;
         float targetDistance = ownner.GetTargetDistance();
-        bool standBy = targetDistance < COLLISION_SAFE_DIST;
-        Vector3 oldPosition = ownner.sceneNode.worldPosition;
+        if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            motion.translateEnabled = false;
+
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == 0)
         {
@@ -268,10 +269,6 @@ class ThugAttackState : CharacterState
 
         // TODO ....
         bool finished = motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
-        if (standBy) {
-            ownner.sceneNode.worldPosition = oldPosition;
-        }
-
         if (finished) {
             ownner.CommonStateFinishedOnGroud();
         }

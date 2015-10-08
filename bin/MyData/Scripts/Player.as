@@ -309,9 +309,9 @@ class PlayerAttackState : CharacterState
         targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
         targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
 
-        bool standBy = targetDistance < COLLISION_SAFE_DIST;
+        if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            motion.translateEnabled = false;
 
-        Vector3 oldPosition = ownner.sceneNode.worldPosition;
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == 0)
         {
@@ -349,10 +349,6 @@ class PlayerAttackState : CharacterState
         }
 
         bool finished = motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
-        if (standBy) {
-            ownner.sceneNode.worldPosition = oldPosition;
-        }
-
         if (finished) {
             // ownner.sceneNode.scene.timeScale = 0.0f;
             ownner.CommonStateFinishedOnGroud();

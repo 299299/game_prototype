@@ -36,9 +36,13 @@ class Motion
     int                     allowMotion;
     bool                    cutRotation;
 
+    bool                    translateEnabled;
+    bool                    rotateEnabled;
+
     Motion()
     {
-
+        translateEnabled = true;
+        rotateEnabled = true;
     }
 
     ~Motion()
@@ -117,45 +121,46 @@ class Motion
         startRotation = startRotationQua.eulerAngles.y;
         deltaRotation = 0;
         deltaPosition = Vector3(0, 0, 0);
+        translateEnabled = true;
+        rotateEnabled = true;
     }
 
     bool Move(float dt, Node@ node, AnimationController@ ctrl)
     {
         float localTime = ctrl.GetTime(animationName);
-
-        /*
         if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             GetMotion(localTime, dt, looped, motionOut);
-            node.Yaw(motionOut.w);
-            Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-            tLocal = tLocal * ctrl.GetWeight(animationName);
-            Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition + deltaPosition;
-            MoveNode(node, tWorld, dt);
+
+            if (rotateEnabled)
+            {
+                node.Yaw(motionOut.w);
+            }
+
+            if (translateEnabled)
+            {
+                Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
+                tLocal = tLocal * ctrl.GetWeight(animationName);
+                Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition + deltaPosition;
+                MoveNode(node, tWorld, dt);
+            }
         }
         else
         {
             Vector4 motionOut = GetKey(localTime);
-            node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
-            Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
-            MoveNode(node, tWorld, dt);
-            // Print("key-yaw=" + String(motionOut.w) + " worldRotation=" + node.worldRotation.eulerAngles.ToString());
-        }*/
+            if (rotateEnabled)
+            {
+                node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
+            }
 
-        Vector4 motionOut = Vector4(0, 0, 0, 0);
-        GetMotion(localTime, dt, looped, motionOut);
-        // Print("motion-out=" + motionOut.ToString());
-        Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-        tLocal = tLocal * ctrl.GetWeight(animationName);
-        Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition;
-        MoveNode(node, tWorld, dt);
-        node.Yaw(motionOut.w);
-        if (!looped)
-        {
-            return localTime >= endTime;
+            if (translateEnabled)
+            {
+                Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
+                MoveNode(node, tWorld, dt);
+            }
         }
-        return false;
+        return localTime >= endTime;
     }
 
     Vector3 GetFuturePosition(Node@ node, float t)
