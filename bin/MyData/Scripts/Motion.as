@@ -10,6 +10,28 @@ void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer =
     ctrl.SetSpeed(name, speed);
 }
 
+int QueryBestCounterMotion(const Array<Motion@>&in motions1, const Array<Motion@>&in motions2, const Vector3&in posDiff)
+{
+    float bestErrSQR = 99999;
+    int bestIndex = -1;
+    for (uint i=0; i<motions1.length; ++i)
+    {
+        Motion@ motion1 = motions1[i];
+        Motion@ motion2 = motions2[i];
+        Vector3 startDiff = motion1.startFromOrigin - motion2.startFromOrigin;
+        startDiff.y = 0;
+        float diffSQR = (startDiff - posDiff).lengthSquared;
+        if (diffSQR < bestErrSQR)
+        {
+            bestIndex = i;
+            bestErrSQR = diffSQR;
+        }
+    }
+
+    Print("QueryBestCounterMotion bestIndex=" + bestIndex + " bestErrSQR=" + bestErrSQR);
+    return bestIndex;
+}
+
 class Motion
 {
     String                  name;
@@ -203,7 +225,7 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ node, const Quaternion&in ro
 {
     Vector3 dir = rotation * Vector3(0, 0, 1);
     float angle = Atan2(dir.x, dir.z);
-    DebugDrawDirection(debug, node, angle, color, radius);
+    DebugDrawDirection(debug, node, angle, color, radius, yAdjust);
 }
 
 void DebugDrawDirection(DebugRenderer@ debug, Node@ node, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
@@ -269,6 +291,7 @@ class MotionManager
             if (motions[i].name == name)
                 return motions[i];
         }
+        Print("Could not find " + name);
         return null;
     }
 
@@ -433,6 +456,10 @@ class MotionManager
         CreateMotion(counter_prefix + "Counter_Leg_Front_08", kMotion_XZR, kMotion_XZR);
         CreateMotion(counter_prefix + "Counter_Leg_Front_09", kMotion_XZR, kMotion_XZR);
 
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak", kMotion_XZR, kMotion_XZ);
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01", kMotion_XZR, kMotion_XZR);
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02", kMotion_XZR, kMotion_XZR);
+
         //========================================================================
         // THUG MOTIONS
         //========================================================================
@@ -509,6 +536,10 @@ class MotionManager
         CreateMotion(counter_prefix + "Counter_Leg_Front_07", kMotion_XZR, kMotion_XZ);
         CreateMotion(counter_prefix + "Counter_Leg_Front_08", kMotion_XZR, kMotion_XZ);
         CreateMotion(counter_prefix + "Counter_Leg_Front_09", kMotion_XZR, kMotion_XZ);
+
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak", kMotion_XZR, kMotion_XZR);
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01", kMotion_XZR, kMotion_XZ);
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02", kMotion_XZR, kMotion_XZ);
 
         PostProcess();
 

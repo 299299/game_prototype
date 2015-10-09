@@ -1,7 +1,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = 3;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2;
 const float START_TO_ATTACK_DIST = 6;
 
 const int MAX_NUM_OF_ATTACK = 2;
@@ -10,6 +10,7 @@ const StringHash ATTACK_STATE("AttackState");
 const StringHash REDIRECT_STATE("RedirectState");
 const StringHash TURN_STATE("TurnState");
 const StringHash ANIMATION_INDEX("AnimationIndex");
+const StringHash ATTACK_TYPE("AttackType");
 
 class CharacterState : State
 {
@@ -90,8 +91,8 @@ class MultiMotionState : CharacterState
     void Enter(State@ lastState)
     {
         selectIndex = PickIndex();
-        motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl);
         Print(name + " pick " + motions[selectIndex].animationName);
+        motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -281,6 +282,90 @@ class RandomAnimationState : CharacterState
     }
 };
 
+class CharacterCounterState : CharacterState
+{
+    Array<Motion@>      frontArmMotions;
+    Array<Motion@>      frontLegMotions;
+    Array<Motion@>      backArmMotions;
+    Array<Motion@>      backLegMotions;
+    Motion@             currentMotion;
+    int                 state; // sub state
+
+    CharacterCounterState(Character@ c)
+    {
+        super(c);
+        SetName("CounterState");
+    }
+
+    void Exit(State@ nextState)
+    {
+        CharacterState::Exit(nextState);
+        @currentMotion = null;
+    }
+
+    void AddCounterMotions(const String&in preFix)
+    {
+        // Front Arm
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_04"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_02"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_03"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_04"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_05"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_06"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_07"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_08"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_09"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_10"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_13"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_14"));
+        // Front Leg
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak_01"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak_02"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_01"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_02"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_03"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_04"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_06"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_07"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_08"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_09"));
+        // Back Arm
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_02"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_01"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_03"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_05"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_06"));
+        // Back Leg
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_03"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_05"));
+    }
+
+    void StartCounterMotion()
+    {
+        Print(ownner.GetName() + " start counter motion!");
+        currentMotion.Start(ownner.sceneNode, ownner.animCtrl);
+        state = 1;
+    }
+
+    Motion@ GetCounterMotion(int index, bool isArm, bool isBack)
+    {
+        if (isBack)
+        {
+            return isArm ? backArmMotions[index] : backLegMotions[index];
+        }
+        else
+        {
+            return isArm ? frontArmMotions[index] : frontLegMotions[index];
+        }
+    }
+};
+
 class Character : GameObject
 {
     Node@                   sceneNode;
@@ -419,11 +504,20 @@ class Character : GameObject
         return true;
     }
 
+    bool CanBeRedirected()
+    {
+        return true;
+    }
+
     void DebugDraw(DebugRenderer@ debug)
     {
         GameObject::DebugDraw(debug);
-        debug.AddNode(sceneNode, 0.5f, false);
-        debug.AddNode(sceneNode.GetChild("Bip01", true), 0.25f, false);
+        //debug.AddNode(sceneNode, 0.5f, false);
+        //debug.AddNode(sceneNode.GetChild("Bip01", true), 0.25f, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(1, 1, 0), 32, false);
+        DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, Color(0, 0, 1), COLLISION_RADIUS);
+        debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, Color(0,1,1), false);
+
         //Sphere sp;
         //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, COLLISION_RADIUS);
         //debug.AddSphere(sp, Color(0, 1, 0));
@@ -442,7 +536,6 @@ class Character : GameObject
         sp.Define(footNode_R.worldPosition, footRadius);
         debug.AddSphere(sp, Color(0, 1, 0));
         */
-        debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, Color(1,1,0), false);
     }
 
     void TestAnimation(const String&in animationName)

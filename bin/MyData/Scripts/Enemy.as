@@ -37,6 +37,11 @@ class Enemy : Character
         return GetTargetDistance(target.sceneNode);
     }
 
+    bool CanBeAttacked()
+    {
+        return HasFlag(FLAGS_ATTACK);
+    }
+
     bool CanBeCountered()
     {
         return HasFlag(FLAGS_COUNTER);

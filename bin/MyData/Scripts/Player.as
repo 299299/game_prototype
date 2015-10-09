@@ -1,6 +1,7 @@
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
+const float MAX_COUNTER_DIST = 6.0f;
 
 class PlayerStandState : RandomAnimationState
 {
@@ -482,20 +483,18 @@ class PlayerAttackState : CharacterState
 };
 
 
-class PlayerCounterState : MultiMotionState
+class PlayerCounterState : CharacterCounterState
 {
     Enemy@              counterEnemy;
-    int                 status;
     Vector3             positionDiff;
     float               rotationDiff;
-    int                 counterIndex;
     float               alignTime;
 
     PlayerCounterState(Character@ c)
     {
         super(c);
         SetName("CounterState");
-        AddMotion("BM_TG_Counter/Counter_Arm_Front_01");
+        AddCounterMotions("BM_TG_Counter/");
         alignTime = 0.2f;
     }
 
@@ -506,29 +505,27 @@ class PlayerCounterState : MultiMotionState
 
     void Update(float dt)
     {
-        if (status == 0) {
+        if (state == 0) {
             // aligning
             float targetRotation = counterEnemy.sceneNode.worldRotation.eulerAngles.y + rotationDiff;
-            Vector3 targetPos = Quaternion(0, targetRotation, 0) * positionDiff + node.worldPosition;
-            targetPos = node.worldPosition.Lerp(targetPos, timeInState/alignTime);
-            float curRot = node.worldRotation.eulerAngles.y;
+            Vector3 targetPos = Quaternion(0, targetRotation, 0) * positionDiff + ownner.sceneNode.worldPosition;
+            targetPos = ownner.sceneNode.worldPosition.Lerp(targetPos, timeInState/alignTime);
+            float curRot = ownner.sceneNode.worldRotation.eulerAngles.y;
             float dYaw = AngleDiff(targetRotation - curRot);
             float timeLeft = alignTime - timeInState;
             float yawPerSec = dYaw / timeLeft;
-            node.worldRotation = Quaternion(0, curRot + yawPerSec * dt, 0);
+            ownner.sceneNode.worldRotation = Quaternion(0, curRot + yawPerSec * dt, 0);
 
             if (timeInState >= alignTime) {
-                Print("FINISHED ALIGN!!!!");
-                status = 1;
-                counterEnemy.sceneNode.vars["CounterIndex"] = counterIndex;
-                counterEnemy.stateMachine.ChangeState("CounterState");
-                motions[counterIndex].Start(ownner.sceneNode, ownner.animCtrl);
+                StartCounterMotion();
+
+                CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.GetState());
+                enemyCounterState.StartCounterMotion();
             }
         }
         else {
-            // real counting
-            if (motions[counterIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
-                ownner.stateMachine.ChangeState("StandState");
+            if (currentMotion.Move(dt, ownner.sceneNode, ownner.animCtrl))
+                ownner.CommonStateFinishedOnGroud();
         }
 
         CharacterState::Update(dt);
@@ -536,39 +533,75 @@ class PlayerCounterState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        status = 0;
+        state = 0;
         float dAngle = ownner.ComputeAngleDiff(counterEnemy.sceneNode);
-        int front_back = 0;
+        bool isBack = false;
         if (Abs(dAngle) > 90)
-            front_back = 1;
-        rotationDiff = (front_back == 0) ? 180 : 0;
-        Print("Counter-align angle-diff=" + dAngle);
+            isBack = true;
+        rotationDiff = isBack ? 180 : 0;
+        Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack);
 
-        ThugCounterState@ enemyCounterState = cast<ThugCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
+        int attackType = counterEnemy.sceneNode.vars[ATTACK_TYPE].GetInt();
+
+        CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
         if (enemyCounterState is null)
             return;
 
-        positionDiff = motions[counterIndex].startFromOrigin - enemyCounterState.motions[counterIndex].startFromOrigin;
+        Vector3 currentPositionDiff = counterEnemy.sceneNode.worldPosition - ownner.sceneNode.worldPosition;
+        currentPositionDiff.y = 0;
+        if (attackType == 0)
+        {
+            if (isBack)
+            {
+                int idx = QueryBestCounterMotion(backArmMotions, enemyCounterState.backArmMotions, currentPositionDiff);
+                @currentMotion = backArmMotions[idx];
+                @enemyCounterState.currentMotion = enemyCounterState.backArmMotions[idx];
+            }
+            else
+            {
+                int idx = QueryBestCounterMotion(frontArmMotions, enemyCounterState.frontArmMotions, currentPositionDiff);
+                @currentMotion = frontArmMotions[idx];
+                @enemyCounterState.currentMotion = enemyCounterState.frontArmMotions[idx];
+            }
+        }
+        else
+        {
+            if (isBack)
+            {
+                int idx = QueryBestCounterMotion(backLegMotions, enemyCounterState.backLegMotions, currentPositionDiff);
+                @currentMotion = backArmMotions[idx];
+                @enemyCounterState.currentMotion = enemyCounterState.backArmMotions[idx];
+            }
+            else
+            {
+                int idx = QueryBestCounterMotion(frontLegMotions, enemyCounterState.frontLegMotions, currentPositionDiff);
+                @currentMotion = frontArmMotions[idx];
+                @enemyCounterState.currentMotion = enemyCounterState.frontArmMotions[idx];
+            }
+        }
+
+        positionDiff = currentMotion.startFromOrigin - enemyCounterState.currentMotion.startFromOrigin;
+
         Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff);
+
+        CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
-        CharacterState::Exit(nextState);
         @counterEnemy = null;
+        @currentMotion = null;
+        CharacterState::Exit(nextState);
     }
 
     String GetDebugText()
     {
         String r = CharacterState::GetDebugText();
-        r += "\ncurrent motion=" + motions[counterIndex].animationName;
+        r += "\ncurrent motion=" + currentMotion.animationName;
         return r;
     }
 
-    int PickIndex()
-    {
-        return counterIndex;
-    }
+
 };
 
 class PlayerHitState : MultiMotionState
@@ -731,6 +764,7 @@ class Player : Character
             return;
         @state.counterEnemy = counterEnemy;
         stateMachine.ChangeState("CounterState");
+        counterEnemy.stateMachine.ChangeState("CounterState");
     }
 
     void Evade()
