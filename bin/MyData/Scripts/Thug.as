@@ -283,6 +283,7 @@ class ThugAttackState : CharacterState
             if (t >= currentAttack.slowMotionTime.x) {
                 state = 1;
                 ownner.animCtrl.SetSpeed(motion.animationName, 0.25f);
+                ownner.AddFlag(FLAGS_COUNTER);
             }
         }
         else if (state == 1)
@@ -324,7 +325,7 @@ class ThugAttackState : CharacterState
         state = 0;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner.sceneNode, ownner.animCtrl);
-        ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
+        ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         CharacterState::Enter(lastState);
     }
 
@@ -431,7 +432,10 @@ class ThugRedirectState : MultiMotionState
 
     void Update(float dt)
     {
-        MultiMotionState::Update(dt);
+        selectIndex = PickIndex();
+        Print(name + " pick " + motions[selectIndex].animationName);
+        float blendTime = 0.5f;
+        motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl, 0.0f, blendTime);
     }
 
     int PickIndex()

@@ -32,6 +32,15 @@ int QueryBestCounterMotion(const Array<Motion@>&in motions1, const Array<Motion@
     return bestIndex;
 }
 
+void MoveNode(Node@ n, const Vector3&in tWorld, float dt)
+{
+    RigidBody@ body = n.GetComponent("RigidBody");
+    if (body is null)
+        n.worldPosition = tWorld;
+    else
+        body.linearVelocity = (tWorld - n.worldPosition) / dt;
+}
+
 class Motion
 {
     String                  name;
@@ -195,15 +204,6 @@ class Motion
     {
         Vector4 motionOut = GetKey(t);
         return startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
-    }
-
-    void MoveNode(Node@ node, const Vector3&in tWorld, float dt)
-    {
-        RigidBody@ body = node.GetComponent("RigidBody");
-        if (body is null)
-            node.worldPosition = tWorld;
-        else
-            body.linearVelocity = (tWorld - node.worldPosition) / dt;
     }
 
     void DebugDraw(DebugRenderer@ debug, Node@ node)
@@ -543,7 +543,9 @@ class MotionManager
 
         PostProcess();
 
+        Print("************************************************************************************************");
         Print("Motion Process time-cost=" + String(time.systemTime - startTime) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
+        Print("************************************************************************************************");
     }
 
     void Stop()

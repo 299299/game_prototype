@@ -278,6 +278,7 @@ class PlayerAttackState : CharacterState
         rightAttacks.Sort();
         backAttacks.Sort();
 
+        /*
         Print("\nAfter sort forward attack motions:\n");
         for (uint i=0; i<forwardAttacks.length; ++i)
             Print(forwardAttacks[i].motion.animationName);
@@ -293,6 +294,7 @@ class PlayerAttackState : CharacterState
         Print("\nAfter sort back attack motions:\n");
         for (uint i=0; i<backAttacks.length; ++i)
             Print(backAttacks[i].motion.animationName);
+        */
     }
 
     ~PlayerAttackState()
@@ -490,6 +492,9 @@ class PlayerCounterState : CharacterCounterState
     float               rotationDiff;
     float               alignTime;
 
+    Vector3             movePerSec;
+    float               yawPerSec;
+
     PlayerCounterState(Character@ c)
     {
         super(c);
@@ -507,18 +512,20 @@ class PlayerCounterState : CharacterCounterState
     {
         if (state == 0) {
             // aligning
-            float targetRotation = counterEnemy.sceneNode.worldRotation.eulerAngles.y + rotationDiff;
-            Vector3 targetPos = Quaternion(0, targetRotation, 0) * positionDiff + ownner.sceneNode.worldPosition;
-            targetPos = ownner.sceneNode.worldPosition.Lerp(targetPos, timeInState/alignTime);
-            float curRot = ownner.sceneNode.worldRotation.eulerAngles.y;
-            float dYaw = AngleDiff(targetRotation - curRot);
-            float timeLeft = alignTime - timeInState;
-            float yawPerSec = dYaw / timeLeft;
-            ownner.sceneNode.worldRotation = Quaternion(0, curRot + yawPerSec * dt, 0);
+            //float targetRotation = counterEnemy.sceneNode.worldRotation.eulerAngles.y + rotationDiff;
+            //Vector3 targetPos = Quaternion(0, targetRotation, 0) * positionDiff + ownner.sceneNode.worldPosition;
+            //targetPos = ownner.sceneNode.worldPosition.Lerp(targetPos, timeInState/alignTime);
+            //float curRot = ownner.sceneNode.worldRotation.eulerAngles.y;
+            //float dYaw = AngleDiff(targetRotation - curRot);
+            //float timeLeft = alignTime - timeInState;
+            //float yawPerSec = dYaw / timeLeft;
+            //ownner.sceneNode.worldRotation = Quaternion(0, curRot + yawPerSec * dt, 0);
+            ownner.sceneNode.Yaw(yawPerSec * dt);
+            Vector3 tWorld = ownner.sceneNode.worldPosition + movePerSec * dt;
+            MoveNode(ownner.sceneNode, tWorld, dt);
 
             if (timeInState >= alignTime) {
                 StartCounterMotion();
-
                 CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.GetState());
                 enemyCounterState.StartCounterMotion();
             }
@@ -533,21 +540,25 @@ class PlayerCounterState : CharacterCounterState
 
     void Enter(State@ lastState)
     {
+        Node@ enemyNode = counterEnemy.sceneNode;
+        Node@ myNode = ownner.sceneNode;
+
         state = 0;
-        float dAngle = ownner.ComputeAngleDiff(counterEnemy.sceneNode);
+        float dAngle = ownner.ComputeAngleDiff(enemyNode);
         bool isBack = false;
         if (Abs(dAngle) > 90)
             isBack = true;
-        rotationDiff = isBack ? 180 : 0;
+        rotationDiff = isBack ? 0 : 180;
         Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack);
 
-        int attackType = counterEnemy.sceneNode.vars[ATTACK_TYPE].GetInt();
+
+        int attackType = enemyNode.vars[ATTACK_TYPE].GetInt();
 
         CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
         if (enemyCounterState is null)
             return;
 
-        Vector3 currentPositionDiff = counterEnemy.sceneNode.worldPosition - ownner.sceneNode.worldPosition;
+        Vector3 currentPositionDiff = enemyNode.worldPosition - myNode.worldPosition;
         currentPositionDiff.y = 0;
         if (attackType == 0)
         {
@@ -580,9 +591,19 @@ class PlayerCounterState : CharacterCounterState
             }
         }
 
-        positionDiff = currentMotion.startFromOrigin - enemyCounterState.currentMotion.startFromOrigin;
+        float targetRotation = enemyNode.worldRotation.eulerAngles.y + rotationDiff;
+        float myRotation = myNode.worldRotation.eulerAngles.y;
+        Vector3 originDiff = enemyCounterState.currentMotion.startFromOrigin - currentMotion.startFromOrigin;
+        Vector3 targetPosition = enemyNode.worldPosition - originDiff;
+
+        positionDiff = targetPosition - myNode.worldPosition;
+        rotationDiff = AngleDiff(targetRotation - myRotation);
 
         Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff);
+
+        yawPerSec = rotationDiff / alignTime;
+        movePerSec = positionDiff / alignTime;
+        movePerSec.y = 0;
 
         CharacterState::Enter(lastState);
     }
