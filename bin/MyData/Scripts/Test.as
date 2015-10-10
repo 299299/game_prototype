@@ -97,6 +97,15 @@ void CreateInstructions()
     instructionText.verticalAlignment = VA_TOP;
     instructionText.SetPosition(0, 0);
     instructionText.color = Color(0, 1, 0);
+
+    Text@ debugText = ui.root.CreateChild("Text", "debug");
+    debugText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 16);
+    debugText.horizontalAlignment = HA_CENTER;
+    debugText.verticalAlignment = VA_CENTER;
+    debugText.color = Color(1, 0, 0);
+    debugText.text = "FUCK";
+    debugText.visible = false;
+
     SetLogoVisible(false);
 }
 
@@ -168,7 +177,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "BM_Attack/Attack_Far_Left_03"; //"TG_HitReaction/Push_Reaction"; //"TG_BM_Counter/Counter_Arm_Front_01";
+        String testName = "TG_BM_Counter/Counter_Arm_Front_06"; //"TG_HitReaction/Push_Reaction"; //"TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
     }
 
@@ -242,7 +251,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     DebugRenderer@ debug = scene_.debugRenderer;
     if (true)
     {
-        // debug.AddNode(scene_, 2.0f, false);
+        debug.AddNode(scene_, 1.0f, false);
         if (player !is null)
             player.DebugDraw(debug);
         if (thug !is null)

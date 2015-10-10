@@ -301,6 +301,7 @@ class CharacterCounterState : CharacterState
     {
         CharacterState::Exit(nextState);
         @currentMotion = null;
+        state = 0;
     }
 
     void AddCounterMotions(const String&in preFix)
@@ -348,7 +349,7 @@ class CharacterCounterState : CharacterState
 
     void StartCounterMotion()
     {
-        Print(ownner.GetName() + " start counter motion!");
+        Print(ownner.GetName() + " start counter motion " + currentMotion.animationName);
         currentMotion.Start(ownner.sceneNode, ownner.animCtrl);
         state = 1;
     }
@@ -416,12 +417,14 @@ class Character : GameObject
 
     void Start()
     {
+        uint startTime = time.systemTime;
         ObjectStart();
+        Print(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
     }
 
     void DelayedStart()
     {
-        Print("Character::DelayedStart " + sceneNode.name);
+
     }
 
     void Stop()

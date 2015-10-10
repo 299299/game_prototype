@@ -219,26 +219,17 @@ class ThugCounterState : CharacterCounterState
                 ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterState::Update(dt);
+        CharacterCounterState::Update(dt);
     }
 
     void Enter(State@ lastState)
     {
-        CharacterState::Enter(lastState);
+        CharacterCounterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
-        CharacterState::Exit(nextState);
-    }
-};
-
-
-class ThugAlignState : CharacterAlignState
-{
-    ThugAlignState(Character@ c)
-    {
-        super(c);
+        CharacterCounterState::Exit(nextState);
     }
 };
 
@@ -253,12 +244,12 @@ class ThugAttackState : CharacterState
     {
         super(c);
         SetName("AttackState");
-        AddAttackMotion("Attack_Punch", 23, 16);
-        AddAttackMotion("Attack_Punch_01", 23, 16);
-        AddAttackMotion("Attack_Punch_02", 23, 16);
-        AddAttackMotion("Attack_Kick", 24, 16);
-        AddAttackMotion("Attack_Kick_01", 24, 16);
-        AddAttackMotion("Attack_Kick_02", 24, 16);
+        AddAttackMotion("Attack_Punch", 23, 14);
+        AddAttackMotion("Attack_Punch_01", 23, 14);
+        AddAttackMotion("Attack_Punch_02", 23, 14);
+        AddAttackMotion("Attack_Kick", 24, 14);
+        AddAttackMotion("Attack_Kick_01", 24, 14);
+        AddAttackMotion("Attack_Kick_02", 24, 14);
         turnSpeed = 1;
     }
 
@@ -284,6 +275,7 @@ class ThugAttackState : CharacterState
                 state = 1;
                 ownner.animCtrl.SetSpeed(motion.animationName, 0.25f);
                 ownner.AddFlag(FLAGS_COUNTER);
+                ShowHint(true);
             }
         }
         else if (state == 1)
@@ -292,6 +284,7 @@ class ThugAttackState : CharacterState
                 state = 2;
                 ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
                 ownner.RemoveFlag(FLAGS_COUNTER);
+                ShowHint(false);
             }
         }
 
@@ -327,6 +320,7 @@ class ThugAttackState : CharacterState
         motion.Start(ownner.sceneNode, ownner.animCtrl);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         CharacterState::Enter(lastState);
+        Print("Thug Pick attack motion = " + motion.animationName);
     }
 
     void Exit(State@ nextState)
@@ -334,6 +328,13 @@ class ThugAttackState : CharacterState
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
         CharacterState::Exit(nextState);
+        ShowHint(false);
+    }
+
+    void ShowHint(bool bshow)
+    {
+        Text@ text = ui.root.GetChild("debug", true);
+        text.visible = bshow;
     }
 };
 
@@ -446,12 +447,11 @@ class ThugRedirectState : MultiMotionState
 
 class Thug : Enemy
 {
-    void Start()
+    void ObjectStart()
     {
-        Enemy::Start();
+        Enemy::ObjectStart();
         stateMachine.AddState(ThugStandState(this));
         stateMachine.AddState(ThugCounterState(this));
-        stateMachine.AddState(ThugAlignState(this));
         stateMachine.AddState(ThugHitState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));

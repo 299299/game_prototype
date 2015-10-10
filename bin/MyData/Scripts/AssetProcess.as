@@ -76,7 +76,7 @@ void PreProcess()
     pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, bool cutRotation, Array<Vector4>&out outKeys, bool dump = false)
+void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, bool cutRotation, Array<Vector4>&out outKeys, Vector3&out startFromOrigin, bool dump = false)
 {
     uint startTime = time.systemTime;
     Print("Processing animation " + animationFile);
@@ -120,8 +120,16 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         }
     }
 
-    outKeys.Resize(translateTrack.numKeyFrames);
+    if (translateTrack !is null)
+    {
+        translateNode.position = translateTrack.keyFrames[0].position;
+        Vector3 t_ws1 = translateNode.worldPosition;
+        translateNode.position = translateBoneInitP;
+        Vector3 t_ws2 = translateNode.worldPosition;
+        startFromOrigin = t_ws1 - t_ws2;
+    }
 
+    outKeys.Resize(translateTrack.numKeyFrames);
 
     float firstRotateFromRoot = 0;
     if (rotateTrack !is null)
@@ -239,6 +247,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         outKeys[i].x = v_motion.x;
         outKeys[i].y = v_motion.y;
         outKeys[i].z = v_motion.z;
+
         if (allowMotion & kMotion_X == 0)
             outKeys[i].x = 0;
         if (allowMotion & kMotion_Y == 0)
@@ -247,21 +256,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             outKeys[i].z = 0;
         if (allowMotion & kMotion_R == 0)
             outKeys[i].w = 0;
-    }
-
-    // query first key-out
-    if (translateTrack !is null)
-    {
-        Vector3 key_one_pos = translateTrack.keyFrames[0].position;
-        Vector3 diff = key_one_pos - translateBoneInitP;
-        outKeys[0].x = diff.x;
-        outKeys[0].y = diff.y;
-        outKeys[0].z = diff.z;
-    }
-    if (rotateTrack !is null)
-    {
-        Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation);
-        outKeys[0].w = q.eulerAngles.y;
     }
 
     if (dump)

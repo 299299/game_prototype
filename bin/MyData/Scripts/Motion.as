@@ -32,13 +32,13 @@ int QueryBestCounterMotion(const Array<Motion@>&in motions1, const Array<Motion@
     return bestIndex;
 }
 
-void MoveNode(Node@ n, const Vector3&in tWorld, float dt)
+void MoveNode(Node@ _node, const Vector3&in tWorld, float dt)
 {
-    RigidBody@ body = n.GetComponent("RigidBody");
+    RigidBody@ body = _node.GetComponent("RigidBody");
     if (body is null)
-        n.worldPosition = tWorld;
+        _node.worldPosition = tWorld;
     else
-        body.linearVelocity = (tWorld - n.worldPosition) / dt;
+        body.linearVelocity = (tWorld - _node.worldPosition) / dt;
 }
 
 class Motion
@@ -87,19 +87,14 @@ class Motion
         this.animationName = GetAnimationName(this.name);
         this.animation = cache.GetResource("Animation", animationName);
         gMotionMgr.memoryUse += this.animation.memoryUse;
-        ProcessAnimation(animationName, motionFlag, originFlag, allowMotion, cutRotation, motionKeys);
+        bool dump = false;
+        ProcessAnimation(animationName, motionFlag, originFlag, allowMotion, cutRotation, motionKeys, startFromOrigin, dump);
         if (endFrame < 0)
             endFrame = motionKeys.length - 1;
         endTime = float(endFrame) / FRAME_PER_SEC;
         Vector4 v = motionKeys[0];
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
         endDistance = Vector3(diff.x, diff.y, diff.z).length;
-        motionKeys[0].x = 0;
-        motionKeys[0].y = 0;
-        motionKeys[0].z = 0;
-        startFromOrigin = Vector3(v.x, v.y, v.z);
-        if (!this.cutRotation)
-            motionKeys[0].w = 0;
         Print("Motion " + name + " endDistance="  + endDistance + " timeCost=" + String(time.systemTime - startTime) + " ms startFromOrigin=" + startFromOrigin.ToString());
     }
 
@@ -144,19 +139,20 @@ class Motion
         return k1.Lerp(k2, a);
     }
 
-    void Start(Node@ node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
+    void Start(Node@ _node, AnimationController@ ctrl, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
         PlayAnimation(ctrl, animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
-        startPosition = node.worldPosition;
-        startRotationQua = node.worldRotation;
+        startPosition = _node.worldPosition;
+        startRotationQua = _node.worldRotation;
         startRotation = startRotationQua.eulerAngles.y;
         deltaRotation = 0;
         deltaPosition = Vector3(0, 0, 0);
         translateEnabled = true;
         rotateEnabled = true;
+        Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
     }
 
-    bool Move(float dt, Node@ node, AnimationController@ ctrl)
+    bool Move(float dt, Node@ _node, AnimationController@ ctrl)
     {
         float localTime = ctrl.GetTime(animationName);
         if (looped)
@@ -166,15 +162,15 @@ class Motion
 
             if (rotateEnabled)
             {
-                node.Yaw(motionOut.w);
+                _node.Yaw(motionOut.w);
             }
 
             if (translateEnabled)
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 tLocal = tLocal * ctrl.GetWeight(animationName);
-                Vector3 tWorld = node.worldRotation * tLocal + node.worldPosition + deltaPosition;
-                MoveNode(node, tWorld, dt);
+                Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + deltaPosition;
+                MoveNode(_node, tWorld, dt);
             }
         }
         else
@@ -182,22 +178,22 @@ class Motion
             Vector4 motionOut = GetKey(localTime);
             if (rotateEnabled)
             {
-                node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
+                _node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
             }
 
             if (translateEnabled)
             {
                 Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
-                MoveNode(node, tWorld, dt);
+                MoveNode(_node, tWorld, dt);
             }
         }
         return localTime >= endTime;
     }
 
-    Vector3 GetFuturePosition(Node@ node, float t)
+    Vector3 GetFuturePosition(Node@ _node, float t)
     {
         Vector4 motionOut = GetKey(t);
-        return node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + node.worldPosition;
+        return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
     }
 
     Vector3 GetFuturePosition(float t)
@@ -206,31 +202,31 @@ class Motion
         return startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
     }
 
-    void DebugDraw(DebugRenderer@ debug, Node@ node)
+    void DebugDraw(DebugRenderer@ debug, Node@ _node)
     {
         if (looped) {
             Vector4 tFinnal = GetKey(endTime);
             Vector3 tLocal(tFinnal.x, tFinnal.y, tFinnal.z);
-            debug.AddLine(node.worldRotation * tLocal + node.worldPosition, node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
+            debug.AddLine(_node.worldRotation * tLocal + _node.worldPosition, _node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
         }
         else {
             Vector4 tFinnal = GetKey(endTime);
             debug.AddLine(startRotationQua * Vector3(tFinnal.x, tFinnal.y, tFinnal.z) + startPosition,  startPosition, Color(0.5f, 0.5f, 0.7f), false);
-            DebugDrawDirection(debug, node, startRotation + tFinnal.w, Color(0,1,0), 2.0);
+            DebugDrawDirection(debug, _node, startRotation + tFinnal.w, Color(0,1,0), 2.0);
         }
     }
 };
 
-void DebugDrawDirection(DebugRenderer@ debug, Node@ node, const Quaternion&in rotation, const Color&in color, float radius = 1.0, float yAdjust = 0)
+void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, const Quaternion&in rotation, const Color&in color, float radius = 1.0, float yAdjust = 0)
 {
     Vector3 dir = rotation * Vector3(0, 0, 1);
     float angle = Atan2(dir.x, dir.z);
-    DebugDrawDirection(debug, node, angle, color, radius, yAdjust);
+    DebugDrawDirection(debug, _node, angle, color, radius, yAdjust);
 }
 
-void DebugDrawDirection(DebugRenderer@ debug, Node@ node, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
+void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
 {
-    Vector3 start = node.worldPosition;
+    Vector3 start = _node.worldPosition;
     start.y = yAdjust;
     Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
     debug.AddLine(start, end, color, false);
