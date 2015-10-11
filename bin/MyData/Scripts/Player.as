@@ -530,7 +530,7 @@ class PlayerCounterState : CharacterCounterState
                 StartCounterMotion();
                 CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.GetState());
                 enemyCounterState.StartCounterMotion();
-                //scene_.timeScale = 0.1f;
+                scene_.timeScale = 0.0f;
             }
         }
         else {
@@ -565,13 +565,15 @@ class PlayerCounterState : CharacterCounterState
         {
             if (isBack)
             {
-                int idx = QueryBestCounterMotion(backArmMotions, enemyCounterState.backArmMotions, currentPositionDiff);
+                //int idx = QueryBestCounterMotion(backArmMotions, enemyCounterState.backArmMotions, currentPositionDiff);
+                int idx = RandomInt(backArmMotions.length);
                 @currentMotion = backArmMotions[idx];
                 @enemyCounterState.currentMotion = enemyCounterState.backArmMotions[idx];
             }
             else
             {
-                int idx = QueryBestCounterMotion(frontArmMotions, enemyCounterState.frontArmMotions, currentPositionDiff);
+                //int idx = QueryBestCounterMotion(frontArmMotions, enemyCounterState.frontArmMotions, currentPositionDiff);
+                int idx = RandomInt(frontArmMotions.length);
                 @currentMotion = frontArmMotions[idx];
                 @enemyCounterState.currentMotion = enemyCounterState.frontArmMotions[idx];
             }
@@ -580,28 +582,38 @@ class PlayerCounterState : CharacterCounterState
         {
             if (isBack)
             {
-                int idx = QueryBestCounterMotion(backLegMotions, enemyCounterState.backLegMotions, currentPositionDiff);
-                @currentMotion = backArmMotions[idx];
-                @enemyCounterState.currentMotion = enemyCounterState.backArmMotions[idx];
+                //int idx = QueryBestCounterMotion(backLegMotions, enemyCounterState.backLegMotions, currentPositionDiff);
+                int idx = RandomInt(backLegMotions.length);
+                @currentMotion = backLegMotions[idx];
+                @enemyCounterState.currentMotion = enemyCounterState.backLegMotions[idx];
             }
             else
             {
-                int idx = QueryBestCounterMotion(frontLegMotions, enemyCounterState.frontLegMotions, currentPositionDiff);
-                @currentMotion = frontArmMotions[idx];
-                @enemyCounterState.currentMotion = enemyCounterState.frontArmMotions[idx];
+                //int idx = QueryBestCounterMotion(frontLegMotions, enemyCounterState.frontLegMotions, currentPositionDiff);
+                int idx = RandomInt(frontLegMotions.length);
+                @currentMotion = frontLegMotions[idx];
+                @enemyCounterState.currentMotion = enemyCounterState.frontLegMotions[idx];
             }
         }
 
         float rotationDiff = isBack ? 0 : 180;
-        float targetRotation = enemyNode.worldRotation.eulerAngles.y + rotationDiff;
+        float enemyYaw = enemyNode.worldRotation.eulerAngles.y;
+        float targetRotation = enemyYaw + rotationDiff;
         float myRotation = myNode.worldRotation.eulerAngles.y;
-        Vector3 originDiff = currentMotion.startFromOrigin - enemyCounterState.currentMotion.startFromOrigin;
-        targetPosition = enemyNode.worldPosition + Quaternion(0, targetRotation + 180, 0) * originDiff;
+        Vector3 s1 = currentMotion.startFromOrigin;
+        Vector3 s2 = enemyCounterState.currentMotion.startFromOrigin;
+        Vector3 originDiff = s1 - s2;
+        originDiff.x = Abs(originDiff.x);
+        originDiff.z = Abs(originDiff.z);
+
+        if (isBack)
+            enemyYaw += 180;
+        targetPosition = enemyNode.worldPosition + enemyNode.worldRotation * originDiff;
 
         Vector3 positionDiff = targetPosition - myNode.worldPosition;
         rotationDiff = AngleDiff(targetRotation - myRotation);
 
-        Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff + " s1=" + enemyCounterState.currentMotion.startFromOrigin.ToString() + " s2=" + currentMotion.startFromOrigin.ToString());
+        Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff + " s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
 
         yawPerSec = rotationDiff / alignTime;
         movePerSec = positionDiff / alignTime;

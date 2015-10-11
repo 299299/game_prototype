@@ -114,6 +114,7 @@ void SetupViewport()
     Viewport@ viewport = Viewport(scene_, cameraNode.GetComponent("Camera"));
     renderer.viewports[0] = viewport;
 
+    graphics.windowTitle = "Test";
     //if (GetPlatform() == "Linux")
     //    graphics.windowPosition = IntVector2(0, 800);
 }

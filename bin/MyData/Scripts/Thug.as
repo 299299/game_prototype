@@ -190,7 +190,7 @@ class ThugRunState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        attackRange = Random(0.5, 6.0);
+        attackRange = Random(0.05, 6.0);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
     }
 
@@ -307,7 +307,7 @@ class ThugAttackState : CharacterState
         Print("targetDistance=" + targetDistance + " punchDist=" + punchDist);
         int index = RandomInt(3);
         int attackType = 0;
-        if (targetDistance > punchDist + 0.25f)
+        if (targetDistance > punchDist + 0.5f)
         {
             index += 3; // a kick attack
             attackType = 1;

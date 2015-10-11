@@ -27,7 +27,6 @@ Skeleton@ skeleton;
 
 Vector3 pelvisRightAxis = Vector3(1, 0, 0);
 Quaternion rotateBoneInitQ;
-Vector3 translateBoneInitP;
 
 Vector3 pelvisOrign;
 
@@ -57,15 +56,14 @@ void PreProcess()
 {
     processScene = Scene();
     processNode = processScene.CreateChild("Character");
+    processNode.worldRotation = Quaternion(0, 180, 0);
+
     AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
     am.model = cache.GetResource("Model", rigName);
 
     skeleton = am.skeleton;
     Bone@ bone = skeleton.GetBone(RotateBoneName);
     rotateBoneInitQ = bone.initialRotation;
-
-    bone = skeleton.GetBone(TranslateBoneName);
-    translateBoneInitP = bone.initialPosition;
 
     pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
     pelvisRightAxis.Normalize();
@@ -124,7 +122,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     {
         translateNode.position = translateTrack.keyFrames[0].position;
         Vector3 t_ws1 = translateNode.worldPosition;
-        translateNode.position = translateBoneInitP;
+        translateNode.position = pelvisOrign;
         Vector3 t_ws2 = translateNode.worldPosition;
         startFromOrigin = t_ws1 - t_ws2;
     }
@@ -242,8 +240,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     for (uint i=0; i<outKeys.length; ++i)
     {
         Vector3 v_motion(outKeys[i].x, outKeys[i].y, outKeys[i].z);
-        v_motion = flipZ_Rot * v_motion;
-
         outKeys[i].x = v_motion.x;
         outKeys[i].y = v_motion.y;
         outKeys[i].z = v_motion.z;
