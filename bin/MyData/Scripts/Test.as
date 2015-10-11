@@ -1,4 +1,3 @@
-#include "Scripts/Utilities/Sample.as"
 // ------------------------------------------------
 #include "Scripts/AssetProcess.as"
 #include "Scripts/Motion.as"
@@ -10,6 +9,12 @@
 #include "Scripts/Enemy.as"
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
+
+
+Scene@ scene_;
+Node@ cameraNode; // Camera scene node
+float yaw = 0.0f; // Camera yaw angle
+float pitch = 0.0f; // Camera pitch angle
 
 
 const String GAME_SCRIPT = "Scripts/Test.as";
@@ -29,12 +34,15 @@ void Start()
     gMotionMgr.Start();
 
     if (!engine.headless)
-        SampleStart();
+    {
+        SetWindowTitleAndIcon();
+        CreateConsoleAndDebugHud();
+    }
 
     CreateScene();
 
     if (!engine.headless) {
-        CreateInstructions();
+        CreateUI();
         SetupViewport();
     }
 
@@ -71,7 +79,7 @@ void CreateScene()
         return;
     }
 
-    thugNode = scene_.GetChild("bruce2", true);
+    thugNode = scene_.GetChild("thug", true);
     @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
     if (thug is null) {
         Print("thug is null!!");
@@ -89,7 +97,31 @@ void CreateScene()
     cameraNode.worldPosition = pos;
 }
 
-void CreateInstructions()
+void SetWindowTitleAndIcon()
+{
+    Image@ icon = cache.GetResource("Image", "Textures/UrhoIcon.png");
+    graphics.windowIcon = icon;
+    graphics.windowTitle = "Test";
+}
+
+void CreateConsoleAndDebugHud()
+{
+    // Get default style
+    XMLFile@ xmlFile = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
+    if (xmlFile is null)
+        return;
+
+    // Create console
+    Console@ console = engine.CreateConsole();
+    console.defaultStyle = xmlFile;
+    console.background.opacity = 0.8f;
+
+    // Create debug HUD
+    DebugHud@ debugHud = engine.CreateDebugHud();
+    debugHud.defaultStyle = xmlFile;
+}
+
+void CreateUI()
 {
     Text@ instructionText = ui.root.CreateChild("Text", "instruction");
     instructionText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
@@ -105,8 +137,6 @@ void CreateInstructions()
     debugText.color = Color(1, 0, 0);
     debugText.text = "FUCK";
     debugText.visible = false;
-
-    SetLogoVisible(false);
 }
 
 void SetupViewport()
@@ -153,6 +183,7 @@ void SubscribeToEvents()
     SubscribeToEvent("Update", "HandleUpdate");
     SubscribeToEvent("SceneUpdate", "HandleSceneUpdate");
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
+    SubscribeToEvent("KeyDown", "HandleKeyDown");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -258,6 +289,33 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         if (thug !is null)
             thug.DebugDraw(debug);
     }
+
+    scene_.physicsWorld.DrawDebugGeometry(true);
 }
 
-String patchInstructions = "";
+void HandleKeyDown(StringHash eventType, VariantMap& eventData)
+{
+    int key = eventData["Key"].GetInt();
+
+    // Close console (if open) or exit when ESC is pressed
+    if (key == KEY_ESC)
+    {
+        if (!console.visible)
+            engine.Exit();
+        else
+            console.visible = false;
+    }
+
+    // Toggle console with F1
+    else if (key == KEY_F1)
+        console.Toggle();
+
+    // Toggle debug HUD with F2
+    else if (key == KEY_F2)
+        debugHud.ToggleAll();
+
+}
+
+void HandleSceneUpdate(StringHash eventType, VariantMap& eventData)
+{
+}

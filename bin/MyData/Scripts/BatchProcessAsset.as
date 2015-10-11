@@ -33,9 +33,9 @@ void PreProcess()
     fileSystem.CreateDir(OUT_DIR + "Animations");
 }
 
-String DoProcess(const String&in name, const String&in folderName, const String&in args)
+String DoProcess(const String&in name, const String&in folderName, const String&in args, bool checkFolders)
 {
-    if (!exportFolder.empty)
+    if (!exportFolder.empty && checkFolders)
     {
         if (!name.Contains(exportFolder))
             return "";
@@ -57,7 +57,7 @@ void ProcessModels()
     for (uint i=0; i<models.length; ++i)
     {
         Print("Found a model " + models[i]);
-        DoProcess(models[i], "Models/", MODEL_ARGS);
+        DoProcess(models[i], "Models/", MODEL_ARGS, false);
     }
 }
 
@@ -67,7 +67,7 @@ void ProcessAnimations()
     for (uint i=0; i<animations.length; ++i)
     {
         Print("Found a animation " + animations[i]);
-        String outMdlName = DoProcess(animations[i], "Animations/", ANIMATION_ARGS);
+        String outMdlName = DoProcess(animations[i], "Animations/", ANIMATION_ARGS, true);
         if (!outMdlName.empty)
             fileSystem.Delete(outMdlName);
     }

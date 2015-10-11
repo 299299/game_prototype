@@ -38,7 +38,13 @@ void MoveNode(Node@ _node, const Vector3&in tWorld, float dt)
     if (body is null)
         _node.worldPosition = tWorld;
     else
-        body.linearVelocity = (tWorld - _node.worldPosition) / dt;
+    {
+        Vector3 diff = tWorld - _node.worldPosition;
+        diff.y = 0;
+        Vector3 velocity = diff / dt;
+        Print("MoveNode vel=" + velocity.ToString() + " t1=" + tWorld.ToString() + " t2=" + _node.worldPosition.ToString() + " dt=" + dt);
+        body.linearVelocity = velocity;
+    }
 }
 
 class Motion
@@ -152,8 +158,10 @@ class Motion
         // Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
     }
 
-    bool Move(float dt, Node@ _node, AnimationController@ ctrl)
+    bool Move(float dt, Character@ object)
     {
+        AnimationController@ ctrl = object.animCtrl;
+        Node@ _node = object.SceneNode;
         float localTime = ctrl.GetTime(animationName);
         if (looped)
         {

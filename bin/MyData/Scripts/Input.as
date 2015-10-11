@@ -1,6 +1,4 @@
 
-int screenJoystickID = -1;
-int screenJoystickSettingsID = -1;
 
 class GameInput
 {
@@ -123,7 +121,7 @@ class GameInput
     {
         if (input.numJoysticks > 0)
         {
-            return touchEnabled ? input.joysticks[screenJoystickID] : input.joysticksByIndex[0];
+            return input.joysticksByIndex[0];
         }
         return null;
     }
@@ -182,7 +180,7 @@ class GameInput
     String GetDebugText()
     {
         return "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
-               " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime +
+               " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " left-magnitude=" + m_leftStickMagnitude +
                " rightStick:(" + m_rightStickX + "," + m_rightStickY + ")\n";
     }
 };

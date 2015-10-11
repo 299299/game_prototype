@@ -44,7 +44,7 @@ class SingleMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motion.Move(dt, ownner.sceneNode, ownner.animCtrl))
+        if (motion.Move(dt, ownner))
             ownner.CommonStateFinishedOnGroud();
 
         CharacterState::Update(dt);
@@ -380,9 +380,12 @@ class Character : GameObject
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
+    RigidBody@              body;
 
     Vector3                 startPosition;
     Quaternion              startRotation;
+
+    Vector3                 physicsTargetPosition;
 
     Character()
     {
@@ -401,6 +404,7 @@ class Character : GameObject
         renderNode = sceneNode.children[0];
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
+        body = sceneNode.GetComponent("RigidBody");
 
         hipsNode = renderNode.GetChild("Bip01_Pelvis", true);
         handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
@@ -413,6 +417,19 @@ class Character : GameObject
 
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
+        physicsTargetPosition = startPosition;
+    }
+
+    void FixedUpdate(float timeStep)
+    {
+        if (body !is null)
+        {
+            Vector3 myPos = sceneNode.worldPosition;
+            Vector3 diff = physicsTargetPosition - myPos;
+            body.linearVelocity = diff / timeStep;
+        }
+
+        GameObject::FixedUpdate(timeStep);
     }
 
     void Start()
@@ -434,6 +451,7 @@ class Character : GameObject
         @sceneNode = null;
         @animCtrl = null;
         @animModel = null;
+        @body = null;
     }
 
     void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
@@ -466,6 +484,12 @@ class Character : GameObject
             }
         }
         return debugText;
+    }
+
+    void SetVelocity(const Vector3&in velocity)
+    {
+        if (body !is null)
+            body.linearVelocity = velocity;
     }
 
     void Attack()
