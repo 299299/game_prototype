@@ -329,8 +329,11 @@ class PlayerAttackState : CharacterState
             targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
             targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
 
-            if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-                motion.translateEnabled = false;
+            //if (!ownner.IsPhysical())
+            {
+                if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+                    motion.translateEnabled = false;
+            }
         }
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
@@ -338,7 +341,7 @@ class PlayerAttackState : CharacterState
         {
             if (t >= currentAttack.slowMotionTime.x) {
                 state = 1;
-                ownner.sceneNode.scene.timeScale = 0.25f;
+                ownner.sceneNode.scene.timeScale = 0.5f;
             }
         }
         else if (state == 1)
@@ -552,7 +555,7 @@ class PlayerCounterState : CharacterCounterState
         Node@ _node = ownner.sceneNode;
         if (state == 0) {
             _node.Yaw(yawPerSec * dt);
-            if (ownner.body !is null)
+            if (ownner.IsPhysical())
                 ownner.SetVelocity(movePerSec);
             else
                 ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);

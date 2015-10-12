@@ -42,6 +42,12 @@ class ThugStandState : RandomAnimationState
     void Update(float dt)
     {
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
+        if (dist < 0)
+        {
+            ownner.stateMachine.ChangeState("StepMoveState");
+            return;
+        }
+
         if (timeInState > thinkTime)
         {
             float diff = Abs(ownner.ComputeAngleDiff());
@@ -99,42 +105,45 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Back_Long");
     }
 
-    void Update(float dt)
+    void FixedUpdate(float dt)
     {
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist <= attackRange)
+        if (motions[selectIndex].Move(ownner, dt))
         {
-            int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
-            if (num >= MAX_NUM_OF_ATTACK)
+            float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+            if (dist <= attackRange)
             {
-                ownner.stateMachine.ChangeState("StandState");
+                int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
+                if (num >= MAX_NUM_OF_ATTACK)
+                {
+                    ownner.stateMachine.ChangeState("StandState");
+                }
+                else {
+                    ownner.stateMachine.ChangeState("AttackState");
+                }
             }
-            else {
-                ownner.stateMachine.ChangeState("AttackState");
-            }
+            else
+                ownner.CommonStateFinishedOnGroud();
         }
 
-        float characterDifference = ownner.ComputeAngleDiff();
-        // if the difference is large, then turn 180 degrees
-        if (Abs(characterDifference) > FULLTURN_THRESHOLD)
-        {
-            ownner.stateMachine.ChangeState("TurnState");
-            return;
-        }
-
-        MultiMotionState::Update(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
     {
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        bool step_long = false;
-        if (dist > motions[0].endDistance + 0.25f)
-            step_long = true;
-
         int index = 0;
-        if (step_long)
-            index += 3;
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist < 0)
+        {
+            index = 2;
+        }
+        else
+        {
+            bool step_long = false;
+            if (dist > motions[0].endDistance + 0.25f)
+                step_long = true;
+            if (step_long)
+                index += 3;
+        }
 
         //TODO OTHER left/back/right
         ownner.sceneNode.vars[ANIMATION_INDEX] = index;
@@ -271,9 +280,13 @@ class ThugAttackState : CharacterState
             return;
 
         Motion@ motion = currentAttack.motion;
-        float targetDistance = ownner.GetTargetDistance();
-        if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-            motion.translateEnabled = false;
+
+        //if (!ownner.IsPhysical())
+        {
+            float targetDistance = ownner.GetTargetDistance();
+            if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+                motion.translateEnabled = false;
+        }
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == 0)

@@ -459,6 +459,20 @@ class Character : GameObject
         @body = null;
     }
 
+    void FixedUpdate(float timeStep)
+    {
+        if (IsPhysical())
+            stateMachine.FixedUpdate(timeStep);
+        GameObject::FixedUpdate(timeStep);
+    }
+
+    void Update(float timeStep)
+    {
+        stateMachine.Update(timeStep);
+        if (!IsPhysical())
+            stateMachine.FixedUpdate(timeStep);
+    }
+
     void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
     {
         CharacterAlignState@ state = cast<CharacterAlignState@>(stateMachine.FindState("AlignState"));
@@ -491,9 +505,16 @@ class Character : GameObject
         return debugText;
     }
 
-    void MoveTo(const Vector3&in position, float dt)
+    bool IsPhysical()
     {
         if (body is null)
+            return false;
+        return body.enabled;
+    }
+
+    void MoveTo(const Vector3&in position, float dt)
+    {
+        if (!IsPhysical())
         {
             sceneNode.worldPosition = position;
         }
@@ -508,8 +529,9 @@ class Character : GameObject
 
     void SetVelocity(const Vector3&in velocity)
     {
-        if (body !is null)
+        if (IsPhysical()) {
             body.linearVelocity = velocity;
+        }
     }
 
     void Attack()
