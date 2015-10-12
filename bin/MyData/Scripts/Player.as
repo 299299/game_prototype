@@ -31,8 +31,6 @@ class PlayerStandState : RandomAnimationState
 
     void Update(float dt)
     {
-        ownner.SetVelocity(Vector3(0, 0, 0));
-
         if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
         {
             int index = ownner.RadialSelectAnimation(4);
@@ -53,6 +51,12 @@ class PlayerStandState : RandomAnimationState
 
         RandomAnimationState::Update(dt);
     }
+
+    void FixedUpdate(float dt)
+    {
+        ownner.SetVelocity(Vector3(0, 0, 0));
+        RandomAnimationState::FixedUpdate(dt);
+    }
 };
 
 class PlayerTurnState : MultiMotionState
@@ -71,16 +75,19 @@ class PlayerTurnState : MultiMotionState
 
     void Update(float dt)
     {
-        ownner.sceneNode.Yaw(turnSpeed * dt);
-
         if (gInput.IsAttackPressed())
             ownner.Attack();
         else if (gInput.IsCounterPressed())
             ownner.Counter();
         else if (gInput.IsEvadePressed())
             ownner.Evade();
-
         MultiMotionState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        ownner.sceneNode.Yaw(turnSpeed * dt);
+        MultiMotionState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -113,27 +120,30 @@ class PlayerMoveState : SingleMotionState
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
             ownner.stateMachine.ChangeState("StandState");
 
-        float characterDifference = ownner.ComputeAngleDiff();
-        ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
-        motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
-
         if (gInput.IsAttackPressed())
             ownner.Attack();
         else if (gInput.IsCounterPressed())
             ownner.Counter();
         else if (gInput.IsEvadePressed())
             ownner.Evade();
-        else
-        {
-            // if the difference is large, then turn 180 degrees
-            if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
-            {
-                ownner.sceneNode.vars[ANIMATION_INDEX] = 1;
-                ownner.stateMachine.ChangeState("TurnState");
-            }
-        }
 
         CharacterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        float characterDifference = ownner.ComputeAngleDiff();
+        ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
+        motion.Move(ownner, dt);
+
+        // if the difference is large, then turn 180 degrees
+        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
+        {
+            ownner.sceneNode.vars[ANIMATION_INDEX] = 1;
+            ownner.stateMachine.ChangeState("TurnState");
+        }
+
+        CharacterState::FixedUpdate(dt);
     }
 };
 
@@ -146,11 +156,6 @@ class PlayerEvadeState : MultiMotionState
         AddMotion("BM_Combat/Evade_Forward_01");
         AddMotion("BM_Combat/Evade_Back_01");
     }
-
-    void Update(float dt)
-    {
-        MultiMotionState::Update(dt);
-    }
 };
 
 class PlayerRedirectState : SingleMotionState
@@ -162,16 +167,6 @@ class PlayerRedirectState : SingleMotionState
         super(c);
         SetName("RedirectState");
         SetMotion("BM_Combat/Redirect");
-    }
-
-    void Update(float dt)
-    {
-        SingleMotionState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        SingleMotionState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
@@ -360,16 +355,23 @@ class PlayerAttackState : CharacterState
             }
         }
 
+        CharacterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        Motion@ motion = currentAttack.motion;
+
         if (state != 2)
             motion.deltaPosition += movePerSec * dt;
 
-        bool finished = motion.Move(dt, ownner.sceneNode, ownner.animCtrl);
+        bool finished = motion.Move(ownner, dt);
         if (finished) {
             // ownner.sceneNode.scene.timeScale = 0.0f;
             ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterState::Update(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     AttackMotion@ GetAttack(int dir, int index)
@@ -529,28 +531,11 @@ class PlayerCounterState : CharacterCounterState
 
     ~PlayerCounterState()
     {
-        @counterEnemy = null;
     }
 
     void Update(float dt)
     {
-        Node@ _node = ownner.sceneNode;
-
         if (state == 0) {
-            // aligning
-            //float targetRotation = counterEnemy.sceneNode.worldRotation.eulerAngles.y + rotationDiff;
-            //Vector3 targetPos = Quaternion(0, targetRotation, 0) * positionDiff + ownner.sceneNode.worldPosition;
-            //targetPos = ownner.sceneNode.worldPosition.Lerp(targetPos, timeInState/alignTime);
-            //float curRot = ownner.sceneNode.worldRotation.eulerAngles.y;
-            //float dYaw = AngleDiff(targetRotation - curRot);
-            //float timeLeft = alignTime - timeInState;
-            //float yawPerSec = dYaw / timeLeft;
-            //ownner.sceneNode.worldRotation = Quaternion(0, curRot + yawPerSec * dt, 0);
-
-            _node.Yaw(yawPerSec * dt);
-            Vector3 tWorld = _node.worldPosition + movePerSec * dt;
-            MoveNode(_node, tWorld, dt);
-
             if (timeInState >= alignTime) {
                 StartCounterMotion();
                 CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.GetState());
@@ -558,12 +543,26 @@ class PlayerCounterState : CharacterCounterState
                 // scene_.timeScale = 0.0f;
             }
         }
+
+        CharacterCounterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        Node@ _node = ownner.sceneNode;
+        if (state == 0) {
+            _node.Yaw(yawPerSec * dt);
+            if (ownner.body !is null)
+                ownner.SetVelocity(movePerSec);
+            else
+                ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
+        }
         else {
-            if (currentMotion.Move(dt, _node, ownner.animCtrl))
+            if (currentMotion.Move(ownner, dt))
                 ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterCounterState::Update(dt);
+        CharacterCounterState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -679,16 +678,6 @@ class PlayerHitState : MultiMotionState
         AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
         AddMotion(hitPrefix + "Hit_Reaction_SideRight");
         AddMotion(hitPrefix + "HitReaction_Stomach");
-    }
-
-    void Update(float dt)
-    {
-        MultiMotionState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        MultiMotionState::Enter(lastState);
     }
 };
 

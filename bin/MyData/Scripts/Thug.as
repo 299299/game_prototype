@@ -73,6 +73,12 @@ class ThugStandState : RandomAnimationState
 
         RandomAnimationState::Update(dt);
     }
+
+    void FixedUpdate(float dt)
+    {
+        ownner.SetVelocity(Vector3(0, 0, 0));
+        RandomAnimationState::FixedUpdate(dt);
+    }
 };
 
 class ThugStepMoveState : MultiMotionState
@@ -173,6 +179,11 @@ class ThugRunState : SingleMotionState
             }
         }
 
+        SingleMotionState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
         float characterDifference = ownner.ComputeAngleDiff();
         ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
 
@@ -180,9 +191,10 @@ class ThugRunState : SingleMotionState
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
         {
             ownner.stateMachine.ChangeState("TurnState");
+            return;
         }
 
-        SingleMotionState::Update(dt);
+        SingleMotionState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -207,17 +219,14 @@ class ThugCounterState : CharacterCounterState
         AddCounterMotions("TG_BM_Counter/");
     }
 
-    void Update(float dt)
+    void FixedUpdate(float dt)
     {
-        if (state == 0) {
-            // wait for player aligning
-        }
-        else {
-            if (currentMotion.Move(dt, ownner.sceneNode, ownner.animCtrl))
+        if (state == 1)
+        {
+            if (currentMotion.Move(ownner, dt))
                 ownner.CommonStateFinishedOnGroud();
         }
-
-        CharacterCounterState::Update(dt);
+        CharacterCounterState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -286,16 +295,22 @@ class ThugAttackState : CharacterState
             }
         }
 
+        CharacterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
         float characterDifference = ownner.ComputeAngleDiff();
+        Motion@ motion = currentAttack.motion;
         motion.deltaRotation += characterDifference * turnSpeed * dt;
 
         // TODO ....
-        bool finished = motion.Move(dt, ownner);
+        bool finished = motion.Move(ownner, dt);
         if (finished) {
             ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterState::Update(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -350,21 +365,6 @@ class ThugHitState : MultiMotionState
         AddMotion(preFix + "Push_Reaction");
         AddMotion(preFix + "Push_Reaction_From_Back");
     }
-
-    void Update(float dt)
-    {
-        MultiMotionState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        MultiMotionState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        MultiMotionState::Exit(nextState);
-    }
 };
 
 class ThugTurnState : MultiMotionState
@@ -380,7 +380,7 @@ class ThugTurnState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
     }
 
-    void Update(float dt)
+    void FixedUpdate(float dt)
     {
         Motion@ motion = motions[selectIndex];
         float t = ownner.animCtrl.GetTime(motion.animationName);
@@ -390,7 +390,7 @@ class ThugTurnState : MultiMotionState
             ownner.CommonStateFinishedOnGroud();
         }
         ownner.sceneNode.Yaw(turnSpeed * dt);
-        CharacterState::Update(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -430,11 +430,6 @@ class ThugRedirectState : MultiMotionState
         Print(name + " pick " + motions[selectIndex].animationName);
         float blendTime = 0.5f;
         motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl, 0.0f, blendTime);
-    }
-
-    void Update(float dt)
-    {
-        MultiMotionState::Update(dt);
     }
 
     int PickIndex()

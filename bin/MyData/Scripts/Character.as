@@ -44,10 +44,15 @@ class SingleMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motion.Move(dt, ownner))
+        CharacterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        if (motion.Move(ownner, dt))
             ownner.CommonStateFinishedOnGroud();
 
-        CharacterState::Update(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -82,10 +87,15 @@ class MultiMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(dt, ownner.sceneNode, ownner.animCtrl))
+        CharacterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        if (motions[selectIndex].Move(ownner, dt))
             ownner.CommonStateFinishedOnGroud();
 
-        CharacterState::Update(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     void Enter(State@ lastState)
@@ -163,7 +173,7 @@ class CharacterAlignState : CharacterState
         }
     }
 
-    void Update(float dt)
+    void FixedUpdate(float dt)
     {
         Node@ sceneNode = ownner.sceneNode;
 
@@ -185,7 +195,7 @@ class CharacterAlignState : CharacterState
 
         float lerpValue = curTime / alignTime;
         Vector3 curPos = sceneNode.worldPosition;
-        sceneNode.worldPosition = curPos.Lerp(targetPosition, lerpValue);
+        ownner.MoveTo(curPos.Lerp(targetPosition, lerpValue), dt);
 
         float yawEd = yawPerSec * dt;
         sceneNode.Yaw(yawEd);
@@ -195,6 +205,11 @@ class CharacterAlignState : CharacterState
             " r=" + String(sceneNode.worldRotation.eulerAngles.y) +
             " dyaw=" + String(yawEd));
 
+        CharacterState::FixedUpdate(dt);
+    }
+
+    void Update(float dt)
+    {
         CharacterState::Update(dt);
     }
 };
@@ -236,10 +251,15 @@ class AnimationTestState : CharacterState
 
     void Update(float dt)
     {
+        CharacterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
         bool finished = false;
         if (testMotion !is null)
         {
-             finished = testMotion.Move(dt, ownner.sceneNode, ownner.animCtrl);
+             finished = testMotion.Move(ownner, dt);
 
             if (testMotion.looped && timeInState > 2.0f)
                 finished = true;
@@ -250,7 +270,7 @@ class AnimationTestState : CharacterState
         if (finished)
             ownner.CommonStateFinishedOnGroud();
 
-        CharacterState::Update(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -385,8 +405,6 @@ class Character : GameObject
     Vector3                 startPosition;
     Quaternion              startRotation;
 
-    Vector3                 physicsTargetPosition;
-
     Character()
     {
         Print("Character()");
@@ -417,19 +435,6 @@ class Character : GameObject
 
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
-        physicsTargetPosition = startPosition;
-    }
-
-    void FixedUpdate(float timeStep)
-    {
-        if (body !is null)
-        {
-            Vector3 myPos = sceneNode.worldPosition;
-            Vector3 diff = physicsTargetPosition - myPos;
-            body.linearVelocity = diff / timeStep;
-        }
-
-        GameObject::FixedUpdate(timeStep);
     }
 
     void Start()
@@ -484,6 +489,21 @@ class Character : GameObject
             }
         }
         return debugText;
+    }
+
+    void MoveTo(const Vector3&in position, float dt)
+    {
+        if (body is null)
+        {
+            sceneNode.worldPosition = position;
+        }
+        else
+        {
+            Vector3 diff = position - sceneNode.worldPosition;
+            Vector3 velocity = diff / dt;
+            // Print("MoveNode vel=" + velocity.ToString() + " t1=" + tWorld.ToString() + " t2=" + _node.worldPosition.ToString() + " dt=" + dt);
+            body.linearVelocity = velocity;
+        }
     }
 
     void SetVelocity(const Vector3&in velocity)

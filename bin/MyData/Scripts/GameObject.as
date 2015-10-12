@@ -36,6 +36,8 @@ class GameObject : ScriptObject
 
     void FixedUpdate(float timeStep)
     {
+        stateMachine.FixedUpdate(timeStep);
+
         // Disappear when duration expired
         if (duration >= 0)
         {

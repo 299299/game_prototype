@@ -32,21 +32,6 @@ int QueryBestCounterMotion(const Array<Motion@>&in motions1, const Array<Motion@
     return bestIndex;
 }
 
-void MoveNode(Node@ _node, const Vector3&in tWorld, float dt)
-{
-    RigidBody@ body = _node.GetComponent("RigidBody");
-    if (body is null)
-        _node.worldPosition = tWorld;
-    else
-    {
-        Vector3 diff = tWorld - _node.worldPosition;
-        diff.y = 0;
-        Vector3 velocity = diff / dt;
-        Print("MoveNode vel=" + velocity.ToString() + " t1=" + tWorld.ToString() + " t2=" + _node.worldPosition.ToString() + " dt=" + dt);
-        body.linearVelocity = velocity;
-    }
-}
-
 class Motion
 {
     String                  name;
@@ -158,10 +143,10 @@ class Motion
         // Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
     }
 
-    bool Move(float dt, Character@ object)
+    bool Move(Character@ object, float dt)
     {
         AnimationController@ ctrl = object.animCtrl;
-        Node@ _node = object.SceneNode;
+        Node@ _node = object.sceneNode;
         float localTime = ctrl.GetTime(animationName);
         if (looped)
         {
@@ -169,30 +154,26 @@ class Motion
             GetMotion(localTime, dt, looped, motionOut);
 
             if (rotateEnabled)
-            {
                 _node.Yaw(motionOut.w);
-            }
 
             if (translateEnabled)
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 tLocal = tLocal * ctrl.GetWeight(animationName);
                 Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + deltaPosition;
-                MoveNode(_node, tWorld, dt);
+                object.MoveTo(tWorld, dt);
             }
         }
         else
         {
             Vector4 motionOut = GetKey(localTime);
             if (rotateEnabled)
-            {
                 _node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
-            }
 
             if (translateEnabled)
             {
                 Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
-                MoveNode(_node, tWorld, dt);
+                object.MoveTo(tWorld, dt);
             }
         }
         return localTime >= endTime;

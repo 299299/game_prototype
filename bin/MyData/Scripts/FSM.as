@@ -31,6 +31,11 @@ class State
         timeInState += dt;
     }
 
+    void FixedUpdate(float dt)
+    {
+
+    }
+
     void DebugDraw(DebugRenderer@ debug)
     {
 
@@ -121,6 +126,12 @@ class FSM
     {
         if (currentState !is null)
             currentState.Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        if (currentState !is null)
+            currentState.FixedUpdate(dt);
     }
 
     void DebugDraw(DebugRenderer@ debug)
