@@ -276,7 +276,7 @@ class MotionManager
             if (motions[i].name == name)
                 return motions[i];
         }
-        Print("Could not find " + name);
+        log.Error("Could not find " + name);
         return null;
     }
 

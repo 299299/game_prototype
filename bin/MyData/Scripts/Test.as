@@ -3,6 +3,7 @@
 #include "Scripts/Motion.as"
 #include "Scripts/Input.as"
 #include "Scripts/FSM.as"
+#include "Scripts/Ragdoll.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -10,16 +11,18 @@
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
 
-
 Scene@ scene_;
 Node@ cameraNode; // Camera scene node
 float yaw = 0.0f; // Camera yaw angle
 float pitch = 0.0f; // Camera pitch angle
-
+bool drawDebug = true;
+bool dragging = false;
+float dragDistance = 0.0f;
 
 const String GAME_SCRIPT = "Scripts/Test.as";
 Node@ characterNode;
 Node@ thugNode;
+Node@ floorNode;
 
 Player@ player;
 Thug@ thug;
@@ -67,6 +70,8 @@ void CreateScene()
     // Set an initial position for the camera scene node above the plane
     cameraNode.position = Vector3(0.0f, 10.0f, -10.0f);
     pitch = 45;
+
+    floorNode = scene_.GetChild("Floor", true);
 
     characterNode = scene_.GetChild("bruce", true);
     characterNode.Translate(Vector3(5, 0, 0));
@@ -176,6 +181,40 @@ void MoveCamera(float timeStep)
         cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * speed * timeStep);
     if (input.keyDown['D'])
         cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * speed * timeStep);
+
+    if (input.mouseButtonPress[MOUSEB_LEFT])
+    {
+        IntVector2 pos = ui.cursorPosition;
+        // Check the cursor is visible and there is no UI element in front of the cursor
+        if (ui.GetElementAt(pos, true) !is null)
+            return;
+
+        dragging = false;
+        Camera@ camera = cameraNode.GetComponent("Camera");
+        Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
+        float rayDistance = 100.0f;
+        PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, 0xffffffff);
+        if (result.body !is null)
+        {
+            Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
+            floorNode.RemoveComponent("Constraint");
+            Constraint@ constraint = floorNode.CreateComponent("Constraint");
+            constraint.constraintType = CONSTRAINT_POINT;
+            constraint.disableCollision = true;
+            constraint.otherBody = result.body;
+            constraint.worldPosition = result.body.node.worldPosition;
+            dragging = true;
+            dragDistance = result.distance;
+        }
+    }
+    else {
+        if (!input.mouseButtonDown[MOUSEB_LEFT]) {
+            if (dragging) {
+                floorNode.RemoveComponent("Constraint");
+                dragging = false;
+            }
+        }
+    }
 }
 
 void SubscribeToEvents()
@@ -184,6 +223,7 @@ void SubscribeToEvents()
     SubscribeToEvent("SceneUpdate", "HandleSceneUpdate");
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
     SubscribeToEvent("KeyDown", "HandleKeyDown");
+    SubscribeToEvent("MouseMove", "HandleMouseMove");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -280,17 +320,16 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
+    if (!drawDebug)
+        return;
     DebugRenderer@ debug = scene_.debugRenderer;
-    if (true)
-    {
-        debug.AddNode(scene_, 1.0f, false);
-        if (player !is null)
-            player.DebugDraw(debug);
-        if (thug !is null)
-            thug.DebugDraw(debug);
-    }
-
+    debug.AddNode(scene_, 1.0f, false);
+    if (player !is null)
+        player.DebugDraw(debug);
+    if (thug !is null)
+        thug.DebugDraw(debug);
     scene_.physicsWorld.DrawDebugGeometry(true);
+
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
@@ -305,16 +344,27 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         else
             console.visible = false;
     }
-
-    // Toggle console with F1
     else if (key == KEY_F1)
-        console.Toggle();
-
-    // Toggle debug HUD with F2
+        drawDebug = !drawDebug;
     else if (key == KEY_F2)
         debugHud.ToggleAll();
+    else if (key == KEY_F3)
+        console.Toggle();
 
 }
+
+void HandleMouseMove(StringHash eventType, VariantMap& eventData)
+{
+    // dragging physics object
+    if (dragging) {
+        float x = eventData["x"].GetInt();
+        float y = eventData["y"].GetInt();
+        Constraint@ constraint = floorNode.GetComponent("Constraint");
+        Camera@ camera = cameraNode.GetComponent("Camera");
+        constraint.worldPosition = camera.ScreenToWorldPoint(Vector3(x / graphics.width, y / graphics.height, dragDistance));
+    }
+}
+
 
 void HandleSceneUpdate(StringHash eventType, VariantMap& eventData)
 {

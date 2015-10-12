@@ -829,7 +829,7 @@ class Player : Character
                 continue;
             }
             float diffAngle = Abs(Atan2(posDiff.x, posDiff.z));
-            int angleScore = (180 - diffAngle)/180 * 50; // angle at 50% percant
+            int angleScore = int((180.0f - diffAngle)/180.0f * 50.0f); // angle at 50% percant
             score += angleScore;
             gEnemyMgr.scoreCache.Push(score);
             Print("Enemy " + e.sceneNode.name + " distSQR=" + distSQR + " diffAngle=" + diffAngle + " score=" + score);
