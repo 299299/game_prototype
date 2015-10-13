@@ -90,8 +90,39 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
 
+    bool fixOriginFlag = originFlag <= 0;
+
     // ==============================================================
     // pre process key frames
+    if (rotateTrack !is null && fixOriginFlag)
+    {
+        float rotation = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
+        if (Abs(rotation) > 75)
+        {
+            Print("Need to flip rotate track since object is start opposite, rotation=" + rotation);
+            originFlag |= kMotion_R;
+        }
+    }
+
+    if (translateTrack !is null && fixOriginFlag)
+    {
+        Vector3 position = translateTrack.keyFrames[0].position - pelvisOrign;
+        const float minDist = 0.5f;
+        if (Abs(position.x) > minDist) {
+            Print("Need reset x position");
+            originFlag |= kMotion_X;
+        }
+        if (Abs(position.y) > 2.0f) {
+            // Print("Need reset y position");
+            // riginFlag |= kMotion_Y;
+        }
+        if (Abs(position.z) > minDist) {
+            Print("Need reset z position");
+            originFlag |= kMotion_Z;
+        }
+        Print("t-diff-position=" + position.ToString());
+    }
+
     if (originFlag & kMotion_R != 0)
     {
         if (rotateTrack !is null)

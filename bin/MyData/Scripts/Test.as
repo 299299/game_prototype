@@ -94,6 +94,9 @@ void CreateScene()
         return;
     }
 
+    Node@ jack = scene_.GetChild("jack", true);
+    jack.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
+
     @thug.target = player;
 
     Vector3 pos = cameraNode.worldPosition;
@@ -318,7 +321,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "BM_Attack/Attack_Close_Weak_Forward_02";
+        String testName = "BM_TG_Counter/Counter_Leg_Back_Weak_03";
         //String testName = "TG_HitReaction/Push_Reaction";
         //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
@@ -359,7 +362,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             if (player !is null && globalState != 1)
             {
                 globalState = 1;
-                String testName = "BM_Attack/Attack_Far_Back";
+                String testName = "BM_Attack/Attack_Close_Forward_02";
                 player.TestAnimation(testName);
             }
         }

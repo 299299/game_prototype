@@ -6,9 +6,7 @@ const float MAX_ATTACK_DIST = 30.0f;
 
 class PlayerStandState : CharacterState
 {
-    Motion@         alignMotion;
     Array<String>   animations;
-    int             state;
 
     PlayerStandState(Character@ c)
     {
@@ -17,15 +15,10 @@ class PlayerStandState : CharacterState
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle"));
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_01"));
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_02"));
-        Motion@ refMotion = gMotionMgr.FindMotion(MOVEMENT_GROUP + "Walk_Forward");
-        @alignMotion = gMotionMgr.CreateCustomMotion(refMotion, "Align_Walk");
-        alignMotion.looped = false;
-        alignMotion.SetEndFrame(-1);
     }
 
     void Enter(State@ lastState)
     {
-        state = 0;
         float blendTime = 0.25f;
         if (lastState !is null)
         {
@@ -36,62 +29,36 @@ class PlayerStandState : CharacterState
             else if (lastState.nameHash == COUNTER_STATE)
                 blendTime = 2.5f;
         }
-        float diff = ownner.GetFootFrontDiff();
-        if (diff < -0.5f) {
-            Print("Right Foot front!!");
-            state = 1;
-            alignMotion.Start(ownner);
-        }
-        else {
-            PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
-        }
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         CharacterState::Enter(lastState);
     }
 
     void Update(float dt)
     {
-        if (state == 1)
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
+            int index = ownner.RadialSelectAnimation(4);
+            ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
 
-        }
-        else
-        {
-            if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
-            {
-                int index = ownner.RadialSelectAnimation(4);
-                ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
-
-                if (index == 0)
-                    ownner.stateMachine.ChangeState("MoveState");
-                else
-                    ownner.stateMachine.ChangeState("TurnState");
-            }
-
-            if (gInput.IsAttackPressed())
-                ownner.Attack();
-            else if (gInput.IsCounterPressed())
-                ownner.Counter();
-            else if (gInput.IsEvadePressed())
-                ownner.Evade();
+            if (index == 0)
+                ownner.stateMachine.ChangeState("MoveState");
+            else
+                ownner.stateMachine.ChangeState("TurnState");
         }
 
-        // ownner.GetFootFrontDiff();
+        if (gInput.IsAttackPressed())
+            ownner.Attack();
+        else if (gInput.IsCounterPressed())
+            ownner.Counter();
+        else if (gInput.IsEvadePressed())
+            ownner.Evade();
 
         CharacterState::Update(dt);
     }
 
     void FixedUpdate(float dt)
     {
-        if (state == 1) {
-            if (alignMotion.Move(ownner, dt))
-            {
-                state = 0;
-                PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.1f);
-            }
-        }
-        else {
-            ownner.SetVelocity(Vector3(0, 0, 0));
-        }
+        ownner.SetVelocity(Vector3(0, 0, 0));
         CharacterState::FixedUpdate(dt);
     }
 };
@@ -154,7 +121,7 @@ class PlayerMoveState : SingleMotionState
 
     void Update(float dt)
     {
-        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
             ownner.stateMachine.ChangeState("StandState");
 
         if (gInput.IsAttackPressed())
@@ -240,10 +207,10 @@ class PlayerAttackState : CharacterState
 
         String preFix = "BM_Attack/";
 
-        forwadCloseNum = 9;
-        leftCloseNum = 5;
-        rightCloseNum = 6;
-        backCloseNum = 10;
+        forwadCloseNum = 14;
+        leftCloseNum = 12;
+        rightCloseNum = 11;
+        backCloseNum = 11;
 
         //========================================================================
         // FORWARD
@@ -251,17 +218,23 @@ class PlayerAttackState : CharacterState
         // forward weak
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward", 11));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_01", 12));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_02", 12));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_03", 11));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_04", 16));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_05", 12));
 
         // forward close
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_02", 14));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_03", 11));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_04", 19));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_05", 24));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_06", 20));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_07", 15));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_08", 18));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Run_Forward", 12));
 
         // forward far
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward", 25));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_01", 17));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_02", 21));
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_03", 22));
@@ -272,13 +245,18 @@ class PlayerAttackState : CharacterState
         // RIGHT
         //========================================================================
         // right weak
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right", 12));
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_01", 10));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_02", 15));
 
         // right close
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right", 16));
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_01", 18));
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_03", 11));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_04", 19));
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_05", 15));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_06", 20));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_07", 18));
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_08", 18));
 
         // right far
@@ -300,30 +278,44 @@ class PlayerAttackState : CharacterState
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_01", 16));
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_02", 18));
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_03", 21));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_04", 18));
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_05", 14));
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_06", 15));
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_07", 14));
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_08", 17));
 
         // back far
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back", 14));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_01", 15));
         backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_02", 18));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_03", 22));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_04", 36));
 
         //========================================================================
         // LEFT
         //========================================================================
         // left weak
         leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left", 13));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_01", 12));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_02", 13));
 
         // left close
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left", 7));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_01", 18));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_02", 13));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_03", 21));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_04", 21));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_05", 15));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_06", 12));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_07", 15));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_08", 20));
 
         // left far
         leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left", 19));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_01", 22));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_02", 22));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_03", 21));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_04", 23));
 
         forwardAttacks.Sort();
         leftAttacks.Sort();
@@ -655,6 +647,7 @@ class PlayerCounterState : CharacterCounterState
             {
                 //int idx = QueryBestCounterMotion(frontLegMotions, enemyCounterState.frontLegMotions, currentPositionDiff);
                 int idx = RandomInt(frontLegMotions.length);
+                // idx = FindMotionIndex(frontLegMotions, "BM_TG_Counter/Counter_Leg_Back_Weak_03");
                 @currentMotion = frontLegMotions[idx];
                 @enemyCounterState.currentMotion = enemyCounterState.frontLegMotions[idx];
             }
@@ -794,7 +787,7 @@ class Player : Character
         }
         else
         {
-            if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
+            if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
             {
                 sceneNode.vars[ANIMATION_INDEX] = RadialSelectAnimation(2);
                 stateMachine.ChangeState("EvadeState");
@@ -824,7 +817,7 @@ class Player : Character
 
     void CommonStateFinishedOnGroud()
     {
-        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
+        if (gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
             stateMachine.ChangeState("StandState");
         else {
             stateMachine.ChangeState("MoveState");

@@ -33,6 +33,16 @@ int QueryBestCounterMotion(const Array<Motion@>&in motions1, const Array<Motion@
     return bestIndex;
 }
 
+int FindMotionIndex(const Array<Motion@>&in motions, const String&in name)
+{
+    for (uint i=0; i<motions.length; ++i)
+    {
+        if (motions[i].name == name)
+            return i;
+    }
+    return -1;
+}
+
 class Motion
 {
     String                  name;
@@ -324,192 +334,133 @@ class MotionManager
         // PLAYER MOTIONS
         //========================================================================
         // Locomotions
-        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, 0, kMotion_R, 16, false);
-        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, 0, kMotion_R, 28, false);
-        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, 0, kMotion_R, 22, false);
-        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, 0, kMotion_Z, -1, true);
+        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, kMotion_R, 16, 0, false);
+        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, kMotion_R, 28, 0, false);
+        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, kMotion_R, 22, 0, false);
+        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, 0, true);
 
-        CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, 0, kMotion_R, 16, false);
-        CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, 0, kMotion_R, 25, false);
-        CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, 0, kMotion_R, 14, false);
-        CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, 0, kMotion_Z, -1, true);
+        CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, kMotion_R, 16, 0, false);
+        CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, kMotion_R, 25, 0, false);
+        CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, kMotion_R, 14, 0, false);
+        CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
 
         // Evades
-        CreateMotion("BM_Combat/Evade_Forward_01", kMotion_XZR, 0, kMotion_ZR, -1, false);
-        CreateMotion("BM_Combat/Evade_Right_01", kMotion_XZR, 0, kMotion_XR, -1, false, true);
-        CreateMotion("BM_Combat/Evade_Back_01", kMotion_XZR, 0, kMotion_ZR, -1, false);
-        CreateMotion("BM_Combat/Evade_Left_01", kMotion_XZR, 0, kMotion_XR, -1, false, true);
+        CreateMotion("BM_Combat/Evade_Forward_01", kMotion_XZR, kMotion_ZR, -1, 0, false);
+        CreateMotion("BM_Combat/Evade_Right_01", kMotion_XZR, kMotion_XR, -1, 0, false, true);
+        CreateMotion("BM_Combat/Evade_Back_01", kMotion_XZR, kMotion_ZR, -1, 0, false);
+        CreateMotion("BM_Combat/Evade_Left_01", kMotion_XZR, kMotion_XR, -1, 0, false, true);
 
-        CreateMotion("BM_Combat/Redirect", kMotion_XZR, 0, kMotion_XZR, 58, false);
+        CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
 
         String hitPrefix = "BM_Combat_HitReaction/";
-        CreateMotion(hitPrefix + "HitReaction_Back", kMotion_XZR);
-        CreateMotion(hitPrefix + "HitReaction_Face_Left", kMotion_XZR);
-        CreateMotion(hitPrefix + "HitReaction_Face_Right", kMotion_XZR);
-        CreateMotion(hitPrefix + "Hit_Reaction_SideLeft", kMotion_XZR);
-        CreateMotion(hitPrefix + "Hit_Reaction_SideRight", kMotion_XZR);
-        CreateMotion(hitPrefix + "HitReaction_Stomach", kMotion_XZR);
+        CreateMotion(hitPrefix + "HitReaction_Back");
+        CreateMotion(hitPrefix + "HitReaction_Face_Left");
+        CreateMotion(hitPrefix + "HitReaction_Face_Right");
+        CreateMotion(hitPrefix + "Hit_Reaction_SideLeft");
+        CreateMotion(hitPrefix + "Hit_Reaction_SideRight");
+        CreateMotion(hitPrefix + "HitReaction_Stomach");
 
         // Attacks
         String preFix = "BM_Attack/";
         //========================================================================
         // FORWARD
         //========================================================================
-        int foward_motion_flags = kMotion_XZR;
-        int foward_allow_motion = kMotion_ZR;
         // weak forward
-        CreateMotion(preFix + "Attack_Close_Weak_Forward", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_01", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_02", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_03", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_04", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_05", foward_motion_flags, 0, foward_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Weak_Forward");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_01");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_02");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_03");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_04");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_05");
         // close forward
-        CreateMotion(preFix + "Attack_Close_Forward_02", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Forward_03", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Forward_04", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Forward_05", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Forward_06", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Forward_07", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Forward_08", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Run_Forward", foward_motion_flags, 0, foward_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Forward_02");
+        CreateMotion(preFix + "Attack_Close_Forward_03");
+        CreateMotion(preFix + "Attack_Close_Forward_04");
+        CreateMotion(preFix + "Attack_Close_Forward_05");
+        CreateMotion(preFix + "Attack_Close_Forward_06");
+        CreateMotion(preFix + "Attack_Close_Forward_07");
+        CreateMotion(preFix + "Attack_Close_Forward_08");
+        CreateMotion(preFix + "Attack_Close_Run_Forward");
         // far forward
-        CreateMotion(preFix + "Attack_Far_Forward", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Forward_01", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Forward_02", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Forward_03", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Forward_04", foward_motion_flags, 0, foward_allow_motion);
-        CreateMotion(preFix + "Attack_Run_Far_Forward", foward_motion_flags, 0, foward_allow_motion);
+        CreateMotion(preFix + "Attack_Far_Forward");
+        CreateMotion(preFix + "Attack_Far_Forward_01");
+        CreateMotion(preFix + "Attack_Far_Forward_02");
+        CreateMotion(preFix + "Attack_Far_Forward_03");
+        CreateMotion(preFix + "Attack_Far_Forward_04");
+        CreateMotion(preFix + "Attack_Run_Far_Forward");
 
         //========================================================================
         // RIGHT
         //========================================================================
-        int right_motion_flags = kMotion_XZR;
-        int right_allow_motion = kMotion_XR;
         // weak right
-        CreateMotion(preFix + "Attack_Close_Weak_Right", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Right_01", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Right_02", right_motion_flags, 0, right_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Weak_Right");
+        CreateMotion(preFix + "Attack_Close_Weak_Right_01");
+        CreateMotion(preFix + "Attack_Close_Weak_Right_02");
         // close right
-        CreateMotion(preFix + "Attack_Close_Right", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Right_01", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Right_03", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Right_04", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Right_05", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Right_06", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Right_07", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Right_08", right_motion_flags, 0, right_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Right");
+        CreateMotion(preFix + "Attack_Close_Right_01");
+        CreateMotion(preFix + "Attack_Close_Right_03");
+        CreateMotion(preFix + "Attack_Close_Right_04");
+        CreateMotion(preFix + "Attack_Close_Right_05");
+        CreateMotion(preFix + "Attack_Close_Right_06");
+        CreateMotion(preFix + "Attack_Close_Right_07");
+        CreateMotion(preFix + "Attack_Close_Right_08");
         // far right
-        CreateMotion(preFix + "Attack_Far_Right", right_motion_flags, 0, right_allow_motion);
-        // seems Attack_Far_Right_01 is not start at the origin
-        CreateMotion(preFix + "Attack_Far_Right_01", right_motion_flags, kMotion_XZ, right_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Right_02", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Right_03", right_motion_flags, 0, right_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Right_04", right_motion_flags, 0, right_allow_motion);
+        CreateMotion(preFix + "Attack_Far_Right");
+        CreateMotion(preFix + "Attack_Far_Right_01");
+        CreateMotion(preFix + "Attack_Far_Right_02");
+        CreateMotion(preFix + "Attack_Far_Right_03");
+        CreateMotion(preFix + "Attack_Far_Right_04");
 
         //========================================================================
         // BACK
         //========================================================================
-        int back_motion_flags = kMotion_XZR;
-        int back_allow_motion = kMotion_ZR;
         // weak back
-        CreateMotion(preFix + "Attack_Close_Weak_Back", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Back_01", back_motion_flags, 0, back_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Weak_Back");
+        CreateMotion(preFix + "Attack_Close_Weak_Back_01");
         // close back
-        CreateMotion(preFix + "Attack_Close_Back", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_01", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_02", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_03", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_04", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_05", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_06", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_07", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Back_08", back_motion_flags, 0, back_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Back");
+        CreateMotion(preFix + "Attack_Close_Back_01");
+        CreateMotion(preFix + "Attack_Close_Back_02");
+        CreateMotion(preFix + "Attack_Close_Back_03");
+        CreateMotion(preFix + "Attack_Close_Back_04");
+        CreateMotion(preFix + "Attack_Close_Back_05");
+        CreateMotion(preFix + "Attack_Close_Back_06");
+        CreateMotion(preFix + "Attack_Close_Back_07");
+        CreateMotion(preFix + "Attack_Close_Back_08");
         // far back
-        CreateMotion(preFix + "Attack_Far_Back", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Back_01", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Back_02", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Back_03", back_motion_flags, 0, back_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Back_04", back_motion_flags, 0, back_allow_motion);
+        CreateMotion(preFix + "Attack_Far_Back");
+        CreateMotion(preFix + "Attack_Far_Back_01");
+        CreateMotion(preFix + "Attack_Far_Back_02");
+        CreateMotion(preFix + "Attack_Far_Back_03");
+        CreateMotion(preFix + "Attack_Far_Back_04");
 
         //========================================================================
         // LEFT
         //========================================================================
-        int left_motion_flags = kMotion_XZR;
-        int left_allow_motion = kMotion_XZR;
         // weak left
-        CreateMotion(preFix + "Attack_Close_Weak_Left", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Left_01", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Weak_Left_02", left_motion_flags, 0, left_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Weak_Left");
+        CreateMotion(preFix + "Attack_Close_Weak_Left_01");
+        CreateMotion(preFix + "Attack_Close_Weak_Left_02");
 
         // close left
-        CreateMotion(preFix + "Attack_Close_Left", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_01", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_02", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_03", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_04", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_05", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_06", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_07", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Close_Left_08", left_motion_flags, 0, left_allow_motion);
+        CreateMotion(preFix + "Attack_Close_Left");
+        CreateMotion(preFix + "Attack_Close_Left_01");
+        CreateMotion(preFix + "Attack_Close_Left_02");
+        CreateMotion(preFix + "Attack_Close_Left_03");
+        CreateMotion(preFix + "Attack_Close_Left_04");
+        CreateMotion(preFix + "Attack_Close_Left_05");
+        CreateMotion(preFix + "Attack_Close_Left_06");
+        CreateMotion(preFix + "Attack_Close_Left_07");
+        CreateMotion(preFix + "Attack_Close_Left_08");
         // far left
-        CreateMotion(preFix + "Attack_Far_Left", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Left_01", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Left_02", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Left_03", left_motion_flags, 0, left_allow_motion);
-        CreateMotion(preFix + "Attack_Far_Left_04", left_motion_flags, 0, left_allow_motion);
+        CreateMotion(preFix + "Attack_Far_Left");
+        CreateMotion(preFix + "Attack_Far_Left_01");
+        CreateMotion(preFix + "Attack_Far_Left_02");
+        CreateMotion(preFix + "Attack_Far_Left_03");
+        CreateMotion(preFix + "Attack_Far_Left_04");
 
-        // Counters
-        String counter_prefix = "BM_TG_Counter/";
-        CreateMotion(counter_prefix + "Counter_Arm_Back_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_03", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_05", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_06", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_03", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Arm_Front_01", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_02", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_03", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_04", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_05", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_06", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_07", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_08", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_09", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_10", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_13", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_14", kMotion_XZR, kMotion_XZ);
-
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_02", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_03", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_04", kMotion_XZR, kMotion_XZ);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Back_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_03", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_04", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_05", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_03", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Front_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_03", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_04", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_05", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_06", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_07", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_08", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_09", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02", kMotion_XZR, kMotion_XZR);
+        AddCounterMotions("BM_TG_Counter/");
 
         //========================================================================
         // THUG MOTIONS
@@ -524,80 +475,31 @@ class MotionManager
         CreateMotion(preFix + "Step_Back_Long", kMotion_Z);
         CreateMotion(preFix + "Step_Left_Long", kMotion_X);
 
-        CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, 0, kMotion_R, 32);
-        CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, 0, kMotion_R, 32);
+        CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
+        CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
 
-        CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, 0, kMotion_XZR, -1, true);
-        CreateMotion(preFix + "Redirect_push_back", kMotion_XZR, kMotion_XZR);
-        CreateMotion(preFix + "Redirect_Stumble_JK", kMotion_XZR, kMotion_XZR);
+        CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_XZR, -1, 0, true);
+        CreateMotion(preFix + "Redirect_push_back");
+        CreateMotion(preFix + "Redirect_Stumble_JK");
 
-        CreateMotion(preFix + "Attack_Kick", kMotion_XZR);
-        CreateMotion(preFix + "Attack_Kick_01", kMotion_XZR);
-        CreateMotion(preFix + "Attack_Kick_02", kMotion_XZR);
-        CreateMotion(preFix + "Attack_Punch", kMotion_XZR);
-        CreateMotion(preFix + "Attack_Punch_01", kMotion_XZR);
-        CreateMotion(preFix + "Attack_Punch_02", kMotion_XZR);
+        CreateMotion(preFix + "Attack_Kick");
+        CreateMotion(preFix + "Attack_Kick_01");
+        CreateMotion(preFix + "Attack_Kick_02");
+        CreateMotion(preFix + "Attack_Punch");
+        CreateMotion(preFix + "Attack_Punch_01");
+        CreateMotion(preFix + "Attack_Punch_02");
 
 
         String preFix1 = "TG_HitReaction/";
-        CreateMotion(preFix1 + "HitReaction_Left", kMotion_XZR);
-        CreateMotion(preFix1 + "HitReaction_Right", kMotion_XZR);
-        CreateMotion(preFix1 + "HitReaction_Back_NoTurn", kMotion_XZR);
-        CreateMotion(preFix1 + "Generic_Hit_Reaction", kMotion_XZR);
+        CreateMotion(preFix1 + "HitReaction_Left");
+        CreateMotion(preFix1 + "HitReaction_Right");
+        CreateMotion(preFix1 + "HitReaction_Back_NoTurn");
+        CreateMotion(preFix1 + "Generic_Hit_Reaction");
 
-        CreateMotion(preFix1 + "Push_Reaction", kMotion_XZR, kMotion_XZ);
-        CreateMotion(preFix1 + "Push_Reaction_From_Back", kMotion_XZR, kMotion_XZ);
+        CreateMotion(preFix1 + "Push_Reaction");
+        CreateMotion(preFix1 + "Push_Reaction_From_Back");
 
-        counter_prefix = "TG_BM_Counter/";
-        CreateMotion(counter_prefix + "Counter_Arm_Back_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_03", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_05", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_06", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_03", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Arm_Front_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_03", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_04", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_05", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_06", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_07", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_08", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_09", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_10", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_13", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_14", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_03", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_04", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Back_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_02", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_03", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_04", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_05", kMotion_XZR, kMotion_XZR);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_03", kMotion_XZR, kMotion_XZ);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Front_01", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_02", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_03", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_04", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_05", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_06", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_07", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_08", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_09", kMotion_XZR, kMotion_XZ);
-
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak", kMotion_XZR, kMotion_XZR);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01", kMotion_XZR, kMotion_XZ);
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02", kMotion_XZR, kMotion_XZ);
+        AddCounterMotions("TG_BM_Counter/");
 
         PostProcess();
 
@@ -611,7 +513,7 @@ class MotionManager
         motions.Clear();
     }
 
-    Motion@ CreateMotion(const String&in name, int motionFlag, int originFlag = 0, int allowMotion = kMotion_XZR, int endFrame = -1, bool loop = false, bool cutRotation = false)
+    Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, int originFlag = 0, bool loop = false, bool cutRotation = false)
     {
         Motion@ motion = Motion();
         motion.name = name;
@@ -632,6 +534,59 @@ class MotionManager
         motion.name = name;
         motions.Push(motion);
         return motion;
+    }
+
+    void AddCounterMotions(const String&in counter_prefix)
+    {
+        CreateMotion(counter_prefix + "Counter_Arm_Back_01");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_03");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_05");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_06");
+
+        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_01");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_03");
+
+        CreateMotion(counter_prefix + "Counter_Arm_Front_01");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_03");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_04");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_05");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_06");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_07");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_08");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_09");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_10");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_13");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_14");
+
+        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_03");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_04");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Back_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_02");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_03");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_04");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_05");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_03");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Front_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_02");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_03");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_04");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_05");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_06");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_07");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_08");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_09");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02");
     }
 };
 

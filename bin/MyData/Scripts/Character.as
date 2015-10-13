@@ -257,8 +257,6 @@ class AnimationTestState : CharacterState
 
     void FixedUpdate(float dt)
     {
-        ownner.GetFootFrontDiff();
-
         bool finished = false;
         if (testMotion !is null)
         {
@@ -343,7 +341,6 @@ class CharacterCounterState : CharacterState
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_07"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_08"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_09"));
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_03"));
         // Back Arm
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
@@ -356,7 +353,6 @@ class CharacterCounterState : CharacterState
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_06"));
         // Back Leg
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_03"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_03"));
@@ -687,8 +683,10 @@ class Character : GameObject
     float GetFootFrontDiff()
     {
         Vector3 fwd_dir = sceneNode.worldRotation * Vector3(0, 0, 1);
-        float dot_lf = footNode_L.worldPosition.DotProduct(fwd_dir);
-        float dot_rf = footNode_R.worldPosition.DotProduct(fwd_dir);
+        Vector3 pt_lf = footNode_L.worldPosition - sceneNode.worldPosition;
+        Vector3 pt_rf = footNode_R.worldPosition - sceneNode.worldPosition;
+        float dot_lf = pt_lf.DotProduct(fwd_dir);
+        float dot_rf = pt_rf.DotProduct(fwd_dir);
         Print(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));
         return dot_lf - dot_rf;
     }

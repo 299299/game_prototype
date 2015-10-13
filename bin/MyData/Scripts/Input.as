@@ -135,7 +135,7 @@ class GameInput
     // Returns true if the left game pad hasn't moved since the last update
     bool IsLeftStickStationary()
     {
-        return HasLeftStickBeenStationary(0.025f);
+        return HasLeftStickBeenStationary(0.01f);
     }
 
     // Returns true if the left stick is the dead zone, false otherwise

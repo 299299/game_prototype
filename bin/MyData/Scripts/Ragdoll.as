@@ -1,6 +1,5 @@
-
 // CreateRagdoll script object class
-class CreateRagdoll : ScriptObject
+class Ragdoll : ScriptObject
 {
     void Start()
     {
@@ -16,8 +15,8 @@ class CreateRagdoll : ScriptObject
         if (otherBody.mass > 0.0f)
         {
             // We do not need the physics components in the AnimatedModel's root scene node anymore
-            // node.RemoveComponent("RigidBody");
-            // node.RemoveComponent("CollisionShape");
+            node.RemoveComponent("RigidBody");
+            node.RemoveComponent("CollisionShape");
 
             // Create RigidBody & CollisionShape components to bones
             CreateRagdollBone("Bip01_Pelvis", SHAPE_BOX, Vector3(0.3f, 0.2f, 0.25f), Vector3(0.0f, 0.0f, 0.0f),
