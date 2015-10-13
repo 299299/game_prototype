@@ -4,8 +4,12 @@ bool attack_timing_test = false;
 const float MAX_COUNTER_DIST = 6.0f;
 const float MAX_ATTACK_DIST = 30.0f;
 
-class PlayerStandState : RandomAnimationState
+class PlayerStandState : CharacterState
 {
+    Motion@         alignMotion;
+    Array<String>   animations;
+    int             state;
+
     PlayerStandState(Character@ c)
     {
         super(c);
@@ -13,49 +17,82 @@ class PlayerStandState : RandomAnimationState
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle"));
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_01"));
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_02"));
+        Motion@ refMotion = gMotionMgr.FindMotion(MOVEMENT_GROUP + "Walk_Forward");
+        @alignMotion = gMotionMgr.CreateCustomMotion(refMotion, "Align_Walk");
+        alignMotion.looped = false;
+        alignMotion.SetEndFrame(-1);
     }
 
     void Enter(State@ lastState)
     {
+        state = 0;
         float blendTime = 0.25f;
         if (lastState !is null)
         {
             if (lastState.nameHash == ATTACK_STATE)
                 blendTime = 10.0f;
-            if (lastState.nameHash == REDIRECT_STATE)
+            else if (lastState.nameHash == REDIRECT_STATE)
+                blendTime = 2.5f;
+            else if (lastState.nameHash == COUNTER_STATE)
                 blendTime = 2.5f;
         }
-        StartBlendTime(blendTime);
+        float diff = ownner.GetFootFrontDiff();
+        if (diff < -0.5f) {
+            Print("Right Foot front!!");
+            state = 1;
+            alignMotion.Start(ownner);
+        }
+        else {
+            PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        }
         CharacterState::Enter(lastState);
     }
 
     void Update(float dt)
     {
-        if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
+        if (state == 1)
         {
-            int index = ownner.RadialSelectAnimation(4);
-            ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
 
-            if (index == 0)
-                ownner.stateMachine.ChangeState("MoveState");
-            else
-                ownner.stateMachine.ChangeState("TurnState");
+        }
+        else
+        {
+            if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1))
+            {
+                int index = ownner.RadialSelectAnimation(4);
+                ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
+
+                if (index == 0)
+                    ownner.stateMachine.ChangeState("MoveState");
+                else
+                    ownner.stateMachine.ChangeState("TurnState");
+            }
+
+            if (gInput.IsAttackPressed())
+                ownner.Attack();
+            else if (gInput.IsCounterPressed())
+                ownner.Counter();
+            else if (gInput.IsEvadePressed())
+                ownner.Evade();
         }
 
-        if (gInput.IsAttackPressed())
-            ownner.Attack();
-        else if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
+        // ownner.GetFootFrontDiff();
 
-        RandomAnimationState::Update(dt);
+        CharacterState::Update(dt);
     }
 
     void FixedUpdate(float dt)
     {
-        ownner.SetVelocity(Vector3(0, 0, 0));
-        RandomAnimationState::FixedUpdate(dt);
+        if (state == 1) {
+            if (alignMotion.Move(ownner, dt))
+            {
+                state = 0;
+                PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.1f);
+            }
+        }
+        else {
+            ownner.SetVelocity(Vector3(0, 0, 0));
+        }
+        CharacterState::FixedUpdate(dt);
     }
 };
 
@@ -469,7 +506,7 @@ class PlayerAttackState : CharacterState
         }
 
         Motion@ motion = currentAttack.motion;
-        motion.Start(ownner.sceneNode, ownner.animCtrl);
+        motion.Start(ownner);
         state = 0;
 
         if (attack_timing_test)

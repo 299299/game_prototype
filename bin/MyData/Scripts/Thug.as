@@ -5,8 +5,9 @@ float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
 
-class ThugStandState : RandomAnimationState
+class ThugStandState : CharacterState
 {
+    Array<String>   animations;
     float thinkTime;
 
     ThugStandState(Character@ c)
@@ -27,7 +28,7 @@ class ThugStandState : RandomAnimationState
             if (lastState.nameHash == ATTACK_STATE || lastState.nameHash == TURN_STATE)
                 blendTime = 5.0f;
         }
-        StartBlendTime(blendTime);
+        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         thinkTime = Random(0.5f, 3.0f);
         CharacterState::Enter(lastState);
@@ -77,13 +78,13 @@ class ThugStandState : RandomAnimationState
             thinkTime = Random(0.5f, 3.0f);
         }
 
-        RandomAnimationState::Update(dt);
+        CharacterState::Update(dt);
     }
 
     void FixedUpdate(float dt)
     {
         ownner.SetVelocity(Vector3(0, 0, 0));
-        RandomAnimationState::FixedUpdate(dt);
+        CharacterState::FixedUpdate(dt);
     }
 };
 
@@ -343,7 +344,7 @@ class ThugAttackState : CharacterState
         @currentAttack = attacks[index];
         state = 0;
         Motion@ motion = currentAttack.motion;
-        motion.Start(ownner.sceneNode, ownner.animCtrl);
+        motion.Start(ownner);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         CharacterState::Enter(lastState);
         Print("Thug Pick attack motion = " + motion.animationName);
@@ -442,7 +443,7 @@ class ThugRedirectState : MultiMotionState
         selectIndex = PickIndex();
         Print(name + " pick " + motions[selectIndex].animationName);
         float blendTime = 0.5f;
-        motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl, 0.0f, blendTime);
+        motions[selectIndex].Start(ownner, 0.0f, blendTime);
     }
 
     int PickIndex()

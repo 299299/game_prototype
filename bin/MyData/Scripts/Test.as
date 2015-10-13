@@ -318,7 +318,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "TG_BM_Counter/Counter_Arm_Front_06"; //"TG_HitReaction/Push_Reaction"; //"TG_BM_Counter/Counter_Arm_Front_01";
+        String testName = "BM_Attack/Attack_Close_Weak_Forward_02";
+        //String testName = "TG_HitReaction/Push_Reaction";
+        //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
     }
 
@@ -357,13 +359,14 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             if (player !is null && globalState != 1)
             {
                 globalState = 1;
-                player.Attack();
+                String testName = "BM_Attack/Attack_Far_Back";
+                player.TestAnimation(testName);
             }
         }
 
-        if (globalTime > 1)
+        if (globalTime > 5)
         {
-            if (globalState != 2)
+            if (globalState == 999)
             {
                 @player = null;
                 @thug = null;
@@ -377,7 +380,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
         if (globalTime > 3.0)
         {
-            engine.Exit();
+            // engine.Exit();
         }
     }
     else

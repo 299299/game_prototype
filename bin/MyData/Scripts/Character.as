@@ -9,6 +9,7 @@ const int MAX_NUM_OF_ATTACK = 2;
 const StringHash ATTACK_STATE("AttackState");
 const StringHash REDIRECT_STATE("RedirectState");
 const StringHash TURN_STATE("TurnState");
+const StringHash COUNTER_STATE("CounterState");
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
 
@@ -57,7 +58,7 @@ class SingleMotionState : CharacterState
 
     void Enter(State@ lastState)
     {
-        motion.Start(ownner.sceneNode, ownner.animCtrl);
+        motion.Start(ownner);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -102,7 +103,7 @@ class MultiMotionState : CharacterState
     {
         selectIndex = PickIndex();
         Print(name + " pick " + motions[selectIndex].animationName);
-        motions[selectIndex].Start(ownner.sceneNode, ownner.animCtrl);
+        motions[selectIndex].Start(ownner);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -229,7 +230,7 @@ class AnimationTestState : CharacterState
     void Enter(State@ lastState)
     {
         if (testMotion !is null)
-            testMotion.Start(ownner.sceneNode, ownner.animCtrl);
+            testMotion.Start(ownner);
         else
             PlayAnimation(ownner.animCtrl, animationName);
     }
@@ -256,6 +257,8 @@ class AnimationTestState : CharacterState
 
     void FixedUpdate(float dt)
     {
+        ownner.GetFootFrontDiff();
+
         bool finished = false;
         if (testMotion !is null)
         {
@@ -287,21 +290,6 @@ class AnimationTestState : CharacterState
     }
 };
 
-class RandomAnimationState : CharacterState
-{
-    Array<String>           animations;
-
-    RandomAnimationState(Character@ c)
-    {
-        super(c);
-    }
-
-    void StartBlendTime(float blendTime)
-    {
-        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime, 0.0);
-    }
-};
-
 class CharacterCounterState : CharacterState
 {
     Array<Motion@>      frontArmMotions;
@@ -328,7 +316,9 @@ class CharacterCounterState : CharacterState
     {
         // Front Arm
         frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_03"));
         frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_04"));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_01"));
         frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_02"));
         frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_03"));
         frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_04"));
@@ -348,29 +338,36 @@ class CharacterCounterState : CharacterState
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_02"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_03"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_04"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_05"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_06"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_07"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_08"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_09"));
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_03"));
         // Back Arm
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_02"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_03"));
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_01"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_02"));
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_03"));
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_05"));
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_06"));
         // Back Leg
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_03"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_03"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_04"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_05"));
     }
 
     void StartCounterMotion()
     {
         Print(ownner.GetName() + " start counter motion " + currentMotion.animationName);
-        currentMotion.Start(ownner.sceneNode, ownner.animCtrl);
+        currentMotion.Start(ownner);
         state = 1;
     }
 
@@ -623,7 +620,7 @@ class Character : GameObject
             return;
 
         // If the animation is blended with sufficient weight, instantiate a local particle effect for the footstep.
-        // The trigger data (string) tells the bone scenenode to use. Note: called on both client and server
+        // The trigger data (string) tells the bone sceneNode to use. Note: called on both client and server
         if (state.weight > 0.5f)
         {
             Node@ bone = node.GetChild(eventData["Data"].GetString(), true);
@@ -685,6 +682,15 @@ class Character : GameObject
     String GetName()
     {
         return sceneNode.name;
+    }
+
+    float GetFootFrontDiff()
+    {
+        Vector3 fwd_dir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        float dot_lf = footNode_L.worldPosition.DotProduct(fwd_dir);
+        float dot_rf = footNode_R.worldPosition.DotProduct(fwd_dir);
+        Print(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));
+        return dot_lf - dot_rf;
     }
 };
 
