@@ -741,9 +741,7 @@ class Player : Character
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        Vector3 fwd = Vector3(0, 0, 1);
-        Vector3 camDir = cameraNode.worldRotation * fwd;
-        float cameraAngle = Atan2(camDir.x, camDir.z);
+        float cameraAngle = gCameraMgr.GetCameraAngle();
         float targetAngle = cameraAngle + gInput.m_leftStickAngle;
         float baseLen = 2.0f;
         DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
@@ -826,9 +824,7 @@ class Player : Character
 
     float GetTargetAngle()
     {
-        Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
-        float cameraAngle = Atan2(camDir.x, camDir.z);
-        return gInput.m_leftStickAngle + cameraAngle;
+        return gInput.m_leftStickAngle + gCameraMgr.GetCameraAngle();
     }
 
     //====================================================================
@@ -840,8 +836,7 @@ class Player : Character
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
         float myAngle = Atan2(myDir.x, myDir.z);
-        Vector3 camDir = cameraNode.worldRotation * Vector3(0, 0, 1);
-        float cameraAngle = Atan2(camDir.x, camDir.z);
+        float cameraAngle = gCameraMgr.GetCameraAngle();
         float targetAngle = gInput.m_leftStickAngle + cameraAngle;
         gEnemyMgr.scoreCache.Clear();
 

@@ -7,6 +7,10 @@ const int FLAGS_ATTACK  = (1 << 0);
 const int FLAGS_COUNTER = (1 << 1);
 const int FLAGS_REDIRECTED = (1 << 2);
 
+const int COLLISION_LAYER_CHARACTER = 1;
+const int COLLISION_LAYER_LANDSCAPE = 2;
+const int COLLISION_LAYER_PROP      = 3;
+
 class GameObject : ScriptObject
 {
     FSM@ stateMachine;
@@ -67,7 +71,7 @@ class GameObject : ScriptObject
         RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
 
         // If the other collision shape belongs to static geometry, perform world collision
-        if (otherBody.collisionLayer == 2)
+        if (otherBody.collisionLayer == COLLISION_LAYER_LANDSCAPE)
             WorldCollision(eventData);
 
         // If the other node is scripted, perform object-to-object collision

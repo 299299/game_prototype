@@ -47,6 +47,8 @@ class Motion
 {
     String                  name;
     String                  animationName;
+    StringHash              nameHash;
+
     Animation@              animation;
     Array<Vector4>          motionKeys;
     float                   endTime;
@@ -97,6 +99,12 @@ class Motion
         originFlag = other.originFlag;
         allowMotion = other.allowMotion;
         cutRotation = other.cutRotation;
+    }
+
+    void SetName(const String&in _name)
+    {
+        name = _name;
+        nameHash = StringHash(name);
     }
 
     ~Motion()
@@ -312,16 +320,20 @@ class MotionManager
         Print("MotionManager");
     }
 
-
-    Motion@ FindMotion(const String&in name)
+    Motion@ FindMotion(StringHash nameHash)
     {
         for (uint i=0; i<motions.length; ++i)
         {
-            if (motions[i].name == name)
+            if (motions[i].nameHash == nameHash)
                 return motions[i];
         }
-        log.Error("Could not find " + name);
+        log.Error("FindMotion Could not find " + nameHash.ToString());
         return null;
+    }
+
+    Motion@ FindMotion(const String&in name)
+    {
+        return FindMotion(StringHash(name));
     }
 
     void Start()
@@ -516,7 +528,7 @@ class MotionManager
     Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, int originFlag = 0, bool loop = false, bool cutRotation = false)
     {
         Motion@ motion = Motion();
-        motion.name = name;
+        motion.SetName(name);
         motion.motionFlag = motionFlag;
         motion.originFlag = originFlag;
         motion.allowMotion = allowMotion;
@@ -531,7 +543,7 @@ class MotionManager
     Motion@ CreateCustomMotion(Motion@ refMotion, const String&in name)
     {
         Motion@ motion = Motion(refMotion);
-        motion.name = name;
+        motion.SetName(name);
         motions.Push(motion);
         return motion;
     }

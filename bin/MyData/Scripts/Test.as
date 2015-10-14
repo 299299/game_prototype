@@ -1,9 +1,11 @@
 // ------------------------------------------------
+#include "Scripts/Game.as"
 #include "Scripts/AssetProcess.as"
 #include "Scripts/Motion.as"
 #include "Scripts/Input.as"
 #include "Scripts/FSM.as"
 #include "Scripts/Ragdoll.as"
+#include "Scripts/Camera.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -12,9 +14,6 @@
 #include "Scripts/Player.as"
 
 Scene@ scene_;
-Node@ cameraNode; // Camera scene node
-float yaw = 0.0f; // Camera yaw angle
-float pitch = 0.0f; // Camera pitch angle
 bool drawDebug = true;
 
 float dragDistance = 0.0f;
@@ -24,7 +23,6 @@ const String GAME_SCRIPT = "Scripts/Test.as";
 Node@ characterNode;
 Node@ thugNode;
 Node@ floorNode;
-
 
 Player@ player;
 Thug@ thug;
@@ -65,19 +63,18 @@ void CreateScene()
 
     scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
 
-    cameraNode = scene_.CreateChild("Camera");
+    Node@ cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
     // cam.fillMode = FILL_WIREFRAME;
-
-    // Set an initial position for the camera scene node above the plane
-    cameraNode.position = Vector3(0.0f, 10.0f, -10.0f);
-    pitch = 45;
 
     floorNode = scene_.GetChild("Floor", true);
 
     characterNode = scene_.GetChild("bruce", true);
     characterNode.Translate(Vector3(5, 0, 0));
     // characterNode.GetChild("RootNode", true).rotation = Quaternion(0, -180, 0);
+
+    cameraNode.position = Vector3(5.0f, 10.0f, -10.0f);
+    cameraNode.LookAt(characterNode.worldPosition);
 
     @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
     if (player is null) {
@@ -94,17 +91,10 @@ void CreateScene()
         return;
     }
 
-    Node@ jack = scene_.GetChild("jack", true);
-    jack.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
-
     @thug.target = player;
 
-    Vector3 pos = cameraNode.worldPosition;
-    Vector3 playerPos = characterNode.worldPosition;
-    pos.x = playerPos.x;
-    pos.z = playerPos.z;
-    pos.z -= 5;
-    cameraNode.worldPosition = pos;
+    gCameraMgr.Start(cameraNode);
+    gCameraMgr.SetCameraController("Debug");
 }
 
 void SetWindowTitleAndIcon()
@@ -161,18 +151,17 @@ void CreateUI()
 
 void SetupViewport()
 {
-    Viewport@ viewport = Viewport(scene_, cameraNode.GetComponent("Camera"));
+    Viewport@ viewport = Viewport(scene_, gCameraMgr.GetCamera());
     renderer.viewports[0] = viewport;
-
     graphics.windowTitle = "Test";
     //if (GetPlatform() == "Linux")
     //    graphics.windowPosition = IntVector2(0, 800);
 }
 
-void ShootBox()
+void ShootBox(Scene@ _scene)
 {
-    // Create a smaller box at camera position
-    Node@ boxNode = scene_.CreateChild("SmallBox");
+    Node@ cameraNode = gCameraMgr.GetCameraNode();
+    Node@ boxNode = _scene.CreateChild("SmallBox");
     boxNode.position = cameraNode.position;
     boxNode.rotation = cameraNode.rotation;
     boxNode.SetScale(1.0);
@@ -180,24 +169,19 @@ void ShootBox()
     boxObject.model = cache.GetResource("Model", "Models/Box.mdl");
     boxObject.material = cache.GetResource("Material", "Materials/StoneEnvMapSmall.xml");
     boxObject.castShadows = true;
-
-    // Create physics components, use a smaller mass also
     RigidBody@ body = boxNode.CreateComponent("RigidBody");
     body.mass = 0.25f;
     body.friction = 0.75f;
+    body.collisionLayer = (1 << COLLISION_LAYER_PROP);
     CollisionShape@ shape = boxNode.CreateComponent("CollisionShape");
     shape.SetBox(Vector3(1.0f, 1.0f, 1.0f));
-
-    const float OBJECT_VELOCITY = 10.0f;
-
-    // Set initial velocity for the RigidBody based on camera forward vector. Add also a slight up component
-    // to overcome gravity better
-    body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * OBJECT_VELOCITY;
+    body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * 10.0f;
 }
 
-void ShootSphere()
+void ShootSphere(Scene@ _scene)
 {
-    Node@ sphereNode = scene_.CreateChild("Sphere");
+    Node@ cameraNode = gCameraMgr.GetCameraNode();
+    Node@ sphereNode = _scene.CreateChild("Sphere");
     sphereNode.position = cameraNode.position;
     sphereNode.rotation = cameraNode.rotation;
     sphereNode.SetScale(1.0);
@@ -205,53 +189,35 @@ void ShootSphere()
     boxObject.model = cache.GetResource("Model", "Models/Sphere.mdl");
     boxObject.material = cache.GetResource("Material", "Materials/StoneSmall.xml");
     boxObject.castShadows = true;
-
     RigidBody@ body = sphereNode.CreateComponent("RigidBody");
     body.mass = 1.0f;
     body.rollingFriction = 0.15f;
+    body.collisionLayer = (1 << COLLISION_LAYER_PROP);
     CollisionShape@ shape = sphereNode.CreateComponent("CollisionShape");
     shape.SetSphere(1.0f);
-
-    const float OBJECT_VELOCITY = 10.0f;
-
-    // Set initial velocity for the RigidBody based on camera forward vector. Add also a slight up component
-    // to overcome gravity better
-    body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * OBJECT_VELOCITY;
+    body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * 10.0f;
 }
 
-void MoveCamera(float timeStep)
+void SubscribeToEvents()
 {
-    if (ui.focusElement !is null)
-        return;
+    SubscribeToEvent("Update", "HandleUpdate");
+    SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
+    SubscribeToEvent("KeyDown", "HandleKeyDown");
+    SubscribeToEvent("MouseMove", "HandleMouseMove");
+}
 
-    const float MOVE_SPEED = 20.0f;
-    const float MOUSE_SENSITIVITY = 0.1f;
+void HandleUpdate(StringHash eventType, VariantMap& eventData)
+{
+    float timeStep = eventData["TimeStep"].GetFloat();
 
-    float speed = MOVE_SPEED;
-    if (input.keyDown[KEY_LSHIFT])
-        speed *= 2;
-
-    IntVector2 mouseMove = input.mouseMove;
-    yaw += MOUSE_SENSITIVITY * mouseMove.x;
-    pitch += MOUSE_SENSITIVITY * mouseMove.y;
-    pitch = Clamp(pitch, -90.0f, 90.0f);
-
-    cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
-
-    if (input.keyDown['W'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * speed * timeStep);
-    if (input.keyDown['S'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, -1.0f) * speed * timeStep);
-    if (input.keyDown['A'])
-        cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * speed * timeStep);
-    if (input.keyDown['D'])
-        cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * speed * timeStep);
+    gInput.Update(timeStep);
+    gCameraMgr.Update(timeStep);
 
     if (input.keyPress[KEY_1])
-        ShootSphere();
+        ShootSphere(scene_);
 
     if (input.keyPress[KEY_2])
-        ShootBox();
+        ShootBox(scene_);
 
     if (input.mouseButtonPress[MOUSEB_RIGHT])
     {
@@ -260,7 +226,7 @@ void MoveCamera(float timeStep)
         if (ui.GetElementAt(pos, true) !is null)
             return;
 
-        Camera@ camera = cameraNode.GetComponent("Camera");
+        Camera@ camera = gCameraMgr.GetCamera();
         Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
         float rayDistance = 100.0f;
         PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, 3);
@@ -282,29 +248,11 @@ void MoveCamera(float timeStep)
     else {
         if (!input.mouseButtonDown[MOUSEB_RIGHT]) {
             if (draggingNode !is null) {
-                draggingNode.RemoveAllComponents();
+                draggingNode.Remove();
                 draggingNode = null;
             }
         }
     }
-}
-
-void SubscribeToEvents()
-{
-    SubscribeToEvent("Update", "HandleUpdate");
-    SubscribeToEvent("SceneUpdate", "HandleSceneUpdate");
-    SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
-    SubscribeToEvent("KeyDown", "HandleKeyDown");
-    SubscribeToEvent("MouseMove", "HandleMouseMove");
-}
-
-void HandleUpdate(StringHash eventType, VariantMap& eventData)
-{
-    float timeStep = eventData["TimeStep"].GetFloat();
-
-    MoveCamera(timeStep);
-
-    gInput.Update(timeStep);
 
     if (input.keyPress['T'])
     {
@@ -336,25 +284,10 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     {
         debugText += player.GetDebugText();
         debugText += thug.GetDebugText();
-
-        /*
-        Vector3 fwd = Vector3(0, 0, 1);
-        Vector3 camDir = cameraNode.worldRotation * fwd;
-        float cameraAngle = Atan2(camDir.x, camDir.z);
-        Vector3 characterDir = characterNode.worldRotation * fwd;
-        float characterAngle = Atan2(characterDir.x, characterDir.z);
-
-        //Print("cameraAngle=" + String(cameraAngle) + " characterAngle=" + String(characterAngle) + " inputAngle=" + String(gInput.m_leftStickAngle));
-        float diff = computeDifference();
-        // debugText = "DIFF=" + String(diff) + " SEL=" + String(RadialSelectAnimation(4)) + " m=" + String(gInput.m_leftStickMagnitude) + " l=" + String(gInput.m_leftStickHoldTime);
-        */
     }
 
     if (engine.headless)
     {
-        //if (!debugText.empty)
-        //    Print(debugText);
-
         globalTime += timeStep;
 
          if (globalTime > 0.5)
@@ -395,9 +328,12 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
+    DebugRenderer@ debug = scene_.debugRenderer;
+    gGame.PostRenderUpdate();
+
     if (!drawDebug)
         return;
-    DebugRenderer@ debug = scene_.debugRenderer;
+
     debug.AddNode(scene_, 1.0f, false);
     if (player !is null)
         player.DebugDraw(debug);
@@ -409,6 +345,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 {
     int key = eventData["Key"].GetInt();
+    gGame.OnKeyDown(key);
 
     // Close console (if open) or exit when ESC is pressed
     if (key == KEY_ESC)
@@ -424,20 +361,16 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         debugHud.ToggleAll();
     else if (key == KEY_F3)
         console.Toggle();
-
 }
 
 void HandleMouseMove(StringHash eventType, VariantMap& eventData)
 {
+    int x = eventData["x"].GetInt();
+    int y = eventData["y"].GetInt();
+    gGame.OnMouseMove(x, y);
     // dragging physics object
     if (draggingNode !is null) {
-        float x = eventData["x"].GetInt();
-        float y = eventData["y"].GetInt();
-        Camera@ camera = cameraNode.GetComponent("Camera");
+        Camera@ camera = gCameraMgr.GetCamera();
         draggingNode.worldPosition = camera.ScreenToWorldPoint(Vector3(x / graphics.width, y / graphics.height, dragDistance));
     }
-}
-
-void HandleSceneUpdate(StringHash eventType, VariantMap& eventData)
-{
 }
