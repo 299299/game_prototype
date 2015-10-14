@@ -27,6 +27,7 @@ class GameObject : ScriptObject
         duration = -1; // Infinite
         flags = 0;
         @stateMachine = FSM();
+        timeScale = 1.0f;
     }
 
     void Start()
@@ -47,6 +48,7 @@ class GameObject : ScriptObject
     void FixedUpdate(float timeStep)
     {
         timeStep *= timeScale;
+        stateMachine.FixedUpdate(timeStep);
         // Disappear when duration expired
         if (duration >= 0)
         {

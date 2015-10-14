@@ -28,7 +28,7 @@ class ThugStandState : CharacterState
             if (lastState.nameHash == ATTACK_STATE || lastState.nameHash == TURN_STATE)
                 blendTime = 5.0f;
         }
-        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         thinkTime = Random(0.5f, 3.0f);
         CharacterState::Enter(lastState);
@@ -294,7 +294,7 @@ class ThugAttackState : CharacterState
         {
             if (t >= currentAttack.slowMotionTime.x) {
                 state = 1;
-                ownner.animCtrl.SetSpeed(motion.animationName, 0.25f);
+                ownner.SetTimeScale(0.25f);
                 ownner.AddFlag(FLAGS_COUNTER);
                 ShowHint(true);
             }
@@ -303,7 +303,7 @@ class ThugAttackState : CharacterState
         {
             if (t >= currentAttack.slowMotionTime.y) {
                 state = 2;
-                ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
+                ownner.SetTimeScale(1.0f);
                 ownner.RemoveFlag(FLAGS_COUNTER);
                 ShowHint(false);
             }
@@ -354,8 +354,9 @@ class ThugAttackState : CharacterState
     {
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
-        CharacterState::Exit(nextState);
+        ownner.SetTimeScale(1.0f);
         ShowHint(false);
+        CharacterState::Exit(nextState);
     }
 
     void ShowHint(bool bshow)

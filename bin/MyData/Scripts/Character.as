@@ -469,13 +469,25 @@ class Character : GameObject
 
     void SetTimeScale(float scale)
     {
+        // Print(GetName() + " SetTimeScale=" + scale);
         GameObject::SetTimeScale(scale);
         uint num = animModel.numAnimationStates;
         for (uint i=0; i<num; ++i)
         {
             AnimationState@ state = animModel.GetAnimationState(i);
+            Print("SetSpeed " + state.animation.name + " scale " + scale);
             animCtrl.SetSpeed(state.animation.name, scale);
         }
+    }
+
+    void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
+    {
+        Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+        AnimationController@ ctrl = animCtrl;
+        ctrl.StopLayer(layer, blendTime);
+        ctrl.PlayExclusive(animName, layer, loop, blendTime);
+        ctrl.SetTime(animName, startTime);
+        ctrl.SetSpeed(animName, speed * timeScale);
     }
 
     String GetDebugText()

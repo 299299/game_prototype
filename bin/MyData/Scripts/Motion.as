@@ -178,7 +178,7 @@ class Motion
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
-        PlayAnimation(object.animCtrl, animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
+        object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
         startPosition = object.sceneNode.worldPosition;
         startRotationQua = object.sceneNode.worldRotation;
         startRotation = startRotationQua.eulerAngles.y;

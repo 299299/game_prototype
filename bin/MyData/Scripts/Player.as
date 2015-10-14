@@ -29,7 +29,7 @@ class PlayerStandState : CharacterState
             else if (lastState.nameHash == COUNTER_STATE)
                 blendTime = 2.5f;
         }
-        PlayAnimation(ownner.animCtrl, animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         CharacterState::Enter(lastState);
     }
 
@@ -370,7 +370,7 @@ class PlayerAttackState : CharacterState
         {
             if (t >= currentAttack.slowMotionTime.x) {
                 state = 1;
-                SetWorldTimeScale(ownner.sceneNode.scene, 0.5f);
+                SetWorldTimeScale(ownner.sceneNode.scene, 0.25f);
             }
         }
         else if (state == 1)

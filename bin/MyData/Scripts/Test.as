@@ -34,7 +34,7 @@ float globalTime = 0;
 void Start()
 {
     cache.autoReloadResources = true;
-    gMotionMgr.Start();
+    // gMotionMgr.Start();
 
     if (!engine.headless)
     {
@@ -70,28 +70,20 @@ void CreateScene()
     floorNode = scene_.GetChild("Floor", true);
 
     characterNode = scene_.GetChild("bruce", true);
-    characterNode.Translate(Vector3(5, 0, 0));
+    // characterNode.Translate(Vector3(5, 0, 0));
     // characterNode.GetChild("RootNode", true).rotation = Quaternion(0, -180, 0);
 
     cameraNode.position = Vector3(5.0f, 10.0f, -10.0f);
     cameraNode.LookAt(characterNode.worldPosition);
 
-    @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
-    if (player is null) {
-        Print("player is null!!");
-        engine.Exit();
-        return;
-    }
+    //@player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
 
     thugNode = scene_.GetChild("thug", true);
-    @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
-    if (thug is null) {
-        Print("thug is null!!");
-        engine.Exit();
-        return;
-    }
+    //@thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+    //@thug.target = player;
 
-    @thug.target = player;
+    characterNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
+    thugNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
 
     gCameraMgr.Start(cameraNode);
     gCameraMgr.SetCameraController("Debug");
@@ -131,7 +123,7 @@ void CreateUI()
     //ui.cursor = cursor;
     // Set starting position of the cursor at the rendering window center
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
-    input.SetMouseVisible(true);
+    // input.SetMouseVisible(true);
 
     Text@ instructionText = ui.root.CreateChild("Text", "instruction");
     instructionText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
@@ -234,9 +226,13 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         {
             Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
             draggingNode = scene_.CreateChild("DraggingNode");
+            draggingNode.scale = Vector3(0.1f, 0.1f, 0.1f);
+            StaticModel@ boxObject = draggingNode.CreateComponent("StaticModel");
+            boxObject.model = cache.GetResource("Model", "Models/Sphere.mdl");
+
             RigidBody@ body = draggingNode.CreateComponent("RigidBody");
             CollisionShape@ shape = draggingNode.CreateComponent("CollisionShape");
-            shape.SetSphere(0.1f);
+            shape.SetSphere(1);
             Constraint@ constraint = draggingNode.CreateComponent("Constraint");
             constraint.constraintType = CONSTRAINT_POINT;
             constraint.disableCollision = true;
@@ -282,10 +278,10 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     String debugText = gInput.GetDebugText();
     if (player !is null)
-    {
         debugText += player.GetDebugText();
+    if (thug !is null)
         debugText += thug.GetDebugText();
-    }
+
 
     if (engine.headless)
     {
@@ -340,7 +336,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         player.DebugDraw(debug);
     if (thug !is null)
         thug.DebugDraw(debug);
-    scene_.physicsWorld.DrawDebugGeometry(true);
+    scene_.physicsWorld.DrawDebugGeometry(false);
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
@@ -366,12 +362,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 
 void HandleMouseMove(StringHash eventType, VariantMap& eventData)
 {
-    int x = eventData["x"].GetInt();
-    int y = eventData["y"].GetInt();
+    int x = eventData["X"].GetInt();
+    int y = eventData["Y"].GetInt();
     gGame.OnMouseMove(x, y);
     // dragging physics object
     if (draggingNode !is null) {
         Camera@ camera = gCameraMgr.GetCamera();
-        draggingNode.worldPosition = camera.ScreenToWorldPoint(Vector3(x / graphics.width, y / graphics.height, dragDistance));
+        draggingNode.worldPosition = camera.ScreenToWorldPoint(Vector3(float(x) / graphics.width, float(y) / graphics.height, dragDistance));
     }
 }
