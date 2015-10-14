@@ -13,11 +13,12 @@ const int COLLISION_LAYER_PROP      = 3;
 
 class GameObject : ScriptObject
 {
-    FSM@ stateMachine;
-    bool onGround;
-    bool isSliding;
-    float duration;
-    int   flags;
+    FSM@    stateMachine;
+    bool    onGround;
+    bool    isSliding;
+    float   duration;
+    int     flags;
+    float   timeScale;
 
     GameObject()
     {
@@ -38,8 +39,14 @@ class GameObject : ScriptObject
         @stateMachine = null;
     }
 
+    void SetTimeScale(float scale)
+    {
+        timeScale = scale;
+    }
+
     void FixedUpdate(float timeStep)
     {
+        timeStep *= timeScale;
         // Disappear when duration expired
         if (duration >= 0)
         {
@@ -51,6 +58,7 @@ class GameObject : ScriptObject
 
     void Update(float timeStep)
     {
+        timeStep *= timeScale;
         stateMachine.Update(timeStep);
     }
 
@@ -185,4 +193,16 @@ void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&i
     Sphere sp;
     sp.Define(position, size);
     debug.AddSphere(sp, color, false);
+}
+
+void SetWorldTimeScale(Scene@ _scene, float scale)
+{
+    Array<Node@> nodes = _scene.GetChildrenWithScript(false);
+    for (uint i=0; i<nodes.length; ++i)
+    {
+        GameObject@ object = cast<GameObject@>(nodes[i].scriptObject);
+        if (object is null)
+            continue;
+        object.SetTimeScale(scale);
+    }
 }

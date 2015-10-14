@@ -276,7 +276,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     }
 
     if (input.keyPress['F']) {
-        scene_.timeScale = 1.0f;
+        //scene_.timeScale = 1.0f;
+        SetWorldTimeScale(scene_, 1);
     }
 
     String debugText = gInput.GetDebugText();

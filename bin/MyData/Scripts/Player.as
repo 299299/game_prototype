@@ -370,7 +370,7 @@ class PlayerAttackState : CharacterState
         {
             if (t >= currentAttack.slowMotionTime.x) {
                 state = 1;
-                ownner.sceneNode.scene.timeScale = 0.5f;
+                SetWorldTimeScale(ownner.sceneNode.scene, 0.5f);
             }
         }
         else if (state == 1)
@@ -383,7 +383,7 @@ class PlayerAttackState : CharacterState
 
             if (t >= currentAttack.slowMotionTime.y) {
                 state = 2;
-                ownner.sceneNode.scene.timeScale = 1.0f;
+                SetWorldTimeScale(ownner.sceneNode.scene, 1.0f);
             }
         }
 

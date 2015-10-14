@@ -17,11 +17,6 @@ class Enemy : Character
         gEnemyMgr.UnRegisterEnemy(this);
     }
 
-    void Update(float dt)
-    {
-        Character::Update(dt);
-    }
-
     void DebugDraw(DebugRenderer@ debug)
     {
 

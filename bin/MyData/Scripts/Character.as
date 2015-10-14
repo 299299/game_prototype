@@ -452,20 +452,6 @@ class Character : GameObject
         @body = null;
     }
 
-    void FixedUpdate(float timeStep)
-    {
-        if (IsPhysical())
-            stateMachine.FixedUpdate(timeStep);
-        GameObject::FixedUpdate(timeStep);
-    }
-
-    void Update(float timeStep)
-    {
-        stateMachine.Update(timeStep);
-        if (!IsPhysical())
-            stateMachine.FixedUpdate(timeStep);
-    }
-
     void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
     {
         CharacterAlignState@ state = cast<CharacterAlignState@>(stateMachine.FindState("AlignState"));
@@ -481,15 +467,27 @@ class Character : GameObject
         stateMachine.ChangeState("AlignState");
     }
 
+    void SetTimeScale(float scale)
+    {
+        GameObject::SetTimeScale(scale);
+        uint num = animModel.numAnimationStates;
+        for (uint i=0; i<num; ++i)
+        {
+            AnimationState@ state = animModel.GetAnimationState(i);
+            animCtrl.SetSpeed(state.animation.name, scale);
+        }
+    }
+
     String GetDebugText()
     {
         String debugText = "========================================================================\n";
         debugText += stateMachine.GetDebugText();
         debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + "\n";
-        if (animModel.numAnimationStates > 0)
+        uint num = animModel.numAnimationStates;
+        if (num > 0)
         {
             debugText += "Debug-Animations:\n";
-            for (uint i=0; i<animModel.numAnimationStates ; ++i)
+            for (uint i=0; i<num ; ++i)
             {
                 AnimationState@ state = animModel.GetAnimationState(i);
                 debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
