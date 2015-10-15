@@ -127,7 +127,7 @@ class Motion
         Print("Motion " + name + " endDistance="  + endDistance + " timeCost=" + String(time.systemTime - startTime) + " ms startFromOrigin=" + startFromOrigin.ToString());
     }
 
-    void SetEndFrame(float frame)
+    void SetEndFrame(int frame)
     {
         endFrame = frame;
         if (endFrame < 0)
@@ -327,20 +327,22 @@ class MotionManager
             if (motions[i].nameHash == nameHash)
                 return motions[i];
         }
-        log.Error("FindMotion Could not find " + nameHash.ToString());
         return null;
     }
 
     Motion@ FindMotion(const String&in name)
     {
-        return FindMotion(StringHash(name));
+        Motion@ m = FindMotion(StringHash(name));
+        if (m is null)
+            log.Error("FindMotion Could not find " + name);
+        return m;
     }
 
     void Start()
     {
-        uint startTime = time.systemTime;
+        uint t = time.systemTime;
 
-        PreProcess();
+        AssetPreProcess();
 
         //========================================================================
         // PLAYER MOTIONS
@@ -513,10 +515,10 @@ class MotionManager
 
         AddCounterMotions("TG_BM_Counter/");
 
-        PostProcess();
+        AssetPostProcess();
 
         Print("************************************************************************************************");
-        Print("Motion Process time-cost=" + String(time.systemTime - startTime) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
+        Print("Motion Process time-cost=" + String(time.systemTime - t) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
         Print("************************************************************************************************");
     }
 
@@ -599,6 +601,14 @@ class MotionManager
         CreateMotion(counter_prefix + "Counter_Leg_Front_Weak");
         CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01");
         CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02");
+    }
+
+    void PostProcess()
+    {
+
+
+
+        Print("MotionManager::PostProcess time-cst=" + (time.systemTime - t) + " ms");
     }
 };
 

@@ -282,12 +282,9 @@ class ThugAttackState : CharacterState
 
         Motion@ motion = currentAttack.motion;
 
-        //if (!ownner.IsPhysical())
-        {
-            float targetDistance = ownner.GetTargetDistance();
-            if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-                motion.translateEnabled = false;
-        }
+        float targetDistance = ownner.GetTargetDistance();
+        if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            motion.translateEnabled = false;
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == 0)

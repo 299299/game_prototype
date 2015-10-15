@@ -358,11 +358,8 @@ class PlayerAttackState : CharacterState
             targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
             targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
 
-            //if (!ownner.IsPhysical())
-            {
-                if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-                    motion.translateEnabled = false;
-            }
+            if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+                motion.translateEnabled = false;
         }
 
         float t = ownner.animCtrl.GetTime(motion.animationName);

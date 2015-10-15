@@ -34,7 +34,8 @@ float globalTime = 0;
 void Start()
 {
     cache.autoReloadResources = true;
-    // gMotionMgr.Start();
+    gMotionMgr.Start();
+    gMotionMgr.LoadConfig();
 
     if (!engine.headless)
     {
@@ -50,6 +51,7 @@ void Start()
     }
 
     SubscribeToEvents();
+    SetRandomSeed(time.systemTime);
 }
 
 void Stop()
@@ -70,23 +72,23 @@ void CreateScene()
     floorNode = scene_.GetChild("Floor", true);
 
     characterNode = scene_.GetChild("bruce", true);
-    // characterNode.Translate(Vector3(5, 0, 0));
-    // characterNode.GetChild("RootNode", true).rotation = Quaternion(0, -180, 0);
 
     cameraNode.position = Vector3(5.0f, 10.0f, -10.0f);
     cameraNode.LookAt(characterNode.worldPosition);
 
-    //@player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
+    @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
 
     thugNode = scene_.GetChild("thug", true);
-    //@thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
-    //@thug.target = player;
+    @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+    @thug.target = player;
 
     characterNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
     thugNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
 
     gCameraMgr.Start(cameraNode);
     gCameraMgr.SetCameraController("Debug");
+
+    // DumpSkeletonNames(characterNode);
 }
 
 void SetWindowTitleAndIcon()
@@ -369,5 +371,20 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
     if (draggingNode !is null) {
         Camera@ camera = gCameraMgr.GetCamera();
         draggingNode.worldPosition = camera.ScreenToWorldPoint(Vector3(float(x) / graphics.width, float(y) / graphics.height, dragDistance));
+    }
+}
+
+void DumpSkeletonNames(Node@ n)
+{
+    AnimatedModel@ model = n.GetComponent("AnimatedModel");
+    if (model is null)
+        model = n.children[0].GetComponent("AnimatedModel");
+    if (model is null)
+        return;
+
+    Skeleton@ skeleton = model.skeleton;
+    for (uint i=0; i<skeleton.numBones; ++i)
+    {
+        Print(skeleton.bones[i].name);
     }
 }

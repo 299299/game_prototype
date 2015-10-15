@@ -52,7 +52,7 @@ Quaternion GetRotationInXZPlane(Node@ rotateNode, const Quaternion&in startLocal
     return Quaternion(startAxis, curAxis);
 }
 
-void PreProcess()
+void AssetPreProcess()
 {
     processScene = Scene();
     processNode = processScene.CreateChild("Character");
@@ -321,7 +321,7 @@ Animation@ CreateAnimation(const String&in originAnimationName, const String&in 
     return anim;
 }
 
-void PostProcess()
+void AssetPostProcess()
 {
     @skeleton = null;
     @rotateNode = null;
