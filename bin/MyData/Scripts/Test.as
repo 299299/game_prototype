@@ -35,7 +35,6 @@ void Start()
 {
     cache.autoReloadResources = true;
     gMotionMgr.Start();
-    gMotionMgr.LoadConfig();
 
     if (!engine.headless)
     {

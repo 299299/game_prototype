@@ -43,6 +43,13 @@ int FindMotionIndex(const Array<Motion@>&in motions, const String&in name)
     return -1;
 }
 
+ void AddAnimationTrigger(const String&in name, int frame, const String&in tag)
+{
+    Animation@ anim = cache.GetResource("Animation", GetAnimationName(name));
+    if (anim !is null)
+        anim.AddTrigger(float(frame) * SEC_PER_FRAME, false, Variant(StringHash(tag)));
+}
+
 class Motion
 {
     String                  name;
@@ -132,7 +139,7 @@ class Motion
         endFrame = frame;
         if (endFrame < 0)
             endFrame = motionKeys.length - 1;
-        endTime = float(endFrame) / FRAME_PER_SEC;
+        endTime = float(endFrame) * SEC_PER_FRAME;
     }
 
     void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
@@ -517,6 +524,8 @@ class MotionManager
 
         AssetPostProcess();
 
+        PostProcess();
+
         Print("************************************************************************************************");
         Print("Motion Process time-cost=" + String(time.systemTime - t) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
         Print("************************************************************************************************");
@@ -605,7 +614,7 @@ class MotionManager
 
     void PostProcess()
     {
-
+        uint t = time.systemTime;
 
 
         Print("MotionManager::PostProcess time-cst=" + (time.systemTime - t) + " ms");

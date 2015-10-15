@@ -27,7 +27,7 @@ class CharacterState : State
         @ownner = null;
     }
 
-    void OnAnimationTrigger(AnimationState@ animState, Node@ boneNode)
+    void OnAnimationTrigger(AnimationState@ animState, const StringHash&in data)
     {
 
     }
@@ -627,13 +627,12 @@ class Character : GameObject
 
         // If the animation is blended with sufficient weight, instantiate a local particle effect for the footstep.
         // The trigger data (string) tells the bone sceneNode to use. Note: called on both client and server
-        if (state.weight > 0.5f)
+        if (state.weight > 0.25f)
         {
-            Node@ bone = node.GetChild(eventData["Data"].GetString(), true);
             CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
             if (cs !is null)
             {
-                cs.OnAnimationTrigger(state, bone);
+                cs.OnAnimationTrigger(state, eventData["Data"].GetStringHash());
             }
         }
     }

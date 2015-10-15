@@ -26,6 +26,10 @@ enum RagdollState
     RAGDOLL_DYNAMIC,
 };
 
+const StringHash RAGDOLL_PERPARE("Ragdoll_Prepare");
+const StringHash RAGDOLL_START("Ragdoll_Start");
+const StringHash RAGDOLL_STOP("Ragdoll_Stop");
+
 class Ragdoll : ScriptObject
 {
     Array<Node@>      boneNodes;
@@ -70,6 +74,13 @@ class Ragdoll : ScriptObject
             boneNodes[i] = node.GetChild(boneNames[i], true);
             boneLastPositions[i] = boneNodes[i].worldPosition;
         }
+
+        Node@ renderNode = node;
+        AnimatedModel@ model = node.GetComponent("AnimatedModel");
+        if (model is null)
+            renderNode = node.children[0];
+
+        SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
 
     void Stop()
@@ -238,5 +249,18 @@ class Ragdoll : ScriptObject
         Skeleton@ skeleton = model.skeleton;
         for (uint i = 0; i < skeleton.numBones; ++i)
             skeleton.bones[i].animated = bEnable;
+    }
+
+    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
+    {
+        StringHash data = eventData["Data"].GetStringHash();
+        int new_state = RAGDOLL_NONE;
+        if (data == RAGDOLL_PERPARE)
+            new_state = RAGDOLL_STATIC;
+        else if (data == RAGDOLL_DYNAMIC)
+            new_state = RAGDOLL_DYNAMIC;
+        else if (data == RAGDOLL_STOP)
+            new_state = RAGDOLL_NONE;
+        ChangeState(new_state);
     }
 }
