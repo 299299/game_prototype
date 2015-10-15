@@ -268,8 +268,9 @@ class AnimationTestState : CharacterState
         else
             finished = ownner.animCtrl.IsAtEnd(animationName);
 
-        if (finished)
+        if (finished) {
             ownner.CommonStateFinishedOnGroud();
+        }
 
         CharacterState::FixedUpdate(dt);
     }
@@ -629,8 +630,7 @@ class Character : GameObject
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
-        AnimatedModel@ model = node.GetComponent("AnimatedModel");
-        AnimationState@ state = model.animationStates[eventData["Name"].GetString()];
+        AnimationState@ state = animModel.animationStates[eventData["Name"].GetString()];
         if (state is null)
             return;
 

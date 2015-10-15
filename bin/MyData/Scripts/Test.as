@@ -30,11 +30,14 @@ bool slowMotion = false;
 bool pauseGame = false;
 int globalState = 0;
 float globalTime = 0;
+bool test_ragdoll = false;
 
 void Start()
 {
     cache.autoReloadResources = true;
-    gMotionMgr.Start();
+
+    if (!test_ragdoll)
+        gMotionMgr.Start();
 
     if (!engine.headless)
     {
@@ -55,7 +58,11 @@ void Start()
 
 void Stop()
 {
+    Print("Test Stop");
     gMotionMgr.Stop();
+    ui.Clear();
+    scene_.Remove();
+    scene_ = null;
 }
 
 void CreateScene()
@@ -72,17 +79,23 @@ void CreateScene()
 
     characterNode = scene_.GetChild("bruce", true);
 
-    cameraNode.position = Vector3(5.0f, 10.0f, -10.0f);
-    cameraNode.LookAt(characterNode.worldPosition);
+    Vector3 v_pos = characterNode.worldPosition;
+    cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
 
-    @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
+    if (!test_ragdoll)
+        @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
 
     thugNode = scene_.GetChild("thug", true);
-    @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
-    @thug.target = player;
+    if (!test_ragdoll)
+        @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+
+    if (thug !is null)
+        @thug.target = player;
 
     characterNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
     thugNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
+
+    cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
 
     gCameraMgr.Start(cameraNode);
     gCameraMgr.SetCameraController("Debug");
@@ -222,7 +235,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         Camera@ camera = gCameraMgr.GetCamera();
         Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
         float rayDistance = 100.0f;
-        PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, 3);
+        PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP);
         if (result.body !is null)
         {
             Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
@@ -266,18 +279,19 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "BM_TG_Counter/Counter_Leg_Back_Weak_03";
+        String testName = "TG_BM_Counter/Counter_Leg_Front_01";
         //String testName = "TG_HitReaction/Push_Reaction";
         //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
         player.TestAnimation(testName);
     }
 
     if (input.keyPress['F']) {
-        //scene_.timeScale = 1.0f;
+        scene_.timeScale = 1.0f;
         SetWorldTimeScale(scene_, 1);
     }
 
-    String debugText = gInput.GetDebugText();
+    String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+    debugText += gInput.GetDebugText();
     if (player !is null)
         debugText += player.GetDebugText();
     if (thug !is null)
@@ -363,13 +377,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 
 void HandleMouseMove(StringHash eventType, VariantMap& eventData)
 {
-    int x = eventData["X"].GetInt();
-    int y = eventData["Y"].GetInt();
+    int x = input.mousePosition.x;
+    int y = input.mousePosition.y;
     gGame.OnMouseMove(x, y);
     // dragging physics object
     if (draggingNode !is null) {
         Camera@ camera = gCameraMgr.GetCamera();
-        draggingNode.worldPosition = camera.ScreenToWorldPoint(Vector3(float(x) / graphics.width, float(y) / graphics.height, dragDistance));
+        Vector3 v(float(x) / graphics.width, float(y) / graphics.height, dragDistance);
+        draggingNode.worldPosition = camera.ScreenToWorldPoint(v);
     }
 }
 

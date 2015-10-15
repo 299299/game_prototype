@@ -43,12 +43,20 @@ int FindMotionIndex(const Array<Motion@>&in motions, const String&in name)
     return -1;
 }
 
- void AddAnimationTrigger(const String&in name, int frame, const String&in tag)
+void AddAnimationTrigger(const String&in name, int frame, const String&in tag)
 {
     Animation@ anim = cache.GetResource("Animation", GetAnimationName(name));
     if (anim !is null)
         anim.AddTrigger(float(frame) * SEC_PER_FRAME, false, Variant(StringHash(tag)));
 }
+
+void AddAnimationTrigger(const String&in name, int frame, const StringHash&in tag)
+{
+    Animation@ anim = cache.GetResource("Animation", GetAnimationName(name));
+    if (anim !is null)
+        anim.AddTrigger(float(frame) * SEC_PER_FRAME, false, Variant(tag));
+}
+
 
 class Motion
 {
@@ -616,6 +624,25 @@ class MotionManager
     {
         uint t = time.systemTime;
 
+        String preFix = "TG_BM_Counter/";
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_01", 44, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_01", 54, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_02", 46, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_02", 55, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_03", 38, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_03", 48, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_04", 30, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_04", 46, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_05", 38, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_05", 42, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_06", 32, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_06", 36, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_07", 56, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_07", 60, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_08", 50, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_08", 52, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 36, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 38, RAGDOLL_START);
 
         Print("MotionManager::PostProcess time-cst=" + (time.systemTime - t) + " ms");
     }

@@ -82,6 +82,13 @@ class Ragdoll : ScriptObject
             renderNode = node.children[0];
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+
+        if (test_ragdoll)
+        {
+            CreateRagdoll();
+            SetAnimationEnabled(false);
+        }
+
     }
 
     void Stop()
@@ -94,14 +101,18 @@ class Ragdoll : ScriptObject
         if (state == newState)
             return;
 
-        timeInState = 0.0f;
-        if (state == RAGDOLL_STATIC) {
+        Print("Ragdoll ChangeState from " + state + " to " + newState);
+        state = newState;
+        if (newState == RAGDOLL_STATIC)
+        {
             for (uint i=0; i<boneNodes.length; ++i)
             {
                 boneLastPositions[i] = boneNodes[i].worldPosition;
             }
         }
-        else if (state == RAGDOLL_DYNAMIC) {
+        else if (newState == RAGDOLL_DYNAMIC)
+        {
+            SetAnimationEnabled(false);
             CreateRagdoll();
 
             for (uint i=0; i<boneNodes.length; ++i)
@@ -116,8 +127,13 @@ class Ragdoll : ScriptObject
                 }
             }
         }
+        else if (newState == RAGDOLL_NONE)
+        {
+            SetAnimationEnabled(true);
+        }
 
         node.vars[RAGDOLL_STATE] = 0;
+        timeInState = 0.0f;
     }
 
     void CreateRagdoll()
@@ -129,20 +145,22 @@ class Ragdoll : ScriptObject
         Quaternion common_rotation(0, 0, 90); // model exported from 3DS MAX need to roll 90
 
         Vector3 upper_leg_size(0.2f, 0.45f, 0.2f);
-        Vector3 uppper_leg_offset(0.25f, 0.0f, 0.0f);
+        Vector3 uppper_leg_offset(0.3f, 0.0f, 0.0f);
 
         Vector3 lower_leg_size(0.175f, 0.55f, 0.175f);
         Vector3 lower_leg_offset(0.25f, 0.0f, 0.0f);
 
-        Vector3 upper_arm_size(0.175f, 0.35f, 0.175f);
-        Vector3 upper_arm_offset(0.1f, 0.0f, 0.0f);
+        Vector3 upper_arm_size(0.15f, 0.4f, 0.175f);
+        Vector3 upper_arm_offset_left(0.1f, 0.0f, 0.01f);
+        Vector3 upper_arm_offset_right(0.1f, 0.0f, -0.01f);
 
-        Vector3 lower_arm_size(0.15f, 0.4f, 0.15f);
-        Vector3 lower_arm_offset(0.2f, 0.0f, 0.0f);
+        Vector3 lower_arm_size(0.15f, 0.35f, 0.15f);
+        Vector3 lower_arm_offset_left(0.125f, 0.0f, 0.01f);
+        Vector3 lower_arm_offset_right(0.125f, 0.0f, -0.01f);
 
-        CreateRagdollBone(boneNodes[BONE_HEAD], SHAPE_BOX, Vector3(0.25f, 0.2f, 0.2f), Vector3(0.0f, 0.0f, 0.0f), identityQ);
-        CreateRagdollBone(boneNodes[BONE_PELVIS], SHAPE_BOX, Vector3(0.3f, 0.2f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), identityQ);
-        CreateRagdollBone(boneNodes[BONE_SPINE], SHAPE_BOX, Vector3(0.35f, 0.2f, 0.3f), Vector3(0.15f, 0.0f, 0.0f), identityQ);
+        // CreateRagdollBone(boneNodes[BONE_HEAD], SHAPE_CAPSULE, Vector3(0.25f, 0.35f, 0.2f), Vector3(0.0f, 0.0f, 0.0f), common_rotation);
+        CreateRagdollBone(boneNodes[BONE_PELVIS], SHAPE_CAPSULE, Vector3(0.4f, 0.3f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), common_rotation);
+        CreateRagdollBone(boneNodes[BONE_SPINE], SHAPE_CAPSULE, Vector3(0.4f, 0.55f, 0.3f), Vector3(0.15f, 0.0f, 0.0f), common_rotation);
 
         CreateRagdollBone(boneNodes[BONE_L_THIGH], SHAPE_CAPSULE, upper_leg_size, uppper_leg_offset, common_rotation);
         CreateRagdollBone(boneNodes[BONE_R_THIGH], SHAPE_CAPSULE, upper_leg_size, uppper_leg_offset, common_rotation);
@@ -150,12 +168,11 @@ class Ragdoll : ScriptObject
         CreateRagdollBone(boneNodes[BONE_L_CALF], SHAPE_CAPSULE, lower_leg_size, lower_leg_offset, common_rotation);
         CreateRagdollBone(boneNodes[BONE_R_CALF], SHAPE_CAPSULE, lower_leg_size, lower_leg_offset, common_rotation);
 
+        CreateRagdollBone(boneNodes[BONE_L_UPPERARM], SHAPE_CAPSULE, upper_arm_size, upper_arm_offset_left, common_rotation);
+        CreateRagdollBone(boneNodes[BONE_R_UPPERARM], SHAPE_CAPSULE, upper_arm_size, upper_arm_offset_right, common_rotation);
 
-        CreateRagdollBone(boneNodes[BONE_L_UPPERARM], SHAPE_CAPSULE, upper_arm_size, upper_arm_offset, common_rotation);
-        CreateRagdollBone(boneNodes[BONE_R_UPPERARM], SHAPE_CAPSULE, upper_arm_offset, upper_arm_offset, common_rotation);
-
-        CreateRagdollBone(boneNodes[BONE_L_FOREARM], SHAPE_CAPSULE, lower_arm_size, lower_arm_offset, common_rotation);
-        CreateRagdollBone(boneNodes[BONE_R_FOREARM], SHAPE_CAPSULE, lower_arm_size, lower_arm_offset, common_rotation);
+        CreateRagdollBone(boneNodes[BONE_L_FOREARM], SHAPE_CAPSULE, lower_arm_size, lower_arm_offset_left, common_rotation);
+        CreateRagdollBone(boneNodes[BONE_R_FOREARM], SHAPE_CAPSULE, lower_arm_size, lower_arm_offset_right, common_rotation);
 
         // Create Constraints between bones
         CreateRagdollConstraint(boneNodes[BONE_HEAD], boneNodes[BONE_SPINE], CONSTRAINT_CONETWIST,
@@ -194,6 +211,7 @@ class Ragdoll : ScriptObject
         // Set rest thresholds to ensure the ragdoll rigid bodies come to rest to not consume CPU endlessly
         body.linearRestThreshold = 1.5f;
         body.angularRestThreshold = 2.5f;
+        // body.collisionLayer =
 
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
         // We use either a box or a capsule shape for all of the bones
@@ -260,7 +278,7 @@ class Ragdoll : ScriptObject
         int new_state = RAGDOLL_NONE;
         if (data == RAGDOLL_PERPARE)
             new_state = RAGDOLL_STATIC;
-        else if (data == RAGDOLL_DYNAMIC)
+        else if (data == RAGDOLL_START)
             new_state = RAGDOLL_DYNAMIC;
         else if (data == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;

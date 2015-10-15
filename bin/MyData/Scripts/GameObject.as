@@ -10,6 +10,7 @@ const int FLAGS_REDIRECTED = (1 << 2);
 const int COLLISION_LAYER_CHARACTER = 1;
 const int COLLISION_LAYER_LANDSCAPE = 2;
 const int COLLISION_LAYER_PROP      = 3;
+const int COLLISION_LAYER_RAGDOLL   = 4;
 
 class GameObject : ScriptObject
 {
