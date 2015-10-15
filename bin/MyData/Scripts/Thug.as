@@ -239,16 +239,14 @@ class ThugCounterState : CharacterCounterState
         CharacterCounterState::FixedUpdate(dt);
     }
 
-    void Enter(State@ lastState)
+    void OnAnimationTrigger(AnimationState@ animState, const StringHash&in data)
     {
-        CharacterCounterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        CharacterCounterState::Exit(nextState);
+        if (data == RAGDOLL_START) {
+            ownner.stateMachine.ChangeState("RagdollState");
+        }
     }
 };
+
 
 class ThugAttackState : CharacterState
 {
@@ -463,6 +461,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugRunState(this));
         stateMachine.AddState(ThugRedirectState(this));
         stateMachine.AddState(ThugAttackState(this));
+        stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.ChangeState("StandState");
 
         Motion@ kickMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Kick");

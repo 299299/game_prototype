@@ -26,6 +26,7 @@ enum RagdollState
     RAGDOLL_DYNAMIC,
 };
 
+const StringHash RAGDOLL_STATE("Ragdoll_State");
 const StringHash RAGDOLL_PERPARE("Ragdoll_Prepare");
 const StringHash RAGDOLL_START("Ragdoll_Start");
 const StringHash RAGDOLL_STOP("Ragdoll_Stop");
@@ -115,6 +116,8 @@ class Ragdoll : ScriptObject
                 }
             }
         }
+
+        node.vars[RAGDOLL_STATE] = 0;
     }
 
     void CreateRagdoll()

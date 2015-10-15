@@ -87,7 +87,7 @@ void CreateScene()
     gCameraMgr.Start(cameraNode);
     gCameraMgr.SetCameraController("Debug");
 
-    // DumpSkeletonNames(characterNode);
+    DumpSkeletonNames(characterNode);
 }
 
 void SetWindowTitleAndIcon()

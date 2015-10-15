@@ -733,6 +733,7 @@ class Player : Character
         stateMachine.AddState(PlayerHitState(this));
         stateMachine.AddState(PlayerRedirectState(this));
         stateMachine.AddState(AnimationTestState(this));
+        stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.ChangeState("StandState");
     }
 
