@@ -448,6 +448,20 @@ class ThugRedirectState : MultiMotionState
     }
 };
 
+
+class ThugGetUpState : CharacterGetUpState
+{
+    ThugGetUpState(Character@ c)
+    {
+        super(c);
+        String prefix = "TG_Getup/";
+        animations.Push(GetAnimationName(prefix + "GetUp_Front"));
+        animations.Push(GetAnimationName(prefix + "GetUp_Front_Idle"));
+        animations.Push(GetAnimationName(prefix + "GetUp_Back"));
+        animations.Push(GetAnimationName(prefix + "GetUp_Back_Idle"));
+    }
+};
+
 class Thug : Enemy
 {
     void ObjectStart()
@@ -462,6 +476,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugRedirectState(this));
         stateMachine.AddState(ThugAttackState(this));
         stateMachine.AddState(CharacterRagdollState(this));
+        stateMachine.AddState(ThugGetUpState(this));
         stateMachine.ChangeState("StandState");
 
         Motion@ kickMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Kick");

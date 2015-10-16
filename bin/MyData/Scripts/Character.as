@@ -13,6 +13,8 @@ const StringHash COUNTER_STATE("CounterState");
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
 const StringHash TIME_SCALE("TimeScale");
+const StringHash DATA("Data");
+const StringHash NAME("Name");
 
 class CharacterState : State
 {
@@ -233,7 +235,7 @@ class AnimationTestState : CharacterState
         if (testMotion !is null)
             testMotion.Start(ownner);
         else
-            PlayAnimation(ownner.animCtrl, animationName);
+            ownner.PlayAnimation(animationName);
     }
 
     void Exit(State@ nextState)
@@ -408,6 +410,42 @@ class CharacterRagdollState : CharacterState
     {
         super(c);
         SetName("RagdollState");
+    }
+
+    void FixedUpdate(float dt)
+    {
+        int state = ownner.sceneNode.vars[RAGDOLL_STATE].GetInt();
+        if (state == RAGDOLL_NONE && timeInState > 2.0f)
+        {
+            ownner.stateMachine.ChangeState("GetUpState");
+        }
+    }
+};
+
+class CharacterGetUpState : CharacterState
+{
+    Array<String>               animations;
+    int                         index;
+
+    CharacterGetUpState(Character@ c)
+    {
+        super(c);
+        SetName("GetUpState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        index = 0;
+        ownner.PlayAnimation(animations[index], LAYER_MOVE, false, 1.0f);
+        CharacterState::Enter(lastState);
+    }
+
+    void Update(float dt)
+    {
+        if (ownner.animCtrl.IsAtEnd(animations[index]))
+            ownner.CommonStateFinishedOnGroud();
+
+        CharacterState::Update(dt);
     }
 };
 
@@ -653,13 +691,13 @@ class Character : GameObject
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
-        AnimationState@ state = animModel.animationStates[eventData["Name"].GetString()];
+        AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
         if (state is null)
             return;
 
         CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
         if (cs !is null)
-            cs.OnAnimationTrigger(state, eventData["Data"].GetStringHash());
+            cs.OnAnimationTrigger(state, eventData[DATA].GetStringHash());
     }
 
     float GetTargetAngle()

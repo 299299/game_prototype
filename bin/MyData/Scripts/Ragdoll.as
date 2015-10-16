@@ -35,6 +35,7 @@ class Ragdoll : ScriptObject
 {
     Array<Node@>      boneNodes;
     Array<Vector3>    boneLastPositions;
+    Node@             rootNode;
 
     float             scale;
     int               state;
@@ -67,6 +68,7 @@ class Ragdoll : ScriptObject
             "Bip01_R_Foot"
         };
 
+        rootNode = node;
         boneNodes.Resize(boneNames.length);
         boneLastPositions.Resize(boneNames.length);
 
@@ -82,13 +84,6 @@ class Ragdoll : ScriptObject
             renderNode = node.children[0];
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-
-        if (test_ragdoll)
-        {
-            CreateRagdoll();
-            SetAnimationEnabled(false);
-        }
-
     }
 
     void Stop()
@@ -121,20 +116,22 @@ class Ragdoll : ScriptObject
                 if (rb !is null)
                 {
                     Vector3 velocity = boneNodes[i].worldPosition - boneLastPositions[i];
-                    float scale = node.vars[TIME_SCALE].GetFloat();
+                    float scale = rootNode.vars[TIME_SCALE].GetFloat();
                     velocity /= timeInState;
                     velocity *= scale;
                     Print(boneNodes[i].name + " velocity=" + velocity.ToString());
-                    rb.linearVelocity = velocity;
+                    //if (i == BONE_PELVIS || i == BONE_SPINE)
+                        rb.linearVelocity = velocity;
                 }
             }
         }
         else if (newState == RAGDOLL_NONE)
         {
+            DestroyRagdoll();
             SetAnimationEnabled(true);
         }
 
-        node.vars[RAGDOLL_STATE] = 0;
+        rootNode.vars[RAGDOLL_STATE] = newState;
         timeInState = 0.0f;
     }
 
@@ -208,13 +205,14 @@ class Ragdoll : ScriptObject
         // Set mass to make movable
         body.mass = 1.0f;
         // Set damping parameters to smooth out the motion
-        body.linearDamping = 0.05f;
+        body.linearDamping = 0.075f;
         body.angularDamping = 0.85f;
         // Set rest thresholds to ensure the ragdoll rigid bodies come to rest to not consume CPU endlessly
-        body.linearRestThreshold = 1.5f;
-        body.angularRestThreshold = 2.5f;
+        body.linearRestThreshold = 2.5f;
+        body.angularRestThreshold = 1.5;
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
+        body.friction = 0.75f;
 
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
         // We use either a box or a capsule shape for all of the bones
@@ -254,10 +252,45 @@ class Ragdoll : ScriptObject
         }
     }
 
+    void EnableRagdoll(bool bEnable)
+    {
+        for (uint i=0; i<boneNodes.length; ++i)
+        {
+            RigidBody@ rb = boneNodes[i].GetComponent("RigidBody");
+            Constraint@ cs = boneNodes[i].GetComponent("Constraint");
+            if (rb !is null)
+                rb.enabled = bEnable;
+            if (cs !is null)
+                cs.enabled = bEnable;
+        }
+    }
+
     void FixedUpdate(float dt)
     {
-        if (state != RAGDOLL_NONE) {
+        if (state == RAGDOLL_STATIC) {
             timeInState += dt;
+        }
+        else if (state == RAGDOLL_DYNAMIC) {
+            int num_of_freeze_objects = 0;
+            for (uint i=0; i<boneNodes.length; ++i)
+            {
+                // Vector3 curPos = boneNodes[i].worldPosition;
+                RigidBody@ rb = boneNodes[i].GetComponent("RigidBody");
+                if (rb is null || !rb.active) {
+                    num_of_freeze_objects ++;
+                    continue;
+                }
+
+                Vector3 vel = rb.linearVelocity;
+                if (vel.lengthSquared < 0.01f)
+                    num_of_freeze_objects ++;
+                //Print(boneNodes[i].name + " vel=" + vel.ToString());
+            }
+
+            // Print("num_of_freeze_objects=" + num_of_freeze_objects);
+
+            if (num_of_freeze_objects == boneNodes.length)
+                ChangeState(RAGDOLL_NONE);
         }
     }
 
@@ -277,7 +310,7 @@ class Ragdoll : ScriptObject
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
-        StringHash data = eventData["Data"].GetStringHash();
+        StringHash data = eventData[DATA].GetStringHash();
         int new_state = RAGDOLL_NONE;
         if (data == RAGDOLL_PERPARE)
             new_state = RAGDOLL_STATIC;

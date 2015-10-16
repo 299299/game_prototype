@@ -100,7 +100,15 @@ void CreateScene()
     gCameraMgr.Start(cameraNode);
     gCameraMgr.SetCameraController("Debug");
 
-    DumpSkeletonNames(characterNode);
+    if (test_ragdoll)
+    {
+        VariantMap data;
+        data[DATA] = RAGDOLL_START;
+        characterNode.children[0].SendEvent("AnimationTrigger", data);
+        thugNode.children[0].SendEvent("AnimationTrigger", data);
+    }
+
+    //DumpSkeletonNames(characterNode);
 }
 
 void SetWindowTitleAndIcon()

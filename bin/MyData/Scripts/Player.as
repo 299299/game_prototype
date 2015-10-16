@@ -611,7 +611,9 @@ class PlayerCounterState : CharacterCounterState
         if (enemyCounterState is null)
             return;
 
-        Vector3 currentPositionDiff = enemyNode.worldPosition - myNode.worldPosition;
+        Vector3 myPos = myNode.worldPosition;
+        Vector3 enemyPos = enemyNode.worldPosition;
+        Vector3 currentPositionDiff = enemyPos - myPos;
         currentPositionDiff.y = 0;
         if (attackType == 0)
         {
@@ -661,9 +663,10 @@ class PlayerCounterState : CharacterCounterState
 
         if (isBack)
             enemyYaw += 180;
-        targetPosition = enemyNode.worldPosition + enemyNode.worldRotation * originDiff;
+        targetPosition = enemyPos + enemyNode.worldRotation * originDiff;
+        targetPosition.y = myPos.y;
 
-        Vector3 positionDiff = targetPosition - myNode.worldPosition;
+        Vector3 positionDiff = targetPosition - myPos;
         rotationDiff = AngleDiff(targetRotation - myRotation);
 
         Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff + " s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
