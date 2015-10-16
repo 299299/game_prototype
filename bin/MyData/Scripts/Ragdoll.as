@@ -214,7 +214,7 @@ class Ragdoll : ScriptObject
         body.linearRestThreshold = 1.5f;
         body.angularRestThreshold = 2.5f;
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
-        body.collsioMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
+        body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
 
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
         // We use either a box or a capsule shape for all of the bones

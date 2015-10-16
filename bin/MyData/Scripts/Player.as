@@ -552,7 +552,6 @@ class PlayerCounterState : CharacterCounterState
     PlayerCounterState(Character@ c)
     {
         super(c);
-        SetName("ounterState");
         alignTime = 0.2f;
         AddCounterMotions("BM_TG_Counter/");
         // Dump();
