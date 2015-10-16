@@ -121,7 +121,9 @@ class Ragdoll : ScriptObject
                 if (rb !is null)
                 {
                     Vector3 velocity = boneNodes[i].worldPosition - boneLastPositions[i];
+                    float scale = node.vars[TIME_SCALE].GetFloat();
                     velocity /= timeInState;
+                    velocity *= scale;
                     Print(boneNodes[i].name + " velocity=" + velocity.ToString());
                     rb.linearVelocity = velocity;
                 }
@@ -158,7 +160,7 @@ class Ragdoll : ScriptObject
         Vector3 lower_arm_offset_left(0.125f, 0.0f, 0.01f);
         Vector3 lower_arm_offset_right(0.125f, 0.0f, -0.01f);
 
-        // CreateRagdollBone(boneNodes[BONE_HEAD], SHAPE_CAPSULE, Vector3(0.25f, 0.35f, 0.2f), Vector3(0.0f, 0.0f, 0.0f), common_rotation);
+        CreateRagdollBone(boneNodes[BONE_HEAD], SHAPE_CAPSULE, Vector3(0.25f, 0.35f, 0.2f), Vector3(0.0f, 0.0f, 0.0f), common_rotation);
         CreateRagdollBone(boneNodes[BONE_PELVIS], SHAPE_CAPSULE, Vector3(0.4f, 0.3f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), common_rotation);
         CreateRagdollBone(boneNodes[BONE_SPINE], SHAPE_CAPSULE, Vector3(0.4f, 0.55f, 0.3f), Vector3(0.15f, 0.0f, 0.0f), common_rotation);
 
@@ -211,7 +213,8 @@ class Ragdoll : ScriptObject
         // Set rest thresholds to ensure the ragdoll rigid bodies come to rest to not consume CPU endlessly
         body.linearRestThreshold = 1.5f;
         body.angularRestThreshold = 2.5f;
-        // body.collisionLayer =
+        body.collisionLayer = COLLISION_LAYER_RAGDOLL;
+        body.collsioMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
 
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
         // We use either a box or a capsule shape for all of the bones

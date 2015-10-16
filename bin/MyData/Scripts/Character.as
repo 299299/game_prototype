@@ -12,6 +12,7 @@ const StringHash TURN_STATE("TurnState");
 const StringHash COUNTER_STATE("CounterState");
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
+const StringHash TIME_SCALE("TimeScale");
 
 class CharacterState : State
 {
@@ -379,6 +380,26 @@ class CharacterCounterState : CharacterState
             return isArm ? frontArmMotions[index] : frontLegMotions[index];
         }
     }
+
+    void DumpCounterMotions(const Array<Motion@>&in motions)
+    {
+        for (uint i=0; i<motions.length; ++i)
+        {
+            Motion@ motion = motions[i];
+            String other_name = motion.name.Replaced("BM_TG_Counter", "TG_BM_Counter");
+            Motion@ other_motion = gMotionMgr.FindMotion(other_name);
+            Vector3 startDiff = other_motion.startFromOrigin - motion.startFromOrigin;
+            Print("couter-motion " + motion.name + " diff-len=" + startDiff.length);
+        }
+    }
+
+    void Dump()
+    {
+        DumpCounterMotions(frontArmMotions);
+        DumpCounterMotions(backArmMotions);
+        DumpCounterMotions(frontLegMotions);
+        DumpCounterMotions(backLegMotions);
+    }
 };
 
 class CharacterRagdollState : CharacterState
@@ -438,6 +459,7 @@ class Character : GameObject
 
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
+        sceneNode.vars[TIME_SCALE] = 1.0f;
     }
 
     void Start()
@@ -488,6 +510,7 @@ class Character : GameObject
             Print("SetSpeed " + state.animation.name + " scale " + scale);
             animCtrl.SetSpeed(state.animation.name, scale);
         }
+        sceneNode.vars[TIME_SCALE] = scale;
     }
 
     void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
@@ -634,16 +657,9 @@ class Character : GameObject
         if (state is null)
             return;
 
-        // If the animation is blended with sufficient weight, instantiate a local particle effect for the footstep.
-        // The trigger data (string) tells the bone sceneNode to use. Note: called on both client and server
-        if (state.weight > 0.25f)
-        {
-            CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
-            if (cs !is null)
-            {
-                cs.OnAnimationTrigger(state, eventData["Data"].GetStringHash());
-            }
-        }
+        CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
+        if (cs !is null)
+            cs.OnAnimationTrigger(state, eventData["Data"].GetStringHash());
     }
 
     float GetTargetAngle()
@@ -713,6 +729,9 @@ class Character : GameObject
     {
         Array<String> boneNames =
         {
+            "Bip01_$AssimpFbx$_Translation",
+            "Bip01_$AssimpFbx$_Rotation",
+            "Bip01_$AssimpFbx$_Scaling",
             "Bip01_Pelvis",
             "Bip01_Spine",
             "Bip01_Spine1",

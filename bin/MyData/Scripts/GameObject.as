@@ -7,10 +7,10 @@ const int FLAGS_ATTACK  = (1 << 0);
 const int FLAGS_COUNTER = (1 << 1);
 const int FLAGS_REDIRECTED = (1 << 2);
 
-const int COLLISION_LAYER_CHARACTER = 1;
-const int COLLISION_LAYER_LANDSCAPE = 2;
-const int COLLISION_LAYER_PROP      = 3;
-const int COLLISION_LAYER_RAGDOLL   = 4;
+const int COLLISION_LAYER_CHARACTER = (1 << 0);
+const int COLLISION_LAYER_LANDSCAPE = (1 << 1);
+const int COLLISION_LAYER_PROP      = (1 << 2);
+const int COLLISION_LAYER_RAGDOLL   = (1 << 3);
 
 class GameObject : ScriptObject
 {

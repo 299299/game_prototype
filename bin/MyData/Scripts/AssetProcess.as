@@ -86,6 +86,13 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         return;
     }
 
+    /*
+    if (anim.tracks["Bip01_$AssimpFbx$_PreRotation"] !is null)
+        Print("Bip01_$AssimpFbx$_PreRotation has track");
+    if (anim.tracks["Bip01_$AssimpFbx$_Scaling"] !is null)
+        Print("Bip01_$AssimpFbx$_Scaling");
+    */
+
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);

@@ -160,8 +160,6 @@ void SetupViewport()
     Viewport@ viewport = Viewport(scene_, gCameraMgr.GetCamera());
     renderer.viewports[0] = viewport;
     graphics.windowTitle = "Test";
-    //if (GetPlatform() == "Linux")
-    //    graphics.windowPosition = IntVector2(0, 800);
 }
 
 void ShootBox(Scene@ _scene)
@@ -241,9 +239,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
             draggingNode = scene_.CreateChild("DraggingNode");
             draggingNode.scale = Vector3(0.1f, 0.1f, 0.1f);
-            StaticModel@ boxObject = draggingNode.CreateComponent("StaticModel");
-            boxObject.model = cache.GetResource("Model", "Models/Sphere.mdl");
-
+            StaticModel@ sphereObject = draggingNode.CreateComponent("StaticModel");
+            sphereObject.model = cache.GetResource("Model", "Models/Sphere.mdl");
             RigidBody@ body = draggingNode.CreateComponent("RigidBody");
             CollisionShape@ shape = draggingNode.CreateComponent("CollisionShape");
             shape.SetSphere(1);

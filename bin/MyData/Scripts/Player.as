@@ -396,7 +396,6 @@ class PlayerAttackState : CharacterState
 
         bool finished = motion.Move(ownner, dt);
         if (finished) {
-            // ownner.sceneNode.scene.timeScale = 0.0f;
             ownner.CommonStateFinishedOnGroud();
         }
 
@@ -553,9 +552,10 @@ class PlayerCounterState : CharacterCounterState
     PlayerCounterState(Character@ c)
     {
         super(c);
-        SetName("CounterState");
-        AddCounterMotions("BM_TG_Counter/");
+        SetName("ounterState");
         alignTime = 0.2f;
+        AddCounterMotions("BM_TG_Counter/");
+        // Dump();
     }
 
     ~PlayerCounterState()
@@ -566,13 +566,13 @@ class PlayerCounterState : CharacterCounterState
     {
         if (state == 0) {
             if (timeInState >= alignTime) {
+                ownner.sceneNode.worldPosition = targetPosition;
                 StartCounterMotion();
                 CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.GetState());
                 enemyCounterState.StartCounterMotion();
                 // scene_.timeScale = 0.0f;
             }
         }
-
         CharacterCounterState::Update(dt);
     }
 
