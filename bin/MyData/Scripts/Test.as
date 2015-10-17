@@ -30,7 +30,6 @@ bool slowMotion = false;
 bool pauseGame = false;
 int globalState = 0;
 float globalTime = 0;
-bool test_ragdoll = false;
 
 void Start()
 {
@@ -86,8 +85,8 @@ void CreateScene()
         @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
 
     thugNode = scene_.GetChild("thug", true);
-    if (!test_ragdoll)
-        @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+    //if (!test_ragdoll)
+    //    @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
 
     if (thug !is null)
         @thug.target = player;
@@ -284,15 +283,41 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (input.keyPress['E'])
     {
-        String testName = "TG_BM_Counter/Counter_Leg_Front_01";
-        //String testName = "TG_HitReaction/Push_Reaction";
-        //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
-        player.TestAnimation(testName);
+        if (test_ragdoll)
+        {
+            Node@ renderNode = characterNode.children[0];
+
+            AnimationController@ ctl = renderNode.GetComponent("AnimationController");
+            // PlayAnimation(ctl, GetAnimationName("TG_Getup/GetUp_Back"), LAYER_MOVE, false, 0.0f, 0.0, 0.0);
+            Animation@ anim = Animation();
+            String name = "Test_Pose";
+            anim.name = name;
+            anim.animationName = name;
+            FillAnimationWithCurrentPose(anim, renderNode);
+            cache.AddManualResource(anim);
+
+            AnimatedModel@ model = renderNode.GetComponent("AnimatedModel");
+            AnimationState@ state = model.AddAnimationState(anim);
+            state.weight = 1.0f;
+
+            PlayAnimation(ctl, GetAnimationName("TG_Getup/GetUp_Back"), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
+        }
+        else
+        {
+            String testName = "TG_BM_Counter/Counter_Leg_Front_01";
+            //String testName = "TG_HitReaction/Push_Reaction";
+            //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
+            player.TestAnimation(testName);
+        }
     }
 
     if (input.keyPress['F']) {
         scene_.timeScale = 1.0f;
         SetWorldTimeScale(scene_, 1);
+
+        Node@ renderNode = characterNode.children[0];
+        AnimationController@ ctl = renderNode.GetComponent("AnimationController");
+        PlayAnimation(ctl, GetAnimationName("TG_Getup/GetUp_Back"), LAYER_MOVE, false, 0.0f, 0.0, 1.0);
     }
 
     String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
@@ -356,7 +381,27 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         player.DebugDraw(debug);
     if (thug !is null)
         thug.DebugDraw(debug);
-    scene_.physicsWorld.DrawDebugGeometry(false);
+    // scene_.physicsWorld.DrawDebugGeometry(false);
+
+    //AnimatedModel@ model = characterNode.children[0].GetComponent("AnimatedModel");
+    //Skeleton@ skel = model.skeleton;
+    //debug.AddSkeleton(skel, Color(1, 0, 0), false);
+
+    //debug.AddNode(characterNode, 0.25, false);
+    //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Translation", true), 0.25, false);
+    //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Rotation", true), 0.25, false);
+    debug.AddNode(characterNode.GetChild("Bip01_Pelvis", true), 0.25, false);
+
+    //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Scaling", true), 0.25, false);
+    //debug.AddNode(characterNode.GetChild("Bip01_Pelvis", true), 0.25, false);
+    //debug.AddNode(characterNode.GetChild("Bip01_Spine1", true), 0.25, false);
+
+    //Vector3 v1 = characterNode.GetChild("Bip01_L_Foot", true).worldPosition;
+    //Vector3 v2 = characterNode.GetChild("Bip01_R_Foot", true).worldPosition;
+    //debug.AddCross((v1+v2)*0.5f, 0.5f, Color(1,0,0), false);
+    //Vector3 v3 = characterNode.GetChild("Bip01_Head", true).worldPosition;
+    //debug.AddCross(v3, 0.5f, Color(1,0,0), false);
+    //debug.AddLine((v1+v2)*0.5f, v3, Color(1,0,0), false);
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)

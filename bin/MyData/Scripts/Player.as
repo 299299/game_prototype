@@ -713,6 +713,20 @@ class PlayerHitState : MultiMotionState
     }
 };
 
+class PlayerGetUpState : CharacterGetUpState
+{
+    PlayerGetUpState(Character@ c)
+    {
+        super(c);
+        String prefix = "TG_Getup/";
+        animations.Push(GetAnimationName(prefix + "GetUp_Front"));
+        //animations.Push(GetAnimationName(prefix + "GetUp_Back"));
+        //animations.Push(GetAnimationName(prefix + "GetUp_Back_Idle"));
+        // animations.Push(GetAnimationName(prefix + "GetUp_Front"));
+        //animations.Push(GetAnimationName(prefix + "GetUp_Front_Idle"));
+    }
+};
+
 class Player : Character
 {
     int combo;
@@ -736,6 +750,7 @@ class Player : Character
         stateMachine.AddState(PlayerRedirectState(this));
         stateMachine.AddState(AnimationTestState(this));
         stateMachine.AddState(CharacterRagdollState(this));
+        stateMachine.AddState(PlayerGetUpState(this));
         stateMachine.ChangeState("StandState");
     }
 

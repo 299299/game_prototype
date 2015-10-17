@@ -14,21 +14,16 @@ const int COLLISION_LAYER_RAGDOLL   = (1 << 3);
 
 class GameObject : ScriptObject
 {
-    FSM@    stateMachine;
-    bool    onGround;
-    bool    isSliding;
-    float   duration;
-    int     flags;
-    float   timeScale;
+    FSM@    stateMachine = FSM();
+    bool    onGround = false;
+    bool    isSliding = false;
+    float   duration = -1;
+    int     flags = 0;
+    float   timeScale = 1.0f;
 
     GameObject()
     {
-        onGround = false;
-        isSliding = false;
-        duration = -1; // Infinite
-        flags = 0;
-        @stateMachine = FSM();
-        timeScale = 1.0f;
+
     }
 
     void Start()

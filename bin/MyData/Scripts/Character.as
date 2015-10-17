@@ -15,6 +15,7 @@ const StringHash ATTACK_TYPE("AttackType");
 const StringHash TIME_SCALE("TimeScale");
 const StringHash DATA("Data");
 const StringHash NAME("Name");
+const StringHash ANIMATION("Animation");
 
 class CharacterState : State
 {
@@ -32,7 +33,9 @@ class CharacterState : State
 
     void OnAnimationTrigger(AnimationState@ animState, const StringHash&in data)
     {
-
+        if (data == RAGDOLL_START) {
+            ownner.stateMachine.ChangeState("RagdollState");
+        }
     }
 };
 
@@ -86,7 +89,6 @@ class MultiMotionState : CharacterState
     MultiMotionState(Character@ c)
     {
         super(c);
-        selectIndex = 0;
     }
 
     void Update(float dt)
@@ -141,7 +143,7 @@ class CharacterAlignState : CharacterState
     float               targetRotation;
     float               yawPerSec;
 
-    float               alignTime;
+    float               alignTime = 0.5f;
     float               curTime;
     String              nextState;
 
@@ -151,7 +153,6 @@ class CharacterAlignState : CharacterState
     {
         super(c);
         SetName("AlignState");
-        alignTime = 0.5f;
     }
 
     void Enter(State@ lastState)
@@ -414,18 +415,23 @@ class CharacterRagdollState : CharacterState
 
     void FixedUpdate(float dt)
     {
-        int state = ownner.sceneNode.vars[RAGDOLL_STATE].GetInt();
-        if (state == RAGDOLL_NONE && timeInState > 2.0f)
+        int ragdoll_state = ownner.sceneNode.vars[RAGDOLL_STATE].GetInt();
+        if (ragdoll_state == RAGDOLL_NONE)
         {
+            ownner.PlayCurrentPose();
             ownner.stateMachine.ChangeState("GetUpState");
         }
+
+        CharacterState::FixedUpdate(dt);
     }
 };
 
 class CharacterGetUpState : CharacterState
 {
     Array<String>               animations;
-    int                         index;
+    int                         getupIndex;
+    int                         state = 0;
+    int                         ragdollToAnimTime = 2.5f;
 
     CharacterGetUpState(Character@ c)
     {
@@ -435,17 +441,33 @@ class CharacterGetUpState : CharacterState
 
     void Enter(State@ lastState)
     {
-        index = 0;
-        ownner.PlayAnimation(animations[index], LAYER_MOVE, false, 1.0f);
+        state = 0;
+        ChooseGetUpIndex();
+        ownner.PlayAnimation(animations[getupIndex], LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
         CharacterState::Enter(lastState);
     }
 
     void Update(float dt)
     {
-        if (ownner.animCtrl.IsAtEnd(animations[index]))
-            ownner.CommonStateFinishedOnGroud();
-
+        if (state == 0)
+        {
+            if (timeInState >= ragdollToAnimTime)
+            {
+                ownner.animCtrl.SetSpeed(animations[getupIndex], 1.0f);
+                state = 1;
+            }
+        }
+        else
+        {
+            if (ownner.animCtrl.IsAtEnd(animations[getupIndex]))
+                ownner.CommonStateFinishedOnGroud();
+        }
         CharacterState::Update(dt);
+    }
+
+    void ChooseGetUpIndex()
+    {
+
     }
 };
 
@@ -466,6 +488,8 @@ class Character : GameObject
 
     Vector3                 startPosition;
     Quaternion              startRotation;
+
+    Animation@              ragdollPoseAnim;
 
     Character()
     {
@@ -498,6 +522,17 @@ class Character : GameObject
         startPosition = node.worldPosition;
         startRotation = node.worldRotation;
         sceneNode.vars[TIME_SCALE] = 1.0f;
+
+        String name = node.name + "_Ragdoll_Pose";
+        ragdollPoseAnim = cache.GetResource("Animation", name);
+        if (ragdollPoseAnim is null)
+        {
+            Print("Creating animation for ragdoll pose " + name);
+            ragdollPoseAnim = Animation();
+            ragdollPoseAnim.name = name;
+            ragdollPoseAnim.animationName = name;
+            cache.AddManualResource(ragdollPoseAnim);
+        }
     }
 
     void Start()
@@ -520,6 +555,8 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @body = null;
+        cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
+        ragdollPoseAnim = null;
     }
 
     void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
@@ -763,48 +800,11 @@ class Character : GameObject
         return dot_lf - dot_rf;
     }
 
-    void FillAnimationWithCurrentPose(Animation@ anim)
+    void PlayCurrentPose()
     {
-        Array<String> boneNames =
-        {
-            "Bip01_$AssimpFbx$_Translation",
-            "Bip01_$AssimpFbx$_Rotation",
-            "Bip01_$AssimpFbx$_Scaling",
-            "Bip01_Pelvis",
-            "Bip01_Spine",
-            "Bip01_Spine1",
-            "Bip01_Spine2",
-            "Bip01_Spine3",
-            "Bip01_Neck",
-            "Bip01_Head",
-            "Bip01_L_Thigh",
-            "Bip01_L_Calf",
-            "Bip01_L_Foot",
-            "Bip01_R_Thigh",
-            "Bip01_R_Calf",
-            "Bip01_R_Foot"
-            "Bip01_L_Clavicle",
-            "Bip01_L_UpperArm",
-            "Bip01_L_Forearm",
-            "Bip01_L_Hand",
-            "Bip01_R_Clavicle",
-            "Bip01_R_UpperArm",
-            "Bip01_R_Forearm",
-            "Bip01_R_Hand",
-        };
-
-        anim.RemoveAllTracks();
-        for (uint i=0; i<boneNames.length; ++i)
-        {
-            Node@ n = renderNode.GetChild(boneNames[i], true);
-            AnimationTrack@ track = anim.CreateTrack(boneNames[i]);
-            track.channelMask = CHANNEL_POSITION | CHANNEL_ROTATION;
-            AnimationKeyFrame kf;
-            kf.time = 0.0f;
-            kf.position = n.position;
-            kf.rotation = n.rotation;
-            track.AddKeyFrame(kf);
-        }
+        FillAnimationWithCurrentPose(ragdollPoseAnim, renderNode);
+        AnimationState@ state = animModel.AddAnimationState(ragdollPoseAnim);
+        state.weight = 1.0f;
     }
 };
 

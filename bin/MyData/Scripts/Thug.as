@@ -238,13 +238,6 @@ class ThugCounterState : CharacterCounterState
         }
         CharacterCounterState::FixedUpdate(dt);
     }
-
-    void OnAnimationTrigger(AnimationState@ animState, const StringHash&in data)
-    {
-        if (data == RAGDOLL_START) {
-            ownner.stateMachine.ChangeState("RagdollState");
-        }
-    }
 };
 
 

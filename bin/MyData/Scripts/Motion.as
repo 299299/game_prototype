@@ -57,6 +57,54 @@ void AddAnimationTrigger(const String&in name, int frame, const StringHash&in ta
         anim.AddTrigger(float(frame) * SEC_PER_FRAME, false, Variant(tag));
 }
 
+void FillAnimationWithCurrentPose(Animation@ anim, Node@ _node)
+{
+    Array<String> boneNames =
+    {
+        "Bip01_$AssimpFbx$_Translation",
+        "Bip01_$AssimpFbx$_PreRotation",
+        "Bip01_$AssimpFbx$_Rotation",
+        "Bip01_Pelvis",
+        "Bip01_Spine",
+        "Bip01_Spine1",
+        "Bip01_Spine2",
+        "Bip01_Spine3",
+        "Bip01_Neck",
+        "Bip01_Head",
+        "Bip01_L_Thigh",
+        "Bip01_L_Calf",
+        "Bip01_L_Foot",
+        "Bip01_R_Thigh",
+        "Bip01_R_Calf",
+        "Bip01_R_Foot",
+        "Bip01_L_Clavicle",
+        "Bip01_L_UpperArm",
+        "Bip01_L_Forearm",
+        "Bip01_L_Hand",
+        "Bip01_R_Clavicle",
+        "Bip01_R_UpperArm",
+        "Bip01_R_Forearm",
+        "Bip01_R_Hand"
+    };
+
+    anim.RemoveAllTracks();
+    for (uint i=0; i<boneNames.length; ++i)
+    {
+        Node@ n = _node.GetChild(boneNames[i], true);
+        if (n is null)
+        {
+            log.Error("FillAnimationWithCurrentPose can not find bone " + boneNames[i]);
+            continue;
+        }
+        AnimationTrack@ track = anim.CreateTrack(boneNames[i]);
+        track.channelMask = CHANNEL_POSITION | CHANNEL_ROTATION;
+        AnimationKeyFrame kf;
+        kf.time = 0.0f;
+        kf.position = n.position;
+        kf.rotation = n.rotation;
+        track.AddKeyFrame(kf);
+    }
+}
 
 class Motion
 {
@@ -89,19 +137,15 @@ class Motion
     float                   deltaRotation;
     Vector3                 deltaPosition;
 
-    bool                    translateEnabled;
-    bool                    rotateEnabled;
+    bool                    translateEnabled = true;
+    bool                    rotateEnabled = true;
 
     Motion()
     {
-        translateEnabled = true;
-        rotateEnabled = true;
     }
 
     Motion(const Motion&in other)
     {
-        translateEnabled = true;
-        rotateEnabled = true;
         animationName = other.animationName;
         animation = other.animation;
         motionKeys = other.motionKeys;
