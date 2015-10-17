@@ -238,6 +238,12 @@ class Motion
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
         object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
+        InnerStart(object);
+        // Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
+    }
+
+    void InnerStart(Character@ object)
+    {
         startPosition = object.sceneNode.worldPosition;
         startRotationQua = object.sceneNode.worldRotation;
         startRotation = startRotationQua.eulerAngles.y;
@@ -245,7 +251,6 @@ class Motion
         deltaPosition = Vector3(0, 0, 0);
         translateEnabled = true;
         rotateEnabled = true;
-        // Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
     }
 
     bool Move(Character@ object, float dt)
@@ -425,16 +430,16 @@ class MotionManager
 
         CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
 
-        String hitPrefix = "BM_Combat_HitReaction/";
-        CreateMotion(hitPrefix + "HitReaction_Back");
-        CreateMotion(hitPrefix + "HitReaction_Face_Left");
-        CreateMotion(hitPrefix + "HitReaction_Face_Right");
-        CreateMotion(hitPrefix + "Hit_Reaction_SideLeft");
-        CreateMotion(hitPrefix + "Hit_Reaction_SideRight");
-        CreateMotion(hitPrefix + "HitReaction_Stomach");
+        String preFix = "BM_Combat_HitReaction/";
+        CreateMotion(preFix + "HitReaction_Back");
+        CreateMotion(preFix + "HitReaction_Face_Left");
+        CreateMotion(preFix + "HitReaction_Face_Right");
+        CreateMotion(preFix + "Hit_Reaction_SideLeft");
+        CreateMotion(preFix + "Hit_Reaction_SideRight");
+        CreateMotion(preFix + "HitReaction_Stomach");
 
         // Attacks
-        String preFix = "BM_Attack/";
+        preFix = "BM_Attack/";
         //========================================================================
         // FORWARD
         //========================================================================
@@ -563,14 +568,18 @@ class MotionManager
         CreateMotion(preFix + "Attack_Punch_02");
 
 
-        String preFix1 = "TG_HitReaction/";
-        CreateMotion(preFix1 + "HitReaction_Left");
-        CreateMotion(preFix1 + "HitReaction_Right");
-        CreateMotion(preFix1 + "HitReaction_Back_NoTurn");
-        CreateMotion(preFix1 + "Generic_Hit_Reaction");
+        preFix = "TG_HitReaction/";
+        CreateMotion(preFix + "HitReaction_Left");
+        CreateMotion(preFix + "HitReaction_Right");
+        CreateMotion(preFix + "HitReaction_Back_NoTurn");
+        CreateMotion(preFix + "Generic_Hit_Reaction");
 
-        CreateMotion(preFix1 + "Push_Reaction");
-        CreateMotion(preFix1 + "Push_Reaction_From_Back");
+        CreateMotion(preFix + "Push_Reaction");
+        CreateMotion(preFix + "Push_Reaction_From_Back");
+
+        preFix = "TG_Getup/";
+        CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
+        CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
         AddCounterMotions("TG_BM_Counter/");
 

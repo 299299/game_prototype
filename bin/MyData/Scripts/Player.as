@@ -28,6 +28,8 @@ class PlayerStandState : CharacterState
                 blendTime = 2.5f;
             else if (lastState.nameHash == COUNTER_STATE)
                 blendTime = 2.5f;
+            else if (lastState.nameHash == GETUP_STATE)
+                blendTime = 0.5f;
         }
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         CharacterState::Enter(lastState);
@@ -74,7 +76,6 @@ class PlayerTurnState : MultiMotionState
         AddMotion(MOVEMENT_GROUP + "Turn_Right_90");
         AddMotion(MOVEMENT_GROUP + "Turn_Right_180");
         AddMotion(MOVEMENT_GROUP + "Turn_Left_90");
-        turnSpeed = 0.0f;
     }
 
     void Update(float dt)
@@ -109,14 +110,13 @@ class PlayerTurnState : MultiMotionState
 
 class PlayerMoveState : SingleMotionState
 {
-    float turnSpeed;
+    float turnSpeed = 5.0f;
 
     PlayerMoveState(Character@ c)
     {
         super(c);
         SetName("MoveState");
         SetMotion(MOVEMENT_GROUP + "Walk_Forward");
-        turnSpeed = 5;
     }
 
     void Update(float dt)
@@ -195,10 +195,10 @@ class PlayerAttackState : CharacterState
     float           targetAngle;
     float           targetDistance;
 
-    int             forwadCloseNum;
-    int             leftCloseNum;
-    int             rightCloseNum;
-    int             backCloseNum;
+    int             forwadCloseNum = 14;
+    int             leftCloseNum = 12;
+    int             rightCloseNum = 11;
+    int             backCloseNum = 11;
 
     PlayerAttackState(Character@ c)
     {
@@ -206,12 +206,6 @@ class PlayerAttackState : CharacterState
         SetName("AttackState");
 
         String preFix = "BM_Attack/";
-
-        forwadCloseNum = 14;
-        leftCloseNum = 12;
-        rightCloseNum = 11;
-        backCloseNum = 11;
-
         //========================================================================
         // FORWARD
         //========================================================================
@@ -526,7 +520,7 @@ class PlayerAttackState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        if (currentAttack is null)
+        if (currentAttack is null || attackEnemy is null)
             return;
         debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.7f, 0.8f, 0.7f), false);
         DebugDrawDirection(debug, ownner.sceneNode, targetAngle, Color(1, 0, 0), 2);
@@ -544,7 +538,7 @@ class PlayerAttackState : CharacterState
 class PlayerCounterState : CharacterCounterState
 {
     Enemy@              counterEnemy;
-    float               alignTime;
+    float               alignTime = 0.2f;
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;
@@ -552,7 +546,6 @@ class PlayerCounterState : CharacterCounterState
     PlayerCounterState(Character@ c)
     {
         super(c);
-        alignTime = 0.2f;
         AddCounterMotions("BM_TG_Counter/");
         // Dump();
     }
@@ -719,11 +712,8 @@ class PlayerGetUpState : CharacterGetUpState
     {
         super(c);
         String prefix = "TG_Getup/";
-        animations.Push(GetAnimationName(prefix + "GetUp_Front"));
-        //animations.Push(GetAnimationName(prefix + "GetUp_Back"));
-        //animations.Push(GetAnimationName(prefix + "GetUp_Back_Idle"));
-        // animations.Push(GetAnimationName(prefix + "GetUp_Front"));
-        //animations.Push(GetAnimationName(prefix + "GetUp_Front_Idle"));
+        AddMotion(prefix + "GetUp_Back");
+        AddMotion(prefix + "GetUp_Front");
     }
 };
 
@@ -734,7 +724,6 @@ class Player : Character
     Player()
     {
         super();
-        combo = 0;
     }
 
     void ObjectStart()

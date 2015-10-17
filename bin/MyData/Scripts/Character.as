@@ -10,12 +10,14 @@ const StringHash ATTACK_STATE("AttackState");
 const StringHash REDIRECT_STATE("RedirectState");
 const StringHash TURN_STATE("TurnState");
 const StringHash COUNTER_STATE("CounterState");
+const StringHash GETUP_STATE("GetUpState");
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
 const StringHash TIME_SCALE("TimeScale");
 const StringHash DATA("Data");
 const StringHash NAME("Name");
 const StringHash ANIMATION("Animation");
+const StringHash GETUP_INDEX("Getup_Index");
 
 class CharacterState : State
 {
@@ -426,12 +428,10 @@ class CharacterRagdollState : CharacterState
     }
 };
 
-class CharacterGetUpState : CharacterState
+class CharacterGetUpState : MultiMotionState
 {
-    Array<String>               animations;
-    int                         getupIndex;
     int                         state = 0;
-    int                         ragdollToAnimTime = 2.5f;
+    float                       ragdollToAnimTime = 1.0f;
 
     CharacterGetUpState(Character@ c)
     {
@@ -442,32 +442,39 @@ class CharacterGetUpState : CharacterState
     void Enter(State@ lastState)
     {
         state = 0;
-        ChooseGetUpIndex();
-        ownner.PlayAnimation(animations[getupIndex], LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
+        selectIndex = PickIndex();
+        Motion@ motion = motions[selectIndex];
+        ownner.PlayAnimation(motion.animationName, LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
         CharacterState::Enter(lastState);
     }
 
-    void Update(float dt)
+    void FixedUpdate(float dt)
     {
+        Motion@ motion = motions[selectIndex];
         if (state == 0)
         {
             if (timeInState >= ragdollToAnimTime)
             {
-                ownner.animCtrl.SetSpeed(animations[getupIndex], 1.0f);
+                ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
+                motion.InnerStart(ownner);
                 state = 1;
             }
         }
         else
         {
-            if (ownner.animCtrl.IsAtEnd(animations[getupIndex]))
+            if (motion.Move(ownner, dt))
+            {
+                // ownner.sceneNode.scene.timeScale = 0.0f;
                 ownner.CommonStateFinishedOnGroud();
+            }
         }
-        CharacterState::Update(dt);
+
+        CharacterState::FixedUpdate(dt);
     }
 
-    void ChooseGetUpIndex()
+    int PickIndex()
     {
-
+        return ownner.sceneNode.vars[GETUP_INDEX].GetInt();
     }
 };
 

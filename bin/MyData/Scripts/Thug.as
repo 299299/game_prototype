@@ -163,7 +163,7 @@ class ThugStepMoveState : MultiMotionState
 
 class ThugRunState : SingleMotionState
 {
-    float turnSpeed;
+    float turnSpeed = 5.0f;
     float attackRange;
 
     ThugRunState(Character@ c)
@@ -171,7 +171,6 @@ class ThugRunState : SingleMotionState
         super(c);
         SetName("RunState");
         SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
-        turnSpeed = 5.0f;
     }
 
     void Update(float dt)
@@ -246,7 +245,7 @@ class ThugAttackState : CharacterState
     AttackMotion@               currentAttack;
     Array<AttackMotion@>        attacks;
     int                         state;
-    float                       turnSpeed;
+    float                       turnSpeed = 1;
 
     ThugAttackState(Character@ c)
     {
@@ -258,7 +257,6 @@ class ThugAttackState : CharacterState
         AddAttackMotion("Attack_Kick", 24, 14);
         AddAttackMotion("Attack_Kick_01", 24, 14);
         AddAttackMotion("Attack_Kick_02", 24, 14);
-        turnSpeed = 1;
     }
 
     void AddAttackMotion(const String&in name, int impactFrame, int counterStartFrame)
@@ -431,8 +429,7 @@ class ThugRedirectState : MultiMotionState
     {
         selectIndex = PickIndex();
         Print(name + " pick " + motions[selectIndex].animationName);
-        float blendTime = 0.5f;
-        motions[selectIndex].Start(ownner, 0.0f, blendTime);
+        motions[selectIndex].Start(ownner, 0.0f, 0.5f);
     }
 
     int PickIndex()
@@ -448,10 +445,8 @@ class ThugGetUpState : CharacterGetUpState
     {
         super(c);
         String prefix = "TG_Getup/";
-        animations.Push(GetAnimationName(prefix + "GetUp_Front"));
-        animations.Push(GetAnimationName(prefix + "GetUp_Front_Idle"));
-        animations.Push(GetAnimationName(prefix + "GetUp_Back"));
-        animations.Push(GetAnimationName(prefix + "GetUp_Back_Idle"));
+        AddMotion(prefix + "GetUp_Back");
+        AddMotion(prefix + "GetUp_Front");
     }
 };
 
@@ -485,8 +480,7 @@ class Thug : Enemy
     {
         Character::DebugDraw(debug);
         float targetAngle = GetTargetAngle();
-        float baseLen = 2.0f;
-        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
+        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), 2.0f);
     }
 
     void Attack()

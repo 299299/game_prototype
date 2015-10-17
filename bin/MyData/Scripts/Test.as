@@ -107,6 +107,9 @@ void CreateScene()
         thugNode.children[0].SendEvent("AnimationTrigger", data);
     }
 
+    //Animation@ anim = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
+    //AnimationTrack@ track = anim.tracks["Bip"];
+
     //DumpSkeletonNames(characterNode);
 }
 
@@ -281,14 +284,13 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         scene_.timeScale = pauseGame ? 0 : speed;
     }
 
-    if (input.keyPress['E'])
+    if (test_ragdoll)
     {
-        if (test_ragdoll)
+        if (input.keyPress['E'])
         {
             Node@ renderNode = characterNode.children[0];
 
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
-            // PlayAnimation(ctl, GetAnimationName("TG_Getup/GetUp_Back"), LAYER_MOVE, false, 0.0f, 0.0, 0.0);
             Animation@ anim = Animation();
             String name = "Test_Pose";
             anim.name = name;
@@ -300,24 +302,32 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             AnimationState@ state = model.AddAnimationState(anim);
             state.weight = 1.0f;
 
-            PlayAnimation(ctl, GetAnimationName("TG_Getup/GetUp_Back"), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
+            String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
+            PlayAnimation(ctl, GetAnimationName(name1), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
         }
-        else
+        else if (input.keyPress['F'])
         {
+            Node@ renderNode = characterNode.children[0];
+            AnimationController@ ctl = renderNode.GetComponent("AnimationController");
+            String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
+            ctl.SetSpeed(GetAnimationName(name1), 1.0);
+        }
+    }
+    else
+    {
+        if (input.keyPress['E'])
+        {
+            //String testName = "TG_Getup/GetUp_Back";
             String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
             //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
             player.TestAnimation(testName);
         }
-    }
-
-    if (input.keyPress['F']) {
-        scene_.timeScale = 1.0f;
-        SetWorldTimeScale(scene_, 1);
-
-        Node@ renderNode = characterNode.children[0];
-        AnimationController@ ctl = renderNode.GetComponent("AnimationController");
-        PlayAnimation(ctl, GetAnimationName("TG_Getup/GetUp_Back"), LAYER_MOVE, false, 0.0f, 0.0, 1.0);
+        else if (input.keyPress['F'])
+        {
+            scene_.timeScale = 1.0f;
+            SetWorldTimeScale(scene_, 1);
+        }
     }
 
     String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
@@ -381,7 +391,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         player.DebugDraw(debug);
     if (thug !is null)
         thug.DebugDraw(debug);
-    // scene_.physicsWorld.DrawDebugGeometry(false);
+    scene_.physicsWorld.DrawDebugGeometry(false);
 
     //AnimatedModel@ model = characterNode.children[0].GetComponent("AnimatedModel");
     //Skeleton@ skel = model.skeleton;
@@ -393,7 +403,6 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     debug.AddNode(characterNode.GetChild("Bip01_Pelvis", true), 0.25, false);
 
     //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Scaling", true), 0.25, false);
-    //debug.AddNode(characterNode.GetChild("Bip01_Pelvis", true), 0.25, false);
     //debug.AddNode(characterNode.GetChild("Bip01_Spine1", true), 0.25, false);
 
     //Vector3 v1 = characterNode.GetChild("Bip01_L_Foot", true).worldPosition;

@@ -34,6 +34,7 @@ const StringHash RAGDOLL_START("Ragdoll_Start");
 const StringHash RAGDOLL_STOP("Ragdoll_Stop");
 
 bool test_ragdoll = false;
+int ragdoll_direction = 0;
 
 class Ragdoll : ScriptObject
 {
@@ -188,22 +189,21 @@ class Ragdoll : ScriptObject
         Vector3 lower_arm_offset_left(0.125f, 0.0f, 0.01f);
         Vector3 lower_arm_offset_right(0.125f, 0.0f, -0.01f);
 
-        CreateRagdollBone(boneNodes[BONE_PELVIS], SHAPE_BOX, Vector3(0.3f, 0.2f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), identityQ);
-        CreateRagdollBone(boneNodes[BONE_SPINE], SHAPE_BOX, Vector3(0.35f, 0.2f, 0.3f), Vector3(0.15f, 0.0f, 0.0f), identityQ);
-        CreateRagdollBone(boneNodes[BONE_HEAD], SHAPE_BOX, Vector3(0.275f, 0.2f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), identityQ);
+        CreateRagdollBone(BONE_PELVIS, SHAPE_BOX, Vector3(0.3f, 0.2f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), identityQ);
+        CreateRagdollBone(BONE_SPINE, SHAPE_BOX, Vector3(0.35f, 0.2f, 0.3f), Vector3(0.15f, 0.0f, 0.0f), identityQ);
+        CreateRagdollBone(BONE_HEAD, SHAPE_BOX, Vector3(0.275f, 0.2f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), identityQ);
 
+        CreateRagdollBone(BONE_L_THIGH, SHAPE_CAPSULE, upper_leg_size, uppper_leg_offset, common_rotation);
+        CreateRagdollBone(BONE_R_THIGH, SHAPE_CAPSULE, upper_leg_size, uppper_leg_offset, common_rotation);
 
-        CreateRagdollBone(boneNodes[BONE_L_THIGH], SHAPE_CAPSULE, upper_leg_size, uppper_leg_offset, common_rotation);
-        CreateRagdollBone(boneNodes[BONE_R_THIGH], SHAPE_CAPSULE, upper_leg_size, uppper_leg_offset, common_rotation);
+        CreateRagdollBone(BONE_L_CALF, SHAPE_CAPSULE, lower_leg_size, lower_leg_offset, common_rotation);
+        CreateRagdollBone(BONE_R_CALF, SHAPE_CAPSULE, lower_leg_size, lower_leg_offset, common_rotation);
 
-        CreateRagdollBone(boneNodes[BONE_L_CALF], SHAPE_CAPSULE, lower_leg_size, lower_leg_offset, common_rotation);
-        CreateRagdollBone(boneNodes[BONE_R_CALF], SHAPE_CAPSULE, lower_leg_size, lower_leg_offset, common_rotation);
+        CreateRagdollBone(BONE_L_UPPERARM, SHAPE_CAPSULE, upper_arm_size, upper_arm_offset_left, common_rotation);
+        CreateRagdollBone(BONE_R_UPPERARM, SHAPE_CAPSULE, upper_arm_size, upper_arm_offset_right, common_rotation);
 
-        CreateRagdollBone(boneNodes[BONE_L_UPPERARM], SHAPE_CAPSULE, upper_arm_size, upper_arm_offset_left, common_rotation);
-        CreateRagdollBone(boneNodes[BONE_R_UPPERARM], SHAPE_CAPSULE, upper_arm_size, upper_arm_offset_right, common_rotation);
-
-        CreateRagdollBone(boneNodes[BONE_L_FOREARM], SHAPE_CAPSULE, lower_arm_size, lower_arm_offset_left, common_rotation);
-        CreateRagdollBone(boneNodes[BONE_R_FOREARM], SHAPE_CAPSULE, lower_arm_size, lower_arm_offset_right, common_rotation);
+        CreateRagdollBone(BONE_L_FOREARM, SHAPE_CAPSULE, lower_arm_size, lower_arm_offset_left, common_rotation);
+        CreateRagdollBone(BONE_R_FOREARM, SHAPE_CAPSULE, lower_arm_size, lower_arm_offset_right, common_rotation);
 
         // Create Constraints between bones
         CreateRagdollConstraint(boneNodes[BONE_HEAD], boneNodes[BONE_SPINE], CONSTRAINT_CONETWIST,
@@ -231,8 +231,10 @@ class Ragdoll : ScriptObject
         Print("CreateRagdoll time-cost=" + (time.systemTime - t) + " ms");
     }
 
-    void CreateRagdollBone(Node@ boneNode, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation, float scale = 100)
+    void CreateRagdollBone(RagdollBoneType boneType, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation)
     {
+        int scale = 100;
+        Node@ boneNode = boneNodes[boneType];
         RigidBody@ body = boneNode.CreateComponent("RigidBody");
         // Set mass to make movable
         body.mass = 1.0f;
@@ -246,6 +248,9 @@ class Ragdoll : ScriptObject
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
         body.friction = 0.75f;
         //body.kinematic = true;
+
+        //if (boneType == BONE_PELVIS)
+        //    body.angularFactor = Vector3(0, 0, 0);
 
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
         // We use either a box or a capsule shape for all of the bones
@@ -405,11 +410,11 @@ class Ragdoll : ScriptObject
     void ResetBonePositions()
     {
         Quaternion oldRot = boneNodes[BONE_PELVIS].worldRotation;
+        Vector3 head_pos = boneNodes[BONE_HEAD].worldPosition;
         Vector3 pelvis_pos = boneNodes[BONE_PELVIS].worldPosition;
 
-        Vector3 ragdolledDirection = rootNode.worldPosition - pelvis_pos;
-        ragdolledDirection *= -1;
-        ragdolledDirection.y = 0;
+        Vector3 ragdolledDirection = head_pos - pelvis_pos;
+        ragdolledDirection.y = 0.0f;
         Vector3 currentDirection = rootNode.worldRotation * Vector3(0, 0, 1);
         currentDirection.y = 0.0f;
 
@@ -421,16 +426,35 @@ class Ragdoll : ScriptObject
         dest_root_pos.x = pelvis_pos.x;
         dest_root_pos.z = pelvis_pos.z;
         rootNode.worldPosition = dest_root_pos;
+
         t_node.worldPosition = pelvis_pos;
 
+        /*
         Quaternion q;
         q.FromRotationTo(currentDirection, ragdolledDirection);
-        rootNode.worldRotation *= q;
-        // rootNode.worldRotation *= Quaternion(0, 180, 0);
-
+        r_node.worldRotation = r_node.worldRotation * q;
         boneNodes[BONE_PELVIS].worldRotation = oldRot;
+        */
 
-        //boneNodes[BONE_PELVIS].worldRotation = q.Inverse() * boneNodes[BONE_PELVIS].worldRotation;
-        //boneNodes[BONE_PELVIS].rotation = Quaternion(90, 0, -90);
+        Quaternion q(90, 0, -90);
+        boneNodes[BONE_PELVIS].rotation = q;
+        r_node.worldRotation = oldRot * q.Inverse();
+
+        Print("oldR=" + oldRot.eulerAngles.ToString() + " newR=" + boneNodes[BONE_PELVIS].worldRotation.eulerAngles.ToString());
+
+        Vector3 pelvis_up = oldRot * Vector3(0, 1, 0);
+        Print("pelvis_up=" + pelvis_up.ToString());
+
+        int getUpIndex = 0;
+        if (pelvis_up.y < 0)
+            getUpIndex = 1;
+
+        Print("getUpIndex = " + getUpIndex);
+        rootNode.vars[GETUP_INDEX] = getUpIndex;
+
+        //Quaternion cur_rot = boneNodes[BONE_PELVIS].rotation;
+        //Quaternion dst_rot = Quaternion(90, 0, -90);
+        //Quaternion parent_rot = boneNodes[BONE_PELVIS].parent.worldRotation;
+        //boneNodes[BONE_PELVIS].worldRotation = parent_rot * dst_rot;
     }
 }
