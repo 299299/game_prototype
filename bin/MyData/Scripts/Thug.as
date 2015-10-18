@@ -100,10 +100,12 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Forward");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Right");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Back");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Left");
         // long step
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Forward_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Right_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Back_Long");
+        AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
     }
 
     void FixedUpdate(float dt)
@@ -111,17 +113,19 @@ class ThugStepMoveState : MultiMotionState
         if (motions[selectIndex].Move(ownner, dt))
         {
             float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+            bool attack = false;
+
             if (dist <= attackRange && dist > 0)
             {
                 int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
-                if (num >= MAX_NUM_OF_ATTACK)
+                if (num < MAX_NUM_OF_ATTACK && Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
                 {
-                    ownner.stateMachine.ChangeState("StandState");
-                }
-                else {
-                    ownner.stateMachine.ChangeState("AttackState");
+                    attack = true;
                 }
             }
+
+            if (attack)
+                ownner.stateMachine.ChangeState("AttackState");
             else
                 ownner.CommonStateFinishedOnGroud();
         }
@@ -135,11 +139,8 @@ class ThugStepMoveState : MultiMotionState
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist < 0)
         {
-            float dAngle = Abs(ownner.ComputeAngleDiff());
-            if (dAngle < 30)
-                index = 2;
-            else
-                index = 0;
+            index = ownner.RadialSelectAnimation(4);
+            index = (index + 2) % 4;
         }
         else
         {
@@ -249,7 +250,7 @@ class ThugAttackState : CharacterState
     AttackMotion@               currentAttack;
     Array<AttackMotion@>        attacks;
     int                         state;
-    float                       turnSpeed = 1;
+    float                       turnSpeed = 0.5f;
 
     ThugAttackState(Character@ c)
     {

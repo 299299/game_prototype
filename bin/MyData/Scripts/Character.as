@@ -433,7 +433,7 @@ class CharacterRagdollState : CharacterState
 class CharacterGetUpState : MultiMotionState
 {
     int                         state = 0;
-    float                       ragdollToAnimTime = 0.1f;
+    float                       ragdollToAnimTime = 0.0f;
 
     CharacterGetUpState(Character@ c)
     {
@@ -446,8 +446,8 @@ class CharacterGetUpState : MultiMotionState
         state = 0;
         selectIndex = PickIndex();
         Motion@ motion = motions[selectIndex];
-        if (blend_to_anim)
-            ragdollToAnimTime = 0.0f;
+        //if (blend_to_anim)
+        //    ragdollToAnimTime = 0.2f;
         ownner.PlayAnimation(motion.animationName, LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
         CharacterState::Enter(lastState);
     }
@@ -544,6 +544,8 @@ class Character : GameObject
             ragdollPoseAnim.animationName = name;
             cache.AddManualResource(ragdollPoseAnim);
         }
+
+        SubscribeToEvent(node, "NodeCollision", "HandleNodeCollision");
     }
 
     void Start()
@@ -817,6 +819,13 @@ class Character : GameObject
         AnimationState@ state = animModel.AddAnimationState(ragdollPoseAnim);
         state.weight = 1.0f;
         animCtrl.PlayExclusive(ragdollPoseAnim.name, LAYER_MOVE, false, 0.0f);
+    }
+
+    void HandleNodeCollision(StringHash eventType, VariantMap& eventData)
+    {
+        Node@ otherNode = eventData["OtherNode"].GetPtr();
+        RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
+        Print("HandleNodeCollision " + otherNode.name);
     }
 };
 
