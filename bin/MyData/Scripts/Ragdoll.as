@@ -104,6 +104,9 @@ class Ragdoll : ScriptObject
         //blendingAnim = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+
+        CreateRagdoll();
+        EnableRagdoll(false);
     }
 
     void Stop()
@@ -130,7 +133,8 @@ class Ragdoll : ScriptObject
         else if (newState == RAGDOLL_DYNAMIC)
         {
             SetAnimationEnabled(false);
-            CreateRagdoll();
+            //CreateRagdoll();
+            EnableRagdoll(true);
 
             if (timeInState > 0.05f)
             {
@@ -151,13 +155,15 @@ class Ragdoll : ScriptObject
             }
         }
         else if (newState == RAGDOLL_BLEND_TO_ANIMATION) {
-            DestroyRagdoll();
+            //DestroyRagdoll();
+            EnableRagdoll(false);
             SetAnimationEnabled(true);
             ResetBonePositions();
         }
         else if (newState == RAGDOLL_NONE)
         {
-            DestroyRagdoll();
+            //DestroyRagdoll();
+            EnableRagdoll(false);
             SetAnimationEnabled(true);
             ResetBonePositions();
         }
@@ -246,7 +252,7 @@ class Ragdoll : ScriptObject
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
         body.friction = 0.75f;
-        //body.kinematic = true;
+        // body.kinematic = true;
 
         //if (boneType == BONE_PELVIS)
         //    body.angularFactor = Vector3(0, 0, 0);
@@ -297,8 +303,9 @@ class Ragdoll : ScriptObject
             Constraint@ cs = boneNodes[i].GetComponent("Constraint");
             if (rb !is null)
                 rb.enabled = bEnable;
-            if (cs !is null)
+            if (cs !is null) {
                 cs.enabled = bEnable;
+            }
         }
     }
 
