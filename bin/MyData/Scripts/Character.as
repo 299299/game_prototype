@@ -417,13 +417,15 @@ class CharacterRagdollState : CharacterState
 
     void FixedUpdate(float dt)
     {
-        int ragdoll_state = ownner.sceneNode.vars[RAGDOLL_STATE].GetInt();
-        if (ragdoll_state == RAGDOLL_NONE)
+        if (timeInState > 0.1f)
         {
-            ownner.PlayCurrentPose();
-            ownner.stateMachine.ChangeState("GetUpState");
+            int ragdoll_state = ownner.sceneNode.vars[RAGDOLL_STATE].GetInt();
+            if (ragdoll_state == RAGDOLL_NONE)
+            {
+                ownner.PlayCurrentPose();
+                ownner.stateMachine.ChangeState("GetUpState");
+            }
         }
-
         CharacterState::FixedUpdate(dt);
     }
 };
@@ -431,7 +433,7 @@ class CharacterRagdollState : CharacterState
 class CharacterGetUpState : MultiMotionState
 {
     int                         state = 0;
-    float                       ragdollToAnimTime = 1.0f;
+    float                       ragdollToAnimTime = 0.1f;
 
     CharacterGetUpState(Character@ c)
     {
@@ -444,6 +446,8 @@ class CharacterGetUpState : MultiMotionState
         state = 0;
         selectIndex = PickIndex();
         Motion@ motion = motions[selectIndex];
+        if (blend_to_anim)
+            ragdollToAnimTime = 0.0f;
         ownner.PlayAnimation(motion.animationName, LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
         CharacterState::Enter(lastState);
     }

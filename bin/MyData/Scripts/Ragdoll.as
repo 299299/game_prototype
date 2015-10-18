@@ -34,6 +34,7 @@ const StringHash RAGDOLL_START("Ragdoll_Start");
 const StringHash RAGDOLL_STOP("Ragdoll_Stop");
 
 bool test_ragdoll = false;
+bool blend_to_anim = true;
 
 class Ragdoll : ScriptObject
 {
@@ -44,10 +45,14 @@ class Ragdoll : ScriptObject
     int               state;
     float             timeInState;
 
-    // Animation@        blendingAnim;
-    // float             ragdollToAnimBlendTime = 2.0f;
+    Animation@        blendingAnim_1;
+    Animation@        blendingAnim_2;
+
+    float             ragdollToAnimBlendTime = 5.0f;
 
     float             minRagdollStateTime = 0.5f;
+
+    int               getUpIndex = 0;
 
     Ragdoll()
     {
@@ -87,10 +92,15 @@ class Ragdoll : ScriptObject
         };
 
         rootNode = node;
-        boneNodes.Resize(boneNames.length);
-        boneLastPositions.Resize(boneNames.length);
 
-        for (uint i=0; i<RAGDOLL_BONE_NUM; ++i)
+        int maxLen = RAGDOLL_BONE_NUM;
+        if (blend_to_anim)
+            maxLen = boneNames.length;
+
+        boneNodes.Resize(maxLen);
+        boneLastPositions.Resize(maxLen);
+
+        for (uint i=0; i<maxLen; ++i)
         {
             boneNodes[i] = node.GetChild(boneNames[i], true);
             boneLastPositions[i] = boneNodes[i].worldPosition;
@@ -101,7 +111,11 @@ class Ragdoll : ScriptObject
         if (model is null)
             renderNode = node.children[0];
 
-        //blendingAnim = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
+        if (blend_to_anim)
+        {
+            blendingAnim_1 = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
+            blendingAnim_2 = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Front"));
+        }
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
 
@@ -111,6 +125,7 @@ class Ragdoll : ScriptObject
 
     void Stop()
     {
+        DestroyRagdoll();
         boneNodes.Clear();
     }
 
@@ -120,7 +135,7 @@ class Ragdoll : ScriptObject
             return;
 
         int old_state = state;
-        Print("Ragdoll ChangeState from " + old_state + " to " + newState);
+        Print(rootNode.name + " Ragdoll ChangeState from " + old_state + " to " + newState);
         state = newState;
 
         if (newState == RAGDOLL_STATIC)
@@ -133,7 +148,6 @@ class Ragdoll : ScriptObject
         else if (newState == RAGDOLL_DYNAMIC)
         {
             SetAnimationEnabled(false);
-            //CreateRagdoll();
             EnableRagdoll(true);
 
             if (timeInState > 0.05f)
@@ -154,15 +168,14 @@ class Ragdoll : ScriptObject
                 }
             }
         }
-        else if (newState == RAGDOLL_BLEND_TO_ANIMATION) {
-            //DestroyRagdoll();
+        else if (newState == RAGDOLL_BLEND_TO_ANIMATION)
+        {
             EnableRagdoll(false);
             SetAnimationEnabled(true);
             ResetBonePositions();
         }
         else if (newState == RAGDOLL_NONE)
         {
-            //DestroyRagdoll();
             EnableRagdoll(false);
             SetAnimationEnabled(true);
             ResetBonePositions();
@@ -244,14 +257,14 @@ class Ragdoll : ScriptObject
         // Set mass to make movable
         body.mass = 1.0f;
         // Set damping parameters to smooth out the motion
-        body.linearDamping = 0.075f;
+        body.linearDamping = 0.1f;
         body.angularDamping = 0.85f;
         // Set rest thresholds to ensure the ragdoll rigid bodies come to rest to not consume CPU endlessly
         body.linearRestThreshold = 2.5f;
         body.angularRestThreshold = 1.5;
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
-        body.friction = 0.75f;
+        body.friction = 1.0f;
         // body.kinematic = true;
 
         //if (boneType == BONE_PELVIS)
@@ -311,13 +324,13 @@ class Ragdoll : ScriptObject
 
     void FixedUpdate(float dt)
     {
-        if (state == RAGDOLL_STATIC) {
+        if (state == RAGDOLL_STATIC)
+        {
             timeInState += dt;
         }
-        else if (state == RAGDOLL_DYNAMIC) {
-
+        else if (state == RAGDOLL_DYNAMIC)
+        {
             // Print("Ragdoll Dynamic time " + timeInState);
-
             timeInState += dt;
 
             uint num_of_freeze_objects = 0;
@@ -338,9 +351,10 @@ class Ragdoll : ScriptObject
 
             // Print("num_of_freeze_objects=" + num_of_freeze_objects);
             if (num_of_freeze_objects == RAGDOLL_BONE_NUM && timeInState >= minRagdollStateTime)
-                ChangeState(RAGDOLL_NONE);
+                ChangeState(blend_to_anim ? RAGDOLL_BLEND_TO_ANIMATION : RAGDOLL_NONE);
         }
-        /*else if (state == RAGDOLL_BLEND_TO_ANIMATION) {
+        else if (state == RAGDOLL_BLEND_TO_ANIMATION)
+        {
 
             //compute the ragdoll blend amount in the range 0...1
             float ragdollBlendAmount = timeInState / ragdollToAnimBlendTime;
@@ -348,9 +362,13 @@ class Ragdoll : ScriptObject
 
             timeInState += dt;
 
+            Animation@ anim = blendingAnim_1;
+            if (getUpIndex == 1)
+                anim = blendingAnim_2;
+
             for (uint i=0; i<boneNodes.length; ++i)
             {
-                AnimationTrack@ track = blendingAnim.tracks[boneNodes[i].name];
+                AnimationTrack@ track = anim.tracks[boneNodes[i].name];
                 if (track is null)
                     continue;
 
@@ -368,7 +386,7 @@ class Ragdoll : ScriptObject
             //if the ragdoll blend amount has decreased to zero, move to animated state
             if (ragdollBlendAmount >= 0.9999999f)
                 ChangeState(RAGDOLL_NONE);
-        }*/
+        }
     }
 
     void SetAnimationEnabled(bool bEnable)
@@ -386,32 +404,20 @@ class Ragdoll : ScriptObject
             skeleton.bones[i].animated = bEnable;
 
         if (!bEnable)
-        {
-            /*
-            AnimationController@ ctl = model.node.GetComponent("AnimationController");
-            if (ctl is null)
-            {
-                ctl.StopAll(0.0f);
-            }
-            */
             model.RemoveAllAnimationStates();
-        }
     }
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
+        Print("HandleAnimationTrigger current-state=" + state);
         StringHash data = eventData[DATA].GetStringHash();
         int new_state = RAGDOLL_NONE;
         if (data == RAGDOLL_PERPARE)
             new_state = RAGDOLL_STATIC;
         else if (data == RAGDOLL_START)
             new_state = RAGDOLL_DYNAMIC;
-        else if (data == RAGDOLL_STOP) {
-            //if (state == RAGDOLL_DYNAMIC)
-            //    new_state = RAGDOLL_BLEND_TO_ANIMATION;
-            //else
-                new_state = RAGDOLL_NONE;
-        }
+        else if (data == RAGDOLL_STOP)
+            new_state = RAGDOLL_NONE;
         ChangeState(new_state);
     }
 
@@ -424,7 +430,7 @@ class Ragdoll : ScriptObject
         Vector3 pelvis_up = oldRot * Vector3(0, 1, 0);
         Print("pelvis_up=" + pelvis_up.ToString());
 
-        int getUpIndex = 0;
+        getUpIndex = 0;
         if (pelvis_up.y < 0)
             getUpIndex = 1;
 
@@ -471,6 +477,7 @@ class Ragdoll : ScriptObject
         r_node.worldRotation = q;
 
         // Print("targetRootRot=" + targetRootRot.eulerAngles.ToString());
+        // q = r_node.worldRotation;
         rootNode.worldRotation = targetRootRot;
         r_node.worldRotation = q;
     }

@@ -572,6 +572,7 @@ class MotionManager
         CreateMotion(preFix + "HitReaction_Left");
         CreateMotion(preFix + "HitReaction_Right");
         CreateMotion(preFix + "HitReaction_Back_NoTurn");
+        CreateMotion(preFix + "HitReaction_Back");
         CreateMotion(preFix + "Generic_Hit_Reaction");
 
         CreateMotion(preFix + "Push_Reaction");
@@ -725,7 +726,7 @@ class MotionManager
         AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 33, RAGDOLL_PERPARE);
         AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 35, RAGDOLL_START);
         AddAnimationTrigger(preFix + "Counter_Arm_Back_04", 48, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 72, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_06", 72, RAGDOLL_START);
 
         AddAnimationTrigger(preFix + "Counter_Leg_Back_01", 50, RAGDOLL_PERPARE);
         AddAnimationTrigger(preFix + "Counter_Leg_Back_01", 54, RAGDOLL_START);

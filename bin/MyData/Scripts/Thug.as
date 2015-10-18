@@ -111,7 +111,7 @@ class ThugStepMoveState : MultiMotionState
         if (motions[selectIndex].Move(ownner, dt))
         {
             float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-            if (dist <= attackRange)
+            if (dist <= attackRange && dist > 0)
             {
                 int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
                 if (num >= MAX_NUM_OF_ATTACK)
@@ -135,7 +135,11 @@ class ThugStepMoveState : MultiMotionState
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist < 0)
         {
-            index = 2;
+            float dAngle = Abs(ownner.ComputeAngleDiff());
+            if (dAngle < 30)
+                index = 2;
+            else
+                index = 0;
         }
         else
         {
