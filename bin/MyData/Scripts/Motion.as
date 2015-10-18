@@ -697,6 +697,51 @@ class MotionManager
         AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 36, RAGDOLL_PERPARE);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 38, RAGDOLL_START);
 
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_01", 34, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_01", 35, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_02", 44, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_02", 48, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_03", 40, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_03", 44, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_04", 36, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_04", 40, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_05", 60, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_05", 66, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_06", 44, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_07", 38, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_07", 43, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_08", 54, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_08", 62, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_09", 60, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_09", 68, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_10", 56, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_13", 58, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_13", 68, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_14", 72, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_14", 78, RAGDOLL_START);
+
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_01", 42, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_02", 50, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 33, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 35, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_04", 48, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 72, RAGDOLL_START);
+
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_01", 50, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_01", 54, RAGDOLL_START);
+
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 60, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 64, RAGDOLL_START);
+
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 60, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 64, RAGDOLL_START);
+
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_03", 72, RAGDOLL_START);
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_04", 43, RAGDOLL_START);
+
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_05", 48, RAGDOLL_PERPARE);
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_05", 52, RAGDOLL_START);
+
         Print("MotionManager::PostProcess time-cst=" + (time.systemTime - t) + " ms");
     }
 };

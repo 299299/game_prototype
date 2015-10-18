@@ -34,7 +34,6 @@ const StringHash RAGDOLL_START("Ragdoll_Start");
 const StringHash RAGDOLL_STOP("Ragdoll_Stop");
 
 bool test_ragdoll = false;
-int ragdoll_direction = 0;
 
 class Ragdoll : ScriptObject
 {
@@ -133,7 +132,7 @@ class Ragdoll : ScriptObject
             SetAnimationEnabled(false);
             CreateRagdoll();
 
-            if (timeInState > 0.1f)
+            if (timeInState > 0.05f)
             {
                 for (uint i=0; i<RAGDOLL_BONE_NUM; ++i)
                 {
@@ -233,7 +232,7 @@ class Ragdoll : ScriptObject
 
     void CreateRagdollBone(RagdollBoneType boneType, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation)
     {
-        int scale = 100;
+        float scale = 100;
         Node@ boneNode = boneNodes[boneType];
         RigidBody@ body = boneNode.CreateComponent("RigidBody");
         // Set mass to make movable
@@ -309,6 +308,8 @@ class Ragdoll : ScriptObject
             timeInState += dt;
         }
         else if (state == RAGDOLL_DYNAMIC) {
+
+            // Print("Ragdoll Dynamic time " + timeInState);
 
             timeInState += dt;
 
@@ -409,39 +410,10 @@ class Ragdoll : ScriptObject
 
     void ResetBonePositions()
     {
-        Quaternion oldRot = boneNodes[BONE_PELVIS].worldRotation;
-        Vector3 head_pos = boneNodes[BONE_HEAD].worldPosition;
-        Vector3 pelvis_pos = boneNodes[BONE_PELVIS].worldPosition;
+        Node@ pelvis_bone = boneNodes[BONE_PELVIS];
+        Quaternion oldRot = pelvis_bone.worldRotation;
 
-        Vector3 ragdolledDirection = head_pos - pelvis_pos;
-        ragdolledDirection.y = 0.0f;
-        Vector3 currentDirection = rootNode.worldRotation * Vector3(0, 0, 1);
-        currentDirection.y = 0.0f;
-
-        boneNodes[BONE_PELVIS].position = Vector3(0, 0, 0);
-        Node@ t_node = rootNode.GetChild("Bip01_$AssimpFbx$_Translation", true);
-        Node@ r_node = rootNode.GetChild("Bip01_$AssimpFbx$_Rotation", true);
-        Vector3 cur_root_pos = rootNode.worldPosition;
-        Vector3 dest_root_pos = cur_root_pos;
-        dest_root_pos.x = pelvis_pos.x;
-        dest_root_pos.z = pelvis_pos.z;
-        rootNode.worldPosition = dest_root_pos;
-
-        t_node.worldPosition = pelvis_pos;
-
-        /*
-        Quaternion q;
-        q.FromRotationTo(currentDirection, ragdolledDirection);
-        r_node.worldRotation = r_node.worldRotation * q;
-        boneNodes[BONE_PELVIS].worldRotation = oldRot;
-        */
-
-        Quaternion q(90, 0, -90);
-        boneNodes[BONE_PELVIS].rotation = q;
-        r_node.worldRotation = oldRot * q.Inverse();
-
-        Print("oldR=" + oldRot.eulerAngles.ToString() + " newR=" + boneNodes[BONE_PELVIS].worldRotation.eulerAngles.ToString());
-
+        // determine back or frong get up
         Vector3 pelvis_up = oldRot * Vector3(0, 1, 0);
         Print("pelvis_up=" + pelvis_up.ToString());
 
@@ -452,9 +424,47 @@ class Ragdoll : ScriptObject
         Print("getUpIndex = " + getUpIndex);
         rootNode.vars[GETUP_INDEX] = getUpIndex;
 
-        //Quaternion cur_rot = boneNodes[BONE_PELVIS].rotation;
-        //Quaternion dst_rot = Quaternion(90, 0, -90);
-        //Quaternion parent_rot = boneNodes[BONE_PELVIS].parent.worldRotation;
-        //boneNodes[BONE_PELVIS].worldRotation = parent_rot * dst_rot;
+        Vector3 head_pos = boneNodes[BONE_HEAD].worldPosition;
+        Vector3 pelvis_pos = pelvis_bone.worldPosition;
+
+        Vector3 ragdolledDirection = head_pos - pelvis_pos;
+        ragdolledDirection.y = 0.0f;
+        Vector3 currentDirection = rootNode.worldRotation * Vector3(0, 0, 1);
+        currentDirection.y = 0.0f;
+
+        Quaternion dRot;
+        dRot.FromRotationTo(currentDirection, ragdolledDirection);
+        Quaternion oldRootRot = rootNode.worldRotation;
+        Quaternion targetRootRot = oldRootRot * dRot;
+        if (getUpIndex == 0)
+            targetRootRot = targetRootRot * Quaternion(0, 180, 0);
+
+        Node@ t_node = rootNode.GetChild("Bip01_$AssimpFbx$_Translation", true);
+        Node@ r_node = rootNode.GetChild("Bip01_$AssimpFbx$_Rotation", true);
+        Vector3 cur_root_pos = rootNode.worldPosition;
+        Vector3 dest_root_pos = cur_root_pos;
+        dest_root_pos.x = pelvis_pos.x;
+        dest_root_pos.z = pelvis_pos.z;
+
+        if (getUpIndex == 0) {
+            boneNodes[BONE_SPINE].position = Vector3(8.78568, -0.00968838, 0);
+            t_node.position = Vector3(-0.0264441, 0.282345, 0.461603);
+        }
+        else {
+            boneNodes[BONE_SPINE].position = Vector3(8.78568, -0.00968742, 0);
+            t_node.position = Vector3(-0.0246718, 0.465134, -0.135913);
+        }
+        pelvis_bone.position = Vector3(0, 0, 0);
+        rootNode.worldPosition = dest_root_pos;
+
+        Quaternion q(90, 0, -90);
+        pelvis_bone.rotation = q;
+
+        q = oldRot * q.Inverse();
+        r_node.worldRotation = q;
+
+        // Print("targetRootRot=" + targetRootRot.eulerAngles.ToString());
+        rootNode.worldRotation = targetRootRot;
+        r_node.worldRotation = q;
     }
 }

@@ -812,6 +812,7 @@ class Character : GameObject
         FillAnimationWithCurrentPose(ragdollPoseAnim, renderNode);
         AnimationState@ state = animModel.AddAnimationState(ragdollPoseAnim);
         state.weight = 1.0f;
+        animCtrl.PlayExclusive(ragdollPoseAnim.name, LAYER_MOVE, false, 0.0f);
     }
 };
 

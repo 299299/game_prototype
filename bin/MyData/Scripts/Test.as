@@ -82,11 +82,15 @@ void CreateScene()
     cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
 
     if (!test_ragdoll)
+    {
         @player = cast<Player>(characterNode.CreateScriptObject(GAME_SCRIPT, "Player"));
+    }
 
     thugNode = scene_.GetChild("thug", true);
-    //if (!test_ragdoll)
-    //    @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+    if (!test_ragdoll)
+    {
+        @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+    }
 
     if (thug !is null)
         @thug.target = player;
@@ -104,7 +108,6 @@ void CreateScene()
         VariantMap data;
         data[DATA] = RAGDOLL_START;
         characterNode.children[0].SendEvent("AnimationTrigger", data);
-        thugNode.children[0].SendEvent("AnimationTrigger", data);
     }
 
     //Animation@ anim = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
@@ -290,6 +293,10 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         {
             Node@ renderNode = characterNode.children[0];
 
+            VariantMap data;
+            data[DATA] = RAGDOLL_STOP;
+            renderNode.SendEvent("AnimationTrigger", data);
+
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
             Animation@ anim = Animation();
             String name = "Test_Pose";
@@ -301,7 +308,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             AnimatedModel@ model = renderNode.GetComponent("AnimatedModel");
             AnimationState@ state = model.AddAnimationState(anim);
             state.weight = 1.0f;
+            ctl.PlayExclusive(anim.name, LAYER_MOVE, false, 0.0f);
 
+            int ragdoll_direction = characterNode.vars[GETUP_INDEX].GetInt();
             String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
             PlayAnimation(ctl, GetAnimationName(name1), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
         }
@@ -309,6 +318,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         {
             Node@ renderNode = characterNode.children[0];
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
+            int ragdoll_direction = characterNode.vars[GETUP_INDEX].GetInt();
             String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
             ctl.SetSpeed(GetAnimationName(name1), 1.0);
         }
