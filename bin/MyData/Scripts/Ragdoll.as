@@ -33,7 +33,7 @@ const StringHash RAGDOLL_PERPARE("Ragdoll_Prepare");
 const StringHash RAGDOLL_START("Ragdoll_Start");
 const StringHash RAGDOLL_STOP("Ragdoll_Stop");
 
-bool test_ragdoll = true;
+bool test_ragdoll = false;
 bool blend_to_anim = false;
 
 class Ragdoll : ScriptObject
@@ -49,7 +49,7 @@ class Ragdoll : ScriptObject
     Animation@        blendingAnim_1;
     Animation@        blendingAnim_2;
 
-    float             ragdollToAnimBlendTime = 5.0f;
+    float             ragdollToAnimBlendTime = 1.0f;
 
     float             minRagdollStateTime = 0.5f;
 

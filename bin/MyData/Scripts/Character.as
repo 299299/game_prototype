@@ -827,6 +827,27 @@ class Character : GameObject
         RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
         Print("HandleNodeCollision " + otherNode.name);
     }
+
+    void ResetWorldCollision()
+    {
+        if (IsPhysical())
+        {
+            onGround = false;
+            isSliding = false;
+        }
+        else
+        {
+            // If body is not active, assume it rests on the ground
+            onGround = true;
+            isSliding = false;
+        }
+    }
+
+    void FixedUpdate(float dt)
+    {
+        GameObject::FixedUpdate(dt);
+        ResetWorldCollision();
+    }
 };
 
 int DirectionMapToIndex(float directionDifference, int numDirections)
