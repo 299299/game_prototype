@@ -347,15 +347,6 @@ class PlayerAttackState : CharacterState
             return;
 
         Motion@ motion = currentAttack.motion;
-        if (attackEnemy !is null)
-        {
-            targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
-            targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
-
-            if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-                motion.translateEnabled = false;
-        }
-
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == 0)
         {
@@ -384,6 +375,15 @@ class PlayerAttackState : CharacterState
     void FixedUpdate(float dt)
     {
         Motion@ motion = currentAttack.motion;
+
+        if (attackEnemy !is null)
+        {
+            targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
+            targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
+
+            if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+                motion.translateEnabled = false;
+        }
 
         if (state != 2)
             motion.deltaPosition += movePerSec * dt;
@@ -608,7 +608,7 @@ class PlayerCounterState : CharacterCounterState
         Vector3 enemyPos = enemyNode.worldPosition;
         Vector3 currentPositionDiff = enemyPos - myPos;
         currentPositionDiff.y = 0;
-        if (attackType == 0)
+        if (attackType == ATTACK_PUNCH)
         {
             if (isBack)
             {

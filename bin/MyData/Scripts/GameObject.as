@@ -76,15 +76,11 @@ class GameObject : ScriptObject
     {
         Node@ otherNode = eventData["OtherNode"].GetPtr();
         RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
-
         // If the other collision shape belongs to static geometry, perform world collision
         if (otherBody.collisionLayer == COLLISION_LAYER_LANDSCAPE)
             WorldCollision(eventData);
-
-        // If the other node is scripted, perform object-to-object collision
-        GameObject@ otherObject = cast<GameObject>(otherNode.scriptObject);
-        if (otherObject !is null)
-            ObjectCollision(otherObject, eventData);
+        else
+            ObjectCollision(otherBody, eventData);
     }
 
     void WorldCollision(VariantMap& eventData)
@@ -117,7 +113,7 @@ class GameObject : ScriptObject
             isSliding = false;
     }
 
-    void ObjectCollision(GameObject@ otherObject, VariantMap& eventData)
+    void ObjectCollision(RigidBody@ otherBody, VariantMap& eventData)
     {
 
     }

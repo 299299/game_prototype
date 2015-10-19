@@ -2,6 +2,12 @@
 const int LAYER_MOVE = 0;
 const int LAYER_ATTACK = 1;
 
+enum AttackType
+{
+    ATTACK_PUNCH,
+    ATTACK_KICK,
+};
+
 void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
 {
     Print("PlayAnimation " + name + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
@@ -258,6 +264,7 @@ class Motion
         AnimationController@ ctrl = object.animCtrl;
         Node@ _node = object.sceneNode;
         float localTime = ctrl.GetTime(animationName);
+
         if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
@@ -286,6 +293,7 @@ class Motion
             if (translateEnabled)
             {
                 Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
+                //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.sceneNode.worldPosition.ToString() + " localTime=" + localTime);
                 object.MoveTo(tWorld, dt);
             }
             else {

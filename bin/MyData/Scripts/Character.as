@@ -520,6 +520,11 @@ class Character : GameObject
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
         body = sceneNode.GetComponent("RigidBody");
+        if (body !is null)
+        {
+            body.collisionLayer = COLLISION_LAYER_CHARACTER;
+            body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_PROP | COLLISION_LAYER_ATTACK;
+        }
 
         hipsNode = renderNode.GetChild("Bip01_Pelvis", true);
         handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
@@ -589,7 +594,8 @@ class Character : GameObject
 
     void SetTimeScale(float scale)
     {
-        // Print(GetName() + " SetTimeScale=" + scale);
+        if (timeScale == scale)
+            return;
         GameObject::SetTimeScale(scale);
         uint num = animModel.numAnimationStates;
         for (uint i=0; i<num; ++i)
@@ -639,15 +645,13 @@ class Character : GameObject
     void MoveTo(const Vector3&in position, float dt)
     {
         if (!IsPhysical())
-        {
             sceneNode.worldPosition = position;
-        }
         else
         {
             Vector3 diff = position - sceneNode.worldPosition;
             Vector3 velocity = diff / dt;
-            // Print("MoveNode vel=" + velocity.ToString() + " t1=" + tWorld.ToString() + " t2=" + _node.worldPosition.ToString() + " dt=" + dt);
-            body.linearVelocity = velocity;
+            // Print(sceneNode.name + " MoveNode vel=" + velocity.ToString() + " t1=" + position.ToString() + " t2=" + sceneNode.worldPosition.ToString() + " dt=" + dt);
+            body.linearVelocity = velocity * timeScale;
         }
     }
 
@@ -821,13 +825,6 @@ class Character : GameObject
         animCtrl.PlayExclusive(ragdollPoseAnim.name, LAYER_MOVE, false, 0.0f);
     }
 
-    void HandleNodeCollision(StringHash eventType, VariantMap& eventData)
-    {
-        Node@ otherNode = eventData["OtherNode"].GetPtr();
-        RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
-        Print("HandleNodeCollision " + otherNode.name);
-    }
-
     void ResetWorldCollision()
     {
         if (IsPhysical())
@@ -847,6 +844,11 @@ class Character : GameObject
     {
         GameObject::FixedUpdate(dt);
         ResetWorldCollision();
+    }
+
+    void ObjectCollision(RigidBody@ otherBody, VariantMap& eventData)
+    {
+        Print("ObjectCollision -> " + otherBody.node.name);
     }
 };
 

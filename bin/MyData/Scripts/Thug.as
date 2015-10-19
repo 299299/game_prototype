@@ -324,15 +324,13 @@ class ThugAttackState : CharacterState
         float punchDist = attacks[0].motion.endDistance;
         Print("targetDistance=" + targetDistance + " punchDist=" + punchDist);
         int index = RandomInt(3);
-        int attackType = 0;
-        if (targetDistance > punchDist + 0.5f)
-        {
+        int type = ATTACK_PUNCH;
+        if (targetDistance > punchDist + 0.5f) {
             index += 3; // a kick attack
-            attackType = 1;
+            type = ATTACK_KICK;
         }
-        ownner.sceneNode.vars[ATTACK_TYPE] = attackType;
-
         @currentAttack = attacks[index];
+        ownner.sceneNode.vars[ATTACK_TYPE] = type;
         state = 0;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);

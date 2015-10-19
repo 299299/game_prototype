@@ -32,9 +32,11 @@ const StringHash RAGDOLL_STATE("Ragdoll_State");
 const StringHash RAGDOLL_PERPARE("Ragdoll_Prepare");
 const StringHash RAGDOLL_START("Ragdoll_Start");
 const StringHash RAGDOLL_STOP("Ragdoll_Stop");
+const StringHash RAGDOLL_ROOT("Ragdoll_Root");
 
 bool test_ragdoll = false;
 bool blend_to_anim = false;
+int ragdoll_method = 1;
 
 class Ragdoll : ScriptObject
 {
@@ -136,12 +138,18 @@ class Ragdoll : ScriptObject
 
     void SetPhysicsEnabled(bool bEnable)
     {
-        //EnableRagdoll(bEnable);
-        SetRagdollDynamic(bEnable);
-        uint mask = COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
-        if (bEnable)
-            mask |= COLLISION_LAYER_RAGDOLL;
-        SetCollisionMask(mask);
+        if (ragdoll_method == 0)
+        {
+            EnableRagdoll(bEnable);
+        }
+        else
+        {
+            SetRagdollDynamic(bEnable);
+            uint mask = COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
+            if (bEnable)
+                mask |= COLLISION_LAYER_RAGDOLL;
+            SetCollisionMask(mask);
+        }
     }
 
     void ChangeState(int newState)
@@ -285,7 +293,7 @@ class Ragdoll : ScriptObject
         Vector3 uppper_leg_offset(0.3f, 0.0f, 0.0f);
 
         Vector3 lower_leg_size(0.175f, 0.55f, 0.175f);
-        Vector3 lower_leg_offset(0.25f, 0.0f, 0.0f);
+        Vector3 lower_leg_offset(0.25f, -0.025f, 0.0f);
 
         Vector3 upper_arm_size(0.15f, 0.4f, 0.175f);
         Vector3 upper_arm_offset_left(0.1f, 0.0f, 0.01f);
@@ -353,6 +361,7 @@ class Ragdoll : ScriptObject
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
         body.friction = 1.0f;
+        body.node.vars[RAGDOLL_ROOT] = rootNode.id;
         // body.kinematic = true;
 
         //if (boneType == BONE_PELVIS)
