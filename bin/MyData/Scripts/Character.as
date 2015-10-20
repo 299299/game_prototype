@@ -18,6 +18,10 @@ const StringHash DATA("Data");
 const StringHash NAME("Name");
 const StringHash ANIMATION("Animation");
 const StringHash GETUP_INDEX("Getup_Index");
+const StringHash SLOW_MOTION("Slow_Motion");
+const StringHash SPEED("Speed");
+const StringHash STATE("State");
+const StringHash VALUE("Value");
 
 class CharacterState : State
 {

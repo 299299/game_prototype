@@ -349,26 +349,16 @@ class AttackMotion
 {
     Motion@         motion;
     float           impactTime;
-    float           impactDist;
-    float           counterStartTime;
+    float           impactDist;;
     Vector3         impactPosition;
-    Vector2         slowMotionTime;
 
-    AttackMotion(const String&in name, int impactFrame, int counterStartFrame = -1)
+    AttackMotion(const String&in name, int impactFrame)
     {
         @motion = gMotionMgr.FindMotion(name);
         impactTime = impactFrame * SEC_PER_FRAME;
         Vector4 k = motion.motionKeys[impactFrame];
         impactPosition = Vector3(k.x, k.y, k.z);
         impactDist = impactPosition.length;
-        slowMotionTime.x = impactTime - SEC_PER_FRAME * 5;
-        slowMotionTime.y = impactTime + SEC_PER_FRAME * 5;
-        counterStartTime = counterStartFrame * SEC_PER_FRAME;
-        if (counterStartFrame > 0)
-        {
-            slowMotionTime.x = counterStartTime;
-            slowMotionTime.y = impactTime;
-        }
     }
 
     int opCmp(const AttackMotion&in obj)

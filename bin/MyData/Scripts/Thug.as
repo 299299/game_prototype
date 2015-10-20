@@ -86,6 +86,15 @@ class ThugStandState : CharacterState
         ownner.SetVelocity(Vector3(0, 0, 0));
         CharacterState::FixedUpdate(dt);
     }
+
+    void OnAnimationTrigger(AnimationState@ animState, const StringHash&in data)
+    {
+        CharacterState::OnAnimationTrigger(animState, data);
+        if (data == SLOW_MOTION) {
+            float scale = data[VALUE].GetFloat();
+            owner.SetTimeScale(scale);
+        }
+    }
 };
 
 class ThugStepMoveState : MultiMotionState
@@ -256,17 +265,17 @@ class ThugAttackState : CharacterState
     {
         super(c);
         SetName("AttackState");
-        AddAttackMotion("Attack_Punch", 23, 14);
-        AddAttackMotion("Attack_Punch_01", 23, 14);
-        AddAttackMotion("Attack_Punch_02", 23, 14);
-        AddAttackMotion("Attack_Kick", 24, 14);
-        AddAttackMotion("Attack_Kick_01", 24, 14);
-        AddAttackMotion("Attack_Kick_02", 24, 14);
+        AddAttackMotion("Attack_Punch", 23);
+        AddAttackMotion("Attack_Punch_01", 23);
+        AddAttackMotion("Attack_Punch_02", 23);
+        AddAttackMotion("Attack_Kick", 24);
+        AddAttackMotion("Attack_Kick_01", 24);
+        AddAttackMotion("Attack_Kick_02", 24);
     }
 
-    void AddAttackMotion(const String&in name, int impactFrame, int counterStartFrame)
+    void AddAttackMotion(const String&in name, int impactFrame)
     {
-        attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame, counterStartFrame));
+        attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame));
     }
 
     void Update(float dt)
@@ -275,11 +284,6 @@ class ThugAttackState : CharacterState
             return;
 
         Motion@ motion = currentAttack.motion;
-
-        float targetDistance = ownner.GetTargetDistance();
-        if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-            motion.translateEnabled = false;
-
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == 0)
         {
@@ -305,6 +309,10 @@ class ThugAttackState : CharacterState
 
     void FixedUpdate(float dt)
     {
+        float targetDistance = ownner.GetTargetDistance();
+        if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            motion.translateEnabled = false;
+
         float characterDifference = ownner.ComputeAngleDiff();
         Motion@ motion = currentAttack.motion;
         motion.deltaRotation += characterDifference * turnSpeed * dt;
