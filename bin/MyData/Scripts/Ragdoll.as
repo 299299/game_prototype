@@ -36,7 +36,7 @@ const StringHash RAGDOLL_ROOT("Ragdoll_Root");
 
 bool test_ragdoll = false;
 bool blend_to_anim = false;
-int ragdoll_method = 1;
+int ragdoll_method = 0;
 
 class Ragdoll : ScriptObject
 {
@@ -460,13 +460,13 @@ class Ragdoll : ScriptObject
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
         Print("HandleAnimationTrigger current-state=" + state);
-        StringHash data = eventData[DATA].GetStringHash();
+        StringHash name = eventData[DATA].GetVariantMap()[NAME].GetStringHash();
         int new_state = RAGDOLL_NONE;
-        if (data == RAGDOLL_PERPARE)
+        if (name == RAGDOLL_PERPARE)
             new_state = RAGDOLL_STATIC;
-        else if (data == RAGDOLL_START)
+        else if (name == RAGDOLL_START)
             new_state = RAGDOLL_DYNAMIC;
-        else if (data == RAGDOLL_STOP)
+        else if (name == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;
         ChangeState(new_state);
     }
@@ -539,6 +539,6 @@ class Ragdoll : ScriptObject
     {
         Node@ otherNode = eventData["OtherNode"].GetPtr();
         RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
-        Print("HandleNodeCollision " + otherNode.name);
+        // Print("HandleNodeCollision " + otherNode.name);
     }
 }

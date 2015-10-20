@@ -18,10 +18,13 @@ const StringHash DATA("Data");
 const StringHash NAME("Name");
 const StringHash ANIMATION("Animation");
 const StringHash GETUP_INDEX("Getup_Index");
-const StringHash SLOW_MOTION("Slow_Motion");
 const StringHash SPEED("Speed");
 const StringHash STATE("State");
 const StringHash VALUE("Value");
+const StringHash COUNTER_CHECK("CounterCheck");
+const StringHash ATTACK_CHECK("AttackCheck");
+const StringHash BONE("Bone");
+const StringHash NODE("Node");
 
 class CharacterState : State
 {
@@ -37,9 +40,10 @@ class CharacterState : State
         @ownner = null;
     }
 
-    void OnAnimationTrigger(AnimationState@ animState, const StringHash&in data)
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        if (data == RAGDOLL_START) {
+        //Print("ownner.name= " + ownner.GetName() + "name=" + eventData[NAME].GetStringHash().ToString() + " name1=" + RAGDOLL_START.ToString());
+        if (eventData[NAME].GetStringHash() == RAGDOLL_START) {
             ownner.stateMachine.ChangeState("RagdollState");
         }
     }
@@ -755,7 +759,7 @@ class Character : GameObject
 
         CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
         if (cs !is null)
-            cs.OnAnimationTrigger(state, eventData[DATA].GetStringHash());
+            cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }
 
     float GetTargetAngle()

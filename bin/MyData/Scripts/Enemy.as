@@ -49,7 +49,7 @@ class Enemy : Character
 
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "flags=" + flags + " distToPlayer=" + GetTargetDistance() + "\n";
+        return Character::GetDebugText() +  "flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
     }
 };
 

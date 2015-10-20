@@ -356,3 +356,47 @@ float AngleDiff( float diff )
         diff += 360;
     return diff;
 }
+
+void Animation_AddTrigger(const String&in name, int frame, const VariantMap&in data)
+{
+    Animation@ anim = cache.GetResource("Animation", GetAnimationName(name));
+    if (anim !is null)
+        anim.AddTrigger(float(frame) * SEC_PER_FRAME, false, Variant(data));
+}
+
+void AddAnimationTrigger(const String&in name, int frame, const String&in tag)
+{
+    AddAnimationTrigger(name, frame, StringHash(tag));
+}
+
+void AddAnimationTrigger(const String&in name, int frame, const StringHash&in tag)
+{
+    VariantMap eventData;
+    eventData[NAME] = tag;
+    Animation_AddTrigger(name, frame, eventData);
+}
+
+void AddFloatAnimationTrigger(const String&in name, int frame, const StringHash&in tag, float value)
+{
+    VariantMap eventData;
+    eventData[NAME] = TIME_SCALE;
+    eventData[VALUE] = value;
+    Animation_AddTrigger(name, frame, eventData);
+}
+
+void AddIntAnimationTrigger(const String&in name, int frame, const StringHash&in tag, int value)
+{
+    VariantMap eventData;
+    eventData[NAME] = tag;
+    eventData[VALUE] = value;
+    Animation_AddTrigger(name, frame, eventData);
+}
+
+void AddAttackCollisionTrigger(int frame, float radius, const StringHash&in boneName)
+{
+    VariantMap eventData;
+    eventData[NAME] = ATTACK_CHECK;
+    eventData[VALUE] = 1;
+    eventData[BONE] = boneName;
+    Animation_AddTrigger(name, frame, eventData);
+}

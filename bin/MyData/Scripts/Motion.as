@@ -49,20 +49,6 @@ int FindMotionIndex(const Array<Motion@>&in motions, const String&in name)
     return -1;
 }
 
-void AddAnimationTrigger(const String&in name, int frame, const String&in tag)
-{
-    Animation@ anim = cache.GetResource("Animation", GetAnimationName(name));
-    if (anim !is null)
-        anim.AddTrigger(float(frame) * SEC_PER_FRAME, false, Variant(StringHash(tag)));
-}
-
-void AddAnimationTrigger(const String&in name, int frame, const StringHash&in tag)
-{
-    Animation@ anim = cache.GetResource("Animation", GetAnimationName(name));
-    if (anim !is null)
-        anim.AddTrigger(float(frame) * SEC_PER_FRAME, false, Variant(tag));
-}
-
 void FillAnimationWithCurrentPose(Animation@ anim, Node@ _node)
 {
     Array<String> boneNames =
@@ -243,7 +229,7 @@ class Motion
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
-        object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
+        object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed * object.timeScale);
         InnerStart(object);
         // Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
     }
@@ -740,6 +726,49 @@ class MotionManager
 
         AddAnimationTrigger(preFix + "Counter_Leg_Back_05", 48, RAGDOLL_PERPARE);
         AddAnimationTrigger(preFix + "Counter_Leg_Back_05", 52, RAGDOLL_START);
+
+        preFix = "TG_Combat/";
+        AddFloatAnimationTrigger(preFix + "Attack_Kick", 15, TIME_SCALE, 0.25f);
+        AddFloatAnimationTrigger(preFix + "Attack_Kick", 24, TIME_SCALE, 1.0f);
+        AddIntAnimationTrigger(preFix + "Attack_Kick", 15, COUNTER_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Kick", 24, COUNTER_CHECK, 0);
+        AddIntAnimationTrigger(preFix + "Attack_Kick", 24, ATTACK_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Kick", 27, ATTACK_CHECK, 0);
+
+        AddFloatAnimationTrigger(preFix + "Attack_Kick_01", 12, TIME_SCALE, 0.25f);
+        AddFloatAnimationTrigger(preFix + "Attack_Kick_01", 24, TIME_SCALE, 1.0f);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_01", 12, COUNTER_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_01", 24, COUNTER_CHECK, 0);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_01", 24, ATTACK_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_01", 27, ATTACK_CHECK, 0);
+
+        AddFloatAnimationTrigger(preFix + "Attack_Kick_02", 19, TIME_SCALE, 0.25f);
+        AddFloatAnimationTrigger(preFix + "Attack_Kick_02", 24, TIME_SCALE, 1.0f);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_02", 19, COUNTER_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_02", 24, COUNTER_CHECK, 0);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_02", 24, ATTACK_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Kick_02", 27, ATTACK_CHECK, 0);
+
+        AddFloatAnimationTrigger(preFix + "Attack_Punch", 15, TIME_SCALE, 0.25f);
+        AddFloatAnimationTrigger(preFix + "Attack_Punch", 22, TIME_SCALE, 1.0f);
+        AddIntAnimationTrigger(preFix + "Attack_Punch", 15, COUNTER_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Punch", 22, COUNTER_CHECK, 0);
+        AddIntAnimationTrigger(preFix + "Attack_Punch", 22, ATTACK_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Punch", 24, ATTACK_CHECK, 0);
+
+        AddFloatAnimationTrigger(preFix + "Attack_Punch_01", 15, TIME_SCALE, 0.25f);
+        AddFloatAnimationTrigger(preFix + "Attack_Punch_01", 23, TIME_SCALE, 1.0f);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_01", 15, COUNTER_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_01", 23, COUNTER_CHECK, 0);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_01", 23, ATTACK_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_01", 24, ATTACK_CHECK, 0);
+
+        AddFloatAnimationTrigger(preFix + "Attack_Punch_02", 15, TIME_SCALE, 0.25f);
+        AddFloatAnimationTrigger(preFix + "Attack_Punch_02", 23, TIME_SCALE, 1.0f);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_02", 15, COUNTER_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_02", 23, COUNTER_CHECK, 0);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_02", 23, ATTACK_CHECK, 1);
+        AddIntAnimationTrigger(preFix + "Attack_Punch_02", 24, ATTACK_CHECK, 0);
 
         Print("MotionManager::PostProcess time-cst=" + (time.systemTime - t) + " ms");
     }

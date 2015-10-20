@@ -86,15 +86,6 @@ class ThugStandState : CharacterState
         ownner.SetVelocity(Vector3(0, 0, 0));
         CharacterState::FixedUpdate(dt);
     }
-
-    void OnAnimationTrigger(AnimationState@ animState, const StringHash&in data)
-    {
-        CharacterState::OnAnimationTrigger(animState, data);
-        if (data == SLOW_MOTION) {
-            float scale = data[VALUE].GetFloat();
-            owner.SetTimeScale(scale);
-        }
-    }
 };
 
 class ThugStepMoveState : MultiMotionState
@@ -258,8 +249,8 @@ class ThugAttackState : CharacterState
 {
     AttackMotion@               currentAttack;
     Array<AttackMotion@>        attacks;
-    int                         state;
     float                       turnSpeed = 0.5f;
+    bool                        doAttackCheck = false;
 
     ThugAttackState(Character@ c)
     {
@@ -278,44 +269,21 @@ class ThugAttackState : CharacterState
         attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame));
     }
 
-    void Update(float dt)
+    void FixedUpdate(float dt)
     {
         if (currentAttack is null)
             return;
 
         Motion@ motion = currentAttack.motion;
-        float t = ownner.animCtrl.GetTime(motion.animationName);
-        if (state == 0)
-        {
-            if (t >= currentAttack.slowMotionTime.x) {
-                state = 1;
-                ownner.SetTimeScale(0.25f);
-                ownner.AddFlag(FLAGS_COUNTER);
-                ShowHint(true);
-            }
-        }
-        else if (state == 1)
-        {
-            if (t >= currentAttack.slowMotionTime.y) {
-                state = 2;
-                ownner.SetTimeScale(1.0f);
-                ownner.RemoveFlag(FLAGS_COUNTER);
-                ShowHint(false);
-            }
-        }
-
-        CharacterState::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
-    {
         float targetDistance = ownner.GetTargetDistance();
         if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
             motion.translateEnabled = false;
 
         float characterDifference = ownner.ComputeAngleDiff();
-        Motion@ motion = currentAttack.motion;
         motion.deltaRotation += characterDifference * turnSpeed * dt;
+
+        if (doAttackCheck)
+            AttackCollisionCheck();
 
         // TODO ....
         bool finished = motion.Move(ownner, dt);
@@ -339,10 +307,10 @@ class ThugAttackState : CharacterState
         }
         @currentAttack = attacks[index];
         ownner.sceneNode.vars[ATTACK_TYPE] = type;
-        state = 0;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+        doAttackCheck = false;
         CharacterState::Enter(lastState);
         Print("Thug Pick attack motion = " + motion.animationName);
     }
@@ -361,6 +329,36 @@ class ThugAttackState : CharacterState
         Text@ text = ui.root.GetChild("debug", true);
         text.visible = bshow;
     }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == TIME_SCALE) {
+            float scale = eventData[VALUE].GetFloat();
+            ownner.SetTimeScale(scale);
+        }
+        else if (name == COUNTER_CHECK) {
+            int value = eventData[VALUE].GetInt();
+            ShowHint(value == 1);
+            if (value == 1)
+                ownner.AddFlag(FLAGS_COUNTER);
+            else
+                ownner.RemoveFlag(FLAGS_COUNTER);
+        }
+        else if (name == ATTACK_CHECK) {
+            int value = eventData[VALUE].GetInt();
+            if (value == 1 && !doAttackCheck)
+                AttackCollisionCheck();
+            doAttackCheck = (value != 0);
+        }
+    }
+
+    void AttackCollisionCheck()
+    {
+
+    }
+
 };
 
 class ThugHitState : MultiMotionState

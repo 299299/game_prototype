@@ -348,25 +348,10 @@ class PlayerAttackState : CharacterState
 
         Motion@ motion = currentAttack.motion;
         float t = ownner.animCtrl.GetTime(motion.animationName);
-        if (state == 0)
+        if (attack_timing_test)
         {
-            if (t >= currentAttack.slowMotionTime.x) {
-                state = 1;
-                SetWorldTimeScale(ownner.sceneNode.scene, 0.25f);
-            }
-        }
-        else if (state == 1)
-        {
-            if (attack_timing_test)
-            {
-                if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
-                    ownner.sceneNode.scene.timeScale = 0.0f;
-            }
-
-            if (t >= currentAttack.slowMotionTime.y) {
-                state = 2;
-                SetWorldTimeScale(ownner.sceneNode.scene, 1.0f);
-            }
+            if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
+                ownner.sceneNode.scene.timeScale = 0.0f;
         }
 
         CharacterState::Update(dt);
@@ -516,6 +501,16 @@ class PlayerAttackState : CharacterState
         CharacterState::Exit(nextState);
         @attackEnemy = null;
         @currentAttack = null;
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == TIME_SCALE) {
+            float scale = eventData[VALUE].GetFloat();
+            SetWorldTimeScale(ownner.sceneNode, scale);
+        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -814,7 +809,7 @@ class Player : Character
 
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "flags=" + flags + " combo=" + combo + "\n";
+        return Character::GetDebugText() +  "flags=" + flags + " combo=" + combo + " timeScale=" + timeScale + "\n";
     }
 
     void CommonStateFinishedOnGroud()
