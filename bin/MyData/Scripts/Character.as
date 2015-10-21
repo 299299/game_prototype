@@ -25,6 +25,11 @@ const StringHash COUNTER_CHECK("CounterCheck");
 const StringHash ATTACK_CHECK("AttackCheck");
 const StringHash BONE("Bone");
 const StringHash NODE("Node");
+const StringHash L_FOOT("Bip01_L_Foot");
+const StringHash R_FOOT("Bip01_R_Foot");
+const StringHash L_HAND("Bip01_L_Hand");
+const StringHash R_HAND("Bip01_R_Hand");
+const StringHash RADIUS("Radius");
 
 class CharacterState : State
 {
@@ -509,6 +514,7 @@ class Character : GameObject
     Quaternion              startRotation;
 
     Animation@              ragdollPoseAnim;
+    float                   attackRadius = 0.5f;
 
     Character()
     {
@@ -540,14 +546,11 @@ class Character : GameObject
         footNode_L = renderNode.GetChild("Bip01_L_Foot", true);
         footNode_R = renderNode.GetChild("Bip01_R_Foot", true);
 
-        // Subscribe to animation triggers, which are sent by the AnimatedModel's node (same as our node)
-        SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-
-        startPosition = node.worldPosition;
-        startRotation = node.worldRotation;
+        startPosition = sceneNode.worldPosition;
+        startRotation = sceneNode.worldRotation;
         sceneNode.vars[TIME_SCALE] = 1.0f;
 
-        String name = node.name + "_Ragdoll_Pose";
+        String name = sceneNode.name + "_Ragdoll_Pose";
         ragdollPoseAnim = cache.GetResource("Animation", name);
         if (ragdollPoseAnim is null)
         {
@@ -558,7 +561,8 @@ class Character : GameObject
             cache.AddManualResource(ragdollPoseAnim);
         }
 
-        SubscribeToEvent(node, "NodeCollision", "HandleNodeCollision");
+        SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+        SubscribeToEvent(sceneNode, "NodeCollision", "HandleNodeCollision");
     }
 
     void Start()
@@ -728,19 +732,16 @@ class Character : GameObject
         //debug.AddSphere(sp, Color(0, 1, 0));
         //debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
 
-        /*
-        float handRadius = 0.5f;
+        float radius = attackRadius;
         Sphere sp;
-        sp.Define(handNode_L.worldPosition, handRadius);
+        sp.Define(handNode_L.worldPosition, radius);
         debug.AddSphere(sp, Color(0, 1, 0));
-        sp.Define(handNode_R.worldPosition, handRadius);
+        sp.Define(handNode_R.worldPosition, radius);
         debug.AddSphere(sp, Color(0, 1, 0));
-        float footRadius = 0.5f;
-        sp.Define(footNode_L.worldPosition, footRadius);
+        sp.Define(footNode_L.worldPosition, radius);
         debug.AddSphere(sp, Color(0, 1, 0));
-        sp.Define(footNode_R.worldPosition, footRadius);
+        sp.Define(footNode_R.worldPosition, radius);
         debug.AddSphere(sp, Color(0, 1, 0));
-        */
     }
 
     void TestAnimation(const String&in animationName)
@@ -857,6 +858,16 @@ class Character : GameObject
     void ObjectCollision(RigidBody@ otherBody, VariantMap& eventData)
     {
         Print("ObjectCollision -> " + otherBody.node.name);
+    }
+
+    void OnDamange(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    {
+        stateMachine.ChangeState("HitState");
+    }
+
+    Node@ GetNode()
+    {
+        return sceneNode;
     }
 };
 

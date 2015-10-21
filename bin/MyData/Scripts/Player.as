@@ -32,7 +32,14 @@ class PlayerStandState : CharacterState
                 blendTime = 0.5f;
         }
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        ownner.AddFlag(FLAGS_ATTACK);
         CharacterState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.RemoveFlag(FLAGS_ATTACK);
+        CharacterState::Exit(nextState);
     }
 
     void Update(float dt)
@@ -98,6 +105,7 @@ class PlayerTurnState : MultiMotionState
     void Enter(State@ lastState)
     {
         MultiMotionState::Enter(lastState);
+        ownner.AddFlag(FLAGS_ATTACK);
         Motion@ motion = motions[selectIndex];
         Vector4 endKey = motion.GetKey(motion.endTime);
         float motionTargetAngle = motion.startRotation + endKey.w;
@@ -105,6 +113,12 @@ class PlayerTurnState : MultiMotionState
         float diff = AngleDiff(targetAngle - motionTargetAngle);
         turnSpeed = diff / motion.endTime;
         Print("motionTargetAngle=" + String(motionTargetAngle) + " targetAngle=" + String(targetAngle) + " diff=" + String(diff) + " turnSpeed=" + String(turnSpeed));
+    }
+
+    void Exit(State@ nextState)
+    {
+        MultiMotionState::Exit(nextState);
+        ownner.RemoveFlag(FLAGS_ATTACK);
     }
 };
 
@@ -148,6 +162,18 @@ class PlayerMoveState : SingleMotionState
         }
 
         CharacterState::FixedUpdate(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        ownner.AddFlag(FLAGS_ATTACK);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        ownner.RemoveFlag(FLAGS_ATTACK);
     }
 };
 
@@ -494,6 +520,7 @@ class PlayerAttackState : CharacterState
     {
         Start();
         CharacterState::Enter(lastState);
+        ownner.AddFlag(FLAGS_ATTACK);
     }
 
     void Exit(State@ nextState)
@@ -501,6 +528,7 @@ class PlayerAttackState : CharacterState
         CharacterState::Exit(nextState);
         @attackEnemy = null;
         @currentAttack = null;
+        ownner.RemoveFlag(FLAGS_ATTACK);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -790,11 +818,6 @@ class Player : Character
                 stateMachine.ChangeState("EvadeState");
             }
         }
-    }
-
-    void Hit()
-    {
-
     }
 
     bool CanBeAttacked()

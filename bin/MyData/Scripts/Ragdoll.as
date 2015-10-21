@@ -459,7 +459,7 @@ class Ragdoll : ScriptObject
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
-        Print("HandleAnimationTrigger current-state=" + state);
+        // Print("HandleAnimationTrigger current-state=" + state);
         StringHash name = eventData[DATA].GetVariantMap()[NAME].GetStringHash();
         int new_state = RAGDOLL_NONE;
         if (name == RAGDOLL_PERPARE)

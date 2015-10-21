@@ -251,6 +251,8 @@ class ThugAttackState : CharacterState
     Array<AttackMotion@>        attacks;
     float                       turnSpeed = 0.5f;
     bool                        doAttackCheck = false;
+    Node@                       attackCheckNode;
+    int                         attackDamage = 10;
 
     ThugAttackState(Character@ c)
     {
@@ -320,6 +322,7 @@ class ThugAttackState : CharacterState
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
         ownner.SetTimeScale(1.0f);
+        attackCheckNode = null;
         ShowHint(false);
         CharacterState::Exit(nextState);
     }
@@ -348,15 +351,45 @@ class ThugAttackState : CharacterState
         }
         else if (name == ATTACK_CHECK) {
             int value = eventData[VALUE].GetInt();
-            if (value == 1 && !doAttackCheck)
-                AttackCollisionCheck();
+            if (value == 1)
+            {
+                attackCheckNode = ownner.sceneNode.GetChild(eventData[BONE].GetString(), true);
+                Print("Thug AttackCheck bone=" + attackCheckNode.name);
+                if (!doAttackCheck)
+                    AttackCollisionCheck();
+            }
             doAttackCheck = (value != 0);
         }
     }
 
     void AttackCollisionCheck()
     {
+        if (attackCheckNode is null)
+            return;
 
+        Vector3 position = attackCheckNode.worldPosition;
+        Sphere sphere;
+        sphere.Define(position, 1.0f);
+        uint mask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL;
+        Array<RigidBody@> contactBodies = ownner.sceneNode.scene.physicsWorld.GetRigidBodies(sphere, -1);
+        Print("ContactBodies = " + contactBodies.length);
+        for (uint i=0; i<contactBodies.length; ++i)
+        {
+            Node@ n = contactBodies[i].node;
+            Print("BodyName=" + n.name);
+            if (n is ownner.sceneNode)
+                continue;
+
+            GameObject@ object = cast<GameObject>(n.scriptObject);
+            if (object is null)
+                continue;
+
+            Print("object.name=" + n.name);
+            Vector3 dir = position - n.worldPosition;
+            dir.y = 0;
+            dir.Normalize();
+            object.OnDamange(ownner, position, dir, attackDamage);
+        }
     }
 
 };
@@ -496,8 +529,11 @@ class Thug : Enemy
     {
         // try to attack
         int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
-        if (num < MAX_NUM_OF_ATTACK)
-            stateMachine.ChangeState("AttackState");
+        if (num >= MAX_NUM_OF_ATTACK)
+            return;
+        if (!target.HasFlag(FLAGS_ATTACK))
+            return;
+        stateMachine.ChangeState("AttackState");
     }
 
     void Counter()

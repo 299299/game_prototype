@@ -181,6 +181,16 @@ class GameObject : ScriptObject
             return false;
         return state.nameHash == nameHash;
     }
+
+    void OnDamange(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    {
+
+    }
+
+    Node@ GetNode()
+    {
+        return null;
+    }
 };
 
 
