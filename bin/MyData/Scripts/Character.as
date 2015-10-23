@@ -514,6 +514,8 @@ class Character : GameObject
     Quaternion              startRotation;
 
     Animation@              ragdollPoseAnim;
+
+    Node@                   attackCheckNode;
     float                   attackRadius = 0.5f;
 
     Character()
@@ -563,6 +565,16 @@ class Character : GameObject
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
         SubscribeToEvent(sceneNode, "NodeCollision", "HandleNodeCollision");
+
+        attackCheckNode = sceneNode.CreateChild("Attack_Node");
+        CollisionShape@ shape = attackCheckNode.CreateComponent("CollisionShape");
+        shape.SetSphere(attackRadius);
+        RigidBody@ rb = attackCheckNode.CreateComponent("RigidBody");
+        rb.trigger = true;
+        rb.collisionLayer = COLLISION_LAYER_ATTACK;
+        rb.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL;
+        rb.collisionEventMode = COLLISION_ALWAYS;
+        rb.enabled = false;
     }
 
     void Start()
@@ -851,13 +863,15 @@ class Character : GameObject
 
     void FixedUpdate(float dt)
     {
+        if (IsPhysical())
+            body.Activate();
         GameObject::FixedUpdate(dt);
         ResetWorldCollision();
     }
 
     void ObjectCollision(RigidBody@ otherBody, VariantMap& eventData)
     {
-        Print("ObjectCollision -> " + otherBody.node.name);
+        // Print("ObjectCollision -> " + otherBody.node.name);
     }
 
     void OnDamange(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
@@ -868,6 +882,12 @@ class Character : GameObject
     Node@ GetNode()
     {
         return sceneNode;
+    }
+
+    void EnableAttackCheck(bool bEnable)
+    {
+        RigidBody@ rb = attackCheckNode.GetComponent("RigidBody");
+        rb.enabled = bEnable;
     }
 };
 

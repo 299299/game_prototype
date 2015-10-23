@@ -253,6 +253,9 @@ class ThugAttackState : CharacterState
     bool                        doAttackCheck = false;
     Node@                       attackCheckNode;
     int                         attackDamage = 10;
+    int                         currentFrame = 0;
+    int                         enableAttackFrame = 0;
+    int                         disableAttackFrame = -1;
 
     ThugAttackState(Character@ c)
     {
@@ -276,6 +279,7 @@ class ThugAttackState : CharacterState
         if (currentAttack is null)
             return;
 
+        ++ currentFrame;
         Motion@ motion = currentAttack.motion;
         float targetDistance = ownner.GetTargetDistance();
         if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
@@ -286,6 +290,11 @@ class ThugAttackState : CharacterState
 
         if (doAttackCheck)
             AttackCollisionCheck();
+
+        if (currentFrame == disableAttackFrame) {
+            ownner.EnableAttackCheck(false);
+            doAttackCheck = false;
+        }
 
         // TODO ....
         bool finished = motion.Move(ownner, dt);
@@ -313,6 +322,9 @@ class ThugAttackState : CharacterState
         motion.Start(ownner);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         doAttackCheck = false;
+        currentFrame = 0;
+        disableAttackFrame = -1;
+        enableAttackFrame = -1;
         CharacterState::Enter(lastState);
         Print("Thug Pick attack motion = " + motion.animationName);
     }
@@ -337,11 +349,13 @@ class ThugAttackState : CharacterState
     {
         CharacterState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
-        if (name == TIME_SCALE) {
+        if (name == TIME_SCALE)
+        {
             float scale = eventData[VALUE].GetFloat();
             ownner.SetTimeScale(scale);
         }
-        else if (name == COUNTER_CHECK) {
+        else if (name == COUNTER_CHECK)
+        {
             int value = eventData[VALUE].GetInt();
             ShowHint(value == 1);
             if (value == 1)
@@ -349,16 +363,33 @@ class ThugAttackState : CharacterState
             else
                 ownner.RemoveFlag(FLAGS_COUNTER);
         }
-        else if (name == ATTACK_CHECK) {
+        else if (name == ATTACK_CHECK)
+        {
             int value = eventData[VALUE].GetInt();
+            bool bCheck = value == 1;
+            if (doAttackCheck == bCheck)
+                return;
+
+            doAttackCheck = bCheck;
             if (value == 1)
             {
                 attackCheckNode = ownner.sceneNode.GetChild(eventData[BONE].GetString(), true);
                 Print("Thug AttackCheck bone=" + attackCheckNode.name);
-                if (!doAttackCheck)
-                    AttackCollisionCheck();
+                ownner.EnableAttackCheck(true);
+                AttackCollisionCheck();
+                enableAttackFrame = currentFrame;
             }
-            doAttackCheck = (value != 0);
+            else
+            {
+                disableAttackFrame = currentFrame;
+                if (disableAttackFrame == enableAttackFrame)
+                    disableAttackFrame += 1;
+                else
+                {
+                    disableAttackFrame = -1;
+                    ownner.EnableAttackCheck(false);
+                }
+            }
         }
     }
 
@@ -368,10 +399,9 @@ class ThugAttackState : CharacterState
             return;
 
         Vector3 position = attackCheckNode.worldPosition;
-        Sphere sphere;
-        sphere.Define(position, 1.0f);
-        uint mask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL;
-        Array<RigidBody@> contactBodies = ownner.sceneNode.scene.physicsWorld.GetRigidBodies(sphere, -1);
+        ownner.attackCheckNode.worldPosition = position;
+        RigidBody@ rb = ownner.attackCheckNode.GetComponent("RigidBody");
+        Array<RigidBody@> contactBodies = ownner.sceneNode.scene.physicsWorld.GetRigidBodies(rb);
         Print("ContactBodies = " + contactBodies.length);
         for (uint i=0; i<contactBodies.length; ++i)
         {
