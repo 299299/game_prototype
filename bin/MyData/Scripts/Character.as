@@ -520,6 +520,7 @@ class Character : GameObject
 
     Node@                   attackCheckNode;
     float                   attackRadius = 0.5f;
+    int                     attackDamage = 10;
 
     Character()
     {
@@ -648,7 +649,7 @@ class Character : GameObject
     {
         String debugText = "========================================================================\n";
         debugText += stateMachine.GetDebugText();
-        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + "\n";
+        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + " health:" + health + "\n";
         uint num = animModel.numAnimationStates;
         if (num > 0)
         {
@@ -879,7 +880,7 @@ class Character : GameObject
         // Print("ObjectCollision -> " + otherBody.node.name);
     }
 
-    void OnDamange(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
     {
         stateMachine.ChangeState("HitState");
     }
@@ -893,6 +894,11 @@ class Character : GameObject
     {
         RigidBody@ rb = attackCheckNode.GetComponent("RigidBody");
         rb.enabled = bEnable;
+    }
+
+    void OnDead()
+    {
+        stateMachine.ChangeState("DeadState");
     }
 };
 

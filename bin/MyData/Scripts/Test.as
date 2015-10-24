@@ -401,7 +401,8 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         player.DebugDraw(debug);
     if (thug !is null)
         thug.DebugDraw(debug);
-    scene_.physicsWorld.DrawDebugGeometry(false);
+
+    //scene_.physicsWorld.DrawDebugGeometry(false);
 
     //AnimatedModel@ model = characterNode.children[0].GetComponent("AnimatedModel");
     //Skeleton@ skel = model.skeleton;

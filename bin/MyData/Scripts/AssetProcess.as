@@ -392,12 +392,20 @@ void AddIntAnimationTrigger(const String&in name, int frame, const StringHash&in
     Animation_AddTrigger(name, frame, eventData);
 }
 
-void AddAttackCollisionTrigger(const String&in name, int frame, const String&in boneName)
+void AddAttackTrigger(const String&in name, int startFrame, int endFrame, const String&in boneName)
 {
     VariantMap eventData;
     eventData[NAME] = ATTACK_CHECK;
     eventData[VALUE] = 1;
     eventData[BONE] = boneName;
-    //eventData[RADIUS] = radius;
-    Animation_AddTrigger(name, frame, eventData);
+    Animation_AddTrigger(name, startFrame, eventData);
+    eventData[VALUE] = 0;
+    Animation_AddTrigger(name, endFrame + 1, eventData);
+}
+
+void AddRagdollTrigger(const String&in name, int prepareFrame, int startFrame)
+{
+    if (prepareFrame >= 0)
+        AddAnimationTrigger(name, prepareFrame, RAGDOLL_PERPARE);
+    AddAnimationTrigger(name, startFrame, RAGDOLL_START);
 }

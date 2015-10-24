@@ -261,17 +261,17 @@ class ThugAttackState : CharacterState
     {
         super(c);
         SetName("AttackState");
-        AddAttackMotion("Attack_Punch", 23);
-        AddAttackMotion("Attack_Punch_01", 23);
-        AddAttackMotion("Attack_Punch_02", 23);
-        AddAttackMotion("Attack_Kick", 24);
-        AddAttackMotion("Attack_Kick_01", 24);
-        AddAttackMotion("Attack_Kick_02", 24);
+        AddAttackMotion("Attack_Punch", 23, ATTACK_PUNCH);
+        AddAttackMotion("Attack_Punch_01", 23, ATTACK_PUNCH);
+        AddAttackMotion("Attack_Punch_02", 23, ATTACK_PUNCH);
+        AddAttackMotion("Attack_Kick", 24, ATTACK_KICK);
+        AddAttackMotion("Attack_Kick_01", 24, ATTACK_KICK);
+        AddAttackMotion("Attack_Kick_02", 24, ATTACK_KICK);
     }
 
-    void AddAttackMotion(const String&in name, int impactFrame)
+    void AddAttackMotion(const String&in name, int impactFrame, int type)
     {
-        attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame));
+        attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame, type));
     }
 
     void FixedUpdate(float dt)
@@ -311,13 +311,10 @@ class ThugAttackState : CharacterState
         float punchDist = attacks[0].motion.endDistance;
         Print("targetDistance=" + targetDistance + " punchDist=" + punchDist);
         int index = RandomInt(3);
-        int type = ATTACK_PUNCH;
-        if (targetDistance > punchDist + 0.5f) {
+        if (targetDistance > punchDist + 0.5f)
             index += 3; // a kick attack
-            type = ATTACK_KICK;
-        }
         @currentAttack = attacks[index];
-        ownner.sceneNode.vars[ATTACK_TYPE] = type;
+        ownner.sceneNode.vars[ATTACK_TYPE] = currentAttack.type;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
@@ -418,10 +415,9 @@ class ThugAttackState : CharacterState
             Vector3 dir = position - n.worldPosition;
             dir.y = 0;
             dir.Normalize();
-            object.OnDamange(ownner, position, dir, attackDamage);
+            object.OnDamage(ownner, position, dir, ownner.attackDamage);
         }
     }
-
 };
 
 class ThugHitState : MultiMotionState
@@ -432,9 +428,10 @@ class ThugHitState : MultiMotionState
         SetName("HitState");
         String preFix = "TG_HitReaction/";
         AddMotion(preFix + "Generic_Hit_Reaction");
+        AddMotion(preFix + "HitReaction_Right");
         AddMotion(preFix + "HitReaction_Back_NoTurn");
         AddMotion(preFix + "HitReaction_Left");
-        AddMotion(preFix + "HitReaction_Right");
+
         AddMotion(preFix + "Push_Reaction");
         AddMotion(preFix + "Push_Reaction_From_Back");
     }
@@ -582,6 +579,39 @@ class Thug : Enemy
     void CommonStateFinishedOnGroud()
     {
         stateMachine.ChangeState("StandState");
+    }
+
+    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    {
+        if (!CanBeAttacked())
+            return;
+
+        Node@ attackNode = attacker.GetNode();
+        float diff = ComputeAngleDiff(attackNode);
+        int r = DirectionMapToIndex(diff, 4);
+        int attackType = attackNode.vars[ATTACK_TYPE].GetInt();
+        // flip left and right
+        if (r == 1)
+            r = 3;
+        if (r == 3)
+            r = 1;
+        int index = r;
+        if (index == 0)
+        {
+            if (attackType == ATTACK_KICK)
+            {
+                index = 4 + RandomInt(2);
+            }
+        }
+        sceneNode.vars[ANIMATION_INDEX] = index;
+        stateMachine.ChangeState("HitState");
+
+        health -= damage;
+        if (health <= 0)
+        {
+            OnDead();
+            health = 0;
+        }
     }
 };
 
