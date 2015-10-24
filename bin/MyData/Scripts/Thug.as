@@ -402,11 +402,11 @@ class ThugAttackState : CharacterState
         ownner.attackCheckNode.worldPosition = position;
         RigidBody@ rb = ownner.attackCheckNode.GetComponent("RigidBody");
         Array<RigidBody@> contactBodies = ownner.sceneNode.scene.physicsWorld.GetRigidBodies(rb);
-        Print("ContactBodies = " + contactBodies.length);
+        //Print("ContactBodies = " + contactBodies.length);
         for (uint i=0; i<contactBodies.length; ++i)
         {
             Node@ n = contactBodies[i].node;
-            Print("BodyName=" + n.name);
+            //Print("BodyName=" + n.name);
             if (n is ownner.sceneNode)
                 continue;
 
@@ -414,7 +414,7 @@ class ThugAttackState : CharacterState
             if (object is null)
                 continue;
 
-            Print("object.name=" + n.name);
+            //Print("object.name=" + n.name);
             Vector3 dir = position - n.worldPosition;
             dir.y = 0;
             dir.Normalize();
@@ -561,7 +561,7 @@ class Thug : Enemy
         int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
         if (num >= MAX_NUM_OF_ATTACK)
             return;
-        if (!target.HasFlag(FLAGS_ATTACK))
+        if (!target.CanBeAttacked())
             return;
         stateMachine.ChangeState("AttackState");
     }

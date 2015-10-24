@@ -721,11 +721,17 @@ class PlayerHitState : MultiMotionState
         super(c);
         SetName("HitState");
         String hitPrefix = "BM_Combat_HitReaction/";
-        AddMotion(hitPrefix + "HitReaction_Face_Left");
         AddMotion(hitPrefix + "HitReaction_Face_Right");
-        AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
         AddMotion(hitPrefix + "Hit_Reaction_SideRight");
+        AddMotion(hitPrefix + "HitReaction_Back");
+        AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
         AddMotion(hitPrefix + "HitReaction_Stomach");
+        AddMotion(hitPrefix + "BM_Hit_Reaction");
+    }
+
+    void Enter(State@ lastState)
+    {
+        MultiMotionState::Enter(lastState);
     }
 };
 
@@ -796,8 +802,6 @@ class Player : Character
         counterEnemy.stateMachine.ChangeState("CounterState");
     }
 
-
-
     void Evade()
     {
         Print("Player::Evade()");
@@ -820,16 +824,6 @@ class Player : Character
         }
     }
 
-    bool CanBeAttacked()
-    {
-        return true;
-    }
-
-    bool CanBeCountered()
-    {
-        return false;
-    }
-
     String GetDebugText()
     {
         return Character::GetDebugText() +  "flags=" + flags + " combo=" + combo + " timeScale=" + timeScale + "\n";
@@ -847,6 +841,32 @@ class Player : Character
     float GetTargetAngle()
     {
         return gInput.m_leftStickAngle + gCameraMgr.GetCameraAngle();
+    }
+
+    void OnDamange(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    {
+        if (!CanBeAttacked())
+            return;
+
+        Node@ attackNode = attacker.GetNode();
+        float diff = ComputeAngleDiff(attackNode);
+        int r = DirectionMapToIndex(diff, 4);
+        int attackType = attackNode.vars[ATTACK_TYPE].GetInt();
+        // flip left and right
+        if (r == 1)
+            r = 3;
+        if (r == 3)
+            r = 1;
+        int index = r;
+        if (index == 0)
+        {
+            if (attackType == ATTACK_KICK)
+            {
+                index = 4;
+            }
+        }
+        sceneNode.vars[ANIMATION_INDEX] = index;
+        stateMachine.ChangeState("HitState");
     }
 
     //====================================================================

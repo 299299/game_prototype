@@ -32,21 +32,6 @@ class Enemy : Character
         return GetTargetDistance(target.sceneNode);
     }
 
-    bool CanBeAttacked()
-    {
-        return HasFlag(FLAGS_ATTACK);
-    }
-
-    bool CanBeCountered()
-    {
-        return HasFlag(FLAGS_COUNTER);
-    }
-
-    bool CanBeRedirected()
-    {
-        return HasFlag(FLAGS_REDIRECTED);
-    }
-
     String GetDebugText()
     {
         return Character::GetDebugText() +  "flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";

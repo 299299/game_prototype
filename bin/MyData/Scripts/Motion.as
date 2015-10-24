@@ -415,12 +415,13 @@ class MotionManager
         CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
 
         String preFix = "BM_Combat_HitReaction/";
-        CreateMotion(preFix + "HitReaction_Back");
-        CreateMotion(preFix + "HitReaction_Face_Left");
-        CreateMotion(preFix + "HitReaction_Face_Right");
-        CreateMotion(preFix + "Hit_Reaction_SideLeft");
-        CreateMotion(preFix + "Hit_Reaction_SideRight");
-        CreateMotion(preFix + "HitReaction_Stomach");
+        CreateMotion(preFix + "HitReaction_Back", kMotion_XZ); // back attacked
+        // CreateMotion(preFix + "HitReaction_Face_Left", kMotion_XZ); // front punched
+        CreateMotion(preFix + "HitReaction_Face_Right", kMotion_XZ); // front punched
+        CreateMotion(preFix + "Hit_Reaction_SideLeft", kMotion_XZ); // left attacked
+        CreateMotion(preFix + "Hit_Reaction_SideRight", kMotion_XZ); // right attacked
+        CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
+        CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
 
         // Attacks
         preFix = "BM_Attack/";

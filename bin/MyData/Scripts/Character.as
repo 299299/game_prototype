@@ -5,6 +5,7 @@ const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2;
 const float START_TO_ATTACK_DIST = 6;
 
 const int MAX_NUM_OF_ATTACK = 2;
+const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash REDIRECT_STATE("RedirectState");
@@ -515,6 +516,8 @@ class Character : GameObject
 
     Animation@              ragdollPoseAnim;
 
+    int                     health = INITIAL_HEALTH;
+
     Node@                   attackCheckNode;
     float                   attackRadius = 0.5f;
 
@@ -712,22 +715,24 @@ class Character : GameObject
     {
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
+        health = INITIAL_HEALTH;
+        SetTimeScale(1.0f);
         stateMachine.ChangeState("StandState");
     }
 
     bool CanBeAttacked()
     {
-        return true;
+        return HasFlag(FLAGS_ATTACK);
     }
 
     bool CanBeCountered()
     {
-        return true;
+        return HasFlag(FLAGS_COUNTER);
     }
 
     bool CanBeRedirected()
     {
-        return true;
+        return HasFlag(FLAGS_REDIRECTED);
     }
 
     void DebugDraw(DebugRenderer@ debug)
