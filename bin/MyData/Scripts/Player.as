@@ -645,8 +645,6 @@ class PlayerCounterState : CharacterCounterState
     float               yawPerSec;
     Vector3             targetPosition;
 
-
-
     PlayerCounterState(Character@ c)
     {
         super(c);

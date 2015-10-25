@@ -184,7 +184,7 @@ class Ragdoll : ScriptObject
                         float scale = rootNode.vars[TIME_SCALE].GetFloat();
                         velocity /= timeInState;
                         velocity *= scale;
-                        Print(boneNodes[i].name + " velocity=" + velocity.ToString());
+                        // Print(boneNodes[i].name + " velocity=" + velocity.ToString());
                         // if (i == BONE_PELVIS || i == BONE_SPINE)
                         rb.linearVelocity = velocity;
                     }

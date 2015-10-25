@@ -522,6 +522,8 @@ class Character : GameObject
     float                   attackRadius = 0.5f;
     int                     attackDamage = 10;
 
+    Node@                   hintNode;
+
     Character()
     {
         Print("Character()");
@@ -579,6 +581,16 @@ class Character : GameObject
         rb.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL;
         rb.collisionEventMode = COLLISION_ALWAYS;
         rb.enabled = false;
+
+        hintNode = sceneNode.CreateChild("Hint_Node");
+        hintNode.position = Vector3(0, 5, 0);
+        Text3D@ text = hintNode.CreateComponent("Text3D");
+        text.SetFont("Fonts/UbuntuMono-R.ttf", 25);
+        text.SetAlignment(HA_CENTER, VA_CENTER);
+        text.color = Color(1, 0, 0);
+        text.textAlignment = HA_CENTER;
+        text.text = sceneNode.name;
+        text.faceCameraMode = FC_LOOKAT_XYZ;
     }
 
     void Start()
@@ -910,6 +922,12 @@ class Character : GameObject
         VariantMap data;
         data[DATA] = RAGDOLL_START;
         renderNode.SendEvent("AnimationTrigger", data);
+    }
+
+    void SetHintText(const String&in text)
+    {
+        Text3D@ text3d = hintNode.GetComponent("Text3D");
+        text3d.text = text;
     }
 };
 

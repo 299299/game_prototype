@@ -59,19 +59,25 @@ class ThugStandState : CharacterState
             }
 
             int rand_i = RandomInt(2);
+            Print("rand_i=" + rand_i + " dist=" + dist);
+
             if (rand_i == 0)
             {
-                if (dist <= KICK_DIST + 0.5f)
+                float attack_dist = KICK_DIST + 0.5f;
+                if (dist <= attack_dist)
                 {
-                    ownner.Attack();
-                    return;
+                    Print("do attack because dist <= " + attack_dist);
+                    if (ownner.Attack())
+                        return;
                 }
             }
 
              // try to move to player
             String nextState = "StepMoveState";
-            if (dist >= STEP_MAX_DIST + 0.5f)
+            float run_dist = STEP_MAX_DIST + 0.5f;
+            if (dist >= run_dist)
             {
+                Print("do run because dist >= " + run_dist);
                nextState = "RunState";
             }
             ownner.stateMachine.ChangeState(nextState);
@@ -117,10 +123,18 @@ class ThugStepMoveState : MultiMotionState
             float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
             bool attack = false;
 
-            if (dist <= attackRange && dist >= -0.5f && Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
+            if (dist <= attackRange && dist >= -0.5f)
             {
-                if (ownner.Attack())
+                if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
+                {
+                    if (ownner.Attack())
+                        return;
+                }
+                else
+                {
+                    ownner.stateMachine.ChangeState("TurnState");
                     return;
+                }
             }
             ownner.CommonStateFinishedOnGroud();
         }
@@ -146,7 +160,7 @@ class ThugStepMoveState : MultiMotionState
                 index += 3;
         }
 
-        Print("index = " + index);
+        Print("ThugStepMoveState-> index = " + index);
 
         //TODO OTHER left/back/right
         ownner.sceneNode.vars[ANIMATION_INDEX] = index;
@@ -330,8 +344,7 @@ class ThugAttackState : CharacterState
 
     void ShowHint(bool bshow)
     {
-        Text@ text = ui.root.GetChild("debug", true);
-        text.visible = bshow;
+        ownner.SetHintText(bshow ? "COUNTER!!!!!!!" : ownner.sceneNode.name);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
