@@ -810,11 +810,6 @@ class PlayerHitState : MultiMotionState
         AddMotion(hitPrefix + "HitReaction_Stomach");
         AddMotion(hitPrefix + "BM_Hit_Reaction");
     }
-
-    void Enter(State@ lastState)
-    {
-        MultiMotionState::Enter(lastState);
-    }
 };
 
 class PlayerGetUpState : CharacterGetUpState
@@ -863,28 +858,30 @@ class Player : Character
         Character::DebugDraw(debug);
     }
 
-    void Attack()
+    bool Attack()
     {
         stateMachine.ChangeState("AttackState");
+        return true;
     }
 
-    void Counter()
+    bool Counter()
     {
         Print("Player::Counter");
         Enemy@ counterEnemy = PickCounterEnemy();
         if (counterEnemy is null)
-            return;
+            return false;
 
         Print("Choose Couter Enemy " + counterEnemy.sceneNode.name);
         PlayerCounterState@ state = cast<PlayerCounterState@>(stateMachine.FindState("CounterState"));
         if (state is null)
-            return;
+            return false;
         @state.counterEnemy = counterEnemy;
         stateMachine.ChangeState("CounterState");
         counterEnemy.stateMachine.ChangeState("CounterState");
+        return true;
     }
 
-    void Evade()
+    bool Evade()
     {
         Print("Player::Evade()");
         Enemy@ redirectEnemy = PickRedirectEnemy();
@@ -904,6 +901,8 @@ class Player : Character
                 stateMachine.ChangeState("EvadeState");
             }
         }
+
+        return true;
     }
 
     String GetDebugText()

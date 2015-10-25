@@ -690,21 +690,25 @@ class Character : GameObject
         }
     }
 
-    void Attack()
+    bool Attack()
     {
+        return false;
     }
 
-    void Counter()
+    bool Counter()
     {
+        return false;
     }
 
-    void Evade()
+    bool Evade()
     {
+        return false;
     }
 
-    void Redirect()
+    bool Redirect()
     {
         stateMachine.ChangeState("RedirectState");
+        return false;
     }
 
     void CommonStateFinishedOnGroud()
@@ -899,6 +903,13 @@ class Character : GameObject
     void OnDead()
     {
         stateMachine.ChangeState("DeadState");
+    }
+
+    void MakeMeRagdoll()
+    {
+        VariantMap data;
+        data[DATA] = RAGDOLL_START;
+        renderNode.SendEvent("AnimationTrigger", data);
     }
 };
 

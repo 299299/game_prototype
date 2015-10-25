@@ -43,7 +43,7 @@ class ThugStandState : CharacterState
     void Update(float dt)
     {
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (dist < 0)
+        if (dist < -0.25f)
         {
             ownner.stateMachine.ChangeState("StepMoveState");
             return;
@@ -58,21 +58,23 @@ class ThugStandState : CharacterState
                 return;
             }
 
-            if (dist > KICK_DIST + 0.5f)
+            int rand_i = RandomInt(2);
+            if (rand_i == 0)
             {
-                // try to move to player
-                String nextState = "StepMoveState";
-                if (dist >= STEP_MAX_DIST + 0.5f)
+                if (dist <= KICK_DIST + 0.5f)
                 {
-                   nextState = "RunState";
+                    ownner.Attack();
+                    return;
                 }
-                ownner.stateMachine.ChangeState(nextState);
-                return;
             }
-            else
+
+             // try to move to player
+            String nextState = "StepMoveState";
+            if (dist >= STEP_MAX_DIST + 0.5f)
             {
-                ownner.Attack();
+               nextState = "RunState";
             }
+            ownner.stateMachine.ChangeState(nextState);
 
             timeInState = 0.0f;
             thinkTime = Random(0.5f, 3.0f);
@@ -115,19 +117,12 @@ class ThugStepMoveState : MultiMotionState
             float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
             bool attack = false;
 
-            if (dist <= attackRange && dist > 0)
+            if (dist <= attackRange && dist >= -0.5f && Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
             {
-                int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
-                if (num < MAX_NUM_OF_ATTACK && Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
-                {
-                    attack = true;
-                }
+                if (ownner.Attack())
+                    return;
             }
-
-            if (attack)
-                ownner.stateMachine.ChangeState("AttackState");
-            else
-                ownner.CommonStateFinishedOnGroud();
+            ownner.CommonStateFinishedOnGroud();
         }
 
         CharacterState::FixedUpdate(dt);
@@ -150,6 +145,8 @@ class ThugStepMoveState : MultiMotionState
             if (step_long)
                 index += 3;
         }
+
+        Print("index = " + index);
 
         //TODO OTHER left/back/right
         ownner.sceneNode.vars[ANIMATION_INDEX] = index;
@@ -183,14 +180,9 @@ class ThugRunState : SingleMotionState
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist <= attackRange)
         {
-            int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
-            if (num >= MAX_NUM_OF_ATTACK)
-            {
-                ownner.stateMachine.ChangeState("StandState");
-            }
-            else {
-                ownner.stateMachine.ChangeState("AttackState");
-            }
+            if (ownner.Attack())
+                return;
+            ownner.CommonStateFinishedOnGroud();
         }
 
         SingleMotionState::Update(dt);
@@ -552,28 +544,22 @@ class Thug : Enemy
         DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), 2.0f);
     }
 
-    void Attack()
+    bool Attack()
     {
         // try to attack
         int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
         if (num >= MAX_NUM_OF_ATTACK)
-            return;
+            return false;
         if (!target.CanBeAttacked())
-            return;
+            return false;
         stateMachine.ChangeState("AttackState");
+        return true;
     }
 
-    void Counter()
-    {
-    }
-
-    void Evade()
-    {
-    }
-
-    void Redirect()
+    bool Redirect()
     {
         stateMachine.ChangeState("RedirectState");
+        return true;
     }
 
     void CommonStateFinishedOnGroud()
