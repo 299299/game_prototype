@@ -21,6 +21,7 @@ const StringHash CURSOR_TYPE("Cursor");
 
 const String AUTO_STYLE("");    // Empty string means auto style, i.e. applying style according to UI-element's type automatically
 const String TEMP_SCENE_NAME("_tempscene_.xml");
+const String TEMP_BINARY_SCENE_NAME("_tempscene_.bin");
 const StringHash CALLBACK_VAR("Callback");
 const StringHash INDENT_MODIFIED_BY_ICON_VAR("IconIndented");
 
@@ -357,18 +358,20 @@ void CreateMenuBar()
         
         if (hotKeyMode == HOTKEYS_MODE_STANDARD)    
         {
-            popup.AddChild(CreateMenuItem("Reset position", @SceneResetPosition));
-            popup.AddChild(CreateMenuItem("Reset rotation", @SceneResetRotation));
-            popup.AddChild(CreateMenuItem("Reset scale", @SceneResetScale));
+            popup.AddChild(CreateMenuItem("Reset position", @SceneResetPosition, '1' , QUAL_ALT));
+            popup.AddChild(CreateMenuItem("Reset rotation", @SceneResetRotation, '2' , QUAL_ALT));
+            popup.AddChild(CreateMenuItem("Reset scale", @SceneResetScale, '3' , QUAL_ALT));
+            popup.AddChild(CreateMenuItem("Reset transform", @SceneResetTransform, 'Q' , QUAL_ALT));
         }
         else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
-        { 
+        {
             popup.AddChild(CreateMenuItem("Reset position", @SceneResetPosition, 'G' , QUAL_ALT));
             popup.AddChild(CreateMenuItem("Reset rotation", @SceneResetRotation, 'R', QUAL_ALT));
             popup.AddChild(CreateMenuItem("Reset scale", @SceneResetScale, 'S', QUAL_ALT));
+            popup.AddChild(CreateMenuItem("Reset transform", @SceneResetTransform, 'Q' , QUAL_ALT));            
         }
-        
-        if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
+
+        if (hotKeyMode == HOTKEYS_MODE_STANDARD)
         {
             popup.AddChild(CreateMenuItem("Enable/disable", @SceneToggleEnable, 'E', QUAL_CTRL));
             popup.AddChild(CreateMenuItem("Enable all", @SceneEnableAllNodes, 'E', QUAL_ALT));
@@ -378,7 +381,7 @@ void CreateMenuBar()
             popup.AddChild(CreateMenuItem("Enable/disable", @SceneToggleEnable, 'H'));
             popup.AddChild(CreateMenuItem("Enable all", @SceneEnableAllNodes, 'H', QUAL_ALT));
         }
-        
+
         if (hotKeyMode == HOTKEYS_MODE_STANDARD)
             popup.AddChild(CreateMenuItem("Unparent", @SceneUnparent, 'U', QUAL_CTRL));
         else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
@@ -619,15 +622,55 @@ bool PickFile()
         CreateFileSelector("Import scene", "Import", "Cancel", uiImportPath, uiAllFilters, uiImportFilter);
         SubscribeToEvent(uiFileSelector, "FileSelected", "HandleImportScene");
     }
-    else if (action == "Export scene to OBJ...")
+    else if (action == "Export scene to OBJ..." || action == "Export selected to OBJ...")
     {
-        CreateFileSelector("Export scene to OBJ", "Save", "Cancel", uiExportPath, uiExportPathFilters, uiExportFilter);
-        SubscribeToEvent(uiFileSelector, "FileSelected", "HandleExportSceneOBJ");
-    }
-    else if (action == "Export selected to OBJ...")
-    {
-        CreateFileSelector("Export selected to OBJ", "Save", "Cancel", uiExportPath, uiExportPathFilters, uiExportFilter);
-        SubscribeToEvent(uiFileSelector, "FileSelected", "HandleExportSelectedOBJ");
+        // Set these up together to share the "export settings" options
+        if (action == "Export scene to OBJ...")
+        {
+            CreateFileSelector("Export scene to OBJ", "Save", "Cancel", uiExportPath, uiExportPathFilters, uiExportFilter);
+            SubscribeToEvent(uiFileSelector, "FileSelected", "HandleExportSceneOBJ");
+        }
+        else if (action == "Export selected to OBJ...")
+        {
+            CreateFileSelector("Export selected to OBJ", "Save", "Cancel", uiExportPath, uiExportPathFilters, uiExportFilter);
+            SubscribeToEvent(uiFileSelector, "FileSelected", "HandleExportSelectedOBJ");
+        }
+        
+        Window@ window = uiFileSelector.window;
+        
+            UIElement@ optionsGroup = UIElement();
+            optionsGroup.maxHeight = 30;
+            optionsGroup.layoutMode = LM_HORIZONTAL;
+            window.defaultStyle = uiStyle;
+            window.style = AUTO_STYLE;
+            
+                CheckBox@ checkRightHanded = CheckBox();
+                checkRightHanded.checked = objExportRightHanded_;
+                checkRightHanded.defaultStyle = uiStyle;
+                checkRightHanded.style = AUTO_STYLE;
+                SubscribeToEvent(checkRightHanded, "Toggled", "HandleOBJRightHandedChanged");
+                optionsGroup.AddChild(checkRightHanded);
+                
+                    Text@ lblRightHanded = Text();
+                    lblRightHanded.defaultStyle = uiStyle;
+                    lblRightHanded.style = AUTO_STYLE;
+                    lblRightHanded.text = "  Right handed";
+                    optionsGroup.AddChild(lblRightHanded);
+                
+                CheckBox@ checkZUp = CheckBox();
+                checkZUp.checked = objExportZUp_;
+                checkZUp.defaultStyle = uiStyle;
+                checkZUp.style = AUTO_STYLE;
+                SubscribeToEvent(checkZUp, "Toggled", "HandleOBJZUpChanged");
+                optionsGroup.AddChild(checkZUp);
+                
+                    Text@ lblZUp = Text();
+                    lblZUp.defaultStyle = uiStyle;
+                    lblZUp.style = AUTO_STYLE;
+                    lblZUp.text = " Z Axis Up";
+                    optionsGroup.AddChild(lblZUp);
+                
+            window.AddChild(optionsGroup);
     }
     else if (action == "Run script...")
     {
@@ -1053,7 +1096,7 @@ void CreateContextMenu()
 void UpdateWindowTitle()
 {
     String sceneName = GetFileNameAndExtension(editorScene.fileName);
-    if (sceneName.empty || sceneName == TEMP_SCENE_NAME)
+    if (sceneName.empty || sceneName == TEMP_SCENE_NAME || sceneName == TEMP_BINARY_SCENE_NAME)
         sceneName = "Untitled";
     if (sceneModified)
         sceneName += "*";
