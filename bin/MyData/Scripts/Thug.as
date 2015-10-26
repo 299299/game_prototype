@@ -432,10 +432,10 @@ class ThugHitState : MultiMotionState
         super(c);
         SetName("HitState");
         String preFix = "TG_HitReaction/";
-        AddMotion(preFix + "Generic_Hit_Reaction");
         AddMotion(preFix + "HitReaction_Right");
-        AddMotion(preFix + "HitReaction_Back_NoTurn");
         AddMotion(preFix + "HitReaction_Left");
+        AddMotion(preFix + "HitReaction_Back_NoTurn");
+        AddMotion(preFix + "HitReaction_Back");
 
         AddMotion(preFix + "Push_Reaction");
         AddMotion(preFix + "Push_Reaction_From_Back");
@@ -585,32 +585,25 @@ class Thug : Enemy
         if (!CanBeAttacked())
             return;
 
-        Node@ attackNode = attacker.GetNode();
-        float diff = ComputeAngleDiff(attackNode);
-        int r = DirectionMapToIndex(diff, 4);
-        int attackType = attackNode.vars[ATTACK_TYPE].GetInt();
-        // flip left and right
-        if (r == 1)
-            r = 3;
-        if (r == 3)
-            r = 1;
-        int index = r;
-        if (index == 0)
-        {
-            if (attackType == ATTACK_KICK)
-            {
-                index = 4 + RandomInt(2);
-            }
-        }
-        sceneNode.vars[ANIMATION_INDEX] = index;
-        stateMachine.ChangeState("HitState");
-
         health -= damage;
         if (health <= 0)
         {
             OnDead();
             health = 0;
         }
+        else
+        {
+            Node@ attackNode = attacker.GetNode();
+            float diff = ComputeAngleDiff(attackNode);
+            int index = 0;
+            if (diff < 0)
+                index = 1;
+            if (Abs(diff) > 135)
+                index = 2 + RandomInt(2);
+            sceneNode.vars[ANIMATION_INDEX] = index;
+            stateMachine.ChangeState("HitState");
+        }
+
     }
 };
 

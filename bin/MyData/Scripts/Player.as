@@ -373,25 +373,26 @@ class PlayerAttackState : CharacterState
         @currentAttack = null;
     }
 
-    void Update(float dt)
-    {
-        if (currentAttack is null)
-            return;
-
-        Motion@ motion = currentAttack.motion;
-        float t = ownner.animCtrl.GetTime(motion.animationName);
-        if (attack_timing_test)
-        {
-            if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
-                ownner.sceneNode.scene.timeScale = 0.0f;
-        }
-
-        CharacterState::Update(dt);
-    }
 
     void FixedUpdate(float dt)
     {
         Motion@ motion = currentAttack.motion;
+
+        float t = ownner.animCtrl.GetTime(motion.animationName);
+
+         if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
+        {
+            if (attack_timing_test)
+                ownner.sceneNode.scene.timeScale = 0.0f;
+
+            if (attackEnemy !is null)
+            {
+                Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
+                dir.y = 0;
+                dir.Normalize();
+                attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage);
+            }
+        }
 
         if (attackEnemy !is null)
         {
@@ -927,31 +928,33 @@ class Player : Character
         if (!CanBeAttacked())
             return;
 
-        Node@ attackNode = attacker.GetNode();
-        float diff = ComputeAngleDiff(attackNode);
-        int r = DirectionMapToIndex(diff, 4);
-        int attackType = attackNode.vars[ATTACK_TYPE].GetInt();
-        // flip left and right
-        if (r == 1)
-            r = 3;
-        if (r == 3)
-            r = 1;
-        int index = r;
-        if (index == 0)
-        {
-            if (attackType == ATTACK_KICK)
-            {
-                index = 4 + RandomInt(2);
-            }
-        }
-        sceneNode.vars[ANIMATION_INDEX] = index;
-        stateMachine.ChangeState("HitState");
-
         health -= damage;
         if (health <= 0)
         {
             OnDead();
             health = 0;
+        }
+        else
+        {
+            Node@ attackNode = attacker.GetNode();
+            float diff = ComputeAngleDiff(attackNode);
+            int r = DirectionMapToIndex(diff, 4);
+            int attackType = attackNode.vars[ATTACK_TYPE].GetInt();
+            // flip left and right
+            if (r == 1)
+                r = 3;
+            if (r == 3)
+                r = 1;
+            int index = r;
+            /*if (index == 0)
+            {
+                if (attackType == ATTACK_KICK)
+                {
+                    index = 4 + RandomInt(2);
+                }
+            }*/
+            sceneNode.vars[ANIMATION_INDEX] = index;
+            stateMachine.ChangeState("HitState");
         }
     }
 

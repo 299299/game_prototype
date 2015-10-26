@@ -560,7 +560,7 @@ class MotionManager
         CreateMotion(preFix + "HitReaction_Right", kMotion_XZ);
         CreateMotion(preFix + "HitReaction_Back_NoTurn", kMotion_XZ);
         CreateMotion(preFix + "HitReaction_Back");
-        CreateMotion(preFix + "Generic_Hit_Reaction", 0, kMotion_XZR, -1, kMotion_XZ);
+        // CreateMotion(preFix + "Generic_Hit_Reaction", 0, kMotion_XZR, -1, kMotion_XZ);
 
         CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
         CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
