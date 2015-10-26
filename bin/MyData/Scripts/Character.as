@@ -5,6 +5,7 @@ const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2;
 const float START_TO_ATTACK_DIST = 6;
 
 const int MAX_NUM_OF_ATTACK = 2;
+const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash REDIRECT_STATE("RedirectState");
@@ -514,7 +515,14 @@ class Character : GameObject
     Quaternion              startRotation;
 
     Animation@              ragdollPoseAnim;
+
+    int                     health = INITIAL_HEALTH;
+
+    Node@                   attackCheckNode;
     float                   attackRadius = 0.5f;
+    int                     attackDamage = 10;
+
+    Node@                   hintNode;
 
     Character()
     {
@@ -563,6 +571,26 @@ class Character : GameObject
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
         SubscribeToEvent(sceneNode, "NodeCollision", "HandleNodeCollision");
+
+        attackCheckNode = sceneNode.CreateChild("Attack_Node");
+        CollisionShape@ shape = attackCheckNode.CreateComponent("CollisionShape");
+        shape.SetSphere(attackRadius);
+        RigidBody@ rb = attackCheckNode.CreateComponent("RigidBody");
+        rb.trigger = true;
+        rb.collisionLayer = COLLISION_LAYER_ATTACK;
+        rb.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL;
+        rb.collisionEventMode = COLLISION_ALWAYS;
+        rb.enabled = false;
+
+        hintNode = sceneNode.CreateChild("Hint_Node");
+        hintNode.position = Vector3(0, 5, 0);
+        Text3D@ text = hintNode.CreateComponent("Text3D");
+        text.SetFont("Fonts/UbuntuMono-R.ttf", 25);
+        text.SetAlignment(HA_CENTER, VA_CENTER);
+        text.color = Color(1, 0, 0);
+        text.textAlignment = HA_CENTER;
+        text.text = sceneNode.name;
+        text.faceCameraMode = FC_LOOKAT_XYZ;
     }
 
     void Start()
@@ -633,7 +661,7 @@ class Character : GameObject
     {
         String debugText = "========================================================================\n";
         debugText += stateMachine.GetDebugText();
-        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + "\n";
+        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + " health:" + health + "\n";
         uint num = animModel.numAnimationStates;
         if (num > 0)
         {
@@ -674,21 +702,25 @@ class Character : GameObject
         }
     }
 
-    void Attack()
+    bool Attack()
     {
+        return false;
     }
 
-    void Counter()
+    bool Counter()
     {
+        return false;
     }
 
-    void Evade()
+    bool Evade()
     {
+        return false;
     }
 
-    void Redirect()
+    bool Redirect()
     {
         stateMachine.ChangeState("RedirectState");
+        return false;
     }
 
     void CommonStateFinishedOnGroud()
@@ -700,22 +732,24 @@ class Character : GameObject
     {
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
+        health = INITIAL_HEALTH;
+        SetTimeScale(1.0f);
         stateMachine.ChangeState("StandState");
     }
 
     bool CanBeAttacked()
     {
-        return true;
+        return HasFlag(FLAGS_ATTACK);
     }
 
     bool CanBeCountered()
     {
-        return true;
+        return HasFlag(FLAGS_COUNTER);
     }
 
     bool CanBeRedirected()
     {
-        return true;
+        return HasFlag(FLAGS_REDIRECTED);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -851,16 +885,18 @@ class Character : GameObject
 
     void FixedUpdate(float dt)
     {
+        if (IsPhysical())
+            body.Activate();
         GameObject::FixedUpdate(dt);
         ResetWorldCollision();
     }
 
     void ObjectCollision(RigidBody@ otherBody, VariantMap& eventData)
     {
-        Print("ObjectCollision -> " + otherBody.node.name);
+        // Print("ObjectCollision -> " + otherBody.node.name);
     }
 
-    void OnDamange(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
     {
         stateMachine.ChangeState("HitState");
     }
@@ -868,6 +904,30 @@ class Character : GameObject
     Node@ GetNode()
     {
         return sceneNode;
+    }
+
+    void EnableAttackCheck(bool bEnable)
+    {
+        RigidBody@ rb = attackCheckNode.GetComponent("RigidBody");
+        rb.enabled = bEnable;
+    }
+
+    void OnDead()
+    {
+        stateMachine.ChangeState("DeadState");
+    }
+
+    void MakeMeRagdoll()
+    {
+        VariantMap data;
+        data[DATA] = RAGDOLL_START;
+        renderNode.SendEvent("AnimationTrigger", data);
+    }
+
+    void SetHintText(const String&in text)
+    {
+        Text3D@ text3d = hintNode.GetComponent("Text3D");
+        text3d.text = text;
     }
 };
 

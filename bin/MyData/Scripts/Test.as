@@ -152,20 +152,12 @@ void CreateUI()
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
     // input.SetMouseVisible(true);
 
-    Text@ instructionText = ui.root.CreateChild("Text", "instruction");
+    Text@ instructionText = ui.root.CreateChild("Text", "debug");
     instructionText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
     instructionText.horizontalAlignment = HA_LEFT;
     instructionText.verticalAlignment = VA_TOP;
     instructionText.SetPosition(0, 0);
     instructionText.color = Color(0, 1, 0);
-
-    Text@ debugText = ui.root.CreateChild("Text", "debug");
-    debugText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 16);
-    debugText.horizontalAlignment = HA_CENTER;
-    debugText.verticalAlignment = VA_CENTER;
-    debugText.color = Color(1, 0, 0);
-    debugText.text = "FUCK";
-    debugText.visible = false;
 }
 
 void SetupViewport()
@@ -383,7 +375,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     }
     else
     {
-        Text@ text = ui.root.GetChild("instruction", true);
+        Text@ text = ui.root.GetChild("debug", true);
         text.text = debugText;
     }
 }
@@ -401,7 +393,8 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         player.DebugDraw(debug);
     if (thug !is null)
         thug.DebugDraw(debug);
-    scene_.physicsWorld.DrawDebugGeometry(false);
+
+    //scene_.physicsWorld.DrawDebugGeometry(false);
 
     //AnimatedModel@ model = characterNode.children[0].GetComponent("AnimatedModel");
     //Skeleton@ skel = model.skeleton;

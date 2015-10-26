@@ -337,14 +337,16 @@ class AttackMotion
     float           impactTime;
     float           impactDist;;
     Vector3         impactPosition;
+    int             type;
 
-    AttackMotion(const String&in name, int impactFrame)
+    AttackMotion(const String&in name, int impactFrame, int _type)
     {
         @motion = gMotionMgr.FindMotion(name);
         impactTime = impactFrame * SEC_PER_FRAME;
         Vector4 k = motion.motionKeys[impactFrame];
         impactPosition = Vector3(k.x, k.y, k.z);
         impactDist = impactPosition.length;
+        type = _type;
     }
 
     int opCmp(const AttackMotion&in obj)
@@ -415,12 +417,13 @@ class MotionManager
         CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
 
         String preFix = "BM_Combat_HitReaction/";
-        CreateMotion(preFix + "HitReaction_Back");
-        CreateMotion(preFix + "HitReaction_Face_Left");
-        CreateMotion(preFix + "HitReaction_Face_Right");
-        CreateMotion(preFix + "Hit_Reaction_SideLeft");
-        CreateMotion(preFix + "Hit_Reaction_SideRight");
-        CreateMotion(preFix + "HitReaction_Stomach");
+        CreateMotion(preFix + "HitReaction_Back", kMotion_XZ); // back attacked
+        // CreateMotion(preFix + "HitReaction_Face_Left", kMotion_XZ); // front punched
+        CreateMotion(preFix + "HitReaction_Face_Right", kMotion_XZ); // front punched
+        CreateMotion(preFix + "Hit_Reaction_SideLeft", kMotion_XZ); // left attacked
+        CreateMotion(preFix + "Hit_Reaction_SideRight", kMotion_XZ); // right attacked
+        CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
+        CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
 
         // Attacks
         preFix = "BM_Attack/";
@@ -553,14 +556,14 @@ class MotionManager
 
 
         preFix = "TG_HitReaction/";
-        CreateMotion(preFix + "HitReaction_Left");
-        CreateMotion(preFix + "HitReaction_Right");
-        CreateMotion(preFix + "HitReaction_Back_NoTurn");
+        CreateMotion(preFix + "HitReaction_Left", kMotion_XZ);
+        CreateMotion(preFix + "HitReaction_Right", kMotion_XZ);
+        CreateMotion(preFix + "HitReaction_Back_NoTurn", kMotion_XZ);
         CreateMotion(preFix + "HitReaction_Back");
-        CreateMotion(preFix + "Generic_Hit_Reaction");
+        CreateMotion(preFix + "Generic_Hit_Reaction", 0, kMotion_XZR, -1, kMotion_XZ);
 
-        CreateMotion(preFix + "Push_Reaction");
-        CreateMotion(preFix + "Push_Reaction_From_Back");
+        CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
+        CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
 
         preFix = "TG_Getup/";
         CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
@@ -663,113 +666,82 @@ class MotionManager
         uint t = time.systemTime;
 
         String preFix = "TG_BM_Counter/";
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_01", 44, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_01", 54, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_02", 46, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_02", 55, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_03", 38, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_03", 48, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_04", 30, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_04", 46, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_05", 38, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_05", 42, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_06", 32, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_06", 36, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_07", 56, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_07", 60, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_08", 50, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_08", 52, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 36, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 38, RAGDOLL_START);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 44, 54);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 46, 56);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 38, 48);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 30, 46);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 38, 42);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_06", 32, 36);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_07", 56, 60);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_08", 50, 52);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_09", 36, 38);
 
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_01", 34, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_01", 35, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_02", 44, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_02", 48, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_03", 40, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_03", 44, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_04", 36, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_04", 40, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_05", 60, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_05", 66, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_06", 44, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_07", 38, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_07", 43, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_08", 54, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_08", 62, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_09", 60, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_09", 68, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_10", 56, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_13", 58, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_13", 68, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_14", 72, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Front_14", 78, RAGDOLL_START);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_01", 34, 35);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_02", 44, 48);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_03", 40, 44);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_04", 36, 40);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_05", 60, 66);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_06", -1, 44);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_07", 38, 43);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 54, 62);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 60, 68);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_10", -1, 56);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_13", 58, 68);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_14", 72, 78);
 
-        AddAnimationTrigger(preFix + "Counter_Arm_Back_01", 42, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Back_02", 50, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 33, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 35, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Arm_Back_06", 72, RAGDOLL_START);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_01", -1, 42);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 50);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 33, 35);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_06", -1, 72);
 
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_01", 50, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_01", 54, RAGDOLL_START);
+        AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 50, 54);
+        AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 60, 54);
+        AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 72);
+        AddRagdollTrigger(preFix + "Counter_Leg_Back_04", -1, 43);
+        AddRagdollTrigger(preFix + "Counter_Leg_Back_05", 48, 52);
 
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 60, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 64, RAGDOLL_START);
-
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 60, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 64, RAGDOLL_START);
-
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_03", 72, RAGDOLL_START);
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_04", 43, RAGDOLL_START);
-
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_05", 48, RAGDOLL_PERPARE);
-        AddAnimationTrigger(preFix + "Counter_Leg_Back_05", 52, RAGDOLL_START);
+        preFix = "TG_HitReaction/";
+        AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);
+        AddRagdollTrigger(preFix + "Push_Reaction_From_Back", 6, 9);
 
         preFix = "TG_Combat/";
         AddFloatAnimationTrigger(preFix + "Attack_Kick", 15, TIME_SCALE, 0.25f);
         AddFloatAnimationTrigger(preFix + "Attack_Kick", 24, TIME_SCALE, 1.0f);
         AddIntAnimationTrigger(preFix + "Attack_Kick", 15, COUNTER_CHECK, 1);
         AddIntAnimationTrigger(preFix + "Attack_Kick", 24, COUNTER_CHECK, 0);
-        AddAttackCollisionTrigger(preFix + "Attack_Kick", 24, "Bip01_L_Foot");
-        AddIntAnimationTrigger(preFix + "Attack_Kick", 27, ATTACK_CHECK, 0);
+        AddAttackTrigger(preFix + "Attack_Kick", 24, 27, "Bip01_L_Foot");
 
         AddFloatAnimationTrigger(preFix + "Attack_Kick_01", 12, TIME_SCALE, 0.25f);
         AddFloatAnimationTrigger(preFix + "Attack_Kick_01", 24, TIME_SCALE, 1.0f);
         AddIntAnimationTrigger(preFix + "Attack_Kick_01", 12, COUNTER_CHECK, 1);
         AddIntAnimationTrigger(preFix + "Attack_Kick_01", 24, COUNTER_CHECK, 0);
-        AddAttackCollisionTrigger(preFix + "Attack_Kick_01", 24,"Bip01_L_Foot");
-        AddIntAnimationTrigger(preFix + "Attack_Kick_01", 27, ATTACK_CHECK, 0);
+        AddAttackTrigger(preFix + "Attack_Kick_01", 24, 27, "Bip01_L_Foot");
 
         AddFloatAnimationTrigger(preFix + "Attack_Kick_02", 19, TIME_SCALE, 0.25f);
         AddFloatAnimationTrigger(preFix + "Attack_Kick_02", 24, TIME_SCALE, 1.0f);
         AddIntAnimationTrigger(preFix + "Attack_Kick_02", 19, COUNTER_CHECK, 1);
         AddIntAnimationTrigger(preFix + "Attack_Kick_02", 24, COUNTER_CHECK, 0);
-        AddAttackCollisionTrigger(preFix + "Attack_Kick_02", 24, "Bip01_L_Foot");
-        AddIntAnimationTrigger(preFix + "Attack_Kick_02", 27, ATTACK_CHECK, 0);
+        AddAttackTrigger(preFix + "Attack_Kick_02", 24, 27, "Bip01_L_Foot");
 
         AddFloatAnimationTrigger(preFix + "Attack_Punch", 15, TIME_SCALE, 0.25f);
         AddFloatAnimationTrigger(preFix + "Attack_Punch", 22, TIME_SCALE, 1.0f);
         AddIntAnimationTrigger(preFix + "Attack_Punch", 15, COUNTER_CHECK, 1);
         AddIntAnimationTrigger(preFix + "Attack_Punch", 22, COUNTER_CHECK, 0);
-        AddAttackCollisionTrigger(preFix + "Attack_Punch", 22, "Bip01_R_Hand");
-        AddIntAnimationTrigger(preFix + "Attack_Punch", 24, ATTACK_CHECK, 0);
+        AddAttackTrigger(preFix + "Attack_Punch", 22, 24, "Bip01_R_Hand");
 
         AddFloatAnimationTrigger(preFix + "Attack_Punch_01", 15, TIME_SCALE, 0.25f);
         AddFloatAnimationTrigger(preFix + "Attack_Punch_01", 23, TIME_SCALE, 1.0f);
         AddIntAnimationTrigger(preFix + "Attack_Punch_01", 15, COUNTER_CHECK, 1);
         AddIntAnimationTrigger(preFix + "Attack_Punch_01", 23, COUNTER_CHECK, 0);
-        AddAttackCollisionTrigger(preFix + "Attack_Punch_01", 23, "Bip01_R_Hand");
-        AddIntAnimationTrigger(preFix + "Attack_Punch_01", 24, ATTACK_CHECK, 0);
+        AddAttackTrigger(preFix + "Attack_Punch_01", 23, 24, "Bip01_R_Hand");
 
         AddFloatAnimationTrigger(preFix + "Attack_Punch_02", 15, TIME_SCALE, 0.25f);
         AddFloatAnimationTrigger(preFix + "Attack_Punch_02", 23, TIME_SCALE, 1.0f);
         AddIntAnimationTrigger(preFix + "Attack_Punch_02", 15, COUNTER_CHECK, 1);
         AddIntAnimationTrigger(preFix + "Attack_Punch_02", 23, COUNTER_CHECK, 0);
-        AddAttackCollisionTrigger(preFix + "Attack_Punch_02", 23, "Bip01_R_Hand");
-        AddIntAnimationTrigger(preFix + "Attack_Punch_02", 24, ATTACK_CHECK, 0);
+        AddAttackTrigger(preFix + "Attack_Punch_02", 23, 24, "Bip01_R_Hand");
 
-        Print("MotionManager::PostProcess time-cst=" + (time.systemTime - t) + " ms");
+        Print("MotionManager::PostProcess time-cost=" + (time.systemTime - t) + " ms");
     }
 };
 
