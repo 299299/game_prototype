@@ -382,6 +382,8 @@ class PlayerAttackState : CharacterState
 
          if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
         {
+            state = 1;
+
             if (attack_timing_test)
                 ownner.sceneNode.scene.timeScale = 0.0f;
 
@@ -403,7 +405,7 @@ class PlayerAttackState : CharacterState
                 motion.translateEnabled = false;
         }
 
-        if (state != 2)
+        if (state == 0)
             motion.deltaPosition += movePerSec * dt;
 
         if (doAttackCheck)

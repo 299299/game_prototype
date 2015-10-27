@@ -182,8 +182,14 @@ class Motion
     {
         endFrame = frame;
         if (endFrame < 0)
+        {
             endFrame = motionKeys.length - 1;
-        endTime = float(endFrame) * SEC_PER_FRAME;
+            endTime = this.animation.length;
+        }
+        else
+        {
+            endTime = float(endFrame) * SEC_PER_FRAME;
+        }
     }
 
     void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)

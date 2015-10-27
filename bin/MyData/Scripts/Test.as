@@ -323,7 +323,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
             //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
-            String testName = "TG_HitReaction/HitReaction_Right";
+            //String testName = "TG_HitReaction/HitReaction_Right";
+            String testName = "BM_Attack/Attack_Far_Back_01";
             player.TestAnimation(testName);
         }
         else if (input.keyPress['F'])

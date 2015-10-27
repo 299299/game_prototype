@@ -585,7 +585,7 @@ class Thug : Enemy
         if (!CanBeAttacked())
             return;
 
-        health -= damage;
+        // health -= damage;
         if (health <= 0)
         {
             OnDead();
