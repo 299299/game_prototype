@@ -392,6 +392,7 @@ class PlayerAttackState : CharacterState
                 Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
                 dir.y = 0;
                 dir.Normalize();
+                Print("attackEnemy OnDamage!!!!");
                 attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage);
             }
         }

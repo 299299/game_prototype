@@ -22,7 +22,6 @@ Node@ draggingNode;
 const String GAME_SCRIPT = "Scripts/Test.as";
 Node@ characterNode;
 Node@ thugNode;
-Node@ floorNode;
 
 Player@ player;
 Thug@ thug;
@@ -73,8 +72,6 @@ void CreateScene()
     Node@ cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
     // cam.fillMode = FILL_WIREFRAME;
-
-    floorNode = scene_.GetChild("Floor", true);
 
     characterNode = scene_.GetChild("bruce", true);
 

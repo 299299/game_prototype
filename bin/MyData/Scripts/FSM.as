@@ -94,8 +94,10 @@ class FSM
     void ChangeState(const StringHash&in nameHash)
     {
         State@ newState = FindState(nameHash);
-        if (currentState is newState)
+        if (currentState is newState) {
+            Print("same state return !!!");
             return;
+        }
 
         State@ oldState = currentState;
         if (oldState !is null)

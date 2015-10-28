@@ -103,7 +103,7 @@ class Ragdoll : ScriptObject
         if (blend_to_anim)
             boneLastRotations.Resize(maxLen);
 
-        for (uint i=0; i<maxLen; ++i)
+        for (int i=0; i<maxLen; ++i)
         {
             boneNodes[i] = node.GetChild(boneNames[i], true);
             SubscribeToEvent(boneNodes[i], "NodeCollision", "HandleNodeCollision");
