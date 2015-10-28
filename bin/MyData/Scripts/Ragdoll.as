@@ -45,22 +45,18 @@ class Ragdoll : ScriptObject
     Array<Quaternion> boneLastRotations;
     Node@             rootNode;
 
-    int               state;
+    int               state = RAGDOLL_NONE;
+    int               state_request = -1;
+
     float             timeInState;
 
     Animation@        blendingAnim_1;
     Animation@        blendingAnim_2;
 
     float             ragdollToAnimBlendTime = 1.0f;
-
     float             minRagdollStateTime = 0.5f;
 
     int               getUpIndex = 0;
-
-    Ragdoll()
-    {
-        state = RAGDOLL_NONE;
-    }
 
     void Start()
     {
@@ -217,6 +213,11 @@ class Ragdoll : ScriptObject
 
     void FixedUpdate(float dt)
     {
+        if (state_request >= 0) {
+            ChangeState(state_request);
+            state_request = -1;
+        }
+
         if (state == RAGDOLL_STATIC)
         {
             timeInState += dt;
@@ -468,7 +469,8 @@ class Ragdoll : ScriptObject
             new_state = RAGDOLL_DYNAMIC;
         else if (name == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;
-        ChangeState(new_state);
+        //ChangeState(new_state);
+        state_request = new_state;
     }
 
     void ResetBonePositions()

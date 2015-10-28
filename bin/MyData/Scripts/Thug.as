@@ -440,6 +440,19 @@ class ThugHitState : MultiMotionState
         AddMotion(preFix + "Push_Reaction");
         AddMotion(preFix + "Push_Reaction_From_Back");
     }
+
+    void FixedUpdate(float dt)
+    {
+        if (timeInState > 0.5f)
+            ownner.AddFlag(FLAGS_ATTACK);
+        MultiMotionState::FixedUpdate(dt);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.RemoveFlag(FLAGS_ATTACK);
+        MultiMotionState::Exit(nextState);
+    }
 };
 
 class ThugTurnState : MultiMotionState
@@ -583,7 +596,10 @@ class Thug : Enemy
     void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
     {
         if (!CanBeAttacked())
+        {
+            Print("OnDamage failed because I can no be attacked " + GetName());
             return;
+        }
 
         // health -= damage;
         if (health <= 0)

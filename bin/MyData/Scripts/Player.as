@@ -530,6 +530,8 @@ class PlayerAttackState : CharacterState
         @attackEnemy = p.PickAttackEnemy();
         if (attackEnemy !is null)
              Print("Choose Attack Enemy " + attackEnemy.sceneNode.name);
+         else
+            Print("No Attack Enemy");
         StartAttack();
     }
 
@@ -927,8 +929,10 @@ class Player : Character
 
     void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
     {
-        if (!CanBeAttacked())
+        if (!CanBeAttacked()) {
+            Print("OnDamage failed because I can no be attacked " + GetName());
             return;
+        }
 
         health -= damage;
         if (health <= 0)
