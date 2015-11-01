@@ -42,10 +42,12 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
+        return;
+
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
         if (dist < -0.25f)
         {
-            ownner.stateMachine.ChangeState("StepMoveState");
+            ownner.ChangeState("StepMoveState");
             return;
         }
 
@@ -54,7 +56,7 @@ class ThugStandState : CharacterState
             float diff = Abs(ownner.ComputeAngleDiff());
             if (diff > MIN_TURN_ANGLE)
             {
-                ownner.stateMachine.ChangeState("TurnState");
+                ownner.ChangeState("TurnState");
                 return;
             }
 
@@ -80,7 +82,7 @@ class ThugStandState : CharacterState
                 Print("do run because dist >= " + run_dist);
                nextState = "RunState";
             }
-            ownner.stateMachine.ChangeState(nextState);
+            ownner.ChangeState(nextState);
 
             timeInState = 0.0f;
             thinkTime = Random(0.5f, 3.0f);
@@ -132,7 +134,7 @@ class ThugStepMoveState : MultiMotionState
                 }
                 else
                 {
-                    ownner.stateMachine.ChangeState("TurnState");
+                    ownner.ChangeState("TurnState");
                     return;
                 }
             }
@@ -210,7 +212,7 @@ class ThugRunState : SingleMotionState
         // if the difference is large, then turn 180 degrees
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
         {
-            ownner.stateMachine.ChangeState("TurnState");
+            ownner.ChangeState("TurnState");
             return;
         }
 
@@ -421,6 +423,7 @@ class ThugAttackState : CharacterState
             dir.y = 0;
             dir.Normalize();
             object.OnDamage(ownner, position, dir, ownner.attackDamage);
+            ownner.OnAttackSuccess();
         }
     }
 };
@@ -443,7 +446,7 @@ class ThugHitState : MultiMotionState
 
     void FixedUpdate(float dt)
     {
-        if (timeInState > 0.5f)
+        if (timeInState > 0.25f)
             ownner.AddFlag(FLAGS_ATTACK);
         MultiMotionState::FixedUpdate(dt);
     }
@@ -452,6 +455,11 @@ class ThugHitState : MultiMotionState
     {
         ownner.RemoveFlag(FLAGS_ATTACK);
         MultiMotionState::Exit(nextState);
+    }
+
+    bool CanReEntered()
+    {
+        return timeInState > 0.25f;
     }
 };
 

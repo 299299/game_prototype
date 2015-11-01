@@ -6,6 +6,7 @@ const int CTRL_ALL = (1 << 16);
 const int FLAGS_ATTACK  = (1 << 0);
 const int FLAGS_COUNTER = (1 << 1);
 const int FLAGS_REDIRECTED = (1 << 2);
+const int FLAGS_NO_MOVE = (1 << 3);
 
 const int COLLISION_LAYER_CHARACTER = (1 << 0);
 const int COLLISION_LAYER_LANDSCAPE = (1 << 1);
@@ -190,6 +191,11 @@ class GameObject : ScriptObject
     Node@ GetNode()
     {
         return null;
+    }
+
+    void ChangeState(const String&in state)
+    {
+        stateMachine.ChangeState(state);
     }
 };
 

@@ -51,6 +51,11 @@ class State
         name = s;
         nameHash = StringHash(name);
     }
+
+    bool CanReEntered()
+    {
+        return false;
+    }
 };
 
 
@@ -95,8 +100,11 @@ class FSM
     {
         State@ newState = FindState(nameHash);
         if (currentState is newState) {
-            Print("same state return !!!");
-            return;
+            Print("same state !!!");
+            if (!currentState.CanReEntered())
+                return;
+            currentState.Exit(newState);
+            currentState.Enter(newState);
         }
 
         State@ oldState = currentState;

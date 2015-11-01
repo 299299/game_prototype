@@ -265,7 +265,7 @@ class Motion
             if (rotateEnabled)
                 _node.Yaw(motionOut.w);
 
-            if (translateEnabled)
+            if (translateEnabled && !object.HasFlag(FLAGS_NO_MOVE))
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 tLocal = tLocal * ctrl.GetWeight(animationName);
@@ -282,7 +282,7 @@ class Motion
             if (rotateEnabled)
                 _node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
 
-            if (translateEnabled)
+            if (translateEnabled && !object.HasFlag(FLAGS_NO_MOVE))
             {
                 Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
                 //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.sceneNode.worldPosition.ToString() + " localTime=" + localTime);

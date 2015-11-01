@@ -1,7 +1,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85;
 const float START_TO_ATTACK_DIST = 6;
 
 const int MAX_NUM_OF_ATTACK = 2;
@@ -50,7 +50,7 @@ class CharacterState : State
     {
         //Print("ownner.name= " + ownner.GetName() + "name=" + eventData[NAME].GetStringHash().ToString() + " name1=" + RAGDOLL_START.ToString());
         if (eventData[NAME].GetStringHash() == RAGDOLL_START) {
-            ownner.stateMachine.ChangeState("RagdollState");
+            ownner.ChangeState("RagdollState");
         }
     }
 };
@@ -203,7 +203,7 @@ class CharacterAlignState : CharacterState
             Print("FINISHED Align!!!");
             ownner.sceneNode.worldPosition = targetPosition;
             ownner.sceneNode.worldRotation = Quaternion(0, targetRotation, 0);
-            ownner.stateMachine.ChangeState(nextState);
+            ownner.ChangeState(nextState);
 
             VariantMap eventData;
             eventData["ALIGN"] = alignNodeId;
@@ -437,7 +437,7 @@ class CharacterRagdollState : CharacterState
             if (ragdoll_state == RAGDOLL_NONE)
             {
                 ownner.PlayCurrentPose();
-                ownner.stateMachine.ChangeState("GetUpState");
+                ownner.ChangeState("GetUpState");
             }
         }
         CharacterState::FixedUpdate(dt);
@@ -928,6 +928,11 @@ class Character : GameObject
     {
         Text3D@ text3d = hintNode.GetComponent("Text3D");
         text3d.text = text;
+    }
+
+    void OnAttackSuccess()
+    {
+
     }
 };
 

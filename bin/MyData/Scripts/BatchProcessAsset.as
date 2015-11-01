@@ -1,21 +1,10 @@
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
-const String MODEL_ARGS = " -t na -l -cm -ct";
-const String ANIMATION_ARGS = " -nm -nt";
+const Array<String> MODEL_ARGS = {"-t", "na", "-l", "-cm", "-ct"};
+const Array<String> ANIMATION_ARGS = {"-nm",  "-nt"};
 const bool showOutput = false;
 String exportFolder;
-
-void ExecuteCmd(const String&in cmd)
-{
-    Print("[CMD] " + cmd);
-    String osCmd = cmd;
-    if (GetPlatform() == "Windows")
-    {
-        osCmd.Replace("/", "\\");
-    }
-    fileSystem.SystemCommand(osCmd, showOutput);
-}
 
 void PreProcess()
 {
@@ -23,9 +12,7 @@ void PreProcess()
     for (uint i=0; i<arguments.length; ++i)
     {
         if (arguments[i] == "-folder")
-        {
             exportFolder = arguments[i + 1];
-        }
     }
 
     Print("exportFolder=" + exportFolder);
@@ -33,7 +20,7 @@ void PreProcess()
     fileSystem.CreateDir(OUT_DIR + "Animations");
 }
 
-String DoProcess(const String&in name, const String&in folderName, const String&in args, bool checkFolders)
+String DoProcess(const String&in name, const String&in folderName, const Array<String>&in args, bool checkFolders)
 {
     if (!exportFolder.empty && checkFolders)
     {
@@ -41,13 +28,33 @@ String DoProcess(const String&in name, const String&in folderName, const String&
             return "";
     }
 
-    String iname = folderName + name;
+    String iname = "Asset/" + folderName + name;
     uint pos = name.FindLast('.');
     String oname = OUT_DIR + folderName + name.Substring(0, pos) + ".mdl";
     pos = oname.FindLast('/');
     String outFolder = oname.Substring(0, pos);
     fileSystem.CreateDir(outFolder);
-    ExecuteCmd("tool/AssetImporter model Asset/" + iname + " " + oname + args);
+
+    bool is_windows = GetPlatform() == "Windows";
+    if (is_windows) {
+        iname.Replace("/", "\\");
+        oname.Replace("/", "\\");
+    }
+
+    Array<String> runArgs;
+    runArgs.Push("model");
+    runArgs.Push("\"" + iname + "\"");
+    runArgs.Push("\"" + oname + "\"");
+    for (uint i=0; i<args.length; ++i)
+        runArgs.Push(args[i]);
+
+    //for (uint i=0; i<runArgs.length; ++i)
+    //    Print("args[" + i +"]=" + runArgs[i]);
+
+    int ret = fileSystem.SystemRun(fileSystem.programDir + "tool/AssetImporter", runArgs);
+    if (ret != 0)
+        Print("DoProcess " + name + " ret=" + ret);
+
     return oname;
 }
 
@@ -85,6 +92,6 @@ void Start()
     ProcessModels();
     ProcessAnimations();
     PostProcess();
-    Print("\n\n BATCH PROCESS TIME COST = " + String(time.systemTime - startTime) + " ms");
     engine.Exit();
+    ErrorDialog("BATCH PROCESS", "Time cost = " + String(time.systemTime - startTime) + " ms");
 }

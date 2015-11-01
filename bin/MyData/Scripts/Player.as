@@ -2,7 +2,7 @@
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
 const float MAX_COUNTER_DIST = 6.0f;
-const float MAX_ATTACK_DIST = 30.0f;
+const float MAX_ATTACK_DIST = 20.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -50,9 +50,9 @@ class PlayerStandState : CharacterState
             ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
 
             if (index == 0)
-                ownner.stateMachine.ChangeState("MoveState");
+                ownner.ChangeState("MoveState");
             else
-                ownner.stateMachine.ChangeState("TurnState");
+                ownner.ChangeState("TurnState");
         }
 
         if (gInput.IsAttackPressed())
@@ -136,7 +136,7 @@ class PlayerMoveState : SingleMotionState
     void Update(float dt)
     {
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
-            ownner.stateMachine.ChangeState("StandState");
+            ownner.ChangeState("StandState");
 
         if (gInput.IsAttackPressed())
             ownner.Attack();
@@ -158,7 +158,7 @@ class PlayerMoveState : SingleMotionState
         if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
             ownner.sceneNode.vars[ANIMATION_INDEX] = 1;
-            ownner.stateMachine.ChangeState("TurnState");
+            ownner.ChangeState("TurnState");
         }
 
         CharacterState::FixedUpdate(dt);
@@ -206,6 +206,13 @@ class PlayerRedirectState : SingleMotionState
     }
 };
 
+enum AttackStateType
+{
+    ATTACK_STATE_ALIGN,
+    ATTACK_STATE_BEFORE_IMPACT,
+    ATTACK_STATE_AFTER_IMPACT,
+};
+
 class PlayerAttackState : CharacterState
 {
     Array<AttackMotion@>  forwardAttacks;
@@ -213,24 +220,32 @@ class PlayerAttackState : CharacterState
     Array<AttackMotion@>  rightAttacks;
     Array<AttackMotion@>  backAttacks;
 
+    Array<AttackMotion@>  forwardWeakAttacks;
+    Array<AttackMotion@>  leftWeakAttacks;
+    Array<AttackMotion@>  rightWeakAttacks;
+    Array<AttackMotion@>  backWeakAttacks;
+
     AttackMotion@   currentAttack;
     Enemy@          attackEnemy;
 
     int             state;
     Vector3         movePerSec;
-    float           targetAngle;
+    Vector3         predictPosition;
     float           targetDistance;
+    float           alignTime = 0.3f;
 
-    int             forwadCloseNum = 14;
-    int             leftCloseNum = 12;
-    int             rightCloseNum = 11;
-    int             backCloseNum = 11;
+    int             forwadCloseNum = 8;
+    int             leftCloseNum = 8;
+    int             rightCloseNum = 9;
+    int             backCloseNum = 9;
 
     bool            doAttackCheck = false;
     Node@           attackCheckNode;
     int             currentFrame = 0;
     int             enableAttackFrame = 0;
     int             disableAttackFrame = -1;
+
+    bool            weakAttack = true;
 
     PlayerAttackState(Character@ c)
     {
@@ -242,12 +257,12 @@ class PlayerAttackState : CharacterState
         // FORWARD
         //========================================================================
         // forward weak
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH));
+        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH));
+        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH));
+        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH));
+        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH));
+        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH));
+        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH));
 
         // forward close
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_02", 14, ATTACK_PUNCH));
@@ -271,9 +286,9 @@ class PlayerAttackState : CharacterState
         // RIGHT
         //========================================================================
         // right weak
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right", 12, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH));
+        rightWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right", 12, ATTACK_PUNCH));
+        rightWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH));
+        rightWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH));
 
         // right close
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right", 16, ATTACK_PUNCH));
@@ -296,8 +311,8 @@ class PlayerAttackState : CharacterState
         // BACK
         //========================================================================
         // back weak
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back", 12, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH));
+        backWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back", 12, ATTACK_PUNCH));
+        backWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH));
 
         // back close
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back", 9, ATTACK_PUNCH));
@@ -321,9 +336,9 @@ class PlayerAttackState : CharacterState
         // LEFT
         //========================================================================
         // left weak
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left", 13, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH));
+        leftWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left", 13, ATTACK_PUNCH));
+        leftWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH));
+        leftWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH));
 
         // left close
         leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left", 7, ATTACK_PUNCH));
@@ -343,21 +358,31 @@ class PlayerAttackState : CharacterState
         leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_03", 21, ATTACK_KICK));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_04", 23, ATTACK_KICK));
 
+        forwardWeakAttacks.Sort();
+        leftWeakAttacks.Sort();
+        rightWeakAttacks.Sort();
+        backWeakAttacks.Sort();
+
         forwardAttacks.Sort();
         leftAttacks.Sort();
         rightAttacks.Sort();
         backAttacks.Sort();
 
-        Print("\nAfter sort forward attack motions:\n");
+        Print("\n forward weak attacks: \n");
+        DumpAttacks(forwardWeakAttacks);
+        Print("\n right weak attcks: \n");
+        DumpAttacks(rightWeakAttacks);
+        Print("\n back weak attcks: \n");
+        DumpAttacks(backWeakAttacks);
+        Print("\n left weak attcks: \n");
+        DumpAttacks(leftWeakAttacks);
+        Print("\n forward attacks: \n");
         DumpAttacks(forwardAttacks);
-
-        Print("\nAfter sort right attack motions:\n");
+        Print("\n right attacks: \n");
         DumpAttacks(rightAttacks);
-
-        Print("\nAfter sort back attack motions:\n");
+        Print("\n back attacks: \n");
         DumpAttacks(backAttacks);
-
-        Print("\nAfter sort left attack motions:\n");
+        Print("\n left attacks:\n");
         DumpAttacks(leftAttacks);
     }
 
@@ -373,41 +398,70 @@ class PlayerAttackState : CharacterState
         @currentAttack = null;
     }
 
+    void ChangeSubState(int newState)
+    {
+        Print("PlayerAttackState changeSubState from " + state + " to " + newState);
+        state = newState;
+    }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         Motion@ motion = currentAttack.motion;
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
-
-         if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
+        if (state == ATTACK_STATE_ALIGN)
         {
-            state = 1;
-
-            if (attack_timing_test)
-                ownner.sceneNode.scene.timeScale = 0.0f;
-
-            if (attackEnemy !is null)
+            motion.deltaPosition += movePerSec * dt;
+            if (t >= alignTime)
             {
-                Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
-                dir.y = 0;
-                dir.Normalize();
-                Print("attackEnemy OnDamage!!!!");
-                attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage);
+                ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
+                if (attackEnemy !is null)
+                    attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
+            }
+        }
+        else
+        {
+            if (t < currentAttack.impactTime && ((t + dt) > currentAttack.impactTime))
+            {
+                ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
+
+                if (attack_timing_test)
+                    ownner.sceneNode.scene.timeScale = 0.0f;
+
+                if (attackEnemy !is null)
+                {
+                    Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
+                    dir.y = 0;
+                    dir.Normalize();
+                    Print("attackEnemy OnDamage!!!!");
+                    attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage);
+                    ownner.OnAttackSuccess();
+                }
             }
         }
 
         if (attackEnemy !is null)
         {
-            targetAngle = ownner.GetTargetAngle(attackEnemy.sceneNode);
-            targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
-
+            float targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
             if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
                 motion.translateEnabled = false;
         }
 
-        if (state == 0)
-            motion.deltaPosition += movePerSec * dt;
+        if (state == ATTACK_STATE_AFTER_IMPACT)
+        {
+            if (gInput.IsAttackPressed())
+                ownner.Attack();
+        }
+
+        if (gInput.IsCounterPressed())
+            ownner.Counter();
+        else if (gInput.IsEvadePressed())
+            ownner.Evade();
+    }
+
+    void FixedUpdate(float dt)
+    {
+        Motion@ motion = currentAttack.motion;
 
         if (doAttackCheck)
             AttackCollisionCheck();
@@ -425,72 +479,66 @@ class PlayerAttackState : CharacterState
         CharacterState::FixedUpdate(dt);
     }
 
-    AttackMotion@ GetAttack(int dir, int index)
-    {
-        if (dir == 0)
-            return forwardAttacks[index];
-        else if (dir == 1)
-            return rightAttacks[index];
-        else if (dir == 2)
-            return backAttacks[index];
-        else
-            return leftAttacks[index];
-    }
-
     void ResetValues()
     {
         @currentAttack = null;
         @attackEnemy = null;
-        state = 0;
+        state = ATTACK_STATE_ALIGN;
         movePerSec = Vector3(0, 0, 0);
-        targetAngle = 0.0f;
-        targetDistance = 0.0f;
     }
 
     void PickBestMotion(const Array<AttackMotion@>&in attacks, int dir)
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
-        Quaternion myRot = ownner.sceneNode.worldRotation;
-        float yaw = myRot.eulerAngles.y;
-        Vector3 enemyDir = enemyPos - myPos;
-        float enemyDist = enemyDir.length;
-        enemyDir.Normalize();
+        Vector3 diff = enemyPos - myPos;
+        diff.y = 0;
+        float toEnenmyDistance = diff.length - COLLISION_SAFE_DIST;
+        if (toEnenmyDistance < 0.0f)
+            toEnenmyDistance = 0.0f;
+        Print("Player attack toEnenmyDistance = " + toEnenmyDistance);
+        int bestIndex = 0;
+        diff.Normalize();
 
-        float minDistance = 99999;
-        float bestRange = 0;
-        int bestIndex = -1;
-        float baseDist = COLLISION_RADIUS * 1.75f;
+        int index_start = -1;
+        int index_num = 0;
 
-        for (int i=attacks.length-1; i>=0; --i)
+        float min_dist = toEnenmyDistance - 3.0f;
+        if (min_dist < 0.0f)
+            min_dist = 0.0f;
+        float max_dist = toEnenmyDistance + 0.1f;
+        for (uint i=0; i<attacks.length; ++i)
         {
-            AttackMotion@ attack = attacks[i];
-            float farRange = attack.impactDist + baseDist;
-            Print("farRange = " + farRange + " enemyDist=" + enemyDist);
-            if (farRange < enemyDist) {
-                bestIndex = i;
-                bestRange = farRange;
+            AttackMotion@ am = attacks[i];
+            if (am.impactDist > max_dist)
                 break;
+
+            if (am.impactDist > min_dist)
+            {
+                if (index_start == -1)
+                    index_start = i;
+                index_num ++;
             }
         }
 
-        if (bestIndex < 0) {
-            Print("bestIndex is -1 !!!");
-            if (dir == 0)
-                bestIndex = RandomInt(forwadCloseNum);
-            else if (dir == 1)
-                bestIndex = RandomInt(rightCloseNum);
-            else if (dir == 2)
-                bestIndex = RandomInt(backCloseNum);
-            else if (dir == 3)
-                bestIndex = RandomInt(leftCloseNum);
+        if (index_num == 0)
+        {
+            if (toEnenmyDistance > attacks[attacks.length - 1].impactDist)
+                bestIndex = attacks.length - 1;
+            else
+                bestIndex = 0;
+        }
+        else
+        {
+            bestIndex = index_start + RandomInt(index_num);
+            Print("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num"+index_num);
         }
 
         @currentAttack = attacks[bestIndex];
 
-        Vector3 predictPosition = myPos + enemyDir * (enemyDist -  COLLISION_SAFE_DIST);
+        predictPosition = myPos + diff * toEnenmyDistance;
         Vector3 futurePos = currentAttack.motion.GetFuturePosition(ownner.sceneNode, currentAttack.impactTime);
-        movePerSec = ( predictPosition - futurePos ) / currentAttack.impactTime;
+        movePerSec = ( predictPosition - futurePos ) / alignTime;
 
         Print("Player Pick attack motion = " + currentAttack.motion.animationName + " movePerSec=" + movePerSec.ToString());
     }
@@ -499,6 +547,7 @@ class PlayerAttackState : CharacterState
     {
         if (attackEnemy !is null)
         {
+            state = ATTACK_STATE_ALIGN;
             float diff = ownner.ComputeAngleDiff(attackEnemy.sceneNode);
             int r = DirectionMapToIndex(diff, 4);
             Print("Attack-align " + " r-index=" + r + " diff=" + diff);
@@ -511,14 +560,16 @@ class PlayerAttackState : CharacterState
                 PickBestMotion(backAttacks, r);
             else if (r == 3)
                 PickBestMotion(leftAttacks, r);
+
+            attackEnemy.AddFlag(FLAGS_NO_MOVE);
         }
         else {
             currentAttack = forwardAttacks[RandomInt(forwadCloseNum)];
+            state = ATTACK_STATE_BEFORE_IMPACT;
         }
 
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
-        state = 0;
 
         if (attack_timing_test)
             ownner.sceneNode.scene.timeScale = 0.0f;
@@ -546,6 +597,8 @@ class PlayerAttackState : CharacterState
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
+        if (attackEnemy !is null)
+            attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
         @attackEnemy = null;
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
@@ -602,7 +655,7 @@ class PlayerAttackState : CharacterState
         if (currentAttack is null || attackEnemy is null)
             return;
         debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.7f, 0.8f, 0.7f), false);
-        DebugDrawDirection(debug, ownner.sceneNode, targetAngle, Color(1, 0, 0), 2);
+        debug.AddCross(predictPosition, 0.5f, Color(0.7f, 0.8f, 0.7f), false);
     }
 
     String GetDebugText()
@@ -640,6 +693,11 @@ class PlayerAttackState : CharacterState
             object.OnDamage(ownner, position, dir, ownner.attackDamage);
         }
     }
+
+    bool CanReEntered()
+    {
+        return true;
+    }
 };
 
 
@@ -670,7 +728,6 @@ class PlayerCounterState : CharacterCounterState
                 StartCounterMotion();
                 CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.GetState());
                 enemyCounterState.StartCounterMotion();
-                // scene_.timeScale = 0.0f;
             }
         }
         CharacterCounterState::Update(dt);
@@ -720,14 +777,12 @@ class PlayerCounterState : CharacterCounterState
         {
             if (isBack)
             {
-                //int idx = QueryBestCounterMotion(backArmMotions, enemyCounterState.backArmMotions, currentPositionDiff);
                 int idx = RandomInt(backArmMotions.length);
                 @currentMotion = backArmMotions[idx];
                 @enemyCounterState.currentMotion = enemyCounterState.backArmMotions[idx];
             }
             else
             {
-                //int idx = QueryBestCounterMotion(frontArmMotions, enemyCounterState.frontArmMotions, currentPositionDiff);
                 int idx = RandomInt(frontArmMotions.length);
                 @currentMotion = frontArmMotions[idx];
                 @enemyCounterState.currentMotion = enemyCounterState.frontArmMotions[idx];
@@ -737,16 +792,13 @@ class PlayerCounterState : CharacterCounterState
         {
             if (isBack)
             {
-                //int idx = QueryBestCounterMotion(backLegMotions, enemyCounterState.backLegMotions, currentPositionDiff);
                 int idx = RandomInt(backLegMotions.length);
                 @currentMotion = backLegMotions[idx];
                 @enemyCounterState.currentMotion = enemyCounterState.backLegMotions[idx];
             }
             else
             {
-                //int idx = QueryBestCounterMotion(frontLegMotions, enemyCounterState.frontLegMotions, currentPositionDiff);
                 int idx = RandomInt(frontLegMotions.length);
-                // idx = FindMotionIndex(frontLegMotions, "BM_TG_Counter/Counter_Leg_Back_Weak_03");
                 @currentMotion = frontLegMotions[idx];
                 @enemyCounterState.currentMotion = enemyCounterState.frontLegMotions[idx];
             }
@@ -935,6 +987,7 @@ class Player : Character
             return;
         }
 
+        combo = 0;
         health -= damage;
         if (health <= 0)
         {
@@ -965,11 +1018,20 @@ class Player : Character
         }
     }
 
+    void OnAttackSuccess()
+    {
+        combo ++;
+        Print("combo add to " + combo);
+    }
+
     //====================================================================
     //      SMART ENEMY PICK FUNCTIONS
     //====================================================================
     Enemy@ PickAttackEnemy()
     {
+        uint t = time.systemTime;
+        Print("PickAttackEnemy() started");
+
         // Find the best enemy
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
@@ -979,26 +1041,36 @@ class Player : Character
         gEnemyMgr.scoreCache.Clear();
 
         Enemy@ attackEnemy = null;
-        Print("Attack targetAngle=" + targetAngle);
-
         for (uint i=0; i<gEnemyMgr.enemyList.length; ++i)
         {
             Enemy@ e = gEnemyMgr.enemyList[i];
-            Vector3 posDiff = e.sceneNode.worldPosition - myPos;
-            posDiff.y = 0;
-            int score = 0;
-            float distSQR = posDiff.lengthSquared;
-            // Print(" distSQR=" + distSQR);
-            if (distSQR > MAX_ATTACK_DIST * MAX_ATTACK_DIST || !e.CanBeAttacked())
+            if (!e.CanBeAttacked())
             {
+                Print(e.GetName() + " can not be attacked");
                 gEnemyMgr.scoreCache.Push(-1);
                 continue;
             }
-            float diffAngle = Abs(Atan2(posDiff.x, posDiff.z));
-            int angleScore = int((180.0f - diffAngle)/180.0f * 50.0f); // angle at 50% percant
+
+            Vector3 posDiff = e.sceneNode.worldPosition - myPos;
+            posDiff.y = 0;
+            int score = 0;
+            float dist = posDiff.length;
+            if (dist > MAX_ATTACK_DIST)
+            {
+                Print(e.GetName() + " far way from player");
+                gEnemyMgr.scoreCache.Push(-1);
+                continue;
+            }
+            float enemyAngle = Atan2(posDiff.x, posDiff.z);
+            float diffAngle = targetAngle - enemyAngle;
+            diffAngle = AngleDiff(diffAngle);
+            Print("enemyAngle="+enemyAngle+"targetAngle="+targetAngle+"diffAngle="+diffAngle);
+            int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 80.0f);
+            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST) * 20.0f;
+            score += distScore;
             score += angleScore;
             gEnemyMgr.scoreCache.Push(score);
-            Print("Enemy " + e.sceneNode.name + " distSQR=" + distSQR + " diffAngle=" + diffAngle + " score=" + score);
+            Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 
         int bestScore = 0;
@@ -1010,6 +1082,8 @@ class Player : Character
                 @attackEnemy = gEnemyMgr.enemyList[i];
             }
         }
+
+        Print("PickAttackEnemy() time-cost = " + (time.systemTime - t) + " ms");
 
         return attackEnemy;
     }

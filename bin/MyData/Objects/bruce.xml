@@ -2,17 +2,17 @@
 <node id="10">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="bruce" />
-	<attribute name="Position" value="7.79603 0 0" />
+	<attribute name="Position" value="5 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
 	<component type="CollisionShape" id="23">
 		<attribute name="Shape Type" value="Capsule" />
-		<attribute name="Size" value="3 5 2.5" />
+		<attribute name="Size" value="2.5 5 2.5" />
 		<attribute name="Offset Position" value="0 2.5 0" />
 	</component>
 	<component type="RigidBody" id="24">
-		<attribute name="Physics Position" value="7.79603 0 0" />
+		<attribute name="Physics Position" value="5 0 0" />
 		<attribute name="Mass" value="1" />
 		<attribute name="Friction" value="0" />
 		<attribute name="Angular Factor" value="0 0 0" />

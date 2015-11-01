@@ -87,10 +87,15 @@ void CreateScene()
     if (!test_ragdoll)
     {
         @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+        @thug.target = player;
     }
 
-    if (thug !is null)
-        @thug.target = player;
+    Node@ thugNode2 = scene_.GetChild("thug2", true);
+    if (!test_ragdoll)
+    {
+        Thug@ thug2 = cast<Thug>(thugNode2.CreateScriptObject(GAME_SCRIPT, "Thug"));
+        @thug2.target = player;
+    }
 
     characterNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
     thugNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
@@ -109,7 +114,6 @@ void CreateScene()
 
     //Animation@ anim = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
     //AnimationTrack@ track = anim.tracks["Bip"];
-
     //DumpSkeletonNames(characterNode);
 }
 
@@ -266,7 +270,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (input.keyPress['T'])
     {
         slowMotion = !slowMotion;
-        scene_.timeScale = slowMotion ? 0.05f : 1.0f;
+        //scene_.timeScale = slowMotion ? 0.1f : 1.0f;
+        SetWorldTimeScale(scene_, slowMotion ? 0.25f : 1.0f);
     }
 
     if (input.keyPress['R'])
@@ -321,7 +326,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_HitReaction/Push_Reaction";
             //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
             //String testName = "TG_HitReaction/HitReaction_Right";
-            String testName = "BM_Attack/Attack_Far_Back_01";
+            String testName = "BM_Attack/Attack_Far_Back_03";
             player.TestAnimation(testName);
         }
         else if (input.keyPress['F'])
@@ -402,7 +407,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     //debug.AddNode(characterNode, 0.25, false);
     //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Translation", true), 0.25, false);
     //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Rotation", true), 0.25, false);
-    debug.AddNode(characterNode.GetChild("Bip01_Pelvis", true), 0.25, false);
+    // debug.AddNode(characterNode.GetChild("Bip01_Pelvis", true), 0.25, false);
 
     //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Scaling", true), 0.25, false);
     //debug.AddNode(characterNode.GetChild("Bip01_Spine1", true), 0.25, false);
