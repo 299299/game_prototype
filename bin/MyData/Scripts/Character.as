@@ -31,6 +31,7 @@ const StringHash R_FOOT("Bip01_R_Foot");
 const StringHash L_HAND("Bip01_L_Hand");
 const StringHash R_HAND("Bip01_R_Hand");
 const StringHash RADIUS("Radius");
+const StringHash IN_AIR("InAir");
 
 class CharacterState : State
 {
@@ -896,7 +897,7 @@ class Character : GameObject
         // Print("ObjectCollision -> " + otherBody.node.name);
     }
 
-    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
         stateMachine.ChangeState("HitState");
     }

@@ -9,7 +9,7 @@
 	<component type="CollisionShape" id="23">
 		<attribute name="Shape Type" value="Capsule" />
 		<attribute name="Size" value="2.5 5 2.5" />
-		<attribute name="Offset Position" value="0 2.5 0" />
+		<attribute name="Offset Position" value="0 2.5 0.25" />
 	</component>
 	<component type="RigidBody" id="24">
 		<attribute name="Physics Position" value="5 0 0" />

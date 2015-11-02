@@ -324,9 +324,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_Getup/GetUp_Back";
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
-            //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
+            String testName = "TG_BM_Counter/Counter_Arm_Front_01";
             //String testName = "TG_HitReaction/HitReaction_Right";
-            String testName = "BM_Attack/Attack_Far_Back_03";
+            //String testName = "BM_Attack/Attack_Far_Back_03";
             player.TestAnimation(testName);
         }
         else if (input.keyPress['F'])
@@ -398,7 +398,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     if (thug !is null)
         thug.DebugDraw(debug);
 
-    //scene_.physicsWorld.DrawDebugGeometry(false);
+    scene_.physicsWorld.DrawDebugGeometry(false);
 
     //AnimatedModel@ model = characterNode.children[0].GetComponent("AnimatedModel");
     //Skeleton@ skel = model.skeleton;

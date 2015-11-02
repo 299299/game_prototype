@@ -220,11 +220,6 @@ class PlayerAttackState : CharacterState
     Array<AttackMotion@>  rightAttacks;
     Array<AttackMotion@>  backAttacks;
 
-    Array<AttackMotion@>  forwardWeakAttacks;
-    Array<AttackMotion@>  leftWeakAttacks;
-    Array<AttackMotion@>  rightWeakAttacks;
-    Array<AttackMotion@>  backWeakAttacks;
-
     AttackMotion@   currentAttack;
     Enemy@          attackEnemy;
 
@@ -234,10 +229,10 @@ class PlayerAttackState : CharacterState
     float           targetDistance;
     float           alignTime = 0.3f;
 
-    int             forwadCloseNum = 8;
-    int             leftCloseNum = 8;
-    int             rightCloseNum = 9;
-    int             backCloseNum = 9;
+    int             forwadCloseNum = 0;
+    int             leftCloseNum = 0;
+    int             rightCloseNum = 0;
+    int             backCloseNum = 0;
 
     bool            doAttackCheck = false;
     Node@           attackCheckNode;
@@ -246,6 +241,7 @@ class PlayerAttackState : CharacterState
     int             disableAttackFrame = -1;
 
     bool            weakAttack = true;
+    bool            isInAir = false;
 
     PlayerAttackState(Character@ c)
     {
@@ -257,12 +253,12 @@ class PlayerAttackState : CharacterState
         // FORWARD
         //========================================================================
         // forward weak
-        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH));
-        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH));
-        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH));
-        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH));
-        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH));
-        forwardWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH));
+        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH));
 
         // forward close
         forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_02", 14, ATTACK_PUNCH));
@@ -286,9 +282,9 @@ class PlayerAttackState : CharacterState
         // RIGHT
         //========================================================================
         // right weak
-        rightWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right", 12, ATTACK_PUNCH));
-        rightWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH));
-        rightWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right", 12, ATTACK_PUNCH));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH));
+        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH));
 
         // right close
         rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right", 16, ATTACK_PUNCH));
@@ -311,8 +307,8 @@ class PlayerAttackState : CharacterState
         // BACK
         //========================================================================
         // back weak
-        backWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back", 12, ATTACK_PUNCH));
-        backWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back", 12, ATTACK_PUNCH));
+        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH));
 
         // back close
         backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back", 9, ATTACK_PUNCH));
@@ -336,9 +332,9 @@ class PlayerAttackState : CharacterState
         // LEFT
         //========================================================================
         // left weak
-        leftWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left", 13, ATTACK_PUNCH));
-        leftWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH));
-        leftWeakAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left", 13, ATTACK_PUNCH));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH));
+        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH));
 
         // left close
         leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left", 7, ATTACK_PUNCH));
@@ -358,31 +354,44 @@ class PlayerAttackState : CharacterState
         leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_03", 21, ATTACK_KICK));
         leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_04", 23, ATTACK_KICK));
 
-        forwardWeakAttacks.Sort();
-        leftWeakAttacks.Sort();
-        rightWeakAttacks.Sort();
-        backWeakAttacks.Sort();
-
         forwardAttacks.Sort();
         leftAttacks.Sort();
         rightAttacks.Sort();
         backAttacks.Sort();
 
-        Print("\n forward weak attacks: \n");
-        DumpAttacks(forwardWeakAttacks);
-        Print("\n right weak attcks: \n");
-        DumpAttacks(rightWeakAttacks);
-        Print("\n back weak attcks: \n");
-        DumpAttacks(backWeakAttacks);
-        Print("\n left weak attcks: \n");
-        DumpAttacks(leftWeakAttacks);
-        Print("\n forward attacks: \n");
+        float min_dist = 2.0f;
+        for (uint i=0; i<forwardAttacks.length; ++i)
+        {
+            if (forwardAttacks[i].impactDist >= min_dist)
+                break;
+            forwadCloseNum++;
+        }
+        for (uint i=0; i<rightAttacks.length; ++i)
+        {
+            if (rightAttacks[i].impactDist >= min_dist)
+                break;
+            rightCloseNum++;
+        }
+        for (uint i=0; i<backAttacks.length; ++i)
+        {
+            if (backAttacks[i].impactDist >= min_dist)
+                break;
+            backCloseNum++;
+        }
+        for (uint i=0; i<leftAttacks.length; ++i)
+        {
+            if (leftAttacks[i].impactDist >= min_dist)
+                break;
+            leftCloseNum++;
+        }
+
+        Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
         DumpAttacks(forwardAttacks);
-        Print("\n right attacks: \n");
+        Print("\n right attacks(closeNum=" + rightCloseNum + "): \n");
         DumpAttacks(rightAttacks);
-        Print("\n back attacks: \n");
+        Print("\n back attacks(closeNum=" + backCloseNum + "): \n");
         DumpAttacks(backAttacks);
-        Print("\n left attacks:\n");
+        Print("\n left attacks(closeNum=" + leftCloseNum + "): \n");
         DumpAttacks(leftAttacks);
     }
 
@@ -433,8 +442,8 @@ class PlayerAttackState : CharacterState
                     Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
                     dir.y = 0;
                     dir.Normalize();
-                    Print("attackEnemy OnDamage!!!!");
-                    attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage);
+                    Print("PlayerAttackState::" +  attackEnemy.GetName() + " OnDamage!!!!");
+                    attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage, weakAttack);
                     ownner.OnAttackSuccess();
                 }
             }
@@ -444,9 +453,22 @@ class PlayerAttackState : CharacterState
         {
             float targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
             if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            {
+                Print("Player::AttackState TooClose set translateEnabled to false");
                 motion.translateEnabled = false;
+            }
         }
 
+        float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
+        isInAir = y_diff > 0.5f;
+
+        if (!isInAir)
+            CheckInput();
+    }
+
+
+    void CheckInput()
+    {
         if (state == ATTACK_STATE_AFTER_IMPACT)
         {
             if (gInput.IsAttackPressed())
@@ -473,6 +495,7 @@ class PlayerAttackState : CharacterState
 
         bool finished = motion.Move(ownner, dt);
         if (finished) {
+            Print("Player::Attack finish attack movemont in sub state = " + state);
             ownner.CommonStateFinishedOnGroud();
         }
 
@@ -571,6 +594,8 @@ class PlayerAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
 
+        isInAir = false;
+
         if (attack_timing_test)
             ownner.sceneNode.scene.timeScale = 0.0f;
     }
@@ -589,6 +614,7 @@ class PlayerAttackState : CharacterState
 
     void Enter(State@ lastState)
     {
+        Print("################## Player::AttackState Enter from " + lastState.name  + " #####################");
         Start();
         CharacterState::Enter(lastState);
         ownner.AddFlag(FLAGS_ATTACK);
@@ -602,6 +628,7 @@ class PlayerAttackState : CharacterState
         @attackEnemy = null;
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
+        Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -980,7 +1007,7 @@ class Player : Character
         return gInput.m_leftStickAngle + gCameraMgr.GetCameraAngle();
     }
 
-    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
         if (!CanBeAttacked()) {
             Print("OnDamage failed because I can no be attacked " + GetName());

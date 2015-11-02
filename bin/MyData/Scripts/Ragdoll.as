@@ -36,7 +36,7 @@ const StringHash RAGDOLL_ROOT("Ragdoll_Root");
 
 bool test_ragdoll = false;
 bool blend_to_anim = false;
-int ragdoll_method = 0;
+int ragdoll_method = 2;
 
 class Ragdoll : ScriptObject
 {
@@ -122,8 +122,11 @@ class Ragdoll : ScriptObject
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
 
-        CreateRagdoll();
-        SetPhysicsEnabled(false);
+        if (ragdoll_method != 2)
+        {
+            CreateRagdoll();
+            SetPhysicsEnabled(false);
+        }
     }
 
     void Stop()
@@ -138,13 +141,20 @@ class Ragdoll : ScriptObject
         {
             EnableRagdoll(bEnable);
         }
-        else
+        else if (ragdoll_method == 1)
         {
             SetRagdollDynamic(bEnable);
             uint mask = COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
             if (bEnable)
                 mask |= COLLISION_LAYER_RAGDOLL;
             SetCollisionMask(mask);
+        }
+        else if (ragdoll_method == 2)
+        {
+            if (bEnable)
+                CreateRagdoll();
+            else
+                DestroyRagdoll();
         }
     }
 

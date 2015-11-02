@@ -601,7 +601,7 @@ class Thug : Enemy
         stateMachine.ChangeState("StandState");
     }
 
-    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
         if (!CanBeAttacked())
         {

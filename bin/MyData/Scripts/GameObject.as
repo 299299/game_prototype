@@ -183,7 +183,7 @@ class GameObject : ScriptObject
         return state.nameHash == nameHash;
     }
 
-    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage)
+    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
 
     }
