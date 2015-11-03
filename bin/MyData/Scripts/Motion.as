@@ -272,9 +272,6 @@ class Motion
                 Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + deltaPosition;
                 object.MoveTo(tWorld, dt);
             }
-            else {
-                object.SetVelocity(Vector3(0, 0, 0));
-            }
         }
         else
         {
@@ -287,9 +284,6 @@ class Motion
                 Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
                 //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.sceneNode.worldPosition.ToString() + " localTime=" + localTime);
                 object.MoveTo(tWorld, dt);
-            }
-            else {
-                object.SetVelocity(Vector3(0, 0, 0));
             }
         }
         return localTime >= endTime;

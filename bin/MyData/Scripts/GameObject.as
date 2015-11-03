@@ -17,8 +17,6 @@ const int COLLISION_LAYER_ATTACK    = (1 << 4);
 class GameObject : ScriptObject
 {
     FSM@    stateMachine = FSM();
-    bool    onGround = false;
-    bool    isSliding = false;
     float   duration = -1;
     int     flags = 0;
     float   timeScale = 1.0f;
@@ -71,68 +69,6 @@ class GameObject : ScriptObject
         source.SetDistanceAttenuation(2, 50, 1);
         source.Play(sound);
         source.autoRemove = true;
-    }
-
-    void HandleNodeCollision(StringHash eventType, VariantMap& eventData)
-    {
-        Node@ otherNode = eventData["OtherNode"].GetPtr();
-        RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
-        // If the other collision shape belongs to static geometry, perform world collision
-        if (otherBody.collisionLayer == COLLISION_LAYER_LANDSCAPE)
-            WorldCollision(eventData);
-        else
-            ObjectCollision(otherBody, eventData);
-    }
-
-    void WorldCollision(VariantMap& eventData)
-    {
-        VectorBuffer contacts = eventData["Contacts"].GetBuffer();
-        while (!contacts.eof)
-        {
-            Vector3 contactPosition = contacts.ReadVector3();
-            Vector3 contactNormal = contacts.ReadVector3();
-            float contactDistance = contacts.ReadFloat();
-            float contactImpulse = contacts.ReadFloat();
-
-            // If contact is below node center and mostly vertical, assume it's ground contact
-            if (contactPosition.y < node.position.y)
-            {
-                float level = Abs(contactNormal.y);
-                if (level > 0.75)
-                    onGround = true;
-                else
-                {
-                    // If contact is somewhere inbetween vertical/horizontal, is sliding a slope
-                    if (level > 0.1)
-                        isSliding = true;
-                }
-            }
-        }
-
-        // Ground contact has priority over sliding contact
-        if (onGround == true)
-            isSliding = false;
-    }
-
-    void ObjectCollision(RigidBody@ otherBody, VariantMap& eventData)
-    {
-
-    }
-
-    void ResetWorldCollision()
-    {
-        RigidBody@ body = node.GetComponent("RigidBody");
-        if (body.active)
-        {
-            onGround = false;
-            isSliding = false;
-        }
-        else
-        {
-            // If body is not active, assume it rests on the ground
-            onGround = true;
-            isSliding = false;
-        }
     }
 
     void DebugDraw(DebugRenderer@ debug)

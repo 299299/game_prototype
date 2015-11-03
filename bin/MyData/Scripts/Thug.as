@@ -90,12 +90,6 @@ class ThugStandState : CharacterState
 
         CharacterState::Update(dt);
     }
-
-    void FixedUpdate(float dt)
-    {
-        ownner.SetVelocity(Vector3(0, 0, 0));
-        CharacterState::FixedUpdate(dt);
-    }
 };
 
 class ThugStepMoveState : MultiMotionState
@@ -118,7 +112,7 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         if (motions[selectIndex].Move(ownner, dt))
         {
@@ -141,7 +135,7 @@ class ThugStepMoveState : MultiMotionState
             ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -193,19 +187,6 @@ class ThugRunState : SingleMotionState
 
     void Update(float dt)
     {
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist <= attackRange)
-        {
-            if (ownner.Attack())
-                return;
-            ownner.CommonStateFinishedOnGroud();
-        }
-
-        SingleMotionState::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
-    {
         float characterDifference = ownner.ComputeAngleDiff();
         ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
 
@@ -216,7 +197,15 @@ class ThugRunState : SingleMotionState
             return;
         }
 
-        SingleMotionState::FixedUpdate(dt);
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist <= attackRange)
+        {
+            if (ownner.Attack())
+                return;
+            ownner.CommonStateFinishedOnGroud();
+        }
+
+        SingleMotionState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -241,14 +230,14 @@ class ThugCounterState : CharacterCounterState
         AddCounterMotions("TG_BM_Counter/");
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         if (state == 1)
         {
             if (currentMotion.Move(ownner, dt))
                 ownner.CommonStateFinishedOnGroud();
         }
-        CharacterCounterState::FixedUpdate(dt);
+        CharacterCounterState::Update(dt);
     }
 };
 
@@ -282,11 +271,8 @@ class ThugAttackState : CharacterState
         attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame, type));
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
-        if (currentAttack is null)
-            return;
-
         ++ currentFrame;
         Motion@ motion = currentAttack.motion;
         float targetDistance = ownner.GetTargetDistance();
@@ -310,7 +296,7 @@ class ThugAttackState : CharacterState
             ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -444,11 +430,11 @@ class ThugHitState : MultiMotionState
         AddMotion(preFix + "Push_Reaction_From_Back");
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         if (timeInState > 0.25f)
             ownner.AddFlag(FLAGS_ATTACK);
-        MultiMotionState::FixedUpdate(dt);
+        MultiMotionState::Update(dt);
     }
 
     void Exit(State@ nextState)
@@ -476,7 +462,7 @@ class ThugTurnState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         Motion@ motion = motions[selectIndex];
         float t = ownner.animCtrl.GetTime(motion.animationName);
@@ -486,7 +472,7 @@ class ThugTurnState : MultiMotionState
             ownner.CommonStateFinishedOnGroud();
         }
         ownner.sceneNode.Yaw(turnSpeed * dt);
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)

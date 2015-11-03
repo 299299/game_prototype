@@ -68,15 +68,10 @@ class SingleMotionState : CharacterState
 
     void Update(float dt)
     {
-        CharacterState::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
-    {
         if (motion.Move(ownner, dt))
             ownner.CommonStateFinishedOnGroud();
 
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -110,15 +105,10 @@ class MultiMotionState : CharacterState
 
     void Update(float dt)
     {
-        CharacterState::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
-    {
         if (motions[selectIndex].Move(ownner, dt))
             ownner.CommonStateFinishedOnGroud();
 
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -195,15 +185,15 @@ class CharacterAlignState : CharacterState
         }
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         Node@ sceneNode = ownner.sceneNode;
 
         curTime += dt;
         if (curTime >= alignTime) {
             Print("FINISHED Align!!!");
-            ownner.sceneNode.worldPosition = targetPosition;
-            ownner.sceneNode.worldRotation = Quaternion(0, targetRotation, 0);
+            sceneNode.worldPosition = targetPosition;
+            sceneNode.worldRotation = Quaternion(0, targetRotation, 0);
             ownner.ChangeState(nextState);
 
             VariantMap eventData;
@@ -227,11 +217,6 @@ class CharacterAlignState : CharacterState
             " r=" + String(sceneNode.worldRotation.eulerAngles.y) +
             " dyaw=" + String(yawEd));
 
-        CharacterState::FixedUpdate(dt);
-    }
-
-    void Update(float dt)
-    {
         CharacterState::Update(dt);
     }
 };
@@ -250,6 +235,8 @@ class AnimationTestState : CharacterState
 
     void Enter(State@ lastState)
     {
+        Print("AnimationTestState::Enter");
+        @testMotion = gMotionMgr.FindMotion(animationName);
         if (testMotion !is null)
             testMotion.Start(ownner);
         else
@@ -258,25 +245,12 @@ class AnimationTestState : CharacterState
 
     void Exit(State@ nextState)
     {
+        Print("AnimationTestState::Exit");
         @testMotion = null;
         CharacterState::Exit(nextState);
     }
 
-    bool SetTestAnimation(const String&in name)
-    {
-        @testMotion = gMotionMgr.FindMotion(name);
-        if (testMotion is null)
-            return false;
-        animationName = name;
-        return true;
-    }
-
     void Update(float dt)
-    {
-        CharacterState::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
     {
         bool finished = false;
         if (testMotion !is null)
@@ -293,7 +267,7 @@ class AnimationTestState : CharacterState
             ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -307,6 +281,11 @@ class AnimationTestState : CharacterState
         String r = CharacterState::GetDebugText();
         r += "\nanimation=" + animationName;
         return r;
+    }
+
+    bool CanReEntered()
+    {
+        return true;
     }
 };
 
@@ -430,7 +409,7 @@ class CharacterRagdollState : CharacterState
         SetName("RagdollState");
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         if (timeInState > 0.1f)
         {
@@ -441,7 +420,7 @@ class CharacterRagdollState : CharacterState
                 ownner.ChangeState("GetUpState");
             }
         }
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 };
 
@@ -467,7 +446,7 @@ class CharacterGetUpState : MultiMotionState
         CharacterState::Enter(lastState);
     }
 
-    void FixedUpdate(float dt)
+    void Update(float dt)
     {
         Motion@ motion = motions[selectIndex];
         if (state == 0)
@@ -488,7 +467,7 @@ class CharacterGetUpState : MultiMotionState
             }
         }
 
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
     }
 
     int PickIndex()
@@ -510,7 +489,6 @@ class Character : GameObject
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
-    RigidBody@              body;
 
     Vector3                 startPosition;
     Quaternion              startRotation;
@@ -524,6 +502,9 @@ class Character : GameObject
     int                     attackDamage = 10;
 
     Node@                   hintNode;
+
+    Vector3                 targetPosition;
+    bool                    targetPositionApplied = false;
 
     Character()
     {
@@ -542,12 +523,6 @@ class Character : GameObject
         renderNode = sceneNode.children[0];
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
-        body = sceneNode.GetComponent("RigidBody");
-        if (body !is null)
-        {
-            body.collisionLayer = COLLISION_LAYER_CHARACTER;
-            body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_PROP | COLLISION_LAYER_ATTACK;
-        }
 
         hipsNode = renderNode.GetChild("Bip01_Pelvis", true);
         handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
@@ -571,7 +546,6 @@ class Character : GameObject
         }
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-        SubscribeToEvent(sceneNode, "NodeCollision", "HandleNodeCollision");
 
         attackCheckNode = sceneNode.CreateChild("Attack_Node");
         CollisionShape@ shape = attackCheckNode.CreateComponent("CollisionShape");
@@ -592,6 +566,8 @@ class Character : GameObject
         text.textAlignment = HA_CENTER;
         text.text = sceneNode.name;
         text.faceCameraMode = FC_LOOKAT_XYZ;
+
+        targetPositionApplied = false;
     }
 
     void Start()
@@ -613,7 +589,6 @@ class Character : GameObject
         @sceneNode = null;
         @animCtrl = null;
         @animModel = null;
-        @body = null;
         cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
         ragdollPoseAnim = null;
     }
@@ -676,31 +651,29 @@ class Character : GameObject
         return debugText;
     }
 
-    bool IsPhysical()
+    void Update(float dt)
     {
-        if (body is null)
-            return false;
-        return body.enabled;
+        targetPositionApplied = false;
+        GameObject::Update(dt);
+
+        if (!targetPositionApplied)
+            return;
+
+        targetPositionApplied = false;
+        Vector3 curPosition = sceneNode.worldPosition;
+        Ray ray(curPosition, (targetPosition - curPosition).Normalized());
+        float rayLen = COLLISION_RADIUS + 0.5f;
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, rayLen, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+            return;
+        sceneNode.worldPosition = targetPosition;
     }
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        if (!IsPhysical())
-            sceneNode.worldPosition = position;
-        else
-        {
-            Vector3 diff = position - sceneNode.worldPosition;
-            Vector3 velocity = diff / dt;
-            // Print(sceneNode.name + " MoveNode vel=" + velocity.ToString() + " t1=" + position.ToString() + " t2=" + sceneNode.worldPosition.ToString() + " dt=" + dt);
-            body.linearVelocity = velocity * timeScale;
-        }
-    }
-
-    void SetVelocity(const Vector3&in velocity)
-    {
-        if (IsPhysical()) {
-            body.linearVelocity = velocity;
-        }
+        sceneNode.worldPosition = position;
+        //targetPosition = position;
+        //targetPositionApplied = true;
     }
 
     bool Attack()
@@ -735,6 +708,7 @@ class Character : GameObject
         sceneNode.worldRotation = startRotation;
         health = INITIAL_HEALTH;
         SetTimeScale(1.0f);
+        targetPositionApplied = false;
         stateMachine.ChangeState("StandState");
     }
 
@@ -782,8 +756,9 @@ class Character : GameObject
     void TestAnimation(const String&in animationName)
     {
         AnimationTestState@ state = cast<AnimationTestState@>(stateMachine.FindState("AnimationTestState"));
-        if (!state.SetTestAnimation(animationName))
+        if (state is null)
             return;
+        state.animationName = animationName;
         stateMachine.ChangeState("AnimationTestState");
     }
 
@@ -867,34 +842,6 @@ class Character : GameObject
         AnimationState@ state = animModel.AddAnimationState(ragdollPoseAnim);
         state.weight = 1.0f;
         animCtrl.PlayExclusive(ragdollPoseAnim.name, LAYER_MOVE, false, 0.0f);
-    }
-
-    void ResetWorldCollision()
-    {
-        if (IsPhysical())
-        {
-            onGround = false;
-            isSliding = false;
-        }
-        else
-        {
-            // If body is not active, assume it rests on the ground
-            onGround = true;
-            isSliding = false;
-        }
-    }
-
-    void FixedUpdate(float dt)
-    {
-        if (IsPhysical())
-            body.Activate();
-        GameObject::FixedUpdate(dt);
-        ResetWorldCollision();
-    }
-
-    void ObjectCollision(RigidBody@ otherBody, VariantMap& eventData)
-    {
-        // Print("ObjectCollision -> " + otherBody.node.name);
     }
 
     void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)

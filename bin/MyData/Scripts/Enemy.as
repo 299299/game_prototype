@@ -79,6 +79,12 @@ class EnemyManager
         return ret;
     }
 
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        for (uint i=0; i<enemyList.length; ++i)
+            enemyList[i].DebugDraw(debug);
+    }
+
     Array<Enemy@>             enemyList;
     Array<int>                scoreCache;
 };

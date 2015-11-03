@@ -24,7 +24,6 @@ Node@ characterNode;
 Node@ thugNode;
 
 Player@ player;
-Thug@ thug;
 bool slowMotion = false;
 bool pauseGame = false;
 int globalState = 0;
@@ -86,15 +85,15 @@ void CreateScene()
     thugNode = scene_.GetChild("thug", true);
     if (!test_ragdoll)
     {
-        @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
+        Thug @thug = cast<Thug>(thugNode.CreateScriptObject(GAME_SCRIPT, "Thug"));
         @thug.target = player;
     }
 
     Node@ thugNode2 = scene_.GetChild("thug2", true);
     if (!test_ragdoll)
     {
-        Thug@ thug2 = cast<Thug>(thugNode2.CreateScriptObject(GAME_SCRIPT, "Thug"));
-        @thug2.target = player;
+        Thug @thug = cast<Thug>(thugNode2.CreateScriptObject(GAME_SCRIPT, "Thug"));
+        @thug.target = player;
     }
 
     characterNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
@@ -270,8 +269,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (input.keyPress['T'])
     {
         slowMotion = !slowMotion;
-        //scene_.timeScale = slowMotion ? 0.1f : 1.0f;
-        SetWorldTimeScale(scene_, slowMotion ? 0.25f : 1.0f);
+        scene_.timeScale = slowMotion ? 0.1f : 1.0f;
+        //SetWorldTimeScale(scene_, slowMotion ? 0.25f : 1.0f);
     }
 
     if (input.keyPress['R'])
@@ -324,9 +323,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_Getup/GetUp_Back";
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
-            String testName = "TG_BM_Counter/Counter_Arm_Front_01";
-            //String testName = "TG_HitReaction/HitReaction_Right";
-            //String testName = "BM_Attack/Attack_Far_Back_03";
+            //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
+            String testName = "TG_HitReaction/HitReaction_Right";
+            //String testName = "BM_Attack/Attack_Far_Back_04";
             player.TestAnimation(testName);
         }
         else if (input.keyPress['F'])
@@ -340,9 +339,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     debugText += gInput.GetDebugText();
     if (player !is null)
         debugText += player.GetDebugText();
-    if (thug !is null)
-        debugText += thug.GetDebugText();
-
 
     if (engine.headless)
     {
@@ -363,7 +359,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             if (globalState == 999)
             {
                 @player = null;
-                @thug = null;
                 characterNode.RemoveAllComponents();
                 thugNode.RemoveAllComponents();
                 @gEnemyMgr = null;
@@ -395,8 +390,8 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     debug.AddNode(scene_, 1.0f, false);
     if (player !is null)
         player.DebugDraw(debug);
-    if (thug !is null)
-        thug.DebugDraw(debug);
+
+    gEnemyMgr.DebugDraw(debug);
 
     scene_.physicsWorld.DrawDebugGeometry(false);
 

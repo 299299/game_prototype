@@ -64,12 +64,6 @@ class PlayerStandState : CharacterState
 
         CharacterState::Update(dt);
     }
-
-    void FixedUpdate(float dt)
-    {
-        ownner.SetVelocity(Vector3(0, 0, 0));
-        CharacterState::FixedUpdate(dt);
-    }
 };
 
 class PlayerTurnState : MultiMotionState
@@ -87,19 +81,24 @@ class PlayerTurnState : MultiMotionState
 
     void Update(float dt)
     {
+        //ownner.sceneNode.Yaw(turnSpeed * dt);
+        Motion@ motion = motions[selectIndex];
+        motion.deltaRotation += turnSpeed * dt;
+
         if (gInput.IsAttackPressed())
             ownner.Attack();
         else if (gInput.IsCounterPressed())
             ownner.Counter();
         else if (gInput.IsEvadePressed())
             ownner.Evade();
-        MultiMotionState::Update(dt);
-    }
 
-    void FixedUpdate(float dt)
-    {
-        ownner.sceneNode.Yaw(turnSpeed * dt);
-        MultiMotionState::FixedUpdate(dt);
+        if (motions[selectIndex].Move(ownner, dt))
+        {
+            // ownner.sceneNode.scene.timeScale = 0.0f;
+            ownner.CommonStateFinishedOnGroud();
+        }
+
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -135,21 +134,6 @@ class PlayerMoveState : SingleMotionState
 
     void Update(float dt)
     {
-        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
-            ownner.ChangeState("StandState");
-
-        if (gInput.IsAttackPressed())
-            ownner.Attack();
-        else if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
-
-        CharacterState::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
-    {
         float characterDifference = ownner.ComputeAngleDiff();
         ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
         motion.Move(ownner, dt);
@@ -161,7 +145,17 @@ class PlayerMoveState : SingleMotionState
             ownner.ChangeState("TurnState");
         }
 
-        CharacterState::FixedUpdate(dt);
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
+            ownner.ChangeState("StandState");
+
+        if (gInput.IsAttackPressed())
+            ownner.Attack();
+        else if (gInput.IsCounterPressed())
+            ownner.Counter();
+        else if (gInput.IsEvadePressed())
+            ownner.Evade();
+
+        CharacterState::Update(dt);
     }
 
     void Enter(State@ lastState)
@@ -464,26 +458,6 @@ class PlayerAttackState : CharacterState
 
         if (!isInAir)
             CheckInput();
-    }
-
-
-    void CheckInput()
-    {
-        if (state == ATTACK_STATE_AFTER_IMPACT)
-        {
-            if (gInput.IsAttackPressed())
-                ownner.Attack();
-        }
-
-        if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
-    }
-
-    void FixedUpdate(float dt)
-    {
-        Motion@ motion = currentAttack.motion;
 
         if (doAttackCheck)
             AttackCollisionCheck();
@@ -499,7 +473,22 @@ class PlayerAttackState : CharacterState
             ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterState::FixedUpdate(dt);
+        CharacterState::Update(dt);
+    }
+
+
+    void CheckInput()
+    {
+        if (state == ATTACK_STATE_AFTER_IMPACT)
+        {
+            if (gInput.IsAttackPressed())
+                ownner.Attack();
+        }
+
+        if (gInput.IsCounterPressed())
+            ownner.Counter();
+        else if (gInput.IsEvadePressed())
+            ownner.Evade();
     }
 
     void ResetValues()
@@ -749,7 +738,12 @@ class PlayerCounterState : CharacterCounterState
 
     void Update(float dt)
     {
+        Node@ _node = ownner.sceneNode;
         if (state == 0) {
+
+            _node.Yaw(yawPerSec * dt);
+            ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
+
             if (timeInState >= alignTime) {
                 ownner.sceneNode.worldPosition = targetPosition;
                 StartCounterMotion();
@@ -757,25 +751,12 @@ class PlayerCounterState : CharacterCounterState
                 enemyCounterState.StartCounterMotion();
             }
         }
-        CharacterCounterState::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
-    {
-        Node@ _node = ownner.sceneNode;
-        if (state == 0) {
-            _node.Yaw(yawPerSec * dt);
-            if (ownner.IsPhysical())
-                ownner.SetVelocity(movePerSec);
-            else
-                ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
-        }
         else {
-            if (currentMotion.Move(ownner, dt))
+             if (currentMotion.Move(ownner, dt))
                 ownner.CommonStateFinishedOnGroud();
         }
 
-        CharacterCounterState::FixedUpdate(dt);
+        CharacterCounterState::Update(dt);
     }
 
     void Enter(State@ lastState)
