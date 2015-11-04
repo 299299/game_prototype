@@ -68,9 +68,10 @@ class SingleMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motion.Move(ownner, dt))
+        if (motion.Move(ownner, dt)) {
             ownner.CommonStateFinishedOnGroud();
-
+            return;
+        }
         CharacterState::Update(dt);
     }
 
@@ -105,9 +106,10 @@ class MultiMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(ownner, dt))
+        if (motions[selectIndex].Move(ownner, dt)) {
             ownner.CommonStateFinishedOnGroud();
-
+            return;
+        }
         CharacterState::Update(dt);
     }
 
@@ -265,6 +267,7 @@ class AnimationTestState : CharacterState
 
         if (finished) {
             ownner.CommonStateFinishedOnGroud();
+            return;
         }
 
         CharacterState::Update(dt);
@@ -464,6 +467,7 @@ class CharacterGetUpState : MultiMotionState
             {
                 // ownner.sceneNode.scene.timeScale = 0.0f;
                 ownner.CommonStateFinishedOnGroud();
+                return;
             }
         }
 
@@ -671,9 +675,9 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        sceneNode.worldPosition = position;
-        //targetPosition = position;
-        //targetPositionApplied = true;
+        // sceneNode.worldPosition = position;
+        targetPosition = position;
+        targetPositionApplied = true;
     }
 
     bool Attack()

@@ -133,6 +133,7 @@ class ThugStepMoveState : MultiMotionState
                 }
             }
             ownner.CommonStateFinishedOnGroud();
+            return;
         }
 
         CharacterState::Update(dt);
@@ -203,6 +204,7 @@ class ThugRunState : SingleMotionState
             if (ownner.Attack())
                 return;
             ownner.CommonStateFinishedOnGroud();
+            return;
         }
 
         SingleMotionState::Update(dt);
@@ -234,8 +236,10 @@ class ThugCounterState : CharacterCounterState
     {
         if (state == 1)
         {
-            if (currentMotion.Move(ownner, dt))
+            if (currentMotion.Move(ownner, dt)) {
                 ownner.CommonStateFinishedOnGroud();
+                return;
+            }
         }
         CharacterCounterState::Update(dt);
     }
@@ -294,6 +298,7 @@ class ThugAttackState : CharacterState
         bool finished = motion.Move(ownner, dt);
         if (finished) {
             ownner.CommonStateFinishedOnGroud();
+            return;
         }
 
         CharacterState::Update(dt);
@@ -470,6 +475,7 @@ class ThugTurnState : MultiMotionState
         if (t >= endTime || characterDifference < 5)
         {
             ownner.CommonStateFinishedOnGroud();
+            return;
         }
         ownner.sceneNode.Yaw(turnSpeed * dt);
         CharacterState::Update(dt);

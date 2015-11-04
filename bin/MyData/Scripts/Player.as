@@ -96,6 +96,7 @@ class PlayerTurnState : MultiMotionState
         {
             // ownner.sceneNode.scene.timeScale = 0.0f;
             ownner.CommonStateFinishedOnGroud();
+            return;
         }
 
         CharacterState::Update(dt);
@@ -471,6 +472,7 @@ class PlayerAttackState : CharacterState
         if (finished) {
             Print("Player::Attack finish attack movemont in sub state = " + state);
             ownner.CommonStateFinishedOnGroud();
+            return;
         }
 
         CharacterState::Update(dt);
@@ -752,8 +754,11 @@ class PlayerCounterState : CharacterCounterState
             }
         }
         else {
-             if (currentMotion.Move(ownner, dt))
+             if (currentMotion.Move(ownner, dt)) {
                 ownner.CommonStateFinishedOnGroud();
+                return;
+             }
+
         }
 
         CharacterCounterState::Update(dt);
