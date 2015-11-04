@@ -17,28 +17,6 @@ void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer =
     ctrl.SetSpeed(name, speed);
 }
 
-int QueryBestCounterMotion(const Array<Motion@>&in motions1, const Array<Motion@>&in motions2, const Vector3&in posDiff)
-{
-    float bestErrSQR = 99999;
-    int bestIndex = -1;
-    for (uint i=0; i<motions1.length; ++i)
-    {
-        Motion@ motion1 = motions1[i];
-        Motion@ motion2 = motions2[i];
-        Vector3 startDiff = motion1.startFromOrigin - motion2.startFromOrigin;
-        startDiff.y = 0;
-        float diffSQR = (startDiff - posDiff).lengthSquared;
-        if (diffSQR < bestErrSQR)
-        {
-            bestIndex = i;
-            bestErrSQR = diffSQR;
-        }
-    }
-
-    Print("QueryBestCounterMotion bestIndex=" + bestIndex + " bestErrSQR=" + bestErrSQR);
-    return bestIndex;
-}
-
 int FindMotionIndex(const Array<Motion@>&in motions, const String&in name)
 {
     for (uint i=0; i<motions.length; ++i)
@@ -98,6 +76,22 @@ void FillAnimationWithCurrentPose(Animation@ anim, Node@ _node)
     }
 }
 
+void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, const Quaternion&in rotation, const Color&in color, float radius = 1.0, float yAdjust = 0)
+{
+    Vector3 dir = rotation * Vector3(0, 0, 1);
+    float angle = Atan2(dir.x, dir.z);
+    DebugDrawDirection(debug, _node, angle, color, radius, yAdjust);
+}
+
+void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
+{
+    Vector3 start = _node.worldPosition;
+    start.y = yAdjust;
+    Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
+    debug.AddLine(start, end, color, false);
+}
+
+
 class Motion
 {
     String                  name;
@@ -118,19 +112,6 @@ class Motion
     int                     originFlag;
     int                     allowMotion;
     bool                    cutRotation;
-
-    // ==============================================
-    //   DYNAMIC VALUES
-    // ==============================================
-    Vector3                 startPosition;
-    float                   startRotation;
-    Quaternion              startRotationQua;
-
-    float                   deltaRotation;
-    Vector3                 deltaPosition;
-
-    bool                    translateEnabled = true;
-    bool                    rotateEnabled = true;
 
     Motion()
     {
@@ -233,11 +214,76 @@ class Motion
         return k1.Lerp(k2, a);
     }
 
+    Vector3 GetFuturePosition(Node@ _node, float t)
+    {
+        Vector4 motionOut = GetKey(t);
+        return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
+    }
+
+    Vector3 GetFuturePosition(float t)
+    {
+        Vector4 motionOut = GetKey(t);
+        return startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
+    }
+
+};
+
+class MotionInstance
+{
+    Motion@                  motion;
+
+    // ==============================================
+    //   DYNAMIC VALUES
+    // ==============================================
+    Vector3                 startPosition;
+    float                   startRotation;
+    Quaternion              startRotationQua;
+
+    float                   deltaRotation;
+    Vector3                 deltaPosition;
+
+    bool                    translateEnabled = true;
+    bool                    rotateEnabled = true;
+
+    // ==============================================
+    //   ATTACK VALUES
+    // ==============================================
+
+    float                   impactTime;
+    float                   impactDist;;
+    Vector3                 impactPosition;
+    int                     type;
+
+    MotionInstance(const String&in name)
+    {
+        @motion = gMotionMgr.FindMotion(name);
+    }
+
+    MotionInstance(const String&in name, int impactFrame, int _type)
+    {
+        @motion = gMotionMgr.FindMotion(name);
+        impactTime = impactFrame * SEC_PER_FRAME;
+        Vector4 k = motion.motionKeys[impactFrame];
+        impactPosition = Vector3(k.x, k.y, k.z);
+        impactDist = impactPosition.length;
+        type = _type;
+    }
+
+    int opCmp(const MotionInstance&in obj)
+    {
+        if (impactDist > obj.impactDist)
+            return 1;
+        else if (impactDist < obj.impactDist)
+            return -1;
+        else
+            return 0;
+    }
+
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
         object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed * object.timeScale);
         InnerStart(object);
-        // Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
+        Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
     }
 
     void InnerStart(Character@ object)
@@ -260,12 +306,12 @@ class Motion
         if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
-            GetMotion(localTime, dt, looped, motionOut);
+            motion.GetMotion(localTime, dt, looped, motionOut);
 
             if (rotateEnabled)
                 _node.Yaw(motionOut.w);
 
-            if (translateEnabled && !object.HasFlag(FLAGS_NO_MOVE))
+            if (translateEnabled)
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 tLocal = tLocal * ctrl.GetWeight(animationName);
@@ -275,11 +321,11 @@ class Motion
         }
         else
         {
-            Vector4 motionOut = GetKey(localTime);
+            Vector4 motionOut = motion.GetKey(localTime);
             if (rotateEnabled)
                 _node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
 
-            if (translateEnabled && !object.HasFlag(FLAGS_NO_MOVE))
+            if (translateEnabled)
             {
                 Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
                 //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.sceneNode.worldPosition.ToString() + " localTime=" + localTime);
@@ -289,74 +335,18 @@ class Motion
         return localTime >= endTime;
     }
 
-    Vector3 GetFuturePosition(Node@ _node, float t)
-    {
-        Vector4 motionOut = GetKey(t);
-        return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
-    }
-
-    Vector3 GetFuturePosition(float t)
-    {
-        Vector4 motionOut = GetKey(t);
-        return startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
-    }
-
     void DebugDraw(DebugRenderer@ debug, Node@ _node)
     {
         if (looped) {
-            Vector4 tFinnal = GetKey(endTime);
+            Vector4 tFinnal = motion.GetKey(endTime);
             Vector3 tLocal(tFinnal.x, tFinnal.y, tFinnal.z);
             debug.AddLine(_node.worldRotation * tLocal + _node.worldPosition, _node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
         }
         else {
-            Vector4 tFinnal = GetKey(endTime);
+            Vector4 tFinnal = motion.GetKey(endTime);
             debug.AddLine(startRotationQua * Vector3(tFinnal.x, tFinnal.y, tFinnal.z) + startPosition,  startPosition, Color(0.5f, 0.5f, 0.7f), false);
             DebugDrawDirection(debug, _node, startRotation + tFinnal.w, Color(0,1,0), 2.0);
         }
-    }
-};
-
-void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, const Quaternion&in rotation, const Color&in color, float radius = 1.0, float yAdjust = 0)
-{
-    Vector3 dir = rotation * Vector3(0, 0, 1);
-    float angle = Atan2(dir.x, dir.z);
-    DebugDrawDirection(debug, _node, angle, color, radius, yAdjust);
-}
-
-void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
-{
-    Vector3 start = _node.worldPosition;
-    start.y = yAdjust;
-    Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
-    debug.AddLine(start, end, color, false);
-}
-
-class AttackMotion
-{
-    Motion@         motion;
-    float           impactTime;
-    float           impactDist;;
-    Vector3         impactPosition;
-    int             type;
-
-    AttackMotion(const String&in name, int impactFrame, int _type)
-    {
-        @motion = gMotionMgr.FindMotion(name);
-        impactTime = impactFrame * SEC_PER_FRAME;
-        Vector4 k = motion.motionKeys[impactFrame];
-        impactPosition = Vector3(k.x, k.y, k.z);
-        impactDist = impactPosition.length;
-        type = _type;
-    }
-
-    int opCmp(const AttackMotion&in obj)
-    {
-        if (impactDist > obj.impactDist)
-            return 1;
-        else if (impactDist < obj.impactDist)
-            return -1;
-        else
-            return 0;
     }
 };
 

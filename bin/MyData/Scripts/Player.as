@@ -210,13 +210,13 @@ enum AttackStateType
 
 class PlayerAttackState : CharacterState
 {
-    Array<AttackMotion@>  forwardAttacks;
-    Array<AttackMotion@>  leftAttacks;
-    Array<AttackMotion@>  rightAttacks;
-    Array<AttackMotion@>  backAttacks;
+    Array<MotionInstance@>    forwardAttacks;
+    Array<MotionInstance@>    leftAttacks;
+    Array<MotionInstance@>    rightAttacks;
+    Array<MotionInstance@>    backAttacks;
 
-    AttackMotion@   currentAttack;
-    Enemy@          attackEnemy;
+    MotionInstance@           currentAttack;
+    Enemy@                    attackEnemy;
 
     int             state;
     Vector3         movePerSec;
@@ -243,78 +243,77 @@ class PlayerAttackState : CharacterState
         super(c);
         SetName("AttackState");
 
-        String preFix = "BM_Attack/";
         //========================================================================
         // FORWARD
         //========================================================================
         // forward weak
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH));
 
         // forward close
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_02", 14, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_03", 11, ATTACK_KICK));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_04", 19, ATTACK_KICK));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_05", 24, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_06", 20, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_07", 15, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Forward_08", 18, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Close_Run_Forward", 12, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_02", 14, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_03", 11, ATTACK_KICK));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_04", 19, ATTACK_KICK));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_05", 24, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_06", 20, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_07", 15, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_08", 18, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Run_Forward", 12, ATTACK_PUNCH));
 
         // forward far
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward", 25, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_01", 17, ATTACK_KICK));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_02", 21, ATTACK_KICK));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_03", 22, ATTACK_PUNCH));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Far_Forward_04", 22, ATTACK_KICK));
-        forwardAttacks.Push(AttackMotion(preFix + "Attack_Run_Far_Forward", 14, ATTACK_KICK));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward", 25, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_01", 17, ATTACK_KICK));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_02", 21, ATTACK_KICK));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_03", 22, ATTACK_PUNCH));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_04", 22, ATTACK_KICK));
+        forwardAttacks.Push(MotionInstance(preFix + "Attack_Run_Far_Forward", 14, ATTACK_KICK));
 
         //========================================================================
         // RIGHT
         //========================================================================
         // right weak
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right", 12, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Right", 12, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH));
 
         // right close
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right", 16, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_01", 18, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_03", 11, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_04", 19, ATTACK_KICK));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_05", 15, ATTACK_KICK));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_06", 20, ATTACK_KICK));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_07", 18, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Close_Right_08", 18, ATTACK_KICK));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right", 16, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_01", 18, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_03", 11, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_04", 19, ATTACK_KICK));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_05", 15, ATTACK_KICK));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_06", 20, ATTACK_KICK));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_07", 18, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_08", 18, ATTACK_KICK));
 
         // right far
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right", 25, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_01", 15, ATTACK_KICK));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_02", 21, ATTACK_PUNCH));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_03", 29, ATTACK_KICK));
-        rightAttacks.Push(AttackMotion(preFix + "Attack_Far_Right_04", 22, ATTACK_KICK));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right", 25, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_01", 15, ATTACK_KICK));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_02", 21, ATTACK_PUNCH));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_03", 29, ATTACK_KICK));
+        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_04", 22, ATTACK_KICK));
 
         //========================================================================
         // BACK
         //========================================================================
         // back weak
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back", 12, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Back", 12, ATTACK_PUNCH));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH));
 
         // back close
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back", 9, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_01", 16, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_02", 18, ATTACK_KICK));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_03", 21, ATTACK_KICK));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_04", 18, ATTACK_KICK));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_05", 14, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_06", 15, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_07", 14, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Close_Back_08", 17, ATTACK_KICK));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back", 9, ATTACK_PUNCH));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_01", 16, ATTACK_PUNCH));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_02", 18, ATTACK_KICK));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_03", 21, ATTACK_KICK));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_04", 18, ATTACK_KICK));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_05", 14, ATTACK_PUNCH));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_06", 15, ATTACK_PUNCH));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_07", 14, ATTACK_PUNCH));
+        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_08", 17, ATTACK_KICK));
 
         // back far
         backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back", 14, ATTACK_KICK));
@@ -327,27 +326,28 @@ class PlayerAttackState : CharacterState
         // LEFT
         //========================================================================
         // left weak
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left", 13, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH));
+        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left", 13, ATTACK_PUNCH);
+        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH);
+        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH);
 
         // left close
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left", 7, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_01", 18, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_02", 13, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_03", 21, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_04", 21, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_05", 15, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_06", 12, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_07", 15, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Close_Left_08", 20, ATTACK_KICK));
+        AddAttackMotion(leftAttacks, "Attack_Close_Left", 7, ATTACK_PUNCH);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_01", 18, ATTACK_PUNCH);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_02", 13, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_03", 21, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_04", 21, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_05", 15, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_06", 12, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_07", 15, ATTACK_PUNCH);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_08", 20, ATTACK_KICK);
+
 
         // left far
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left", 19, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_01", 22, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_02", 22, ATTACK_PUNCH));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_03", 21, ATTACK_KICK));
-        leftAttacks.Push(AttackMotion(preFix + "Attack_Far_Left_04", 23, ATTACK_KICK));
+        AddAttackMotion(leftAttacks, "Attack_Far_Left", 19, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 22, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 22, ATTACK_PUNCH);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 21, ATTACK_KICK);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left_04", 23, ATTACK_KICK);
 
         forwardAttacks.Sort();
         leftAttacks.Sort();
@@ -390,10 +390,15 @@ class PlayerAttackState : CharacterState
         DumpAttacks(leftAttacks);
     }
 
-    void DumpAttacks(const Array<AttackMotion@>&in attacks)
+    void DumpAttacks(const Array<MotionInstance@>&in attacks)
     {
         for (uint i=0; i<attacks.length; ++i)
             Print(attacks[i].motion.animationName + " impactDist=" + String(attacks[i].impactDist));
+    }
+
+    void AddAttackMotion(Array<MotionInstance@>&out attacks, const String&in name, int frame, int type)
+    {
+        attacks.Push(MotionInstance("BM_Attack/" + name, frame, type));
     }
 
     ~PlayerAttackState()
@@ -419,8 +424,8 @@ class PlayerAttackState : CharacterState
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
-                if (attackEnemy !is null)
-                    attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
+                //if (attackEnemy !is null)
+                //    attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
             }
         }
         else
@@ -438,6 +443,7 @@ class PlayerAttackState : CharacterState
                     dir.y = 0;
                     dir.Normalize();
                     Print("PlayerAttackState::" +  attackEnemy.GetName() + " OnDamage!!!!");
+                    //ownner.sceneNode.scene.timeScale = 0.0f;
                     attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage, weakAttack);
                     ownner.OnAttackSuccess();
                 }
@@ -575,7 +581,7 @@ class PlayerAttackState : CharacterState
             else if (r == 3)
                 PickBestMotion(leftAttacks, r);
 
-            attackEnemy.AddFlag(FLAGS_NO_MOVE);
+            //attackEnemy.AddFlag(FLAGS_NO_MOVE);
         }
         else {
             currentAttack = forwardAttacks[RandomInt(forwadCloseNum)];
@@ -1077,7 +1083,7 @@ class Player : Character
             float enemyAngle = Atan2(posDiff.x, posDiff.z);
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
-            Print("enemyAngle="+enemyAngle+"targetAngle="+targetAngle+"diffAngle="+diffAngle);
+            Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
             int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 80.0f);
             int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST) * 20.0f;
             score += distScore;

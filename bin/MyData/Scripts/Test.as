@@ -98,6 +98,7 @@ void CreateScene()
 
     characterNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
     thugNode.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
+    thugNode2.CreateScriptObject(GAME_SCRIPT, "Ragdoll");
 
     cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
 
@@ -280,6 +281,11 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         scene_.timeScale = pauseGame ? 0 : speed;
     }
 
+    if (input.keyPress['Y'])
+    {
+        scene_.timeScale = 1;
+    }
+
     if (test_ragdoll)
     {
         if (input.keyPress['E'])
@@ -324,7 +330,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
             //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
-            String testName = "TG_HitReaction/HitReaction_Right";
+            String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             player.TestAnimation(testName);
         }
@@ -332,6 +338,13 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         {
             scene_.timeScale = 1.0f;
             SetWorldTimeScale(scene_, 1);
+        }
+        else if (input.keyPress['O'])
+        {
+            Node@ n = scene_.GetChild("thug2");
+            n.vars[ANIMATION_INDEX] = RandomInt(4);
+            Thug@ thug = cast<Thug@>(n.scriptObject);
+            thug.stateMachine.ChangeState("HitState");
         }
     }
 

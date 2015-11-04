@@ -116,7 +116,7 @@ class MultiMotionState : CharacterState
     void Enter(State@ lastState)
     {
         selectIndex = PickIndex();
-        Print(name + " pick " + motions[selectIndex].animationName);
+        Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner);
     }
 
@@ -675,9 +675,9 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        // sceneNode.worldPosition = position;
-        targetPosition = position;
-        targetPositionApplied = true;
+        sceneNode.worldPosition = position;
+        //targetPosition = position;
+        //targetPositionApplied = true;
     }
 
     bool Attack()
