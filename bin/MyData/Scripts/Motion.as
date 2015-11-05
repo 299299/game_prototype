@@ -91,6 +91,15 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, float angle, const Co
     debug.AddLine(start, end, color, false);
 }
 
+void SendAnimationTriger(Node@ _node, const StringHash&in nameHash)
+{
+    VariantMap anim_data;
+    anim_data[NAME] = nameHash;
+    VariantMap data;
+    data[DATA] = anim_data;
+    _node.SendEvent("AnimationTrigger", data);
+}
+
 
 class Motion
 {
@@ -308,8 +317,9 @@ class AttackMotion
     float                   impactDist;;
     Vector3                 impactPosition;
     int                     type;
+    String                  boneName;
 
-    AttackMotion(const String&in name, int impactFrame, int _type)
+    AttackMotion(const String&in name, int impactFrame, int _type, const String&in bName)
     {
         @motion = gMotionMgr.FindMotion(name);
         impactTime = impactFrame * SEC_PER_FRAME;
@@ -317,6 +327,7 @@ class AttackMotion
         impactPosition = Vector3(k.x, k.y, k.z);
         impactDist = impactPosition.length;
         type = _type;
+        boneName = bName;
     }
 
     int opCmp(const AttackMotion&in obj)

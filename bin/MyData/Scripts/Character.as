@@ -34,6 +34,8 @@ const StringHash L_FOOT("Bip01_L_Foot");
 const StringHash R_FOOT("Bip01_R_Foot");
 const StringHash L_HAND("Bip01_L_Hand");
 const StringHash R_HAND("Bip01_R_Hand");
+const StringHash L_FOREARM("Bip01_L_Forearm");
+const StringHash R_FOREARM("Bip01_R_Forearm");
 const StringHash RADIUS("Radius");
 const StringHash IN_AIR("InAir");
 
@@ -679,6 +681,8 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
+        // (sceneNode.name == "bruce")
+        //    Print("MoveTo " + position.ToString());
         sceneNode.worldPosition = position;
         //targetPosition = position;
         //targetPositionApplied = true;
@@ -773,9 +777,6 @@ class Character : GameObject
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
         AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
-        if (state is null)
-            return;
-
         CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
         if (cs !is null)
             cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
@@ -869,9 +870,7 @@ class Character : GameObject
 
     void MakeMeRagdoll()
     {
-        VariantMap data;
-        data[DATA] = RAGDOLL_START;
-        renderNode.SendEvent("AnimationTrigger", data);
+        SendAnimationTriger(renderNode, RAGDOLL_START);
     }
 
     void SetHintText(const String&in text)
@@ -889,6 +888,45 @@ class Character : GameObject
     {
         AddFlag(FLAGS_NO_MOVE);
     }
+
+    Node@ SpawnParticleEffect(const Vector3&in position, const String&in effectName, float duration, CreateMode mode = REPLICATED)
+    {
+        Node@ newNode = sceneNode.scene.CreateChild("Effect", mode);
+        newNode.position = position;
+        newNode.scale = Vector3(5,5,5);
+
+        // Create the particle emitter
+        ParticleEmitter@ emitter = newNode.CreateComponent("ParticleEmitter");
+        emitter.effect = cache.GetResource("ParticleEffect", effectName);
+
+        // Create a GameObject for managing the effect lifetime. This is always local, so for server-controlled effects it
+        // exists only on the server
+        GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(GAME_SCRIPT, "GameObject", LOCAL));
+        object.duration = duration;
+
+        Print(GetName() + " SpawnParticleEffect pos=" + position.ToString() + " effectName=" + effectName + " duration=" + duration);
+
+        return newNode;
+    }
+
+    Node@ SpawnSound(const Vector3&in position, const String&in soundName, float duration)
+    {
+        Node@ newNode = sceneNode.scene.CreateChild();
+        newNode.position = position;
+
+        // Create the sound source
+        SoundSource3D@ source = newNode.CreateComponent("SoundSource3D");
+        Sound@ sound = cache.GetResource("Sound", soundName);
+        source.SetDistanceAttenuation(200, 5000, 1);
+        source.Play(sound);
+
+        // Create a GameObject for managing the sound lifetime
+        GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(GAME_SCRIPT, "GameObject", LOCAL));
+        object.duration = duration;
+
+        return newNode;
+    }
+
 };
 
 int DirectionMapToIndex(float directionDifference, int numDirections)

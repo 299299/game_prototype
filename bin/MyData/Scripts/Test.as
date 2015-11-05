@@ -270,20 +270,15 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (input.keyPress['T'])
     {
         slowMotion = !slowMotion;
-        scene_.timeScale = slowMotion ? 0.1f : 1.0f;
+        scene_.timeScale = slowMotion ? 0.35f : 1.0f;
         //SetWorldTimeScale(scene_, slowMotion ? 0.25f : 1.0f);
     }
 
     if (input.keyPress['R'])
     {
         pauseGame = !pauseGame;
-        float speed = slowMotion ? 0.1f : 1.0f;
+        float speed = slowMotion ? 0.25f : 1.0f;
         scene_.timeScale = pauseGame ? 0 : speed;
-    }
-
-    if (input.keyPress['Y'])
-    {
-        scene_.timeScale = 1;
     }
 
     if (test_ragdoll)
@@ -291,10 +286,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (input.keyPress['E'])
         {
             Node@ renderNode = characterNode.children[0];
-
-            VariantMap data;
-            data[DATA] = RAGDOLL_STOP;
-            renderNode.SendEvent("AnimationTrigger", data);
+            SendAnimationTriger(renderNode, RAGDOLL_STOP);
 
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
             Animation@ anim = Animation();
@@ -329,8 +321,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_Getup/GetUp_Back";
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
-            //String testName = "TG_BM_Counter/Counter_Arm_Front_01";
-            String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
+            String testName = "TG_BM_Counter/Counter_Arm_Front_01";
+            //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             player.TestAnimation(testName);
         }
@@ -476,3 +468,4 @@ void DumpSkeletonNames(Node@ n)
         Print(skeleton.bones[i].name);
     }
 }
+

@@ -261,17 +261,17 @@ class ThugAttackState : CharacterState
     {
         super(c);
         SetName("AttackState");
-        AddAttackMotion("Attack_Punch", 23, ATTACK_PUNCH);
-        AddAttackMotion("Attack_Punch_01", 23, ATTACK_PUNCH);
-        AddAttackMotion("Attack_Punch_02", 23, ATTACK_PUNCH);
-        AddAttackMotion("Attack_Kick", 24, ATTACK_KICK);
-        AddAttackMotion("Attack_Kick_01", 24, ATTACK_KICK);
-        AddAttackMotion("Attack_Kick_02", 24, ATTACK_KICK);
+        AddAttackMotion("Attack_Punch", 23, ATTACK_PUNCH, "Bip01_R_Hand");
+        AddAttackMotion("Attack_Punch_01", 23, ATTACK_PUNCH, "Bip01_R_Hand");
+        AddAttackMotion("Attack_Punch_02", 23, ATTACK_PUNCH, "Bip01_R_Hand");
+        AddAttackMotion("Attack_Kick", 24, ATTACK_KICK, "Bip01_L_Foot");
+        AddAttackMotion("Attack_Kick_01", 24, ATTACK_KICK, "Bip01_L_Foot");
+        AddAttackMotion("Attack_Kick_02", 24, ATTACK_KICK, "Bip01_L_Foot");
     }
 
-    void AddAttackMotion(const String&in name, int impactFrame, int type)
+    void AddAttackMotion(const String&in name, int impactFrame, int type, const String&in bName)
     {
-        attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame, type));
+        attacks.Push(AttackMotion(MOVEMENT_GROUP_THUG + name, impactFrame, type, bName));
     }
 
     void Update(float dt)
@@ -609,7 +609,7 @@ class Thug : Enemy
         {
             // I dont know how to do ...
             // special case
-            // thug.motion_translateEnabled = false;
+            motion_translateEnabled = false;
         }
     }
 };
