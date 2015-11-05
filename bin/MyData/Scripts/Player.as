@@ -81,9 +81,7 @@ class PlayerTurnState : MultiMotionState
 
     void Update(float dt)
     {
-        //ownner.sceneNode.Yaw(turnSpeed * dt);
-        Motion@ motion = motions[selectIndex];
-        motion.deltaRotation += turnSpeed * dt;
+        ownner.motion_deltaRotation += turnSpeed * dt;
 
         if (gInput.IsAttackPressed())
             ownner.Attack();
@@ -108,7 +106,7 @@ class PlayerTurnState : MultiMotionState
         ownner.AddFlag(FLAGS_ATTACK);
         Motion@ motion = motions[selectIndex];
         Vector4 endKey = motion.GetKey(motion.endTime);
-        float motionTargetAngle = motion.startRotation + endKey.w;
+        float motionTargetAngle = ownner.motion_startRotation + endKey.w;
         float targetAngle = ownner.GetTargetAngle();
         float diff = AngleDiff(targetAngle - motionTargetAngle);
         turnSpeed = diff / motion.endTime;
@@ -210,13 +208,13 @@ enum AttackStateType
 
 class PlayerAttackState : CharacterState
 {
-    Array<MotionInstance@>    forwardAttacks;
-    Array<MotionInstance@>    leftAttacks;
-    Array<MotionInstance@>    rightAttacks;
-    Array<MotionInstance@>    backAttacks;
+    Array<AttackMotion@>    forwardAttacks;
+    Array<AttackMotion@>    leftAttacks;
+    Array<AttackMotion@>    rightAttacks;
+    Array<AttackMotion@>    backAttacks;
 
-    MotionInstance@           currentAttack;
-    Enemy@                    attackEnemy;
+    AttackMotion@           currentAttack;
+    Enemy@                  attackEnemy;
 
     int             state;
     Vector3         movePerSec;
@@ -247,80 +245,79 @@ class PlayerAttackState : CharacterState
         // FORWARD
         //========================================================================
         // forward weak
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH));
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH);
 
         // forward close
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_02", 14, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_03", 11, ATTACK_KICK));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_04", 19, ATTACK_KICK));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_05", 24, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_06", 20, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_07", 15, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Forward_08", 18, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Close_Run_Forward", 12, ATTACK_PUNCH));
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_02", 14, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_03", 11, ATTACK_KICK);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_04", 19, ATTACK_KICK);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_05", 24, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_06", 20, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_07", 15, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_08", 18, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Run_Forward", 12, ATTACK_PUNCH);
 
         // forward far
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward", 25, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_01", 17, ATTACK_KICK));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_02", 21, ATTACK_KICK));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_03", 22, ATTACK_PUNCH));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Far_Forward_04", 22, ATTACK_KICK));
-        forwardAttacks.Push(MotionInstance(preFix + "Attack_Run_Far_Forward", 14, ATTACK_KICK));
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward", 25, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_01", 17, ATTACK_KICK);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_02", 21, ATTACK_KICK);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_03", 22, ATTACK_PUNCH);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_04", 22, ATTACK_KICK);
+        AddAttackMotion(forwardAttacks, "Attack_Run_Far_Forward", 14, ATTACK_KICK);
 
         //========================================================================
         // RIGHT
         //========================================================================
         // right weak
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Right", 12, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH));
+        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right", 12, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH);
 
         // right close
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right", 16, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_01", 18, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_03", 11, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_04", 19, ATTACK_KICK));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_05", 15, ATTACK_KICK));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_06", 20, ATTACK_KICK));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_07", 18, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Close_Right_08", 18, ATTACK_KICK));
+        AddAttackMotion(rightAttacks, "Attack_Close_Right", 16, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_01", 18, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_03", 11, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_04", 19, ATTACK_KICK);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_05", 15, ATTACK_KICK);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_06", 20, ATTACK_KICK);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_07", 18, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_08", 18, ATTACK_KICK);
 
         // right far
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right", 25, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_01", 15, ATTACK_KICK));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_02", 21, ATTACK_PUNCH));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_03", 29, ATTACK_KICK));
-        rightAttacks.Push(MotionInstance(preFix + "Attack_Far_Right_04", 22, ATTACK_KICK));
+        AddAttackMotion(rightAttacks, "Attack_Far_Right", 25, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Far_Right_01", 15, ATTACK_KICK);
+        AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH);
+        AddAttackMotion(rightAttacks, "Attack_Far_Right_03", 29, ATTACK_KICK);
+        AddAttackMotion(rightAttacks, "Attack_Far_Right_04", 22, ATTACK_KICK);
 
         //========================================================================
         // BACK
         //========================================================================
         // back weak
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Back", 12, ATTACK_PUNCH));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH));
+        AddAttackMotion(backAttacks, "Attack_Close_Weak_Back", 12, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Close_Weak_Back", 12, ATTACK_PUNCH);
 
-        // back close
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back", 9, ATTACK_PUNCH));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_01", 16, ATTACK_PUNCH));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_02", 18, ATTACK_KICK));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_03", 21, ATTACK_KICK));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_04", 18, ATTACK_KICK));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_05", 14, ATTACK_PUNCH));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_06", 15, ATTACK_PUNCH));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_07", 14, ATTACK_PUNCH));
-        backAttacks.Push(MotionInstance(preFix + "Attack_Close_Back_08", 17, ATTACK_KICK));
+        AddAttackMotion(backAttacks, "Attack_Close_Back", 9, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_01", 16, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_02", 18, ATTACK_KICK);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_03", 21, ATTACK_KICK);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_04", 18, ATTACK_KICK);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_05", 14, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_06", 15, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_07", 14, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_08", 17, ATTACK_KICK);
 
         // back far
-        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back", 14, ATTACK_KICK));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_01", 15, ATTACK_KICK));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_02", 18, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_03", 22, ATTACK_PUNCH));
-        backAttacks.Push(AttackMotion(preFix + "Attack_Far_Back_04", 36, ATTACK_KICK));
+        AddAttackMotion(backAttacks, "Attack_Far_Back", 14, ATTACK_KICK);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_01", 15, ATTACK_KICK);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_02", 18, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_03", 22, ATTACK_PUNCH);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_04", 36, ATTACK_KICK);
 
         //========================================================================
         // LEFT
@@ -390,15 +387,15 @@ class PlayerAttackState : CharacterState
         DumpAttacks(leftAttacks);
     }
 
-    void DumpAttacks(const Array<MotionInstance@>&in attacks)
+    void DumpAttacks(Array<AttackMotion@>@ attacks)
     {
         for (uint i=0; i<attacks.length; ++i)
             Print(attacks[i].motion.animationName + " impactDist=" + String(attacks[i].impactDist));
     }
 
-    void AddAttackMotion(Array<MotionInstance@>&out attacks, const String&in name, int frame, int type)
+    void AddAttackMotion(Array<AttackMotion@>@ attacks, const String&in name, int frame, int type)
     {
-        attacks.Push(MotionInstance("BM_Attack/" + name, frame, type));
+        attacks.Push(AttackMotion("BM_Attack/" + name, frame, type));
     }
 
     ~PlayerAttackState()
@@ -420,7 +417,7 @@ class PlayerAttackState : CharacterState
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
         {
-            motion.deltaPosition += movePerSec * dt;
+            ownner.motion_deltaPosition += movePerSec * dt;
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
@@ -453,10 +450,10 @@ class PlayerAttackState : CharacterState
         if (attackEnemy !is null)
         {
             float targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
-            if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            if (ownner.motion_translateEnabled && targetDistance < COLLISION_SAFE_DIST)
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
-                motion.translateEnabled = false;
+                ownner.motion_translateEnabled = false;
             }
         }
 
@@ -507,7 +504,7 @@ class PlayerAttackState : CharacterState
         movePerSec = Vector3(0, 0, 0);
     }
 
-    void PickBestMotion(const Array<AttackMotion@>&in attacks, int dir)
+    void PickBestMotion(Array<AttackMotion@>@ attacks, int dir)
     {
         Vector3 myPos = ownner.sceneNode.worldPosition;
         Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
@@ -557,7 +554,7 @@ class PlayerAttackState : CharacterState
         @currentAttack = attacks[bestIndex];
 
         predictPosition = myPos + diff * toEnenmyDistance;
-        Vector3 futurePos = currentAttack.motion.GetFuturePosition(ownner.sceneNode, currentAttack.impactTime);
+        Vector3 futurePos = currentAttack.motion.GetFuturePosition(ownner, currentAttack.impactTime);
         movePerSec = ( predictPosition - futurePos ) / alignTime;
 
         Print("Player Pick attack motion = " + currentAttack.motion.animationName + " movePerSec=" + movePerSec.ToString());
@@ -792,36 +789,13 @@ class PlayerCounterState : CharacterCounterState
         Vector3 enemyPos = enemyNode.worldPosition;
         Vector3 currentPositionDiff = enemyPos - myPos;
         currentPositionDiff.y = 0;
-        if (attackType == ATTACK_PUNCH)
-        {
-            if (isBack)
-            {
-                int idx = RandomInt(backArmMotions.length);
-                @currentMotion = backArmMotions[idx];
-                @enemyCounterState.currentMotion = enemyCounterState.backArmMotions[idx];
-            }
-            else
-            {
-                int idx = RandomInt(frontArmMotions.length);
-                @currentMotion = frontArmMotions[idx];
-                @enemyCounterState.currentMotion = enemyCounterState.frontArmMotions[idx];
-            }
-        }
-        else
-        {
-            if (isBack)
-            {
-                int idx = RandomInt(backLegMotions.length);
-                @currentMotion = backLegMotions[idx];
-                @enemyCounterState.currentMotion = enemyCounterState.backLegMotions[idx];
-            }
-            else
-            {
-                int idx = RandomInt(frontLegMotions.length);
-                @currentMotion = frontLegMotions[idx];
-                @enemyCounterState.currentMotion = enemyCounterState.frontLegMotions[idx];
-            }
-        }
+
+        Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
+        Array<Motion@>@ enemyCounterMotions = enemyCounterState.GetCounterMotions(attackType, isBack);
+
+        int idx = RandomInt(counterMotions.length);
+        @currentMotion = counterMotions[idx];
+        @enemyCounterState.currentMotion = enemyCounterMotions[idx];
 
         float rotationDiff = isBack ? 0 : 180;
         float enemyYaw = enemyNode.worldRotation.eulerAngles.y;

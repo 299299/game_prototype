@@ -280,11 +280,11 @@ class ThugAttackState : CharacterState
         ++ currentFrame;
         Motion@ motion = currentAttack.motion;
         float targetDistance = ownner.GetTargetDistance();
-        if (motion.translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-            motion.translateEnabled = false;
+        if (ownner.motion_translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            ownner.motion_translateEnabled = false;
 
         float characterDifference = ownner.ComputeAngleDiff();
-        motion.deltaRotation += characterDifference * turnSpeed * dt;
+        ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
 
         if (doAttackCheck)
             AttackCollisionCheck();

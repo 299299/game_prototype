@@ -214,87 +214,31 @@ class Motion
         return k1.Lerp(k2, a);
     }
 
-    Vector3 GetFuturePosition(Node@ _node, float t)
+    Vector3 GetFuturePosition(Character@ object, float t)
     {
         Vector4 motionOut = GetKey(t);
-        return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
-    }
-
-    Vector3 GetFuturePosition(float t)
-    {
-        Vector4 motionOut = GetKey(t);
-        return startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition;
-    }
-
-};
-
-class MotionInstance
-{
-    Motion@                  motion;
-
-    // ==============================================
-    //   DYNAMIC VALUES
-    // ==============================================
-    Vector3                 startPosition;
-    float                   startRotation;
-    Quaternion              startRotationQua;
-
-    float                   deltaRotation;
-    Vector3                 deltaPosition;
-
-    bool                    translateEnabled = true;
-    bool                    rotateEnabled = true;
-
-    // ==============================================
-    //   ATTACK VALUES
-    // ==============================================
-
-    float                   impactTime;
-    float                   impactDist;;
-    Vector3                 impactPosition;
-    int                     type;
-
-    MotionInstance(const String&in name)
-    {
-        @motion = gMotionMgr.FindMotion(name);
-    }
-
-    MotionInstance(const String&in name, int impactFrame, int _type)
-    {
-        @motion = gMotionMgr.FindMotion(name);
-        impactTime = impactFrame * SEC_PER_FRAME;
-        Vector4 k = motion.motionKeys[impactFrame];
-        impactPosition = Vector3(k.x, k.y, k.z);
-        impactDist = impactPosition.length;
-        type = _type;
-    }
-
-    int opCmp(const MotionInstance&in obj)
-    {
-        if (impactDist > obj.impactDist)
-            return 1;
-        else if (impactDist < obj.impactDist)
-            return -1;
+        Node@ _node = object.sceneNode;
+        if (looped)
+            return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
         else
-            return 0;
+            return Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
     }
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
         object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed * object.timeScale);
         InnerStart(object);
-        Print("motion " + animationName + " start-position=" + startPosition.ToString() + " start-rotation=" + startRotation);
     }
 
     void InnerStart(Character@ object)
     {
-        startPosition = object.sceneNode.worldPosition;
-        startRotationQua = object.sceneNode.worldRotation;
-        startRotation = startRotationQua.eulerAngles.y;
-        deltaRotation = 0;
-        deltaPosition = Vector3(0, 0, 0);
-        translateEnabled = true;
-        rotateEnabled = true;
+        object.motion_startPosition = object.sceneNode.worldPosition;
+        object.motion_startRotation = object.sceneNode.worldRotation.eulerAngles.y;
+        object.motion_deltaRotation = 0;
+        object.motion_deltaPosition = Vector3(0, 0, 0);
+        object.motion_translateEnabled = true;
+        object.motion_rotateEnabled = true;
+        // Print("motion " + animationName + " start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
     }
 
     bool Move(Character@ object, float dt)
@@ -306,28 +250,28 @@ class MotionInstance
         if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
-            motion.GetMotion(localTime, dt, looped, motionOut);
+            GetMotion(localTime, dt, looped, motionOut);
 
-            if (rotateEnabled)
+            if (object.motion_rotateEnabled)
                 _node.Yaw(motionOut.w);
 
-            if (translateEnabled)
+            if (object.motion_translateEnabled)
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 tLocal = tLocal * ctrl.GetWeight(animationName);
-                Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + deltaPosition;
+                Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_deltaPosition;
                 object.MoveTo(tWorld, dt);
             }
         }
         else
         {
-            Vector4 motionOut = motion.GetKey(localTime);
-            if (rotateEnabled)
-                _node.worldRotation = Quaternion(0, startRotation + motionOut.w + deltaRotation, 0);
+            Vector4 motionOut = GetKey(localTime);
+            if (object.motion_rotateEnabled)
+                _node.worldRotation = Quaternion(0, object.motion_startRotation + motionOut.w + object.motion_deltaRotation, 0);
 
-            if (translateEnabled)
+            if (object.motion_translateEnabled)
             {
-                Vector3 tWorld = startRotationQua * Vector3(motionOut.x, motionOut.y, motionOut.z) + startPosition + deltaPosition;
+                Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
                 //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.sceneNode.worldPosition.ToString() + " localTime=" + localTime);
                 object.MoveTo(tWorld, dt);
             }
@@ -335,18 +279,54 @@ class MotionInstance
         return localTime >= endTime;
     }
 
-    void DebugDraw(DebugRenderer@ debug, Node@ _node)
+    void DebugDraw(DebugRenderer@ debug, Character@ object)
     {
+        Node@ _node = object.sceneNode;
         if (looped) {
-            Vector4 tFinnal = motion.GetKey(endTime);
+            Vector4 tFinnal = GetKey(endTime);
             Vector3 tLocal(tFinnal.x, tFinnal.y, tFinnal.z);
             debug.AddLine(_node.worldRotation * tLocal + _node.worldPosition, _node.worldPosition, Color(0.5f, 0.5f, 0.7f), false);
         }
         else {
-            Vector4 tFinnal = motion.GetKey(endTime);
-            debug.AddLine(startRotationQua * Vector3(tFinnal.x, tFinnal.y, tFinnal.z) + startPosition,  startPosition, Color(0.5f, 0.5f, 0.7f), false);
-            DebugDrawDirection(debug, _node, startRotation + tFinnal.w, Color(0,1,0), 2.0);
+            Vector4 tFinnal = GetKey(endTime);
+            Vector3 tMotionEnd = Quaternion(0, object.motion_startRotation, 0) * Vector3(tFinnal.x, tFinnal.y, tFinnal.z);
+            debug.AddLine(tMotionEnd + object.motion_startPosition,  object.motion_startPosition, Color(0.5f, 0.5f, 0.7f), false);
+            DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, Color(0,1,0), 2.0);
         }
+    }
+};
+
+class AttackMotion
+{
+    Motion@                  motion;
+
+    // ==============================================
+    //   ATTACK VALUES
+    // ==============================================
+
+    float                   impactTime;
+    float                   impactDist;;
+    Vector3                 impactPosition;
+    int                     type;
+
+    AttackMotion(const String&in name, int impactFrame, int _type)
+    {
+        @motion = gMotionMgr.FindMotion(name);
+        impactTime = impactFrame * SEC_PER_FRAME;
+        Vector4 k = motion.motionKeys[impactFrame];
+        impactPosition = Vector3(k.x, k.y, k.z);
+        impactDist = impactPosition.length;
+        type = _type;
+    }
+
+    int opCmp(const AttackMotion&in obj)
+    {
+        if (impactDist > obj.impactDist)
+            return 1;
+        else if (impactDist < obj.impactDist)
+            return -1;
+        else
+            return 0;
     }
 };
 

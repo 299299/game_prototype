@@ -82,7 +82,7 @@ class SingleMotionState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        motion.DebugDraw(debug, ownner.sceneNode);
+        motion.DebugDraw(debug, ownner);
     }
 
     void SetMotion(const String&in name)
@@ -122,7 +122,7 @@ class MultiMotionState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        motions[selectIndex].DebugDraw(debug, ownner.sceneNode);
+        motions[selectIndex].DebugDraw(debug, ownner);
     }
 
     int PickIndex()
@@ -276,7 +276,7 @@ class AnimationTestState : CharacterState
     void DebugDraw(DebugRenderer@ debug)
     {
         if (testMotion !is null)
-            testMotion.DebugDraw(debug, ownner.sceneNode);
+            testMotion.DebugDraw(debug, ownner);
     }
 
     String GetDebugText()
@@ -371,19 +371,15 @@ class CharacterCounterState : CharacterState
         state = 1;
     }
 
-    Motion@ GetCounterMotion(int index, bool isArm, bool isBack)
+    Array<Motion@>@ GetCounterMotions(int attackType, bool isBack)
     {
         if (isBack)
-        {
-            return isArm ? backArmMotions[index] : backLegMotions[index];
-        }
+            return attackType == ATTACK_PUNCH ? backArmMotions : backLegMotions;
         else
-        {
-            return isArm ? frontArmMotions[index] : frontLegMotions[index];
-        }
+            return attackType == ATTACK_PUNCH ? frontArmMotions : frontLegMotions;
     }
 
-    void DumpCounterMotions(const Array<Motion@>&in motions)
+    void DumpCounterMotions(Array<Motion@>@ motions)
     {
         for (uint i=0; i<motions.length; ++i)
         {
@@ -509,6 +505,18 @@ class Character : GameObject
 
     Vector3                 targetPosition;
     bool                    targetPositionApplied = false;
+
+    // ==============================================
+    //   DYNAMIC VALUES For Motion
+    // ==============================================
+    Vector3                 motion_startPosition;
+    float                   motion_startRotation;
+
+    float                   motion_deltaRotation;
+    Vector3                 motion_deltaPosition;
+
+    bool                    motion_translateEnabled = true;
+    bool                    motion_rotateEnabled = true;
 
     Character()
     {
