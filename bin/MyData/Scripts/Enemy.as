@@ -2,8 +2,6 @@
 
 class Enemy : Character
 {
-    Character@          target;
-
     void Start()
     {
         Character::Start();
@@ -12,7 +10,6 @@ class Enemy : Character
 
     void Stop()
     {
-        @target = null;
         Character::Stop();
         gEnemyMgr.UnRegisterEnemy(this);
     }

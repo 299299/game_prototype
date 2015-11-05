@@ -478,6 +478,8 @@ class CharacterGetUpState : MultiMotionState
 
 class Character : GameObject
 {
+    Character@              target;
+
     Node@                   sceneNode;
     Node@                   renderNode;
 
@@ -497,7 +499,6 @@ class Character : GameObject
 
     int                     health = INITIAL_HEALTH;
 
-    Node@                   attackCheckNode;
     float                   attackRadius = 0.5f;
     int                     attackDamage = 10;
 
@@ -559,16 +560,6 @@ class Character : GameObject
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
 
-        attackCheckNode = sceneNode.CreateChild("Attack_Node");
-        CollisionShape@ shape = attackCheckNode.CreateComponent("CollisionShape");
-        shape.SetSphere(attackRadius);
-        RigidBody@ rb = attackCheckNode.CreateComponent("RigidBody");
-        rb.trigger = true;
-        rb.collisionLayer = COLLISION_LAYER_ATTACK;
-        rb.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL;
-        rb.collisionEventMode = COLLISION_ALWAYS;
-        rb.enabled = false;
-
         hintNode = sceneNode.CreateChild("Hint_Node");
         hintNode.position = Vector3(0, 5, 0);
         Text3D@ text = hintNode.CreateComponent("Text3D");
@@ -601,6 +592,7 @@ class Character : GameObject
         @sceneNode = null;
         @animCtrl = null;
         @animModel = null;
+        @target = null;
         cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
         ragdollPoseAnim = null;
     }
@@ -864,12 +856,6 @@ class Character : GameObject
     Node@ GetNode()
     {
         return sceneNode;
-    }
-
-    void EnableAttackCheck(bool bEnable)
-    {
-        RigidBody@ rb = attackCheckNode.GetComponent("RigidBody");
-        rb.enabled = bEnable;
     }
 
     void OnDead()

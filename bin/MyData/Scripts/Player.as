@@ -229,9 +229,6 @@ class PlayerAttackState : CharacterState
 
     bool            doAttackCheck = false;
     Node@           attackCheckNode;
-    int             currentFrame = 0;
-    int             enableAttackFrame = 0;
-    int             disableAttackFrame = -1;
 
     bool            weakAttack = true;
     bool            isInAir = false;
@@ -466,11 +463,6 @@ class PlayerAttackState : CharacterState
         if (doAttackCheck)
             AttackCollisionCheck();
 
-        if (currentFrame == disableAttackFrame) {
-            ownner.EnableAttackCheck(false);
-            doAttackCheck = false;
-        }
-
         bool finished = motion.Move(ownner, dt);
         if (finished) {
             Print("Player::Attack finish attack movemont in sub state = " + state);
@@ -653,20 +645,7 @@ class PlayerAttackState : CharacterState
             {
                 attackCheckNode = ownner.sceneNode.GetChild(eventData[BONE].GetString(), true);
                 Print("Player AttackCheck bone=" + attackCheckNode.name);
-                ownner.EnableAttackCheck(true);
                 AttackCollisionCheck();
-                enableAttackFrame = currentFrame;
-            }
-            else
-            {
-                disableAttackFrame = currentFrame;
-                if (disableAttackFrame == enableAttackFrame)
-                    disableAttackFrame += 1;
-                else
-                {
-                    disableAttackFrame = -1;
-                    ownner.EnableAttackCheck(false);
-                }
             }
         }
     }
@@ -688,30 +667,23 @@ class PlayerAttackState : CharacterState
 
     void AttackCollisionCheck()
     {
-        if (attackCheckNode is null)
+        if (attackCheckNode is null) {
+            doAttackCheck = false;
             return;
+        }
 
+        Character@ target = attackEnemy;
         Vector3 position = attackCheckNode.worldPosition;
-        ownner.attackCheckNode.worldPosition = position;
-        RigidBody@ rb = ownner.attackCheckNode.GetComponent("RigidBody");
-        Array<RigidBody@> contactBodies = ownner.sceneNode.scene.physicsWorld.GetRigidBodies(rb);
-        //Print("ContactBodies = " + contactBodies.length);
-        for (uint i=0; i<contactBodies.length; ++i)
-        {
-            Node@ n = contactBodies[i].node;
-            //Print("BodyName=" + n.name);
-            if (n is ownner.sceneNode)
-                continue;
-
-            GameObject@ object = cast<GameObject>(n.scriptObject);
-            if (object is null)
-                continue;
-
-            //Print("object.name=" + n.name);
-            Vector3 dir = position - n.worldPosition;
+        Vector3 targetPosition = target.sceneNode.worldPosition;
+        Vector3 diff = targetPosition - position;
+        diff.y = 0;
+        float distance = diff.length;
+        if (distance < ownner.attackRadius + COLLISION_RADIUS) {
+            Vector3 dir = position - targetPosition;
             dir.y = 0;
             dir.Normalize();
-            object.OnDamage(ownner, position, dir, ownner.attackDamage);
+            target.OnDamage(ownner, position, dir, ownner.attackDamage);
+            ownner.OnAttackSuccess();
         }
     }
 

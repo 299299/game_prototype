@@ -253,10 +253,6 @@ class ThugAttackState : CharacterState
     float                       turnSpeed = 0.5f;
     bool                        doAttackCheck = false;
     Node@                       attackCheckNode;
-    int                         attackDamage = 10;
-    int                         currentFrame = 0;
-    int                         enableAttackFrame = 0;
-    int                         disableAttackFrame = -1;
 
     ThugAttackState(Character@ c)
     {
@@ -277,7 +273,6 @@ class ThugAttackState : CharacterState
 
     void Update(float dt)
     {
-        ++ currentFrame;
         Motion@ motion = currentAttack.motion;
         float targetDistance = ownner.GetTargetDistance();
         if (ownner.motion_translateEnabled && targetDistance < COLLISION_SAFE_DIST)
@@ -288,11 +283,6 @@ class ThugAttackState : CharacterState
 
         if (doAttackCheck)
             AttackCollisionCheck();
-
-        if (currentFrame == disableAttackFrame) {
-            ownner.EnableAttackCheck(false);
-            doAttackCheck = false;
-        }
 
         // TODO ....
         bool finished = motion.Move(ownner, dt);
@@ -318,9 +308,6 @@ class ThugAttackState : CharacterState
         motion.Start(ownner);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         doAttackCheck = false;
-        currentFrame = 0;
-        disableAttackFrame = -1;
-        enableAttackFrame = -1;
         CharacterState::Enter(lastState);
         Print("Thug Pick attack motion = " + motion.animationName);
     }
@@ -370,50 +357,29 @@ class ThugAttackState : CharacterState
             {
                 attackCheckNode = ownner.sceneNode.GetChild(eventData[BONE].GetString(), true);
                 Print("Thug AttackCheck bone=" + attackCheckNode.name);
-                ownner.EnableAttackCheck(true);
                 AttackCollisionCheck();
-                enableAttackFrame = currentFrame;
-            }
-            else
-            {
-                disableAttackFrame = currentFrame;
-                if (disableAttackFrame == enableAttackFrame)
-                    disableAttackFrame += 1;
-                else
-                {
-                    disableAttackFrame = -1;
-                    ownner.EnableAttackCheck(false);
-                }
             }
         }
     }
 
     void AttackCollisionCheck()
     {
-        if (attackCheckNode is null)
+        if (attackCheckNode is null) {
+            doAttackCheck = false;
             return;
+        }
 
+        Character@ target = ownner.target;
         Vector3 position = attackCheckNode.worldPosition;
-        ownner.attackCheckNode.worldPosition = position;
-        RigidBody@ rb = ownner.attackCheckNode.GetComponent("RigidBody");
-        Array<RigidBody@> contactBodies = ownner.sceneNode.scene.physicsWorld.GetRigidBodies(rb);
-        //Print("ContactBodies = " + contactBodies.length);
-        for (uint i=0; i<contactBodies.length; ++i)
-        {
-            Node@ n = contactBodies[i].node;
-            //Print("BodyName=" + n.name);
-            if (n is ownner.sceneNode)
-                continue;
-
-            GameObject@ object = cast<GameObject>(n.scriptObject);
-            if (object is null)
-                continue;
-
-            //Print("object.name=" + n.name);
-            Vector3 dir = position - n.worldPosition;
+        Vector3 targetPosition = target.sceneNode.worldPosition;
+        Vector3 diff = targetPosition - position;
+        diff.y = 0;
+        float distance = diff.length;
+        if (distance < ownner.attackRadius + COLLISION_RADIUS) {
+            Vector3 dir = position - targetPosition;
             dir.y = 0;
             dir.Normalize();
-            object.OnDamage(ownner, position, dir, ownner.attackDamage);
+            target.OnDamage(ownner, position, dir, ownner.attackDamage);
             ownner.OnAttackSuccess();
         }
     }
