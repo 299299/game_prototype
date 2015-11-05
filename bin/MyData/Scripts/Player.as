@@ -418,8 +418,7 @@ class PlayerAttackState : CharacterState
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
-                //if (attackEnemy !is null)
-                //    attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
+                attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
             }
         }
         else
@@ -440,6 +439,7 @@ class PlayerAttackState : CharacterState
                     //ownner.sceneNode.scene.timeScale = 0.0f;
                     attackEnemy.OnDamage(ownner, ownner.sceneNode.worldPosition, dir, ownner.attackDamage, weakAttack);
                     ownner.OnAttackSuccess();
+                    weakAttack = ownner.combo < 3;
                 }
             }
         }
@@ -570,7 +570,7 @@ class PlayerAttackState : CharacterState
             else if (r == 3)
                 PickBestMotion(leftAttacks, r);
 
-            //attackEnemy.AddFlag(FLAGS_NO_MOVE);
+            attackEnemy.RequestDoNotMove();
         }
         else {
             currentAttack = forwardAttacks[RandomInt(forwadCloseNum)];

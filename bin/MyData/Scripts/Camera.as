@@ -61,6 +61,22 @@ class DebugFPSCameraController: CameraController
     }
 };
 
+
+class ThirdPersonCameraController : CameraController
+{
+    Vector3 offset = Vector3(0, 2.5f, -6.0f);
+
+    ThirdPersonCameraController(Node@ n, const String&in name)
+    {
+        super(n, name);
+    }
+
+    void Update(float dt)
+    {
+
+    }
+};
+
 class CameraManager
 {
     Array<CameraController@>    cameraControllers;
@@ -87,6 +103,7 @@ class CameraManager
     {
         cameraNode = n;
         cameraControllers.Push(DebugFPSCameraController(n, "Debug"));
+        cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
     }
 
     void Stop()

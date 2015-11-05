@@ -45,7 +45,7 @@ class ThugStandState : CharacterState
         return;
 
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (dist < -0.25f)
+        if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ownner.ChangeState("StepMoveState");
             return;
@@ -74,15 +74,18 @@ class ThugStandState : CharacterState
                 }
             }
 
-             // try to move to player
-            String nextState = "StepMoveState";
-            float run_dist = STEP_MAX_DIST + 0.5f;
-            if (dist >= run_dist)
+            if (!ownner.HasFlag(FLAGS_NO_MOVE))
             {
-                Print("do run because dist >= " + run_dist);
-               nextState = "RunState";
+                // try to move to player
+                String nextState = "StepMoveState";
+                float run_dist = STEP_MAX_DIST + 0.5f;
+                if (dist >= run_dist)
+                {
+                    Print("do run because dist >= " + run_dist);
+                   nextState = "RunState";
+                }
+                ownner.ChangeState(nextState);
             }
-            ownner.ChangeState(nextState);
 
             timeInState = 0.0f;
             thinkTime = Random(0.5f, 3.0f);
@@ -577,15 +580,37 @@ class Thug : Enemy
         {
             Node@ attackNode = attacker.GetNode();
             float diff = ComputeAngleDiff(attackNode);
-            int index = 0;
-            if (diff < 0)
-                index = 1;
-            if (Abs(diff) > 135)
-                index = 2 + RandomInt(2);
-            sceneNode.vars[ANIMATION_INDEX] = index;
-            stateMachine.ChangeState("HitState");
+            if (weak) {
+                int index = 0;
+                if (diff < 0)
+                    index = 1;
+                if (Abs(diff) > 135)
+                    index = 2 + RandomInt(2);
+                sceneNode.vars[ANIMATION_INDEX] = index;
+                stateMachine.ChangeState("HitState");
+            }
+            else {
+                MakeMeRagdoll();
+            }
+        }
+    }
+
+    void RequestDoNotMove()
+    {
+        Character::RequestDoNotMove();
+        StringHash nameHash = stateMachine.currentState.nameHash;
+        if (nameHash == RUN_STATE || nameHash == RUN_STATE)
+        {
+            stateMachine.ChangeState("StandState");
+            return;
         }
 
+        if (nameHash == HIT_STATE)
+        {
+            // I dont know how to do ...
+            // special case
+            // thug.motion_translateEnabled = false;
+        }
     }
 };
 

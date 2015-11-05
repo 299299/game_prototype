@@ -12,6 +12,10 @@ const StringHash REDIRECT_STATE("RedirectState");
 const StringHash TURN_STATE("TurnState");
 const StringHash COUNTER_STATE("CounterState");
 const StringHash GETUP_STATE("GetUpState");
+const StringHash STEPMOVE_STATE("StepMoveState");
+const StringHash RUN_STATE("RunState");
+const StringHash HIT_STATE("HitState");
+
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
 const StringHash TIME_SCALE("TimeScale");
@@ -879,6 +883,11 @@ class Character : GameObject
     void OnAttackSuccess()
     {
 
+    }
+
+    void RequestDoNotMove()
+    {
+        AddFlag(FLAGS_NO_MOVE);
     }
 };
 

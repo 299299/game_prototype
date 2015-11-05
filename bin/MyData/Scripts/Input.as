@@ -17,6 +17,9 @@ class GameInput
 
     float m_smooth;
 
+    float m_mouseX;
+    float m_mouseY;
+
     GameInput()
     {
         m_leftStickX = 0;
@@ -111,8 +114,10 @@ class GameInput
         }
         else
         {
-            ret.x = input.mouseMoveX;
-            ret.y = input.mouseMoveY;
+            m_mouseX += input.mouseMoveX;
+            m_mouseY += input.mouseMoveY;
+            ret.x = m_mouseX;
+            ret.y = m_mouseY;
         }
         return ret;
     }
