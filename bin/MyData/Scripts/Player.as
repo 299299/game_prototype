@@ -457,7 +457,7 @@ class PlayerAttackState : CharacterState
                         position = n.worldPosition;
 
                     attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
-                    ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 2, LOCAL);
+                    ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 2, 5.0f);
                     ownner.OnAttackSuccess();
                     weakAttack = cast<Player@>(ownner).combo < 3;
                 }

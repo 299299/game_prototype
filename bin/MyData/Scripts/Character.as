@@ -889,11 +889,11 @@ class Character : GameObject
         AddFlag(FLAGS_NO_MOVE);
     }
 
-    Node@ SpawnParticleEffect(const Vector3&in position, const String&in effectName, float duration, CreateMode mode = REPLICATED)
+    Node@ SpawnParticleEffect(const Vector3&in position, const String&in effectName, float duration, float scale = 1.0f)
     {
-        Node@ newNode = sceneNode.scene.CreateChild("Effect", mode);
+        Node@ newNode = sceneNode.scene.CreateChild("Effect");
         newNode.position = position;
-        newNode.scale = Vector3(5,5,5);
+        newNode.scale = Vector3(scale, scale, scale);
 
         // Create the particle emitter
         ParticleEmitter@ emitter = newNode.CreateComponent("ParticleEmitter");
