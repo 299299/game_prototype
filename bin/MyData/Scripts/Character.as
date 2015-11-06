@@ -508,8 +508,6 @@ class Character : GameObject
     float                   attackRadius = 0.5f;
     int                     attackDamage = 10;
 
-    Node@                   hintNode;
-
     Vector3                 targetPosition;
     bool                    targetPositionApplied = false;
 
@@ -566,7 +564,7 @@ class Character : GameObject
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
 
-        hintNode = sceneNode.CreateChild("Hint_Node");
+        Node@ hintNode = sceneNode.CreateChild("HintNode");
         hintNode.position = Vector3(0, 5, 0);
         Text3D@ text = hintNode.CreateComponent("Text3D");
         text.SetFont("Fonts/UbuntuMono-R.ttf", 25);
@@ -875,6 +873,7 @@ class Character : GameObject
 
     void SetHintText(const String&in text)
     {
+        Node@ hintNode = sceneNode.GetChild("HintNode", false);
         Text3D@ text3d = hintNode.GetComponent("Text3D");
         text3d.text = text;
     }
@@ -927,6 +926,19 @@ class Character : GameObject
         return newNode;
     }
 
+    void CreateTail(Node@ _node, const String&in material)
+    {
+        TailGenerator@ tailGen = _node.CreateComponent("TailGenerator");
+        tailGen.tailLength = 0.5f; // set segment length
+        tailGen.numTails = 50;     // set num of segments
+        tailGen.widthScale = 4.0f; // side scale
+        //tailGen.material = cache.GetResource("Material", material);
+    }
+
+    void DestroyTail(Node@ _node)
+    {
+        _node.RemoveComponent("TailGenerator");
+    }
 };
 
 int DirectionMapToIndex(float directionDifference, int numDirections)

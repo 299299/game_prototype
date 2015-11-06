@@ -70,7 +70,7 @@ void CreateScene()
 
     Node@ cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
-    // cam.fillMode = FILL_WIREFRAME;
+    cam.fillMode = FILL_WIREFRAME;
 
     characterNode = scene_.GetChild("bruce", true);
 

@@ -250,7 +250,7 @@ class PlayerAttackState : CharacterState
         String lFoot = "Bip01_L_Foot";
         String rFoot = "Bip01_R_Foot";
         String lArm = "Bip01_L_Forearm";
-        String rArm = "Bip01_R_Forwarm";
+        String rArm = "Bip01_R_Forearm";
         String lCalf = "Bip01_L_Calf";
         String rCalf = "Bip01_R_Calf";
 
@@ -278,7 +278,7 @@ class PlayerAttackState : CharacterState
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward_02", 21, ATTACK_KICK, lFoot);
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward_03", 22, ATTACK_PUNCH, rHand);
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward_04", 22, ATTACK_KICK, rFoot);
-        AddAttackMotion(forwardAttacks, "Attack_Run_Far_Forward", 14, ATTACK_KICK, rFoot);
+        AddAttackMotion(forwardAttacks, "Attack_Run_Far_Forward", 18, ATTACK_KICK, rFoot);
 
         //========================================================================
         // RIGHT
@@ -325,9 +325,9 @@ class PlayerAttackState : CharacterState
         // back far
         AddAttackMotion(backAttacks, "Attack_Far_Back", 14, ATTACK_KICK, lFoot);
         AddAttackMotion(backAttacks, "Attack_Far_Back_01", 15, ATTACK_KICK, lFoot);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_02", 18, ATTACK_PUNCH, rArm);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_02", 22, ATTACK_PUNCH, rArm);
         AddAttackMotion(backAttacks, "Attack_Far_Back_03", 22, ATTACK_PUNCH, lHand);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_04", 36, ATTACK_KICK, lFoot);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_04", 36, ATTACK_KICK, rFoot);
 
         //========================================================================
         // LEFT
@@ -457,7 +457,7 @@ class PlayerAttackState : CharacterState
                         position = n.worldPosition;
 
                     attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
-                    ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 2, 5.0f);
+                    ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
                     ownner.OnAttackSuccess();
                     weakAttack = cast<Player@>(ownner).combo < 3;
                 }
@@ -904,6 +904,15 @@ class Player : Character
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(PlayerGetUpState(this));
         stateMachine.ChangeState("StandState");
+
+        Node@ tailNode = sceneNode.CreateChild("TailNode");
+        TailGenerator@ tailGen = tailNode.CreateComponent("TailGenerator");
+        //tailGen.tailLength = 0.25f; // set segment length
+        //tailGen.numTails = 50;     // set num of segments
+        tailGen.widthScale = 0.5f; // side scale
+        //tailGen.colorForHead = Color(1.0f, 1.0f, 1.0f);
+        //tailGen.colorForTip = Color(0.0f, 0.0f, 1.0f);
+        // tailGen.material = cache.GetResource("Material", "Materials/TailGenerator.xml");
     }
 
     void DebugDraw(DebugRenderer@ debug)

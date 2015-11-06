@@ -23,7 +23,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="3">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;Debug/debug_tile.xml" />
+			<attribute name="Material" value="Material;Materials/debug_tile.xml" />
 		</component>
 		<component type="CollisionShape" id="20">
 			<attribute name="Shape Type" value="StaticPlane" />

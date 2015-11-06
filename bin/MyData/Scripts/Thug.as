@@ -42,7 +42,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        return;
+        // return;
 
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
         if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
