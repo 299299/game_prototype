@@ -91,10 +91,11 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, float angle, const Co
     debug.AddLine(start, end, color, false);
 }
 
-void SendAnimationTriger(Node@ _node, const StringHash&in nameHash)
+void SendAnimationTriger(Node@ _node, const StringHash&in nameHash, int value = 0)
 {
     VariantMap anim_data;
     anim_data[NAME] = nameHash;
+    anim_data[VALUE] = value;
     VariantMap data;
     data[DATA] = anim_data;
     _node.SendEvent("AnimationTrigger", data);

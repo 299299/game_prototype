@@ -42,7 +42,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        // return;
+        return;
 
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
         if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
@@ -327,7 +327,7 @@ class ThugAttackState : CharacterState
 
     void ShowHint(bool bshow)
     {
-        ownner.SetHintText(bshow ? "COUNTER!!!!!!!" : ownner.sceneNode.name);
+        ownner.SetHintText("COUNTER!!!!!!!", bshow);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -506,6 +506,22 @@ class ThugGetUpState : CharacterGetUpState
     }
 };
 
+class ThugDeadState : CharacterState
+{
+    ThugDeadState(Character@ c)
+    {
+        super(c);
+        SetName("DeadState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.MakeMeRagdoll(1);
+        CharacterState::Enter(lastState);
+    }
+};
+
+
 class Thug : Enemy
 {
     void ObjectStart()
@@ -521,6 +537,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugAttackState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugGetUpState(this));
+        stateMachine.AddState(ThugDeadState(this));
         stateMachine.ChangeState("StandState");
 
         Motion@ kickMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Kick");
@@ -570,7 +587,7 @@ class Thug : Enemy
             return;
         }
 
-        // health -= damage;
+        health -= damage;
         if (health <= 0)
         {
             OnDead();
@@ -611,6 +628,11 @@ class Thug : Enemy
             // special case
             motion_translateEnabled = false;
         }
+    }
+
+    String GetHintText()
+    {
+        return sceneNode.name + " state=" + stateMachine.currentState.name + " distToPlayer=" + GetTargetDistance();
     }
 };
 

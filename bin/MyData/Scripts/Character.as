@@ -511,6 +511,8 @@ class Character : GameObject
     Vector3                 targetPosition;
     bool                    targetPositionApplied = false;
 
+    bool                    hintTextSet = false;
+
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -567,7 +569,7 @@ class Character : GameObject
         Node@ hintNode = sceneNode.CreateChild("HintNode");
         hintNode.position = Vector3(0, 5, 0);
         Text3D@ text = hintNode.CreateComponent("Text3D");
-        text.SetFont("Fonts/UbuntuMono-R.ttf", 25);
+        text.SetFont("Fonts/UbuntuMono-R.ttf", 30);
         text.SetAlignment(HA_CENTER, VA_CENTER);
         text.color = Color(1, 0, 0);
         text.textAlignment = HA_CENTER;
@@ -677,6 +679,27 @@ class Character : GameObject
         sceneNode.worldPosition = targetPosition;
     }
 
+    String GetHintText()
+    {
+        return "";
+    }
+
+    void FixedUpdate(float dt)
+    {
+        Node@ hintNode = sceneNode.GetChild("HintNode", false);
+        if (hintNode !is null)
+        {
+            Vector3 pos = hipsNode.worldPosition;
+            hintNode.worldPosition = Vector3(pos.x, pos.y + 3, pos.z);
+
+            Text3D@ text = hintNode.GetComponent("Text3D");
+            if (text !is null)
+            {
+                text.text = GetHintText();
+            }
+        }
+    }
+
     void MoveTo(const Vector3&in position, float dt)
     {
         // (sceneNode.name == "bruce")
@@ -751,7 +774,7 @@ class Character : GameObject
         //debug.AddSphere(sp, Color(0, 1, 0));
         //debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
 
-        float radius = attackRadius;
+        /*float radius = attackRadius;
         Sphere sp;
         sp.Define(handNode_L.worldPosition, radius);
         debug.AddSphere(sp, Color(0, 1, 0));
@@ -761,6 +784,7 @@ class Character : GameObject
         debug.AddSphere(sp, Color(0, 1, 0));
         sp.Define(footNode_R.worldPosition, radius);
         debug.AddSphere(sp, Color(0, 1, 0));
+        */
     }
 
     void TestAnimation(const String&in animationName)
@@ -866,16 +890,17 @@ class Character : GameObject
         stateMachine.ChangeState("DeadState");
     }
 
-    void MakeMeRagdoll()
+    void MakeMeRagdoll(int stickToDynamic = 0)
     {
-        SendAnimationTriger(renderNode, RAGDOLL_START);
+        SendAnimationTriger(renderNode, RAGDOLL_START, stickToDynamic);
     }
 
-    void SetHintText(const String&in text)
+    void SetHintText(const String&in text, bool bSet)
     {
         Node@ hintNode = sceneNode.GetChild("HintNode", false);
         Text3D@ text3d = hintNode.GetComponent("Text3D");
         text3d.text = text;
+        hintTextSet = bSet;
     }
 
     void OnAttackSuccess()
@@ -926,18 +951,15 @@ class Character : GameObject
         return newNode;
     }
 
-    void CreateTail(Node@ _node, const String&in material)
+    void EnableComponent(const String&in boneName, const String&in componentName, bool bEnable)
     {
-        TailGenerator@ tailGen = _node.CreateComponent("TailGenerator");
-        tailGen.tailLength = 0.5f; // set segment length
-        tailGen.numTails = 50;     // set num of segments
-        tailGen.widthScale = 4.0f; // side scale
-        //tailGen.material = cache.GetResource("Material", material);
-    }
-
-    void DestroyTail(Node@ _node)
-    {
-        _node.RemoveComponent("TailGenerator");
+        Node@ _node = sceneNode.GetChild(boneName, true);
+        if (_node is null)
+            return;
+        Component@ comp = _node.GetComponent(componentName);
+        if (comp is null)
+            return;
+        comp.enabled = bEnable;
     }
 };
 

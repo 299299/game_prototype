@@ -70,7 +70,6 @@ void CreateScene()
 
     Node@ cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
-    cam.fillMode = FILL_WIREFRAME;
 
     characterNode = scene_.GetChild("bruce", true);
 
@@ -153,12 +152,13 @@ void CreateUI()
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
     // input.SetMouseVisible(true);
 
-    Text@ instructionText = ui.root.CreateChild("Text", "debug");
-    instructionText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
-    instructionText.horizontalAlignment = HA_LEFT;
-    instructionText.verticalAlignment = VA_TOP;
-    instructionText.SetPosition(0, 0);
-    instructionText.color = Color(0, 1, 0);
+    Text@ text = ui.root.CreateChild("Text", "debug");
+    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 14);
+    text.horizontalAlignment = HA_LEFT;
+    text.verticalAlignment = VA_TOP;
+    text.SetPosition(0, 0);
+    text.color = Color(0, 0, 1);
+    text.textEffect = TE_SHADOW;
 }
 
 void SetupViewport()
@@ -439,6 +439,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         debugHud.ToggleAll();
     else if (key == KEY_F3)
         console.Toggle();
+    else if (key == KEY_F4)
+    {
+        Node@ cameraNode = scene_.GetChild("Camera");
+        Camera@ cam = cameraNode.GetComponent("Camera");
+        cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
+    }
 }
 
 void HandleMouseMove(StringHash eventType, VariantMap& eventData)

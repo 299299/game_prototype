@@ -252,7 +252,7 @@ class PlayerAttackState : CharacterState
         String lArm = "Bip01_L_Forearm";
         String rArm = "Bip01_R_Forearm";
         String lCalf = "Bip01_L_Calf";
-        String rCalf = "Bip01_R_Calf";
+        //String rCalf = "Bip01_R_Calf";
 
         // forward weak
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH, rHand);
@@ -424,6 +424,13 @@ class PlayerAttackState : CharacterState
     {
         Motion@ motion = currentAttack.motion;
 
+        Node@ tailNode = ownner.sceneNode.GetChild("TailNode", true);
+        Node@ attackNode = ownner.sceneNode.GetChild(currentAttack.boneName, true);
+
+        if (tailNode !is null && attackNode !is null) {
+            tailNode.worldPosition = attackNode.worldPosition;
+        }
+
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
         {
@@ -470,7 +477,7 @@ class PlayerAttackState : CharacterState
 
         if (attackEnemy !is null)
         {
-            float targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
+            targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
             if (ownner.motion_translateEnabled && targetDistance < COLLISION_SAFE_DIST)
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
@@ -617,6 +624,8 @@ class PlayerAttackState : CharacterState
 
         if (attack_timing_test)
             ownner.sceneNode.scene.timeScale = 0.0f;
+
+        ownner.EnableComponent("TailNode", "TailGenerator", true);
     }
 
     void Start()
@@ -644,6 +653,8 @@ class PlayerAttackState : CharacterState
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
+        ownner.EnableComponent("TailNode", "TailGenerator", false);
+
         if (attackEnemy !is null)
             attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
         @attackEnemy = null;
@@ -905,14 +916,16 @@ class Player : Character
         stateMachine.AddState(PlayerGetUpState(this));
         stateMachine.ChangeState("StandState");
 
-        Node@ tailNode = sceneNode.CreateChild("TailNode");
-        TailGenerator@ tailGen = tailNode.CreateComponent("TailGenerator");
-        //tailGen.tailLength = 0.25f; // set segment length
-        //tailGen.numTails = 50;     // set num of segments
-        tailGen.widthScale = 0.5f; // side scale
-        //tailGen.colorForHead = Color(1.0f, 1.0f, 1.0f);
-        //tailGen.colorForTip = Color(0.0f, 0.0f, 1.0f);
-        // tailGen.material = cache.GetResource("Material", "Materials/TailGenerator.xml");
+        Node@ _node = sceneNode.CreateChild("TailNode");
+        TailGenerator@ t = _node.CreateComponent("TailGenerator");
+        t.material = cache.GetResource("Material", "Materials/Tail.xml");
+        t.width = 0.5f;
+        t.tailNum = 200;
+        t.SetArcValue(0.1f, 10.0f);
+        t.SetStartColor(Color(0.9f,0.5f,0.2f,1), Color(1.0f,1.0f,1.0f,5.0f));
+        t.SetEndColor(Color(1.0f,0.2f,1.0f,1), Color(1.0f,1.0f,1.0f,5.0f));
+        // t.endNodeName = "Bip01";
+        t.enabled = false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -969,11 +982,6 @@ class Player : Character
         }
 
         return true;
-    }
-
-    String GetDebugText()
-    {
-        return Character::GetDebugText() +  "flags=" + flags + " combo=" + combo + " timeScale=" + timeScale + "\n";
     }
 
     void CommonStateFinishedOnGroud()
@@ -1173,5 +1181,15 @@ class Player : Character
         }
 
         return redirectEnemy;
+    }
+
+    String GetDebugText()
+    {
+        return Character::GetDebugText() +  "flags=" + flags + " combo=" + combo + " timeScale=" + timeScale + "\n";
+    }
+
+    String GetHintText()
+    {
+        return sceneNode.name + " state=" + stateMachine.currentState.name + " combo=" + combo;
     }
 };

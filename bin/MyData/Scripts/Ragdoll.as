@@ -57,6 +57,7 @@ class Ragdoll : ScriptObject
     float             minRagdollStateTime = 0.5f;
 
     int               getUpIndex = 0;
+    int               stickToDynamic = 0;
 
     void Start()
     {
@@ -236,6 +237,9 @@ class Ragdoll : ScriptObject
         {
             // Print("Ragdoll Dynamic time " + timeInState);
             timeInState += dt;
+
+            if (stickToDynamic == 1)
+                return;
 
             uint num_of_freeze_objects = 0;
             for (uint i=0; i<RAGDOLL_BONE_NUM; ++i)
@@ -472,11 +476,16 @@ class Ragdoll : ScriptObject
     {
         // Print("HandleAnimationTrigger current-state=" + state);
         StringHash name = eventData[DATA].GetVariantMap()[NAME].GetStringHash();
+        int value = eventData[DATA].GetVariantMap()[VALUE].GetInt();
+
         int new_state = RAGDOLL_NONE;
         if (name == RAGDOLL_PERPARE)
             new_state = RAGDOLL_STATIC;
         else if (name == RAGDOLL_START)
+        {
             new_state = RAGDOLL_DYNAMIC;
+            stickToDynamic = value;
+        }
         else if (name == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;
         //ChangeState(new_state);
