@@ -47,7 +47,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        return;
+        // return;
 
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
         if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
@@ -65,31 +65,34 @@ class ThugStandState : CharacterState
                 return;
             }
 
-            int rand_i = RandomInt(2);
-            Print("rand_i=" + rand_i + " dist=" + dist);
-
-            if (rand_i == 0)
+            if (ownner.CanAttack())
             {
-                float attack_dist = KICK_DIST + 0.5f;
-                if (dist <= attack_dist)
-                {
-                    Print("do attack because dist <= " + attack_dist);
-                    if (ownner.Attack())
-                        return;
-                }
-            }
+                int rand_i = RandomInt(2);
+                Print("rand_i=" + rand_i + " dist=" + dist);
 
-            if (!ownner.HasFlag(FLAGS_NO_MOVE))
-            {
-                // try to move to player
-                String nextState = "StepMoveState";
-                float run_dist = STEP_MAX_DIST + 0.5f;
-                if (dist >= run_dist)
+                if (rand_i == 0)
                 {
-                    Print("do run because dist >= " + run_dist);
-                   nextState = "RunState";
+                    float attack_dist = KICK_DIST + 0.5f;
+                    if (dist <= attack_dist)
+                    {
+                        Print("do attack because dist <= " + attack_dist);
+                        if (ownner.Attack())
+                            return;
+                    }
                 }
-                ownner.ChangeState(nextState);
+
+                if (!ownner.HasFlag(FLAGS_NO_MOVE))
+                {
+                    // try to move to player
+                    String nextState = "StepMoveState";
+                    float run_dist = STEP_MAX_DIST + 0.5f;
+                    if (dist >= run_dist)
+                    {
+                        Print("do run because dist >= " + run_dist);
+                       nextState = "RunState";
+                    }
+                    ownner.ChangeState(nextState);
+                }
             }
 
             timeInState = 0.0f;
@@ -383,14 +386,24 @@ class ThugAttackState : CharacterState
         Vector3 diff = targetPosition - position;
         diff.y = 0;
         float distance = diff.length;
-        if (distance < ownner.attackRadius + COLLISION_RADIUS) {
+        if (distance < ownner.attackRadius + COLLISION_RADIUS)
+        {
             Vector3 dir = position - targetPosition;
             dir.y = 0;
             dir.Normalize();
             target.OnDamage(ownner, position, dir, ownner.attackDamage);
+            if (currentAttack.type == ATTACK_PUNCH)
+            {
+                ownner.PlaySound("Sfx/thug_punch.ogg");
+            }
+            else
+            {
+                ownner.PlaySound("Sfx/thug_kick.ogg");
+            }
             ownner.OnAttackSuccess();
         }
     }
+
 };
 
 class ThugHitState : MultiMotionState
@@ -561,7 +574,7 @@ class Thug : Enemy
         DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), 2.0f);
     }
 
-    bool Attack()
+    bool CanAttack()
     {
         EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
         if (em is null)
@@ -570,6 +583,13 @@ class Thug : Enemy
         if (num >= MAX_NUM_OF_ATTACK)
             return false;
         if (!target.CanBeAttacked())
+            return false;
+        return true;
+    }
+
+    bool Attack()
+    {
+        if (!CanAttack())
             return false;
         stateMachine.ChangeState("AttackState");
         return true;

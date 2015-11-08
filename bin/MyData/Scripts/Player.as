@@ -453,28 +453,7 @@ class PlayerAttackState : CharacterState
             if (t > currentAttack.impactTime)
             {
                 ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
-
-                if (attack_timing_test)
-                    ownner.sceneNode.scene.timeScale = 0.0f;
-
-                if (attackEnemy !is null)
-                {
-                    Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
-                    dir.y = 0;
-                    dir.Normalize();
-                    Print("PlayerAttackState::" +  attackEnemy.GetName() + " OnDamage!!!!");
-                    //ownner.sceneNode.scene.timeScale = 0.0f;
-
-                    Node@ n = ownner.sceneNode.GetChild(currentAttack.boneName, true);
-                    Vector3 position = ownner.sceneNode.worldPosition;
-                    if (n !is null)
-                        position = n.worldPosition;
-
-                    attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
-                    ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
-                    ownner.OnAttackSuccess();
-                    weakAttack = cast<Player@>(ownner).combo < 3;
-                }
+                AttackImpact();
             }
         }
         else
@@ -744,6 +723,44 @@ class PlayerAttackState : CharacterState
     bool CanReEntered()
     {
         return true;
+    }
+
+    void AttackImpact()
+    {
+        if (attack_timing_test)
+            ownner.sceneNode.scene.timeScale = 0.0f;
+
+        if (attackEnemy is null)
+            return;
+
+        Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
+        dir.y = 0;
+        dir.Normalize();
+        Print("PlayerAttackState::" +  attackEnemy.GetName() + " OnDamage!!!!");
+        //ownner.sceneNode.scene.timeScale = 0.0f;
+
+        Node@ n = ownner.sceneNode.GetChild(currentAttack.boneName, true);
+        Vector3 position = ownner.sceneNode.worldPosition;
+        if (n !is null)
+            position = n.worldPosition;
+
+        attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
+        ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
+        ownner.OnAttackSuccess();
+        weakAttack = cast<Player@>(ownner).combo < 3;
+
+        if (currentAttack.type == ATTACK_PUNCH)
+        {
+            int i = RandomInt(6) + 1;
+            String name = "Sfx/punch_0" + i + ".ogg";
+            ownner.PlaySound(name);
+        }
+        else
+        {
+            int i = RandomInt(6) + 1;
+            String name = "Sfx/kick_0" + i + ".ogg";
+            ownner.PlaySound(name);
+        }
     }
 };
 

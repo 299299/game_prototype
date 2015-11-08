@@ -39,6 +39,10 @@ void Start()
         CreateConsoleAndDebugHud();
     }
 
+    audio.masterGain[SOUND_MASTER] = 0.5f;
+    audio.masterGain[SOUND_MUSIC] = 0.75f;
+    audio.masterGain[SOUND_EFFECT] = 0.5f;
+
     CreateScene();
 
     if (!engine.headless) {
@@ -69,6 +73,7 @@ void CreateScene()
 
     Node@ cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
+    audio.listener = cameraNode.CreateComponent("SoundListener");
 
     characterNode = scene_.GetChild("player", true);
 

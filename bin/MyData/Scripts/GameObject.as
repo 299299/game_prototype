@@ -71,9 +71,10 @@ class GameObject : ScriptObject
         SoundSource3D@ source = node.CreateComponent("SoundSource3D");
         Sound@ sound = cache.GetResource("Sound", soundName);
 
-        source.SetDistanceAttenuation(2, 50, 1);
+        source.SetDistanceAttenuation(2, 100, 1);
         source.Play(sound);
         source.autoRemove = true;
+        source.soundType = SOUND_EFFECT;
     }
 
     void DebugDraw(DebugRenderer@ debug)

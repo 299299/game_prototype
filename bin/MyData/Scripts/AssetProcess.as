@@ -383,12 +383,20 @@ void AddAnimationTrigger(const String&in name, int frame, const StringHash&in ta
 void AddFloatAnimationTrigger(const String&in name, int frame, const StringHash&in tag, float value)
 {
     VariantMap eventData;
-    eventData[NAME] = TIME_SCALE;
+    eventData[NAME] = tag;
     eventData[VALUE] = value;
     Animation_AddTrigger(name, frame, eventData);
 }
 
 void AddIntAnimationTrigger(const String&in name, int frame, const StringHash&in tag, int value)
+{
+    VariantMap eventData;
+    eventData[NAME] = tag;
+    eventData[VALUE] = value;
+    Animation_AddTrigger(name, frame, eventData);
+}
+
+void AddStringAnimationTrigger(const String&in name, int frame, const StringHash&in tag, const String&in value)
 {
     VariantMap eventData;
     eventData[NAME] = tag;
@@ -412,4 +420,14 @@ void AddRagdollTrigger(const String&in name, int prepareFrame, int startFrame)
     if (prepareFrame >= 0)
         AddAnimationTrigger(name, prepareFrame, RAGDOLL_PERPARE);
     AddAnimationTrigger(name, startFrame, RAGDOLL_START);
+}
+
+void AddParticleTrigger(const String&in name, int startFrame, const String&in boneName, const String&in effectName, float duration)
+{
+    VariantMap eventData;
+    eventData[NAME] = ATTACK_CHECK;
+    eventData[VALUE] = effectName;
+    eventData[BONE] = boneName;
+    eventData[DURATION] = duration;
+    Animation_AddTrigger(name, startFrame, eventData);
 }

@@ -43,6 +43,9 @@ const StringHash L_FOREARM("Bip01_L_Forearm");
 const StringHash R_FOREARM("Bip01_R_Forearm");
 const StringHash RADIUS("Radius");
 const StringHash IN_AIR("InAir");
+const StringHash COMBAT_SOUND("CombatSound");
+const StringHash PARTICLE("Particle");
+const StringHash DURATION("Duration");
 
 class CharacterState : State
 {
@@ -61,8 +64,29 @@ class CharacterState : State
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         //Print("ownner.name= " + ownner.GetName() + "name=" + eventData[NAME].GetStringHash().ToString() + " name1=" + RAGDOLL_START.ToString());
-        if (eventData[NAME].GetStringHash() == RAGDOLL_START) {
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == RAGDOLL_START) {
             ownner.ChangeState("RagdollState");
+        }
+        else if (name == COMBAT_SOUND)
+        {
+            String boneName = eventData[VALUE].GetString();
+            int comb_type = GetAttackType(boneName);
+            if (comb_type == ATTACK_PUNCH)
+            {
+                int i = RandomInt(6) + 1;
+                String name = "Sfx/punch_0" + i + ".ogg";
+                ownner.PlaySound(name);
+            }
+            else
+            {
+                int i = RandomInt(6) + 1;
+                String name = "Sfx/kick_0" + i + ".ogg";
+                ownner.PlaySound(name);
+            }
+        }
+        else if (name == PARTICLE) {
+            // ownner.SpawnParticleEffect()
         }
     }
 };
@@ -763,6 +787,11 @@ class Character : GameObject
     bool CanBeRedirected()
     {
         return HasFlag(FLAGS_REDIRECTED);
+    }
+
+    bool CanAttack()
+    {
+        return false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
