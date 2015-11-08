@@ -1,17 +1,27 @@
-
+// ==============================================
+//
+//    Enemy Base Class and EnemyManager Class
+//
+// ==============================================
 
 class Enemy : Character
 {
     void Start()
     {
         Character::Start();
-        gEnemyMgr.RegisterEnemy(this);
+        @target = cast<Character@>(scene.GetChild("player", false).GetScriptObject("Player"));
+        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        if (em !is null)
+            em.RegisterEnemy(this);
     }
 
     void Stop()
     {
         Character::Stop();
-        gEnemyMgr.UnRegisterEnemy(this);
+
+        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        if (em !is null)
+            em.UnRegisterEnemy(this);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -35,8 +45,11 @@ class Enemy : Character
     }
 };
 
-class EnemyManager
+class EnemyManager : ScriptObject
 {
+    int thugId = 0;
+    Scene@ gameScene;
+
     EnemyManager()
     {
         Print("EnemyManager()");
@@ -47,8 +60,20 @@ class EnemyManager
         Print("~EnemyManager()");
     }
 
-    Node@ CreateEnemy()
+    void Start()
     {
+        gameScene = scene;
+    }
+
+    void Stop()
+    {
+        gameScene = null;
+    }
+
+    Node@ CreateEnemy(const Vector3&in position, const Quaternion&in rotation, const String&in type, const String&in name = "")
+    {
+        if (type == "Thug")
+            return CreateThug(name, position, rotation);
         return null;
     }
 
@@ -82,8 +107,20 @@ class EnemyManager
             enemyList[i].DebugDraw(debug);
     }
 
+    Node@ CreateThug(const String&in name, const Vector3&in position, const Quaternion& rotation)
+    {
+        String thugName = name;
+        if (thugName == "")
+            thugName = "Thug_" + thugId;
+        thugId ++;
+        XMLFile@ xml = cache.GetResource("XMLFile", "Objects/thug.xml");
+        Node@ thugNode = gameScene.InstantiateXML(xml, position, rotation);
+        thugNode.name = name;
+        thugNode.CreateScriptObject(scriptFile, "Thug");
+        thugNode.CreateScriptObject(scriptFile, "Ragdoll");
+        return thugNode;
+    }
+
     Array<Enemy@>             enemyList;
     Array<int>                scoreCache;
 };
-
-EnemyManager@ gEnemyMgr = EnemyManager();

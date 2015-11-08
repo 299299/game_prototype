@@ -1,3 +1,8 @@
+// ==============================================
+//
+//    Thug Pawn and Controller Class
+//
+// ==============================================
 
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 const float MIN_TURN_ANGLE = 30;
@@ -558,8 +563,10 @@ class Thug : Enemy
 
     bool Attack()
     {
-        // try to attack
-        int num = gEnemyMgr.GetNumOfEnemyInState(ATTACK_STATE);
+        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return false;
+        int num = em.GetNumOfEnemyInState(ATTACK_STATE);
         if (num >= MAX_NUM_OF_ATTACK)
             return false;
         if (!target.CanBeAttacked())

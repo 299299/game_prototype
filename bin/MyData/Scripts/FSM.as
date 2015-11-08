@@ -1,3 +1,8 @@
+// ==============================================
+//
+//    State & State Machine Base Class
+//
+// ==============================================
 
 class State
 {
@@ -8,7 +13,7 @@ class State
 
     State()
     {
-        Print("State()");
+        //Print("State()");
     }
 
     ~State()

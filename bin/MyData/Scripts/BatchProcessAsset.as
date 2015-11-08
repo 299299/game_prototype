@@ -1,3 +1,8 @@
+// ==================================================================
+//
+//    Batch Process Asset Script for automatic pipeline
+//
+// ==================================================================
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";

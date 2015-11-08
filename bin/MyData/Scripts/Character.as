@@ -1,3 +1,8 @@
+// ==============================================
+//
+//    Character Base Class
+//
+// ==============================================
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
@@ -702,7 +707,7 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        // (sceneNode.name == "bruce")
+        // (sceneNode.name == "player")
         //    Print("MoveTo " + position.ToString());
         sceneNode.worldPosition = position;
         //targetPosition = position;
@@ -925,7 +930,7 @@ class Character : GameObject
 
         // Create a GameObject for managing the effect lifetime. This is always local, so for server-controlled effects it
         // exists only on the server
-        GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(GAME_SCRIPT, "GameObject", LOCAL));
+        GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(scriptFile, "GameObject", LOCAL));
         object.duration = duration;
 
         Print(GetName() + " SpawnParticleEffect pos=" + position.ToString() + " effectName=" + effectName + " duration=" + duration);
@@ -945,7 +950,7 @@ class Character : GameObject
         source.Play(sound);
 
         // Create a GameObject for managing the sound lifetime
-        GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(GAME_SCRIPT, "GameObject", LOCAL));
+        GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(scriptFile, "GameObject", LOCAL));
         object.duration = duration;
 
         return newNode;

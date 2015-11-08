@@ -1,11 +1,15 @@
-
+// ==============================================
+//
+//    Input Processing Class
+//
+// ==============================================
 
 class GameInput
 {
-    float m_leftStickX = 0;
-    float m_leftStickY = 0;
-    float m_leftStickMagnitude = 0;
-    float m_leftStickAngle = 0;
+    float m_leftStickX;
+    float m_leftStickY;
+    float m_leftStickMagnitude;
+    float m_leftStickAngle;
 
     float m_rightStickX;
     float m_rightStickY;
@@ -15,33 +19,19 @@ class GameInput
     float m_lastLeftStickY;
     float m_leftStickHoldTime;
 
-    float m_smooth;
+    float m_smooth = 0.9f;
 
     float m_mouseX;
     float m_mouseY;
 
+    int   m_leftStickHoldFrames;
+
     GameInput()
     {
-        m_leftStickX = 0;
-        m_leftStickY = 0;
-        m_leftStickMagnitude = 0;
-        m_leftStickAngle = 0;
-
-        m_rightStickX = 0;
-        m_rightStickY = 0;
-        m_rightStickMagnitude = 0;
-
-        m_lastLeftStickX = 0;
-        m_lastLeftStickY = 0;
-
-        m_leftStickHoldTime = 0;
-
-        m_smooth = 0.9f;
     }
 
     ~GameInput()
     {
-
     }
 
     void Update(float dt)
@@ -67,9 +57,15 @@ class GameInput
         float stickDifference = diffX * diffX + diffY * diffY;
 
         if(stickDifference < 0.1f)
+        {
             m_leftStickHoldTime += dt;
+            ++m_leftStickHoldFrames;
+        }
         else
+        {
             m_leftStickHoldTime = 0;
+            m_leftStickHoldFrames = 0;
+        }
 
         // Print("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
     }
@@ -185,7 +181,7 @@ class GameInput
     String GetDebugText()
     {
         return "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
-               " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " left-magnitude=" + m_leftStickMagnitude +
+               " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " hold-frames" + m_leftStickHoldFrames + " left-magnitude=" + m_leftStickMagnitude +
                " rightStick:(" + m_rightStickX + "," + m_rightStickY + ")\n";
     }
 };

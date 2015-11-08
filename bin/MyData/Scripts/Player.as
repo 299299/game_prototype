@@ -1,3 +1,8 @@
+// ==============================================
+//
+//    Player Pawn and Controller Class
+//
+// ==============================================
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
@@ -48,6 +53,8 @@ class PlayerStandState : CharacterState
         {
             int index = ownner.RadialSelectAnimation(4);
             ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
+
+            Print("Stand->Move|Turn hold-frames=" + gInput.m_leftStickHoldFrames + " hold-time=" + gInput.m_leftStickHoldTime);
 
             if (index == 0)
                 ownner.ChangeState("MoveState");
@@ -216,26 +223,26 @@ class PlayerAttackState : CharacterState
     AttackMotion@           currentAttack;
     Enemy@                  attackEnemy;
 
-    int             state;
-    Vector3         movePerSec;
-    Vector3         predictPosition;
-    Vector3         motionPosition;
+    int                     state;
+    Vector3                 movePerSec;
+    Vector3                 predictPosition;
+    Vector3                 motionPosition;
 
-    float           targetDistance;
-    float           alignTime = 0.3f;
+    float                   targetDistance;
+    float                   alignTime = 0.3f;
 
-    int             forwadCloseNum = 0;
-    int             leftCloseNum = 0;
-    int             rightCloseNum = 0;
-    int             backCloseNum = 0;
+    int                     forwadCloseNum = 0;
+    int                     leftCloseNum = 0;
+    int                     rightCloseNum = 0;
+    int                     backCloseNum = 0;
 
-    int             noEnemyStartIndex = 0;
+    int                     noEnemyStartIndex = 0;
 
-    bool            doAttackCheck = false;
-    Node@           attackCheckNode;
+    bool                    doAttackCheck = false;
+    Node@                   attackCheckNode;
 
-    bool            weakAttack = true;
-    bool            isInAir = false;
+    bool                    weakAttack = true;
+    bool                    isInAir = false;
 
     PlayerAttackState(Character@ c)
     {
@@ -1050,22 +1057,26 @@ class Player : Character
         uint t = time.systemTime;
         Print("PickAttackEnemy() started");
 
+        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return null;
+
         // Find the best enemy
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
         float myAngle = Atan2(myDir.x, myDir.z);
         float cameraAngle = gCameraMgr.GetCameraAngle();
         float targetAngle = gInput.m_leftStickAngle + cameraAngle;
-        gEnemyMgr.scoreCache.Clear();
+        em.scoreCache.Clear();
 
         Enemy@ attackEnemy = null;
-        for (uint i=0; i<gEnemyMgr.enemyList.length; ++i)
+        for (uint i=0; i<em.enemyList.length; ++i)
         {
-            Enemy@ e = gEnemyMgr.enemyList[i];
+            Enemy@ e = em.enemyList[i];
             if (!e.CanBeAttacked())
             {
                 Print(e.GetName() + " can not be attacked");
-                gEnemyMgr.scoreCache.Push(-1);
+                em.scoreCache.Push(-1);
                 continue;
             }
 
@@ -1076,7 +1087,7 @@ class Player : Character
             if (dist > MAX_ATTACK_DIST)
             {
                 Print(e.GetName() + " far way from player");
-                gEnemyMgr.scoreCache.Push(-1);
+                em.scoreCache.Push(-1);
                 continue;
             }
             float enemyAngle = Atan2(posDiff.x, posDiff.z);
@@ -1087,27 +1098,30 @@ class Player : Character
             int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST) * 20.0f;
             score += distScore;
             score += angleScore;
-            gEnemyMgr.scoreCache.Push(score);
+            em.scoreCache.Push(score);
             Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 
         int bestScore = 0;
-        for (uint i=0; i<gEnemyMgr.scoreCache.length;++i)
+        for (uint i=0; i<em.scoreCache.length;++i)
         {
-            int score = gEnemyMgr.scoreCache[i];
+            int score = em.scoreCache[i];
             if (score >= bestScore) {
                 bestScore = score;
-                @attackEnemy = gEnemyMgr.enemyList[i];
+                @attackEnemy = em.enemyList[i];
             }
         }
 
         Print("PickAttackEnemy() time-cost = " + (time.systemTime - t) + " ms");
-
         return attackEnemy;
     }
 
     Enemy@ PickCounterEnemy()
     {
+        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return null;
+
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
         float myAngle = Atan2(myDir.x, myDir.z);
@@ -1116,9 +1130,9 @@ class Player : Character
 
         Enemy@ counterEnemy = null;
 
-        for (uint i=0; i<gEnemyMgr.enemyList.length; ++i)
+        for (uint i=0; i<em.enemyList.length; ++i)
         {
-            Enemy@ e = gEnemyMgr.enemyList[i];
+            Enemy@ e = em.enemyList[i];
             if (!e.CanBeCountered())
             {
                 Print(e.GetName() + " can not be countered");
@@ -1145,6 +1159,10 @@ class Player : Character
 
     Enemy@ PickRedirectEnemy()
     {
+        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return null;
+
         Enemy@ redirectEnemy = null;
         const float bestRedirectDist = 5;
         const float maxRedirectDist = 7;
@@ -1153,9 +1171,9 @@ class Player : Character
         float myDir = GetCharacterAngle();
         float bestDistDiff = 9999;
 
-        for (uint i=0; i<gEnemyMgr.enemyList.length; ++i)
+        for (uint i=0; i<em.enemyList.length; ++i)
         {
-            Enemy@ e = gEnemyMgr.enemyList[i];
+            Enemy@ e = em.enemyList[i];
             if (!e.CanBeRedirected()) {
                 Print("Enemy " + e.GetName() + " can not be redirected.");
                 continue;
