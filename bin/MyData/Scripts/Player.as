@@ -773,6 +773,8 @@ class PlayerCounterState : CharacterCounterState
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;
+    bool                bCheckInput = false;
+    bool                isInAir = false;
 
     PlayerCounterState(Character@ c)
     {
@@ -805,9 +807,9 @@ class PlayerCounterState : CharacterCounterState
                 ownner.CommonStateFinishedOnGroud();
                 return;
              }
-
         }
 
+        CheckInput();
         CharacterCounterState::Update(dt);
     }
 
@@ -864,6 +866,7 @@ class PlayerCounterState : CharacterCounterState
         yawPerSec = rotationDiff / alignTime;
         movePerSec = positionDiff / alignTime;
         movePerSec.y = 0;
+        bCheckInput = false;
 
         CharacterCounterState::Enter(lastState);
     }
@@ -877,7 +880,7 @@ class PlayerCounterState : CharacterCounterState
 
     String GetDebugText()
     {
-        return "current motion=" + currentMotion.animationName;
+        return "current motion=" + currentMotion.animationName + " isInAir=" + isInAir + "\n";
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -885,6 +888,31 @@ class PlayerCounterState : CharacterCounterState
         debug.AddCross(targetPosition, 0.25f, Color(0, 1, 0), false);
     }
 
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == READY_TO_FIGHT)
+            bCheckInput = true;
+    }
+
+    void CheckInput()
+    {
+        if (!bCheckInput)
+            return;
+
+        float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
+        isInAir = y_diff > 0.5f;
+        if (isInAir)
+            return;
+
+        if (gInput.IsAttackPressed())
+            ownner.Attack();
+        else if (gInput.IsCounterPressed())
+            ownner.Counter();
+        else if (gInput.IsEvadePressed())
+            ownner.Evade();
+    }
 };
 
 class PlayerHitState : MultiMotionState

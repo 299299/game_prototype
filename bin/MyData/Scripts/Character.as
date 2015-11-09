@@ -46,6 +46,7 @@ const StringHash IN_AIR("InAir");
 const StringHash COMBAT_SOUND("CombatSound");
 const StringHash PARTICLE("Particle");
 const StringHash DURATION("Duration");
+const StringHash READY_TO_FIGHT("ReadyToFight");
 
 class CharacterState : State
 {
@@ -314,7 +315,7 @@ class AnimationTestState : CharacterState
 
     String GetDebugText()
     {
-        return CharacterState::GetDebugText() + " animation=" + animationName;
+        return CharacterState::GetDebugText() + " animation=" + animationName + "\n";
     }
 
     bool CanReEntered()

@@ -431,3 +431,12 @@ void AddParticleTrigger(const String&in name, int startFrame, const String&in bo
     eventData[DURATION] = duration;
     Animation_AddTrigger(name, startFrame, eventData);
 }
+
+void AddComplexAttackTrigger(const String&in name, int counterStart, int counterEnd, int attackStart, int attackEnd, const String&in attackBone)
+{
+    AddFloatAnimationTrigger(name, counterStart, TIME_SCALE, 0.25f);
+    AddFloatAnimationTrigger(name, counterEnd, TIME_SCALE, 1.0f);
+    AddIntAnimationTrigger(name, counterStart, COUNTER_CHECK, 1);
+    AddIntAnimationTrigger(name, counterEnd, COUNTER_CHECK, 0);
+    AddAttackTrigger(name, attackStart, attackEnd, attackBone);
+}

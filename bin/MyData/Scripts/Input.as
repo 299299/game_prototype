@@ -112,8 +112,11 @@ class GameInput
         {
             m_mouseX += input.mouseMoveX;
             m_mouseY += input.mouseMoveY;
-            ret.x = m_mouseX / graphics.width;
-            ret.y = m_mouseY / graphics.height;
+            if (graphics !is null)
+            {
+                ret.x = m_mouseX / graphics.width;
+                ret.y = m_mouseY / graphics.height;
+            }
         }
         return ret;
     }
