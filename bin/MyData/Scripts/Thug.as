@@ -47,7 +47,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        // return;
+        //. return;
 
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
         if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
@@ -183,26 +183,6 @@ class ThugStepMoveState : MultiMotionState
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         MultiMotionState::Exit(nextState);
     }
-
-    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
-    {
-        CharacterState::OnAnimationTrigger(animState, eventData);
-        StringHash name = eventData[NAME].GetStringHash();
-        if (name == FOOT_STEP) {
-            if (animState !is null && animState.weight > 0.5f)
-            {
-                String boneName = eventData[VALUE].GetString();
-                Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
-                if (boneNode !is null)
-                    OnFootStep(boneNode);
-            }
-        }
-    }
-
-    void OnFootStep(Node@ boneNode)
-    {
-        ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 2, 2.5f);
-    }
 };
 
 class ThugRunState : SingleMotionState
@@ -254,6 +234,55 @@ class ThugRunState : SingleMotionState
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
     }
 };
+
+class ThugTurnState : MultiMotionState
+{
+    float turnSpeed;
+    float endTime;
+
+    ThugTurnState(Character@ c)
+    {
+        super(c);
+        SetName("TurnState");
+        AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Right");
+        AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
+    }
+
+    void Update(float dt)
+    {
+        Motion@ motion = motions[selectIndex];
+        float t = ownner.animCtrl.GetTime(motion.animationName);
+        float characterDifference = Abs(ownner.ComputeAngleDiff());
+        if (t >= endTime || characterDifference < 5)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+        ownner.sceneNode.Yaw(turnSpeed * dt);
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        float diff = ownner.ComputeAngleDiff();
+        int index = 0;
+        if (diff < 0)
+            index = 1;
+        ownner.sceneNode.vars[ANIMATION_INDEX] = index;
+        endTime = motions[index].endTime;
+        turnSpeed = diff / endTime;
+        Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
+        ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        MultiMotionState::Exit(nextState);
+        ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+    }
+};
+
 
 class ThugCounterState : CharacterCounterState
 {
@@ -458,54 +487,6 @@ class ThugHitState : MultiMotionState
     bool CanReEntered()
     {
         return timeInState > 0.25f;
-    }
-};
-
-class ThugTurnState : MultiMotionState
-{
-    float turnSpeed;
-    float endTime;
-
-    ThugTurnState(Character@ c)
-    {
-        super(c);
-        SetName("TurnState");
-        AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Right");
-        AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
-    }
-
-    void Update(float dt)
-    {
-        Motion@ motion = motions[selectIndex];
-        float t = ownner.animCtrl.GetTime(motion.animationName);
-        float characterDifference = Abs(ownner.ComputeAngleDiff());
-        if (t >= endTime || characterDifference < 5)
-        {
-            ownner.CommonStateFinishedOnGroud();
-            return;
-        }
-        ownner.sceneNode.Yaw(turnSpeed * dt);
-        CharacterState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        float diff = ownner.ComputeAngleDiff();
-        int index = 0;
-        if (diff < 0)
-            index = 1;
-        ownner.sceneNode.vars[ANIMATION_INDEX] = index;
-        endTime = motions[index].endTime;
-        turnSpeed = diff / endTime;
-        Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
-        ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
-        MultiMotionState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        MultiMotionState::Exit(nextState);
-        ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
     }
 };
 

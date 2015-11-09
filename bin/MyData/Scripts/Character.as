@@ -6,7 +6,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.75;
 const float START_TO_ATTACK_DIST = 6;
 
 const int MAX_NUM_OF_ATTACK = 2;
@@ -77,14 +77,12 @@ class CharacterState : State
             if (comb_type == ATTACK_PUNCH)
             {
                 int i = RandomInt(6) + 1;
-                String name = "Sfx/punch_0" + i + ".ogg";
-                ownner.PlaySound(name);
+                ownner.PlaySound("Sfx/punch_0" + i + ".ogg");
             }
             else
             {
                 int i = RandomInt(6) + 1;
-                String name = "Sfx/kick_0" + i + ".ogg";
-                ownner.PlaySound(name);
+                ownner.PlaySound("Sfx/kick_0" + i + ".ogg");
             }
 
             Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
@@ -94,6 +92,22 @@ class CharacterState : State
         else if (name == PARTICLE) {
 
         }
+        else if (name == FOOT_STEP) {
+            if (animState !is null && animState.weight > 0.5f)
+            {
+                String boneName = eventData[VALUE].GetString();
+                Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+                if (boneNode !is null)
+                    OnFootStep(boneNode);
+            }
+        }
+    }
+
+    void OnFootStep(Node@ boneNode)
+    {
+        Vector3 pos = boneNode.worldPosition;
+        pos.y = 0.1f;
+        ownner.SpawnParticleEffect(pos, "Particle/SnowExplosionFade.xml", 2, 2.5f);
     }
 };
 
@@ -717,6 +731,9 @@ class Character : GameObject
 
     void FixedUpdate(float dt)
     {
+        if (hintTextSet)
+            return;
+
         Node@ hintNode = sceneNode.GetChild("HintNode", false);
         if (hintNode !is null)
         {

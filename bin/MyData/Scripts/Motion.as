@@ -397,10 +397,10 @@ class MotionManager
         CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, kMotion_R, 22, 0, false);
         CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, 0, true);
 
-        CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, kMotion_R, 16, 0, false);
-        CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, kMotion_R, 25, 0, false);
-        CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, kMotion_R, 14, 0, false);
-        CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
+        //CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, kMotion_R, 16, 0, false);
+        //CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, kMotion_R, 25, 0, false);
+        //CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, kMotion_R, 14, 0, false);
+        //CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
 
         // Evades
         CreateMotion("BM_Combat/Evade_Forward_01", kMotion_XZR, kMotion_ZR, -1, 0, false);
@@ -891,8 +891,46 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 21, COMBAT_SOUND, lArm);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 23, READY_TO_FIGHT);
 
-        AddStringAnimationTrigger("M_Combat_Movement/Walk_Forward", 19, FOOT_STEP, lFoot);
-        AddStringAnimationTrigger("M_Combat_Movement/Walk_Forward", 29, FOOT_STEP, rFoot);
+        preFix = "BM_Combat_Movement/";
+        AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, lFoot);
+
+        AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, lFoot);
+
+        AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "Turn_Right_180", 20, FOOT_STEP, lFoot);
+
+        AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, rFoot);
+
+        preFix = "TG_Combat/";
+        AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 2, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 13, FOOT_STEP, rFoot);
+
+        AddStringAnimationTrigger(preFix + "Step_Back", 15, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "Step_Back_Long", 9, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "Step_Back_Long", 19, FOOT_STEP, lFoot);
+
+        AddStringAnimationTrigger(preFix + "Step_Forward", 12, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "Step_Forward_Long", 10, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "Step_Forward_Long", 22, FOOT_STEP, rFoot);
+
+        AddStringAnimationTrigger(preFix + "Step_Left", 11, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "Step_Left_Long", 8, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "Step_Left_Long", 22, FOOT_STEP, rFoot);
+
+        AddStringAnimationTrigger(preFix + "Step_Right", 11, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "Step_Right_Long", 15, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "Step_Right_Long", 28, FOOT_STEP, lFoot);
+
+        AddStringAnimationTrigger(preFix + "135_Turn_Left", 8, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "135_Turn_Left", 20, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "135_Turn_Left", 31, FOOT_STEP, rFoot);
+
+        AddStringAnimationTrigger(preFix + "135_Turn_Right", 11, FOOT_STEP, rFoot);
+        AddStringAnimationTrigger(preFix + "135_Turn_Right", 24, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger(preFix + "135_Turn_Right", 39, FOOT_STEP, rFoot);
 
         Print("MotionManager::PostProcess time-cost=" + (time.systemTime - t) + " ms");
     }

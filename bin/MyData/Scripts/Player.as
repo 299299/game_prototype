@@ -125,26 +125,6 @@ class PlayerTurnState : MultiMotionState
         MultiMotionState::Exit(nextState);
         ownner.RemoveFlag(FLAGS_ATTACK);
     }
-
-    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
-    {
-        CharacterState::OnAnimationTrigger(animState, eventData);
-        StringHash name = eventData[NAME].GetStringHash();
-        if (name == FOOT_STEP) {
-            if (animState !is null && animState.weight > 0.5f)
-            {
-                String boneName = eventData[VALUE].GetString();
-                Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
-                if (boneNode !is null)
-                    OnFootStep(boneNode);
-            }
-        }
-    }
-
-    void OnFootStep(Node@ boneNode)
-    {
-        ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 2, 2.5f);
-    }
 };
 
 class PlayerMoveState : SingleMotionState
@@ -486,7 +466,9 @@ class PlayerAttackState : CharacterState
         {
             float t_diff = Abs(currentAttack.impactTime - t);
             if (t_diff < 0.25f)
-                ownner.sceneNode.scene.timeScale = 0.1f;
+                ownner.sceneNode.scene.timeScale = 0.25f;
+            else
+                ownner.sceneNode.scene.timeScale = 1.0f;
         }
 
         if (attackEnemy !is null)
@@ -590,7 +572,7 @@ class PlayerAttackState : CharacterState
         }
 
         @currentAttack = attacks[bestIndex];
-        //alignTime = Min(0.3f, currentAttack.impactTime);
+        //alignTime = Min(0.5f, currentAttack.impactTime);
         alignTime = currentAttack.impactTime;
 
         predictPosition = myPos + diff * toEnenmyDistance;
@@ -629,13 +611,23 @@ class PlayerAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         isInAir = false;
-        slowMotion = false;
+        weakAttack = cast<Player@>(ownner).combo < 3;
+        if (cast<Player@>(ownner).combo >= 3)
+        {
+            if (RandomInt(5) == 1)
+                slowMotion = true;
+        }
 
         if (attackEnemy !is null)
         {
             motionPosition = motion.GetFuturePosition(ownner, currentAttack.impactTime);
             movePerSec = ( predictPosition - motionPosition ) / alignTime;
             movePerSec.y = 0;
+        }
+        else
+        {
+            weakAttack = false;
+            slowMotion = false;
         }
 
         if (attack_timing_test)
@@ -746,7 +738,7 @@ class PlayerAttackState : CharacterState
         Vector3 diff = targetPosition - position;
         diff.y = 0;
         float distance = diff.length;
-        if (distance < ownner.attackRadius + COLLISION_RADIUS) {
+        if (distance < ownner.attackRadius + COLLISION_SAFE_DIST) {
             Vector3 dir = position - targetPosition;
             dir.y = 0;
             dir.Normalize();
@@ -782,19 +774,19 @@ class PlayerAttackState : CharacterState
         attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
         ownner.OnAttackSuccess();
-        weakAttack = cast<Player@>(ownner).combo < 3;
 
+        float freqScale = slowMotion ? 0.25f : 1.0f;
         if (currentAttack.type == ATTACK_PUNCH)
         {
             int i = RandomInt(6) + 1;
             String name = "Sfx/punch_0" + i + ".ogg";
-            ownner.PlaySound(name);
+            ownner.PlaySound(name, freqScale);
         }
         else
         {
             int i = RandomInt(6) + 1;
             String name = "Sfx/kick_0" + i + ".ogg";
-            ownner.PlaySound(name);
+            ownner.PlaySound(name, freqScale);
         }
     }
 };

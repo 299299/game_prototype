@@ -73,9 +73,10 @@ void CreateScene()
 
     Node@ cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
-    audio.listener = cameraNode.CreateComponent("SoundListener");
+    // audio.listener = cameraNode.CreateComponent("SoundListener");
 
     characterNode = scene_.GetChild("player", true);
+    audio.listener = characterNode.CreateComponent("SoundListener");
 
     Vector3 v_pos = characterNode.worldPosition;
     cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
