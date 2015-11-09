@@ -167,9 +167,7 @@ class MultiMotionState : CharacterState
 
     String GetDebugText()
     {
-        String r = CharacterState::GetDebugText();
-        r += "\ncurrent motion=" + motions[selectIndex].animationName;
-        return r;
+        return CharacterState::GetDebugText() + "current motion=" + motions[selectIndex].animationName + "\n";
     }
 
     void AddMotion(const String&in name)
@@ -316,9 +314,7 @@ class AnimationTestState : CharacterState
 
     String GetDebugText()
     {
-        String r = CharacterState::GetDebugText();
-        r += "\nanimation=" + animationName;
-        return r;
+        return CharacterState::GetDebugText() + " animation=" + animationName;
     }
 
     bool CanReEntered()

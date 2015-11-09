@@ -481,17 +481,18 @@ class PlayerAttackState : CharacterState
             return;
         }
 
-        float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
-        isInAir = y_diff > 0.5f;
-        if (!isInAir)
-            CheckInput();
-
+        CheckInput();
         CharacterState::Update(dt);
     }
 
 
     void CheckInput()
     {
+        float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
+        isInAir = y_diff > 0.5f;
+        if (isInAir)
+            return;
+
         if (state == ATTACK_STATE_AFTER_IMPACT)
         {
             if (gInput.IsAttackPressed())
@@ -693,9 +694,9 @@ class PlayerAttackState : CharacterState
 
     String GetDebugText()
     {
-        String r = CharacterState::GetDebugText();
-        r += "\ncurrentAttack=" + currentAttack.motion.animationName + " distToEnemy=" + targetDistance;
-        return r;
+        return CharacterState::GetDebugText() + "currentAttack=" + currentAttack.motion.animationName +
+                " distToEnemy=" + targetDistance +
+                " isInAir=" + isInAir + "\n";
     }
 
     void AttackCollisionCheck()
@@ -876,9 +877,7 @@ class PlayerCounterState : CharacterCounterState
 
     String GetDebugText()
     {
-        String r = CharacterCounterState::GetDebugText();
-        r += "\ncurrent motion=" + currentMotion.animationName;
-        return r;
+        return "current motion=" + currentMotion.animationName;
     }
 
     void DebugDraw(DebugRenderer@ debug)

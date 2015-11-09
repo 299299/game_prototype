@@ -161,7 +161,7 @@ class FSM
         if (currentState !is null)
             ret += currentState.GetDebugText();
         else
-            ret += "null";
-        return ret + "\n";
+            ret += "null\n";
+        return ret;
     }
 };
