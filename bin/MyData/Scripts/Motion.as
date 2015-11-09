@@ -891,6 +891,9 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 21, COMBAT_SOUND, lArm);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 23, READY_TO_FIGHT);
 
+        AddStringAnimationTrigger("M_Combat_Movement/Walk_Forward", 19, FOOT_STEP, lFoot);
+        AddStringAnimationTrigger("M_Combat_Movement/Walk_Forward", 29, FOOT_STEP, rFoot);
+
         Print("MotionManager::PostProcess time-cost=" + (time.systemTime - t) + " ms");
     }
 };

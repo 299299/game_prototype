@@ -183,6 +183,26 @@ class ThugStepMoveState : MultiMotionState
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         MultiMotionState::Exit(nextState);
     }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == FOOT_STEP) {
+            if (animState !is null && animState.weight > 0.5f)
+            {
+                String boneName = eventData[VALUE].GetString();
+                Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+                if (boneNode !is null)
+                    OnFootStep(boneNode);
+            }
+        }
+    }
+
+    void OnFootStep(Node@ boneNode)
+    {
+        ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 2, 2.5f);
+    }
 };
 
 class ThugRunState : SingleMotionState

@@ -125,6 +125,26 @@ class PlayerTurnState : MultiMotionState
         MultiMotionState::Exit(nextState);
         ownner.RemoveFlag(FLAGS_ATTACK);
     }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == FOOT_STEP) {
+            if (animState !is null && animState.weight > 0.5f)
+            {
+                String boneName = eventData[VALUE].GetString();
+                Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+                if (boneNode !is null)
+                    OnFootStep(boneNode);
+            }
+        }
+    }
+
+    void OnFootStep(Node@ boneNode)
+    {
+        ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 2, 2.5f);
+    }
 };
 
 class PlayerMoveState : SingleMotionState
@@ -242,6 +262,7 @@ class PlayerAttackState : CharacterState
     Node@                   attackCheckNode;
 
     bool                    weakAttack = true;
+    bool                    slowMotion = false;
     bool                    isInAir = false;
 
     PlayerAttackState(Character@ c)
@@ -461,6 +482,13 @@ class PlayerAttackState : CharacterState
 
         }
 
+        if (slowMotion)
+        {
+            float t_diff = Abs(currentAttack.impactTime - t);
+            if (t_diff < 0.25f)
+                ownner.sceneNode.scene.timeScale = 0.1f;
+        }
+
         if (attackEnemy !is null)
         {
             targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
@@ -601,6 +629,7 @@ class PlayerAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         isInAir = false;
+        slowMotion = false;
 
         if (attackEnemy !is null)
         {
@@ -647,6 +676,8 @@ class PlayerAttackState : CharacterState
         @attackEnemy = null;
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
+        if (slowMotion)
+            ownner.sceneNode.scene.timeScale = 1.0f;
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
@@ -696,7 +727,10 @@ class PlayerAttackState : CharacterState
     {
         return CharacterState::GetDebugText() + "currentAttack=" + currentAttack.motion.animationName +
                 " distToEnemy=" + targetDistance +
-                " isInAir=" + isInAir + "\n";
+                " isInAir=" + isInAir +
+                " weakAttack=" + weakAttack +
+                " slowMotion=" + slowMotion +
+                "\n";
     }
 
     void AttackCollisionCheck()

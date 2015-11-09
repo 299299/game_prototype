@@ -47,6 +47,7 @@ const StringHash COMBAT_SOUND("CombatSound");
 const StringHash PARTICLE("Particle");
 const StringHash DURATION("Duration");
 const StringHash READY_TO_FIGHT("ReadyToFight");
+const StringHash FOOT_STEP("FootStep");
 
 class CharacterState : State
 {
@@ -85,9 +86,13 @@ class CharacterState : State
                 String name = "Sfx/kick_0" + i + ".ogg";
                 ownner.PlaySound(name);
             }
+
+            Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+            if (boneNode !is null)
+                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
         }
         else if (name == PARTICLE) {
-            // ownner.SpawnParticleEffect()
+
         }
     }
 };
