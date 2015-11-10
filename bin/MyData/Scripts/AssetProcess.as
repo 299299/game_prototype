@@ -338,6 +338,7 @@ void AssetPostProcess()
     @rotateNode = null;
     @translateNode = null;
     @processNode = null;
+    processScene.Remove();
     @processScene = null;
 }
 

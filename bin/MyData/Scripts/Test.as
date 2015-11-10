@@ -15,16 +15,9 @@
 
 Scene@ scene_;
 bool drawDebug = true;
-
 float dragDistance = 0.0f;
-Node@ draggingNode;
-
 Node@ characterNode;
-
-Player@ player;
 bool slowMotion = false;
-int globalState = 0;
-float globalTime = 0;
 
 void Start()
 {
@@ -83,7 +76,7 @@ void CreateScene()
 
     if (!test_ragdoll)
     {
-        @player = cast<Player>(characterNode.CreateScriptObject(scriptFile, "Player"));
+        characterNode.CreateScriptObject(scriptFile, "Player");
     }
 
     Node@ thugNode = scene_.GetChild("thug", true);
@@ -258,7 +251,7 @@ void SubscribeToEvents()
     SubscribeToEvent("Update", "HandleUpdate");
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
     SubscribeToEvent("KeyDown", "HandleKeyDown");
-    SubscribeToEvent("MouseMove", "HandleMouseMove");
+    SubscribeToEvent("MouseButtonDown", "HandleMouseButtonDown");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -267,82 +260,18 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     gInput.Update(timeStep);
     gCameraMgr.Update(timeStep);
+    gGame.Update(timeStep);
 
-    if (input.mouseButtonPress[MOUSEB_RIGHT])
+    ExecuteCommand();
+
+    if (!engine.headless)
     {
-        IntVector2 pos = ui.cursorPosition;
-        // Check the cursor is visible and there is no UI element in front of the cursor
-        if (ui.GetElementAt(pos, true) !is null)
-            return;
+        String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+        debugText += gInput.GetDebugText();
 
-        Camera@ camera = gCameraMgr.GetCamera();
-        Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
-        float rayDistance = 100.0f;
-        PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP);
-        if (result.body !is null)
-        {
-            Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
-            draggingNode = scene_.CreateChild("DraggingNode");
-            draggingNode.scale = Vector3(0.1f, 0.1f, 0.1f);
-            StaticModel@ sphereObject = draggingNode.CreateComponent("StaticModel");
-            sphereObject.model = cache.GetResource("Model", "Models/Sphere.mdl");
-            RigidBody@ body = draggingNode.CreateComponent("RigidBody");
-            CollisionShape@ shape = draggingNode.CreateComponent("CollisionShape");
-            shape.SetSphere(1);
-            Constraint@ constraint = draggingNode.CreateComponent("Constraint");
-            constraint.constraintType = CONSTRAINT_POINT;
-            constraint.disableCollision = true;
-            constraint.otherBody = result.body;
-            dragDistance = result.distance;
-            draggingNode.worldPosition = result.position;
-        }
-    }
-    else {
-        if (!input.mouseButtonDown[MOUSEB_RIGHT]) {
-            if (draggingNode !is null) {
-                draggingNode.Remove();
-                draggingNode = null;
-            }
-        }
-    }
-
-    String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
-    debugText += gInput.GetDebugText();
-    if (player !is null)
-        debugText += player.GetDebugText();
-
-    if (engine.headless)
-    {
-        globalTime += timeStep;
-
-         if (globalTime > 0.5)
-        {
-            if (player !is null && globalState != 1)
-            {
-                globalState = 1;
-                String testName = "BM_Attack/Attack_Close_Forward_02";
-                player.TestAnimation(testName);
-            }
-        }
-
-        if (globalTime > 5)
-        {
-            if (globalState == 999)
-            {
-                @player = null;
-                characterNode.RemoveAllComponents();
-                gMotionMgr.Stop();
-                globalState = 2;
-            }
-        }
-
-        if (globalTime > 3.0)
-        {
-            // engine.Exit();
-        }
-    }
-    else
-    {
+        Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+        if (player !is null)
+            debugText += player.GetDebugText();
         Text@ text = ui.root.GetChild("debug", true);
         text.text = debugText;
     }
@@ -357,6 +286,8 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         return;
 
     debug.AddNode(scene_, 1.0f, false);
+
+    Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
     if (player !is null)
         player.DebugDraw(debug);
 
@@ -389,8 +320,6 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 {
     int key = eventData["Key"].GetInt();
-    gGame.OnKeyDown(key);
-
     if (key == KEY_ESC)
     {
          if (!console.visible)
@@ -467,7 +396,9 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             String testName = "TG_BM_Counter/Counter_Arm_Front_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
-            player.TestAnimation(testName);
+            Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+            if (player !is null)
+                player.TestAnimation(testName);
         }
         else if (key == 'F')
         {
@@ -484,17 +415,69 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
 }
 
+void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
+{
+    int button = eventData["Button"].GetInt();
+    if (button == MOUSEB_RIGHT)
+    {
+        IntVector2 pos = ui.cursorPosition;
+        // Check the cursor is visible and there is no UI element in front of the cursor
+        if (ui.GetElementAt(pos, true) !is null)
+            return;
+
+        Camera@ camera = gCameraMgr.GetCamera();
+        Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
+        float rayDistance = 100.0f;
+        PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP);
+        if (result.body !is null)
+        {
+            Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
+            Node@ draggingNode = scene_.CreateChild("DraggingNode");
+            draggingNode.scale = Vector3(0.1f, 0.1f, 0.1f);
+            StaticModel@ sphereObject = draggingNode.CreateComponent("StaticModel");
+            sphereObject.model = cache.GetResource("Model", "Models/Sphere.mdl");
+            RigidBody@ body = draggingNode.CreateComponent("RigidBody");
+            CollisionShape@ shape = draggingNode.CreateComponent("CollisionShape");
+            shape.SetSphere(1);
+            Constraint@ constraint = draggingNode.CreateComponent("Constraint");
+            constraint.constraintType = CONSTRAINT_POINT;
+            constraint.disableCollision = true;
+            constraint.otherBody = result.body;
+            dragDistance = result.distance;
+            draggingNode.worldPosition = result.position;
+        }
+    }
+}
+
+void HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
+{
+    int button = eventData["Button"].GetInt();
+    if (button == MOUSEB_RIGHT)
+    {
+        if (!input.mouseButtonDown[MOUSEB_RIGHT]) {
+            Node@ draggingNode = scene_.GetChild("DraggingNode", false);
+            if (draggingNode !is null) {
+                draggingNode.Remove();
+                draggingNode = null;
+            }
+        }
+    }
+    SubscribeToEvent("MouseMove", "HandleMouseMove");
+    SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
+}
+
 void HandleMouseMove(StringHash eventType, VariantMap& eventData)
 {
     int x = input.mousePosition.x;
     int y = input.mousePosition.y;
-    gGame.OnMouseMove(x, y);
-    // dragging physics object
+    Node@ draggingNode = scene_.GetChild("DraggingNode", false);
     if (draggingNode !is null) {
         Camera@ camera = gCameraMgr.GetCamera();
         Vector3 v(float(x) / graphics.width, float(y) / graphics.height, dragDistance);
         draggingNode.worldPosition = camera.ScreenToWorldPoint(v);
     }
+    UnsubscribeFromEvent("MouseMove");
+    UnsubscribeFromEvent("MouseButtonUp");
 }
 
 void DumpSkeletonNames(Node@ n)
@@ -512,3 +495,35 @@ void DumpSkeletonNames(Node@ n)
     }
 }
 
+
+void ExecuteCommand()
+{
+    String command = GetConsoleInput();
+    if(command.length == 0)
+        return;
+
+    Print("######### Console Input: [" + command + "] #############");
+
+    if (command == "dump")
+    {
+        String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+        debugText += gInput.GetDebugText();
+        Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+        if (player !is null)
+            debugText += player.GetDebugText();
+        Print(debugText);
+    }
+    else if (command == "anim")
+    {
+        String testName = "BM_Attack/Attack_Close_Forward_02";
+        Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+        if (player !is null)
+            player.TestAnimation(testName);
+    }
+    else if (command == "stop")
+    {
+        characterNode.Remove();
+        characterNode = null;
+        gMotionMgr.Stop();
+    }
+}
