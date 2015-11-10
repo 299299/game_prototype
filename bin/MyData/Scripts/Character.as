@@ -187,7 +187,7 @@ class MultiMotionState : CharacterState
 
     String GetDebugText()
     {
-        return CharacterState::GetDebugText() + "current motion=" + motions[selectIndex].animationName + "\n";
+        return " name=" + name + " timeInState=" + String(timeInState) + "current motion=" + motions[selectIndex].animationName + "\n";
     }
 
     void AddMotion(const String&in name)
@@ -334,7 +334,7 @@ class AnimationTestState : CharacterState
 
     String GetDebugText()
     {
-        return CharacterState::GetDebugText() + " animation=" + animationName + "\n";
+        return " name=" + name + " timeInState=" + String(timeInState) + " animation=" + animationName + "\n";
     }
 
     bool CanReEntered()
@@ -529,6 +529,8 @@ class CharacterGetUpState : MultiMotionState
 
 class Character : GameObject
 {
+    FSM@    stateMachine = FSM();
+
     Character@              target;
 
     Node@                   sceneNode;
@@ -583,7 +585,6 @@ class Character : GameObject
     void ObjectStart()
     {
         @sceneNode = node;
-        Print("NodeStart " + sceneNode.name);
         renderNode = sceneNode.children[0];
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
@@ -626,9 +627,11 @@ class Character : GameObject
 
     void Start()
     {
+        Print("============================== begin Object Start ==============================");
         uint startTime = time.systemTime;
         ObjectStart();
         Print(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
+        Print("============================== end Object Start ==============================");
     }
 
     void DelayedStart()
@@ -706,46 +709,9 @@ class Character : GameObject
         return debugText;
     }
 
-    void Update(float dt)
-    {
-        targetPositionApplied = false;
-        GameObject::Update(dt);
-
-        if (!targetPositionApplied)
-            return;
-
-        targetPositionApplied = false;
-        Vector3 curPosition = sceneNode.worldPosition;
-        Ray ray(curPosition, (targetPosition - curPosition).Normalized());
-        float rayLen = COLLISION_RADIUS + 0.5f;
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, rayLen, COLLISION_LAYER_LANDSCAPE);
-        if (result.body !is null)
-            return;
-        sceneNode.worldPosition = targetPosition;
-    }
-
     String GetHintText()
     {
         return "";
-    }
-
-    void FixedUpdate(float dt)
-    {
-        if (hintTextSet)
-            return;
-
-        Node@ hintNode = sceneNode.GetChild("HintNode", false);
-        if (hintNode !is null)
-        {
-            Vector3 pos = hipsNode.worldPosition;
-            hintNode.worldPosition = Vector3(pos.x, pos.y + 3, pos.z);
-
-            Text3D@ text = hintNode.GetComponent("Text3D");
-            if (text !is null)
-            {
-                text.text = GetHintText();
-            }
-        }
     }
 
     void MoveTo(const Vector3&in position, float dt)
@@ -815,7 +781,7 @@ class Character : GameObject
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        GameObject::DebugDraw(debug);
+        stateMachine.DebugDraw(debug);
         //debug.AddNode(sceneNode, 0.5f, false);
         //debug.AddNode(sceneNode.GetChild("Bip01", true), 0.25f, false);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(1, 1, 0), 32, false);
@@ -1013,6 +979,78 @@ class Character : GameObject
         if (comp is null)
             return;
         comp.enabled = bEnable;
+    }
+
+    State@ GetState()
+    {
+        return stateMachine.currentState;
+    }
+
+    bool IsInState(const String&in name)
+    {
+        return IsInState(StringHash(name));
+    }
+
+    bool IsInState(const StringHash&in nameHash)
+    {
+        State@ state = stateMachine.currentState;
+        if (state is null)
+            return false;
+        return state.nameHash == nameHash;
+    }
+
+    void ChangeState(const String&in state)
+    {
+        stateMachine.ChangeState(state);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        dt *= timeScale;
+        stateMachine.FixedUpdate(dt);
+
+        if (hintTextSet)
+        {
+            Node@ hintNode = sceneNode.GetChild("HintNode", false);
+            if (hintNode !is null)
+            {
+                Vector3 pos = hipsNode.worldPosition;
+                hintNode.worldPosition = Vector3(pos.x, pos.y + 3, pos.z);
+
+                Text3D@ text = hintNode.GetComponent("Text3D");
+                if (text !is null)
+                {
+                    text.text = GetHintText();
+                }
+            }
+        }
+
+        // Disappear when duration expired
+        if (duration >= 0)
+        {
+            duration -= dt;
+            if (duration <= 0)
+                node.Remove();
+        }
+    }
+
+    void Update(float dt)
+    {
+        dt *= timeScale;
+        targetPositionApplied = false;
+        GameObject::Update(dt);
+
+        if (!targetPositionApplied)
+            return;
+
+        targetPositionApplied = false;
+        Vector3 curPosition = sceneNode.worldPosition;
+        Ray ray(curPosition, (targetPosition - curPosition).Normalized());
+        float rayLen = COLLISION_RADIUS + 0.5f;
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, rayLen, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+            return;
+        sceneNode.worldPosition = targetPosition;
     }
 };
 

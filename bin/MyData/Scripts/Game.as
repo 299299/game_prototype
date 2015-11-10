@@ -24,6 +24,16 @@ class GameFSM : FSM
 {
     GameState@ gameState;
 
+    GameFSM()
+    {
+        Print("GameFSM()");
+    }
+
+    ~GameFSM()
+    {
+        Print("~GameFSM()");
+    }
+
     void Start()
     {
 

@@ -717,7 +717,8 @@ class PlayerAttackState : CharacterState
 
     String GetDebugText()
     {
-        return CharacterState::GetDebugText() + "currentAttack=" + currentAttack.motion.animationName +
+        return " name=" + name + " timeInState=" + String(timeInState) +
+                "currentAttack=" + currentAttack.motion.animationName +
                 " distToEnemy=" + targetDistance +
                 " isInAir=" + isInAir +
                 " weakAttack=" + weakAttack +

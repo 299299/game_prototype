@@ -269,7 +269,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
 
-        Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+        Player@ player = cast<Player@>(characterNode.scriptObject);
         if (player !is null)
             debugText += player.GetDebugText();
         Text@ text = ui.root.GetChild("debug", true);
@@ -287,7 +287,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 
     debug.AddNode(scene_, 1.0f, false);
 
-    Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+    Player@ player = cast<Player@>(characterNode.scriptObject);
     if (player !is null)
         player.DebugDraw(debug);
 
@@ -396,7 +396,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             String testName = "TG_BM_Counter/Counter_Arm_Front_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
-            Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+            Player@ player = cast<Player@>(characterNode.scriptObject);
             if (player !is null)
                 player.TestAnimation(testName);
         }
@@ -508,15 +508,20 @@ void ExecuteCommand()
     {
         String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
-        Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
-        if (player !is null)
-            debugText += player.GetDebugText();
+
+        Array<Node@> nodes = scene_.GetChildrenWithScript("GameObject", true);
+        for (uint i=0; i<nodes.length; ++i)
+        {
+            GameObject@ object = cast<GameObject@>(nodes[i].scriptObject);
+            if (object !is null)
+                debugText += object.GetDebugText();
+        }
         Print(debugText);
     }
     else if (command == "anim")
     {
         String testName = "BM_Attack/Attack_Close_Forward_02";
-        Player@ player = cast<Player@>(characterNode.GetScriptObject("Player"));
+        Player@ player = cast<Player@>(characterNode.scriptObject);
         if (player !is null)
             player.TestAnimation(testName);
     }
@@ -525,5 +530,23 @@ void ExecuteCommand()
         characterNode.Remove();
         characterNode = null;
         gMotionMgr.Stop();
+    }
+    else if (command == "attack")
+    {
+        Player@ player = cast<Player@>(characterNode.scriptObject);
+        if (player !is null)
+            player.Attack();
+    }
+    else if (command == "evade")
+    {
+        Player@ player = cast<Player@>(characterNode.scriptObject);
+        if (player !is null)
+            player.Evade();
+    }
+    else if (command == "counter")
+    {
+        Player@ player = cast<Player@>(characterNode.scriptObject);
+        if (player !is null)
+            player.Counter();
     }
 }
