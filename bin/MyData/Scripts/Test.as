@@ -66,10 +66,10 @@ void CreateScene()
 
     Node@ cameraNode = scene_.CreateChild("Camera");
     Camera@ cam = cameraNode.CreateComponent("Camera");
-    // audio.listener = cameraNode.CreateComponent("SoundListener");
+    audio.listener = cameraNode.CreateComponent("SoundListener");
 
     characterNode = scene_.GetChild("player", true);
-    audio.listener = characterNode.CreateComponent("SoundListener");
+    // audio.listener = characterNode.CreateComponent("SoundListener");
 
     Vector3 v_pos = characterNode.worldPosition;
     cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
@@ -446,6 +446,9 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
             dragDistance = result.distance;
             draggingNode.worldPosition = result.position;
         }
+
+        SubscribeToEvent("MouseMove", "HandleMouseMove");
+        SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
     }
 }
 
@@ -454,16 +457,15 @@ void HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
     int button = eventData["Button"].GetInt();
     if (button == MOUSEB_RIGHT)
     {
-        if (!input.mouseButtonDown[MOUSEB_RIGHT]) {
-            Node@ draggingNode = scene_.GetChild("DraggingNode", false);
-            if (draggingNode !is null) {
-                draggingNode.Remove();
-                draggingNode = null;
-            }
+        Node@ draggingNode = scene_.GetChild("DraggingNode", false);
+        if (draggingNode !is null) {
+            draggingNode.Remove();
+            draggingNode = null;
         }
+
+        UnsubscribeFromEvent("MouseMove");
+        UnsubscribeFromEvent("MouseButtonUp");
     }
-    SubscribeToEvent("MouseMove", "HandleMouseMove");
-    SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
 }
 
 void HandleMouseMove(StringHash eventType, VariantMap& eventData)
@@ -476,8 +478,6 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
         Vector3 v(float(x) / graphics.width, float(y) / graphics.height, dragDistance);
         draggingNode.worldPosition = camera.ScreenToWorldPoint(v);
     }
-    UnsubscribeFromEvent("MouseMove");
-    UnsubscribeFromEvent("MouseButtonUp");
 }
 
 void DumpSkeletonNames(Node@ n)

@@ -1002,9 +1002,14 @@ class Character : GameObject
         return state.nameHash == nameHash;
     }
 
-    void ChangeState(const String&in state)
+    void ChangeState(const String&in name)
     {
-        stateMachine.ChangeState(state);
+        stateMachine.ChangeState(name);
+    }
+
+    State@ FindState(const String&in name)
+    {
+        return stateMachine.FindState(name);
     }
 
     void FixedUpdate(float dt)
@@ -1012,7 +1017,7 @@ class Character : GameObject
         dt *= timeScale;
         stateMachine.FixedUpdate(dt);
 
-        if (hintTextSet)
+        if (!hintTextSet)
         {
             Node@ hintNode = sceneNode.GetChild("HintNode", false);
             if (hintNode !is null)
@@ -1041,7 +1046,7 @@ class Character : GameObject
     {
         dt *= timeScale;
         targetPositionApplied = false;
-        GameObject::Update(dt);
+        stateMachine.Update(dt);
 
         if (!targetPositionApplied)
             return;

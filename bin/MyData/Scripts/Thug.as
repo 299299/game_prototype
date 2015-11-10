@@ -51,55 +51,12 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        if (engine.headless)
+        // if (engine.headless)
             return;
-
-        float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
-        {
-            ownner.ChangeState("StepMoveState");
-            return;
-        }
 
         if (timeInState > thinkTime)
         {
-            float diff = Abs(ownner.ComputeAngleDiff());
-            if (diff > MIN_TURN_ANGLE)
-            {
-                ownner.ChangeState("TurnState");
-                return;
-            }
-
-            if (ownner.CanAttack())
-            {
-                int rand_i = RandomInt(2);
-                Print("rand_i=" + rand_i + " dist=" + dist);
-
-                if (rand_i == 0)
-                {
-                    float attack_dist = KICK_DIST + 0.5f;
-                    if (dist <= attack_dist)
-                    {
-                        Print("do attack because dist <= " + attack_dist);
-                        if (ownner.Attack())
-                            return;
-                    }
-                }
-
-                if (!ownner.HasFlag(FLAGS_NO_MOVE))
-                {
-                    // try to move to player
-                    String nextState = "StepMoveState";
-                    float run_dist = STEP_MAX_DIST + 0.5f;
-                    if (dist >= run_dist)
-                    {
-                        Print("do run because dist >= " + run_dist);
-                       nextState = "RunState";
-                    }
-                    ownner.ChangeState(nextState);
-                }
-            }
-
+            OnThinkTimeOut();
             timeInState = 0.0f;
             thinkTime = Random(0.5f, 3.0f);
         }
@@ -109,19 +66,89 @@ class ThugStandState : CharacterState
 
     void FixedUpdate(float dt)
     {
+        CollisionAvoidance(dt);
+        CharacterState::FixedUpdate(dt);
+    }
+
+    void CollisionAvoidance(float dt)
+    {
+        float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
+        if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
+        {
+            ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
+            node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+            ownner.ChangeState("StepMoveState");
+            return;
+        }
+
         checkAvoidanceTimer += dt;
         if (checkAvoidanceTimer >= checkAvoidanceTime)
         {
             checkAvoidanceTimer -= checkAvoidanceTime;
-            Vector3 v(0, 0, 0);
-            if (Seperate(v))
-            {
-                float angle = Atan2(v.x, v.z);
-                Print("Seperate=" + v.ToString() + " angle=" + angle);
+            int dir = -1;
+
+            Thug@ thug = cast<Thug@>(ownner);
+            if (thug.GetSperateDirection(dir) == 0)
                 return;
+
+            Print("CollisionAvoidance index=" + dir);
+            node.vars[ANIMATION_INDEX] = dir;
+            ownner.ChangeState("StepMoveState");
+        }
+    }
+
+    void OnThinkTimeOut()
+    {
+        float diff = Abs(ownner.ComputeAngleDiff());
+        if (diff > MIN_TURN_ANGLE)
+        {
+            // I should always turn to look at player.
+            ownner.ChangeState("TurnState");
+            return;
+        }
+
+        float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
+        if (ownner.CanAttack())
+        {
+            float attack_dist = KICK_DIST + 0.5f;
+            if (dist <= attack_dist)
+            {
+                Print("do attack because dist <= " + attack_dist);
+                if (ownner.Attack())
+                    return;
+            }
+
+            if (!ownner.HasFlag(FLAGS_NO_MOVE))
+                return;
+
+            int rand_i = RandomInt(5);
+            Print("rand_i=" + rand_i + " dist=" + dist);
+
+            // move
+            if (rand_i > 0)
+            {
+                // try to move to player
+                rand_i = RandomInt(2);
+                String nextState = "StepMoveState";
+                float run_dist = STEP_MAX_DIST + 0.5f;
+                if (dist >= run_dist || rand_i == 1)
+                    nextState = "RunState";
+                else
+                {
+                    ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
+                    node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+                }
+                ownner.ChangeState(nextState);
+            }
+            else // not move
+            {
+                // .....
             }
         }
-        CharacterState::FixedUpdate(dt);
+        else
+        {
+
+        }
     }
 };
 
@@ -196,7 +223,6 @@ class ThugStepMoveState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        ownner.sceneNode.vars[ANIMATION_INDEX] = GetStepMoveIndex();
         attackRange = Random(0.0, 6.0);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         MultiMotionState::Enter(lastState);
@@ -320,7 +346,8 @@ class ThugCounterState : CharacterCounterState
     {
         if (state == 1)
         {
-            if (currentMotion.Move(ownner, dt)) {
+            if (currentMotion.Move(ownner, dt))
+            {
                 ownner.CommonStateFinishedOnGroud();
                 return;
             }
@@ -370,7 +397,8 @@ class ThugAttackState : CharacterState
 
         // TODO ....
         bool finished = motion.Move(ownner, dt);
-        if (finished) {
+        if (finished)
+        {
             ownner.CommonStateFinishedOnGroud();
             return;
         }
@@ -590,6 +618,17 @@ class Thug : Enemy
         Motion@ stepMotion = gMotionMgr.FindMotion("TG_Combat/Step_Forward_Long");
         STEP_MAX_DIST = stepMotion.endDistance;
         Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
+
+        Node@ collsionNode = sceneNode.CreateChild("Collision");
+        CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
+        shape.SetCapsule(2.0f, 5.0f, Vector3(0.0f, 2.5f, 0.0f));
+        RigidBody@ body = collsionNode.CreateComponent("RigidBody");
+        body.collisionLayer = COLLISION_LAYER_CHARACTER;
+        body.collisionMask = COLLISION_LAYER_CHARACTER;
+        body.mass = 0.0f;
+        //body.trigger = true;
+        body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
+        body.collisionEventMode = COLLISION_ALWAYS;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -684,6 +723,57 @@ class Thug : Enemy
     String GetHintText()
     {
         return sceneNode.name + " state=" + stateMachine.currentState.name + " distToPlayer=" + GetTargetDistance();
+    }
+
+    int GetSperateDirection(int& outDir)
+    {
+        Node@ _node = sceneNode.GetChild("Collision");
+        if (_node is null)
+            return 0;
+
+        RigidBody@ body = _node.GetComponent("RigidBody");
+        if (body is null)
+            return 0;
+
+        body.Activate();
+
+        int len = 0;
+        Vector3 myPos = sceneNode.worldPosition;
+        Array<RigidBody@>@ neighbors = body.collidingBodies;
+        float totalAngle = 0;
+
+        Print("neighbors len=" + neighbors.length);
+
+        for (uint i=0; i<neighbors.length; ++i)
+        {
+            Print("neighbors[" + i + "] = " + neighbors[i].node.name);
+
+            Character@ object = cast<Character@>(body.node.scriptObject);
+            StringHash nameHash = object.GetState().nameHash;
+            if (nameHash == RUN_STATE || nameHash == STEPMOVE_STATE)
+                continue;
+
+            ++len;
+
+            float angle = object.ComputeAngleDiff(sceneNode);
+            totalAngle += angle;
+        }
+
+        if (len == 0)
+            return 0;
+
+        totalAngle /= len;
+        outDir = DirectionMapToIndex(totalAngle, 4);
+        return len;
+    }
+
+    void FixedUpdate(float dt)
+    {
+        Node@ collsionNode = sceneNode.GetChild("Collision", false);
+        RigidBody@ body = collsionNode.GetComponent("RigidBody");
+        body.Activate();
+
+        Enemy::FixedUpdate(dt);
     }
 };
 
