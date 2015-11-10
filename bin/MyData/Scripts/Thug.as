@@ -13,7 +13,9 @@ float STEP_MAX_DIST = 0.0f;
 class ThugStandState : CharacterState
 {
     Array<String>   animations;
-    float thinkTime;
+    float           thinkTime;
+    float           checkAvoidanceTimer = 0.0f;
+    float           checkAvoidanceTime = 0.1f;
 
     ThugStandState(Character@ c)
     {
@@ -36,6 +38,8 @@ class ThugStandState : CharacterState
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         thinkTime = Random(0.5f, 3.0f);
+        checkAvoidanceTime = Random(0.1f, 0.2f);
+        checkAvoidanceTimer = 0.0f;
         CharacterState::Enter(lastState);
     }
 
@@ -102,6 +106,23 @@ class ThugStandState : CharacterState
 
         CharacterState::Update(dt);
     }
+
+    void FixedUpdate(float dt)
+    {
+        checkAvoidanceTimer += dt;
+        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        {
+            checkAvoidanceTimer -= checkAvoidanceTime;
+            Vector3 v(0, 0, 0);
+            if (Seperate(v))
+            {
+                float angle = Atan2(v.x, v.z);
+                Print("Seperate=" + v.ToString() + " angle=" + angle);
+                return;
+            }
+        }
+        CharacterState::FixedUpdate(dt);
+    }
 };
 
 class ThugStepMoveState : MultiMotionState
@@ -151,7 +172,7 @@ class ThugStepMoveState : MultiMotionState
         CharacterState::Update(dt);
     }
 
-    void Enter(State@ lastState)
+    int GetStepMoveIndex()
     {
         int index = 0;
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
@@ -169,13 +190,15 @@ class ThugStepMoveState : MultiMotionState
                 index += 3;
         }
 
-        Print("ThugStepMoveState-> index = " + index);
+        Print("ThugStepMoveState->GetStepMoveIndex()=" + index);
+        return index;
+    }
 
-        //TODO OTHER left/back/right
-        ownner.sceneNode.vars[ANIMATION_INDEX] = index;
+    void Enter(State@ lastState)
+    {
+        ownner.sceneNode.vars[ANIMATION_INDEX] = GetStepMoveIndex();
         attackRange = Random(0.0, 6.0);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
-
         MultiMotionState::Enter(lastState);
     }
 
@@ -572,8 +595,7 @@ class Thug : Enemy
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        float targetAngle = GetTargetAngle();
-        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), 2.0f);
+        DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1, 1, 0), 2.0f);
     }
 
     bool CanAttack()

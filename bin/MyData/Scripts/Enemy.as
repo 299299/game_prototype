@@ -6,6 +6,8 @@
 
 class Enemy : Character
 {
+    float requiredDistanceFromNeighbors = 1.25f;
+
     void Start()
     {
         Character::Start();
@@ -43,6 +45,39 @@ class Enemy : Character
     {
         return Character::GetDebugText() +  "flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
     }
+
+    //Moves the NPC/AI/Whatever away from its neighbors that are too close.
+    bool Seperate(Vector3&out ReturnVector)
+    {
+        Node@ _node = sceneNode.GetChild("Collision");
+        if (_node is null)
+            return false;
+
+        RigidBody@ body = _node.GetComponent("RigidBody");
+        if (body is null)
+            return false;
+
+        Array<RigidBody@>@ neighbors = body.collidingBodies;
+        int averageCounter = 0;
+
+        if (neighbors.empty)
+            return false;
+
+        Vector3 myPos = sceneNode.worldPosition;
+        for(int i = 0; i<neighbors.length; i++)
+        {
+            Vector3 otherPos = neighbors[i].node.worldPosition;
+            Vector3 diff = myPos - otherPos;
+            diff.y = 0;
+            if( diff.length < requiredDistanceFromNeighbors ) //If the neighbor is too close.
+            {
+                averageCounter += 1;
+                ReturnVector += diff;
+            }
+        }
+        ReturnVector = ReturnVector / averageCounter; //Average the vector.
+        return true;
+    }
 };
 
 class EnemyManager : ScriptObject
@@ -67,6 +102,7 @@ class EnemyManager : ScriptObject
 
     void Stop()
     {
+        enemyList.Clear();
         gameScene = null;
     }
 

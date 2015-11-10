@@ -67,32 +67,12 @@ class CharacterState : State
     {
         //Print("ownner.name= " + ownner.GetName() + "name=" + eventData[NAME].GetStringHash().ToString() + " name1=" + RAGDOLL_START.ToString());
         StringHash name = eventData[NAME].GetStringHash();
-        if (name == RAGDOLL_START) {
+        if (name == RAGDOLL_START)
             ownner.ChangeState("RagdollState");
-        }
         else if (name == COMBAT_SOUND)
+            OnCombatSound(eventData[VALUE].GetString());
+        else if (name == FOOT_STEP)
         {
-            String boneName = eventData[VALUE].GetString();
-            int comb_type = GetAttackType(boneName);
-            if (comb_type == ATTACK_PUNCH)
-            {
-                int i = RandomInt(6) + 1;
-                ownner.PlaySound("Sfx/punch_0" + i + ".ogg");
-            }
-            else
-            {
-                int i = RandomInt(6) + 1;
-                ownner.PlaySound("Sfx/kick_0" + i + ".ogg");
-            }
-
-            Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
-            if (boneNode !is null)
-                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
-        }
-        else if (name == PARTICLE) {
-
-        }
-        else if (name == FOOT_STEP) {
             if (animState !is null && animState.weight > 0.5f)
             {
                 String boneName = eventData[VALUE].GetString();
@@ -101,6 +81,10 @@ class CharacterState : State
                     OnFootStep(boneNode);
             }
         }
+        else if (name == PARTICLE)
+        {
+
+        }
     }
 
     void OnFootStep(Node@ boneNode)
@@ -108,6 +92,25 @@ class CharacterState : State
         Vector3 pos = boneNode.worldPosition;
         pos.y = 0.1f;
         ownner.SpawnParticleEffect(pos, "Particle/SnowExplosionFade.xml", 2, 2.5f);
+    }
+
+    void OnCombatSound(const String& boneName)
+    {
+        int comb_type = GetAttackType(boneName);
+        if (comb_type == ATTACK_PUNCH)
+        {
+            int i = RandomInt(6) + 1;
+            ownner.PlaySound("Sfx/punch_0" + i + ".ogg");
+        }
+        else
+        {
+            int i = RandomInt(6) + 1;
+            ownner.PlaySound("Sfx/kick_0" + i + ".ogg");
+        }
+
+        Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+        if (boneNode !is null)
+            ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
     }
 };
 
