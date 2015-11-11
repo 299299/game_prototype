@@ -76,7 +76,7 @@ class ThugStandState : CharacterState
         if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-            node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+            ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
             ownner.ChangeState("StepMoveState");
             return;
         }
@@ -92,7 +92,7 @@ class ThugStandState : CharacterState
                 return;
 
             Print("CollisionAvoidance index=" + dir);
-            node.vars[ANIMATION_INDEX] = dir;
+            ownner.sceneNode.vars[ANIMATION_INDEX] = dir;
             ownner.ChangeState("StepMoveState");
         }
     }
@@ -136,7 +136,7 @@ class ThugStandState : CharacterState
                 else
                 {
                     ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-                    node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+                    ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
                 }
                 ownner.ChangeState(nextState);
             }
@@ -625,8 +625,9 @@ class Thug : Enemy
         RigidBody@ body = collsionNode.CreateComponent("RigidBody");
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         body.collisionMask = COLLISION_LAYER_CHARACTER;
-        body.mass = 0.0f;
-        //body.trigger = true;
+        body.mass = 10.0f;
+        body.trigger = true;
+        body.kinematic = true;
         body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
         body.collisionEventMode = COLLISION_ALWAYS;
     }
@@ -735,44 +736,47 @@ class Thug : Enemy
         if (body is null)
             return 0;
 
-        body.Activate();
-
         int len = 0;
         Vector3 myPos = sceneNode.worldPosition;
         Array<RigidBody@>@ neighbors = body.collidingBodies;
         float totalAngle = 0;
 
-        Print("neighbors len=" + neighbors.length);
-
         for (uint i=0; i<neighbors.length; ++i)
         {
-            Print("neighbors[" + i + "] = " + neighbors[i].node.name);
+            Node@ _node = neighbors[i].node.parent;
+            if (_node is null)
+                continue;
 
-            Character@ object = cast<Character@>(body.node.scriptObject);
+            Print("neighbors[" + i + "] = " + _node.name);
+
+            Character@ object = cast<Character@>(_node.scriptObject);
             StringHash nameHash = object.GetState().nameHash;
             if (nameHash == RUN_STATE || nameHash == STEPMOVE_STATE)
                 continue;
 
             ++len;
 
-            float angle = object.ComputeAngleDiff(sceneNode);
+            float angle = ComputeAngleDiff(object.sceneNode);
+            if (angle < 0)
+                angle += 180;
+            else
+                angle = 180 - angle;
+
+            Print("neighbors angle=" + angle);
             totalAngle += angle;
         }
 
         if (len == 0)
             return 0;
 
-        totalAngle /= len;
-        outDir = DirectionMapToIndex(totalAngle, 4);
+        outDir = DirectionMapToIndex(totalAngle / len, 4);
+        Print("GetSperateDirection() totalAngle=" + totalAngle + "outDir=" + outDir + " len=" + len);
+
         return len;
     }
 
     void FixedUpdate(float dt)
     {
-        Node@ collsionNode = sceneNode.GetChild("Collision", false);
-        RigidBody@ body = collsionNode.GetComponent("RigidBody");
-        body.Activate();
-
         Enemy::FixedUpdate(dt);
     }
 };

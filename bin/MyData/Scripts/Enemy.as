@@ -137,6 +137,17 @@ class EnemyManager : ScriptObject
         return ret;
     }
 
+    int GetNumOfEnemyHasFlag(int flag)
+    {
+        int ret = 0;
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            if (enemyList[i].HasFlag(flag))
+                ++ret;
+        }
+        return ret;
+    }
+
     void DebugDraw(DebugRenderer@ debug)
     {
         for (uint i=0; i<enemyList.length; ++i)
@@ -151,7 +162,7 @@ class EnemyManager : ScriptObject
         thugId ++;
         XMLFile@ xml = cache.GetResource("XMLFile", "Objects/thug.xml");
         Node@ thugNode = gameScene.InstantiateXML(xml, position, rotation);
-        thugNode.name = name;
+        thugNode.name = thugName;
         thugNode.CreateScriptObject(scriptFile, "Thug");
         thugNode.CreateScriptObject(scriptFile, "Ragdoll");
         return thugNode;

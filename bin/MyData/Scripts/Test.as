@@ -549,4 +549,12 @@ void ExecuteCommand()
         if (player !is null)
             player.Counter();
     }
+    else if (command == "avoid")
+    {
+        EnemyManager@ em = cast<EnemyManager@>(scene_.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return;
+        em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
+        em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
+    }
 }
