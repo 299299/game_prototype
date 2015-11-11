@@ -34,7 +34,7 @@ void Start()
 
     audio.masterGain[SOUND_MASTER] = 0.5f;
     audio.masterGain[SOUND_MUSIC] = 0.75f;
-    audio.masterGain[SOUND_EFFECT] = 0.5f;
+    audio.masterGain[SOUND_EFFECT] = 0.75f;
 
     CreateScene();
 
@@ -200,29 +200,6 @@ void ShootSphere(Scene@ _scene)
     body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * 10.0f;
 }
 
-bool Raycast(float maxDistance, Vector3& hitPos, Drawable@& hitDrawable)
-{
-    hitDrawable = null;
-
-    IntVector2 pos = ui.cursorPosition;
-    // Check the cursor is visible and there is no UI element in front of the cursor
-    if (ui.GetElementAt(pos, true) !is null)
-        return false;
-
-    Camera@ camera = gCameraMgr.GetCamera();
-    Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
-    // Pick only geometry objects, not eg. zones or lights, only get the first (closest) hit
-    // Note the convenience accessor to scene's Octree component
-    RayQueryResult result = scene_.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY);
-    if (result.drawable !is null)
-    {
-        hitPos = result.position;
-        hitDrawable = result.drawable;
-        return true;
-    }
-
-    return false;
-}
 
 void CreateEnemy(Scene@ _scene)
 {
@@ -230,20 +207,22 @@ void CreateEnemy(Scene@ _scene)
     if (em is null)
         return;
 
-    Vector3 hitPos;
-    Drawable@ hitDrawable;
-
-    if (Raycast(250.0f, hitPos, hitDrawable))
-    {
-         // Print("Raycast hit ---> " + hitDrawable.node.name);
-
-        if (hitDrawable.node.name != "floor")
+    IntVector2 pos = ui.cursorPosition;
+    // Check the cursor is visible and there is no UI element in front of the cursor
+    if (ui.GetElementAt(pos, true) !is null)
             return;
 
-        hitPos.y = 0;
+    Camera@ camera = gCameraMgr.GetCamera();
+    Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
+    float rayDistance = 100.0f;
+    PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_LANDSCAPE);
+    if (result.body is null)
+        return;
 
-        em.CreateEnemy(hitPos, Quaternion(0, Random(360), 0), "Thug");
-    }
+    if (result.body.node.name != "floor")
+        return;
+
+    em.CreateEnemy(result.position, Quaternion(0, Random(360), 0), "Thug");
 }
 
 void SubscribeToEvents()
@@ -352,6 +331,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         ShootBox(scene_);
     else if (key == KEY_3)
         CreateEnemy(scene_);
+    else if (key == KEY_4)
+    {
+        CameraController@ cc = gCameraMgr.currentController;
+        if (cc.nameHash == StringHash("Debug"))
+            gCameraMgr.SetCameraController("ThirdPerson");
+        else
+            gCameraMgr.SetCameraController("Debug");
+    }
 
     if (test_ragdoll)
     {
@@ -393,7 +380,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_Getup/GetUp_Back";
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
-            String testName = "TG_BM_Counter/Counter_Arm_Front_01";
+            String testName = "BM_Movement/Evade_Right_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             Player@ player = cast<Player@>(characterNode.scriptObject);

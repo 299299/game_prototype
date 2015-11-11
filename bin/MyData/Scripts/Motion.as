@@ -403,10 +403,10 @@ class MotionManager
         //CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
 
         // Evades
-        CreateMotion("BM_Combat/Evade_Forward_01", kMotion_XZR, kMotion_ZR, -1, 0, false);
-        CreateMotion("BM_Combat/Evade_Right_01", kMotion_XZR, kMotion_XR, -1, 0, false, true);
-        CreateMotion("BM_Combat/Evade_Back_01", kMotion_XZR, kMotion_ZR, -1, 0, false);
-        CreateMotion("BM_Combat/Evade_Left_01", kMotion_XZR, kMotion_XR, -1, 0, false, true);
+        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZR, kMotion_XZR);
+        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZR, kMotion_XZR);
+        CreateMotion("BM_Movement/Evade_Left_01", kMotion_XZR, kMotion_XZR);
+        CreateMotion("BM_Movement/Evade_Right_01", kMotion_XZR, kMotion_XZR);
 
         CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
 
@@ -733,6 +733,9 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Counter_Arm_Back_05", 26, COMBAT_SOUND, rArm);
         AddAnimationTrigger(preFix + "Counter_Arm_Back_05", 28, READY_TO_FIGHT);
 
+        AddStringAnimationTrigger(preFix + "Counter_Arm_Back_06", 50, COMBAT_SOUND, rHand);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_06", 52, READY_TO_FIGHT);
+
         AddStringAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 11, COMBAT_SOUND, rArm);
         AddStringAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 25, COMBAT_SOUND, rArm);
         AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 27, READY_TO_FIGHT);
@@ -865,7 +868,8 @@ class MotionManager
         AddAnimationTrigger(preFix + "Counter_Leg_Front_05", 40, READY_TO_FIGHT);
 
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_06", 6, COMBAT_SOUND, rHand);
-        AddAnimationTrigger(preFix + "Counter_Leg_Front_05", 8, READY_TO_FIGHT);
+        AddStringAnimationTrigger(preFix + "Counter_Leg_Front_06", 18, COMBAT_SOUND, lHand);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_06", 20, READY_TO_FIGHT);
 
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_07", 8, COMBAT_SOUND, rHand);
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_07", 42, COMBAT_SOUND, rFoot);

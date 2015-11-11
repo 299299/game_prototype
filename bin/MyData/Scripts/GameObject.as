@@ -12,6 +12,7 @@ const int FLAGS_ATTACK  = (1 << 0);
 const int FLAGS_COUNTER = (1 << 1);
 const int FLAGS_REDIRECTED = (1 << 2);
 const int FLAGS_NO_MOVE = (1 << 3);
+const int FLAGS_MOVING = (1 << 4);
 
 const int COLLISION_LAYER_CHARACTER = (1 << 0);
 const int COLLISION_LAYER_LANDSCAPE = (1 << 1);
@@ -105,9 +106,9 @@ class GameObject : ScriptObject
 
     }
 
-    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
+    bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
-
+        return true;
     }
 
     Node@ GetNode()

@@ -55,13 +55,13 @@ class DebugFPSCameraController: CameraController
 
         cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
 
-        if (input.keyDown['W'])
+        if (input.keyDown[KEY_UP])
             cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * speed * dt);
-        if (input.keyDown['S'])
+        if (input.keyDown[KEY_DOWN])
             cameraNode.Translate(Vector3(0.0f, 0.0f, -1.0f) * speed * dt);
-        if (input.keyDown['A'])
+        if (input.keyDown[KEY_LEFT])
             cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * speed * dt);
-        if (input.keyDown['D'])
+        if (input.keyDown[KEY_RIGHT])
             cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * speed * dt);
     }
 };
@@ -69,7 +69,10 @@ class DebugFPSCameraController: CameraController
 
 class ThirdPersonCameraController : CameraController
 {
-    Vector3 offset = Vector3(0, 2.5f, -6.0f);
+    Vector3 cameraTargert;
+    float   cameraSpeed = 2.5f;
+    float   cameraHeight = 5.0f;
+    float   cameraDistance = 15.0f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -78,7 +81,21 @@ class ThirdPersonCameraController : CameraController
 
     void Update(float dt)
     {
+        Node@ _node = cameraNode.scene.GetChild("player");
+        if (_node is null)
+            return;
 
+        Vector3 target_pos = _node.worldPosition;
+        target_pos.y += cameraHeight;
+        Quaternion q(gInput.m_rightStickY, gInput.m_rightStickX, 0);
+        Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
+
+        Vector3 cameraPos = cameraNode.worldPosition;
+        cameraPos = cameraPos.Lerp(pos, dt * cameraSpeed);
+        cameraNode.worldPosition = cameraPos;
+
+        cameraTargert = cameraTargert.Lerp(target_pos, dt * cameraSpeed);
+        cameraNode.LookAt(cameraTargert);
     }
 };
 
@@ -101,7 +118,10 @@ class CameraManager
 
     void SetCameraController(const String&in name)
     {
-        @currentController = FindCameraController(StringHash(name));
+        CameraController@ cc = FindCameraController(StringHash(name));
+        if (cc is null)
+            return;
+        @currentController = cc;
     }
 
     void Start(Node@ n)

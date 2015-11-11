@@ -23,6 +23,7 @@ class GameInput
 
     float m_mouseX;
     float m_mouseY;
+    float mouseSensitivity = 0.125f;
 
     int   m_leftStickHoldFrames;
 
@@ -84,13 +85,13 @@ class GameInput
         }
         else
         {
-            if (input.keyDown[KEY_UP])
+            if (input.keyDown['W'])
                 ret.y += 1.0f;
-            if (input.keyDown[KEY_DOWN])
+            if (input.keyDown['S'])
                 ret.y -= 1.0f;
-            if (input.keyDown[KEY_RIGHT])
+            if (input.keyDown['D'])
                 ret.x += 1.0f;
-            if (input.keyDown[KEY_LEFT])
+            if (input.keyDown['A'])
                 ret.x -= 1.0f;
         }
         return ret;
@@ -110,13 +111,10 @@ class GameInput
         }
         else
         {
-            m_mouseX += input.mouseMoveX;
-            m_mouseY += input.mouseMoveY;
-            if (graphics !is null)
-            {
-                ret.x = m_mouseX / graphics.width;
-                ret.y = m_mouseY / graphics.height;
-            }
+            m_mouseX += mouseSensitivity * input.mouseMoveX;
+            m_mouseY += mouseSensitivity * input.mouseMoveY;
+            ret.x = m_mouseX;
+            ret.y = m_mouseY;
         }
         return ret;
     }

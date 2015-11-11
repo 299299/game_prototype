@@ -167,13 +167,13 @@ class PlayerMoveState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        ownner.AddFlag(FLAGS_ATTACK);
+        ownner.AddFlag(FLAGS_ATTACK | FLAGS_MOVING);
     }
 
     void Exit(State@ nextState)
     {
         SingleMotionState::Exit(nextState);
-        ownner.RemoveFlag(FLAGS_ATTACK);
+        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_MOVING);
     }
 };
 
@@ -183,8 +183,10 @@ class PlayerEvadeState : MultiMotionState
     {
         super(c);
         SetName("EvadeState");
-        AddMotion("BM_Combat/Evade_Forward_01");
-        AddMotion("BM_Combat/Evade_Back_01");
+        AddMotion("BM_Movement/Evade_Forward_01");
+        AddMotion("BM_Movement/Evade_Right_01");
+        AddMotion("BM_Movement/Evade_Back_01");
+        AddMotion("BM_Movement/Evade_Left_01");
     }
 };
 
@@ -613,10 +615,9 @@ class PlayerAttackState : CharacterState
         isInAir = false;
         weakAttack = cast<Player@>(ownner).combo < 3;
         if (cast<Player@>(ownner).combo >= 3)
-        {
-            if (RandomInt(5) == 1)
-                slowMotion = true;
-        }
+            slowMotion = (RandomInt(10) == 1);
+        else
+            slowMotion = false;
 
         if (attackEnemy !is null)
         {
@@ -743,7 +744,9 @@ class PlayerAttackState : CharacterState
             Vector3 dir = position - targetPosition;
             dir.y = 0;
             dir.Normalize();
-            target.OnDamage(ownner, position, dir, ownner.attackDamage);
+            bool b = target.OnDamage(ownner, position, dir, ownner.attackDamage);
+            if (!b)
+                return;
             ownner.OnAttackSuccess();
         }
     }
@@ -1052,9 +1055,11 @@ class Player : Character
         }
         else
         {
-            if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+            // if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
             {
-                sceneNode.vars[ANIMATION_INDEX] = RadialSelectAnimation(2);
+                int index = RadialSelectAnimation(4);
+                Print("Evade Index = " + index);
+                sceneNode.vars[ANIMATION_INDEX] = index;
                 stateMachine.ChangeState("EvadeState");
             }
         }
@@ -1076,11 +1081,11 @@ class Player : Character
         return gInput.m_leftStickAngle + gCameraMgr.GetCameraAngle();
     }
 
-    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
+    bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
         if (!CanBeAttacked()) {
             Print("OnDamage failed because I can no be attacked " + GetName());
-            return;
+            return false;
         }
 
         combo = 0;
@@ -1112,6 +1117,7 @@ class Player : Character
             sceneNode.vars[ANIMATION_INDEX] = index;
             stateMachine.ChangeState("HitState");
         }
+        return true;
     }
 
     void OnAttackSuccess()

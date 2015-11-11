@@ -20,6 +20,7 @@ const StringHash GETUP_STATE("GetUpState");
 const StringHash STEPMOVE_STATE("StepMoveState");
 const StringHash RUN_STATE("RunState");
 const StringHash HIT_STATE("HitState");
+const StringHash COMBAT_IDLE_STATE("CombatIdleState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
@@ -897,9 +898,10 @@ class Character : GameObject
         animCtrl.PlayExclusive(ragdollPoseAnim.name, LAYER_MOVE, false, 0.0f);
     }
 
-    void OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
+    bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
         stateMachine.ChangeState("HitState");
+        return true;
     }
 
     Node@ GetNode()
