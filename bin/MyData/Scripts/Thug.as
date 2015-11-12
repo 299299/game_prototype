@@ -784,13 +784,13 @@ class Thug : Enemy
 
         for (uint i=0; i<neighbors.length; ++i)
         {
-            Node@ _node = neighbors[i].node.parent;
-            if (_node is null)
+            Node@ n_node = neighbors[i].node.parent;
+            if (n_node is null)
                 continue;
 
-            //Print("neighbors[" + i + "] = " + _node.name);
+            //Print("neighbors[" + i + "] = " + n_node.name);
 
-            Character@ object = cast<Character@>(_node.scriptObject);
+            Character@ object = cast<Character@>(n_node.scriptObject);
             if (object.HasFlag(FLAGS_MOVING))
                 continue;
 

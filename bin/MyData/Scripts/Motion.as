@@ -133,7 +133,9 @@ class Motion
     int                     motionFlag;
     int                     originFlag;
     int                     allowMotion;
+
     bool                    cutRotation;
+    bool                    processed = false;
 
     Motion()
     {
@@ -168,6 +170,8 @@ class Motion
 
     void Process()
     {
+        if (processed)
+            return;
         uint startTime = time.systemTime;
         this.animationName = GetAnimationName(this.name);
         this.animation = cache.GetResource("Animation", animationName);
@@ -178,6 +182,7 @@ class Motion
         Vector4 v = motionKeys[0];
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
         endDistance = Vector3(diff.x, diff.y, diff.z).length;
+        processed = true;
         Print("Motion " + name + " endDistance="  + endDistance + " timeCost=" + String(time.systemTime - startTime) + " ms startFromOrigin=" + startFromOrigin.ToString());
     }
 
@@ -357,7 +362,10 @@ class AttackMotion
 class MotionManager
 {
     Array<Motion@>          motions;
-    uint                    memoryUse;
+    uint                    assetProcessTime;
+    int                     memoryUse;
+    int                     processedMotions;
+    int                     processTimePerframe = 16; // ms
 
     MotionManager()
     {
@@ -384,8 +392,7 @@ class MotionManager
 
     void Start()
     {
-        uint t = time.systemTime;
-
+        assetProcessTime = time.systemTime;
         AssetPreProcess();
 
         //========================================================================
@@ -587,14 +594,6 @@ class MotionManager
         CreateMotion(preFix + "Double_Counter_2ThugsG_02");
         CreateMotion(preFix + "Double_Counter_2ThugsH_01");
         CreateMotion(preFix + "Double_Counter_2ThugsH_02");
-
-        AssetPostProcess();
-
-        PostProcess();
-
-        Print("************************************************************************************************");
-        Print("Motion Process time-cost=" + String(time.systemTime - t) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
-        Print("************************************************************************************************");
     }
 
     void Stop()
@@ -613,8 +612,31 @@ class MotionManager
         motion.looped = loop;
         motion.endFrame = endFrame;
         motions.Push(motion);
-        motion.Process();
         return motion;
+    }
+
+    bool Update(float dt)
+    {
+        if (processedMotions >= int(motions.length))
+            return true;
+        uint t = time.systemTime;
+        int len = int(motions.length);
+        for (int i=processedMotions; i<len; ++i)
+        {
+            motions[i].Process();
+            ++processedMotions;
+            uint time_diff = time.systemTime - t;
+            if (time_diff >= processTimePerframe)
+                break;
+        }
+        Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions);
+        return processedMotions >= int(motions.length);
+    }
+
+    void ProcessAll()
+    {
+        for (uint i=0; i<motions.length; ++i)
+            motions[i].Process();
     }
 
     Motion@ CreateCustomMotion(Motion@ refMotion, const String&in name)
@@ -676,6 +698,15 @@ class MotionManager
         CreateMotion(counter_prefix + "Counter_Leg_Front_Weak");
         CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01");
         CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02");
+    }
+
+    void Finish()
+    {
+        PostProcess();
+        AssetPostProcess();
+        Print("************************************************************************************************");
+        Print("Motion Process time-cost=" + String(time.systemTime - assetProcessTime) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
+        Print("************************************************************************************************");
     }
 
     void PostProcess()

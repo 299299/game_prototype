@@ -150,6 +150,8 @@ class CameraManager
 
     Camera@ GetCamera()
     {
+        if (cameraNode is null)
+            return null;
         return cameraNode.GetComponent("Camera");
     }
 

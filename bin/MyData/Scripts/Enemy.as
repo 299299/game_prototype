@@ -11,8 +11,8 @@ class Enemy : Character
     void Start()
     {
         Character::Start();
-        @target = cast<Character@>(scene.GetChild("player", false).GetScriptObject("Player"));
-        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        @target = cast<Character@>(scene.GetChild("player", false).scriptObject);
+        EnemyManager@ em = cast<EnemyManager@>(scene.GetScriptObject("EnemyManager"));
         if (em !is null)
             em.RegisterEnemy(this);
     }
@@ -21,7 +21,7 @@ class Enemy : Character
     {
         Character::Stop();
 
-        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager@>(scene.GetScriptObject("EnemyManager"));
         if (em !is null)
             em.UnRegisterEnemy(this);
     }
@@ -33,11 +33,15 @@ class Enemy : Character
 
     float GetTargetAngle()
     {
+        if (target is null)
+            return 0;
         return GetTargetAngle(target.sceneNode);
     }
 
     float GetTargetDistance()
     {
+        if (target is null)
+            return 0;
         return GetTargetDistance(target.sceneNode);
     }
 
@@ -64,7 +68,7 @@ class Enemy : Character
             return false;
 
         Vector3 myPos = sceneNode.worldPosition;
-        for(int i = 0; i<neighbors.length; i++)
+        for(uint i = 0; i<neighbors.length; i++)
         {
             Vector3 otherPos = neighbors[i].node.worldPosition;
             Vector3 diff = myPos - otherPos;

@@ -2,6 +2,7 @@
 #include "Scripts/Game.as"
 #include "Scripts/AssetProcess.as"
 #include "Scripts/Motion.as"
+#include "Scripts/PhysicsDrag.as"
 #include "Scripts/Input.as"
 #include "Scripts/FSM.as"
 #include "Scripts/Ragdoll.as"
@@ -13,38 +14,31 @@
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
 
-Scene@ scene_;
 bool drawDebug = true;
-float dragDistance = 0.0f;
-Node@ characterNode;
-bool slowMotion = false;
+
+String PLAYER_NAME = "player";
+String CAMERA_NAME = "camera";
 
 void Start()
 {
     cache.autoReloadResources = true;
-
-    if (!test_ragdoll)
-        gMotionMgr.Start();
+    SetRandomSeed(time.systemTime);
 
     if (!engine.headless)
     {
         SetWindowTitleAndIcon();
         CreateConsoleAndDebugHud();
+        CreateUI();
     }
+
+    gGame.Start();
+    gGame.ChangeState("LoadingState");
 
     audio.masterGain[SOUND_MASTER] = 0.5f;
     audio.masterGain[SOUND_MUSIC] = 0.75f;
     audio.masterGain[SOUND_EFFECT] = 0.75f;
 
-    CreateScene();
-
-    if (!engine.headless) {
-        CreateUI();
-        SetupViewport();
-    }
-
     SubscribeToEvents();
-    SetRandomSeed(time.systemTime);
 }
 
 void Stop()
@@ -52,60 +46,52 @@ void Stop()
     Print("Test Stop");
     gMotionMgr.Stop();
     ui.Clear();
-    scene_.Remove();
-    scene_ = null;
 }
 
 void CreateScene()
 {
-    scene_ = Scene();
+    Scene@ scene_ = Scene();
     scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
     scene_.CreateScriptObject(scriptFile, "EnemyManager");
     script.defaultScene = scene_;
     script.defaultScriptFile = scriptFile;
 
-    Node@ cameraNode = scene_.CreateChild("Camera");
+    Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
     Camera@ cam = cameraNode.CreateComponent("Camera");
     audio.listener = cameraNode.CreateComponent("SoundListener");
 
-    characterNode = scene_.GetChild("player", true);
+    Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
     // audio.listener = characterNode.CreateComponent("SoundListener");
+    characterNode.CreateScriptObject(scriptFile, "Player");
+    characterNode.CreateScriptObject(scriptFile, "Ragdoll");
+
+
+    Node@ thugNode = scene_.GetChild("thug", true);
+    thugNode.CreateScriptObject(scriptFile, "Thug");
+    thugNode.CreateScriptObject(scriptFile, "Ragdoll");
+
+    Node@ thugNode2 = scene_.GetChild("thug2", true);
+    thugNode2.CreateScriptObject(scriptFile, "Thug");
+    thugNode2.CreateScriptObject(scriptFile, "Ragdoll");
 
     Vector3 v_pos = characterNode.worldPosition;
     cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
-
-    if (!test_ragdoll)
-    {
-        characterNode.CreateScriptObject(scriptFile, "Player");
-    }
-
-    Node@ thugNode = scene_.GetChild("thug", true);
-    if (!test_ragdoll)
-        thugNode.CreateScriptObject(scriptFile, "Thug");
-
-    Node@ thugNode2 = scene_.GetChild("thug2", true);
-    if (!test_ragdoll)
-        thugNode2.CreateScriptObject(scriptFile, "Thug");
-
-    characterNode.CreateScriptObject(scriptFile, "Ragdoll");
-    thugNode.CreateScriptObject(scriptFile, "Ragdoll");
-    thugNode2.CreateScriptObject(scriptFile, "Ragdoll");
-
     cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
 
     gCameraMgr.Start(cameraNode);
     gCameraMgr.SetCameraController("Debug");
-
-    if (test_ragdoll)
-    {
-        VariantMap data;
-        data[DATA] = RAGDOLL_START;
-        characterNode.children[0].SendEvent("AnimationTrigger", data);
-    }
-
     //Animation@ anim = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
     //AnimationTrack@ track = anim.tracks["Bip"];
     //DumpSkeletonNames(characterNode);
+}
+
+void SetupViewport()
+{
+    if (engine.headless)
+        return;
+    Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
+    renderer.viewports[0] = viewport;
+    graphics.windowTitle = "Test";
 }
 
 void SetWindowTitleAndIcon()
@@ -143,7 +129,6 @@ void CreateUI()
     // Set starting position of the cursor at the rendering window center
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
     // input.SetMouseVisible(true);
-
     Text@ text = ui.root.CreateChild("Text", "debug");
     text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 14);
     text.horizontalAlignment = HA_LEFT;
@@ -151,13 +136,6 @@ void CreateUI()
     text.SetPosition(0, 0);
     text.color = Color(0, 0, 1);
     text.textEffect = TE_SHADOW;
-}
-
-void SetupViewport()
-{
-    Viewport@ viewport = Viewport(scene_, gCameraMgr.GetCamera());
-    renderer.viewports[0] = viewport;
-    graphics.windowTitle = "Test";
 }
 
 void ShootBox(Scene@ _scene)
@@ -203,7 +181,11 @@ void ShootSphere(Scene@ _scene)
 
 void CreateEnemy(Scene@ _scene)
 {
-    EnemyManager@ em = cast<EnemyManager@>(scene_.GetScriptObject("EnemyManager"));
+    Scene@ scene_ = script.defaultScene;
+    if (scene_ is null)
+        return;
+
+    EnemyManager@ em = GetEnemyMgr();
     if (em is null)
         return;
 
@@ -212,7 +194,10 @@ void CreateEnemy(Scene@ _scene)
     if (ui.GetElementAt(pos, true) !is null)
             return;
 
-    Camera@ camera = gCameraMgr.GetCamera();
+    Camera@ camera = GetCamera();
+    if (camera is null)
+        return;
+
     Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
     float rayDistance = 100.0f;
     PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_LANDSCAPE);
@@ -223,6 +208,36 @@ void CreateEnemy(Scene@ _scene)
         return;
 
     em.CreateEnemy(result.position, Quaternion(0, Random(360), 0), "Thug");
+}
+
+Player@ GetPlayer()
+{
+    Scene@ scene_ = script.defaultScene;
+    if (scene_ is null)
+        return null;
+    Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
+    if (characterNode is null)
+        return null;
+    return cast<Player>(characterNode.scriptObject);
+}
+
+Camera@ GetCamera()
+{
+    Scene@ scene_ = script.defaultScene;
+    if (scene_ is null)
+        return null;
+    Node@ cameraNode = scene_.GetChild(CAMERA_NAME, true);
+    if (cameraNode is null)
+        return null;
+    return cameraNode.GetComponent("Camera");
+}
+
+EnemyManager@ GetEnemyMgr()
+{
+    Scene@ scene_ = script.defaultScene;
+    if (scene_ is null)
+        return null;
+    return cast<EnemyManager>(scene_.GetScriptObject("EnemyManager"));
 }
 
 void SubscribeToEvents()
@@ -243,61 +258,49 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     ExecuteCommand();
 
-    if (!engine.headless)
-    {
-        String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
-        debugText += gInput.GetDebugText();
+    if (engine.headless)
+        return;
 
-        Player@ player = cast<Player@>(characterNode.scriptObject);
-        if (player !is null)
-            debugText += player.GetDebugText();
-        Text@ text = ui.root.GetChild("debug", true);
-        text.text = debugText;
-    }
+    if (script.defaultScene is null)
+        return;
+
+    String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+    debugText += gInput.GetDebugText();
+
+    Player@ player = GetPlayer();
+    if (player !is null)
+        debugText += player.GetDebugText();
+    Text@ text = ui.root.GetChild("debug", true);
+    text.text = debugText;
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
-    DebugRenderer@ debug = scene_.debugRenderer;
-    gGame.PostRenderUpdate();
-
     if (!drawDebug)
         return;
 
+    Scene@ scene_ = script.defaultScene;
+    if (scene_ is null)
+        return;
+
+    DebugRenderer@ debug = scene_.debugRenderer;
+    gGame.PostRenderUpdate();
     debug.AddNode(scene_, 1.0f, false);
 
-    Player@ player = cast<Player@>(characterNode.scriptObject);
+    Player@ player = GetPlayer();
     if (player !is null)
         player.DebugDraw(debug);
 
-    EnemyManager@ em = cast<EnemyManager@>(scene_.GetScriptObject("EnemyManager"));
+    EnemyManager@ em = GetEnemyMgr();
     if (em !is null)
         em.DebugDraw(debug);
 
     scene_.physicsWorld.DrawDebugGeometry(false);
-
-    //AnimatedModel@ model = characterNode.children[0].GetComponent("AnimatedModel");
-    //Skeleton@ skel = model.skeleton;
-    //debug.AddSkeleton(skel, Color(1, 0, 0), false);
-
-    //debug.AddNode(characterNode, 0.25, false);
-    //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Translation", true), 0.25, false);
-    //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Rotation", true), 0.25, false);
-    //debug.AddNode(characterNode.GetChild("Bip01_Pelvis", true), 0.25, false);
-
-    //debug.AddNode(characterNode.GetChild("Bip01_$AssimpFbx$_Scaling", true), 0.25, false);
-    //debug.AddNode(characterNode.GetChild("Bip01_Spine1", true), 0.25, false);
-
-    //Vector3 v1 = characterNode.GetChild("Bip01_L_Foot", true).worldPosition;
-    //Vector3 v2 = characterNode.GetChild("Bip01_R_Foot", true).worldPosition;
-    //debug.AddCross((v1+v2)*0.5f, 0.5f, Color(1,0,0), false);
-    //Vector3 v3 = characterNode.GetChild("Bip01_Head", true).worldPosition;
-    //debug.AddCross(v3, 0.5f, Color(1,0,0), false);
-    //debug.AddLine((v1+v2)*0.5f, v3, Color(1,0,0), false);
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 {
+    Scene@ scene_ = script.defaultScene;
     int key = eventData["Key"].GetInt();
     if (key == KEY_ESC)
     {
@@ -314,16 +317,18 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         console.Toggle();
     else if (key == KEY_F4)
     {
-        Node@ cameraNode = scene_.GetChild("Camera");
-        Camera@ cam = cameraNode.GetComponent("Camera");
-        cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
+        Camera@ cam = GetCamera();
+        if (cam !is null)
+            cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
     }
     else if (key == 'R')
         scene_.updateEnabled = !scene_.updateEnabled;
     else if (key == 'T')
     {
-        slowMotion = !slowMotion;
-        scene_.timeScale = slowMotion ? 0.35f : 1.0f;
+        if (scene_.timeScale >= 0.999f)
+            scene_.timeScale = 0.25f;
+        else
+            scene_.timeScale = 1.0f;
     }
     else if (key == KEY_1)
         ShootSphere(scene_);
@@ -342,9 +347,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 
     if (test_ragdoll)
     {
+
         if (key == 'E')
         {
-            Node@ renderNode = characterNode.children[0];
+            Player@ player = GetPlayer();
+            if (player is null)
+                return;
+
+            Node@ renderNode = player.GetNode().children[0];
             SendAnimationTriger(renderNode, RAGDOLL_STOP);
 
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
@@ -360,15 +370,19 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             state.weight = 1.0f;
             ctl.PlayExclusive(anim.name, LAYER_MOVE, false, 0.0f);
 
-            int ragdoll_direction = characterNode.vars[GETUP_INDEX].GetInt();
+            int ragdoll_direction = player.GetNode().vars[GETUP_INDEX].GetInt();
             String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
             PlayAnimation(ctl, GetAnimationName(name1), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
         }
         else if (key == 'F')
         {
-            Node@ renderNode = characterNode.children[0];
+            Player@ player = GetPlayer();
+            if (player is null)
+                return;
+
+            Node@ renderNode = player.GetNode().children[0];
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
-            int ragdoll_direction = characterNode.vars[GETUP_INDEX].GetInt();
+            int ragdoll_direction = player.GetNode().vars[GETUP_INDEX].GetInt();
             String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
             ctl.SetSpeed(GetAnimationName(name1), 1.0);
         }
@@ -383,7 +397,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             String testName = "BM_Movement/Evade_Right_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
-            Player@ player = cast<Player@>(characterNode.scriptObject);
+            Player@ player = GetPlayer();
             if (player !is null)
                 player.TestAnimation(testName);
         }
@@ -412,28 +426,7 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
         if (ui.GetElementAt(pos, true) !is null)
             return;
 
-        Camera@ camera = gCameraMgr.GetCamera();
-        Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
-        float rayDistance = 100.0f;
-        PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP);
-        if (result.body !is null)
-        {
-            Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
-            Node@ draggingNode = scene_.CreateChild("DraggingNode");
-            draggingNode.scale = Vector3(0.1f, 0.1f, 0.1f);
-            StaticModel@ sphereObject = draggingNode.CreateComponent("StaticModel");
-            sphereObject.model = cache.GetResource("Model", "Models/Sphere.mdl");
-            RigidBody@ body = draggingNode.CreateComponent("RigidBody");
-            CollisionShape@ shape = draggingNode.CreateComponent("CollisionShape");
-            shape.SetSphere(1);
-            Constraint@ constraint = draggingNode.CreateComponent("Constraint");
-            constraint.constraintType = CONSTRAINT_POINT;
-            constraint.disableCollision = true;
-            constraint.otherBody = result.body;
-            dragDistance = result.distance;
-            draggingNode.worldPosition = result.position;
-        }
-
+        CreateDrag(float(pos.x), float(pos.y));
         SubscribeToEvent("MouseMove", "HandleMouseMove");
         SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
     }
@@ -444,12 +437,7 @@ void HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
     int button = eventData["Button"].GetInt();
     if (button == MOUSEB_RIGHT)
     {
-        Node@ draggingNode = scene_.GetChild("DraggingNode", false);
-        if (draggingNode !is null) {
-            draggingNode.Remove();
-            draggingNode = null;
-        }
-
+        DestroyDrag();
         UnsubscribeFromEvent("MouseMove");
         UnsubscribeFromEvent("MouseButtonUp");
     }
@@ -459,12 +447,7 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
 {
     int x = input.mousePosition.x;
     int y = input.mousePosition.y;
-    Node@ draggingNode = scene_.GetChild("DraggingNode", false);
-    if (draggingNode !is null) {
-        Camera@ camera = gCameraMgr.GetCamera();
-        Vector3 v(float(x) / graphics.width, float(y) / graphics.height, dragDistance);
-        draggingNode.worldPosition = camera.ScreenToWorldPoint(v);
-    }
+    MoveDrag(float(x), float(y));
 }
 
 void DumpSkeletonNames(Node@ n)
@@ -496,49 +479,55 @@ void ExecuteCommand()
         String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
 
-        Array<Node@> nodes = scene_.GetChildrenWithScript("GameObject", true);
-        for (uint i=0; i<nodes.length; ++i)
+        Scene@ scene_ = script.defaultScene;
+        if (scene_ !is null)
         {
-            GameObject@ object = cast<GameObject@>(nodes[i].scriptObject);
-            if (object !is null)
-                debugText += object.GetDebugText();
+            Array<Node@> nodes = scene_.GetChildrenWithScript("GameObject", true);
+            for (uint i=0; i<nodes.length; ++i)
+            {
+                GameObject@ object = cast<GameObject@>(nodes[i].scriptObject);
+                if (object !is null)
+                    debugText += object.GetDebugText();
+            }
         }
         Print(debugText);
     }
     else if (command == "anim")
     {
         String testName = "BM_Attack/Attack_Close_Forward_02";
-        Player@ player = cast<Player@>(characterNode.scriptObject);
+        Player@ player = GetPlayer();
         if (player !is null)
             player.TestAnimation(testName);
     }
     else if (command == "stop")
     {
-        characterNode.Remove();
-        characterNode = null;
         gMotionMgr.Stop();
+        Scene@ scene_ = script.defaultScene;
+        if (scene_ is null)
+            return;
+        scene_.Remove();
     }
     else if (command == "attack")
     {
-        Player@ player = cast<Player@>(characterNode.scriptObject);
+        Player@ player = GetPlayer();
         if (player !is null)
             player.Attack();
     }
     else if (command == "evade")
     {
-        Player@ player = cast<Player@>(characterNode.scriptObject);
+        Player@ player = GetPlayer();
         if (player !is null)
             player.Evade();
     }
     else if (command == "counter")
     {
-        Player@ player = cast<Player@>(characterNode.scriptObject);
+        Player@ player = GetPlayer();
         if (player !is null)
             player.Counter();
     }
     else if (command == "avoid")
     {
-        EnemyManager@ em = cast<EnemyManager@>(scene_.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em is null)
             return;
         em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
