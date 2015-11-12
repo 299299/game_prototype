@@ -347,8 +347,17 @@ class AnimationTestState : CharacterState
     }
 };
 
+enum CounterSubState
+{
+    COUNTER_NONE,
+    COUNTER_ALIGNING,
+    COUNTER_WAITING,
+    COUNTER_ANIMATING,
+};
+
 class CharacterCounterState : CharacterState
 {
+    Array<Motion@>      doubleCounterMotions;
     Array<Motion@>      frontArmMotions;
     Array<Motion@>      frontLegMotions;
     Array<Motion@>      backArmMotions;
@@ -356,17 +365,58 @@ class CharacterCounterState : CharacterState
     Motion@             currentMotion;
     int                 state; // sub state
 
+    float               alignTime = 0.2f;
+    Vector3             movePerSec;
+    float               yawPerSec;
+    Vector3             targetPosition;
+
     CharacterCounterState(Character@ c)
     {
         super(c);
         SetName("CounterState");
     }
 
+    void Enter(State@ lastState)
+    {
+        state = COUNTER_NONE;
+    }
+
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
         @currentMotion = null;
-        state = 0;
+        state = COUNTER_NONE;
+    }
+
+    void AddDoubleCounterMotions(const String&in preFix, bool is_two)
+    {
+        if (is_two)
+        {
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH_02"));
+        }
+        else
+        {
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH"));
+        }
     }
 
     void AddCounterMotions(const String&in preFix)
@@ -422,8 +472,8 @@ class CharacterCounterState : CharacterState
     void StartCounterMotion()
     {
         Print(ownner.GetName() + " start counter motion " + currentMotion.animationName);
+        ChangeSubState(COUNTER_ANIMATING);
         currentMotion.Start(ownner);
-        state = 1;
     }
 
     Array<Motion@>@ GetCounterMotions(int attackType, bool isBack)
@@ -444,6 +494,38 @@ class CharacterCounterState : CharacterState
             Vector3 startDiff = other_motion.startFromOrigin - motion.startFromOrigin;
             Print("couter-motion " + motion.name + " diff-len=" + startDiff.length);
         }
+    }
+
+    void Update(float dt)
+    {
+        if (state == COUNTER_ALIGNING) {
+            ownner.sceneNode.Yaw(yawPerSec * dt);
+            ownner.MoveTo(ownner.sceneNode.worldPosition + movePerSec * dt, dt);
+            if (timeInState >= alignTime)
+                OnAlignTimeOut();
+        }
+        else if (state== COUNTER_ANIMATING)
+        {
+             if (currentMotion.Move(ownner, dt))
+             {
+                ownner.CommonStateFinishedOnGroud();
+                return;
+             }
+        }
+        CharacterState::Update(dt);
+    }
+
+    void OnAlignTimeOut()
+    {
+
+    }
+
+    void ChangeSubState(int newState)
+    {
+        if (state == newState)
+            return;
+
+        Print(ownner.GetName() + " CounterState ChangeSubState from " + state + " to " + newState);
     }
 
     void Dump()

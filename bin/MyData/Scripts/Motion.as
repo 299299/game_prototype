@@ -519,7 +519,15 @@ class MotionManager
         CreateMotion(preFix + "Attack_Far_Left_03");
         CreateMotion(preFix + "Attack_Far_Left_04");
 
-        AddCounterMotions("BM_TG_Counter/");
+        preFix = "BM_TG_Counter/";
+        AddCounterMotions(preFix);
+        CreateMotion(preFix + "Double_Counter_2ThugsA");
+        CreateMotion(preFix + "Double_Counter_2ThugsB");
+        CreateMotion(preFix + "Double_Counter_2ThugsD");
+        CreateMotion(preFix + "Double_Counter_2ThugsE");
+        CreateMotion(preFix + "Double_Counter_2ThugsF");
+        CreateMotion(preFix + "Double_Counter_2ThugsG");
+        CreateMotion(preFix + "Double_Counter_2ThugsH");
 
         //========================================================================
         // THUG MOTIONS
@@ -563,7 +571,22 @@ class MotionManager
         CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
         CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
-        AddCounterMotions("TG_BM_Counter/");
+        preFix = "TG_BM_Counter/";
+        AddCounterMotions(preFix);
+        CreateMotion(preFix + "Double_Counter_2ThugsA_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsA_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsB_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsB_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsD_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsD_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsE_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsE_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsF_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsF_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsG_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsG_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsH_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsH_02");
 
         AssetPostProcess();
 

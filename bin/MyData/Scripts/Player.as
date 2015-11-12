@@ -7,7 +7,7 @@
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
 const float MAX_COUNTER_DIST = 6.0f;
-const float MAX_ATTACK_DIST = 30.0f;
+const float MAX_ATTACK_DIST = 25.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -798,19 +798,15 @@ class PlayerAttackState : CharacterState
 
 class PlayerCounterState : CharacterCounterState
 {
-    Enemy@              counterEnemy;
-    float               alignTime = 0.3f;
-    Vector3             movePerSec;
-    float               yawPerSec;
-    Vector3             targetPosition;
-    bool                bCheckInput = false;
-    bool                isInAir = false;
+    Array<Enemy@>   counterEnemies;
+    bool            bCheckInput = false;
+    bool            isInAir = false;
 
     PlayerCounterState(Character@ c)
     {
         super(c);
         AddCounterMotions("BM_TG_Counter/");
-        // Dump();
+        AddDoubleCounterMotions("BM_TG_Counter/", false);
     }
 
     ~PlayerCounterState()
@@ -819,98 +815,122 @@ class PlayerCounterState : CharacterCounterState
 
     void Update(float dt)
     {
-        Node@ _node = ownner.sceneNode;
-        if (state == 0) {
-
-            _node.Yaw(yawPerSec * dt);
-            ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
-
-            if (timeInState >= alignTime) {
-                ownner.sceneNode.worldPosition = targetPosition;
-                StartCounterMotion();
-                CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.GetState());
-                enemyCounterState.StartCounterMotion();
-            }
-        }
-        else {
-             if (currentMotion.Move(ownner, dt)) {
-                ownner.CommonStateFinishedOnGroud();
-                return;
-             }
-        }
-
         CheckInput();
         CharacterCounterState::Update(dt);
     }
 
     void Enter(State@ lastState)
     {
-        Node@ enemyNode = counterEnemy.sceneNode;
+        CharacterCounterState::Enter(lastState);
+
         Node@ myNode = ownner.sceneNode;
-
-        state = 0;
-        float dAngle = ownner.ComputeAngleDiff(enemyNode);
-        bool isBack = false;
-        if (Abs(dAngle) > 90)
-            isBack = true;
-        Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack);
-
-        int attackType = enemyNode.vars[ATTACK_TYPE].GetInt();
-
-        CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
-        if (enemyCounterState is null)
-            return;
-
         Vector3 myPos = myNode.worldPosition;
-        Vector3 enemyPos = enemyNode.worldPosition;
-        Vector3 currentPositionDiff = enemyPos - myPos;
-        currentPositionDiff.y = 0;
-
-        Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
-        Array<Motion@>@ enemyCounterMotions = enemyCounterState.GetCounterMotions(attackType, isBack);
-
-        int idx = RandomInt(counterMotions.length);
-        @currentMotion = counterMotions[idx];
-        @enemyCounterState.currentMotion = enemyCounterMotions[idx];
-
-        float rotationDiff = isBack ? 0 : 180;
-        float enemyYaw = enemyNode.worldRotation.eulerAngles.y;
-        float targetRotation = enemyYaw + rotationDiff;
         float myRotation = myNode.worldRotation.eulerAngles.y;
-        Vector3 s1 = currentMotion.startFromOrigin;
-        Vector3 s2 = enemyCounterState.currentMotion.startFromOrigin;
-        Vector3 originDiff = s1 - s2;
-        originDiff.x = Abs(originDiff.x);
-        originDiff.z = Abs(originDiff.z);
+        float targetRotation = 0;
+        float rotationDiff = 0;
+        Vector3 positionDiff(0, 0, 0);
 
-        if (isBack)
-            enemyYaw += 180;
-        targetPosition = enemyPos + enemyNode.worldRotation * originDiff;
-        targetPosition.y = myPos.y;
+        //PRE_PROCESS
+        if (counterEnemies.length > 1)
+        {
+            Enemy@ e1 = counterEnemies[0];
+            Enemy@ e2 = counterEnemies[1];
+            Vector3 direction = e1.sceneNode.worldPosition - e2.sceneNode.worldPosition;
+            direction.y = 0;
 
-        Vector3 positionDiff = targetPosition - myPos;
-        rotationDiff = AngleDiff(targetRotation - myRotation);
+            CharacterCounterState@ eCState = cast<CharacterCounterState@>(e1.stateMachine.FindState("CounterState"));
+            if (eCState is null)
+                return;
 
-        Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff + " s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
+            for (uint i=0; i<eCState.doubleCounterMotions.length/2; ++i)
+            {
+                Motion@ m1 = eCState.doubleCounterMotions[i*2 + 0];
+                Motion@ m2 = eCState.doubleCounterMotions[i*2 + 1];
+            }
+        }
+
+
+        // POST_PROCESS
+        if (counterEnemies.length > 1)
+        {
+
+        }
+        else
+        {
+            Enemy@ counterEnemy = counterEnemies[0];
+            Node@ enemyNode = counterEnemy.sceneNode;
+            float dAngle = ownner.ComputeAngleDiff(enemyNode);
+            bool isBack = false;
+            if (Abs(dAngle) > 90)
+                isBack = true;
+            Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack);
+
+            int attackType = enemyNode.vars[ATTACK_TYPE].GetInt();
+            CharacterCounterState@ eCState = cast<CharacterCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
+            if (eCState is null)
+                return;
+
+            Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
+            Array<Motion@>@ enemyCounterMotions = eCState.GetCounterMotions(attackType, isBack);
+
+            int idx = RandomInt(counterMotions.length);
+            @currentMotion = counterMotions[idx];
+            @eCState.currentMotion = enemyCounterMotions[idx];
+
+            rotationDiff = isBack ? 0 : 180;
+            float enemyYaw = enemyNode.worldRotation.eulerAngles.y;
+            targetRotation = enemyYaw + rotationDiff;
+            Vector3 s1 = currentMotion.startFromOrigin;
+            Vector3 s2 = eCState.currentMotion.startFromOrigin;
+            Vector3 originDiff = s1 - s2;
+            originDiff.x = Abs(originDiff.x);
+            originDiff.z = Abs(originDiff.z);
+
+            if (isBack)
+                enemyYaw += 180;
+            targetPosition = enemyNode.worldPosition + enemyNode.worldRotation * originDiff;
+            targetPosition.y = myPos.y;
+
+            positionDiff = targetPosition - myPos;
+            rotationDiff = AngleDiff(targetRotation - myRotation);
+
+            counterEnemy.ChangeState("CounterState");
+            eCState.ChangeSubState(COUNTER_WAITING);
+
+            Print("SingleCounter s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
+        }
+
+
+        Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff);
 
         yawPerSec = rotationDiff / alignTime;
         movePerSec = positionDiff / alignTime;
         movePerSec.y = 0;
         bCheckInput = false;
 
-        CharacterCounterState::Enter(lastState);
+        ChangeSubState(COUNTER_ALIGNING);
     }
 
     void Exit(State@ nextState)
     {
-        @counterEnemy = null;
-        @currentMotion = null;
+        counterEnemies.Clear();
         CharacterCounterState::Exit(nextState);
+    }
+
+    void OnAlignTimeOut()
+    {
+        ownner.sceneNode.worldPosition = targetPosition;
+        StartCounterMotion();
+        for (uint i=0; i<counterEnemies.length; ++i)
+        {
+            CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemies[i].GetState());
+            enemyCounterState.StartCounterMotion();
+        }
     }
 
     String GetDebugText()
     {
-        return "current motion=" + currentMotion.animationName + " isInAir=" + isInAir + "\n";
+        return "current motion=" + currentMotion.animationName + " isInAir=" + isInAir + " bCheckInput=" + bCheckInput + "\n";
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -942,6 +962,11 @@ class PlayerCounterState : CharacterCounterState
             ownner.Counter();
         else if (gInput.IsEvadePressed())
             ownner.Evade();
+    }
+
+    bool CanReEntered()
+    {
+        return !isInAir && bCheckInput;
     }
 };
 
@@ -1027,17 +1052,15 @@ class Player : Character
     bool Counter()
     {
         Print("Player::Counter");
-        Enemy@ counterEnemy = PickCounterEnemy();
-        if (counterEnemy is null)
-            return false;
-
-        Print("Choose Couter Enemy " + counterEnemy.sceneNode.name);
         PlayerCounterState@ state = cast<PlayerCounterState@>(stateMachine.FindState("CounterState"));
         if (state is null)
             return false;
-        @state.counterEnemy = counterEnemy;
+
+        int len = PickCounterEnemy(state.counterEnemies);
+        if (len == 0)
+            return false;
+
         stateMachine.ChangeState("CounterState");
-        counterEnemy.stateMachine.ChangeState("CounterState");
         return true;
     }
 
@@ -1167,14 +1190,21 @@ class Player : Character
                 em.scoreCache.Push(-1);
                 continue;
             }
+            bool isAttacking = false;
+            if (e.GetState().nameHash == ATTACK_STATE)
+                isAttacking = true;
             float enemyAngle = Atan2(posDiff.x, posDiff.z);
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
             Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
-            int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 80.0f);
+            int threatScore = 0;
+            if (isAttacking && dist < 5.0f)
+                threatScore += 50;
+            int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 30.0f);
             int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST) * 20.0f;
             score += distScore;
             score += angleScore;
+            score += threatScore;
             em.scoreCache.Push(score);
             Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
@@ -1193,20 +1223,14 @@ class Player : Character
         return attackEnemy;
     }
 
-    Enemy@ PickCounterEnemy()
+    int PickCounterEnemy(Array<Enemy@>@ counterEnemies)
     {
         EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
         if (em is null)
-            return null;
+            return 0;
 
+        counterEnemies.Clear();
         Vector3 myPos = sceneNode.worldPosition;
-        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
-        float myAngle = Atan2(myDir.x, myDir.z);
-        float curDistSQR = 999999;
-        Vector3 curPosDiff;
-
-        Enemy@ counterEnemy = null;
-
         for (uint i=0; i<em.enemyList.length; ++i)
         {
             Enemy@ e = em.enemyList[i];
@@ -1220,18 +1244,12 @@ class Player : Character
             float distSQR = posDiff.lengthSquared;
             if (distSQR > MAX_COUNTER_DIST * MAX_COUNTER_DIST)
             {
-                Print(distSQR);
+                Print(e.GetName() + " counter distance too long" + distSQR);
                 continue;
             }
-            if (curDistSQR > distSQR)
-            {
-                @counterEnemy = e;
-                curDistSQR = distSQR;
-                curPosDiff = posDiff;
-            }
+            counterEnemies.Push(e);
         }
-
-        return counterEnemy;
+        return counterEnemies.length;
     }
 
     Enemy@ PickRedirectEnemy()

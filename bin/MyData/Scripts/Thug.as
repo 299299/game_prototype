@@ -51,8 +51,8 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        if (engine.headless)
-            return;
+        //if (engine.headless)
+        //    return;
 
         if (timeInState > thinkTime)
         {
@@ -385,19 +385,7 @@ class ThugCounterState : CharacterCounterState
     {
         super(c);
         AddCounterMotions("TG_BM_Counter/");
-    }
-
-    void Update(float dt)
-    {
-        if (state == 1)
-        {
-            if (currentMotion.Move(ownner, dt))
-            {
-                ownner.CommonStateFinishedOnGroud();
-                return;
-            }
-        }
-        CharacterCounterState::Update(dt);
+        AddDoubleCounterMotions("TG_BM_Counter/", true);
     }
 };
 
@@ -481,6 +469,9 @@ class ThugAttackState : CharacterState
 
     void ShowHint(bool bshow)
     {
+        Print("===============================================================");
+        Print("Counter Start " + bshow);
+        Print("===============================================================");
         ownner.SetHintText("COUNTER!!!!!!!", bshow);
     }
 
