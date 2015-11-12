@@ -919,6 +919,7 @@ class PlayerCounterState : CharacterCounterState
 
     void OnAlignTimeOut()
     {
+        Print("OnAlignTimeOut");
         ownner.sceneNode.worldPosition = targetPosition;
         StartCounterMotion();
         for (uint i=0; i<counterEnemies.length; ++i)
@@ -1201,7 +1202,7 @@ class Player : Character
             if (isAttacking && dist < 5.0f)
                 threatScore += 50;
             int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 30.0f);
-            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST) * 20.0f;
+            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * 20.0f);
             score += distScore;
             score += angleScore;
             score += threatScore;

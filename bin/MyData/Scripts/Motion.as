@@ -625,7 +625,7 @@ class MotionManager
         {
             motions[i].Process();
             ++processedMotions;
-            uint time_diff = time.systemTime - t;
+            int time_diff = int(time.systemTime - t);
             if (time_diff >= processTimePerframe)
                 break;
         }

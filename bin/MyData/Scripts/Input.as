@@ -27,6 +27,8 @@ class GameInput
 
     int   m_leftStickHoldFrames;
 
+    bool  m_freeze = false;
+
     GameInput()
     {
     }
@@ -37,6 +39,9 @@ class GameInput
 
     void Update(float dt)
     {
+        if (m_freeze)
+            return;
+
         m_lastLeftStickX = m_leftStickX;
         m_lastLeftStickY = m_leftStickY;
 
@@ -154,6 +159,9 @@ class GameInput
 
     bool IsAttackPressed()
     {
+        if (m_freeze)
+            return false;
+
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
             return joystick.buttonPress[1];
@@ -163,6 +171,9 @@ class GameInput
 
     bool IsCounterPressed()
     {
+        if (m_freeze)
+            return false;
+
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
             return joystick.buttonPress[2];
@@ -172,6 +183,9 @@ class GameInput
 
     bool IsEvadePressed()
     {
+        if (m_freeze)
+            return false;
+
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
             return joystick.buttonPress[3];

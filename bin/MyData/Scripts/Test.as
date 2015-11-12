@@ -7,6 +7,7 @@
 #include "Scripts/FSM.as"
 #include "Scripts/Ragdoll.as"
 #include "Scripts/Camera.as"
+#include "Scripts/FadeOverlay.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -22,6 +23,8 @@ String CAMERA_NAME = "camera";
 void Start()
 {
     cache.autoReloadResources = true;
+    engine.pauseMinimized = true;
+
     SetRandomSeed(time.systemTime);
 
     if (!engine.headless)
@@ -116,6 +119,31 @@ void CreateConsoleAndDebugHud()
     // Create debug HUD
     DebugHud@ debugHud = engine.CreateDebugHud();
     debugHud.defaultStyle = xmlFile;
+}
+
+void SetLogoVisible(bool enable)
+{
+    Sprite@ logoSprite = ui.root.GetChild("logo", true);
+    if (logoSprite !is null)
+        logoSprite.visible = enable;
+}
+
+void CreateLogo()
+{
+    // Get logo texture
+    Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/LogoLarge.png");
+    if (logoTexture is null)
+        return;
+    Sprite@ logoSprite = ui.root.CreateChild("Sprite", "logo");
+    logoSprite.texture = logoTexture;
+    int textureWidth = logoTexture.width;
+    int textureHeight = logoTexture.height;
+    logoSprite.SetScale(256.0f / textureWidth);
+    logoSprite.SetSize(textureWidth, textureHeight);
+    logoSprite.SetHotSpot(0, textureHeight);
+    logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
+    logoSprite.opacity = 0.75f;
+    logoSprite.priority = -100;
 }
 
 void CreateUI()

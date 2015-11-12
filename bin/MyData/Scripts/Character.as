@@ -498,7 +498,9 @@ class CharacterCounterState : CharacterState
 
     void Update(float dt)
     {
-        if (state == COUNTER_ALIGNING) {
+        Print(ownner.GetName() + " state=" + state);
+        if (state == COUNTER_ALIGNING)
+        {
             ownner.sceneNode.Yaw(yawPerSec * dt);
             ownner.MoveTo(ownner.sceneNode.worldPosition + movePerSec * dt, dt);
             if (timeInState >= alignTime)
@@ -526,6 +528,7 @@ class CharacterCounterState : CharacterState
             return;
 
         Print(ownner.GetName() + " CounterState ChangeSubState from " + state + " to " + newState);
+        state = newState;
     }
 
     void Dump()

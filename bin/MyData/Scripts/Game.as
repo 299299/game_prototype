@@ -16,6 +16,7 @@ enum LoadSubState
 {
     LOADING_MOTIONS,
     LOADING_OTHER,
+    LOADING_FADE,
 };
 
 class LoadingState : State
@@ -27,9 +28,27 @@ class LoadingState : State
         SetName("LoadingState");
     }
 
+    ~LoadingState()
+    {
+
+    }
+
+    void CreateLoadingUI()
+    {
+        CreateLogo();
+        Text@ text = ui.root.CreateChild("Text", "loading_text");
+        text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 14);
+        text.horizontalAlignment = HA_CENTER;
+        text.verticalAlignment = VA_CENTER;
+        text.SetPosition(0, 0);
+        text.color = Color(0, 1, 0);
+        text.textEffect = TE_STROKE;
+    }
+
     void Enter(State@ lastState)
     {
         State::Enter(lastState);
+        CreateLoadingUI();
         state = LOADING_MOTIONS;
         gMotionMgr.Start();
     }
@@ -37,6 +56,10 @@ class LoadingState : State
     void Exit(State@ nextState)
     {
         State::Exit(nextState);
+        SetLogoVisible(false);
+        Text@ text = ui.root.GetChild("loading_text");
+        if (text !is null)
+            text.Remove();
     }
 
     void Update(float dt)
@@ -50,10 +73,18 @@ class LoadingState : State
                 ChangeSubState(LOADING_OTHER);
             }
             Print("============================== Motion Loading end ==============================");
+
+            Text@ text = ui.root.GetChild("loading_text");
+            if (text !is null)
+                text.text = "Loading Motions, loaded = " + gMotionMgr.processedMotions;
         }
         else if (state == LOADING_OTHER)
         {
             gGame.ChangeState("TestGameState");
+        }
+        else if (state == LOADING_FADE)
+        {
+
         }
     }
 
@@ -67,16 +98,36 @@ class LoadingState : State
     }
 };
 
+enum GameSubState
+{
+    GAME_FADING,
+    GAME_RUNNING,
+};
+
 class TestGameState : GameState
 {
+    FadeOverlay@ fade;
+    int          state;
+
     TestGameState()
     {
         SetName("TestGameState");
+        @fade = FadeOverlay();
+        fade.Init();
+    }
+
+    ~TestGameState()
+    {
+        @fade = null;
     }
 
     void Enter(State@ lastState)
     {
         State::Enter(lastState);
+        state = GAME_FADING;
+        fade.Show(1.0f);
+        fade.StartFadeIn(2.0f);
+        gInput.m_freeze = true;
         CreateScene();
         SetupViewport();
     }
@@ -88,7 +139,24 @@ class TestGameState : GameState
 
     void Update(float dt)
     {
+        if (state == GAME_FADING)
+        {
+            if (fade.Update(dt))
+            {
+                ChangeSubState(GAME_RUNNING);
+                gInput.m_freeze = false;
+            }
+        }
         GameState::Update(dt);
+    }
+
+    void ChangeSubState(int newState)
+    {
+        if (state == newState)
+            return;
+
+        Print("TestGameState ChangeSubState from " + state + " to " + newState);
+        state = newState;
     }
 };
 
