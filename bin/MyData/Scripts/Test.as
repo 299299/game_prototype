@@ -16,6 +16,7 @@
 #include "Scripts/Player.as"
 
 bool drawDebug = true;
+bool autoCounter = false;
 
 String PLAYER_NAME = "player";
 String CAMERA_NAME = "camera";
@@ -286,9 +287,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     ExecuteCommand();
 
-    if (engine.headless)
-        return;
-
     if (script.defaultScene is null)
         return;
 
@@ -298,8 +296,28 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     Player@ player = GetPlayer();
     if (player !is null)
         debugText += player.GetDebugText();
+
     Text@ text = ui.root.GetChild("debug", true);
-    text.text = debugText;
+    if (text !is null)
+        text.text = debugText;
+
+    if (autoCounter)
+    {
+        EnemyManager@ em = GetEnemyMgr();
+        if (em is null)
+            return;
+
+        int num = em.GetNumOfEnemyHasFlag(FLAGS_COUNTER);
+        // Print("autoCounter flags -- attack num = " + num);
+        if (num == 2)
+        {
+            Print("==========================Auto Counter Start==========================");
+            Player@ player = GetPlayer();
+            if (player !is null)
+                player.Counter();
+            Print("==========================Auto Counter End==========================");
+        }
+    }
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
@@ -560,5 +578,10 @@ void ExecuteCommand()
             return;
         em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
         em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
+    }
+    else if (command == "autocounter")
+    {
+        autoCounter = !autoCounter;
+        Print("Set autoCounter=" + autoCounter);
     }
 }

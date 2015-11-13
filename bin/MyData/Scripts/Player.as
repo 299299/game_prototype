@@ -821,6 +821,8 @@ class PlayerCounterState : CharacterCounterState
 
     void Enter(State@ lastState)
     {
+        uint t = time.systemTime;
+
         CharacterCounterState::Enter(lastState);
 
         Node@ myNode = ownner.sceneNode;
@@ -835,6 +837,13 @@ class PlayerCounterState : CharacterCounterState
         {
             Enemy@ e1 = counterEnemies[0];
             Enemy@ e2 = counterEnemies[1];
+
+            int attackType1 = e1.sceneNode.vars[ATTACK_TYPE].GetInt();
+            int attackType2 = e2.sceneNode.vars[ATTACK_TYPE].GetInt();
+
+            Vector3 pos1 = e1.sceneNode.worldPosition;
+            Vector3 pos2 = e2.sceneNode.worldPosition;
+
             Vector3 direction = e1.sceneNode.worldPosition - e2.sceneNode.worldPosition;
             direction.y = 0;
 
@@ -846,9 +855,38 @@ class PlayerCounterState : CharacterCounterState
             {
                 Motion@ m1 = eCState.doubleCounterMotions[i*2 + 0];
                 Motion@ m2 = eCState.doubleCounterMotions[i*2 + 1];
+                Vector3 offset1 = m1.startFromOrigin;
+                Vector3 offset2 = m2.startFromOrigin;
+                Print(m1.name + "offset1=" + offset1.ToString() + " offset2=" + offset2.ToString());
+            }
+
+            if (attackType1 == ATTACK_PUNCH && attackType2 == ATTACK_PUNCH)
+            {
+
+            }
+            else
+            {
+                Vector3 diff1 = myPos - pos1;
+                diff1.y = 0.0f;
+                Vector3 diff2 = myPos - pos2;
+                diff2.y = 0.0f;
+                float dist1 = diff1.length;
+                float dist2 = diff2.length;
+                if (dist1 < dist2)
+                {
+                    Print("Erase counter enemy 1");
+                    counterEnemies.Erase(1);
+                }
+                else
+                {
+                    Print("Erase counter enemy 0");
+                    counterEnemies.Erase(0);
+                }
             }
         }
 
+
+        Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
 
         // POST_PROCESS
         if (counterEnemies.length > 1)
@@ -900,15 +938,14 @@ class PlayerCounterState : CharacterCounterState
             Print("SingleCounter s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
         }
 
-
-        Print("positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff);
-
         yawPerSec = rotationDiff / alignTime;
         movePerSec = positionDiff / alignTime;
         movePerSec.y = 0;
         bCheckInput = false;
 
         ChangeSubState(COUNTER_ALIGNING);
+
+        Print("PlayerCounter-> positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff + " time-cost=" + (time.systemTime - t));
     }
 
     void Exit(State@ nextState)

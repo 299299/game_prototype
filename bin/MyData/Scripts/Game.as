@@ -48,7 +48,8 @@ class LoadingState : State
     void Enter(State@ lastState)
     {
         State::Enter(lastState);
-        CreateLoadingUI();
+        if (!engine.headless)
+            CreateLoadingUI();
         state = LOADING_MOTIONS;
         gMotionMgr.Start();
     }
@@ -125,11 +126,17 @@ class TestGameState : GameState
     {
         State::Enter(lastState);
         state = GAME_FADING;
-        fade.Show(1.0f);
-        fade.StartFadeIn(2.0f);
-        gInput.m_freeze = true;
+        if (!engine.headless)
+        {
+            fade.Show(1.0f);
+            fade.StartFadeIn(2.0f);
+            gInput.m_freeze = true;
+        }
         CreateScene();
-        SetupViewport();
+        if (!engine.headless)
+            SetupViewport();
+        else
+            ChangeSubState(GAME_RUNNING);
     }
 
     void Exit(State@ nextState)
