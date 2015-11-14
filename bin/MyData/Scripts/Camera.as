@@ -66,7 +66,6 @@ class DebugFPSCameraController: CameraController
     }
 };
 
-
 class ThirdPersonCameraController : CameraController
 {
     Vector3 cameraTargert;
@@ -87,7 +86,12 @@ class ThirdPersonCameraController : CameraController
 
         Vector3 target_pos = _node.worldPosition;
         target_pos.y += cameraHeight;
-        Quaternion q(gInput.m_rightStickY, gInput.m_rightStickX, 0);
+
+        float pitch = gInput.m_rightStickY;
+        float yaw = gInput.m_rightStickX;
+        pitch = Clamp(pitch, -20, 60);
+
+        Quaternion q(pitch, yaw, 0);
         Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
 
         Vector3 cameraPos = cameraNode.worldPosition;

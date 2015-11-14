@@ -83,9 +83,9 @@ void CreateScene()
     cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
 
     gCameraMgr.Start(cameraNode);
-    gCameraMgr.SetCameraController("Debug");
-    //Animation@ anim = cache.GetResource("Animation", GetAnimationName("TG_Getup/GetUp_Back"));
-    //AnimationTrack@ track = anim.tracks["Bip"];
+    //gCameraMgr.SetCameraController("Debug");
+    gCameraMgr.SetCameraController("ThirdPerson");
+
     //DumpSkeletonNames(characterNode);
 }
 

@@ -21,11 +21,11 @@ class GameInput
 
     float m_smooth = 0.9f;
 
-    float m_mouseX;
-    float m_mouseY;
+    float m_mouseX = 0;
+    float m_mouseY = 0;
     float mouseSensitivity = 0.125f;
 
-    int   m_leftStickHoldFrames;
+    int   m_leftStickHoldFrames = 0;
 
     bool  m_freeze = false;
 

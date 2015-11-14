@@ -9,6 +9,7 @@ const float MIN_TURN_ANGLE = 30;
 float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
+float KEEP_DIST_WIT_PLAYER = -0.05f;
 
 class ThugStandState : CharacterState
 {
@@ -72,8 +73,8 @@ class ThugStandState : CharacterState
 
     void CollisionAvoidance(float dt)
     {
-        float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist < KEEP_DIST_WIT_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
             ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
@@ -179,7 +180,7 @@ class ThugCombatIdleState : CharacterState
     void Update(float dt)
     {
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (dist < -0.25f && !ownner.HasFlag(FLAGS_NO_MOVE))
+        if (dist < KEEP_DIST_WIT_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
             ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
@@ -248,7 +249,7 @@ class ThugStepMoveState : MultiMotionState
     {
         int index = 0;
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist < 0)
+        if (dist < KEEP_DIST_WIT_PLAYER)
         {
             index = ownner.RadialSelectAnimation(4);
             index = (index + 2) % 4;
@@ -661,7 +662,7 @@ class Thug : Enemy
 
         Node@ collsionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(2.0f, 5.0f, Vector3(0.0f, 2.5f, 0.0f));
+        shape.SetCapsule(3.0f, 5.0f, Vector3(0.0f, 2.5f, 0.0f));
         RigidBody@ body = collsionNode.CreateComponent("RigidBody");
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         body.collisionMask = COLLISION_LAYER_CHARACTER;
@@ -764,7 +765,7 @@ class Thug : Enemy
 
     String GetHintText()
     {
-        return sceneNode.name + " state=" + stateMachine.currentState.name + " distToPlayer=" + GetTargetDistance();
+        return ""; //sceneNode.name + " state=" + stateMachine.currentState.name + " distToPlayer=" + GetTargetDistance();
     }
 
     int GetSperateDirection(int& outDir)

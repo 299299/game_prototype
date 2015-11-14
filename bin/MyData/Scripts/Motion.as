@@ -714,7 +714,7 @@ class MotionManager
         uint t = time.systemTime;
 
         String preFix = "TG_BM_Counter/";
-        AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 44, 54);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 34, 44);
         AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 46, 56);
         AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 38, 48);
         AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 30, 46);

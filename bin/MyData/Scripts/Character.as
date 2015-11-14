@@ -498,7 +498,7 @@ class CharacterCounterState : CharacterState
 
     void Update(float dt)
     {
-        Print(ownner.GetName() + " state=" + state);
+        // Print(ownner.GetName() + " state=" + state);
         if (state == COUNTER_ALIGNING)
         {
             ownner.sceneNode.Yaw(yawPerSec * dt);

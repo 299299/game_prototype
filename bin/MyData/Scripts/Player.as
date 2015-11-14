@@ -624,6 +624,9 @@ class PlayerAttackState : CharacterState
             motionPosition = motion.GetFuturePosition(ownner, currentAttack.impactTime);
             movePerSec = ( predictPosition - motionPosition ) / alignTime;
             movePerSec.y = 0;
+
+            if (attackEnemy.HasFlag(FLAGS_COUNTER))
+                slowMotion = true;
         }
         else
         {
@@ -843,26 +846,51 @@ class PlayerCounterState : CharacterCounterState
 
             Vector3 pos1 = e1.sceneNode.worldPosition;
             Vector3 pos2 = e2.sceneNode.worldPosition;
+            float cur_dist = (pos1 - pos2).length;
 
             Vector3 direction = e1.sceneNode.worldPosition - e2.sceneNode.worldPosition;
             direction.y = 0;
 
-            CharacterCounterState@ eCState = cast<CharacterCounterState@>(e1.stateMachine.FindState("CounterState"));
-            if (eCState is null)
+            CharacterCounterState@ eCState1 = cast<CharacterCounterState@>(e1.stateMachine.FindState("CounterState"));
+            CharacterCounterState@ eCState2 = cast<CharacterCounterState@>(e2.stateMachine.FindState("CounterState"));
+
+            if (eCState1 is null || eCState2 is null)
                 return;
 
-            for (uint i=0; i<eCState.doubleCounterMotions.length/2; ++i)
+            bool is_double_valid = false;
+            float best_dist = 9999;
+            int best_index = -1;
+
+            for (uint i=0; i<eCState1.doubleCounterMotions.length/2; ++i)
             {
-                Motion@ m1 = eCState.doubleCounterMotions[i*2 + 0];
-                Motion@ m2 = eCState.doubleCounterMotions[i*2 + 1];
+                Motion@ m1 = eCState1.doubleCounterMotions[i*2 + 0];
+                Motion@ m2 = eCState1.doubleCounterMotions[i*2 + 1];
                 Vector3 offset1 = m1.startFromOrigin;
                 Vector3 offset2 = m2.startFromOrigin;
-                Print(m1.name + "offset1=" + offset1.ToString() + " offset2=" + offset2.ToString());
+                float dist = (offset1 - offset2).length;
+                Print(m1.name + "offset1=" + offset1.ToString() + " offset2=" + offset2.ToString() + " dist=" + dist + " cur_dist=" + cur_dist);
+                if (Abs(dist - cur_dist) > 1.0f)
+                    continue;
+
+                if (dist < best_dist)
+                {
+                    best_dist = dist;
+                    best_index = i;
+                }
             }
 
-            if (attackType1 == ATTACK_PUNCH && attackType2 == ATTACK_PUNCH)
+            if (best_index >= 0)
             {
+                @currentMotion = doubleCounterMotions[best_index];
+                @eCState1.currentMotion = eCState1.doubleCounterMotions[best_index*2 + 0];
+                @eCState2.currentMotion = eCState2.doubleCounterMotions[best_index*2 + 1];
+                Vector3 s1 = eCState1.currentMotion.startFromOrigin;
+                Vector3 s2 = currentMotion.startFromOrigin;
+                Vector3 originDiff = s1 - s2;
+                originDiff.y = 0.0f;
 
+                targetPosition = e1.sceneNode.worldPosition + e1.sceneNode.worldRotation * originDiff;
+                targetRotation = myRotation;
             }
             else
             {
@@ -918,6 +946,7 @@ class PlayerCounterState : CharacterCounterState
             rotationDiff = isBack ? 0 : 180;
             float enemyYaw = enemyNode.worldRotation.eulerAngles.y;
             targetRotation = enemyYaw + rotationDiff;
+
             Vector3 s1 = currentMotion.startFromOrigin;
             Vector3 s2 = eCState.currentMotion.startFromOrigin;
             Vector3 originDiff = s1 - s2;
@@ -929,14 +958,14 @@ class PlayerCounterState : CharacterCounterState
             targetPosition = enemyNode.worldPosition + enemyNode.worldRotation * originDiff;
             targetPosition.y = myPos.y;
 
-            positionDiff = targetPosition - myPos;
-            rotationDiff = AngleDiff(targetRotation - myRotation);
-
             counterEnemy.ChangeState("CounterState");
             eCState.ChangeSubState(COUNTER_WAITING);
 
             Print("SingleCounter s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
         }
+
+        positionDiff = targetPosition - myPos;
+        rotationDiff = AngleDiff(targetRotation - myRotation);
 
         yawPerSec = rotationDiff / alignTime;
         movePerSec = positionDiff / alignTime;
@@ -1341,6 +1370,6 @@ class Player : Character
 
     String GetHintText()
     {
-        return sceneNode.name + " state=" + stateMachine.currentState.name + " combo=" + combo;
+        return ""; //sceneNode.name + " state=" + stateMachine.currentState.name + " combo=" + combo;
     }
 };
