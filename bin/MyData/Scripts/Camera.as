@@ -70,8 +70,8 @@ class ThirdPersonCameraController : CameraController
 {
     Vector3 cameraTargert;
     float   cameraSpeed = 2.5f;
-    float   cameraHeight = 5.0f;
-    float   cameraDistance = 15.0f;
+    float   cameraHeight = 5.5f;
+    float   cameraDistance = 20.0f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {

@@ -339,9 +339,12 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 
     EnemyManager@ em = GetEnemyMgr();
     if (em !is null)
-        em.DebugDraw(debug);
+    {
+        //em.DebugDraw(debug);
+    }
 
-    scene_.physicsWorld.DrawDebugGeometry(false);
+
+    // scene_.physicsWorld.DrawDebugGeometry(false);
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)

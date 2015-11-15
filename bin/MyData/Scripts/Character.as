@@ -36,12 +36,12 @@ const StringHash COUNTER_CHECK("CounterCheck");
 const StringHash ATTACK_CHECK("AttackCheck");
 const StringHash BONE("Bone");
 const StringHash NODE("Node");
-const StringHash L_FOOT("Bip01_L_Foot");
-const StringHash R_FOOT("Bip01_R_Foot");
-const StringHash L_HAND("Bip01_L_Hand");
-const StringHash R_HAND("Bip01_R_Hand");
-const StringHash L_FOREARM("Bip01_L_Forearm");
-const StringHash R_FOREARM("Bip01_R_Forearm");
+const StringHash L_FOOT_SH("Bip01_L_Foot");
+const StringHash R_FOOT_SH("Bip01_R_Foot");
+const StringHash L_HAND_SH("Bip01_L_Hand");
+const StringHash R_HAND_SH("Bip01_R_Hand");
+const StringHash L_FOREARM_SH("Bip01_L_Forearm");
+const StringHash R_FOREARM_SH("Bip01_R_Forearm");
 const StringHash RADIUS("Radius");
 const StringHash IN_AIR("InAir");
 const StringHash COMBAT_SOUND("CombatSound");
@@ -874,8 +874,8 @@ class Character : GameObject
         //debug.AddNode(sceneNode, 0.5f, false);
         //debug.AddNode(sceneNode.GetChild("Bip01", true), 0.25f, false);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(1, 1, 0), 32, false);
-        DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, Color(0, 0, 1), COLLISION_RADIUS);
         debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, Color(0,1,1), false);
+        DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, Color(0, 0, 1), COLLISION_RADIUS);
 
         //Sphere sp;
         //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, COLLISION_RADIUS);
@@ -1037,7 +1037,7 @@ class Character : GameObject
         GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(scriptFile, "GameObject", LOCAL));
         object.duration = duration;
 
-        Print(GetName() + " SpawnParticleEffect pos=" + position.ToString() + " effectName=" + effectName + " duration=" + duration);
+        // Print(GetName() + " SpawnParticleEffect pos=" + position.ToString() + " effectName=" + effectName + " duration=" + duration);
 
         return newNode;
     }
