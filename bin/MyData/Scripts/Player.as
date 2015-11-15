@@ -6,7 +6,7 @@
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 bool attack_timing_test = false;
-const float MAX_COUNTER_DIST = 6.0f;
+const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
 
 class PlayerStandState : CharacterState
@@ -1049,11 +1049,9 @@ class PlayerHitState : MultiMotionState
         SetName("HitState");
         String hitPrefix = "BM_Combat_HitReaction/";
         AddMotion(hitPrefix + "HitReaction_Face_Right");
-        AddMotion(hitPrefix + "Hit_Reaction_SideRight");
-        AddMotion(hitPrefix + "HitReaction_Back");
         AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
-        AddMotion(hitPrefix + "HitReaction_Stomach");
-        AddMotion(hitPrefix + "BM_Hit_Reaction");
+        AddMotion(hitPrefix + "HitReaction_Back");
+        AddMotion(hitPrefix + "Hit_Reaction_SideRight");
     }
 };
 
@@ -1068,6 +1066,22 @@ class PlayerGetUpState : CharacterGetUpState
     }
 };
 
+class PlayerDeadState : MultiMotionState
+{
+    Array<String>   animations;
+
+    PlayerDeadState(Character@ c)
+    {
+        super(c);
+        SetName("DeadState");
+        String prefix = "BM_Death_Primers/";
+        AddMotion(prefix + "Death_Front");
+        AddMotion(prefix + "Death_Side_Left");
+        AddMotion(prefix + "Death_Back");
+        AddMotion(prefix + "Death_Side_Right");
+    }
+};
+
 class Player : Character
 {
     int combo;
@@ -1075,6 +1089,7 @@ class Player : Character
     Player()
     {
         super();
+        attackDamage = 20;
     }
 
     void ObjectStart()
@@ -1091,18 +1106,19 @@ class Player : Character
         stateMachine.AddState(AnimationTestState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(PlayerGetUpState(this));
+        stateMachine.AddState(PlayerDeadState(this));
         stateMachine.ChangeState("StandState");
 
         Node@ _node = sceneNode.CreateChild("TailNode");
-        TailGenerator@ t = _node.CreateComponent("TailGenerator");
-        t.material = cache.GetResource("Material", "Materials/Tail.xml");
-        t.width = 0.5f;
-        t.tailNum = 200;
-        t.SetArcValue(0.1f, 10.0f);
-        t.SetStartColor(Color(0.9f,0.5f,0.2f,1), Color(1.0f,1.0f,1.0f,5.0f));
-        t.SetEndColor(Color(1.0f,0.2f,1.0f,1), Color(1.0f,1.0f,1.0f,5.0f));
+        TailGenerator@ tail = _node.CreateComponent("TailGenerator");
+        tail.material = cache.GetResource("Material", "Materials/Tail.xml");
+        tail.width = 0.5f;
+        tail.tailNum = 200;
+        tail.SetArcValue(0.1f, 10.0f);
+        tail.SetStartColor(Color(0.9f,0.5f,0.2f,1), Color(1.0f,1.0f,1.0f,5.0f));
+        tail.SetEndColor(Color(1.0f,0.2f,1.0f,1), Color(1.0f,1.0f,1.0f,5.0f));
         // t.endNodeName = "Bip01";
-        t.enabled = false;
+        tail.enabled = false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1163,10 +1179,17 @@ class Player : Character
 
     void CommonStateFinishedOnGroud()
     {
-        if (gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-            stateMachine.ChangeState("StandState");
-        else {
-            stateMachine.ChangeState("MoveState");
+        if (health > 0)
+        {
+            if (gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+                stateMachine.ChangeState("StandState");
+            else {
+                stateMachine.ChangeState("MoveState");
+            }
+        }
+        else
+        {
+            // ..............
         }
     }
 
@@ -1184,30 +1207,17 @@ class Player : Character
 
         combo = 0;
         health -= damage;
+        int index = RadialSelectAnimation(attacker.GetNode(), 4);
+        Print("Player::OnDamage RadialSelectAnimation index=" + index);
+
         if (health <= 0)
         {
+            sceneNode.vars[ANIMATION_INDEX] = index;
             OnDead();
             health = 0;
         }
         else
         {
-            Node@ attackNode = attacker.GetNode();
-            float diff = ComputeAngleDiff(attackNode);
-            int r = DirectionMapToIndex(diff, 4);
-            int attackType = attackNode.vars[ATTACK_TYPE].GetInt();
-            // flip left and right
-            if (r == 1)
-                r = 3;
-            if (r == 3)
-                r = 1;
-            int index = r;
-            /*if (index == 0)
-            {
-                if (attackType == ATTACK_KICK)
-                {
-                    index = 4 + RandomInt(2);
-                }
-            }*/
             sceneNode.vars[ANIMATION_INDEX] = index;
             stateMachine.ChangeState("HitState");
         }
@@ -1369,7 +1379,7 @@ class Player : Character
 
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "flags=" + flags + " combo=" + combo + " timeScale=" + timeScale + "\n";
+        return Character::GetDebugText() +  "health=" + health + " flags=" + flags + " combo=" + combo + " timeScale=" + timeScale + "\n";
     }
 
     String GetHintText()

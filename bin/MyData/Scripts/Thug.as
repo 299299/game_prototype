@@ -9,7 +9,7 @@ const float MIN_TURN_ANGLE = 30;
 float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
-float KEEP_DIST_WIT_PLAYER = -0.05f;
+float KEEP_DIST_WITH_PLAYER = -0.05f;
 
 class ThugStandState : CharacterState
 {
@@ -74,7 +74,7 @@ class ThugStandState : CharacterState
     void CollisionAvoidance(float dt)
     {
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist < KEEP_DIST_WIT_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
+        if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
             ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
@@ -180,7 +180,7 @@ class ThugCombatIdleState : CharacterState
     void Update(float dt)
     {
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (dist < KEEP_DIST_WIT_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
+        if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
             ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
@@ -249,7 +249,7 @@ class ThugStepMoveState : MultiMotionState
     {
         int index = 0;
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist < KEEP_DIST_WIT_PLAYER)
+        if (dist < KEEP_DIST_WITH_PLAYER)
         {
             index = ownner.RadialSelectAnimation(4);
             index = (index + 2) % 4;
@@ -628,6 +628,7 @@ class ThugDeadState : CharacterState
     void Enter(State@ lastState)
     {
         ownner.MakeMeRagdoll(1);
+        ownner.duration = 5.0f;
         CharacterState::Enter(lastState);
     }
 };
@@ -639,7 +640,10 @@ class Thug : Enemy
     {
         Enemy::ObjectStart();
         stateMachine.AddState(ThugStandState(this));
+        uint t = time.systemTime;
         stateMachine.AddState(ThugCounterState(this));
+        Print("ThugCounterState time-cost=" + (time.systemTime - t) + " ms");
+
         stateMachine.AddState(ThugHitState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));

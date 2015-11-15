@@ -7,15 +7,6 @@
 const int LAYER_MOVE = 0;
 const int LAYER_ATTACK = 1;
 
-const String L_HAND = "Bip01_L_Hand";
-const String R_HAND = "Bip01_R_Hand";
-const String L_FOOT = "Bip01_L_Foot";
-const String R_FOOT = "Bip01_R_Foot";
-const String L_ARM = "Bip01_L_Forearm";
-const String R_ARM = "Bip01_R_Forearm";
-const String L_CALF = "Bip01_L_Calf";
-const String R_CALF = "Bip01_R_Calf";
-
 enum AttackType
 {
     ATTACK_PUNCH,
@@ -428,12 +419,11 @@ class MotionManager
 
         String preFix = "BM_Combat_HitReaction/";
         CreateMotion(preFix + "HitReaction_Back", kMotion_XZ); // back attacked
-        // CreateMotion(preFix + "HitReaction_Face_Left", kMotion_XZ); // front punched
         CreateMotion(preFix + "HitReaction_Face_Right", kMotion_XZ); // front punched
         CreateMotion(preFix + "Hit_Reaction_SideLeft", kMotion_XZ); // left attacked
         CreateMotion(preFix + "Hit_Reaction_SideRight", kMotion_XZ); // right attacked
-        CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
-        CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
+        //CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
+        //CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
 
         // Attacks
         preFix = "BM_Attack/";
@@ -544,6 +534,12 @@ class MotionManager
         CreateMotion(preFix + "Double_Counter_2ThugsF");
         CreateMotion(preFix + "Double_Counter_2ThugsG");
         CreateMotion(preFix + "Double_Counter_2ThugsH");
+
+        preFix = "BM_Death_Primers/";
+        CreateMotion(preFix + "Death_Front");
+        CreateMotion(preFix + "Death_Back");
+        CreateMotion(preFix + "Death_Side_Left");
+        CreateMotion(preFix + "Death_Side_Right");
 
         //========================================================================
         // THUG MOTIONS

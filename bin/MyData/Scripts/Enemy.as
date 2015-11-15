@@ -47,7 +47,7 @@ class Enemy : Character
 
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
+        return Character::GetDebugText() + "health=" + health +  " flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
     }
 
     //Moves the NPC/AI/Whatever away from its neighbors that are too close.

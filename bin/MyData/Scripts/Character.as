@@ -36,12 +36,6 @@ const StringHash COUNTER_CHECK("CounterCheck");
 const StringHash ATTACK_CHECK("AttackCheck");
 const StringHash BONE("Bone");
 const StringHash NODE("Node");
-const StringHash L_FOOT_SH("Bip01_L_Foot");
-const StringHash R_FOOT_SH("Bip01_R_Foot");
-const StringHash L_HAND_SH("Bip01_L_Hand");
-const StringHash R_HAND_SH("Bip01_R_Hand");
-const StringHash L_FOREARM_SH("Bip01_L_Forearm");
-const StringHash R_FOREARM_SH("Bip01_R_Forearm");
 const StringHash RADIUS("Radius");
 const StringHash IN_AIR("InAir");
 const StringHash COMBAT_SOUND("CombatSound");
@@ -49,6 +43,15 @@ const StringHash PARTICLE("Particle");
 const StringHash DURATION("Duration");
 const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
+
+const String L_HAND = "Bip01_L_Hand";
+const String R_HAND = "Bip01_R_Hand";
+const String L_FOOT = "Bip01_L_Foot";
+const String R_FOOT = "Bip01_R_Foot";
+const String L_ARM = "Bip01_L_Forearm";
+const String R_ARM = "Bip01_R_Forearm";
+const String L_CALF = "Bip01_L_Calf";
+const String R_CALF = "Bip01_R_Calf";
 
 class CharacterState : State
 {
@@ -704,7 +707,9 @@ class Character : GameObject
         Node@ hintNode = sceneNode.CreateChild("HintNode");
         hintNode.position = Vector3(0, 5, 0);
         Text3D@ text = hintNode.CreateComponent("Text3D");
+        uint t_ = time.systemTime;
         text.SetFont("Fonts/UbuntuMono-R.ttf", 30);
+        Print("11111 time-cost=" + (time.systemTime - t_) + " ms");
         text.SetAlignment(HA_CENTER, VA_CENTER);
         text.color = Color(1, 0, 0);
         text.textAlignment = HA_CENTER;
@@ -932,25 +937,30 @@ class Character : GameObject
         return DirectionMapToIndex(ComputeAngleDiff(), numDirections);
     }
 
-    float GetTargetAngle(Node@ node)
+    float GetTargetAngle(Node@ _node)
     {
-        Vector3 targetPos = node.worldPosition;
+        Vector3 targetPos = _node.worldPosition;
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 diff = targetPos - myPos;
         return Atan2(diff.x, diff.z);
     }
 
-    float GetTargetDistance(Node@ node)
+    float GetTargetDistance(Node@ _node)
     {
-        Vector3 targetPos = node.worldPosition;
+        Vector3 targetPos = _node.worldPosition;
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 diff = targetPos - myPos;
         return diff.length;
     }
 
-    float ComputeAngleDiff(Node@ node)
+    float ComputeAngleDiff(Node@ _node)
     {
-        return AngleDiff(GetTargetAngle(node) - GetCharacterAngle());
+        return AngleDiff(GetTargetAngle(_node) - GetCharacterAngle());
+    }
+
+    int RadialSelectAnimation(Node@ _node, int numDirections)
+    {
+        return DirectionMapToIndex(ComputeAngleDiff(_node), numDirections);
     }
 
     float GetCharacterAngle()

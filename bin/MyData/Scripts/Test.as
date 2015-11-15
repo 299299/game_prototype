@@ -147,6 +147,11 @@ void CreateLogo()
     logoSprite.priority = -100;
 }
 
+void PreLoadResources()
+{
+    cache.GetResource("Material", "Materials/Tail.xml");
+}
+
 void CreateUI()
 {
     // Create a Cursor UI element because we want to be able to hide and show it at will. When hidden, the mouse cursor will
@@ -159,12 +164,14 @@ void CreateUI()
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
     // input.SetMouseVisible(true);
     Text@ text = ui.root.CreateChild("Text", "debug");
-    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 14);
+    // for preload font
+    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 30);
+    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
     text.SetPosition(0, 0);
     text.color = Color(0, 0, 1);
-    text.textEffect = TE_SHADOW;
+    // text.textEffect = TE_SHADOW;
 }
 
 void ShootBox(Scene@ _scene)
@@ -312,7 +319,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (num == 2)
         {
             Print("==========================Auto Counter Start==========================");
-            Player@ player = GetPlayer();
             if (player !is null)
                 player.Counter();
             Print("==========================Auto Counter End==========================");

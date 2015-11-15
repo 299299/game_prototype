@@ -2,6 +2,10 @@
 //
 //    Input Processing Class
 //
+//
+//    Joystick: 0 -> A 1 -> B 2 -> X 3 -> Y
+//
+//
 // ==============================================
 
 class GameInput
@@ -21,9 +25,11 @@ class GameInput
 
     float m_smooth = 0.9f;
 
-    float m_mouseX = 0;
-    float m_mouseY = 0;
+    Vector2  m_rigtAxis;
+
     float mouseSensitivity = 0.125f;
+    float joySensitivity = 0.5;
+    float joyLookDeadZone = 0.05;
 
     int   m_leftStickHoldFrames = 0;
 
@@ -31,6 +37,9 @@ class GameInput
 
     GameInput()
     {
+        JoystickState@ js = GetJoystick();
+        if (js !is null)
+            Print("joystick " + js.name);
     }
 
     ~GameInput()
@@ -104,24 +113,32 @@ class GameInput
 
     Vector2 GetRightStick()
     {
-        Vector2 ret;
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
         {
             if (joystick.numAxes >= 4)
             {
-                ret.x = joystick.axisPosition[2];
-                ret.y = joystick.axisPosition[3];
+                float lookX = joystick.axisPosition[2];
+                float lookY = joystick.axisPosition[3];
+                Vector2 rightAxis = m_rigtAxis;
+
+                if (lookX < -joyLookDeadZone)
+                    rightAxis.x -= joySensitivity * lookX * lookX;
+                if (lookX > joyLookDeadZone)
+                    rightAxis.x += joySensitivity * lookX * lookX;
+                if (lookY < -joyLookDeadZone)
+                    rightAxis.y -= joySensitivity * lookY * lookY;
+                if (lookY > joyLookDeadZone)
+                    rightAxis.y += joySensitivity * lookY * lookY;
+                m_rigtAxis = rightAxis;
             }
         }
         else
         {
-            m_mouseX += mouseSensitivity * input.mouseMoveX;
-            m_mouseY += mouseSensitivity * input.mouseMoveY;
-            ret.x = m_mouseX;
-            ret.y = m_mouseY;
+            m_rigtAxis.x += mouseSensitivity * input.mouseMoveX;
+            m_rigtAxis.y += mouseSensitivity * input.mouseMoveY;
         }
-        return ret;
+        return m_rigtAxis;
     }
 
     JoystickState@ GetJoystick()
@@ -164,7 +181,7 @@ class GameInput
 
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
-            return joystick.buttonPress[1];
+            return joystick.buttonPress[2];
         else
             return input.mouseButtonPress[MOUSEB_LEFT];
     }
@@ -176,7 +193,7 @@ class GameInput
 
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
-            return joystick.buttonPress[2];
+            return joystick.buttonPress[3];
         else
             return input.mouseButtonPress[MOUSEB_RIGHT];
     }
@@ -188,16 +205,25 @@ class GameInput
 
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
-            return joystick.buttonPress[3];
+            return joystick.buttonPress[0];
         else
             return input.keyPress[KEY_SPACE];
     }
 
     String GetDebugText()
     {
-        return "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
-               " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " hold-frames" + m_leftStickHoldFrames + " left-magnitude=" + m_leftStickMagnitude +
-               " rightStick:(" + m_rightStickX + "," + m_rightStickY + ")\n";
+        String ret =   "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
+                       " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " hold-frames" + m_leftStickHoldFrames + " left-magnitude=" + m_leftStickMagnitude +
+                       " rightStick:(" + m_rightStickX + "," + m_rightStickY + ")\n";
+
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+        {
+            ret += "joystick button--> 0=" + joystick.buttonDown[0] + " 1=" + joystick.buttonDown[1] + " 2=" + joystick.buttonDown[2] + " 3=" + joystick.buttonDown[3] + "\n";
+            ret += "joystick axis--> 0=" + joystick.axisPosition[0] + " 1=" + joystick.axisPosition[1] + " 2=" + joystick.axisPosition[2] + " 3=" + joystick.axisPosition[3] + "\n";
+        }
+
+        return ret;
     }
 };
 
