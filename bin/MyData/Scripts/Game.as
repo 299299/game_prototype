@@ -144,6 +144,7 @@ enum GameSubState
     GAME_FADING,
     GAME_RUNNING,
     GAME_FAILED,
+    GAME_RESTARTING,
 };
 
 class TestGameState : GameState
@@ -205,15 +206,17 @@ class TestGameState : GameState
         if (state == GAME_FADING)
         {
             if (fade.Update(dt))
-            {
                 ChangeSubState(GAME_RUNNING);
-                gInput.m_freeze = false;
-            }
         }
         else if (state == GAME_FAILED)
         {
             if (gInput.IsAttackPressed() || gInput.IsEvadePressed())
                 Restart();
+        }
+        else if (state == GAME_RESTARTING)
+        {
+            if (fade.Update(dt))
+                ChangeSubState(GAME_RUNNING);
         }
         GameState::Update(dt);
     }
@@ -225,6 +228,17 @@ class TestGameState : GameState
 
         Print("TestGameState ChangeSubState from " + state + " to " + newState);
         state = newState;
+        timeInState = 0.0f;
+
+        if (newState == GAME_RUNNING)
+        {
+            Player@ player = GetPlayer();
+            if (player !is null)
+            {
+                player.RemoveFlag(FLAGS_INVINCIBLE);
+            }
+            gInput.m_freeze = false;
+        }
     }
 
     void CreateScene()
@@ -272,21 +286,28 @@ class TestGameState : GameState
         if (messageText !is null)
         {
             messageText.text = msg;
-            messageText.visible = false;
+            messageText.visible = true;
         }
     }
 
     void Restart()
     {
+        fade.Show(1.0f);
+        fade.StartFadeIn(2.0f);
         Player@ player = GetPlayer();
         if (player !is null)
+        {
             player.Reset();
-        ChangeSubState(GAME_RUNNING);
+            player.AddFlag(FLAGS_INVINCIBLE);
+        }
+        ChangeSubState(GAME_RESTARTING);
         ShowMessage("", false);
+        gInput.m_freeze = true;
     }
 
     void OnPlayerDead()
     {
+        Print("OnPlayerDead!!!!!!!!");
         ChangeSubState(GAME_FAILED);
         ShowMessage("You Died! Press Stride or Jump to restart!", true);
     }

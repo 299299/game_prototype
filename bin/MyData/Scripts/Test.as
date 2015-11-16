@@ -15,7 +15,7 @@
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
 
-bool drawDebug = true;
+int drawDebug = 0;
 bool autoCounter = false;
 
 String PLAYER_NAME = "player";
@@ -279,29 +279,31 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
-    if (!drawDebug)
-        return;
-
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
         return;
+    gGame.PostRenderUpdate();
 
     DebugRenderer@ debug = scene_.debugRenderer;
-    gGame.PostRenderUpdate();
-    debug.AddNode(scene_, 1.0f, false);
+    if (drawDebug == 0)
+        return;
 
-    Player@ player = GetPlayer();
-    if (player !is null)
-        player.DebugDraw(debug);
-
-    EnemyManager@ em = GetEnemyMgr();
-    if (em !is null)
+    if (drawDebug > 0)
     {
-        //em.DebugDraw(debug);
+        gCameraMgr.DebugDraw(debug);
+        debug.AddNode(scene_, 1.0f, false);
+        Player@ player = GetPlayer();
+        if (player !is null)
+            player.DebugDraw(debug);
     }
-
-
-    // scene_.physicsWorld.DrawDebugGeometry(false);
+    if (drawDebug > 1)
+    {
+        EnemyManager@ em = GetEnemyMgr();
+        if (em !is null)
+            em.DebugDraw(debug);
+    }
+    if (drawDebug > 2)
+        scene_.physicsWorld.DrawDebugGeometry(false);
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
@@ -316,7 +318,11 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             console.visible = false;
     }
     else if (key == KEY_F1)
-        drawDebug = !drawDebug;
+    {
+        ++drawDebug;
+        if (drawDebug > 3)
+            drawDebug = 0;
+    }
     else if (key == KEY_F2)
         debugHud.ToggleAll();
     else if (key == KEY_F3)

@@ -5,7 +5,6 @@
 // ==============================================
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
-bool attack_timing_test = false;
 const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
 
@@ -99,7 +98,6 @@ class PlayerTurnState : MultiMotionState
 
         if (motions[selectIndex].Move(ownner, dt))
         {
-            // ownner.sceneNode.scene.timeScale = 0.0f;
             ownner.CommonStateFinishedOnGroud();
             return;
         }
@@ -246,6 +244,7 @@ class PlayerAttackState : CharacterState
     bool                    weakAttack = true;
     bool                    slowMotion = false;
     bool                    isInAir = false;
+    bool                    lastKill = false;
 
     PlayerAttackState(Character@ c)
     {
@@ -463,9 +462,9 @@ class PlayerAttackState : CharacterState
         {
             float t_diff = Abs(currentAttack.impactTime - t);
             if (t_diff < 0.25f)
-                ownner.sceneNode.scene.timeScale = 0.25f;
+                ownner.SetSceneTimeScale(0.25f);
             else
-                ownner.sceneNode.scene.timeScale = 1.0f;
+                ownner.SetSceneTimeScale(1.0f);
         }
 
         if (attackEnemy !is null)
@@ -622,15 +621,25 @@ class PlayerAttackState : CharacterState
 
             if (attackEnemy.HasFlag(FLAGS_COUNTER))
                 slowMotion = true;
+
+            if (attackEnemy.health <= ownner.attackDamage)
+            {
+                EnemyManager@ em = cast<EnemyManager>(ownner.GetScene().GetScriptObject("EnemyManager"));
+                if (em !is null)
+                {
+                    if (em.GetNumOfEnemyHealthAbove(1) == 1)
+                    {
+                        lastKill = true;
+                        ownner.SetSceneTimeScale(0.25f);
+                    }
+                }
+            }
         }
         else
         {
             weakAttack = false;
             slowMotion = false;
         }
-
-        if (attack_timing_test)
-            ownner.sceneNode.scene.timeScale = 0.0f;
 
         ownner.EnableComponent("TailNode", "TailGenerator", true);
     }
@@ -662,13 +671,16 @@ class PlayerAttackState : CharacterState
         CharacterState::Exit(nextState);
         ownner.EnableComponent("TailNode", "TailGenerator", false);
 
+        if (nextState !is this)
+            cast<Player>(ownner).lastAttackId = -1;
+
         if (attackEnemy !is null)
             attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
         @attackEnemy = null;
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
-        if (slowMotion)
-            ownner.sceneNode.scene.timeScale = 1.0f;
+        if (slowMotion || lastKill)
+            ownner.SetSceneTimeScale(1.0f);
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
@@ -755,9 +767,6 @@ class PlayerAttackState : CharacterState
 
     void AttackImpact()
     {
-        if (attack_timing_test)
-            ownner.sceneNode.scene.timeScale = 0.0f;
-
         if (attackEnemy is null)
             return;
 
@@ -765,7 +774,6 @@ class PlayerAttackState : CharacterState
         dir.y = 0;
         dir.Normalize();
         Print("PlayerAttackState::" +  attackEnemy.GetName() + " OnDamage!!!!");
-        //ownner.sceneNode.scene.timeScale = 0.0f;
 
         Node@ n = ownner.sceneNode.GetChild(currentAttack.boneName, true);
         Vector3 position = ownner.sceneNode.worldPosition;
@@ -776,7 +784,7 @@ class PlayerAttackState : CharacterState
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
         ownner.OnAttackSuccess(attackEnemy);
 
-        float freqScale = slowMotion ? 0.25f : 1.0f;
+        float freqScale = ownner.GetScene().timeScale;
         if (currentAttack.type == ATTACK_PUNCH)
         {
             int i = RandomInt(6) + 1;
@@ -885,7 +893,7 @@ class PlayerCounterState : CharacterCounterState
                 targetPosition = e1.sceneNode.worldPosition + e1.sceneNode.worldRotation * originDiff;
 
                 Vector3 vec_dir = pos1 - pos2;
-                targetRotation = Atan2(vec_dir.x, vec_dir.z) + 90;
+                targetRotation = Atan2(vec_dir.x, vec_dir.z) - 90;
             }
             else
             {
@@ -998,7 +1006,7 @@ class PlayerCounterState : CharacterCounterState
 
         if (counterEnemies.length > 1)
         {
-            ownner.sceneNode.scene.timeScale = 0.0f;
+            ownner.SetSceneTimeScale(0.0f);
         }
     }
 
@@ -1073,6 +1081,7 @@ class PlayerGetUpState : CharacterGetUpState
 class PlayerDeadState : MultiMotionState
 {
     Array<String>   animations;
+    int             state = 0;
 
     PlayerDeadState(Character@ c)
     {
@@ -1084,18 +1093,35 @@ class PlayerDeadState : MultiMotionState
         AddMotion(prefix + "Death_Back");
         AddMotion(prefix + "Death_Side_Right");
     }
+
+    void Enter(State@ lastState)
+    {
+        state = 0;
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Update(float dt)
+    {
+        if (state == 0)
+        {
+            if (motions[selectIndex].Move(ownner, dt)) {
+                state = 1;
+                gGame.OnPlayerDead();
+            }
+        }
+        else
+        {
+
+        }
+        CharacterState::Update(dt);
+    }
 };
 
 class Player : Character
 {
     int combo;
     int killed;
-
-    Player()
-    {
-        super();
-        attackDamage = 20;
-    }
+    int lastAttackId = -1;
 
     void ObjectStart()
     {
@@ -1250,9 +1276,29 @@ class Player : Character
         uint t = time.systemTime;
         Print("PickAttackEnemy() started");
 
-        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        Scene@ _scene = GetScene();
+        EnemyManager@ em = cast<EnemyManager>(_scene.GetScriptObject("EnemyManager"));
         if (em is null)
             return null;
+
+        if (lastAttackId >= 0)
+        {
+            Node@ n = _scene.GetNode(uint(lastAttackId));
+            if (n !is null)
+            {
+                Print("lastAttackId = " + lastAttackId);
+                Enemy@ e = cast<Enemy>(n.scriptObject);
+                if (e !is null)
+                {
+                    Print("lastAttack e.CanBeAttacked()=" + e.CanBeAttacked());
+                    if (e.CanBeAttacked())
+                    {
+                        lastAttackId = int(n.id);
+                        return e;
+                    }
+                }
+            }
+        }
 
         // Find the best enemy
         Vector3 myPos = sceneNode.worldPosition;
@@ -1313,12 +1359,13 @@ class Player : Character
         }
 
         Print("PickAttackEnemy() time-cost = " + (time.systemTime - t) + " ms");
+        lastAttackId = (attackEnemy !is null) ? int(attackEnemy.sceneNode.id) : -1;
         return attackEnemy;
     }
 
     int PickCounterEnemy(Array<Enemy@>@ counterEnemies)
     {
-        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(GetScene().GetScriptObject("EnemyManager"));
         if (em is null)
             return 0;
 
@@ -1347,7 +1394,7 @@ class Player : Character
 
     Enemy@ PickRedirectEnemy()
     {
-        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(GetScene().GetScriptObject("EnemyManager"));
         if (em is null)
             return null;
 

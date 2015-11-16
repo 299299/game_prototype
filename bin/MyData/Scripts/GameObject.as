@@ -13,6 +13,7 @@ const int FLAGS_COUNTER = (1 << 1);
 const int FLAGS_REDIRECTED = (1 << 2);
 const int FLAGS_NO_MOVE = (1 << 3);
 const int FLAGS_MOVING = (1 << 4);
+const int FLAGS_INVINCIBLE = (1 << 5);
 
 const int COLLISION_LAYER_CHARACTER = (1 << 0);
 const int COLLISION_LAYER_LANDSCAPE = (1 << 1);
@@ -114,6 +115,21 @@ class GameObject : ScriptObject
     Node@ GetNode()
     {
         return null;
+    }
+
+    Scene@ GetScene()
+    {
+        Node@ _node = GetNode();
+        if (_node is null)
+            return null;
+        return _node.scene;
+    }
+
+    void SetSceneTimeScale(float scale)
+    {
+        Scene@ _scene = GetScene();
+        if (_scene !is null)
+            _scene.timeScale = scale;
     }
 };
 

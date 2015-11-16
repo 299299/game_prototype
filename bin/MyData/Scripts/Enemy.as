@@ -136,6 +136,17 @@ class EnemyManager : ScriptObject
         return ret;
     }
 
+    int GetNumOfEnemyHealthAbove(int health)
+    {
+        int ret = 0;
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            if (enemyList[i].health >= health)
+                ++ret;
+        }
+        return ret;
+    }
+
     void DebugDraw(DebugRenderer@ debug)
     {
         for (uint i=0; i<enemyList.length; ++i)

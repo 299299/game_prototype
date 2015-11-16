@@ -837,6 +837,8 @@ class Character : GameObject
 
     bool CanBeAttacked()
     {
+        if (HasFlag(FLAGS_INVINCIBLE))
+            return false;
         return HasFlag(FLAGS_ATTACK);
     }
 

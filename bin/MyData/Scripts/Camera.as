@@ -18,6 +18,11 @@ class CameraController
 
     }
 
+    void DebugDraw(DebugRenderer@ debug)
+    {
+
+    }
+
     StringHash nameHash;
     Node@      cameraNode;
     Camera@    camera;
@@ -68,14 +73,19 @@ class DebugFPSCameraController: CameraController
 
 class ThirdPersonCameraController : CameraController
 {
+    Vector3 cameraPos;
     Vector3 cameraTargert;
-    float   cameraSpeed = 2.5f;
+    float   cameraSpeed = 5.5f;
     float   cameraHeight = 5.5f;
     float   cameraDistance = 20.0f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
+        cameraPos = cameraNode.worldPosition;
+        Vector3 v = cameraNode.worldPosition;
+        v.y += cameraHeight;
+        cameraTargert = v;
     }
 
     void Update(float dt)
@@ -93,13 +103,16 @@ class ThirdPersonCameraController : CameraController
 
         Quaternion q(pitch, yaw, 0);
         Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
-
-        Vector3 cameraPos = cameraNode.worldPosition;
         cameraPos = cameraPos.Lerp(pos, dt * cameraSpeed);
         cameraNode.worldPosition = cameraPos;
 
         cameraTargert = cameraTargert.Lerp(target_pos, dt * cameraSpeed);
         cameraNode.LookAt(cameraTargert);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(cameraTargert, 1.0f, Color(1, 0, 0), false);
     }
 };
 
@@ -168,6 +181,12 @@ class CameraManager
     {
         Vector3 dir = GetCameraForwardDirection();
         return Atan2(dir.x, dir.z);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        if (currentController !is null)
+            currentController.DebugDraw(debug);
     }
 };
 

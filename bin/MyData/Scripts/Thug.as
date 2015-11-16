@@ -38,7 +38,7 @@ class ThugStandState : CharacterState
         }
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
-        thinkTime = Random(1.0f, 4.0f);
+        thinkTime = Random(1.0f, 3.0f);
         checkAvoidanceTime = Random(0.1f, 0.2f);
         checkAvoidanceTimer = 0.0f;
         CharacterState::Enter(lastState);
@@ -59,7 +59,7 @@ class ThugStandState : CharacterState
         {
             OnThinkTimeOut();
             timeInState = 0.0f;
-            thinkTime = Random(1.0f, 4.0f);
+            thinkTime = Random(1.0f, 3.0f);
         }
 
         CharacterState::Update(dt);
@@ -108,22 +108,26 @@ class ThugStandState : CharacterState
             return;
         }
 
+        EnemyManager@ em = cast<EnemyManager>(ownner.sceneNode.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (ownner.CanAttack())
+        if (!ownner.CanAttack())
         {
-            float attack_dist = KICK_DIST + 0.5f;
-            if (dist <= attack_dist)
-            {
-                Print("do attack because dist <= " + attack_dist);
-                if (ownner.Attack())
-                    return;
-            }
+            int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
+            if (num_of_combat_idle < 3)
+                ownner.stateMachine.ChangeState("CombatIdleState");
+            return;
+        }
+
+        float attack_dist = KICK_DIST + 0.5f;
+        if (dist <= attack_dist)
+        {
+            Print("do attack because dist <= " + attack_dist);
+            if (ownner.Attack())
+                return;
         }
 
         int rand_i = RandomInt(5);
         Print("rand_i=" + rand_i + " dist=" + dist);
-
-        EnemyManager@ em = cast<EnemyManager>(ownner.sceneNode.scene.GetScriptObject("EnemyManager"));
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
         if (num_of_moving_thugs < 3 && rand_i > 0 && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
@@ -549,6 +553,8 @@ class ThugAttackState : CharacterState
 
 class ThugHitState : MultiMotionState
 {
+    float recoverTimer = 0.25f;
+
     ThugHitState(Character@ c)
     {
         super(c);
@@ -565,20 +571,20 @@ class ThugHitState : MultiMotionState
 
     void Update(float dt)
     {
-        if (timeInState > 0.25f)
-            ownner.AddFlag(FLAGS_ATTACK);
+        if (timeInState > recoverTimer)
+            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
         MultiMotionState::Update(dt);
     }
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_ATTACK);
+        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
         MultiMotionState::Exit(nextState);
     }
 
     bool CanReEntered()
     {
-        return timeInState > 0.25f;
+        return timeInState > recoverTimer;
     }
 };
 
@@ -614,6 +620,14 @@ class ThugGetUpState : CharacterGetUpState
         String prefix = "TG_Getup/";
         AddMotion(prefix + "GetUp_Back");
         AddMotion(prefix + "GetUp_Front");
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == READY_TO_FIGHT)
+            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
     }
 };
 
@@ -686,6 +700,8 @@ class Thug : Enemy
         text.text = sceneNode.name;
         text.faceCameraMode = FC_LOOKAT_XYZ;
         text.enabled = false;
+
+        //attackDamage = 50;
     }
 
     void DebugDraw(DebugRenderer@ debug)

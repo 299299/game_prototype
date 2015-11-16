@@ -824,6 +824,10 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "135_Turn_Right", 11, FOOT_STEP, R_FOOT);
         AddStringAnimationTrigger(preFix + "135_Turn_Right", 24, FOOT_STEP, L_FOOT);
         AddStringAnimationTrigger(preFix + "135_Turn_Right", 39, FOOT_STEP, R_FOOT);
+
+        preFix = "TG_Getup/";
+        AddAnimationTrigger(preFix + "GetUp_Front", 44, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "GetUp_Back", 68, READY_TO_FIGHT);
     }
 
     void AddPlayerAnimationTriggers()
