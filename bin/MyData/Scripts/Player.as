@@ -389,14 +389,17 @@ class PlayerAttackState : CharacterState
             leftCloseNum++;
         }
 
-        Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
-        DumpAttacks(forwardAttacks);
-        Print("\n right attacks(closeNum=" + rightCloseNum + "): \n");
-        DumpAttacks(rightAttacks);
-        Print("\n back attacks(closeNum=" + backCloseNum + "): \n");
-        DumpAttacks(backAttacks);
-        Print("\n left attacks(closeNum=" + leftCloseNum + "): \n");
-        DumpAttacks(leftAttacks);
+        if (d_log)
+        {
+            Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
+            DumpAttacks(forwardAttacks);
+            Print("\n right attacks(closeNum=" + rightCloseNum + "): \n");
+            DumpAttacks(rightAttacks);
+            Print("\n back attacks(closeNum=" + backCloseNum + "): \n");
+            DumpAttacks(backAttacks);
+            Print("\n left attacks(closeNum=" + leftCloseNum + "): \n");
+            DumpAttacks(leftAttacks);
+        }
     }
 
     void DumpAttacks(Array<AttackMotion@>@ attacks)
@@ -605,8 +608,8 @@ class PlayerAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         isInAir = false;
-        weakAttack = cast<Player@>(ownner).combo < 3;
-        if (cast<Player@>(ownner).combo >= 3)
+        weakAttack = cast<Player>(ownner).combo < 3;
+        if (cast<Player>(ownner).combo >= 3)
             slowMotion = (RandomInt(10) == 1);
         else
             slowMotion = false;
@@ -635,7 +638,7 @@ class PlayerAttackState : CharacterState
     void Start()
     {
         ResetValues();
-        Player@ p = cast<Player@>(ownner);
+        Player@ p = cast<Player>(ownner);
         @attackEnemy = p.PickAttackEnemy();
         if (attackEnemy !is null)
              Print("Choose Attack Enemy " + attackEnemy.sceneNode.name);
@@ -843,8 +846,8 @@ class PlayerCounterState : CharacterCounterState
             Vector3 direction = e1.sceneNode.worldPosition - e2.sceneNode.worldPosition;
             direction.y = 0;
 
-            CharacterCounterState@ eCState1 = cast<CharacterCounterState@>(e1.stateMachine.FindState("CounterState"));
-            CharacterCounterState@ eCState2 = cast<CharacterCounterState@>(e2.stateMachine.FindState("CounterState"));
+            CharacterCounterState@ eCState1 = cast<CharacterCounterState>(e1.stateMachine.FindState("CounterState"));
+            CharacterCounterState@ eCState2 = cast<CharacterCounterState>(e2.stateMachine.FindState("CounterState"));
 
             if (eCState1 is null || eCState2 is null)
                 return;
@@ -915,8 +918,8 @@ class PlayerCounterState : CharacterCounterState
             Enemy@ e2 = counterEnemies[1];
             e1.ChangeState("CounterState");
             e2.ChangeState("CounterState");
-            CharacterCounterState@ eCState1 = cast<CharacterCounterState@>(e1.GetState());
-            CharacterCounterState@ eCState2 = cast<CharacterCounterState@>(e2.GetState());
+            CharacterCounterState@ eCState1 = cast<CharacterCounterState>(e1.GetState());
+            CharacterCounterState@ eCState2 = cast<CharacterCounterState>(e2.GetState());
             eCState1.ChangeSubState(COUNTER_WAITING);
             eCState2.ChangeSubState(COUNTER_WAITING);
         }
@@ -931,7 +934,7 @@ class PlayerCounterState : CharacterCounterState
             Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack);
 
             int attackType = enemyNode.vars[ATTACK_TYPE].GetInt();
-            CharacterCounterState@ eCState = cast<CharacterCounterState@>(counterEnemy.stateMachine.FindState("CounterState"));
+            CharacterCounterState@ eCState = cast<CharacterCounterState>(counterEnemy.stateMachine.FindState("CounterState"));
             if (eCState is null)
                 return;
 
@@ -989,7 +992,7 @@ class PlayerCounterState : CharacterCounterState
         StartCounterMotion();
         for (uint i=0; i<counterEnemies.length; ++i)
         {
-            CharacterCounterState@ enemyCounterState = cast<CharacterCounterState@>(counterEnemies[i].GetState());
+            CharacterCounterState@ enemyCounterState = cast<CharacterCounterState>(counterEnemies[i].GetState());
             enemyCounterState.StartCounterMotion();
         }
 
@@ -1139,7 +1142,7 @@ class Player : Character
     bool Counter()
     {
         Print("Player::Counter");
-        PlayerCounterState@ state = cast<PlayerCounterState@>(stateMachine.FindState("CounterState"));
+        PlayerCounterState@ state = cast<PlayerCounterState>(stateMachine.FindState("CounterState"));
         if (state is null)
             return false;
 
@@ -1238,7 +1241,7 @@ class Player : Character
         uint t = time.systemTime;
         Print("PickAttackEnemy() started");
 
-        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
         if (em is null)
             return null;
 
@@ -1306,7 +1309,7 @@ class Player : Character
 
     int PickCounterEnemy(Array<Enemy@>@ counterEnemies)
     {
-        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
         if (em is null)
             return 0;
 
@@ -1335,7 +1338,7 @@ class Player : Character
 
     Enemy@ PickRedirectEnemy()
     {
-        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
         if (em is null)
             return null;
 

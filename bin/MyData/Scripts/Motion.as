@@ -183,7 +183,8 @@ class Motion
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
         endDistance = Vector3(diff.x, diff.y, diff.z).length;
         processed = true;
-        Print("Motion " + name + " endDistance="  + endDistance + " timeCost=" + String(time.systemTime - startTime) + " ms startFromOrigin=" + startFromOrigin.ToString());
+        if (d_log)
+            Print("Motion " + name + " endDistance="  + endDistance + " timeCost=" + String(time.systemTime - startTime) + " ms startFromOrigin=" + startFromOrigin.ToString());
     }
 
     void SetEndFrame(int frame)
@@ -365,7 +366,6 @@ class MotionManager
     uint                    assetProcessTime;
     int                     memoryUse;
     int                     processedMotions;
-    int                     processTimePerframe = 16; // ms
 
     MotionManager()
     {
@@ -631,7 +631,7 @@ class MotionManager
             motions[i].Process();
             ++processedMotions;
             int time_diff = int(time.systemTime - t);
-            if (time_diff >= processTimePerframe)
+            if (time_diff >= PROCESS_TIME_PER_FRAME)
                 break;
         }
         Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions);

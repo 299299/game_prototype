@@ -54,8 +54,11 @@ void Stop()
 
 void CreateScene()
 {
+    uint t = time.systemTime;
     Scene@ scene_ = Scene();
     scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
+    Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
+
     scene_.CreateScriptObject(scriptFile, "EnemyManager");
     script.defaultScene = scene_;
     script.defaultScriptFile = scriptFile;
@@ -68,7 +71,6 @@ void CreateScene()
     // audio.listener = characterNode.CreateComponent("SoundListener");
     characterNode.CreateScriptObject(scriptFile, "Player");
     characterNode.CreateScriptObject(scriptFile, "Ragdoll");
-
 
     Node@ thugNode = scene_.GetChild("thug", true);
     thugNode.CreateScriptObject(scriptFile, "Thug");
@@ -87,6 +89,7 @@ void CreateScene()
     gCameraMgr.SetCameraController("ThirdPerson");
 
     //DumpSkeletonNames(characterNode);
+    Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms");
 }
 
 void SetupViewport()
@@ -145,11 +148,6 @@ void CreateLogo()
     logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
     logoSprite.opacity = 0.75f;
     logoSprite.priority = -100;
-}
-
-void PreLoadResources()
-{
-    cache.GetResource("Material", "Materials/Tail.xml");
 }
 
 void CreateUI()
@@ -282,6 +280,7 @@ void SubscribeToEvents()
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
     SubscribeToEvent("KeyDown", "HandleKeyDown");
     SubscribeToEvent("MouseButtonDown", "HandleMouseButtonDown");
+    SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -465,7 +464,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         {
             Node@ n = scene_.GetChild("thug2");
             n.vars[ANIMATION_INDEX] = RandomInt(4);
-            Thug@ thug = cast<Thug@>(n.scriptObject);
+            Thug@ thug = cast<Thug>(n.scriptObject);
             thug.stateMachine.ChangeState("HitState");
         }
     }
@@ -505,19 +504,11 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
     MoveDrag(float(x), float(y));
 }
 
-void DumpSkeletonNames(Node@ n)
-{
-    AnimatedModel@ model = n.GetComponent("AnimatedModel");
-    if (model is null)
-        model = n.children[0].GetComponent("AnimatedModel");
-    if (model is null)
-        return;
 
-    Skeleton@ skeleton = model.skeleton;
-    for (uint i=0; i<skeleton.numBones; ++i)
-    {
-        Print(skeleton.bones[i].name);
-    }
+void HandleSceneLoadFinished(StringHash eventType, VariantMap& eventData)
+{
+    Print("HandleSceneLoadFinished");
+    gGame.OnSceneLoadFinished(eventData["Scene"].GetPtr());
 }
 
 

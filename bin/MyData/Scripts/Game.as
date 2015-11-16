@@ -4,9 +4,20 @@
 //
 // ==============================================
 
+
 class GameState : State
 {
     void PostRenderUpdate()
+    {
+
+    }
+
+    void OnPlayerDead()
+    {
+
+    }
+
+    void OnSceneLoadFinished(Scene@ _scene)
     {
 
     }
@@ -15,13 +26,15 @@ class GameState : State
 enum LoadSubState
 {
     LOADING_MOTIONS,
-    LOADING_OTHER,
-    LOADING_FADE,
+    LOADING_RESOURCES,
+    LOADING_FINISHED,
 };
 
-class LoadingState : State
+class LoadingState : GameState
 {
-    int state;
+    int                 state;
+    int                 numLoadedResources = 0;
+    Scene@              gameScene;
 
     LoadingState()
     {
@@ -71,7 +84,7 @@ class LoadingState : State
             if (gMotionMgr.Update(dt))
             {
                 gMotionMgr.Finish();
-                ChangeSubState(LOADING_OTHER);
+                ChangeSubState(LOADING_RESOURCES);
             }
             Print("============================== Motion Loading end ==============================");
 
@@ -79,13 +92,17 @@ class LoadingState : State
             if (text !is null)
                 text.text = "Loading Motions, loaded = " + gMotionMgr.processedMotions;
         }
-        else if (state == LOADING_OTHER)
+        else if (state == LOADING_RESOURCES)
         {
-            gGame.ChangeState("TestGameState");
+            Text@ text = ui.root.GetChild("loading_text");
+            if (text !is null)
+                text.text = "Loading game scene ressources";
         }
-        else if (state == LOADING_FADE)
+        else if (state == LOADING_FINISHED)
         {
-
+            gameScene.Remove();
+            gameScene = null;
+            gGame.ChangeState("TestGameState");
         }
     }
 
@@ -96,6 +113,24 @@ class LoadingState : State
 
         Print("LoadingState ChangeSubState from " + state + " to " + newState);
         state = newState;
+
+        if (newState == LOADING_RESOURCES)
+        {
+            gameScene = Scene();
+            gameScene.LoadAsyncXML(cache.GetFile("Scenes/1.xml"), LOAD_RESOURCES_ONLY);
+        }
+    }
+
+    void OnSceneLoadFinished(Scene@ _scene)
+    {
+        if (state == LOADING_RESOURCES)
+        {
+            if (_scene is gameScene)
+            {
+                Print("Scene Loading Finished");
+                ChangeSubState(LOADING_FINISHED);
+            }
+        }
     }
 };
 
@@ -165,28 +200,10 @@ class TestGameState : GameState
         Print("TestGameState ChangeSubState from " + state + " to " + newState);
         state = newState;
     }
-};
 
-class PlayingState : GameState
-{
-    PlayingState()
+    void OnPlayerDead()
     {
-        SetName("PlayingState");
-    }
 
-    void Enter(State@ lastState)
-    {
-        State::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        State::Exit(nextState);
-    }
-
-    void Update(float dt)
-    {
-        GameState::Update(dt);
     }
 };
 
@@ -208,13 +225,12 @@ class GameFSM : FSM
     {
         AddState(LoadingState());
         AddState(TestGameState());
-        AddState(PlayingState());
     }
 
     void ChangeState(const StringHash&in nameHash)
     {
         FSM::ChangeState(nameHash);
-        @gameState = cast<GameState@>(currentState);
+        @gameState = cast<GameState>(currentState);
     }
 
     void PostRenderUpdate()
@@ -222,6 +238,19 @@ class GameFSM : FSM
         if (gameState !is null)
             gameState.PostRenderUpdate();
     }
+
+    void OnPlayerDead()
+    {
+        if (gameState !is null)
+            gameState.OnPlayerDead();
+    }
+
+    void OnSceneLoadFinished(Scene@ _scene)
+    {
+        if (gameState !is null)
+            gameState.OnSceneLoadFinished(_scene);
+    }
 };
+
 
 GameFSM@ gGame = GameFSM();

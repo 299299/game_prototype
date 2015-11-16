@@ -130,7 +130,7 @@ void SetWorldTimeScale(Scene@ _scene, float scale)
     Array<Node@> nodes = _scene.GetChildrenWithScript(false);
     for (uint i=0; i<nodes.length; ++i)
     {
-        GameObject@ object = cast<GameObject@>(nodes[i].scriptObject);
+        GameObject@ object = cast<GameObject>(nodes[i].scriptObject);
         if (object is null)
             continue;
         object.SetTimeScale(scale);

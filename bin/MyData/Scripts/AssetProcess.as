@@ -36,6 +36,9 @@ Vector3 pelvisOrign;
 
 const float FRAME_PER_SEC = 30.0f;
 const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
+const int   PROCESS_TIME_PER_FRAME = 16; // ms
+
+bool d_log = false;
 
 Vector3 GetProjectedAxis(Node@ node, const Vector3&in axis)
 {
@@ -54,6 +57,21 @@ Quaternion GetRotationInXZPlane(Node@ rotateNode, const Quaternion&in startLocal
     rotateNode.rotation = curLocalRot;
     Vector3 curAxis = GetProjectedAxis(rotateNode, pelvisRightAxis);
     return Quaternion(startAxis, curAxis);
+}
+
+void DumpSkeletonNames(Node@ n)
+{
+    AnimatedModel@ model = n.GetComponent("AnimatedModel");
+    if (model is null)
+        model = n.children[0].GetComponent("AnimatedModel");
+    if (model is null)
+        return;
+
+    Skeleton@ skeleton = model.skeleton;
+    for (uint i=0; i<skeleton.numBones; ++i)
+    {
+        Print(skeleton.bones[i].name);
+    }
 }
 
 void AssetPreProcess()
@@ -80,8 +98,8 @@ void AssetPreProcess()
 
 void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, bool cutRotation, Array<Vector4>&out outKeys, Vector3&out startFromOrigin, bool dump = false)
 {
-    uint startTime = time.systemTime;
-    Print("Processing animation " + animationFile);
+    if (d_log)
+        Print("Processing animation " + animationFile);
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
@@ -110,7 +128,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         float rotation = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(rotation) > 75)
         {
-            Print("Need to flip rotate track since object is start opposite, rotation=" + rotation);
+            if (d_log)
+                Print("Need to flip rotate track since object is start opposite, rotation=" + rotation);
             originFlag |= kMotion_R;
         }
     }
@@ -120,7 +139,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         Vector3 position = translateTrack.keyFrames[0].position - pelvisOrign;
         const float minDist = 0.5f;
         if (Abs(position.x) > minDist) {
-            Print("Need reset x position");
+            if (d_log)
+                Print("Need reset x position");
             originFlag |= kMotion_X;
         }
         if (Abs(position.y) > 2.0f) {
@@ -128,10 +148,12 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             // riginFlag |= kMotion_Y;
         }
         if (Abs(position.z) > minDist) {
-            Print("Need reset z position");
+            if (d_log)
+                Print("Need reset z position");
             originFlag |= kMotion_Z;
         }
-        Print("t-diff-position=" + position.ToString());
+        if (d_log)
+            Print("t-diff-position=" + position.ToString());
     }
 
     if (originFlag & kMotion_R != 0)
@@ -177,12 +199,13 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
         {
             Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[i].rotation);
-            if (i == 0 || i == rotateTrack.numKeyFrames - 1)
-               Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
-            if (i == 0)
+            if (d_log)
             {
-                firstRotateFromRoot = q.eulerAngles.y;
+                if (i == 0 || i == rotateTrack.numKeyFrames - 1)
+                    Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
             }
+            if (i == 0)
+                firstRotateFromRoot = q.eulerAngles.y;
         }
     }
 

@@ -707,9 +707,7 @@ class Character : GameObject
         Node@ hintNode = sceneNode.CreateChild("HintNode");
         hintNode.position = Vector3(0, 5, 0);
         Text3D@ text = hintNode.CreateComponent("Text3D");
-        uint t_ = time.systemTime;
         text.SetFont("Fonts/UbuntuMono-R.ttf", 30);
-        Print("11111 time-cost=" + (time.systemTime - t_) + " ms");
         text.SetAlignment(HA_CENTER, VA_CENTER);
         text.color = Color(1, 0, 0);
         text.textAlignment = HA_CENTER;
@@ -747,7 +745,7 @@ class Character : GameObject
 
     void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
     {
-        CharacterAlignState@ state = cast<CharacterAlignState@>(stateMachine.FindState("AlignState"));
+        CharacterAlignState@ state = cast<CharacterAlignState>(stateMachine.FindState("AlignState"));
         if (state is null)
             return;
 
@@ -902,7 +900,7 @@ class Character : GameObject
 
     void TestAnimation(const String&in animationName)
     {
-        AnimationTestState@ state = cast<AnimationTestState@>(stateMachine.FindState("AnimationTestState"));
+        AnimationTestState@ state = cast<AnimationTestState>(stateMachine.FindState("AnimationTestState"));
         if (state is null)
             return;
         state.animationName = animationName;
@@ -912,7 +910,7 @@ class Character : GameObject
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
         AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
-        CharacterState@ cs = cast<CharacterState@>(stateMachine.currentState);
+        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
         if (cs !is null)
             cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }

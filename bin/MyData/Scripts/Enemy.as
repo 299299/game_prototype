@@ -12,7 +12,7 @@ class Enemy : Character
     {
         Character::Start();
         @target = cast<Character@>(scene.GetChild("player", false).scriptObject);
-        EnemyManager@ em = cast<EnemyManager@>(scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(scene.GetScriptObject("EnemyManager"));
         if (em !is null)
             em.RegisterEnemy(this);
     }
@@ -21,7 +21,7 @@ class Enemy : Character
     {
         Character::Stop();
 
-        EnemyManager@ em = cast<EnemyManager@>(scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(scene.GetScriptObject("EnemyManager"));
         if (em !is null)
             em.UnRegisterEnemy(this);
     }

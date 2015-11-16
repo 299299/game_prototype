@@ -123,7 +123,7 @@ class ThugStandState : CharacterState
         int rand_i = RandomInt(5);
         Print("rand_i=" + rand_i + " dist=" + dist);
 
-        EnemyManager@ em = cast<EnemyManager@>(ownner.sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(ownner.sceneNode.scene.GetScriptObject("EnemyManager"));
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
         if (num_of_moving_thugs < 3 && rand_i > 0 && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
@@ -685,7 +685,7 @@ class Thug : Enemy
 
     bool CanAttack()
     {
-        EnemyManager@ em = cast<EnemyManager@>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
         if (em is null)
             return false;
         int num = em.GetNumOfEnemyInState(ATTACK_STATE);
@@ -795,7 +795,7 @@ class Thug : Enemy
 
             //Print("neighbors[" + i + "] = " + n_node.name);
 
-            Character@ object = cast<Character@>(n_node.scriptObject);
+            Character@ object = cast<Character>(n_node.scriptObject);
             if (object.HasFlag(FLAGS_MOVING))
                 continue;
 
