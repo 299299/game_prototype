@@ -50,36 +50,20 @@ class Enemy : Character
         return Character::GetDebugText() + "health=" + health +  " flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
     }
 
-    //Moves the NPC/AI/Whatever away from its neighbors that are too close.
-    bool Seperate(Vector3&out ReturnVector)
+    bool IsTargetSightBlocked()
     {
-        Node@ _node = sceneNode.GetChild("Collision");
-        if (_node is null)
+        Vector3 my_mid_pos = sceneNode.worldPosition;
+        my_mid_pos.y += CHARACTER_HEIGHT/2;
+        Vector3 target_mid_pos = target.sceneNode.worldPosition;
+        target_mid_pos.y += CHARACTER_HEIGHT/2;
+        Vector3 dir = target_mid_pos - my_mid_pos;
+        float rayDistance = dir.length;
+        Ray sightRay;
+        sightRay.origin = my_mid_pos;
+        sightRay.direction = dir.Normalized();
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(sightRay, rayDistance, COLLISION_LAYER_CHARACTER);
+        if (result.body is null)
             return false;
-
-        RigidBody@ body = _node.GetComponent("RigidBody");
-        if (body is null)
-            return false;
-
-        Array<RigidBody@>@ neighbors = body.collidingBodies;
-        int averageCounter = 0;
-
-        if (neighbors.empty)
-            return false;
-
-        Vector3 myPos = sceneNode.worldPosition;
-        for(uint i = 0; i<neighbors.length; i++)
-        {
-            Vector3 otherPos = neighbors[i].node.worldPosition;
-            Vector3 diff = myPos - otherPos;
-            diff.y = 0;
-            if( diff.length < requiredDistanceFromNeighbors ) //If the neighbor is too close.
-            {
-                averageCounter += 1;
-                ReturnVector += diff;
-            }
-        }
-        ReturnVector = ReturnVector / averageCounter; //Average the vector.
         return true;
     }
 };

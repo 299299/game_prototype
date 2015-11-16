@@ -17,6 +17,11 @@ class GameState : State
 
     }
 
+    void OnEnemyKilled(Character@ enemy)
+    {
+
+    }
+
     void OnSceneLoadFinished(Scene@ _scene)
     {
 
@@ -222,12 +227,6 @@ class TestGameState : GameState
         state = newState;
     }
 
-    void OnPlayerDead()
-    {
-        ChangeSubState(GAME_FAILED);
-        ShowMessage("You Died! Press Stride or Jump to restart!", true);
-    }
-
     void CreateScene()
     {
         uint t = time.systemTime;
@@ -285,6 +284,17 @@ class TestGameState : GameState
         ChangeSubState(GAME_RUNNING);
         ShowMessage("", false);
     }
+
+    void OnPlayerDead()
+    {
+        ChangeSubState(GAME_FAILED);
+        ShowMessage("You Died! Press Stride or Jump to restart!", true);
+    }
+
+    void OnEnemyKilled(Character@ enemy)
+    {
+
+    }
 };
 
 class GameFSM : FSM
@@ -323,6 +333,12 @@ class GameFSM : FSM
     {
         if (gameState !is null)
             gameState.OnPlayerDead();
+    }
+
+    void OnEnemyKilled(Character@ enemy)
+    {
+        if (gameState !is null)
+            gameState.OnEnemyKilled(enemy);
     }
 
     void OnSceneLoadFinished(Scene@ _scene)

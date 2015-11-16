@@ -1238,6 +1238,7 @@ class Player : Character
         {
             killed ++;
             Print("killed add to " + killed);
+            gGame.OnEnemyKilled(target);
         }
     }
 

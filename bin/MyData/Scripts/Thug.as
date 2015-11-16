@@ -666,7 +666,7 @@ class Thug : Enemy
 
         Node@ collsionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(3.0f, 5.0f, Vector3(0.0f, 2.5f, 0.0f));
+        shape.SetCapsule(3.0f, CHARACTER_HEIGHT, Vector3(0.0f, 2.5f, 0.0f));
         RigidBody@ body = collsionNode.CreateComponent("RigidBody");
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         body.collisionMask = COLLISION_LAYER_CHARACTER;
