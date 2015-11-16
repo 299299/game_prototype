@@ -132,7 +132,8 @@ class FSM
         if (newState !is null)
             newStateName = newState.name;
 
-        Print("FSM Change State " + oldStateName + " -> " + newStateName);
+        if (d_log)
+            Print("FSM Change State " + oldStateName + " -> " + newStateName);
     }
 
     void ChangeState(const String&in name)

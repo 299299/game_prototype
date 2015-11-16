@@ -732,9 +732,8 @@ class PlayerAttackState : CharacterState
             return;
         }
 
-        Character@ target = attackEnemy;
         Vector3 position = attackCheckNode.worldPosition;
-        Vector3 targetPosition = target.sceneNode.worldPosition;
+        Vector3 targetPosition = attackEnemy.sceneNode.worldPosition;
         Vector3 diff = targetPosition - position;
         diff.y = 0;
         float distance = diff.length;
@@ -742,10 +741,10 @@ class PlayerAttackState : CharacterState
             Vector3 dir = position - targetPosition;
             dir.y = 0;
             dir.Normalize();
-            bool b = target.OnDamage(ownner, position, dir, ownner.attackDamage);
+            bool b = attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage);
             if (!b)
                 return;
-            ownner.OnAttackSuccess();
+            ownner.OnAttackSuccess(attackEnemy);
         }
     }
 
@@ -775,7 +774,7 @@ class PlayerAttackState : CharacterState
 
         attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
-        ownner.OnAttackSuccess();
+        ownner.OnAttackSuccess(attackEnemy);
 
         float freqScale = slowMotion ? 0.25f : 1.0f;
         if (currentAttack.type == ATTACK_PUNCH)
@@ -826,7 +825,6 @@ class PlayerCounterState : CharacterCounterState
         Node@ myNode = ownner.sceneNode;
         Vector3 myPos = myNode.worldPosition;
         float myRotation = myNode.worldRotation.eulerAngles.y;
-        float targetRotation = 0;
         float rotationDiff = 0;
         Vector3 positionDiff(0, 0, 0);
 
@@ -885,7 +883,9 @@ class PlayerCounterState : CharacterCounterState
                 originDiff.y = 0.0f;
 
                 targetPosition = e1.sceneNode.worldPosition + e1.sceneNode.worldRotation * originDiff;
-                targetRotation = myRotation;
+
+                Vector3 vec_dir = pos1 - pos2;
+                targetRotation = Atan2(vec_dir.x, vec_dir.z) + 90;
             }
             else
             {
@@ -1010,6 +1010,7 @@ class PlayerCounterState : CharacterCounterState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 1.0f, Color(1, 0, 0), false);
+        DebugDrawDirection(debug, ownner.sceneNode, targetRotation, Color(1, 0, 0));
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1088,6 +1089,7 @@ class PlayerDeadState : MultiMotionState
 class Player : Character
 {
     int combo;
+    int killed;
 
     Player()
     {
@@ -1227,10 +1229,16 @@ class Player : Character
         return true;
     }
 
-    void OnAttackSuccess()
+    void OnAttackSuccess(Character@ target)
     {
         combo ++;
         Print("combo add to " + combo);
+
+        if (target.health == 0)
+        {
+            killed ++;
+            Print("killed add to " + killed);
+        }
     }
 
     //====================================================================
@@ -1382,11 +1390,15 @@ class Player : Character
 
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "health=" + health + " flags=" + flags + " combo=" + combo + " timeScale=" + timeScale + "\n";
+        return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
+              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + "\n";
     }
 
-    String GetHintText()
+    void Reset()
     {
-        return ""; //sceneNode.name + " state=" + stateMachine.currentState.name + " combo=" + combo;
+        Character::Reset();
+        combo = 0;
+        killed = 0;
     }
+
 };

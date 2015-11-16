@@ -138,6 +138,7 @@ enum GameSubState
 {
     GAME_FADING,
     GAME_RUNNING,
+    GAME_FAILED,
 };
 
 class TestGameState : GameState
@@ -169,7 +170,22 @@ class TestGameState : GameState
         }
         CreateScene();
         if (!engine.headless)
-            SetupViewport();
+        {
+            Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
+            renderer.viewports[0] = viewport;
+            graphics.windowTitle = "Test";
+
+            int height = graphics.height / 22;
+            if (height > 64)
+                height = 64;
+
+            Text@ messageText = ui.root.CreateChild("Text", "message");
+            messageText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
+            messageText.SetAlignment(HA_CENTER, VA_CENTER);
+            messageText.SetPosition(0, -height * 2);
+            messageText.color = Color(1, 0, 0);
+            messageText.visible = false;
+        }
         else
             ChangeSubState(GAME_RUNNING);
     }
@@ -189,6 +205,11 @@ class TestGameState : GameState
                 gInput.m_freeze = false;
             }
         }
+        else if (state == GAME_FAILED)
+        {
+            if (gInput.IsAttackPressed() || gInput.IsEvadePressed())
+                Restart();
+        }
         GameState::Update(dt);
     }
 
@@ -203,7 +224,66 @@ class TestGameState : GameState
 
     void OnPlayerDead()
     {
+        ChangeSubState(GAME_FAILED);
+        ShowMessage("You Died! Press Stride or Jump to restart!", true);
+    }
 
+    void CreateScene()
+    {
+        uint t = time.systemTime;
+        Scene@ scene_ = Scene();
+        script.defaultScene = scene_;
+        scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
+        Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
+
+        scene_.CreateScriptObject(scriptFile, "EnemyManager");
+
+        Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
+        Camera@ cam = cameraNode.CreateComponent("Camera");
+        audio.listener = cameraNode.CreateComponent("SoundListener");
+
+        Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
+        // audio.listener = characterNode.CreateComponent("SoundListener");
+        characterNode.CreateScriptObject(scriptFile, "Player");
+        characterNode.CreateScriptObject(scriptFile, "Ragdoll");
+
+        Node@ thugNode = scene_.GetChild("thug", true);
+        thugNode.CreateScriptObject(scriptFile, "Thug");
+        thugNode.CreateScriptObject(scriptFile, "Ragdoll");
+
+        Node@ thugNode2 = scene_.GetChild("thug2", true);
+        thugNode2.CreateScriptObject(scriptFile, "Thug");
+        thugNode2.CreateScriptObject(scriptFile, "Ragdoll");
+
+        Vector3 v_pos = characterNode.worldPosition;
+        cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
+        cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
+
+        gCameraMgr.Start(cameraNode);
+        //gCameraMgr.SetCameraController("Debug");
+        gCameraMgr.SetCameraController("ThirdPerson");
+
+        //DumpSkeletonNames(characterNode);
+        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms");
+    }
+
+    void ShowMessage(const String&in msg, bool show)
+    {
+        Text@ messageText = ui.root.GetChild("message", true);
+        if (messageText !is null)
+        {
+            messageText.text = msg;
+            messageText.visible = false;
+        }
+    }
+
+    void Restart()
+    {
+        Player@ player = GetPlayer();
+        if (player !is null)
+            player.Reset();
+        ChangeSubState(GAME_RUNNING);
+        ShowMessage("", false);
     }
 };
 

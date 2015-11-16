@@ -372,6 +372,7 @@ class CharacterCounterState : CharacterState
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;
+    float               targetRotation;
 
     CharacterCounterState(Character@ c)
     {
@@ -650,8 +651,6 @@ class Character : GameObject
     Vector3                 targetPosition;
     bool                    targetPositionApplied = false;
 
-    bool                    hintTextSet = false;
-
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -703,17 +702,6 @@ class Character : GameObject
         }
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-
-        Node@ hintNode = sceneNode.CreateChild("HintNode");
-        hintNode.position = Vector3(0, 5, 0);
-        Text3D@ text = hintNode.CreateComponent("Text3D");
-        text.SetFont("Fonts/UbuntuMono-R.ttf", 30);
-        text.SetAlignment(HA_CENTER, VA_CENTER);
-        text.color = Color(1, 0, 0);
-        text.textAlignment = HA_CENTER;
-        text.text = sceneNode.name;
-        text.faceCameraMode = FC_LOOKAT_XYZ;
-
         targetPositionApplied = false;
     }
 
@@ -799,11 +787,6 @@ class Character : GameObject
             }
         }
         return debugText;
-    }
-
-    String GetHintText()
-    {
-        return "";
     }
 
     void MoveTo(const Vector3&in position, float dt)
@@ -1017,10 +1000,10 @@ class Character : GameObject
         Node@ hintNode = sceneNode.GetChild("HintNode", false);
         Text3D@ text3d = hintNode.GetComponent("Text3D");
         text3d.text = text;
-        hintTextSet = bSet;
+        text3d.enabled = bSet;
     }
 
-    void OnAttackSuccess()
+    void OnAttackSuccess(Character@ object)
     {
 
     }
@@ -1111,22 +1094,6 @@ class Character : GameObject
     {
         dt *= timeScale;
         stateMachine.FixedUpdate(dt);
-
-        if (!hintTextSet)
-        {
-            Node@ hintNode = sceneNode.GetChild("HintNode", false);
-            if (hintNode !is null)
-            {
-                Vector3 pos = hipsNode.worldPosition;
-                hintNode.worldPosition = Vector3(pos.x, pos.y + 3, pos.z);
-
-                Text3D@ text = hintNode.GetComponent("Text3D");
-                if (text !is null)
-                {
-                    text.text = GetHintText();
-                }
-            }
-        }
 
         // Disappear when duration expired
         if (duration >= 0)

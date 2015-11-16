@@ -25,6 +25,7 @@ void Start()
 {
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
+    script.defaultScriptFile = scriptFile;
 
     SetRandomSeed(time.systemTime);
 
@@ -50,55 +51,6 @@ void Stop()
     Print("Test Stop");
     gMotionMgr.Stop();
     ui.Clear();
-}
-
-void CreateScene()
-{
-    uint t = time.systemTime;
-    Scene@ scene_ = Scene();
-    scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
-    Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
-
-    scene_.CreateScriptObject(scriptFile, "EnemyManager");
-    script.defaultScene = scene_;
-    script.defaultScriptFile = scriptFile;
-
-    Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
-    Camera@ cam = cameraNode.CreateComponent("Camera");
-    audio.listener = cameraNode.CreateComponent("SoundListener");
-
-    Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
-    // audio.listener = characterNode.CreateComponent("SoundListener");
-    characterNode.CreateScriptObject(scriptFile, "Player");
-    characterNode.CreateScriptObject(scriptFile, "Ragdoll");
-
-    Node@ thugNode = scene_.GetChild("thug", true);
-    thugNode.CreateScriptObject(scriptFile, "Thug");
-    thugNode.CreateScriptObject(scriptFile, "Ragdoll");
-
-    Node@ thugNode2 = scene_.GetChild("thug2", true);
-    thugNode2.CreateScriptObject(scriptFile, "Thug");
-    thugNode2.CreateScriptObject(scriptFile, "Ragdoll");
-
-    Vector3 v_pos = characterNode.worldPosition;
-    cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
-    cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
-
-    gCameraMgr.Start(cameraNode);
-    //gCameraMgr.SetCameraController("Debug");
-    gCameraMgr.SetCameraController("ThirdPerson");
-
-    //DumpSkeletonNames(characterNode);
-    Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms");
-}
-
-void SetupViewport()
-{
-    if (engine.headless)
-        return;
-    Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
-    renderer.viewports[0] = viewport;
-    graphics.windowTitle = "Test";
 }
 
 void SetWindowTitleAndIcon()

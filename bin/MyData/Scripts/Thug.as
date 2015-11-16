@@ -541,7 +541,7 @@ class ThugAttackState : CharacterState
             {
                 ownner.PlaySound("Sfx/thug_kick.ogg");
             }
-            ownner.OnAttackSuccess();
+            ownner.OnAttackSuccess(target);
         }
     }
 
@@ -675,6 +675,17 @@ class Thug : Enemy
         body.kinematic = true;
         body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
         body.collisionEventMode = COLLISION_ALWAYS;
+
+        Node@ hintNode = sceneNode.CreateChild("HintNode");
+        hintNode.position = Vector3(0, 5, 0);
+        Text3D@ text = hintNode.CreateComponent("Text3D");
+        text.SetFont("Fonts/UbuntuMono-R.ttf", 30);
+        text.SetAlignment(HA_CENTER, VA_CENTER);
+        text.color = Color(1, 0, 0);
+        text.textAlignment = HA_CENTER;
+        text.text = sceneNode.name;
+        text.faceCameraMode = FC_LOOKAT_XYZ;
+        text.enabled = false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -765,11 +776,6 @@ class Thug : Enemy
             // special case
             motion_translateEnabled = false;
         }
-    }
-
-    String GetHintText()
-    {
-        return ""; //sceneNode.name + " state=" + stateMachine.currentState.name + " distToPlayer=" + GetTargetDistance();
     }
 
     int GetSperateDirection(int& outDir)
