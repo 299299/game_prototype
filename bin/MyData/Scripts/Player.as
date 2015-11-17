@@ -181,10 +181,11 @@ class PlayerEvadeState : MultiMotionState
     {
         super(c);
         SetName("EvadeState");
-        AddMotion("BM_Movement/Evade_Forward_01");
-        AddMotion("BM_Movement/Evade_Right_01");
-        AddMotion("BM_Movement/Evade_Back_01");
-        AddMotion("BM_Movement/Evade_Left_01");
+        String prefix = "BM_Movement/";
+        AddMotion(prefix + "Evade_Forward_01");
+        AddMotion(prefix + "Evade_Right_01");
+        AddMotion(prefix + "Evade_Back_01");
+        AddMotion(prefix + "Evade_Left_01");
     }
 };
 
@@ -487,20 +488,20 @@ class PlayerAttackState : CharacterState
             return;
         }
 
-        CheckInput();
+        CheckInput(t);
         CharacterState::Update(dt);
     }
 
 
-    void CheckInput()
+    void CheckInput(float t)
     {
         float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
         isInAir = y_diff > 0.5f;
         if (isInAir)
             return;
 
-        bool check_attack = timeInState > currentAttack.impactTime + SEC_PER_FRAME * HIT_WAIT_FRAMES;
-        bool check_others = timeInState > currentAttack.impactTime + SEC_PER_FRAME;
+        bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1);
+        bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME;
 
         if (check_attack)
         {
@@ -787,7 +788,10 @@ class PlayerAttackState : CharacterState
         if (n !is null)
             position = n.worldPosition;
 
-        attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
+        bool b = attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage, weakAttack);
+        if (!b)
+            return;
+
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
         ownner.OnAttackSuccess(attackEnemy);
 
@@ -1288,25 +1292,6 @@ class Player : Character
         if (em is null)
             return null;
 
-        if (lastAttackId >= 0)
-        {
-            Node@ n = _scene.GetNode(uint(lastAttackId));
-            if (n !is null)
-            {
-                Print("lastAttackId = " + lastAttackId);
-                Enemy@ e = cast<Enemy>(n.scriptObject);
-                if (e !is null)
-                {
-                    Print("lastAttack e.CanBeAttacked()=" + e.CanBeAttacked());
-                    if (e.CanBeAttacked())
-                    {
-                        lastAttackId = int(n.id);
-                        return e;
-                    }
-                }
-            }
-        }
-
         // Find the best enemy
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
@@ -1351,6 +1336,13 @@ class Player : Character
             score += distScore;
             score += angleScore;
             score += threatScore;
+
+            if (lastAttackId == e.sceneNode.id)
+            {
+                if (diffAngle < 90.0f)
+                    score = 100;
+            }
+
             em.scoreCache.Push(score);
             Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }

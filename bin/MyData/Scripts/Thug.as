@@ -554,7 +554,7 @@ class ThugAttackState : CharacterState
 
 class ThugHitState : MultiMotionState
 {
-    float recoverTimer = HIT_WAIT_FRAMES * SEC_PER_FRAME;
+    float recoverTimer = 3 * SEC_PER_FRAME;
 
     ThugHitState(Character@ c)
     {

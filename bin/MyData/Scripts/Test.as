@@ -233,6 +233,7 @@ void SubscribeToEvents()
     SubscribeToEvent("KeyDown", "HandleKeyDown");
     SubscribeToEvent("MouseButtonDown", "HandleMouseButtonDown");
     SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
+    SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -469,6 +470,17 @@ void HandleSceneLoadFinished(StringHash eventType, VariantMap& eventData)
     gGame.OnSceneLoadFinished(eventData["Scene"].GetPtr());
 }
 
+void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
+{
+    Print("HandleAsyncLoadProgress");
+    Scene@ _scene = eventData["Scene"].GetPtr();
+    float progress = eventData["Progress"].GetFloat();
+    int loadedNodes = eventData["LoadedNodes"].GetInt();
+    int totalNodes = eventData["TotalNodes"].GetInt();
+    int loadedResources = eventData["LoadedResources"].GetInt();
+    int totalResources = eventData["TotalResources"].GetInt();
+    gGame.OnAsyncLoadProgress(_scene, progress, loadedNodes, totalNodes, loadedResources, totalResources);
+}
 
 void ExecuteCommand()
 {

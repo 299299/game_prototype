@@ -26,6 +26,11 @@ class GameState : State
     {
 
     }
+
+    void OnAsyncLoadProgress(Scene@ _scene, float progress, int loadedNodes, int totalNodes, int loadedResources, int totalResources)
+    {
+
+    }
 };
 
 enum LoadSubState
@@ -85,23 +90,23 @@ class LoadingState : GameState
     {
         if (state == LOADING_MOTIONS)
         {
+            Text@ text = ui.root.GetChild("loading_text");
+            if (text !is null)
+                text.text = "Loading Motions, loaded = " + gMotionMgr.processedMotions;
+
             Print("============================== Motion Loading start ==============================");
             if (gMotionMgr.Update(dt))
             {
                 gMotionMgr.Finish();
                 ChangeSubState(LOADING_RESOURCES);
+                if (text !is null)
+                    text.text = "Loading Scene Resources";
             }
             Print("============================== Motion Loading end ==============================");
-
-            Text@ text = ui.root.GetChild("loading_text");
-            if (text !is null)
-                text.text = "Loading Motions, loaded = " + gMotionMgr.processedMotions;
         }
         else if (state == LOADING_RESOURCES)
         {
-            Text@ text = ui.root.GetChild("loading_text");
-            if (text !is null)
-                text.text = "Loading game scene ressources";
+
         }
         else if (state == LOADING_FINISHED)
         {
@@ -131,12 +136,16 @@ class LoadingState : GameState
     {
         if (state == LOADING_RESOURCES)
         {
-            if (_scene is gameScene)
-            {
-                Print("Scene Loading Finished");
-                ChangeSubState(LOADING_FINISHED);
-            }
+            Print("Scene Loading Finished");
+            ChangeSubState(LOADING_FINISHED);
         }
+    }
+
+    void OnAsyncLoadProgress(Scene@ _scene, float progress, int loadedNodes, int totalNodes, int loadedResources, int totalResources)
+    {
+        Text@ text = ui.root.GetChild("loading_text");
+        if (text !is null)
+            text.text = "Loading scene ressources progress=" + progress + " resources:" + loadedResources + "/" + totalResources;
     }
 };
 
@@ -258,20 +267,22 @@ class TestGameState : GameState
 
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
         Camera@ cam = cameraNode.CreateComponent("Camera");
-        audio.listener = cameraNode.CreateComponent("SoundListener");
+        // audio.listener = cameraNode.CreateComponent("SoundListener");
 
         Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
-        // audio.listener = characterNode.CreateComponent("SoundListener");
+        audio.listener = characterNode.CreateComponent("SoundListener");
         characterNode.CreateScriptObject(scriptFile, "Player");
         characterNode.CreateScriptObject(scriptFile, "Ragdoll");
 
-        Node@ thugNode = scene_.GetChild("thug", true);
-        thugNode.CreateScriptObject(scriptFile, "Thug");
-        thugNode.CreateScriptObject(scriptFile, "Ragdoll");
-
-        Node@ thugNode2 = scene_.GetChild("thug2", true);
-        thugNode2.CreateScriptObject(scriptFile, "Thug");
-        thugNode2.CreateScriptObject(scriptFile, "Ragdoll");
+        for (uint i=0; i<scene_.numChildren; ++i)
+        {
+            Node@ _node = scene_.children[i];
+            if (_node.name.StartsWith("thug"))
+            {
+                _node.CreateScriptObject(scriptFile, "Thug");
+                _node.CreateScriptObject(scriptFile, "Ragdoll");
+            }
+        }
 
         Vector3 v_pos = characterNode.worldPosition;
         cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
@@ -362,6 +373,12 @@ class GameFSM : FSM
     {
         if (gameState !is null)
             gameState.OnSceneLoadFinished(_scene);
+    }
+
+    void OnAsyncLoadProgress(Scene@ _scene, float progress, int loadedNodes, int totalNodes, int loadedResources, int totalResources)
+    {
+        if (gameState !is null)
+            gameState.OnAsyncLoadProgress(_scene, progress, loadedNodes, totalNodes, loadedResources, totalResources);
     }
 };
 
