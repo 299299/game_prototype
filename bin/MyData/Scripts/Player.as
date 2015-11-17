@@ -499,16 +499,23 @@ class PlayerAttackState : CharacterState
         if (isInAir)
             return;
 
-        if (state == ATTACK_STATE_AFTER_IMPACT)
+        bool check_attack = timeInState > currentAttack.impactTime + SEC_PER_FRAME * HIT_WAIT_FRAMES;
+        bool check_others = timeInState > currentAttack.impactTime + SEC_PER_FRAME;
+
+        if (check_attack)
         {
             if (gInput.IsAttackPressed())
                 ownner.Attack();
         }
 
-        if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
+        if (check_others)
+        {
+            if (gInput.IsCounterPressed())
+                ownner.Counter();
+            else if (gInput.IsEvadePressed())
+                ownner.Evade();
+        }
+
     }
 
     void ResetValues()

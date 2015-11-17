@@ -10,6 +10,7 @@ float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.05f;
+const int HIT_WAIT_FRAMES = 3;
 
 class ThugStandState : CharacterState
 {
@@ -553,7 +554,7 @@ class ThugAttackState : CharacterState
 
 class ThugHitState : MultiMotionState
 {
-    float recoverTimer = 0.25f;
+    float recoverTimer = HIT_WAIT_FRAMES * SEC_PER_FRAME;
 
     ThugHitState(Character@ c)
     {
@@ -571,7 +572,7 @@ class ThugHitState : MultiMotionState
 
     void Update(float dt)
     {
-        if (timeInState > recoverTimer)
+        if (timeInState >= recoverTimer)
             ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
         MultiMotionState::Update(dt);
     }
@@ -584,7 +585,7 @@ class ThugHitState : MultiMotionState
 
     bool CanReEntered()
     {
-        return timeInState > recoverTimer;
+        return timeInState >= recoverTimer;
     }
 };
 
