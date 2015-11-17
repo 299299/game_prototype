@@ -105,7 +105,8 @@ class LoadingState : GameState
         }
         else if (state == LOADING_FINISHED)
         {
-            gameScene.Remove();
+            if (gameScene !is null)
+                gameScene.Remove();
             gameScene = null;
             gGame.ChangeState("TestGameState");
         }
@@ -150,7 +151,7 @@ enum GameSubState
 class TestGameState : GameState
 {
     FadeOverlay@ fade;
-    int          state;
+    int          state = -1;
 
     TestGameState()
     {
@@ -166,14 +167,9 @@ class TestGameState : GameState
 
     void Enter(State@ lastState)
     {
+        state = -1;
         State::Enter(lastState);
-        state = GAME_FADING;
-        if (!engine.headless)
-        {
-            fade.Show(1.0f);
-            fade.StartFadeIn(2.0f);
-            gInput.m_freeze = true;
-        }
+        ChangeSubState(GAME_FADING);
         CreateScene();
         if (!engine.headless)
         {
@@ -192,8 +188,6 @@ class TestGameState : GameState
             messageText.color = Color(1, 0, 0);
             messageText.visible = false;
         }
-        else
-            ChangeSubState(GAME_RUNNING);
     }
 
     void Exit(State@ nextState)
@@ -238,6 +232,17 @@ class TestGameState : GameState
                 player.RemoveFlag(FLAGS_INVINCIBLE);
             }
             gInput.m_freeze = false;
+        }
+        else if (newState == GAME_FADING || newState == GAME_RESTARTING)
+        {
+            fade.Show(1.0f);
+            fade.StartFadeIn(2.0f);
+            gInput.m_freeze = true;
+            Player@ player = GetPlayer();
+            if (player !is null)
+            {
+                player.AddFlag(FLAGS_INVINCIBLE);
+            }
         }
     }
 
@@ -292,17 +297,8 @@ class TestGameState : GameState
 
     void Restart()
     {
-        fade.Show(1.0f);
-        fade.StartFadeIn(2.0f);
-        Player@ player = GetPlayer();
-        if (player !is null)
-        {
-            player.Reset();
-            player.AddFlag(FLAGS_INVINCIBLE);
-        }
         ChangeSubState(GAME_RESTARTING);
         ShowMessage("", false);
-        gInput.m_freeze = true;
     }
 
     void OnPlayerDead()

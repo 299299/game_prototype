@@ -22,6 +22,8 @@ class FadeOverlay
     {
         if(ui is null || ui.root is null)
             return;
+        if (engine.headless)
+            return;
         fullscreenUI = BorderImage("FullScreenImage");
         fullscreenUI.visible = false;
         fullscreenUI.priority = -9999;
@@ -47,7 +49,8 @@ class FadeOverlay
     {
         alpha = ap;
         SetUIAlpha();
-        fullscreenUI.visible = true;
+        if (fullscreenUI !is null)
+            fullscreenUI.visible = true;
     }
 
     void StartFadeIn(float duration)
