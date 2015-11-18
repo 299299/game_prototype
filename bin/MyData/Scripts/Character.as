@@ -6,7 +6,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.9f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
@@ -853,17 +853,10 @@ class Character : GameObject
     void DebugDraw(DebugRenderer@ debug)
     {
         stateMachine.DebugDraw(debug);
-        //debug.AddNode(sceneNode, 0.5f, false);
-        //debug.AddNode(sceneNode.GetChild("Bip01", true), 0.25f, false);
-        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(1, 1, 0), 32, false);
-        debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, Color(0,1,1), false);
-        DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, Color(0, 0, 1), COLLISION_RADIUS);
-
-        //Sphere sp;
-        //sp.Define(sceneNode.GetChild("Bip01", true).worldPosition, COLLISION_RADIUS);
-        //debug.AddSphere(sp, Color(0, 1, 0));
-        //debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
-
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
+        debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, YELLOW, false);
+        DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, BLUE, COLLISION_RADIUS);
+        DebugDrawDirection(debug, sceneNode, GetTargetAngle(), YELLOW, 2.0f);
         /*
         Node@ handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
         Node@ handNode_R = renderNode.GetChild("Bip01_R_Hand", true);

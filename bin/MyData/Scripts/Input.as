@@ -216,7 +216,12 @@ class GameInput
         if (joystick !is null)
             return joystick.buttonPress[2];
         else
-            return input.keyPress[KEY_RETURN] || input.mouseButtonPress[MOUSEB_LEFT];
+        {
+            if (input.mouseVisible)
+                return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE] || input.mouseButtonPress[MOUSEB_LEFT];
+            else
+                return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE];
+        }
     }
 
     int GetDirectionPressed()

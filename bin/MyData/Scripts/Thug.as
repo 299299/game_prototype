@@ -54,7 +54,7 @@ class ThugStandState : CharacterState
     void Update(float dt)
     {
         //if (engine.headless)
-        //    return;
+            return;
 
         if (timeInState > thinkTime)
         {
@@ -708,7 +708,6 @@ class Thug : Enemy
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1, 1, 0), 2.0f);
     }
 
     bool CanAttack()

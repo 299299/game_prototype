@@ -41,6 +41,11 @@ class CameraController
 
     }
 
+    bool IsDebugCamera()
+    {
+        return false;
+    }
+
     StringHash nameHash;
     Node@      cameraNode;
     Camera@    camera;
@@ -87,6 +92,11 @@ class DebugFPSCameraController: CameraController
         if (input.keyDown[KEY_RIGHT])
             cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * speed * dt);
     }
+
+    bool IsDebugCamera()
+    {
+        return true;
+    }
 };
 
 class ThirdPersonCameraController : CameraController
@@ -129,7 +139,7 @@ class ThirdPersonCameraController : CameraController
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(cameraTargert, 1.0f, Color(1, 0, 0), false);
+        debug.AddCross(cameraTargert, 1.0f, RED, false);
     }
 };
 
@@ -260,6 +270,12 @@ class CameraManager
 
     float GetCameraAngle()
     {
+        if (currentController !is null)
+        {
+            if (currentController.IsDebugCamera())
+                return 0;
+        }
+
         Vector3 dir = GetCameraForwardDirection();
         return Atan2(dir.x, dir.z);
     }

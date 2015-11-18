@@ -175,6 +175,7 @@ class TestGameState : GameState
     FadeOverlay@    fade;
     TextMenu@       pauseMenu;
     int             state = -1;
+    int             lastState = -1;
 
     TestGameState()
     {
@@ -247,7 +248,7 @@ class TestGameState : GameState
             int selection = pauseMenu.Update(dt);
             if (selection == 0)
                 ChangeSubState(GAME_RUNNING);
-            else
+            else if (selection == 1)
                 engine.Exit();
         }
         GameState::Update(dt);
@@ -286,7 +287,7 @@ class TestGameState : GameState
         }
         else if (newState == GAME_PAUSE)
         {
-            gInput.m_freeze = true;
+            // gInput.m_freeze = true;
             script.defaultScene.updateEnabled = false;
             pauseMenu.Add();
         }
@@ -366,21 +367,17 @@ class TestGameState : GameState
 
     void OnKeyDown(int key)
     {
-        if (state == GAME_RUNNING)
+        if (key == KEY_ESC)
         {
-            if (key == KEY_ESC)
+            int oldState = state;
+            if (oldState == GAME_PAUSE)
+                ChangeSubState(lastState);
+            else
             {
                 ChangeSubState(GAME_PAUSE);
-                return;
+                lastState = oldState;
             }
-        }
-        else if (state == GAME_PAUSE)
-        {
-            if (key == KEY_ESC)
-            {
-                ChangeSubState(GAME_RUNNING);
-                return;
-            }
+            return;
         }
 
         GameState::OnKeyDown(key);

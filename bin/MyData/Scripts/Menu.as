@@ -7,7 +7,7 @@ class TextMenu
     Array<Text@>        items;
     String              fontName;
     int                 fontSize;
-    int                 selection;
+    int                 selection = 0;
     Color               highLightColor = Color(1, 1, 0);
     Color               normalColor = Color(1, 0, 0);
     IntVector2          size = IntVector2(400, 100);
@@ -41,6 +41,8 @@ class TextMenu
         {
             AddText(texts[i]);
         }
+
+        items[selection].color = highLightColor;
     }
 
     void Remove()
@@ -74,6 +76,10 @@ class TextMenu
                 break;
             }
         }
+
+        if (selIndex >= items.length)
+            selIndex = 0;
+
         ChangeSelection(selIndex);
         return gInput.IsEnterPressed() ? selection : -1;
     }

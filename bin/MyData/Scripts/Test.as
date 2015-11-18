@@ -251,16 +251,19 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     if (script.defaultScene is null)
         return;
 
-    String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
-    debugText += gInput.GetDebugText();
+    if (drawDebug > 0)
+    {
+         String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+        debugText += gInput.GetDebugText();
 
-    Player@ player = GetPlayer();
-    if (player !is null)
-        debugText += player.GetDebugText();
+        Player@ player = GetPlayer();
+        if (player !is null)
+            debugText += player.GetDebugText();
 
-    Text@ text = ui.root.GetChild("debug", true);
-    if (text !is null)
-        text.text = debugText;
+        Text@ text = ui.root.GetChild("debug", true);
+        if (text !is null)
+            text.text = debugText;
+    }
 
     if (autoCounter)
     {
@@ -273,6 +276,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (num == 2)
         {
             Print("==========================Auto Counter Start==========================");
+            Player@ player = GetPlayer();
             if (player !is null)
                 player.Counter();
             Print("==========================Auto Counter End==========================");

@@ -98,7 +98,7 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, const Quaternion&in r
 void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
 {
     Vector3 start = _node.worldPosition;
-    start.y = yAdjust;
+    start.y += yAdjust;
     Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
     debug.AddLine(start, end, color, false);
 }

@@ -1028,8 +1028,8 @@ class PlayerCounterState : CharacterCounterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(targetPosition, 1.0f, Color(1, 0, 0), false);
-        DebugDrawDirection(debug, ownner.sceneNode, targetRotation, Color(1, 0, 0));
+        debug.AddCross(targetPosition, 1.0f, RED, false);
+        DebugDrawDirection(debug, ownner.sceneNode, targetRotation, RED);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1163,12 +1163,6 @@ class Player : Character
         tail.enabled = false;
 
         animModel.skeleton.GetBone("Bip01_Head").animated = false;
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1, 1, 0), 2.0f);
-        Character::DebugDraw(debug);
     }
 
     bool Attack()
@@ -1447,14 +1441,13 @@ class Player : Character
         killed = 0;
     }
 
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        Character::DebugDraw(debug);
+    }
+
     void PostUpdate(float dt)
     {
-        Vector3 pos = sceneNode.worldPosition;
-        pos.y += CHARACTER_HEIGHT;
-        Vector3 headWorldTarget = pos + Quaternion(0, GetTargetAngle(), 0) * Vector3(0, 0, 2.0f);
-        Node@ headNode = renderNode.GetChild("Bip01_Head", true);
-        headNode.LookAt(headWorldTarget, Vector3(0.0f, 1.0f, 0.0f));
-        // Correct head orientation because LookAt assumes Z = forward, but the bone has been authored differently (Y = forward)
-        headNode.Rotate(Quaternion(0.0f, 90.0f, 90.0f));
+
     }
 };
