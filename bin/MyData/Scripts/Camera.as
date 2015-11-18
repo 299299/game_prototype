@@ -3,6 +3,9 @@
 //    Camera Controller Logic Class
 //
 // ==============================================
+const StringHash TARGET_POSITION("TargetPosition");
+const StringHash TARGET_ROTATION("TargetRotation");
+const StringHash TARGET_CONTROLLER("TargetController");
 
 class CameraController
 {
@@ -24,6 +27,16 @@ class CameraController
     }
 
     void OnCameraEvent(VariantMap& eventData)
+    {
+
+    }
+
+    void Enter()
+    {
+
+    }
+
+    void Exit()
     {
 
     }
@@ -120,6 +133,59 @@ class ThirdPersonCameraController : CameraController
     }
 };
 
+class TransitionCameraController : CameraController
+{
+    Vector3     targetPosition;
+    Quaternion  targetRotation;
+    StringHash  targetController;
+    float       duration;
+    float       curTime;
+
+    TransitionCameraController(Node@ n, const String&in name)
+    {
+        super(n, name);
+    }
+
+    void Update(float dt)
+    {
+        curTime += dt;
+        Vector3 curPos = cameraNode.worldPosition;
+        Quaternion curRot = cameraNode.worldRotation;
+        cameraNode.worldPosition = curPos.Lerp(targetPosition, curTime/dt);
+        cameraNode.worldRotation = curRot.Slerp(targetRotation, curTime/dt);
+        if (curTime >= dt)
+            gCameraMgr.SetCameraController(targetController);
+    }
+
+    void Enter()
+    {
+        curTime = 0.0f;
+    }
+
+    void OnCameraEvent(VariantMap& eventData)
+    {
+        duration = eventData[DURATION].GetFloat();
+        targetPosition = eventData[TARGET_POSITION].GetVector3();
+        targetRotation = eventData[TARGET_ROTATION].GetQuaternion();
+        targetController = eventData[TARGET_CONTROLLER].GetStringHash();
+    }
+};
+
+class DeathCameraController : CameraController
+{
+    Node@ characterNode;
+
+    DeathCameraController(Node@ n, const String&in name)
+    {
+        super(n, name);
+    }
+
+    void Update(float dt)
+    {
+
+    }
+};
+
 class CameraManager
 {
     Array<CameraController@>    cameraControllers;
@@ -139,10 +205,19 @@ class CameraManager
 
     void SetCameraController(const String&in name)
     {
-        CameraController@ cc = FindCameraController(StringHash(name));
-        if (cc is null)
+        SetCameraController(StringHash(name));
+    }
+
+    void SetCameraController(StringHash nameHash)
+    {
+        CameraController@ cc = FindCameraController(nameHash);
+        if (currentController is cc)
             return;
+        if (currentController !is null)
+            currentController.Exit();
         @currentController = cc;
+        if (currentController !is null)
+            currentController.Enter();
     }
 
     void Start(Node@ n)
@@ -150,6 +225,8 @@ class CameraManager
         cameraNode = n;
         cameraControllers.Push(DebugFPSCameraController(n, "Debug"));
         cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
+        cameraControllers.Push(TransitionCameraController(n, "Transition"));
+        cameraControllers.Push(DeathCameraController(n, "Death"));
     }
 
     void Stop()
@@ -195,6 +272,10 @@ class CameraManager
 
     void OnCameraEvent(VariantMap& eventData)
     {
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == CHANGE_STATE)
+            SetCameraController(eventData[VALUE].GetStringHash());
+
         if (currentController !is null)
             currentController.OnCameraEvent(eventData);
     }

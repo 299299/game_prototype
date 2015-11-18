@@ -8,8 +8,9 @@ class TextMenu
     String              fontName;
     int                 fontSize;
     int                 selection;
-    Color               highLightColor;
-    Color               normalColor;
+    Color               highLightColor = Color(1, 1, 0);
+    Color               normalColor = Color(1, 0, 0);
+    IntVector2          size = IntVector2(400, 100);
 
     TextMenu(const String& fName, int fSize)
     {
@@ -32,6 +33,9 @@ class TextMenu
             root.SetAlignment(HA_CENTER, VA_CENTER);
             root.SetPosition(0, -height * 2);
         }
+
+        root.SetLayout(LM_VERTICAL, 8);
+        root.SetFixedSize(size.x, size.y);
 
         for (uint i=0; i<texts.length; ++i)
         {

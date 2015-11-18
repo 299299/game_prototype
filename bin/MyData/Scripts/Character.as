@@ -44,6 +44,7 @@ const StringHash PARTICLE("Particle");
 const StringHash DURATION("Duration");
 const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
+const StringHash CHANGE_STATE("ChangeState");
 
 const String L_HAND = "Bip01_L_Hand";
 const String R_HAND = "Bip01_R_Hand";

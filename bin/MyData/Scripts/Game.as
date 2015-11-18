@@ -164,9 +164,10 @@ enum GameSubState
 {
     GAME_FADING,
     GAME_RUNNING,
-    GAME_FAILED,
+    GAME_FAIL,
     GAME_RESTARTING,
     GAME_PAUSE,
+    GAME_WIN,
 };
 
 class TestGameState : GameState
@@ -228,10 +229,13 @@ class TestGameState : GameState
             if (fade.Update(dt))
                 ChangeSubState(GAME_RUNNING);
         }
-        else if (state == GAME_FAILED)
+        else if (state == GAME_FAIL || state == GAME_WIN)
         {
             if (gInput.IsAttackPressed() || gInput.IsEvadePressed())
-                Restart();
+            {
+                ChangeSubState(GAME_RESTARTING);
+                ShowMessage("", false);
+            }
         }
         else if (state == GAME_RESTARTING)
         {
@@ -286,6 +290,16 @@ class TestGameState : GameState
             script.defaultScene.updateEnabled = false;
             pauseMenu.Add();
         }
+        else if (newState == GAME_WIN)
+        {
+            gInput.m_freeze = true;
+            ShowMessage("You Win! Press Stride or Evade to restart!", true);
+        }
+        else if (newState == GAME_FAIL)
+        {
+            gInput.m_freeze = true;
+            ShowMessage("You Died! Press Stride or Evade to restart!", true);
+        }
     }
 
     void CreateScene()
@@ -339,17 +353,10 @@ class TestGameState : GameState
         }
     }
 
-    void Restart()
-    {
-        ChangeSubState(GAME_RESTARTING);
-        ShowMessage("", false);
-    }
-
     void OnPlayerDead()
     {
         Print("OnPlayerDead!!!!!!!!");
-        ChangeSubState(GAME_FAILED);
-        ShowMessage("You Died! Press Stride or Jump to restart!", true);
+        ChangeSubState(GAME_FAIL);
     }
 
     void OnEnemyKilled(Character@ enemy)
