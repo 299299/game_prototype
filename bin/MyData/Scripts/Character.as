@@ -631,10 +631,6 @@ class Character : GameObject
     Node@                   renderNode;
 
     Node@                   hipsNode;
-    Node@                   handNode_L;
-    Node@                   handNode_R;
-    Node@                   footNode_L;
-    Node@                   footNode_R;
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
@@ -682,10 +678,6 @@ class Character : GameObject
         animModel = renderNode.GetComponent("AnimatedModel");
 
         hipsNode = renderNode.GetChild("Bip01_Pelvis", true);
-        handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
-        handNode_R = renderNode.GetChild("Bip01_R_Hand", true);
-        footNode_L = renderNode.GetChild("Bip01_L_Foot", true);
-        footNode_R = renderNode.GetChild("Bip01_R_Foot", true);
 
         startPosition = sceneNode.worldPosition;
         startRotation = sceneNode.worldRotation;
@@ -871,7 +863,12 @@ class Character : GameObject
         //debug.AddSphere(sp, Color(0, 1, 0));
         //debug.AddSkeleton(animModel.skeleton, Color(0,0,1), false);
 
-        /*float radius = attackRadius;
+        /*
+        Node@ handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
+        Node@ handNode_R = renderNode.GetChild("Bip01_R_Hand", true);
+        Node@ footNode_L = renderNode.GetChild("Bip01_L_Foot", true);
+        Node@ footNode_R = renderNode.GetChild("Bip01_R_Foot", true);
+        float radius = attackRadius;
         Sphere sp;
         sp.Define(handNode_L.worldPosition, radius);
         debug.AddSphere(sp, Color(0, 1, 0));
@@ -960,9 +957,9 @@ class Character : GameObject
 
     float GetFootFrontDiff()
     {
-        Vector3 fwd_dir = sceneNode.worldRotation * Vector3(0, 0, 1);
-        Vector3 pt_lf = footNode_L.worldPosition - sceneNode.worldPosition;
-        Vector3 pt_rf = footNode_R.worldPosition - sceneNode.worldPosition;
+        Vector3 fwd_dir = renderNode.worldRotation * Vector3(0, 0, 1);
+        Vector3 pt_lf = renderNode.GetChild("Bip01_L_Foot").worldPosition - renderNode.worldPosition;
+        Vector3 pt_rf = renderNode.GetChild("Bip01_R_Foot").worldPosition - renderNode.worldPosition;
         float dot_lf = pt_lf.DotProduct(fwd_dir);
         float dot_rf = pt_rf.DotProduct(fwd_dir);
         Print(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));

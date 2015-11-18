@@ -31,6 +31,17 @@ class GameState : State
     {
 
     }
+
+    void OnKeyDown(int key)
+    {
+        if (key == KEY_ESC)
+        {
+             if (!console.visible)
+                engine.Exit();
+            else
+                console.visible = false;
+        }
+    }
 };
 
 enum LoadSubState
@@ -155,23 +166,29 @@ enum GameSubState
     GAME_RUNNING,
     GAME_FAILED,
     GAME_RESTARTING,
+    GAME_PAUSE,
 };
 
 class TestGameState : GameState
 {
-    FadeOverlay@ fade;
-    int          state = -1;
+    FadeOverlay@    fade;
+    TextMenu@       pauseMenu;
+    int             state = -1;
 
     TestGameState()
     {
         SetName("TestGameState");
         @fade = FadeOverlay();
+        @pauseMenu = TextMenu("Fonts/UbuntuMono-R.ttf", 30);
+        pauseMenu.texts.Push("RESUME");
+        pauseMenu.texts.Push("EXIT");
         fade.Init();
     }
 
     ~TestGameState()
     {
         @fade = null;
+        @pauseMenu = null;
     }
 
     void Enter(State@ lastState)
@@ -221,6 +238,14 @@ class TestGameState : GameState
             if (fade.Update(dt))
                 ChangeSubState(GAME_RUNNING);
         }
+        else if (state == GAME_PAUSE)
+        {
+            int selection = pauseMenu.Update(dt);
+            if (selection == 0)
+                ChangeSubState(GAME_RUNNING);
+            else
+                engine.Exit();
+        }
         GameState::Update(dt);
     }
 
@@ -233,6 +258,7 @@ class TestGameState : GameState
         state = newState;
         timeInState = 0.0f;
 
+        pauseMenu.Remove();
         if (newState == GAME_RUNNING)
         {
             Player@ player = GetPlayer();
@@ -241,6 +267,7 @@ class TestGameState : GameState
                 player.RemoveFlag(FLAGS_INVINCIBLE);
             }
             gInput.m_freeze = false;
+            script.defaultScene.updateEnabled = true;
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)
         {
@@ -252,6 +279,12 @@ class TestGameState : GameState
             {
                 player.AddFlag(FLAGS_INVINCIBLE);
             }
+        }
+        else if (newState == GAME_PAUSE)
+        {
+            gInput.m_freeze = true;
+            script.defaultScene.updateEnabled = false;
+            pauseMenu.Add();
         }
     }
 
@@ -323,6 +356,28 @@ class TestGameState : GameState
     {
 
     }
+
+    void OnKeyDown(int key)
+    {
+        if (state == GAME_RUNNING)
+        {
+            if (key == KEY_ESC)
+            {
+                ChangeSubState(GAME_PAUSE);
+                return;
+            }
+        }
+        else if (state == GAME_PAUSE)
+        {
+            if (key == KEY_ESC)
+            {
+                ChangeSubState(GAME_RUNNING);
+                return;
+            }
+        }
+
+        GameState::OnKeyDown(key);
+    }
 };
 
 class GameFSM : FSM
@@ -379,6 +434,12 @@ class GameFSM : FSM
     {
         if (gameState !is null)
             gameState.OnAsyncLoadProgress(_scene, progress, loadedNodes, totalNodes, loadedResources, totalResources);
+    }
+
+    void OnKeyDown(int key)
+    {
+        if (gameState !is null)
+            gameState.OnKeyDown(key);
     }
 };
 

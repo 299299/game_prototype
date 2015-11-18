@@ -1161,14 +1161,13 @@ class Player : Character
         tail.SetEndColor(Color(1.0f,0.2f,1.0f,1), Color(1.0f,1.0f,1.0f,5.0f));
         // t.endNodeName = "Bip01";
         tail.enabled = false;
+
+        animModel.skeleton.GetBone("Bip01_Head").animated = false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        float cameraAngle = gCameraMgr.GetCameraAngle();
-        float targetAngle = cameraAngle + gInput.m_leftStickAngle;
-        float baseLen = 2.0f;
-        DebugDrawDirection(debug, sceneNode, targetAngle, Color(1, 1, 0), baseLen);
+        DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1, 1, 0), 2.0f);
         Character::DebugDraw(debug);
     }
 
@@ -1337,7 +1336,7 @@ class Player : Character
             score += angleScore;
             score += threatScore;
 
-            if (lastAttackId == e.sceneNode.id)
+            if (lastAttackId == int(e.sceneNode.id))
             {
                 if (diffAngle < 90.0f)
                     score = 100;
@@ -1448,4 +1447,14 @@ class Player : Character
         killed = 0;
     }
 
+    void PostUpdate(float dt)
+    {
+        Vector3 pos = sceneNode.worldPosition;
+        pos.y += CHARACTER_HEIGHT;
+        Vector3 headWorldTarget = pos + Quaternion(0, GetTargetAngle(), 0) * Vector3(0, 0, 2.0f);
+        Node@ headNode = renderNode.GetChild("Bip01_Head", true);
+        headNode.LookAt(headWorldTarget, Vector3(0.0f, 1.0f, 0.0f));
+        // Correct head orientation because LookAt assumes Z = forward, but the bone has been authored differently (Y = forward)
+        headNode.Rotate(Quaternion(0.0f, 90.0f, 90.0f));
+    }
 };

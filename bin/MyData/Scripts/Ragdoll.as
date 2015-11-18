@@ -105,10 +105,7 @@ class Ragdoll : ScriptObject
             boneLastRotations.Resize(maxLen);
 
         for (int i=0; i<maxLen; ++i)
-        {
             boneNodes[i] = node.GetChild(boneNames[i], true);
-            SubscribeToEvent(boneNodes[i], "NodeCollision", "HandleNodeCollision");
-        }
 
         Node@ renderNode = node;
         AnimatedModel@ model = node.GetComponent("AnimatedModel");
@@ -474,7 +471,6 @@ class Ragdoll : ScriptObject
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
-        // Print("HandleAnimationTrigger current-state=" + state);
         StringHash name = eventData[DATA].GetVariantMap()[NAME].GetStringHash();
         int value = eventData[DATA].GetVariantMap()[VALUE].GetInt();
 
@@ -488,7 +484,6 @@ class Ragdoll : ScriptObject
         }
         else if (name == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;
-        //ChangeState(new_state);
         state_request = new_state;
     }
 
@@ -530,6 +525,7 @@ class Ragdoll : ScriptObject
         dest_root_pos.x = pelvis_pos.x;
         dest_root_pos.z = pelvis_pos.z;
 
+        // Hack!!!
         if (getUpIndex == 0)
         {
             boneNodes[BONE_SPINE].position = Vector3(8.78568, -0.00968838, 0);
@@ -554,12 +550,5 @@ class Ragdoll : ScriptObject
         // q = r_node.worldRotation;
         rootNode.worldRotation = targetRootRot;
         r_node.worldRotation = q;
-    }
-
-    void HandleNodeCollision(StringHash eventType, VariantMap& eventData)
-    {
-        Node@ otherNode = eventData["OtherNode"].GetPtr();
-        RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
-        // Print("HandleNodeCollision " + otherNode.name);
     }
 }

@@ -8,6 +8,7 @@
 #include "Scripts/Ragdoll.as"
 #include "Scripts/Camera.as"
 #include "Scripts/FadeOverlay.as"
+#include "Scripts/Menu.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -234,6 +235,7 @@ void SubscribeToEvents()
     SubscribeToEvent("MouseButtonDown", "HandleMouseButtonDown");
     SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
     SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
+    SubscribeToEvent("CameraEvent", "HandleCameraEvent");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -311,14 +313,9 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 {
     Scene@ scene_ = script.defaultScene;
     int key = eventData["Key"].GetInt();
-    if (key == KEY_ESC)
-    {
-         if (!console.visible)
-            engine.Exit();
-        else
-            console.visible = false;
-    }
-    else if (key == KEY_F1)
+    gGame.OnKeyDown(key);
+
+    if (key == KEY_F1)
     {
         ++drawDebug;
         if (drawDebug > 3)
@@ -480,6 +477,12 @@ void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
     int loadedResources = eventData["LoadedResources"].GetInt();
     int totalResources = eventData["TotalResources"].GetInt();
     gGame.OnAsyncLoadProgress(_scene, progress, loadedNodes, totalNodes, loadedResources, totalResources);
+}
+
+void HandleCameraEvent(StringHash eventType, VariantMap& eventData)
+{
+    Print("HandleCameraEvent");
+    gCameraMgr.OnCameraEvent(eventData);
 }
 
 void ExecuteCommand()

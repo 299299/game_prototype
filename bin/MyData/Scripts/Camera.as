@@ -23,6 +23,11 @@ class CameraController
 
     }
 
+    void OnCameraEvent(VariantMap& eventData)
+    {
+
+    }
+
     StringHash nameHash;
     Node@      cameraNode;
     Camera@    camera;
@@ -73,7 +78,6 @@ class DebugFPSCameraController: CameraController
 
 class ThirdPersonCameraController : CameraController
 {
-    Vector3 cameraPos;
     Vector3 cameraTargert;
     float   cameraSpeed = 5.5f;
     float   cameraHeight = 5.5f;
@@ -82,7 +86,6 @@ class ThirdPersonCameraController : CameraController
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
-        cameraPos = cameraNode.worldPosition;
         Vector3 v = cameraNode.worldPosition;
         v.y += cameraHeight;
         cameraTargert = v;
@@ -103,6 +106,7 @@ class ThirdPersonCameraController : CameraController
 
         Quaternion q(pitch, yaw, 0);
         Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
+        Vector3 cameraPos = cameraNode.worldPosition;
         cameraPos = cameraPos.Lerp(pos, dt * cameraSpeed);
         cameraNode.worldPosition = cameraPos;
 
@@ -187,6 +191,12 @@ class CameraManager
     {
         if (currentController !is null)
             currentController.DebugDraw(debug);
+    }
+
+    void OnCameraEvent(VariantMap& eventData)
+    {
+        if (currentController !is null)
+            currentController.OnCameraEvent(eventData);
     }
 };
 

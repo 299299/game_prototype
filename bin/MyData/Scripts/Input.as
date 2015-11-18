@@ -210,6 +210,46 @@ class GameInput
             return input.keyPress[KEY_SPACE];
     }
 
+    bool IsEnterPressed()
+    {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+            return joystick.buttonPress[2];
+        else
+            return input.keyPress[KEY_RETURN] || input.mouseButtonPress[MOUSEB_LEFT];
+    }
+
+    int GetDirectionPressed()
+    {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+        {
+            if (joystick.numButtons >= 4)
+            {
+                if (joystick.buttonPress[0])
+                    return 0;
+                else if (joystick.buttonPress[1])
+                    return 1;
+                else if (joystick.buttonPress[2])
+                    return 2;
+                else if (joystick.buttonPress[3])
+                    return 3;
+            }
+        }
+        else
+        {
+            if (input.keyPress[KEY_UP])
+                return 0;
+            else if (input.keyPress[KEY_RIGHT])
+                return 1;
+            else if (input.keyPress[KEY_DOWN])
+                return 2;
+            else if (input.keyPress[KEY_LEFT])
+                return 3;
+        }
+        return -1;
+    }
+
     String GetDebugText()
     {
         String ret =   "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
