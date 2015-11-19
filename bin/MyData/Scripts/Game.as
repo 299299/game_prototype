@@ -12,12 +12,7 @@ class GameState : State
 
     }
 
-    void OnPlayerDead()
-    {
-
-    }
-
-    void OnEnemyKilled(Character@ enemy)
+    void OnCharacterKilled(Character@ killer, Character@ dead)
     {
 
     }
@@ -172,10 +167,14 @@ enum GameSubState
 
 class TestGameState : GameState
 {
-    FadeOverlay@    fade;
-    TextMenu@       pauseMenu;
-    int             state = -1;
-    int             lastState = -1;
+    Array<Vector3>      enemyResetPositions;
+    Array<Quaternion>   enemyResetRotations;
+
+    FadeOverlay@        fade;
+    TextMenu@           pauseMenu;
+    int                 state = -1;
+    int                 lastState = -1;
+    int                 maxKilled = 5;
 
     TestGameState()
     {
@@ -259,9 +258,13 @@ class TestGameState : GameState
         if (state == newState)
             return;
 
-        Print("TestGameState ChangeSubState from " + state + " to " + newState);
+        int oldState = state;
+        Print("TestGameState ChangeSubState from " + oldState + " to " + newState);
         state = newState;
         timeInState = 0.0f;
+
+        if (oldState == GAME_PAUSE)
+            script.defaultScene.updateEnabled = true;
 
         pauseMenu.Remove();
         if (newState == GAME_RUNNING)
@@ -280,10 +283,20 @@ class TestGameState : GameState
             fade.StartFadeIn(2.0f);
             gInput.m_freeze = true;
             Player@ player = GetPlayer();
-            if (player !is null)
+            if (newState == GAME_RESTARTING)
             {
-                player.AddFlag(FLAGS_INVINCIBLE);
+                EnemyManager@ em = GetEnemyMgr();
+                if (em !is null)
+                    em.RemoveAll();
+
+                if (player !is null)
+                    player.Reset();
+
+                ResetEnemies();
             }
+
+            if (player !is null)
+                player.AddFlag(FLAGS_INVINCIBLE);
         }
         else if (newState == GAME_PAUSE)
         {
@@ -293,12 +306,10 @@ class TestGameState : GameState
         }
         else if (newState == GAME_WIN)
         {
-            gInput.m_freeze = true;
             ShowMessage("You Win! Press Stride or Evade to restart!", true);
         }
         else if (newState == GAME_FAIL)
         {
-            gInput.m_freeze = true;
             ShowMessage("You Died! Press Stride or Evade to restart!", true);
         }
     }
@@ -329,6 +340,8 @@ class TestGameState : GameState
             {
                 _node.CreateScriptObject(scriptFile, "Thug");
                 _node.CreateScriptObject(scriptFile, "Ragdoll");
+                enemyResetPositions.Push(_node.worldPosition);
+                enemyResetRotations.Push(_node.worldRotation);
             }
         }
 
@@ -354,15 +367,30 @@ class TestGameState : GameState
         }
     }
 
-    void OnPlayerDead()
-    {
-        Print("OnPlayerDead!!!!!!!!");
-        ChangeSubState(GAME_FAIL);
-    }
 
-    void OnEnemyKilled(Character@ enemy)
+    void OnCharacterKilled(Character@ killer, Character@ dead)
     {
+        if (dead.side == 1)
+        {
+            Print("OnPlayerDead!!!!!!!!");
+            ChangeSubState(GAME_FAIL);
+        }
 
+        if (killer !is null)
+        {
+            if (killer.side == 1)
+            {
+                Player@ player = cast<Player>(killer);
+                if (player !is null)
+                {
+                    if (player.killed >= maxKilled)
+                    {
+                        Print("WIN!!!!!!!!");
+                        ChangeSubState(GAME_WIN);
+                    }
+                }
+            }
+        }
     }
 
     void OnKeyDown(int key)
@@ -381,6 +409,15 @@ class TestGameState : GameState
         }
 
         GameState::OnKeyDown(key);
+    }
+
+    void ResetEnemies()
+    {
+        EnemyManager@ em = GetEnemyMgr();
+        for (uint i=0; i<enemyResetPositions.length; ++i)
+        {
+            em.CreateEnemy(enemyResetPositions[i], enemyResetRotations[i], "Thug");
+        }
     }
 };
 
@@ -416,16 +453,10 @@ class GameFSM : FSM
             gameState.PostRenderUpdate();
     }
 
-    void OnPlayerDead()
+    void OnCharacterKilled(Character@ killer, Character@ dead)
     {
         if (gameState !is null)
-            gameState.OnPlayerDead();
-    }
-
-    void OnEnemyKilled(Character@ enemy)
-    {
-        if (gameState !is null)
-            gameState.OnEnemyKilled(enemy);
+            gameState.OnCharacterKilled(killer, dead);
     }
 
     void OnSceneLoadFinished(Scene@ _scene)

@@ -25,6 +25,7 @@ class GameObject : ScriptObject
 {
     float   duration = -1;
     int     flags = 0;
+    int     side = 0;
     float   timeScale = 1.0f;
 
     GameObject()

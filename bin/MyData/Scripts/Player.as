@@ -237,8 +237,6 @@ class PlayerAttackState : CharacterState
     int                     rightCloseNum = 0;
     int                     backCloseNum = 0;
 
-    int                     noEnemyStartIndex = 0;
-
     bool                    doAttackCheck = false;
     Node@                   attackCheckNode;
 
@@ -500,8 +498,9 @@ class PlayerAttackState : CharacterState
         if (isInAir)
             return;
 
-        bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1);
-        bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME;
+        int addition_frames = slowMotion ? 6 : 0;
+        bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1 + addition_frames);
+        bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME * addition_frames;
 
         if (check_attack)
         {
@@ -516,7 +515,6 @@ class PlayerAttackState : CharacterState
             else if (gInput.IsEvadePressed())
                 ownner.Evade();
         }
-
     }
 
     void ResetValues()
@@ -604,12 +602,8 @@ class PlayerAttackState : CharacterState
             attackEnemy.RequestDoNotMove();
         }
         else {
-            currentAttack = forwardAttacks[noEnemyStartIndex];
+            currentAttack = forwardAttacks[RandomInt(forwadCloseNum)];
             state = ATTACK_STATE_BEFORE_IMPACT;
-            ++noEnemyStartIndex;
-
-            if (noEnemyStartIndex > 4)
-                noEnemyStartIndex = 0;
         }
 
         Motion@ motion = currentAttack.motion;
@@ -658,7 +652,7 @@ class PlayerAttackState : CharacterState
         Player@ p = cast<Player>(ownner);
         @attackEnemy = p.PickAttackEnemy();
         if (attackEnemy !is null)
-             Print("Choose Attack Enemy " + attackEnemy.sceneNode.name);
+             Print("Choose Attack Enemy " + attackEnemy.sceneNode.name + " state=" + attackEnemy.GetState().name);
          else
             Print("No Attack Enemy");
         StartAttack();
@@ -669,8 +663,6 @@ class PlayerAttackState : CharacterState
         Print("################## Player::AttackState Enter from " + lastState.name  + " #####################");
         Start();
         CharacterState::Enter(lastState);
-        if (lastState !is this)
-            noEnemyStartIndex = 0;
         ownner.AddFlag(FLAGS_ATTACK);
     }
 
@@ -1117,7 +1109,7 @@ class PlayerDeadState : MultiMotionState
         {
             if (motions[selectIndex].Move(ownner, dt)) {
                 state = 1;
-                gGame.OnPlayerDead();
+                gGame.OnCharacterKilled(null, ownner);
             }
         }
         else
@@ -1136,6 +1128,7 @@ class Player : Character
 
     void ObjectStart()
     {
+        side = 1;
         Character::ObjectStart();
         stateMachine.AddState(PlayerStandState(this));
         stateMachine.AddState(PlayerTurnState(this));
@@ -1268,7 +1261,7 @@ class Player : Character
         {
             killed ++;
             Print("killed add to " + killed);
-            gGame.OnEnemyKilled(target);
+            gGame.OnCharacterKilled(this, target);
         }
     }
 

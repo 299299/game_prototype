@@ -757,7 +757,7 @@ class Character : GameObject
 
     void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
     {
-        Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+        // Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
         AnimationController@ ctrl = animCtrl;
         ctrl.StopLayer(layer, blendTime);
         ctrl.PlayExclusive(animName, layer, loop, blendTime);
@@ -820,6 +820,7 @@ class Character : GameObject
 
     void Reset()
     {
+        flags = 0;
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
         health = INITIAL_HEALTH;

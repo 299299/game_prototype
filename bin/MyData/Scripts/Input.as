@@ -214,14 +214,11 @@ class GameInput
     {
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
-            return joystick.buttonPress[2];
-        else
         {
-            if (input.mouseVisible)
-                return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE] || input.mouseButtonPress[MOUSEB_LEFT];
-            else
-                return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE];
+            if (joystick.buttonPress[2])
+                return true;
         }
+        return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE] || input.mouseButtonPress[MOUSEB_LEFT];
     }
 
     int GetDirectionPressed()
@@ -229,29 +226,20 @@ class GameInput
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
         {
-            if (joystick.numButtons >= 4)
+            if (m_leftStickMagnitude > 0 && m_lastLeftStickY == 0)
             {
-                if (joystick.buttonPress[0])
-                    return 0;
-                else if (joystick.buttonPress[1])
-                    return 1;
-                else if (joystick.buttonPress[2])
-                    return 2;
-                else if (joystick.buttonPress[3])
-                    return 3;
+                return 0;
             }
         }
-        else
-        {
-            if (input.keyPress[KEY_UP])
-                return 0;
-            else if (input.keyPress[KEY_RIGHT])
-                return 1;
-            else if (input.keyPress[KEY_DOWN])
-                return 2;
-            else if (input.keyPress[KEY_LEFT])
-                return 3;
-        }
+
+        if (input.keyPress[KEY_UP])
+            return 0;
+        else if (input.keyPress[KEY_RIGHT])
+            return 1;
+        else if (input.keyPress[KEY_DOWN])
+            return 2;
+        else if (input.keyPress[KEY_LEFT])
+            return 3;
         return -1;
     }
 

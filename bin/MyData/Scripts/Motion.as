@@ -15,7 +15,7 @@ enum AttackType
 
 void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
 {
-    Print("PlayAnimation " + name + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+    //Print("PlayAnimation " + name + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
     ctrl.StopLayer(layer, blendTime);
     ctrl.PlayExclusive(name, layer, loop, blendTime);
     ctrl.SetTime(name, startTime);

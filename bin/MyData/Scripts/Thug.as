@@ -54,7 +54,7 @@ class ThugStandState : CharacterState
     void Update(float dt)
     {
         //if (engine.headless)
-            return;
+        //    return;
 
         if (timeInState > thinkTime)
         {
@@ -629,6 +629,12 @@ class ThugGetUpState : CharacterGetUpState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
             ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        CharacterState::Exit(nextState);
     }
 };
 

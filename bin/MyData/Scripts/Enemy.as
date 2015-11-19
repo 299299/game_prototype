@@ -167,6 +167,15 @@ class EnemyManager : ScriptObject
         return thugNode;
     }
 
+    void RemoveAll()
+    {
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            enemyList[i].sceneNode.Remove();
+        }
+        enemyList.Clear();
+    }
+
     Array<Enemy@>             enemyList;
     Array<int>                scoreCache;
 };

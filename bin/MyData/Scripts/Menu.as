@@ -68,6 +68,7 @@ class TextMenu
         int selIndex = selection;
         if (gInput.GetDirectionPressed() >= 0)
             selIndex ++;
+
         for (uint i=0; i<items.length; ++i)
         {
             if (items[i].hovering)

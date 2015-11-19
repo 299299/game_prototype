@@ -2,15 +2,15 @@
 <node id="8">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="thug" />
-	<attribute name="Position" value="-5 0 0" />
-	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Position" value="-9.28978 0 6.07221" />
+	<attribute name="Rotation" value="-0.291436 0 -0.95659 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
 	<node id="16778007">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
 		<attribute name="Position" value="0 0 0" />
-		<attribute name="Rotation" value="-4.37114e-008 0 1 -0" />
+		<attribute name="Rotation" value="-4.37114e-008 -0 -1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="16777399">
