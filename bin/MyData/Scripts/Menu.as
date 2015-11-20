@@ -11,6 +11,7 @@ class TextMenu
     Color               highLightColor = Color(1, 1, 0);
     Color               normalColor = Color(1, 0, 0);
     IntVector2          size = IntVector2(400, 100);
+    uint                lastDirectionKeyTime = 0;
 
     TextMenu(const String& fName, int fSize)
     {
@@ -43,6 +44,7 @@ class TextMenu
         }
 
         items[selection].color = highLightColor;
+        lastDirectionKeyTime = time.systemTime;
     }
 
     void Remove()
@@ -66,8 +68,24 @@ class TextMenu
     int Update(float dt)
     {
         int selIndex = selection;
-        if (gInput.GetDirectionPressed() >= 0)
+        int inputDirection = gInput.GetDirectionPressed();
+        if (inputDirection >= 0)
+        {
+            uint time_diff = time.systemTime - lastDirectionKeyTime;
+            if (time_diff < 200)
+                inputDirection = -1;
+            else
+                lastDirectionKeyTime = time.systemTime;
+        }
+
+        if (inputDirection == 0)
+            selIndex --;
+        if (inputDirection == 1)
             selIndex ++;
+        if (inputDirection == 2)
+            selIndex ++;
+        if (inputDirection == 3)
+            selIndex --;
 
         for (uint i=0; i<items.length; ++i)
         {
@@ -80,6 +98,8 @@ class TextMenu
 
         if (selIndex >= items.length)
             selIndex = 0;
+        if (selIndex < 0)
+            selIndex = items.length - 1;
 
         ChangeSelection(selIndex);
         return gInput.IsEnterPressed() ? selection : -1;

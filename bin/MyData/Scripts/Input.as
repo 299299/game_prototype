@@ -226,20 +226,25 @@ class GameInput
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
         {
-            if (m_leftStickMagnitude > 0 && m_lastLeftStickY == 0)
-            {
+            if (m_lastLeftStickY > 0.333f)
                 return 0;
-            }
+            else if (m_lastLeftStickX > 0.333f)
+                return 1;
+            else if (m_lastLeftStickY < -0.333f)
+                return 2;
+            else if (m_lastLeftStickX < -0.333f)
+                return 3;
         }
 
-        if (input.keyPress[KEY_UP])
+        if (input.keyDown[KEY_UP])
             return 0;
-        else if (input.keyPress[KEY_RIGHT])
+        else if (input.keyDown[KEY_RIGHT])
             return 1;
-        else if (input.keyPress[KEY_DOWN])
+        else if (input.keyDown[KEY_DOWN])
             return 2;
-        else if (input.keyPress[KEY_LEFT])
+        else if (input.keyDown[KEY_LEFT])
             return 3;
+
         return -1;
     }
 
