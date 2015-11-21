@@ -68,10 +68,11 @@ class GameObject : ScriptObject
     void PlaySound(const String&in soundName, float freqScale = 1.0f)
     {
         // Create the sound channel
-        SoundSource3D@ source = node.CreateComponent("SoundSource3D");
+        SoundSource3D@ source = GetNode().CreateComponent("SoundSource3D");
+        //SoundSource@ source = GetNode().CreateComponent("SoundSource");
         Sound@ sound = cache.GetResource("Sound", soundName);
 
-        source.SetDistanceAttenuation(1, 100, 2);
+        source.SetDistanceAttenuation(5, 50, 2);
         source.Play(sound);
         source.autoRemove = true;
         source.soundType = SOUND_EFFECT;

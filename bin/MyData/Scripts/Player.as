@@ -883,20 +883,21 @@ class PlayerCounterState : CharacterCounterState
                 }
             }
 
+            best_index = -1;
             if (best_index >= 0)
             {
                 @currentMotion = doubleCounterMotions[best_index];
                 @eCState1.currentMotion = eCState1.doubleCounterMotions[best_index*2 + 0];
                 @eCState2.currentMotion = eCState2.doubleCounterMotions[best_index*2 + 1];
-                Vector3 s1 = eCState1.currentMotion.startFromOrigin;
-                Vector3 s2 = currentMotion.startFromOrigin;
+                Vector3 s1 = currentMotion.startFromOrigin;
+                Vector3 s2 = eCState1.currentMotion.startFromOrigin;
                 Vector3 originDiff = s1 - s2;
                 originDiff.y = 0.0f;
 
-                targetPosition = e1.sceneNode.worldPosition + e1.sceneNode.worldRotation * originDiff;
+                targetPosition = e1.sceneNode.worldPosition + originDiff;
 
                 Vector3 vec_dir = pos1 - pos2;
-                targetRotation = Atan2(vec_dir.x, vec_dir.z) - 90;
+                targetRotation = Atan2(vec_dir.x, vec_dir.z) + 90;
             }
             else
             {
@@ -934,7 +935,7 @@ class PlayerCounterState : CharacterCounterState
             eCState1.ChangeSubState(COUNTER_WAITING);
             eCState2.ChangeSubState(COUNTER_WAITING);
         }
-        else
+        else if (counterEnemies.length == 1)
         {
             Enemy@ counterEnemy = counterEnemies[0];
             Node@ enemyNode = counterEnemy.sceneNode;
@@ -977,6 +978,10 @@ class PlayerCounterState : CharacterCounterState
             Print("SingleCounter s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
         }
 
+        if (counterEnemies.length == 0)
+            ownner.ChangeState("StandState"); // Something Error Happened
+
+
         positionDiff = targetPosition - myPos;
         rotationDiff = AngleDiff(targetRotation - myRotation);
 
@@ -1009,7 +1014,7 @@ class PlayerCounterState : CharacterCounterState
 
         if (counterEnemies.length > 1)
         {
-            ownner.SetSceneTimeScale(0.0f);
+            ownner.SetSceneTimeScale(0.1f);
         }
     }
 
@@ -1229,7 +1234,8 @@ class Player : Character
     bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
         if (!CanBeAttacked()) {
-            Print("OnDamage failed because I can no be attacked " + GetName());
+            if (d_log)
+                Print("OnDamage failed because I can no be attacked " + GetName());
             return false;
         }
 
@@ -1292,7 +1298,8 @@ class Player : Character
             Enemy@ e = em.enemyList[i];
             if (!e.CanBeAttacked())
             {
-                Print(e.GetName() + " can not be attacked");
+                if (d_log)
+                    Print(e.GetName() + " can not be attacked");
                 em.scoreCache.Push(-1);
                 continue;
             }
@@ -1303,7 +1310,8 @@ class Player : Character
             float dist = posDiff.length;
             if (dist > MAX_ATTACK_DIST)
             {
-                Print(e.GetName() + " far way from player");
+                if (d_log)
+                    Print(e.GetName() + " far way from player");
                 em.scoreCache.Push(-1);
                 continue;
             }
@@ -1313,7 +1321,10 @@ class Player : Character
             float enemyAngle = Atan2(posDiff.x, posDiff.z);
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
-            Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
+
+            if (d_log)
+                Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
+
             int threatScore = 0;
             if (isAttacking && dist < 5.0f)
                 threatScore += 50;
@@ -1361,7 +1372,8 @@ class Player : Character
             Enemy@ e = em.enemyList[i];
             if (!e.CanBeCountered())
             {
-                Print(e.GetName() + " can not be countered");
+                if (d_log)
+                    Print(e.GetName() + " can not be countered");
                 continue;
             }
             Vector3 posDiff = e.sceneNode.worldPosition - myPos;
@@ -1369,11 +1381,14 @@ class Player : Character
             float distSQR = posDiff.lengthSquared;
             if (distSQR > MAX_COUNTER_DIST * MAX_COUNTER_DIST)
             {
-                Print(e.GetName() + " counter distance too long" + distSQR);
+                if (d_log)
+                    Print(e.GetName() + " counter distance too long" + distSQR);
                 continue;
             }
             counterEnemies.Push(e);
         }
+
+        Print("PickCounterEnemy ret=" + counterEnemies.length);
         return counterEnemies.length;
     }
 

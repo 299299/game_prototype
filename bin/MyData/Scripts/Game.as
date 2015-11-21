@@ -200,14 +200,10 @@ class TestGameState : GameState
         CreateScene();
         if (!engine.headless)
         {
-            Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
-            renderer.viewports[0] = viewport;
-            graphics.windowTitle = "Test";
-
+            CreateViewPort();
             int height = graphics.height / 22;
             if (height > 64)
                 height = 64;
-
             Text@ messageText = ui.root.CreateChild("Text", "message");
             messageText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
             messageText.SetAlignment(HA_CENTER, VA_CENTER);
@@ -311,6 +307,21 @@ class TestGameState : GameState
         else if (newState == GAME_FAIL)
         {
             ShowMessage("You Died! Press Stride or Evade to restart!", true);
+        }
+    }
+
+    void CreateViewPort()
+    {
+        Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
+        renderer.viewports[0] = viewport;
+        graphics.windowTitle = "Test";
+        if (bHdr)
+        {
+            RenderPath@ renderpath = viewport.renderPath.Clone();
+            renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
+            renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
+            renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
+            viewport.renderPath = renderpath;
         }
     }
 

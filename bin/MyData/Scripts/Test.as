@@ -18,6 +18,7 @@
 
 int drawDebug = 0;
 bool autoCounter = false;
+bool bHdr = true;
 
 String PLAYER_NAME = "player";
 String CAMERA_NAME = "camera";
@@ -27,6 +28,7 @@ void Start()
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
+    renderer.hdrRendering = bHdr;
 
     SetRandomSeed(time.systemTime);
 

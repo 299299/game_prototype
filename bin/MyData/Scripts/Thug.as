@@ -18,6 +18,7 @@ class ThugStandState : CharacterState
     float           thinkTime;
     float           checkAvoidanceTimer = 0.0f;
     float           checkAvoidanceTime = 0.1f;
+    bool            firstEnter = true;
 
     ThugStandState(Character@ c)
     {
@@ -39,7 +40,13 @@ class ThugStandState : CharacterState
         }
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
-        thinkTime = Random(1.0f, 3.0f);
+        float min_think_time = 1.0f;
+        if (firstEnter)
+        {
+            min_think_time = 2.5f;
+            firstEnter = false;
+        }
+        thinkTime = Random(min_think_time, 4.0f);
         checkAvoidanceTime = Random(0.1f, 0.2f);
         checkAvoidanceTimer = 0.0f;
         CharacterState::Enter(lastState);
@@ -60,7 +67,7 @@ class ThugStandState : CharacterState
         {
             OnThinkTimeOut();
             timeInState = 0.0f;
-            thinkTime = Random(1.0f, 3.0f);
+            thinkTime = Random(1.0f, 4.0f);
         }
 
         CharacterState::Update(dt);
@@ -130,7 +137,9 @@ class ThugStandState : CharacterState
         int rand_i = RandomInt(5);
         Print("rand_i=" + rand_i + " dist=" + dist);
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
-        if (num_of_moving_thugs < 3 && rand_i > 0 && !ownner.HasFlag(FLAGS_NO_MOVE))
+        bool can_i_see_player = !ownner.IsTargetSightBlocked();
+
+        if (num_of_moving_thugs < 3 && rand_i > 0 && !ownner.HasFlag(FLAGS_NO_MOVE) && can_i_see_player)
         {
             // try to move to player
             rand_i = RandomInt(2);
@@ -400,7 +409,7 @@ class ThugAttackState : CharacterState
 {
     AttackMotion@               currentAttack;
     Array<AttackMotion@>        attacks;
-    float                       turnSpeed = 0.5f;
+    float                       turnSpeed = 1.0f;
     bool                        doAttackCheck = false;
     Node@                       attackCheckNode;
 
@@ -752,7 +761,8 @@ class Thug : Enemy
     {
         if (!CanBeAttacked())
         {
-            Print("OnDamage failed because I can no be attacked " + GetName());
+            if (d_log)
+                Print("OnDamage failed because I can no be attacked " + GetName());
             return false;
         }
 

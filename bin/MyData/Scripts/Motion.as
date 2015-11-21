@@ -996,7 +996,7 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_08", 21, COMBAT_SOUND, L_HAND);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_08", 23, READY_TO_FIGHT);
 
-        AddStringAnimationTrigger(preFix + "Counter_Arm_Front_09", 6, COMBAT_SOUND, R_HAND);
+        AddStringAnimationTrigger(preFix + "Counter_Leg_Front_09", 6, COMBAT_SOUND, R_HAND);
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_09", 27, COMBAT_SOUND, R_HAND);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 29, READY_TO_FIGHT);
 

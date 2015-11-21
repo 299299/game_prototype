@@ -1117,6 +1117,11 @@ class Character : GameObject
             return;
         sceneNode.worldPosition = targetPosition;
     }
+
+    bool IsTargetSightBlocked()
+    {
+        return false;
+    }
 };
 
 int DirectionMapToIndex(float directionDifference, int numDirections)
