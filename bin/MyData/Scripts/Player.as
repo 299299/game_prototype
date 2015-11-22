@@ -806,6 +806,7 @@ class PlayerAttackState : CharacterState
 
 class PlayerCounterState : CharacterCounterState
 {
+    Array<Motion@>  doubleCounterMotions;
     Array<Enemy@>   counterEnemies;
     bool            bCheckInput = false;
     bool            isInAir = false;
