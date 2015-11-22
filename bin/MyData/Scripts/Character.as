@@ -11,6 +11,9 @@ const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
 const int MAX_NUM_OF_ATTACK = 3;
+const int MAX_NUM_OF_MOVING = 4;
+const int MAX_NUM_OF_COMBAT_IDLE = 3;
+
 const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
@@ -55,6 +58,9 @@ const String L_ARM = "Bip01_L_Forearm";
 const String R_ARM = "Bip01_R_Forearm";
 const String L_CALF = "Bip01_L_Calf";
 const String R_CALF = "Bip01_R_Calf";
+
+Vector3 WORLD_SIZE(0, 0, 0);
+Vector3 WORLD_HALF_SIZE(0, 0, 0);
 
 class CharacterState : State
 {
@@ -749,7 +755,31 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        sceneNode.worldPosition = position;
+        Vector3 old_pos = sceneNode.worldPosition;
+        float x = position.x;
+        float z = position.z;
+        if (x > 0)
+        {
+            if (x + COLLISION_RADIUS > WORLD_HALF_SIZE.x)
+                x = WORLD_HALF_SIZE.x - COLLISION_RADIUS;
+        }
+        else
+        {
+             if (x - COLLISION_RADIUS < -WORLD_HALF_SIZE.x)
+                x = COLLISION_RADIUS - WORLD_HALF_SIZE.x;
+        }
+        if (z > 0)
+        {
+            if (z + COLLISION_RADIUS > WORLD_HALF_SIZE.z)
+                z = WORLD_HALF_SIZE.z - COLLISION_RADIUS;
+        }
+        else
+        {
+             if (z - COLLISION_RADIUS < -WORLD_HALF_SIZE.z)
+                z = COLLISION_RADIUS - WORLD_HALF_SIZE.z;
+        }
+
+        sceneNode.worldPosition = Vector3(x, 0, z);
     }
 
     bool Attack()

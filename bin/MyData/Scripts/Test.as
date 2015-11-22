@@ -255,7 +255,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (drawDebug > 0)
     {
-         String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+        String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
 
         Player@ player = GetPlayer();
@@ -326,6 +326,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         ++drawDebug;
         if (drawDebug > 3)
             drawDebug = 0;
+
+        Text@ text = ui.root.GetChild("debug", true);
+        if (text !is null)
+            text.visible = drawDebug != 0;
     }
     else if (key == KEY_F2)
         debugHud.ToggleAll();

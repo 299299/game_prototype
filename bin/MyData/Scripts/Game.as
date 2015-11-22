@@ -340,7 +340,8 @@ class TestGameState : GameState
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
         Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
-        audio.listener = characterNode.CreateComponent("SoundListener");
+        audio.listener = characterNode.GetChild("Bip01_Head", true).CreateComponent("SoundListener");
+
         characterNode.CreateScriptObject(scriptFile, "Player");
         characterNode.CreateScriptObject(scriptFile, "Ragdoll");
 
@@ -356,6 +357,8 @@ class TestGameState : GameState
             }
         }
 
+        maxKilled = enemyResetRotations.length;
+
         Vector3 v_pos = characterNode.worldPosition;
         cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
         cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
@@ -364,8 +367,13 @@ class TestGameState : GameState
         //gCameraMgr.SetCameraController("Debug");
         gCameraMgr.SetCameraController("ThirdPerson");
 
+        Node@ floor = scene_.GetChild("floor", true);
+        StaticModel@ model = floor.GetComponent("StaticModel");
+        WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
+        WORLD_SIZE = WORLD_HALF_SIZE * 2;
+
         //DumpSkeletonNames(characterNode);
-        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms");
+        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + WORLD_SIZE.ToString());
     }
 
     void ShowMessage(const String&in msg, bool show)

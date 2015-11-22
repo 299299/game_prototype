@@ -112,6 +112,7 @@ class ThirdPersonCameraController : CameraController
         Vector3 v = cameraNode.worldPosition;
         v.y += cameraHeight;
         cameraTargert = v;
+        gInput.m_rightStickY = 30;
     }
 
     void Update(float dt)

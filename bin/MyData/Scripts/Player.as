@@ -852,7 +852,8 @@ class PlayerCounterState : CharacterCounterState
             for (uint i=0; i<counterEnemies.length; ++i)
             {
                 Enemy@ e = counterEnemies[i];
-                vPos += e.sceneNode.worldPosition;
+                Vector3 expect_pos = e.sceneNode.worldPosition + e.sceneNode.worldRotation * Vector3(0, 0, COLLISION_RADIUS);
+                vPos += expect_pos;
                 e.ChangeState("CounterState");
                 CharacterCounterState@ eCState = cast<CharacterCounterState>(e.GetState());
                 eCState.ChangeSubState(COUNTER_WAITING);
