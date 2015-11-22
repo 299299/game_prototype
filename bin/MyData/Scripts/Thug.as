@@ -400,7 +400,6 @@ class ThugCounterState : CharacterCounterState
     {
         super(c);
         AddCounterMotions("TG_BM_Counter/");
-        AddDoubleCounterMotions("TG_BM_Counter/", true);
     }
 };
 

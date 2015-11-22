@@ -10,7 +10,7 @@ const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.9f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
-const int MAX_NUM_OF_ATTACK = 2;
+const int MAX_NUM_OF_ATTACK = 3;
 const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
@@ -45,6 +45,7 @@ const StringHash DURATION("Duration");
 const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
 const StringHash CHANGE_STATE("ChangeState");
+const StringHash IMPACT("Impact");
 
 const String L_HAND = "Bip01_L_Hand";
 const String R_HAND = "Bip01_R_Hand";
@@ -114,7 +115,7 @@ class CharacterState : State
             ownner.PlaySound("Sfx/kick_0" + i + ".ogg");
         }
 
-        Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+        Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
         if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
     }
@@ -472,7 +473,6 @@ class CharacterCounterState : CharacterState
 
     void Update(float dt)
     {
-        // Print(ownner.GetName() + " state=" + state);
         if (state == COUNTER_ALIGNING)
         {
             ownner.sceneNode.Yaw(yawPerSec * dt);
@@ -480,7 +480,7 @@ class CharacterCounterState : CharacterState
             if (timeInState >= alignTime)
                 OnAlignTimeOut();
         }
-        else if (state== COUNTER_ANIMATING)
+        else if (state == COUNTER_ANIMATING)
         {
              if (currentMotion.Move(ownner, dt))
              {
@@ -614,9 +614,6 @@ class Character : GameObject
     float                   attackRadius = 0.5f;
     int                     attackDamage = 10;
 
-    Vector3                 targetPosition;
-    bool                    targetPositionApplied = false;
-
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -664,7 +661,6 @@ class Character : GameObject
         }
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-        targetPositionApplied = false;
     }
 
     void Start()
@@ -753,11 +749,7 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        // (sceneNode.name == "player")
-        //    Print("MoveTo " + position.ToString());
         sceneNode.worldPosition = position;
-        //targetPosition = position;
-        //targetPositionApplied = true;
     }
 
     bool Attack()
@@ -793,7 +785,6 @@ class Character : GameObject
         sceneNode.worldRotation = startRotation;
         health = INITIAL_HEALTH;
         SetTimeScale(1.0f);
-        targetPositionApplied = false;
         stateMachine.ChangeState("StandState");
     }
 
@@ -1070,20 +1061,7 @@ class Character : GameObject
     void Update(float dt)
     {
         dt *= timeScale;
-        targetPositionApplied = false;
         stateMachine.Update(dt);
-
-        if (!targetPositionApplied)
-            return;
-
-        targetPositionApplied = false;
-        Vector3 curPosition = sceneNode.worldPosition;
-        Ray ray(curPosition, (targetPosition - curPosition).Normalized());
-        float rayLen = COLLISION_RADIUS + 0.5f;
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, rayLen, COLLISION_LAYER_LANDSCAPE);
-        if (result.body !is null)
-            return;
-        sceneNode.worldPosition = targetPosition;
     }
 
     bool IsTargetSightBlocked()
