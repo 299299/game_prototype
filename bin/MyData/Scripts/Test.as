@@ -28,7 +28,8 @@ void Start()
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
-    renderer.hdrRendering = bHdr;
+    if (renderer !is null)
+        renderer.hdrRendering = bHdr;
 
     SetRandomSeed(time.systemTime);
 

@@ -974,9 +974,16 @@ class Character : GameObject
         stateMachine.ChangeState("DeadState");
     }
 
-    void MakeMeRagdoll(int stickToDynamic = 0)
+    void MakeMeRagdoll(int stickToDynamic = 0, bool hasVelocity = false, const Vector3&in velocity = Vector3(0, 0, 0))
     {
-        SendAnimationTriger(renderNode, RAGDOLL_START, stickToDynamic);
+        VariantMap anim_data;
+        anim_data[NAME] = RAGDOLL_START;
+        anim_data[VALUE] = stickToDynamic;
+        if (hasVelocity)
+            anim_data[VELOCITY] = velocity;
+        VariantMap data;
+        data[DATA] = anim_data;
+        sceneNode.SendEvent("AnimationTrigger", data);
     }
 
     void SetHintText(const String&in text, bool bSet)
