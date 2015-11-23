@@ -96,10 +96,10 @@ class TextMenu
             }
         }
 
-        if (selIndex >= items.length)
+        if (selIndex >= int(items.length))
             selIndex = 0;
         if (selIndex < 0)
-            selIndex = items.length - 1;
+            selIndex = int(items.length) - 1;
 
         ChangeSelection(selIndex);
         return gInput.IsEnterPressed() ? selection : -1;

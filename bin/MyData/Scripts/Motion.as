@@ -527,13 +527,9 @@ class MotionManager
 
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
-        CreateMotion(preFix + "Double_Counter_2ThugsA");
-        CreateMotion(preFix + "Double_Counter_2ThugsB");
-        CreateMotion(preFix + "Double_Counter_2ThugsD");
-        CreateMotion(preFix + "Double_Counter_2ThugsE");
         CreateMotion(preFix + "Double_Counter_2ThugsF");
         CreateMotion(preFix + "Double_Counter_2ThugsG");
-        CreateMotion(preFix + "Double_Counter_2ThugsH");
+        CreateMotion(preFix + "Double_Counter_3ThugsB");
 
         preFix = "BM_Death_Primers/";
         CreateMotion(preFix + "Death_Front");
@@ -585,20 +581,6 @@ class MotionManager
 
         preFix = "TG_BM_Counter/";
         AddCounterMotions(preFix);
-        CreateMotion(preFix + "Double_Counter_2ThugsA_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsA_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsB_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsB_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsD_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsD_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsE_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsE_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsF_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsF_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsG_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsG_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsH_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsH_02");
     }
 
     void Stop()
@@ -763,27 +745,6 @@ class MotionManager
         AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 72);
         AddRagdollTrigger(preFix + "Counter_Leg_Back_04", -1, 43);
         AddRagdollTrigger(preFix + "Counter_Leg_Back_05", 48, 52);
-
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_01", -1, 90);
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_02", -1, 90);
-
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_01", -1, 60);
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_02", -1, 60);
-
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_01", -1, 48);
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_02", -1, 48);
-
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_01", -1, 84);
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_02", -1, 84);
-
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_01", 20, 25);
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_02", 27, 30);
-
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_01", 25, 28);
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_02", 25, 28);
-
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_01", -1, 70);
-        AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_02", -1, 70);
 
         preFix = "TG_HitReaction/";
         AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);
@@ -996,7 +957,7 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_08", 21, COMBAT_SOUND, L_HAND);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_08", 23, READY_TO_FIGHT);
 
-        AddStringAnimationTrigger(preFix + "Counter_Arm_Front_09", 6, COMBAT_SOUND, R_HAND);
+        AddStringAnimationTrigger(preFix + "Counter_Leg_Front_09", 6, COMBAT_SOUND, R_HAND);
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_09", 27, COMBAT_SOUND, R_HAND);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 29, READY_TO_FIGHT);
 
@@ -1012,34 +973,14 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 21, COMBAT_SOUND, L_ARM);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 23, READY_TO_FIGHT);
 
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 14, COMBAT_SOUND, L_HAND);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 77, COMBAT_SOUND, L_HAND);
-        AddAnimationTrigger(preFix + "Double_Counter_2ThugsA", 80, READY_TO_FIGHT);
-
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsB", 12, COMBAT_SOUND, L_HAND);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsB", 40, COMBAT_SOUND, L_HAND);
-        AddAnimationTrigger(preFix + "Double_Counter_2ThugsB", 64, READY_TO_FIGHT);
-
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 6, COMBAT_SOUND, L_HAND);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 15, COMBAT_SOUND, R_HAND);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 37, COMBAT_SOUND, R_HAND);
-        AddAnimationTrigger(preFix + "Double_Counter_2ThugsD", 42, READY_TO_FIGHT);
-
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 22, COMBAT_SOUND, R_ARM);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 43, COMBAT_SOUND, L_FOOT);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 82, COMBAT_SOUND, R_HAND);
-        AddAnimationTrigger(preFix + "Double_Counter_2ThugsE", 84, READY_TO_FIGHT);
-
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 19, COMBAT_SOUND, R_HAND);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, COMBAT_SOUND, R_FOOT);
+        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, IMPACT, L_FOOT);
         AddAnimationTrigger(preFix + "Double_Counter_2ThugsF", 60, READY_TO_FIGHT);
 
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsG", 23, COMBAT_SOUND, R_HAND);
+        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsG", 23, IMPACT, L_HAND);
         AddAnimationTrigger(preFix + "Double_Counter_2ThugsG", 25, READY_TO_FIGHT);
 
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 18, COMBAT_SOUND, R_HAND);
-        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 38, COMBAT_SOUND, R_HAND);
-        AddAnimationTrigger(preFix + "Double_Counter_2ThugsH", 70, READY_TO_FIGHT);
+        AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, IMPACT, L_HAND);
+        AddAnimationTrigger(preFix + "Double_Counter_3ThugsB", 50, READY_TO_FIGHT);
 
         preFix = "BM_Combat_Movement/";
         AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);

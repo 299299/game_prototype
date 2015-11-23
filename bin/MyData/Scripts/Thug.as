@@ -11,6 +11,8 @@ float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.05f;
 const int HIT_WAIT_FRAMES = 3;
+const float MIN_THINK_TIME = 0.5f;
+const float MAX_THINK_TIME = 3.0f;
 
 class ThugStandState : CharacterState
 {
@@ -18,6 +20,7 @@ class ThugStandState : CharacterState
     float           thinkTime;
     float           checkAvoidanceTimer = 0.0f;
     float           checkAvoidanceTime = 0.1f;
+    bool            firstEnter = true;
 
     ThugStandState(Character@ c)
     {
@@ -39,7 +42,13 @@ class ThugStandState : CharacterState
         }
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
-        thinkTime = Random(1.0f, 3.0f);
+        float min_think_time = MIN_THINK_TIME;
+        if (firstEnter)
+        {
+            min_think_time = 2.5f;
+            firstEnter = false;
+        }
+        thinkTime = Random(min_think_time, MAX_THINK_TIME);
         checkAvoidanceTime = Random(0.1f, 0.2f);
         checkAvoidanceTimer = 0.0f;
         CharacterState::Enter(lastState);
@@ -60,7 +69,7 @@ class ThugStandState : CharacterState
         {
             OnThinkTimeOut();
             timeInState = 0.0f;
-            thinkTime = Random(1.0f, 3.0f);
+            thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
         }
 
         CharacterState::Update(dt);
@@ -114,7 +123,7 @@ class ThugStandState : CharacterState
         if (!ownner.CanAttack())
         {
             int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
-            if (num_of_combat_idle < 3)
+            if (num_of_combat_idle < MAX_NUM_OF_COMBAT_IDLE)
                 ownner.stateMachine.ChangeState("CombatIdleState");
             return;
         }
@@ -130,7 +139,9 @@ class ThugStandState : CharacterState
         int rand_i = RandomInt(5);
         Print("rand_i=" + rand_i + " dist=" + dist);
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
-        if (num_of_moving_thugs < 3 && rand_i > 0 && !ownner.HasFlag(FLAGS_NO_MOVE))
+        bool can_i_see_player = !ownner.IsTargetSightBlocked();
+
+        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && rand_i > 0 && !ownner.HasFlag(FLAGS_NO_MOVE) && can_i_see_player)
         {
             // try to move to player
             rand_i = RandomInt(2);
@@ -148,7 +159,7 @@ class ThugStandState : CharacterState
         else
         {
             int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
-            if (num_of_combat_idle < 3)
+            if (num_of_combat_idle < MAX_NUM_OF_MOVING)
                 ownner.stateMachine.ChangeState("CombatIdleState");
         }
     }
@@ -391,7 +402,6 @@ class ThugCounterState : CharacterCounterState
     {
         super(c);
         AddCounterMotions("TG_BM_Counter/");
-        AddDoubleCounterMotions("TG_BM_Counter/", true);
     }
 };
 
@@ -400,7 +410,7 @@ class ThugAttackState : CharacterState
 {
     AttackMotion@               currentAttack;
     Array<AttackMotion@>        attacks;
-    float                       turnSpeed = 0.5f;
+    float                       turnSpeed = 1.0f;
     bool                        doAttackCheck = false;
     Node@                       attackCheckNode;
 
@@ -687,7 +697,7 @@ class Thug : Enemy
 
         Node@ collsionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(3.0f, CHARACTER_HEIGHT, Vector3(0.0f, 2.5f, 0.0f));
+        shape.SetCapsule(3.5f, CHARACTER_HEIGHT, Vector3(0.0f, 2.5f, 0.0f));
         RigidBody@ body = collsionNode.CreateComponent("RigidBody");
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         body.collisionMask = COLLISION_LAYER_CHARACTER;
@@ -752,7 +762,8 @@ class Thug : Enemy
     {
         if (!CanBeAttacked())
         {
-            Print("OnDamage failed because I can no be attacked " + GetName());
+            if (d_log)
+                Print("OnDamage failed because I can no be attacked " + GetName());
             return false;
         }
 

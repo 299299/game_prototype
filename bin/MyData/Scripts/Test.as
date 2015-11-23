@@ -18,6 +18,7 @@
 
 int drawDebug = 0;
 bool autoCounter = false;
+bool bHdr = true;
 
 String PLAYER_NAME = "player";
 String CAMERA_NAME = "camera";
@@ -27,6 +28,7 @@ void Start()
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
+    renderer.hdrRendering = bHdr;
 
     SetRandomSeed(time.systemTime);
 
@@ -253,7 +255,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (drawDebug > 0)
     {
-         String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+        String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
 
         Player@ player = GetPlayer();
@@ -324,6 +326,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         ++drawDebug;
         if (drawDebug > 3)
             drawDebug = 0;
+
+        Text@ text = ui.root.GetChild("debug", true);
+        if (text !is null)
+            text.visible = drawDebug != 0;
     }
     else if (key == KEY_F2)
         debugHud.ToggleAll();

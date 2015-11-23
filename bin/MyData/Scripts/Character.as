@@ -10,7 +10,10 @@ const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.9f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
-const int MAX_NUM_OF_ATTACK = 2;
+const int MAX_NUM_OF_ATTACK = 3;
+const int MAX_NUM_OF_MOVING = 4;
+const int MAX_NUM_OF_COMBAT_IDLE = 3;
+
 const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
@@ -45,6 +48,7 @@ const StringHash DURATION("Duration");
 const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
 const StringHash CHANGE_STATE("ChangeState");
+const StringHash IMPACT("Impact");
 
 const String L_HAND = "Bip01_L_Hand";
 const String R_HAND = "Bip01_R_Hand";
@@ -54,6 +58,9 @@ const String L_ARM = "Bip01_L_Forearm";
 const String R_ARM = "Bip01_R_Forearm";
 const String L_CALF = "Bip01_L_Calf";
 const String R_CALF = "Bip01_R_Calf";
+
+Vector3 WORLD_SIZE(0, 0, 0);
+Vector3 WORLD_HALF_SIZE(0, 0, 0);
 
 class CharacterState : State
 {
@@ -114,7 +121,7 @@ class CharacterState : State
             ownner.PlaySound("Sfx/kick_0" + i + ".ogg");
         }
 
-        Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+        Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
         if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
     }
@@ -362,7 +369,6 @@ enum CounterSubState
 
 class CharacterCounterState : CharacterState
 {
-    Array<Motion@>      doubleCounterMotions;
     Array<Motion@>      frontArmMotions;
     Array<Motion@>      frontLegMotions;
     Array<Motion@>      backArmMotions;
@@ -392,37 +398,6 @@ class CharacterCounterState : CharacterState
         CharacterState::Exit(nextState);
         @currentMotion = null;
         state = COUNTER_NONE;
-    }
-
-    void AddDoubleCounterMotions(const String&in preFix, bool is_two)
-    {
-        if (is_two)
-        {
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_01"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_02"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB_01"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB_02"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD_01"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD_02"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE_01"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE_02"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF_01"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF_02"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG_01"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG_02"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH_01"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH_02"));
-        }
-        else
-        {
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
-            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH"));
-        }
     }
 
     void AddCounterMotions(const String&in preFix)
@@ -504,7 +479,6 @@ class CharacterCounterState : CharacterState
 
     void Update(float dt)
     {
-        // Print(ownner.GetName() + " state=" + state);
         if (state == COUNTER_ALIGNING)
         {
             ownner.sceneNode.Yaw(yawPerSec * dt);
@@ -512,7 +486,7 @@ class CharacterCounterState : CharacterState
             if (timeInState >= alignTime)
                 OnAlignTimeOut();
         }
-        else if (state== COUNTER_ANIMATING)
+        else if (state == COUNTER_ANIMATING)
         {
              if (currentMotion.Move(ownner, dt))
              {
@@ -646,9 +620,6 @@ class Character : GameObject
     float                   attackRadius = 0.5f;
     int                     attackDamage = 10;
 
-    Vector3                 targetPosition;
-    bool                    targetPositionApplied = false;
-
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -696,7 +667,6 @@ class Character : GameObject
         }
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-        targetPositionApplied = false;
     }
 
     void Start()
@@ -785,11 +755,31 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        // (sceneNode.name == "player")
-        //    Print("MoveTo " + position.ToString());
-        sceneNode.worldPosition = position;
-        //targetPosition = position;
-        //targetPositionApplied = true;
+        Vector3 old_pos = sceneNode.worldPosition;
+        float x = position.x;
+        float z = position.z;
+        if (x > 0)
+        {
+            if (x + COLLISION_RADIUS > WORLD_HALF_SIZE.x)
+                x = WORLD_HALF_SIZE.x - COLLISION_RADIUS;
+        }
+        else
+        {
+             if (x - COLLISION_RADIUS < -WORLD_HALF_SIZE.x)
+                x = COLLISION_RADIUS - WORLD_HALF_SIZE.x;
+        }
+        if (z > 0)
+        {
+            if (z + COLLISION_RADIUS > WORLD_HALF_SIZE.z)
+                z = WORLD_HALF_SIZE.z - COLLISION_RADIUS;
+        }
+        else
+        {
+             if (z - COLLISION_RADIUS < -WORLD_HALF_SIZE.z)
+                z = COLLISION_RADIUS - WORLD_HALF_SIZE.z;
+        }
+
+        sceneNode.worldPosition = Vector3(x, 0, z);
     }
 
     bool Attack()
@@ -825,7 +815,6 @@ class Character : GameObject
         sceneNode.worldRotation = startRotation;
         health = INITIAL_HEALTH;
         SetTimeScale(1.0f);
-        targetPositionApplied = false;
         stateMachine.ChangeState("StandState");
     }
 
@@ -1102,20 +1091,12 @@ class Character : GameObject
     void Update(float dt)
     {
         dt *= timeScale;
-        targetPositionApplied = false;
         stateMachine.Update(dt);
+    }
 
-        if (!targetPositionApplied)
-            return;
-
-        targetPositionApplied = false;
-        Vector3 curPosition = sceneNode.worldPosition;
-        Ray ray(curPosition, (targetPosition - curPosition).Normalized());
-        float rayLen = COLLISION_RADIUS + 0.5f;
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, rayLen, COLLISION_LAYER_LANDSCAPE);
-        if (result.body !is null)
-            return;
-        sceneNode.worldPosition = targetPosition;
+    bool IsTargetSightBlocked()
+    {
+        return false;
     }
 };
 

@@ -200,14 +200,10 @@ class TestGameState : GameState
         CreateScene();
         if (!engine.headless)
         {
-            Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
-            renderer.viewports[0] = viewport;
-            graphics.windowTitle = "Test";
-
+            CreateViewPort();
             int height = graphics.height / 22;
             if (height > 64)
                 height = 64;
-
             Text@ messageText = ui.root.CreateChild("Text", "message");
             messageText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
             messageText.SetAlignment(HA_CENTER, VA_CENTER);
@@ -314,6 +310,21 @@ class TestGameState : GameState
         }
     }
 
+    void CreateViewPort()
+    {
+        Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
+        renderer.viewports[0] = viewport;
+        graphics.windowTitle = "Test";
+        if (bHdr)
+        {
+            RenderPath@ renderpath = viewport.renderPath.Clone();
+            renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
+            renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
+            renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
+            viewport.renderPath = renderpath;
+        }
+    }
+
     void CreateScene()
     {
         uint t = time.systemTime;
@@ -329,7 +340,8 @@ class TestGameState : GameState
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
         Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
-        audio.listener = characterNode.CreateComponent("SoundListener");
+        audio.listener = characterNode.GetChild("Bip01_Head", true).CreateComponent("SoundListener");
+
         characterNode.CreateScriptObject(scriptFile, "Player");
         characterNode.CreateScriptObject(scriptFile, "Ragdoll");
 
@@ -345,6 +357,8 @@ class TestGameState : GameState
             }
         }
 
+        maxKilled = enemyResetRotations.length;
+
         Vector3 v_pos = characterNode.worldPosition;
         cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
         cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
@@ -353,8 +367,13 @@ class TestGameState : GameState
         //gCameraMgr.SetCameraController("Debug");
         gCameraMgr.SetCameraController("ThirdPerson");
 
+        Node@ floor = scene_.GetChild("floor", true);
+        StaticModel@ model = floor.GetComponent("StaticModel");
+        WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
+        WORLD_SIZE = WORLD_HALF_SIZE * 2;
+
         //DumpSkeletonNames(characterNode);
-        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms");
+        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + WORLD_SIZE.ToString());
     }
 
     void ShowMessage(const String&in msg, bool show)
