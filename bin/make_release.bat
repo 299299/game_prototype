@@ -1,10 +1,10 @@
+@echo off
 RMDIR /S /Q .\Release\
 md .\Release\
 xcopy /s /e /h .\CoreData .\Release\CoreData\
 xcopy /s /e /h .\Data .\Release\Data\
 xcopy /s /e /h .\MyData .\Release\MyData\
-copy .\Test.bat .\Release\Game.bat
-copy /f .\Test.sh .\Release\Game.sh
+copy /f .\Test.bat .\Release\Game.bat
 copy /f .\Urho3DPlayer.exe .\Release\
 .\tool\ScriptCompiler.exe .\Release\MyData\Scripts\Test.as
 del .\Release\MyData\Scripts\*.as

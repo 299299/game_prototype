@@ -1,10 +1,10 @@
+#!/usr/bin/env bash
 rm -rf Release
 mkdir Release
 cp -rf CoreData Release/
 cp -rf Data Release/
 cp -rf MyData Release/
 cp Urho3DPlayer Release/
-cp Test.bat Release/Game.bat
 cp Test.sh Release/Game.sh
 tool/ScriptCompiler Release/MyData/Scripts/Test.as
 rm Release/MyData/Scripts/*.as
