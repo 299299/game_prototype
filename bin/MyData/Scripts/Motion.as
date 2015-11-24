@@ -372,6 +372,11 @@ class MotionManager
         Print("MotionManager");
     }
 
+    MotionManager()
+    {
+        Print("~MotionManager");
+    }
+
     Motion@ FindMotion(StringHash nameHash)
     {
         for (uint i=0; i<motions.length; ++i)
