@@ -272,6 +272,11 @@ class TestGameState : GameState
             }
             gInput.m_freeze = false;
             script.defaultScene.updateEnabled = true;
+
+            VariantMap data;
+            data[NAME] = CHANGE_STATE;
+            data[VALUE] = StringHash("Death");
+            SendEvent("CameraEvent", data);
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)
         {

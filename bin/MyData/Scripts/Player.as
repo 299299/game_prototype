@@ -631,10 +631,15 @@ class PlayerAttackState : CharacterState
                 EnemyManager@ em = cast<EnemyManager>(ownner.GetScene().GetScriptObject("EnemyManager"));
                 if (em !is null)
                 {
-                    if (em.GetNumOfEnemyHealthAbove(1) == 1)
+                    if (em.GetNumOfEnemyHealthLessThan(ownner.attackDamage) == 1)
                     {
                         lastKill = true;
-                        ownner.SetSceneTimeScale(0.25f);
+
+                        VariantMap data;
+                        data[NODE] = attackEnemy.GetNode().id;
+                        data[NAME] = CHANGE_STATE;
+                        data[VALUE] = StringHash("ThirdPerson");
+                        SendEvent("CameraEvent", data);
                     }
                 }
             }
@@ -681,8 +686,7 @@ class PlayerAttackState : CharacterState
         @attackEnemy = null;
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
-        if (slowMotion || lastKill)
-            ownner.SetSceneTimeScale(1.0f);
+        ownner.SetSceneTimeScale(1.0f);
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
@@ -1112,6 +1116,8 @@ class Player : Character
         tail.enabled = false;
 
         animModel.skeleton.GetBone("Bip01_Head").animated = false;
+
+        attackDamage = 20;
     }
 
     bool Attack()

@@ -175,6 +175,8 @@ class TransitionCameraController : CameraController
 
     void OnCameraEvent(VariantMap& eventData)
     {
+        if (!eventData.Contains(DURATION))
+            return;
         duration = eventData[DURATION].GetFloat();
         targetPosition = eventData[TARGET_POSITION].GetVector3();
         targetRotation = eventData[TARGET_ROTATION].GetQuaternion();
@@ -184,16 +186,36 @@ class TransitionCameraController : CameraController
 
 class DeathCameraController : CameraController
 {
-    Node@ characterNode;
+    uint nodeId = M_MAX_UNSIGNED;
 
     DeathCameraController(Node@ n, const String&in name)
     {
         super(n, name);
     }
 
+    void Exit()
+    {
+        nodeId = M_MAX_UNSIGNED;
+    }
+
     void Update(float dt)
     {
+        Node@ headNode = cameraNode.scene.GetNode(nodeId).GetChild("Bip01_Head", true);
+        cameraNode.worldPosition = headNode.worldPosition;
+        Node@ playerNode = GetPlayer().GetNode();
+        Vector3 v = playerNode.worldPosition;
+        v.y = CHARACTER_HEIGHT / 2;
+        cameraNode.LookAt(v);
+    }
 
+    void OnCameraEvent(VariantMap& eventData)
+    {
+        if (!eventData.Contains(NODE))
+            return;
+        nodeId = eventData[NODE].GetUInt();
+
+        Node@ headNode = cameraNode.scene.GetNode(nodeId).GetChild("Bip01_Head", true);
+        headNode.enabled = false;
     }
 };
 
