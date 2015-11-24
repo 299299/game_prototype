@@ -95,4 +95,4 @@ Thumbs.db
 /bin/MyData/CharacterTextures
 /bin/Asset/*.zip
 *.asc
-/Release
+/bin/Release/
