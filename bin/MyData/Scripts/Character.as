@@ -32,7 +32,6 @@ const StringHash TIME_SCALE("TimeScale");
 const StringHash DATA("Data");
 const StringHash NAME("Name");
 const StringHash ANIMATION("Animation");
-const StringHash GETUP_INDEX("Getup_Index");
 const StringHash SPEED("Speed");
 const StringHash STATE("State");
 const StringHash VALUE("Value");
@@ -89,7 +88,7 @@ class CharacterState : State
             if (animState !is null && animState.weight > 0.5f)
             {
                 String boneName = eventData[VALUE].GetString();
-                Node@ boneNode = ownner.sceneNode.GetChild(boneName, true);
+                Node@ boneNode = ownner.GetNode().GetChild(boneName, true);
                 if (boneNode !is null)
                     OnFootStep(boneNode);
             }
@@ -198,7 +197,7 @@ class MultiMotionState : CharacterState
 
     int PickIndex()
     {
-        return ownner.sceneNode.vars[ANIMATION_INDEX].GetInt();
+        return ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
     }
 
     String GetDebugText()
@@ -212,83 +211,6 @@ class MultiMotionState : CharacterState
         if (motion is null)
             return;
         motions.Push(motion);
-    }
-};
-
-class CharacterAlignState : CharacterState
-{
-    Vector3             targetPosition;
-    float               targetRotation;
-    float               yawPerSec;
-
-    float               alignTime = 0.5f;
-    float               curTime;
-    String              nextState;
-
-    uint                alignNodeId;
-
-    CharacterAlignState(Character@ c)
-    {
-        super(c);
-        SetName("AlignState");
-    }
-
-    void Enter(State@ lastState)
-    {
-        curTime = 0;
-
-        float curYaw = ownner.sceneNode.worldRotation.eulerAngles.y;
-        float diff = targetRotation - curYaw;
-        diff = AngleDiff(diff);
-
-        targetPosition.y = ownner.sceneNode.worldPosition.y;
-
-        yawPerSec = diff / alignTime;
-        Print("curYaw=" + String(curYaw) + " targetRotation=" + String(targetRotation) + " yaw per second = " + String(yawPerSec));
-
-        float posDiff = (targetPosition - ownner.sceneNode.worldPosition).length;
-        Print("angleDiff=" + String(diff) + " posDiff=" + String(posDiff));
-
-        if (Abs(diff) < 15 && posDiff < 0.5f)
-        {
-            Print("cut alignTime half");
-            alignTime /= 2;
-        }
-    }
-
-    void Update(float dt)
-    {
-        Node@ sceneNode = ownner.sceneNode;
-
-        curTime += dt;
-        if (curTime >= alignTime) {
-            Print("FINISHED Align!!!");
-            sceneNode.worldPosition = targetPosition;
-            sceneNode.worldRotation = Quaternion(0, targetRotation, 0);
-            ownner.ChangeState(nextState);
-
-            VariantMap eventData;
-            eventData["ALIGN"] = alignNodeId;
-            eventData["ME"] = sceneNode.id;
-            eventData["NEXT_STATE"] = nextState;
-            SendEvent("ALIGN_FINISED", eventData);
-
-            return;
-        }
-
-        float lerpValue = curTime / alignTime;
-        Vector3 curPos = sceneNode.worldPosition;
-        ownner.MoveTo(curPos.Lerp(targetPosition, lerpValue), dt);
-
-        float yawEd = yawPerSec * dt;
-        sceneNode.Yaw(yawEd);
-
-        Print("Character align status at " + String(curTime) +
-            " t=" + sceneNode.worldPosition.ToString() +
-            " r=" + String(sceneNode.worldRotation.eulerAngles.y) +
-            " dyaw=" + String(yawEd));
-
-        CharacterState::Update(dt);
     }
 };
 
@@ -481,8 +403,9 @@ class CharacterCounterState : CharacterState
     {
         if (state == COUNTER_ALIGNING)
         {
-            ownner.sceneNode.Yaw(yawPerSec * dt);
-            ownner.MoveTo(ownner.sceneNode.worldPosition + movePerSec * dt, dt);
+            Node@ _node = ownner.GetNode();
+            _node.Yaw(yawPerSec * dt);
+            ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
             if (timeInState >= alignTime)
                 OnAlignTimeOut();
         }
@@ -532,7 +455,7 @@ class CharacterRagdollState : CharacterState
     {
         if (timeInState > 0.1f)
         {
-            int ragdoll_state = ownner.sceneNode.vars[RAGDOLL_STATE].GetInt();
+            int ragdoll_state = ownner.GetNode().vars[RAGDOLL_STATE].GetInt();
             if (ragdoll_state == RAGDOLL_NONE)
             {
                 ownner.PlayCurrentPose();
@@ -581,18 +504,13 @@ class CharacterGetUpState : MultiMotionState
         {
             if (motion.Move(ownner, dt))
             {
-                // ownner.sceneNode.scene.timeScale = 0.0f;
+                // ownner.GetNode().scene.timeScale = 0.0f;
                 ownner.CommonStateFinishedOnGroud();
                 return;
             }
         }
 
         CharacterState::Update(dt);
-    }
-
-    int PickIndex()
-    {
-        return ownner.sceneNode.vars[GETUP_INDEX].GetInt();
     }
 };
 
@@ -693,21 +611,6 @@ class Character : GameObject
         @target = null;
         cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
         ragdollPoseAnim = null;
-    }
-
-    void LineUpdateWithObject(Node@ lineUpWith, const String&in nextState, const Vector3&in targetPosition, float targetRotation, float t)
-    {
-        CharacterAlignState@ state = cast<CharacterAlignState>(stateMachine.FindState("AlignState"));
-        if (state is null)
-            return;
-
-        Print("LineUpdateWithObject targetPosition=" + targetPosition.ToString() + " targetRotation=" + String(targetRotation));
-        state.targetPosition = targetPosition;
-        state.targetRotation = targetRotation;
-        state.alignTime = t;
-        state.nextState = nextState;
-        state.alignNodeId = lineUpWith.id;
-        stateMachine.ChangeState("AlignState");
     }
 
     void SetTimeScale(float scale)

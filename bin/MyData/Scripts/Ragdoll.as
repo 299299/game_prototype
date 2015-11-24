@@ -523,7 +523,7 @@ class Ragdoll : ScriptObject
             getUpIndex = 1;
 
         Print("getUpIndex = " + getUpIndex);
-        rootNode.vars[GETUP_INDEX] = getUpIndex;
+        rootNode.vars[ANIMATION_INDEX] = getUpIndex;
 
         Vector3 head_pos = boneNodes[BONE_HEAD].worldPosition;
         Vector3 pelvis_pos = pelvis_bone.worldPosition;

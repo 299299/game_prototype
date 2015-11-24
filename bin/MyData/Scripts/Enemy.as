@@ -171,7 +171,7 @@ class EnemyManager : ScriptObject
     {
         for (uint i=0; i<enemyList.length; ++i)
         {
-            enemyList[i].sceneNode.Remove();
+            enemyList[i].GetNode().Remove();
         }
         enemyList.Clear();
     }

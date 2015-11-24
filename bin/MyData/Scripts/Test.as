@@ -391,7 +391,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             state.weight = 1.0f;
             ctl.PlayExclusive(anim.name, LAYER_MOVE, false, 0.0f);
 
-            int ragdoll_direction = player.GetNode().vars[GETUP_INDEX].GetInt();
+            int ragdoll_direction = player.GetNode().vars[ANIMATION_INDEX].GetInt();
             String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
             PlayAnimation(ctl, GetAnimationName(name1), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
         }
@@ -403,7 +403,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 
             Node@ renderNode = player.GetNode().children[0];
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
-            int ragdoll_direction = player.GetNode().vars[GETUP_INDEX].GetInt();
+            int ragdoll_direction = player.GetNode().vars[ANIMATION_INDEX].GetInt();
             String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
             ctl.SetSpeed(GetAnimationName(name1), 1.0);
         }

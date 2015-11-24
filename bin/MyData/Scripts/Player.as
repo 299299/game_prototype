@@ -51,7 +51,7 @@ class PlayerStandState : CharacterState
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
             int index = ownner.RadialSelectAnimation(4);
-            ownner.sceneNode.vars[ANIMATION_INDEX] = index -1;
+            ownner.GetNode().vars[ANIMATION_INDEX] = index -1;
 
             Print("Stand->Move|Turn hold-frames=" + gInput.m_leftStickHoldFrames + " hold-time=" + gInput.m_leftStickHoldTime);
 
@@ -139,13 +139,14 @@ class PlayerMoveState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff();
-        ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
+        Node@ _node = ownner.GetNode();
+        _node.Yaw(characterDifference * turnSpeed * dt);
         motion.Move(ownner, dt);
 
         // if the difference is large, then turn 180 degrees
         if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
-            ownner.sceneNode.vars[ANIMATION_INDEX] = 1;
+            _node.vars[ANIMATION_INDEX] = 1;
             ownner.ChangeState("TurnState");
         }
 
@@ -427,8 +428,9 @@ class PlayerAttackState : CharacterState
     {
         Motion@ motion = currentAttack.motion;
 
-        Node@ tailNode = ownner.sceneNode.GetChild("TailNode", true);
-        Node@ attackNode = ownner.sceneNode.GetChild(currentAttack.boneName, true);
+        Node@ _node = ownner.GetNode();
+        Node@ tailNode = _node.GetChild("TailNode", true);
+        Node@ attackNode = _node.GetChild(currentAttack.boneName, true);
 
         if (tailNode !is null && attackNode !is null) {
             tailNode.worldPosition = attackNode.worldPosition;
@@ -468,7 +470,7 @@ class PlayerAttackState : CharacterState
 
         if (attackEnemy !is null)
         {
-            targetDistance = ownner.GetTargetDistance(attackEnemy.sceneNode);
+            targetDistance = ownner.GetTargetDistance(attackEnemy.GetNode());
             if (ownner.motion_translateEnabled && targetDistance < COLLISION_SAFE_DIST)
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
@@ -527,8 +529,8 @@ class PlayerAttackState : CharacterState
 
     void PickBestMotion(Array<AttackMotion@>@ attacks, int dir)
     {
-        Vector3 myPos = ownner.sceneNode.worldPosition;
-        Vector3 enemyPos = attackEnemy.sceneNode.worldPosition;
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 enemyPos = attackEnemy.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
         float toEnenmyDistance = diff.length - COLLISION_SAFE_DIST;
@@ -586,7 +588,7 @@ class PlayerAttackState : CharacterState
         if (attackEnemy !is null)
         {
             state = ATTACK_STATE_ALIGN;
-            float diff = ownner.ComputeAngleDiff(attackEnemy.sceneNode);
+            float diff = ownner.ComputeAngleDiff(attackEnemy.GetNode());
             int r = DirectionMapToIndex(diff, 4);
             Print("Attack-align " + " r-index=" + r + " diff=" + diff);
 
@@ -652,7 +654,7 @@ class PlayerAttackState : CharacterState
         Player@ p = cast<Player>(ownner);
         @attackEnemy = p.PickAttackEnemy();
         if (attackEnemy !is null)
-             Print("Choose Attack Enemy " + attackEnemy.sceneNode.name + " state=" + attackEnemy.GetState().name);
+             Print("Choose Attack Enemy " + attackEnemy.GetNode().name + " state=" + attackEnemy.GetState().name);
          else
             Print("No Attack Enemy");
         StartAttack();
@@ -690,7 +692,7 @@ class PlayerAttackState : CharacterState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == TIME_SCALE) {
             float scale = eventData[VALUE].GetFloat();
-            SetWorldTimeScale(ownner.sceneNode, scale);
+            SetWorldTimeScale(ownner.GetNode(), scale);
         }
         else if (name == COUNTER_CHECK)
         {
@@ -710,7 +712,7 @@ class PlayerAttackState : CharacterState
             doAttackCheck = bCheck;
             if (value == 1)
             {
-                attackCheckNode = ownner.sceneNode.GetChild(eventData[BONE].GetString(), true);
+                attackCheckNode = ownner.GetNode().GetChild(eventData[BONE].GetString(), true);
                 Print("Player AttackCheck bone=" + attackCheckNode.name);
                 AttackCollisionCheck();
             }
@@ -721,7 +723,7 @@ class PlayerAttackState : CharacterState
     {
         if (currentAttack is null || attackEnemy is null)
             return;
-        debug.AddLine(ownner.sceneNode.worldPosition, attackEnemy.sceneNode.worldPosition, Color(0.27f, 0.28f, 0.7f), false);
+        debug.AddLine(ownner.GetNode().worldPosition, attackEnemy.GetNode().worldPosition, Color(0.27f, 0.28f, 0.7f), false);
         debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
         debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
     }
@@ -745,7 +747,7 @@ class PlayerAttackState : CharacterState
         }
 
         Vector3 position = attackCheckNode.worldPosition;
-        Vector3 targetPosition = attackEnemy.sceneNode.worldPosition;
+        Vector3 targetPosition = attackEnemy.GetNode().worldPosition;
         Vector3 diff = targetPosition - position;
         diff.y = 0;
         float distance = diff.length;
@@ -770,13 +772,14 @@ class PlayerAttackState : CharacterState
         if (attackEnemy is null)
             return;
 
-        Vector3 dir = ownner.sceneNode.worldPosition - attackEnemy.sceneNode.worldPosition;
+        Node@ _node = ownner.GetNode();
+        Vector3 dir = _node.worldPosition - attackEnemy.GetNode().worldPosition;
         dir.y = 0;
         dir.Normalize();
         Print("PlayerAttackState::" +  attackEnemy.GetName() + " OnDamage!!!!");
 
-        Node@ n = ownner.sceneNode.GetChild(currentAttack.boneName, true);
-        Vector3 position = ownner.sceneNode.worldPosition;
+        Node@ n = _node.GetChild(currentAttack.boneName, true);
+        Vector3 position = _node.worldPosition;
         if (n !is null)
             position = n.worldPosition;
 
@@ -837,7 +840,7 @@ class PlayerCounterState : CharacterCounterState
 
         CharacterCounterState::Enter(lastState);
 
-        Node@ myNode = ownner.sceneNode;
+        Node@ myNode = ownner.GetNode();
         Vector3 myPos = myNode.worldPosition;
         float myRotation = myNode.worldRotation.eulerAngles.y;
         float rotationDiff = 0;
@@ -852,7 +855,8 @@ class PlayerCounterState : CharacterCounterState
             for (uint i=0; i<counterEnemies.length; ++i)
             {
                 Enemy@ e = counterEnemies[i];
-                Vector3 expect_pos = e.sceneNode.worldPosition + e.sceneNode.worldRotation * Vector3(0, 0, COLLISION_RADIUS);
+                Node@ eNode = e.GetNode();
+                Vector3 expect_pos = eNode.worldPosition + eNode.worldRotation * Vector3(0, 0, COLLISION_RADIUS);
                 vPos += expect_pos;
                 e.ChangeState("CounterState");
                 CharacterCounterState@ eCState = cast<CharacterCounterState>(e.GetState());
@@ -865,7 +869,7 @@ class PlayerCounterState : CharacterCounterState
         else if (counterEnemies.length == 1)
         {
             Enemy@ counterEnemy = counterEnemies[0];
-            Node@ enemyNode = counterEnemy.sceneNode;
+            Node@ enemyNode = counterEnemy.GetNode();
             float dAngle = ownner.ComputeAngleDiff(enemyNode);
             bool isBack = false;
             if (Abs(dAngle) > 90)
@@ -929,7 +933,8 @@ class PlayerCounterState : CharacterCounterState
     void OnAlignTimeOut()
     {
         Print("OnAlignTimeOut");
-        ownner.sceneNode.worldPosition = targetPosition;
+        ownner.GetNode().worldPosition = targetPosition;
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
         StartCounterMotion();
         for (uint i=0; i<counterEnemies.length; ++i)
         {
@@ -951,7 +956,7 @@ class PlayerCounterState : CharacterCounterState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 1.0f, RED, false);
-        DebugDrawDirection(debug, ownner.sceneNode, targetRotation, RED);
+        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, RED);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -962,15 +967,23 @@ class PlayerCounterState : CharacterCounterState
             bCheckInput = true;
         else if (name == IMPACT)
         {
-            Node@ boneNode = ownner.sceneNode.GetChild(eventData[VALUE].GetString(), true);
+            Node@ _node = ownner.GetNode();
+            Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
             if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
             ownner.PlaySound("Sfx/kick_04.ogg");
 
+            Vector3 my_pos = _node.worldPosition;
             if (counterEnemies.length > 1)
             {
                 for (uint i=0; i<counterEnemies.length; ++i)
-                    counterEnemies[i].MakeMeRagdoll();
+                {
+                    Vector3 v = my_pos - counterEnemies[i].GetNode().worldPosition;
+                    v.y = 0;
+                    v.Normalize();
+                    v *= 2;
+                    counterEnemies[i].MakeMeRagdoll(0, true, v);
+                }
             }
         }
     }

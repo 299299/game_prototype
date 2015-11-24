@@ -245,7 +245,7 @@ class Motion
     Vector3 GetFuturePosition(Character@ object, float t)
     {
         Vector4 motionOut = GetKey(t);
-        Node@ _node = object.sceneNode;
+        Node@ _node = object.GetNode();
         if (looped)
             return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
         else
@@ -260,8 +260,8 @@ class Motion
 
     void InnerStart(Character@ object)
     {
-        object.motion_startPosition = object.sceneNode.worldPosition;
-        object.motion_startRotation = object.sceneNode.worldRotation.eulerAngles.y;
+        object.motion_startPosition = object.GetNode().worldPosition;
+        object.motion_startRotation = object.GetNode().worldRotation.eulerAngles.y;
         object.motion_deltaRotation = 0;
         object.motion_deltaPosition = Vector3(0, 0, 0);
         object.motion_translateEnabled = true;
@@ -272,7 +272,7 @@ class Motion
     bool Move(Character@ object, float dt)
     {
         AnimationController@ ctrl = object.animCtrl;
-        Node@ _node = object.sceneNode;
+        Node@ _node = object.GetNode();
         float localTime = ctrl.GetTime(animationName);
 
         if (looped)
@@ -300,7 +300,7 @@ class Motion
             if (object.motion_translateEnabled)
             {
                 Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
-                //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.sceneNode.worldPosition.ToString() + " localTime=" + localTime);
+                //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.GetNode().worldPosition.ToString() + " localTime=" + localTime);
                 object.MoveTo(tWorld, dt);
             }
         }
@@ -309,7 +309,7 @@ class Motion
 
     void DebugDraw(DebugRenderer@ debug, Character@ object)
     {
-        Node@ _node = object.sceneNode;
+        Node@ _node = object.GetNode();
         if (looped) {
             Vector4 tFinnal = GetKey(endTime);
             Vector3 tLocal(tFinnal.x, tFinnal.y, tFinnal.z);

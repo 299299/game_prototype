@@ -87,7 +87,7 @@ class ThugStandState : CharacterState
         if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-            ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+            ownner.GetNode().vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
             ownner.ChangeState("StepMoveState");
             return;
         }
@@ -103,7 +103,7 @@ class ThugStandState : CharacterState
                 return;
 
             Print("CollisionAvoidance index=" + dir);
-            ownner.sceneNode.vars[ANIMATION_INDEX] = dir;
+            ownner.GetNode().vars[ANIMATION_INDEX] = dir;
             ownner.ChangeState("StepMoveState");
         }
     }
@@ -118,7 +118,8 @@ class ThugStandState : CharacterState
             return;
         }
 
-        EnemyManager@ em = cast<EnemyManager>(ownner.sceneNode.scene.GetScriptObject("EnemyManager"));
+        Node@ _node = ownner.GetNode();
+        EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
         if (!ownner.CanAttack())
         {
@@ -152,7 +153,7 @@ class ThugStandState : CharacterState
             else
             {
                 ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-                ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+                _node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
             }
             ownner.ChangeState(nextState);
         }
@@ -199,7 +200,7 @@ class ThugCombatIdleState : CharacterState
         if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-            ownner.sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+            ownner.GetNode().vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
             ownner.ChangeState("StepMoveState");
             return;
         }
@@ -312,7 +313,7 @@ class ThugRunState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff();
-        ownner.sceneNode.Yaw(characterDifference * turnSpeed * dt);
+        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
 
         // if the difference is large, then turn 180 degrees
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
@@ -370,7 +371,7 @@ class ThugTurnState : MultiMotionState
             ownner.CommonStateFinishedOnGroud();
             return;
         }
-        ownner.sceneNode.Yaw(turnSpeed * dt);
+        ownner.GetNode().Yaw(turnSpeed * dt);
         CharacterState::Update(dt);
     }
 
@@ -380,7 +381,7 @@ class ThugTurnState : MultiMotionState
         int index = 0;
         if (diff < 0)
             index = 1;
-        ownner.sceneNode.vars[ANIMATION_INDEX] = index;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
         endTime = motions[index].endTime;
         turnSpeed = diff / endTime;
         Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
@@ -464,7 +465,7 @@ class ThugAttackState : CharacterState
         if (targetDistance > punchDist + 0.5f)
             index += 3; // a kick attack
         @currentAttack = attacks[index];
-        ownner.sceneNode.vars[ATTACK_TYPE] = currentAttack.type;
+        ownner.GetNode().vars[ATTACK_TYPE] = currentAttack.type;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
@@ -519,7 +520,7 @@ class ThugAttackState : CharacterState
             doAttackCheck = bCheck;
             if (value == 1)
             {
-                attackCheckNode = ownner.sceneNode.GetChild(eventData[BONE].GetString(), true);
+                attackCheckNode = ownner.GetNode().GetChild(eventData[BONE].GetString(), true);
                 Print("Thug AttackCheck bone=" + attackCheckNode.name);
                 AttackCollisionCheck();
             }
