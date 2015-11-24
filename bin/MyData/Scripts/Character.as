@@ -83,24 +83,20 @@ class CharacterState : State
             ownner.ChangeState("RagdollState");
         else if (name == COMBAT_SOUND)
             OnCombatSound(eventData[VALUE].GetString());
+        else if (name == PARTICLE)
+            OnCombatParticle(eventData[VALUE].GetString(), eventData[PARTICLE].GetString());
         else if (name == FOOT_STEP)
         {
             if (animState !is null && animState.weight > 0.5f)
-            {
-                String boneName = eventData[VALUE].GetString();
-                Node@ boneNode = ownner.GetNode().GetChild(boneName, true);
-                if (boneNode !is null)
-                    OnFootStep(boneNode);
-            }
-        }
-        else if (name == PARTICLE)
-        {
-
+                OnFootStep(eventData[VALUE].GetString());
         }
     }
 
-    void OnFootStep(Node@ boneNode)
+    void OnFootStep(const String&in boneName)
     {
+        Node@ boneNode = ownner.GetNode().GetChild(boneName, true);
+        if (boneNode !is null)
+            return;
         Vector3 pos = boneNode.worldPosition;
         pos.y = 0.1f;
         ownner.SpawnParticleEffect(pos, "Particle/SnowExplosionFade.xml", 2, 2.5f);
@@ -123,6 +119,14 @@ class CharacterState : State
         Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
         if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
+    }
+
+    void OnCombatParticle(const String& boneName, const String& particleName)
+    {
+        Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
+        if (boneNode !is null)
+            ownner.SpawnParticleEffect(boneNode.worldPosition,
+                particleName.empty ? "Particle/SnowExplosionFade.xml" : particleName, 5, 5.0f);
     }
 };
 

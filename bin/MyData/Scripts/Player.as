@@ -462,8 +462,8 @@ class PlayerAttackState : CharacterState
         if (slowMotion)
         {
             float t_diff = Abs(currentAttack.impactTime - t);
-            if (t_diff < 0.25f)
-                ownner.SetSceneTimeScale(0.25f);
+            if (t_diff < SEC_PER_FRAME * 6)
+                ownner.SetSceneTimeScale(0.75f);
             else
                 ownner.SetSceneTimeScale(1.0f);
         }

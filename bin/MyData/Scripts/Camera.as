@@ -136,6 +136,9 @@ class ThirdPersonCameraController : CameraController
 
         cameraTargert = cameraTargert.Lerp(target_pos, dt * cameraSpeed);
         cameraNode.LookAt(cameraTargert);
+
+        float dist = float(input.mouseMoveWheel) * dt * 5.0f;
+        cameraDistance += dist;
     }
 
     void DebugDraw(DebugRenderer@ debug)

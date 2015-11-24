@@ -979,12 +979,15 @@ class MotionManager
         AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 23, READY_TO_FIGHT);
 
         AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, IMPACT, L_FOOT);
+        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, PARTICLE, R_FOOT);
         AddAnimationTrigger(preFix + "Double_Counter_2ThugsF", 60, READY_TO_FIGHT);
 
         AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsG", 23, IMPACT, L_HAND);
+        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 23, PARTICLE, R_HAND);
         AddAnimationTrigger(preFix + "Double_Counter_2ThugsG", 25, READY_TO_FIGHT);
 
         AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, IMPACT, L_HAND);
+        AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 23, PARTICLE, R_HAND);
         AddAnimationTrigger(preFix + "Double_Counter_3ThugsB", 50, READY_TO_FIGHT);
 
         preFix = "BM_Combat_Movement/";
