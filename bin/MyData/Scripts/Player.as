@@ -1372,7 +1372,7 @@ class Player : Character
             }
 
             float enemyDir = e.GetCharacterAngle();
-            float totalDir = Abs(myDir - enemyDir);
+            float totalDir = Abs(AngleDiff(myDir - enemyDir));
             float dirDiff = Abs(totalDir - 180);
             Print("Evade-- myDir=" + myDir + " enemyDir=" + enemyDir + " totalDir=" + totalDir + " dirDiff=" + dirDiff);
             if (dirDiff > maxDirDiff)
