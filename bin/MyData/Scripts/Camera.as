@@ -189,6 +189,7 @@ class TransitionCameraController : CameraController
 
 class DeathCameraController : CameraController
 {
+    Vector3 offset(-10.5f, 2.5f, 0);
     uint nodeId = M_MAX_UNSIGNED;
 
     DeathCameraController(Node@ n, const String&in name)
@@ -203,11 +204,19 @@ class DeathCameraController : CameraController
 
     void Update(float dt)
     {
-        Node@ headNode = cameraNode.scene.GetNode(nodeId).GetChild("Bip01_Head", true);
-        cameraNode.worldPosition = headNode.worldPosition;
+        Node@ _node = cameraNode.scene.GetNode(nodeId);
+        if (_node is null)
+        {
+            gCameraMgr.SetCameraController("ThirdPerson");
+            return;
+        }
+        Node@ headNode = _node.GetChild("Bip01_Head", true);
         Node@ playerNode = GetPlayer().GetNode();
-        Vector3 v = playerNode.worldPosition;
-        v.y = CHARACTER_HEIGHT / 2;
+
+        cameraNode.worldPosition = _node.worldPosition + playerNode.worldRotation * offset;
+        Vector3 v = _node.worldPosition + playerNode.worldPosition;
+        v /= 2;
+        v.y = 5.0f;
         cameraNode.LookAt(v);
     }
 
@@ -216,9 +225,12 @@ class DeathCameraController : CameraController
         if (!eventData.Contains(NODE))
             return;
         nodeId = eventData[NODE].GetUInt();
+        Node@ _node = cameraNode.scene.GetNode(nodeId);
+        if (_node is null)
+            return;
 
-        Node@ headNode = cameraNode.scene.GetNode(nodeId).GetChild("Bip01_Head", true);
-        headNode.enabled = false;
+        //Node@ headNode = _node.GetChild("Bip01_Head", true);
+        //headNode.scale = Vector3(0.1f, 0.1f, 0.1f);
     }
 };
 

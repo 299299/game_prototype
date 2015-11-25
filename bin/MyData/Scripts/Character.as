@@ -378,6 +378,8 @@ class CharacterCounterState : CharacterState
 
     void StartCounterMotion()
     {
+        if (currentMotion is null)
+            return;
         Print(ownner.GetName() + " start counter motion " + currentMotion.animationName);
         ChangeSubState(COUNTER_ANIMATING);
         currentMotion.Start(ownner);
@@ -589,6 +591,16 @@ class Character : GameObject
         }
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+
+        if (bigHeadMode)
+        {
+            float bigHeadScale = 3.0f;
+            renderNode.GetChild("Bip01_Head", true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
+            renderNode.GetChild(L_HAND, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
+            renderNode.GetChild(R_HAND, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
+            renderNode.GetChild(L_HAND, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
+            renderNode.GetChild(R_FOOT, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
+        }
     }
 
     void Start()
@@ -890,7 +902,7 @@ class Character : GameObject
             anim_data[VELOCITY] = velocity;
         VariantMap data;
         data[DATA] = anim_data;
-        sceneNode.SendEvent("AnimationTrigger", data);
+        renderNode.SendEvent("AnimationTrigger", data);
     }
 
     void SetHintText(const String&in text, bool bSet)

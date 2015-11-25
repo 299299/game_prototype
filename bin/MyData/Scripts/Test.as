@@ -19,6 +19,7 @@
 int drawDebug = 0;
 bool autoCounter = false;
 bool bHdr = true;
+bool bigHeadMode = false;
 
 String PLAYER_NAME = "player";
 String CAMERA_NAME = "camera";

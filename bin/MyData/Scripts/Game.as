@@ -275,7 +275,7 @@ class TestGameState : GameState
 
             VariantMap data;
             data[NAME] = CHANGE_STATE;
-            data[VALUE] = StringHash("Death");
+            data[VALUE] = StringHash("ThirdPerson");
             SendEvent("CameraEvent", data);
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)

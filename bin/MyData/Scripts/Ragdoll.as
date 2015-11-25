@@ -389,6 +389,7 @@ class Ragdoll : ScriptObject
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
         body.friction = 1.0f;
+        body.gravityOverride = Vector3(0, -32, 0);
         body.node.vars[RAGDOLL_ROOT] = rootNode.id;
         // body.kinematic = true;
 
@@ -487,8 +488,13 @@ class Ragdoll : ScriptObject
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
-        StringHash name = eventData[DATA].GetVariantMap()[NAME].GetStringHash();
-        int value = eventData[DATA].GetVariantMap()[VALUE].GetInt();
+        OnAnimationTrigger(eventData[DATA].GetVariantMap());
+    }
+
+    void OnAnimationTrigger(VariantMap& data)
+    {
+        StringHash name = data[NAME].GetStringHash();
+        int value = data[VALUE].GetInt();
 
         int new_state = RAGDOLL_NONE;
         if (name == RAGDOLL_PERPARE)
@@ -502,10 +508,11 @@ class Ragdoll : ScriptObject
             new_state = RAGDOLL_NONE;
         state_request = new_state;
 
-        if (eventData.Contains(VELOCITY))
+        if (data.Contains(VELOCITY))
         {
             hasvelocity_request = true;
-            velocity_request = eventData[VELOCITY].GetVector3();
+            velocity_request = data[VELOCITY].GetVector3();
+            Print("velocity_request="+ velocity_request.ToString());
         }
     }
 

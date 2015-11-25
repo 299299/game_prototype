@@ -65,7 +65,7 @@ class GameObject : ScriptObject
         timeStep *= timeScale;
     }
 
-    void PlaySound(const String&in soundName, float freqScale = 1.0f)
+    void PlaySound(const String&in soundName)
     {
         // Create the sound channel
         SoundSource3D@ source = GetNode().CreateComponent("SoundSource3D");
@@ -76,7 +76,7 @@ class GameObject : ScriptObject
         source.Play(sound);
         source.autoRemove = true;
         source.soundType = SOUND_EFFECT;
-        source.frequency = source.frequency * freqScale;
+        source.frequency = source.frequency * GetNode().scene.timeScale;
     }
 
     void DebugDraw(DebugRenderer@ debug)

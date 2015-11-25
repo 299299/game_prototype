@@ -12,7 +12,7 @@ float STEP_MAX_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.05f;
 const int HIT_WAIT_FRAMES = 3;
 const float MIN_THINK_TIME = 0.5f;
-const float MAX_THINK_TIME = 3.0f;
+const float MAX_THINK_TIME = 2.5f;
 
 class ThugStandState : CharacterState
 {
@@ -45,7 +45,7 @@ class ThugStandState : CharacterState
         float min_think_time = MIN_THINK_TIME;
         if (firstEnter)
         {
-            min_think_time = 2.5f;
+            min_think_time = 3.0f;
             firstEnter = false;
         }
         thinkTime = Random(min_think_time, MAX_THINK_TIME);
@@ -788,7 +788,11 @@ class Thug : Enemy
                 stateMachine.ChangeState("HitState");
             }
             else {
-                MakeMeRagdoll();
+                Vector3 v = direction * -1;
+                v.y = 0;
+                v.Normalize();
+                v *= 7.5f;
+                MakeMeRagdoll(0, true, v);
             }
         }
         return true;
