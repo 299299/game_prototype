@@ -228,6 +228,7 @@ class TestGameState : GameState
         statusText.SetPosition(0, 0);
         statusText.color = Color(1, 1, 0);
         statusText.visible = true;
+        OnPlayerStatusUpdate(GetPlayer());
     }
 
     void Exit(State@ nextState)
@@ -359,6 +360,7 @@ class TestGameState : GameState
 
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
         Camera@ cam = cameraNode.CreateComponent("Camera");
+        cam.fov = BASE_FOV;
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
         Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);

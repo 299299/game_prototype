@@ -45,7 +45,6 @@ class TextMenu
 
         items[selection].color = highLightColor;
         lastDirectionKeyTime = time.systemTime;
-        input.mouseVisible = true;
     }
 
     void Remove()
@@ -55,7 +54,6 @@ class TextMenu
         items.Clear();
         root.Remove();
         root = null;
-        input.mouseVisible = false;
     }
 
     void AddText(const String& str)
@@ -88,15 +86,6 @@ class TextMenu
             selIndex ++;
         if (inputDirection == 3)
             selIndex --;
-
-        for (uint i=0; i<items.length; ++i)
-        {
-            if (items[i].hovering)
-            {
-                selIndex = int(i);
-                break;
-            }
-        }
 
         if (selIndex >= int(items.length))
             selIndex = 0;

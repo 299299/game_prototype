@@ -25,7 +25,7 @@ class GameInput
 
     float m_smooth = 0.9f;
 
-    Vector2  m_rigtAxis;
+    Vector2  m_rigtAxis = Vector2(0, 30);
 
     float mouseSensitivity = 0.125f;
     float joySensitivity = 0.5;

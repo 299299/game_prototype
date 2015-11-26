@@ -124,7 +124,7 @@ void CreateUI()
     text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
-    text.SetPosition(0, 0);
+    text.SetPosition(0, 20);
     text.color = Color(0, 0, 1);
     // text.textEffect = TE_SHADOW;
 }

@@ -6,6 +6,7 @@
 const StringHash TARGET_POSITION("TargetPosition");
 const StringHash TARGET_ROTATION("TargetRotation");
 const StringHash TARGET_CONTROLLER("TargetController");
+const float BASE_FOV = 45.0f;
 
 class CameraController
 {
@@ -105,6 +106,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraSpeed = 5.5f;
     float   cameraHeight = 5.5f;
     float   cameraDistance = 20.0f;
+    float   cameraDistSpeed = 200.0f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -112,7 +114,6 @@ class ThirdPersonCameraController : CameraController
         Vector3 v = cameraNode.worldPosition;
         v.y += cameraHeight;
         cameraTargert = v;
-        gInput.m_rightStickY = 30;
     }
 
     void Update(float dt)
@@ -137,8 +138,7 @@ class ThirdPersonCameraController : CameraController
         cameraTargert = cameraTargert.Lerp(target_pos, dt * cameraSpeed);
         cameraNode.LookAt(cameraTargert);
 
-        float dist = float(input.mouseMoveWheel) * dt * 5.0f;
-        cameraDistance += dist;
+        cameraDistance += float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
     }
 
     void DebugDraw(DebugRenderer@ debug)

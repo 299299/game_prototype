@@ -71,12 +71,18 @@ class GameObject : ScriptObject
         SoundSource3D@ source = GetNode().CreateComponent("SoundSource3D");
         //SoundSource@ source = GetNode().CreateComponent("SoundSource");
         Sound@ sound = cache.GetResource("Sound", soundName);
-
         source.SetDistanceAttenuation(5, 50, 2);
         source.Play(sound);
-        source.autoRemove = true;
         source.soundType = SOUND_EFFECT;
-        source.frequency = source.frequency * GetNode().scene.timeScale;
+        source.frequency = source.frequency * GetNode().scene.timeScale * timeScale;
+        // Subscribe to sound finished for cleaning up the source
+        SubscribeToEvent(node, "SoundFinished", "HandleSoundFinished");
+    }
+
+    void HandleSoundFinished(StringHash eventType, VariantMap& eventData)
+    {
+        SoundSource3D@ source = eventData["SoundSource"].GetPtr();
+        source.Remove();
     }
 
     void DebugDraw(DebugRenderer@ debug)

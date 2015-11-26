@@ -165,7 +165,7 @@ class PlayerMoveState : SingleMotionState
 
     void Enter(State@ lastState)
     {
-        motion.Start(ownner, 0.0f, 0.1f, 1.5f);
+        motion.Start(ownner, 0.0f, 0.1f, 1.25f);
         ownner.AddFlag(FLAGS_ATTACK | FLAGS_MOVING);
         CharacterState::Enter(lastState);
     }
@@ -576,6 +576,7 @@ class PlayerAttackState : CharacterState
         @currentAttack = attacks[bestIndex];
         //alignTime = Min(0.5f, currentAttack.impactTime);
         alignTime = currentAttack.impactTime;
+        // alignTime *= ownner.timeScale;
 
         predictPosition = myPos + diff * toEnenmyDistance;
         Print("Player Pick attack motion = " + currentAttack.motion.animationName);
@@ -1152,8 +1153,6 @@ class Player : Character
             return false;
         }
 
-        SetTimeScale(1.0f);
-
         combo = 0;
         health -= damage;
         int index = RadialSelectAnimation(attacker.GetNode(), 4);
@@ -1199,9 +1198,14 @@ class Player : Character
         }
         else
         {
-            float time_scale = float(combo)/float(speed_up_combo);
-            SetTimeScale(Min(time_scale, 3.0f));
+            int max_comb = 60;
+            int c = Min(combo, max_comb);
+            const float max_time_scale = 1.2f;
+            float time_scale = Lerp(1.0f, max_time_scale, float(c)/float(max_comb));
+            SetTimeScale(time_scale);
         }
+
+        gCameraMgr.GetCamera().fov = timeScale * BASE_FOV;
 
         gGame.OnPlayerStatusUpdate(this);
     }
@@ -1383,6 +1387,7 @@ class Player : Character
         combo = 0;
         killed = 0;
         gGame.OnPlayerStatusUpdate(this);
+        gCameraMgr.GetCamera().fov = BASE_FOV;
     }
 
     void DebugDraw(DebugRenderer@ debug)
