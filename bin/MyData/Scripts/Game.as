@@ -37,6 +37,11 @@ class GameState : State
                 console.visible = false;
         }
     }
+
+    void OnPlayerStatusUpdate(Player@ player)
+    {
+
+    }
 };
 
 enum LoadSubState
@@ -201,16 +206,28 @@ class TestGameState : GameState
         if (!engine.headless)
         {
             CreateViewPort();
-            int height = graphics.height / 22;
-            if (height > 64)
-                height = 64;
-            Text@ messageText = ui.root.CreateChild("Text", "message");
-            messageText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
-            messageText.SetAlignment(HA_CENTER, VA_CENTER);
-            messageText.SetPosition(0, -height * 2);
-            messageText.color = Color(1, 0, 0);
-            messageText.visible = false;
+            CreateUI();
         }
+    }
+
+    void CreateUI()
+    {
+        int height = graphics.height / 22;
+        if (height > 64)
+            height = 64;
+        Text@ messageText = ui.root.CreateChild("Text", "message");
+        messageText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
+        messageText.SetAlignment(HA_CENTER, VA_CENTER);
+        messageText.SetPosition(0, -height * 2);
+        messageText.color = Color(1, 0, 0);
+        messageText.visible = false;
+
+        Text@ statusText = ui.root.CreateChild("Text", "status");
+        statusText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
+        statusText.SetAlignment(HA_LEFT, VA_TOP);
+        statusText.SetPosition(0, 0);
+        statusText.color = Color(1, 1, 0);
+        statusText.visible = true;
     }
 
     void Exit(State@ nextState)
@@ -391,7 +408,6 @@ class TestGameState : GameState
         }
     }
 
-
     void OnCharacterKilled(Character@ killer, Character@ dead)
     {
         if (dead.side == 1)
@@ -441,6 +457,15 @@ class TestGameState : GameState
         for (uint i=0; i<enemyResetPositions.length; ++i)
         {
             em.CreateEnemy(enemyResetPositions[i], enemyResetRotations[i], "Thug");
+        }
+    }
+
+    void OnPlayerStatusUpdate(Player@ player)
+    {
+        Text@ statusText = ui.root.GetChild("status", true);
+        if (statusText !is null)
+        {
+            statusText.text = "HP: " + player.health + " COMBO: " + player.combo + " KILLED:" + player.killed;
         }
     }
 };
@@ -499,6 +524,12 @@ class GameFSM : FSM
     {
         if (gameState !is null)
             gameState.OnKeyDown(key);
+    }
+
+    void OnPlayerStatusUpdate(Player@ player)
+    {
+        if (gameState !is null)
+            gameState.OnPlayerStatusUpdate(player);
     }
 };
 

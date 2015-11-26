@@ -165,8 +165,9 @@ class PlayerMoveState : SingleMotionState
 
     void Enter(State@ lastState)
     {
-        SingleMotionState::Enter(lastState);
+        motion.Start(ownner, 0.0f, 0.1f, 1.5f);
         ownner.AddFlag(FLAGS_ATTACK | FLAGS_MOVING);
+        CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
@@ -238,10 +239,7 @@ class PlayerAttackState : CharacterState
     int                     rightCloseNum = 0;
     int                     backCloseNum = 0;
 
-    int                     slowMotionFrames = 4;
-
-    bool                    doAttackCheck = false;
-    Node@                   attackCheckNode;
+    int                     slowMotionFrames = 2;
 
     bool                    weakAttack = true;
     bool                    slowMotion = false;
@@ -465,7 +463,7 @@ class PlayerAttackState : CharacterState
         {
             float t_diff = Abs(currentAttack.impactTime - t);
             if (t_diff < SEC_PER_FRAME * slowMotionFrames)
-                ownner.SetSceneTimeScale(0.45f);
+                ownner.SetSceneTimeScale(0.5f);
             else
                 ownner.SetSceneTimeScale(1.0f);
         }
@@ -480,9 +478,6 @@ class PlayerAttackState : CharacterState
                 ownner.motion_translateEnabled = false;
             }
         }
-
-        if (doAttackCheck)
-            AttackCollisionCheck();
 
         bool finished = motion.Move(ownner, dt);
         if (finished) {
@@ -643,7 +638,6 @@ class PlayerAttackState : CharacterState
                     SendEvent("CameraEvent", data);
                 }
             }
-
         }
         else
         {
@@ -706,29 +700,6 @@ class PlayerAttackState : CharacterState
             float scale = eventData[VALUE].GetFloat();
             SetWorldTimeScale(ownner.GetNode(), scale);
         }
-        else if (name == COUNTER_CHECK)
-        {
-            int value = eventData[VALUE].GetInt();
-            if (value == 1)
-                ownner.AddFlag(FLAGS_COUNTER);
-            else
-                ownner.RemoveFlag(FLAGS_COUNTER);
-        }
-        else if (name == ATTACK_CHECK)
-        {
-            int value = eventData[VALUE].GetInt();
-            bool bCheck = value == 1;
-            if (doAttackCheck == bCheck)
-                return;
-
-            doAttackCheck = bCheck;
-            if (value == 1)
-            {
-                attackCheckNode = ownner.GetNode().GetChild(eventData[BONE].GetString(), true);
-                Print("Player AttackCheck bone=" + attackCheckNode.name);
-                AttackCollisionCheck();
-            }
-        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -749,29 +720,6 @@ class PlayerAttackState : CharacterState
                 " weakAttack=" + weakAttack +
                 " slowMotion=" + slowMotion +
                 "\n";
-    }
-
-    void AttackCollisionCheck()
-    {
-        if (attackCheckNode is null) {
-            doAttackCheck = false;
-            return;
-        }
-
-        Vector3 position = attackCheckNode.worldPosition;
-        Vector3 targetPosition = attackEnemy.GetNode().worldPosition;
-        Vector3 diff = targetPosition - position;
-        diff.y = 0;
-        float distance = diff.length;
-        if (distance < ownner.attackRadius + COLLISION_SAFE_DIST) {
-            Vector3 dir = position - targetPosition;
-            dir.y = 0;
-            dir.Normalize();
-            bool b = attackEnemy.OnDamage(ownner, position, dir, ownner.attackDamage);
-            if (!b)
-                return;
-            ownner.OnAttackSuccess(attackEnemy);
-        }
     }
 
     bool CanReEntered()
@@ -1204,6 +1152,8 @@ class Player : Character
             return false;
         }
 
+        SetTimeScale(1.0f);
+
         combo = 0;
         health -= damage;
         int index = RadialSelectAnimation(attacker.GetNode(), 4);
@@ -1220,6 +1170,8 @@ class Player : Character
             sceneNode.vars[ANIMATION_INDEX] = index;
             stateMachine.ChangeState("HitState");
         }
+
+        StatusChanged();
         return true;
     }
 
@@ -1234,6 +1186,24 @@ class Player : Character
             Print("killed add to " + killed);
             gGame.OnCharacterKilled(this, target);
         }
+
+        StatusChanged();
+    }
+
+    void StatusChanged()
+    {
+        const int speed_up_combo = 10;
+        if (combo < speed_up_combo)
+        {
+            SetTimeScale(1.0f);
+        }
+        else
+        {
+            float time_scale = float(combo)/float(speed_up_combo);
+            SetTimeScale(Min(time_scale, 3.0f));
+        }
+
+        gGame.OnPlayerStatusUpdate(this);
     }
 
     //====================================================================
@@ -1412,6 +1382,7 @@ class Player : Character
         Character::Reset();
         combo = 0;
         killed = 0;
+        gGame.OnPlayerStatusUpdate(this);
     }
 
     void DebugDraw(DebugRenderer@ debug)

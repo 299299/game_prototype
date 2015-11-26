@@ -152,6 +152,7 @@ class SingleMotionState : CharacterState
     void Enter(State@ lastState)
     {
         motion.Start(ownner);
+        CharacterState::Enter(lastState);
     }
 
     void DebugDraw(DebugRenderer@ debug)
