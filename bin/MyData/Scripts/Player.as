@@ -894,8 +894,7 @@ class PlayerCounterState : CharacterCounterState
     void OnAlignTimeOut()
     {
         Print("OnAlignTimeOut");
-        ownner.GetNode().worldPosition = targetPosition;
-        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
         StartCounterMotion();
         for (uint i=0; i<counterEnemies.length; ++i)
         {
@@ -1192,6 +1191,8 @@ class Player : Character
     void StatusChanged()
     {
         const int speed_up_combo = 10;
+        float fov = BASE_FOV;
+
         if (combo < speed_up_combo)
         {
             SetTimeScale(1.0f);
@@ -1200,13 +1201,16 @@ class Player : Character
         {
             int max_comb = 60;
             int c = Min(combo, max_comb);
+            float a = float(c)/float(max_comb);
             const float max_time_scale = 1.2f;
-            float time_scale = Lerp(1.0f, max_time_scale, float(c)/float(max_comb));
+            float time_scale = Lerp(1.0f, max_time_scale, a);
             SetTimeScale(time_scale);
+            const float max_fov = 60;
+            fov = Lerp(BASE_FOV, max_fov, a);
         }
-
-        gCameraMgr.GetCamera().fov = timeScale * BASE_FOV;
-
+        VariantMap data;
+        data[TARGET_FOV] = fov;
+        SendEvent("CameraEvent", data);
         gGame.OnPlayerStatusUpdate(this);
     }
 
@@ -1387,7 +1391,9 @@ class Player : Character
         combo = 0;
         killed = 0;
         gGame.OnPlayerStatusUpdate(this);
-        gCameraMgr.GetCamera().fov = BASE_FOV;
+        VariantMap data;
+        data[TARGET_FOV] = BASE_FOV;
+        SendEvent("CameraEvent", data);
     }
 
     void DebugDraw(DebugRenderer@ debug)

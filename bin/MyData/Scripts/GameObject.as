@@ -139,6 +139,13 @@ class GameObject : ScriptObject
         if (_scene !is null)
             _scene.timeScale = scale;
     }
+
+    void Transform(const Vector3& pos, const Quaternion& qua)
+    {
+        Node@ _node = GetNode();
+        _node.worldPosition = pos;
+        _node.worldRotation = qua;
+    }
 };
 
 

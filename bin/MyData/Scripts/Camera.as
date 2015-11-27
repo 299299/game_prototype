@@ -6,6 +6,8 @@
 const StringHash TARGET_POSITION("TargetPosition");
 const StringHash TARGET_ROTATION("TargetRotation");
 const StringHash TARGET_CONTROLLER("TargetController");
+const StringHash TARGET_FOV("TargetFOV");
+
 const float BASE_FOV = 45.0f;
 
 class CameraController
@@ -102,18 +104,19 @@ class DebugFPSCameraController: CameraController
 
 class ThirdPersonCameraController : CameraController
 {
-    Vector3 cameraTargert;
     float   cameraSpeed = 5.5f;
     float   cameraHeight = 5.5f;
     float   cameraDistance = 20.0f;
     float   cameraDistSpeed = 200.0f;
+    float   targetFov = BASE_FOV;
+    float   fovSpeed = 15.0f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
         Vector3 v = cameraNode.worldPosition;
         v.y += cameraHeight;
-        cameraTargert = v;
+        gCameraMgr.cameraTarget = v;
     }
 
     void Update(float dt)
@@ -135,15 +138,21 @@ class ThirdPersonCameraController : CameraController
         cameraPos = cameraPos.Lerp(pos, dt * cameraSpeed);
         cameraNode.worldPosition = cameraPos;
 
-        cameraTargert = cameraTargert.Lerp(target_pos, dt * cameraSpeed);
-        cameraNode.LookAt(cameraTargert);
+        gCameraMgr.cameraTarget = gCameraMgr.cameraTarget.Lerp(target_pos, dt * cameraSpeed);
+        cameraNode.LookAt(gCameraMgr.cameraTarget);
 
         cameraDistance += float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
+
+        float diff = targetFov - camera.fov;
+        float fov = diff * dt * fovSpeed;
+        camera.fov = fov;
     }
 
-    void DebugDraw(DebugRenderer@ debug)
+    void OnCameraEvent(VariantMap& eventData)
     {
-        debug.AddCross(cameraTargert, 1.0f, RED, false);
+        if (!eventData.Contains(TARGET_FOV))
+            return;
+        targetFov = eventData[TARGET_FOV].GetFloat();
     }
 };
 
@@ -189,8 +198,10 @@ class TransitionCameraController : CameraController
 
 class DeathCameraController : CameraController
 {
-    Vector3 offset(-10.5f, 2.5f, 0);
     uint nodeId = M_MAX_UNSIGNED;
+    float   cameraSpeed = 10.0f;
+    float   cameraDist = 5.0f;
+    float   cameraHeight = 2.5f;
 
     DeathCameraController(Node@ n, const String&in name)
     {
@@ -210,14 +221,21 @@ class DeathCameraController : CameraController
             gCameraMgr.SetCameraController("ThirdPerson");
             return;
         }
-        Node@ headNode = _node.GetChild("Bip01_Head", true);
         Node@ playerNode = GetPlayer().GetNode();
 
-        cameraNode.worldPosition = _node.worldPosition + playerNode.worldRotation * offset;
-        Vector3 v = _node.worldPosition + playerNode.worldPosition;
-        v /= 2;
-        v.y = 5.0f;
-        cameraNode.LookAt(v);
+        Vector3 dir = _node.worldPosition - playerNode.worldPosition;
+        float angle = Atan2(dir.x, dir.z);
+        angle = AngleDiff(angle);
+        angle += 90;
+        Vector3 v1(Sin(angle) * cameraDist, cameraHeight, Cos(angle) * cameraDist);
+        v1 = v1.Lerp(cameraNode.worldPosition, dt * cameraSpeed);
+        cameraNode.worldPosition = v1;
+
+        Vector3 v2 = _node.worldPosition + playerNode.worldPosition;
+        v2 /= 2;
+        v2.y += CHARACTER_HEIGHT;
+        gCameraMgr.cameraTarget = gCameraMgr.cameraTarget.Lerp(v2, dt * cameraSpeed);
+        cameraNode.LookAt(gCameraMgr.cameraTarget);
     }
 
     void OnCameraEvent(VariantMap& eventData)
@@ -225,10 +243,9 @@ class DeathCameraController : CameraController
         if (!eventData.Contains(NODE))
             return;
         nodeId = eventData[NODE].GetUInt();
-        Node@ _node = cameraNode.scene.GetNode(nodeId);
-        if (_node is null)
-            return;
-
+        //Node@ _node = cameraNode.scene.GetNode(nodeId);
+        //if (_node is null)
+        //    return;
         //Node@ headNode = _node.GetChild("Bip01_Head", true);
         //headNode.scale = Vector3(0.1f, 0.1f, 0.1f);
     }
@@ -239,6 +256,7 @@ class CameraManager
     Array<CameraController@>    cameraControllers;
     CameraController@           currentController;
     Node@                       cameraNode;
+    Vector3                     cameraTarget;
 
     CameraController@ FindCameraController(const StringHash&in nameHash)
     {
@@ -320,6 +338,8 @@ class CameraManager
 
     void DebugDraw(DebugRenderer@ debug)
     {
+        debug.AddCross(cameraTarget, 1.0f, RED, false);
+
         if (currentController !is null)
             currentController.DebugDraw(debug);
     }
