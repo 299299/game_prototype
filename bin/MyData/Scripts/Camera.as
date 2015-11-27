@@ -49,6 +49,18 @@ class CameraController
         return false;
     }
 
+    void UpdateView(const Vector3&in position, const Vector3& lookat, float blend)
+    {
+        Vector3 cameraPos = cameraNode.worldPosition;
+        Vector3 diff = position - cameraPos;
+        cameraNode.worldPosition = cameraPos + diff * blend;
+        Vector3 target = gCameraMgr.cameraTarget;
+        diff = lookat - target;
+        target += diff * blend;
+        cameraNode.LookAt(target);
+        gCameraMgr.cameraTarget = target;
+    }
+
     StringHash nameHash;
     Node@      cameraNode;
     Camera@    camera;
@@ -104,12 +116,12 @@ class DebugFPSCameraController: CameraController
 
 class ThirdPersonCameraController : CameraController
 {
-    float   cameraSpeed = 5.5f;
+    float   cameraSpeed = 4.5f;
     float   cameraHeight = 5.5f;
     float   cameraDistance = 20.0f;
     float   cameraDistSpeed = 200.0f;
     float   targetFov = BASE_FOV;
-    float   fovSpeed = 15.0f;
+    float   fovSpeed = 5.0f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -134,18 +146,12 @@ class ThirdPersonCameraController : CameraController
 
         Quaternion q(pitch, yaw, 0);
         Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
-        Vector3 cameraPos = cameraNode.worldPosition;
-        cameraPos = cameraPos.Lerp(pos, dt * cameraSpeed);
-        cameraNode.worldPosition = cameraPos;
-
-        gCameraMgr.cameraTarget = gCameraMgr.cameraTarget.Lerp(target_pos, dt * cameraSpeed);
-        cameraNode.LookAt(gCameraMgr.cameraTarget);
+        UpdateView(pos, target_pos, dt * cameraSpeed);
 
         cameraDistance += float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
 
         float diff = targetFov - camera.fov;
-        float fov = diff * dt * fovSpeed;
-        camera.fov = fov;
+        camera.fov += diff * dt * fovSpeed;
     }
 
     void OnCameraEvent(VariantMap& eventData)
@@ -199,9 +205,9 @@ class TransitionCameraController : CameraController
 class DeathCameraController : CameraController
 {
     uint nodeId = M_MAX_UNSIGNED;
-    float   cameraSpeed = 10.0f;
-    float   cameraDist = 5.0f;
-    float   cameraHeight = 2.5f;
+    float   cameraSpeed = 3.0f;
+    float   cameraDist = 15.0f;
+    float   cameraHeight = 1.5f;
 
     DeathCameraController(Node@ n, const String&in name)
     {
@@ -224,18 +230,13 @@ class DeathCameraController : CameraController
         Node@ playerNode = GetPlayer().GetNode();
 
         Vector3 dir = _node.worldPosition - playerNode.worldPosition;
-        float angle = Atan2(dir.x, dir.z);
-        angle = AngleDiff(angle);
-        angle += 90;
+        float angle = Atan2(dir.x, dir.z) + 90;
         Vector3 v1(Sin(angle) * cameraDist, cameraHeight, Cos(angle) * cameraDist);
-        v1 = v1.Lerp(cameraNode.worldPosition, dt * cameraSpeed);
-        cameraNode.worldPosition = v1;
-
+        v1 += _node.worldPosition;
         Vector3 v2 = _node.worldPosition + playerNode.worldPosition;
         v2 /= 2;
         v2.y += CHARACTER_HEIGHT;
-        gCameraMgr.cameraTarget = gCameraMgr.cameraTarget.Lerp(v2, dt * cameraSpeed);
-        cameraNode.LookAt(gCameraMgr.cameraTarget);
+        UpdateView(v1, v2, dt * cameraSpeed);
     }
 
     void OnCameraEvent(VariantMap& eventData)

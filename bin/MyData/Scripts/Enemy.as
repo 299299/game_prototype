@@ -71,7 +71,6 @@ class Enemy : Character
 class EnemyManager : ScriptObject
 {
     int thugId = 0;
-    Scene@ gameScene;
 
     EnemyManager()
     {
@@ -85,13 +84,13 @@ class EnemyManager : ScriptObject
 
     void Start()
     {
-        gameScene = scene;
+        Print("EnemyManager::Start()");
     }
 
     void Stop()
     {
+        Print("EnemyManager::Stop()");
         enemyList.Clear();
-        gameScene = null;
     }
 
     Node@ CreateEnemy(const Vector3&in position, const Quaternion&in rotation, const String&in type, const String&in name = "")
@@ -160,7 +159,7 @@ class EnemyManager : ScriptObject
             thugName = "Thug_" + thugId;
         thugId ++;
         XMLFile@ xml = cache.GetResource("XMLFile", "Objects/thug.xml");
-        Node@ thugNode = gameScene.InstantiateXML(xml, position, rotation);
+        Node@ thugNode = script.defaultScene.InstantiateXML(xml, position, rotation);
         thugNode.name = thugName;
         thugNode.CreateScriptObject(scriptFile, "Thug");
         thugNode.CreateScriptObject(scriptFile, "Ragdoll");

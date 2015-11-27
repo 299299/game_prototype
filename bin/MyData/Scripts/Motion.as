@@ -502,7 +502,7 @@ class MotionManager
         CreateMotion(preFix + "Attack_Far_Back");
         CreateMotion(preFix + "Attack_Far_Back_01");
         CreateMotion(preFix + "Attack_Far_Back_02");
-        CreateMotion(preFix + "Attack_Far_Back_03");
+        //CreateMotion(preFix + "Attack_Far_Back_03");
         CreateMotion(preFix + "Attack_Far_Back_04");
 
         //========================================================================

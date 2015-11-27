@@ -32,7 +32,7 @@ class GameState : State
         if (key == KEY_ESC)
         {
              if (!console.visible)
-                engine.Exit();
+                OnESC();
             else
                 console.visible = false;
         }
@@ -41,6 +41,11 @@ class GameState : State
     void OnPlayerStatusUpdate(Player@ player)
     {
 
+    }
+
+    void OnESC()
+    {
+        engine.Exit();
     }
 };
 
@@ -157,6 +162,13 @@ class LoadingState : GameState
         Text@ text = ui.root.GetChild("loading_text");
         if (text !is null)
             text.text = "Loading scene ressources progress=" + progress + " resources:" + loadedResources + "/" + totalResources;
+    }
+
+    void OnESC()
+    {
+        if (state == LOADING_RESOURCES)
+            gameScene.StopAsyncLoading();
+        engine.Exit();
     }
 };
 

@@ -327,7 +327,7 @@ class PlayerAttackState : CharacterState
         AddAttackMotion(backAttacks, "Attack_Far_Back", 14, ATTACK_KICK, L_FOOT);
         AddAttackMotion(backAttacks, "Attack_Far_Back_01", 15, ATTACK_KICK, L_FOOT);
         AddAttackMotion(backAttacks, "Attack_Far_Back_02", 22, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_03", 22, ATTACK_PUNCH, L_HAND);
+        //AddAttackMotion(backAttacks, "Attack_Far_Back_03", 22, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(backAttacks, "Attack_Far_Back_04", 36, ATTACK_KICK, R_FOOT);
 
         //========================================================================
@@ -1073,7 +1073,7 @@ class Player : Character
 
         animModel.skeleton.GetBone("Bip01_Head").animated = false;
 
-        // attackDamage = 100;
+        attackDamage = 100;
     }
 
     bool Attack()
@@ -1387,6 +1387,7 @@ class Player : Character
 
     void Reset()
     {
+        SetSceneTimeScale(1.0f);
         Character::Reset();
         combo = 0;
         killed = 0;
