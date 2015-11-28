@@ -47,6 +47,10 @@ class GameState : State
     {
         engine.Exit();
     }
+
+    void OnSceneTimeScaleUpdated(Scene@ scene, float newScale)
+    {
+    }
 };
 
 enum LoadSubState
@@ -382,7 +386,7 @@ class TestGameState : GameState
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
         Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
-        audio.listener = characterNode.GetChild("Bip01_Head", true).CreateComponent("SoundListener");
+        audio.listener = characterNode.GetChild(HEAD, true).CreateComponent("SoundListener");
 
         characterNode.CreateScriptObject(scriptFile, "Player");
         characterNode.CreateScriptObject(scriptFile, "Ragdoll");
@@ -491,6 +495,26 @@ class TestGameState : GameState
         {
             statusText.text = "HP: " + player.health + " COMBO: " + player.combo + " KILLED:" + player.killed;
         }
+
+        // ApplyBGMScale(gameScene.timeScale *  GetPlayer().timeScale);
+    }
+
+    void OnSceneTimeScaleUpdated(Scene@ scene, float newScale)
+    {
+        if (gameScene !is scene)
+            return;
+        // ApplyBGMScale(newScale *  GetPlayer().timeScale);
+    }
+
+    void ApplyBGMScale(float scale)
+    {
+        if (musicNode is null)
+            return;
+        Print("Game::ApplyBGMScale " + scale);
+        SoundSource@ s = musicNode.GetComponent("SoundSource");
+        if (s is null)
+            return;
+        s.frequency = BGM_BASE_FREQ * scale;
     }
 };
 
@@ -554,6 +578,12 @@ class GameFSM : FSM
     {
         if (gameState !is null)
             gameState.OnPlayerStatusUpdate(player);
+    }
+
+    void OnSceneTimeScaleUpdated(Scene@ scene, float newScale)
+    {
+        if (gameState !is null)
+            gameState.OnSceneTimeScaleUpdated(scene, newScale);
     }
 };
 

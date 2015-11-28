@@ -6,13 +6,13 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.75f;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.8f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
 const int MAX_NUM_OF_ATTACK = 3;
-const int MAX_NUM_OF_MOVING = 4;
-const int MAX_NUM_OF_COMBAT_IDLE = 3;
+const int MAX_NUM_OF_MOVING = 5;
+const int MAX_NUM_OF_COMBAT_IDLE = 2;
 
 const int INITIAL_HEALTH = 100;
 
@@ -48,15 +48,6 @@ const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
 const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
-
-const String L_HAND = "Bip01_L_Hand";
-const String R_HAND = "Bip01_R_Hand";
-const String L_FOOT = "Bip01_L_Foot";
-const String R_FOOT = "Bip01_R_Foot";
-const String L_ARM = "Bip01_L_Forearm";
-const String R_ARM = "Bip01_R_Forearm";
-const String L_CALF = "Bip01_L_Calf";
-const String R_CALF = "Bip01_R_Calf";
 
 Vector3 WORLD_SIZE(0, 0, 0);
 Vector3 WORLD_HALF_SIZE(0, 0, 0);
@@ -387,6 +378,14 @@ class CharacterCounterState : CharacterState
         currentMotion.Start(ownner);
     }
 
+    int GetCounterDirection(int attackType, bool isBack)
+    {
+        if (attackType == ATTACK_PUNCH)
+            return isBack ? 1 : 0;
+        else
+            return isBack ? 3 : 2;
+    }
+
     Array<Motion@>@ GetCounterMotions(int attackType, bool isBack)
     {
         if (isBack)
@@ -593,16 +592,6 @@ class Character : GameObject
         }
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-
-        if (bigHeadMode)
-        {
-            float bigHeadScale = 3.0f;
-            renderNode.GetChild("Bip01_Head", true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
-            renderNode.GetChild(L_HAND, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
-            renderNode.GetChild(R_HAND, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
-            renderNode.GetChild(L_HAND, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
-            renderNode.GetChild(R_FOOT, true).scale = Vector3(bigHeadScale, bigHeadScale, bigHeadScale);
-        }
     }
 
     void Start()

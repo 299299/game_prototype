@@ -23,7 +23,8 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        float blendTime = 0.25f;
+        float blendTime = 0.2f;
+        /*
         if (lastState !is null)
         {
             if (lastState.nameHash == ATTACK_STATE)
@@ -35,6 +36,7 @@ class PlayerStandState : CharacterState
             else if (lastState.nameHash == GETUP_STATE)
                 blendTime = 0.5f;
         }
+        */
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_ATTACK);
         CharacterState::Enter(lastState);
@@ -240,6 +242,9 @@ class PlayerAttackState : CharacterState
     int                     backCloseNum = 0;
 
     int                     slowMotionFrames = 2;
+
+    int                     lastAttackDirection = -1;
+    int                     lastAttackIndex = -1;
 
     bool                    weakAttack = true;
     bool                    slowMotion = false;
@@ -570,6 +575,15 @@ class PlayerAttackState : CharacterState
         else
         {
             bestIndex = index_start + RandomInt(index_num);
+            if (lastAttackDirection == dir && index_num > 1)
+            {
+                bestIndex ++;
+                int max_index = index_start + index_num - 1;
+                if (bestIndex > max_index)
+                    bestIndex = 0;
+            }
+            lastAttackDirection = dir;
+            lastAttackIndex = bestIndex;
             Print("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num"+index_num);
         }
 
@@ -780,6 +794,8 @@ class PlayerCounterState : CharacterCounterState
 {
     Array<Motion@>  doubleCounterMotions;
     Array<Enemy@>   counterEnemies;
+    int             lastCounterIndex = -1;
+    int             lastCounterDirection = -1;
     bool            bCheckInput = false;
     bool            isInAir = false;
 
@@ -856,6 +872,18 @@ class PlayerCounterState : CharacterCounterState
             Array<Motion@>@ enemyCounterMotions = eCState.GetCounterMotions(attackType, isBack);
 
             int idx = RandomInt(counterMotions.length);
+            int cur_direction = GetCounterDirection(attackType, isBack);
+            if (cur_direction == lastCounterDirection)
+            {
+                idx ++;
+                int max_index = counterMotions.length - 1;
+                if (idx > max_index)
+                    idx = 0;
+            }
+
+            lastCounterDirection = cur_direction;
+            lastCounterIndex = idx;
+
             @currentMotion = counterMotions[idx];
             @eCState.currentMotion = enemyCounterMotions[idx];
 
@@ -1081,7 +1109,7 @@ class Player : Character
         // t.endNodeName = "Bip01";
         tail.enabled = false;
 
-        animModel.skeleton.GetBone("Bip01_Head").animated = false;
+        // animModel.skeleton.GetBone("Bip01_Head").animated = false;
 
         // attackDamage = 100;
     }
@@ -1280,7 +1308,7 @@ class Player : Character
 
             int threatScore = 0;
             if (isAttacking && dist < 5.0f)
-                threatScore += 50;
+                threatScore += 30;
             int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 30.0f);
             int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * 20.0f);
             score += distScore;
@@ -1290,11 +1318,13 @@ class Player : Character
             if (lastAttackId == int(e.sceneNode.id))
             {
                 if (diffAngle < 90.0f)
-                    score = 100;
+                    score += 30;
             }
 
             em.scoreCache.Push(score);
-            Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
+
+            if (d_log)
+                Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 
         int bestScore = 0;
@@ -1410,6 +1440,7 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), KEEP_DIST_WITHIN_PLAYER + COLLISION_RADIUS, RED, 32, false);
     }
 
     void PostUpdate(float dt)

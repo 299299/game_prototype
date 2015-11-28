@@ -147,6 +147,7 @@ class GameObject : ScriptObject
         if (_scene.timeScale == scale)
             return;
         _scene.timeScale = scale;
+        gGame.OnSceneTimeScaleUpdated(_scene, scale);
         Print(GetName() + " SetSceneTimeScale:" + scale);
     }
 

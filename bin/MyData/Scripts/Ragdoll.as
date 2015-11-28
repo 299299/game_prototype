@@ -58,6 +58,7 @@ class Ragdoll : ScriptObject
 
     float             ragdollToAnimBlendTime = 1.0f;
     float             minRagdollStateTime = 0.5f;
+    float             maxRagdollStateTime = 6.0f;
 
     int               getUpIndex = 0;
     int               stickToDynamic = 0;
@@ -272,6 +273,8 @@ class Ragdoll : ScriptObject
 
             // Print("num_of_freeze_objects=" + num_of_freeze_objects);
             if (num_of_freeze_objects == RAGDOLL_BONE_NUM && timeInState >= minRagdollStateTime)
+                ChangeState(blend_to_anim ? RAGDOLL_BLEND_TO_ANIMATION : RAGDOLL_NONE);
+            else if (timeInState > maxRagdollStateTime)
                 ChangeState(blend_to_anim ? RAGDOLL_BLEND_TO_ANIMATION : RAGDOLL_NONE);
         }
         else if (state == RAGDOLL_BLEND_TO_ANIMATION)

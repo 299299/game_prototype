@@ -11,8 +11,9 @@ float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.05f;
 const int HIT_WAIT_FRAMES = 3;
-const float MIN_THINK_TIME = 0.5f;
-const float MAX_THINK_TIME = 2.5f;
+const float MIN_THINK_TIME = 0.25f;
+const float MAX_THINK_TIME = 2.0f;
+const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 
 class ThugStandState : CharacterState
 {
@@ -36,12 +37,14 @@ class ThugStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        float blendTime = 0.25f;
+        float blendTime = 0.2f;
+        /*
         if (lastState !is null)
         {
             if (lastState.nameHash == ATTACK_STATE || lastState.nameHash == TURN_STATE)
                 blendTime = 5.0f;
         }
+        */
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         float min_think_time = MIN_THINK_TIME;
@@ -92,28 +95,18 @@ class ThugStandState : CharacterState
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (!ownner.CanAttack())
-        {
-            int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
-            if (num_of_combat_idle < MAX_NUM_OF_COMBAT_IDLE)
-                ownner.ChangeState("CombatIdleState");
-            return;
-        }
-
         float attack_dist = KICK_DIST + 0.5f;
-        if (dist <= attack_dist)
+        if (ownner.CanAttack() && dist <= attack_dist)
         {
             Print("do attack because dist <= " + attack_dist);
             if (ownner.Attack())
                 return;
         }
 
-        int rand_i = RandomInt(8);
-        Print("rand_i=" + rand_i + " dist=" + dist);
+        int rand_i = 0;
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
-        bool can_i_see_player = !ownner.IsTargetSightBlocked();
-
-        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && rand_i > 1 && !ownner.HasFlag(FLAGS_NO_MOVE) && can_i_see_player)
+        //bool can_i_see_player = !ownner.IsTargetSightBlocked();
+        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             // try to move to player
             rand_i = RandomInt(2);
@@ -130,6 +123,14 @@ class ThugStandState : CharacterState
         }
         else
         {
+            if (dist >= KEEP_DIST_WITHIN_PLAYER)
+            {
+                ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
+                _node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+                ownner.ChangeState("StepMoveState");
+                return;
+            }
+
             rand_i = RandomInt(2);
             if (rand_i == 0)
             {
@@ -576,7 +577,7 @@ class ThugAttackState : CharacterState
         Vector3 diff = targetPosition - position;
         diff.y = 0;
         float distance = diff.length;
-        if (distance < ownner.attackRadius + COLLISION_RADIUS * 0.9f)
+        if (distance < ownner.attackRadius + COLLISION_RADIUS * 0.75f)
         {
             Vector3 dir = position - targetPosition;
             dir.y = 0;
@@ -734,7 +735,7 @@ class Thug : Enemy
 
         Node@ collsionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS * 2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT / 2, 0.0f));
+        shape.SetCapsule(COLLISION_RADIUS * 2.5f, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT / 2, 0.0f));
         RigidBody@ body = collsionNode.CreateComponent("RigidBody");
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         body.collisionMask = COLLISION_LAYER_CHARACTER;

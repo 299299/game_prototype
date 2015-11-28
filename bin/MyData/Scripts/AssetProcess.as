@@ -6,7 +6,7 @@
 
 enum RootMotionFlag
 {
-    kMotion_None         = 0,
+    kMotion_None= 0,
     kMotion_X   = (1 << 0),
     kMotion_Y   = (1 << 1),
     kMotion_Z   = (1 << 2),
@@ -22,6 +22,16 @@ const String TranslateBoneName = "Bip01_$AssimpFbx$_Translation";
 const String RotateBoneName = "Bip01_$AssimpFbx$_Rotation";
 const String ScaleBoneName = "Bip01_$AssimpFbx$_Scaling";
 const String rigName = "Models/bruce.mdl";
+
+const String HEAD = "Bip01_Head";
+const String L_HAND = "Bip01_L_Hand";
+const String R_HAND = "Bip01_R_Hand";
+const String L_FOOT = "Bip01_L_Foot";
+const String R_FOOT = "Bip01_R_Foot";
+const String L_ARM = "Bip01_L_Forearm";
+const String R_ARM = "Bip01_R_Forearm";
+const String L_CALF = "Bip01_L_Calf";
+const String R_CALF = "Bip01_R_Calf";
 
 Scene@  processScene;
 Node@   processNode;
@@ -76,6 +86,29 @@ void DumpSkeletonNames(Node@ n)
 
 void AssetPreProcess()
 {
+    if (bigHeadMode)
+    {
+        const float bigHeadScale = 2.0f;
+        Vector3 v(bigHeadScale, bigHeadScale, bigHeadScale);
+
+        Model@ m1 = cache.GetResource("Model",  "Models/bruce.mdl");
+        Skeleton@ s1 = m1.skeleton;
+        s1.GetBone(HEAD).initialScale = v;
+        s1.GetBone(L_HAND).initialScale = v;
+        s1.GetBone(R_HAND).initialScale = v;
+        s1.GetBone(L_FOOT).initialScale = v;
+        s1.GetBone(R_FOOT).initialScale = v;
+
+        m1 = cache.GetResource("Model",  "Models/thug.mdl");
+        s1 = m1.skeleton;
+        s1.GetBone(HEAD).initialScale = v;
+        s1.GetBone(L_HAND).initialScale = v;
+        s1.GetBone(R_HAND).initialScale = v;
+        s1.GetBone(L_FOOT).initialScale = v;
+        s1.GetBone(R_FOOT).initialScale = v;
+    }
+
+
     processScene = Scene();
     processNode = processScene.CreateChild("Character");
     processNode.worldRotation = Quaternion(0, 180, 0);
@@ -118,6 +151,10 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
+
+    //AnimationTrack@ track = anim.tracks["Bip01_L_Hand"];
+    //if (track.channelMask & CHANNEL_SCALE != 0)
+    //    Print("CHANNEL_SCALE");
 
     bool fixOriginFlag = originFlag <= 0;
 

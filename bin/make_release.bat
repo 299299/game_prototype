@@ -4,8 +4,8 @@ md .\Release\
 xcopy /s /e /h .\CoreData .\Release\CoreData\
 xcopy /s /e /h .\Data .\Release\Data\
 xcopy /s /e /h .\MyData .\Release\MyData\
-copy /f .\Test.bat .\Release\Game.bat
-copy /f .\Urho3DPlayer.exe .\Release\
+copy .\Test.bat .\Release\Game.bat
+copy .\Urho3DPlayer.exe .\Release\
 .\tool\ScriptCompiler.exe .\Release\MyData\Scripts\Test.as
 del .\Release\MyData\Scripts\*.as
 .\tool\PackageTool .\Release\CoreData .\Release\CoreData.pak -c -q
