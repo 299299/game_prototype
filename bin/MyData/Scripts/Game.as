@@ -116,7 +116,9 @@ class LoadingState : GameState
             if (text !is null)
                 text.text = "Loading Motions, loaded = " + gMotionMgr.processedMotions;
 
-            Print("============================== Motion Loading start ==============================");
+            if (d_log)
+                Print("============================== Motion Loading start ==============================");
+
             if (gMotionMgr.Update(dt))
             {
                 gMotionMgr.Finish();
@@ -124,7 +126,9 @@ class LoadingState : GameState
                 if (text !is null)
                     text.text = "Loading Scene Resources";
             }
-            Print("============================== Motion Loading end ==============================");
+
+            if (d_log)
+                Print("============================== Motion Loading end ==============================");
         }
         else if (state == LOADING_RESOURCES)
         {
@@ -383,13 +387,16 @@ class TestGameState : GameState
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
+        cameraId = cameraNode.id;
+
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
-        Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
-        audio.listener = characterNode.GetChild(HEAD, true).CreateComponent("SoundListener");
+        Node@ playerNode = scene_.GetChild(PLAYER_NAME, true);
+        audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
 
-        characterNode.CreateScriptObject(scriptFile, "Player");
-        characterNode.CreateScriptObject(scriptFile, "Ragdoll");
+        playerNode.CreateScriptObject(scriptFile, "Player");
+        playerNode.CreateScriptObject(scriptFile, "Ragdoll");
+        playerId = playerNode.id;
 
         for (uint i=0; i<scene_.numChildren; ++i)
         {
@@ -405,7 +412,7 @@ class TestGameState : GameState
 
         maxKilled = enemyResetRotations.length;
 
-        Vector3 v_pos = characterNode.worldPosition;
+        Vector3 v_pos = playerNode.worldPosition;
         cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
         cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
 
@@ -420,7 +427,7 @@ class TestGameState : GameState
 
         gameScene = scene_;
 
-        //DumpSkeletonNames(characterNode);
+        //DumpSkeletonNames(playerNode);
         Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + WORLD_SIZE.ToString());
     }
 

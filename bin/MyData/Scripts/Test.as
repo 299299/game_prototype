@@ -19,13 +19,16 @@
 int drawDebug = 0;
 bool autoCounter = false;
 bool bHdr = true;
-bool bigHeadMode = true;
-bool nobgm = true;
+bool bigHeadMode = false;
+bool nobgm = false;
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String PLAYER_NAME = "player";
 String CAMERA_NAME = "camera";
+
+uint cameraId = M_MAX_UNSIGNED;
+uint playerId = M_MAX_UNSIGNED;
 
 void Start()
 {
@@ -232,7 +235,7 @@ Player@ GetPlayer()
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
         return null;
-    Node@ characterNode = scene_.GetChild(PLAYER_NAME, true);
+    Node@ characterNode = scene_.GetNode(playerId);
     if (characterNode is null)
         return null;
     return cast<Player>(characterNode.scriptObject);
@@ -243,7 +246,7 @@ Camera@ GetCamera()
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
         return null;
-    Node@ cameraNode = scene_.GetChild(CAMERA_NAME, true);
+    Node@ cameraNode = scene_.GetNode(cameraId);
     if (cameraNode is null)
         return null;
     return cameraNode.GetComponent("Camera");

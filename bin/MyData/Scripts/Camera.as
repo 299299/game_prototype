@@ -133,7 +133,7 @@ class ThirdPersonCameraController : CameraController
 
     void Update(float dt)
     {
-        Node@ _node = cameraNode.scene.GetChild("player");
+        Node@ _node = GetPlayer().GetNode();
         if (_node is null)
             return;
 
