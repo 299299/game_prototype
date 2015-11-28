@@ -756,13 +756,14 @@ class MotionManager
         AddRagdollTrigger(preFix + "Push_Reaction_From_Back", 6, 9);
 
         preFix = "TG_Combat/";
+        int frame_fixup = 6;
         // name counter-start counter-end attack-start attack-end attack-bone
-        AddComplexAttackTrigger(preFix + "Attack_Kick", 15, 24, 24, 27, "Bip01_L_Foot");
-        AddComplexAttackTrigger(preFix + "Attack_Kick_01", 12, 24, 24, 27, "Bip01_L_Foot");
-        AddComplexAttackTrigger(preFix + "Attack_Kick_02", 19, 24, 24, 27, "Bip01_L_Foot");
-        AddComplexAttackTrigger(preFix + "Attack_Punch", 15, 22, 22, 24, "Bip01_R_Hand");
-        AddComplexAttackTrigger(preFix + "Attack_Punch_01", 15, 23, 23, 24, "Bip01_R_Hand");
-        AddComplexAttackTrigger(preFix + "Attack_Punch_02", 15, 23, 23, 24, "Bip01_R_Hand");
+        AddComplexAttackTrigger(preFix + "Attack_Kick", 15 - frame_fixup, 24, 24, 27, "Bip01_L_Foot");
+        AddComplexAttackTrigger(preFix + "Attack_Kick_01", 12 - frame_fixup, 24, 24, 27, "Bip01_L_Foot");
+        AddComplexAttackTrigger(preFix + "Attack_Kick_02", 19 - frame_fixup, 24, 24, 27, "Bip01_L_Foot");
+        AddComplexAttackTrigger(preFix + "Attack_Punch", 15 - frame_fixup, 22, 22, 24, "Bip01_R_Hand");
+        AddComplexAttackTrigger(preFix + "Attack_Punch_01", 15 - frame_fixup, 23, 23, 24, "Bip01_R_Hand");
+        AddComplexAttackTrigger(preFix + "Attack_Punch_02", 15 - frame_fixup, 23, 23, 24, "Bip01_R_Hand");
 
         AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 2, FOOT_STEP, L_FOOT);
         AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 13, FOOT_STEP, R_FOOT);

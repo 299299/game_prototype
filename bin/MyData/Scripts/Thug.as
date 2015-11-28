@@ -18,8 +18,10 @@ class ThugStandState : CharacterState
 {
     Array<String>   animations;
     float           thinkTime;
+
     float           checkAvoidanceTimer = 0.0f;
     float           checkAvoidanceTime = 0.1f;
+
     bool            firstEnter = true;
 
     ThugStandState(Character@ c)
@@ -43,14 +45,16 @@ class ThugStandState : CharacterState
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         float min_think_time = MIN_THINK_TIME;
+        float max_think_time = MAX_THINK_TIME;
         if (firstEnter)
         {
-            min_think_time = 3.0f;
+            min_think_time = 2.5f;
+            max_think_time = 5.0f;
             firstEnter = false;
         }
-        thinkTime = Random(min_think_time, MAX_THINK_TIME);
+        thinkTime = Random(min_think_time, max_think_time);
+        Print(ownner.GetName() + " thinkTime=" + thinkTime);
         checkAvoidanceTime = Random(0.1f, 0.2f);
-        checkAvoidanceTimer = 0.0f;
         CharacterState::Enter(lastState);
     }
 
@@ -75,39 +79,6 @@ class ThugStandState : CharacterState
         CharacterState::Update(dt);
     }
 
-    void FixedUpdate(float dt)
-    {
-        CollisionAvoidance(dt);
-        CharacterState::FixedUpdate(dt);
-    }
-
-    void CollisionAvoidance(float dt)
-    {
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
-        {
-            ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-            ownner.GetNode().vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
-            ownner.ChangeState("StepMoveState");
-            return;
-        }
-
-        checkAvoidanceTimer += dt;
-        if (checkAvoidanceTimer >= checkAvoidanceTime)
-        {
-            checkAvoidanceTimer -= checkAvoidanceTime;
-            int dir = -1;
-
-            Thug@ thug = cast<Thug@>(ownner);
-            if (thug.GetSperateDirection(dir) == 0)
-                return;
-
-            Print("CollisionAvoidance index=" + dir);
-            ownner.GetNode().vars[ANIMATION_INDEX] = dir;
-            ownner.ChangeState("StepMoveState");
-        }
-    }
-
     void OnThinkTimeOut()
     {
         float diff = Abs(ownner.ComputeAngleDiff());
@@ -125,7 +96,7 @@ class ThugStandState : CharacterState
         {
             int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
             if (num_of_combat_idle < MAX_NUM_OF_COMBAT_IDLE)
-                ownner.stateMachine.ChangeState("CombatIdleState");
+                ownner.ChangeState("CombatIdleState");
             return;
         }
 
@@ -137,12 +108,12 @@ class ThugStandState : CharacterState
                 return;
         }
 
-        int rand_i = RandomInt(5);
+        int rand_i = RandomInt(8);
         Print("rand_i=" + rand_i + " dist=" + dist);
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
         bool can_i_see_player = !ownner.IsTargetSightBlocked();
 
-        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && rand_i > 0 && !ownner.HasFlag(FLAGS_NO_MOVE) && can_i_see_player)
+        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && rand_i > 1 && !ownner.HasFlag(FLAGS_NO_MOVE) && can_i_see_player)
         {
             // try to move to player
             rand_i = RandomInt(2);
@@ -159,10 +130,30 @@ class ThugStandState : CharacterState
         }
         else
         {
-            int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
-            if (num_of_combat_idle < MAX_NUM_OF_MOVING)
-                ownner.stateMachine.ChangeState("CombatIdleState");
+            rand_i = RandomInt(2);
+            if (rand_i == 0)
+            {
+                _node.vars[ANIMATION_INDEX] = RandomInt(4);
+                ownner.ChangeState("StepMoveState");
+            }
+            else if (rand_i == 1)
+            {
+                int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
+                if (num_of_combat_idle < MAX_NUM_OF_COMBAT_IDLE)
+                    ownner.ChangeState("CombatIdleState");
+            }
         }
+    }
+
+    void FixedUpdate(float dt)
+    {
+        checkAvoidanceTimer += dt;
+        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        {
+            checkAvoidanceTimer -= checkAvoidanceTime;
+            ownner.CheckCollision();
+        }
+        CharacterState::FixedUpdate(dt);
     }
 };
 
@@ -170,6 +161,9 @@ class ThugCombatIdleState : CharacterState
 {
     Array<String> animations;
     int index = 0;
+
+    float           checkAvoidanceTimer = 0.0f;
+    float           checkAvoidanceTime = 0.1f;
 
     ThugCombatIdleState(Character@ c)
     {
@@ -185,6 +179,7 @@ class ThugCombatIdleState : CharacterState
         index = RandomInt(animations.length);
         ownner.PlayAnimation(animations[index], LAYER_MOVE, false, 0.25f);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+        checkAvoidanceTime = Random(0.1f, 0.2f);
         CharacterState::Enter(lastState);
     }
 
@@ -212,6 +207,17 @@ class ThugCombatIdleState : CharacterState
         }
 
         CharacterState::Update(dt);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        checkAvoidanceTimer += dt;
+        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        {
+            checkAvoidanceTimer -= checkAvoidanceTime;
+            ownner.CheckCollision();
+        }
+        CharacterState::FixedUpdate(dt);
     }
 };
 
@@ -303,6 +309,9 @@ class ThugRunState : SingleMotionState
     float turnSpeed = 5.0f;
     float attackRange;
 
+    float           checkAvoidanceTimer = 0.0f;
+    float           checkAvoidanceTime = 0.1f;
+
     ThugRunState(Character@ c)
     {
         super(c);
@@ -338,6 +347,7 @@ class ThugRunState : SingleMotionState
     {
         SingleMotionState::Enter(lastState);
         attackRange = Random(0.0, 6.0);
+        checkAvoidanceTime = Random(0.1f, 0.2f);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING);
     }
 
@@ -346,12 +356,26 @@ class ThugRunState : SingleMotionState
         SingleMotionState::Exit(nextState);
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING);
     }
+
+    void FixedUpdate(float dt)
+    {
+        checkAvoidanceTimer += dt;
+        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        {
+            checkAvoidanceTimer -= checkAvoidanceTime;
+            ownner.CheckCollision();
+        }
+        CharacterState::FixedUpdate(dt);
+    }
 };
 
 class ThugTurnState : MultiMotionState
 {
     float turnSpeed;
     float endTime;
+
+    float           checkAvoidanceTimer = 0.0f;
+    float           checkAvoidanceTime = 0.1f;
 
     ThugTurnState(Character@ c)
     {
@@ -386,6 +410,7 @@ class ThugTurnState : MultiMotionState
         turnSpeed = diff / endTime;
         Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+        checkAvoidanceTime = Random(0.1f, 0.2f);
         MultiMotionState::Enter(lastState);
     }
 
@@ -393,6 +418,17 @@ class ThugTurnState : MultiMotionState
     {
         MultiMotionState::Exit(nextState);
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+    }
+
+    void FixedUpdate(float dt)
+    {
+        checkAvoidanceTimer += dt;
+        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        {
+            checkAvoidanceTimer -= checkAvoidanceTime;
+            ownner.CheckCollision();
+        }
+        CharacterState::FixedUpdate(dt);
     }
 };
 
@@ -540,7 +576,7 @@ class ThugAttackState : CharacterState
         Vector3 diff = targetPosition - position;
         diff.y = 0;
         float distance = diff.length;
-        if (distance < ownner.attackRadius + COLLISION_RADIUS)
+        if (distance < ownner.attackRadius + COLLISION_RADIUS * 0.9f)
         {
             Vector3 dir = position - targetPosition;
             dir.y = 0;
@@ -698,7 +734,7 @@ class Thug : Enemy
 
         Node@ collsionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(3.5f, CHARACTER_HEIGHT, Vector3(0.0f, 2.5f, 0.0f));
+        shape.SetCapsule(COLLISION_RADIUS * 2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT / 2, 0.0f));
         RigidBody@ body = collsionNode.CreateComponent("RigidBody");
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         body.collisionMask = COLLISION_LAYER_CHARACTER;
@@ -743,6 +779,8 @@ class Thug : Enemy
     bool Attack()
     {
         if (!CanAttack())
+            return false;
+        if (KeepDistanceWithEnemy())
             return false;
         stateMachine.ChangeState("AttackState");
         return true;
@@ -867,6 +905,39 @@ class Thug : Enemy
     void FixedUpdate(float dt)
     {
         Enemy::FixedUpdate(dt);
+    }
+
+    bool KeepDistanceWithEnemy()
+    {
+        if (HasFlag(FLAGS_NO_MOVE))
+            return false;
+        int dir = -1;
+        if (GetSperateDirection(dir) == 0)
+            return false;
+        Print(GetName() + " CollisionAvoidance index=" + dir);
+        sceneNode.vars[ANIMATION_INDEX] = dir;
+        ChangeState("StepMoveState");
+        return true;
+    }
+
+    bool KeepDistanceWithPlayer()
+    {
+        float dist = GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist < KEEP_DIST_WITH_PLAYER && !HasFlag(FLAGS_NO_MOVE))
+        {
+            ThugStepMoveState@ state = cast<ThugStepMoveState>(FindState("StepMoveState"));
+            sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+            ChangeState("StepMoveState");
+            return true;
+        }
+        return false;
+    }
+
+    void CheckCollision()
+    {
+        if (KeepDistanceWithPlayer())
+            return;
+        KeepDistanceWithEnemy();
     }
 };
 

@@ -65,11 +65,13 @@ class LoadingState : GameState
     LoadingState()
     {
         SetName("LoadingState");
+        Print("LoadingState()");
     }
 
     ~LoadingState()
     {
-
+        Print("~LoadingState()");
+        gameScene = null;
     }
 
     void CreateLoadingUI()
@@ -184,6 +186,7 @@ enum GameSubState
 
 class TestGameState : GameState
 {
+    Scene@              gameScene;
     Array<Vector3>      enemyResetPositions;
     Array<Quaternion>   enemyResetRotations;
 
@@ -196,6 +199,7 @@ class TestGameState : GameState
     TestGameState()
     {
         SetName("TestGameState");
+        Print("TestGameState()");
         @fade = FadeOverlay();
         @pauseMenu = TextMenu("Fonts/UbuntuMono-R.ttf", 30);
         pauseMenu.texts.Push("RESUME");
@@ -207,6 +211,8 @@ class TestGameState : GameState
     {
         @fade = null;
         @pauseMenu = null;
+        gameScene = null;
+        Print("~TestGameState()");
     }
 
     void Enter(State@ lastState)
@@ -408,6 +414,8 @@ class TestGameState : GameState
         WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
         WORLD_SIZE = WORLD_HALF_SIZE * 2;
 
+        gameScene = scene_;
+
         //DumpSkeletonNames(characterNode);
         Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + WORLD_SIZE.ToString());
     }
@@ -476,6 +484,8 @@ class TestGameState : GameState
 
     void OnPlayerStatusUpdate(Player@ player)
     {
+        if (player is null)
+            return;
         Text@ statusText = ui.root.GetChild("status", true);
         if (statusText !is null)
         {

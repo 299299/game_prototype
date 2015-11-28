@@ -46,6 +46,7 @@ class GameObject : ScriptObject
     void SetTimeScale(float scale)
     {
         timeScale = scale;
+        Print(GetName() + " SetTimeScale:" + scale);
     }
 
     void FixedUpdate(float timeStep)
@@ -95,6 +96,11 @@ class GameObject : ScriptObject
         return "";
     }
 
+    String GetName()
+    {
+        return "";
+    }
+
     void AddFlag(int flag)
     {
         flags |= flag;
@@ -136,8 +142,12 @@ class GameObject : ScriptObject
     void SetSceneTimeScale(float scale)
     {
         Scene@ _scene = GetScene();
-        if (_scene !is null)
-            _scene.timeScale = scale;
+        if (_scene is null)
+            return;
+        if (_scene.timeScale == scale)
+            return;
+        _scene.timeScale = scale;
+        Print(GetName() + " SetSceneTimeScale:" + scale);
     }
 
     void Transform(const Vector3& pos, const Quaternion& qua)

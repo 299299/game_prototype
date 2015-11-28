@@ -6,7 +6,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.9f;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.75f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
@@ -318,6 +318,7 @@ class CharacterCounterState : CharacterState
     void Enter(State@ lastState)
     {
         state = COUNTER_NONE;
+        CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
@@ -1024,6 +1025,11 @@ class Character : GameObject
     bool IsTargetSightBlocked()
     {
         return false;
+    }
+
+    void CheckCollision()
+    {
+
     }
 };
 

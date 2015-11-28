@@ -531,7 +531,7 @@ class PlayerAttackState : CharacterState
         Vector3 enemyPos = attackEnemy.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
-        float toEnenmyDistance = diff.length - COLLISION_SAFE_DIST;
+        float toEnenmyDistance = diff.length - COLLISION_RADIUS * 1.65f;
         if (toEnenmyDistance < 0.0f)
             toEnenmyDistance = 0.0f;
         int bestIndex = 0;
@@ -671,6 +671,10 @@ class PlayerAttackState : CharacterState
     void Enter(State@ lastState)
     {
         Print("################## Player::AttackState Enter from " + lastState.name  + " #####################");
+        //Reset variables
+        lastKill = false;
+        slowMotion = false;
+
         Start();
         CharacterState::Enter(lastState);
         ownner.AddFlag(FLAGS_ATTACK);
@@ -744,7 +748,11 @@ class PlayerAttackState : CharacterState
         if (n !is null)
             position = n.worldPosition;
 
-        int damage = lastKill ? 9999 : ownner.attackDamage;
+        int damage = ownner.attackDamage;
+        if (lastKill)
+            damage = 9999;
+        else
+            damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 10);
         bool b = attackEnemy.OnDamage(ownner, position, dir, damage, weakAttack);
         if (!b)
             return;
@@ -781,7 +789,7 @@ class PlayerCounterState : CharacterCounterState
         String preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
         doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
+        //doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
         doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB"));
     }
 
@@ -797,6 +805,8 @@ class PlayerCounterState : CharacterCounterState
 
     void Enter(State@ lastState)
     {
+        Print("############# PlayerCounterState::Enter ##################");
+
         uint t = time.systemTime;
 
         CharacterCounterState::Enter(lastState);
@@ -881,19 +891,19 @@ class PlayerCounterState : CharacterCounterState
         ChangeSubState(COUNTER_ALIGNING);
         Print("PlayerCounter-> targetPosition=" + targetPosition.ToString() + " positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff + " time-cost=" + (time.systemTime - t));
 
-        if (counterEnemies.length == 0)
+        if (counterEnemies.length == 0 || currentMotion is null)
             ownner.ChangeState("StandState"); // Something Error Happened
     }
 
     void Exit(State@ nextState)
     {
-        counterEnemies.Clear();
+        Print("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
     }
 
     void OnAlignTimeOut()
     {
-        Print("OnAlignTimeOut");
+        Print("Player::OnAlignTimeOut");
         ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
         StartCounterMotion();
         for (uint i=0; i<counterEnemies.length; ++i)
@@ -1073,7 +1083,7 @@ class Player : Character
 
         animModel.skeleton.GetBone("Bip01_Head").animated = false;
 
-        attackDamage = 100;
+        // attackDamage = 100;
     }
 
     bool Attack()

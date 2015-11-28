@@ -205,7 +205,7 @@ class TransitionCameraController : CameraController
 class DeathCameraController : CameraController
 {
     uint nodeId = M_MAX_UNSIGNED;
-    float   cameraSpeed = 3.0f;
+    float   cameraSpeed = 3.5f;
     float   cameraDist = 15.0f;
     float   cameraHeight = 1.5f;
 
