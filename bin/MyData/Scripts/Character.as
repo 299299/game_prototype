@@ -625,8 +625,15 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
-        cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
+        if (ragdollPoseAnim !is null)
+            cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
         ragdollPoseAnim = null;
+    }
+
+    void Remove()
+    {
+        @target = null;
+        GameObject::Remove();
     }
 
     void SetTimeScale(float scale)
@@ -1029,6 +1036,11 @@ class Character : GameObject
     void CheckCollision()
     {
 
+    }
+
+    void SetTarget(Character@ t)
+    {
+        @target = t;
     }
 };
 

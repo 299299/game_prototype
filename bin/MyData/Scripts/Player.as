@@ -697,6 +697,7 @@ class PlayerAttackState : CharacterState
         Start();
         CharacterState::Enter(lastState);
         ownner.AddFlag(FLAGS_ATTACK);
+        ownner.SetTarget(attackEnemy);
     }
 
     void Exit(State@ nextState)
@@ -713,6 +714,7 @@ class PlayerAttackState : CharacterState
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
         ownner.SetSceneTimeScale(1.0f);
+        ownner.SetTarget(null);
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
@@ -781,6 +783,8 @@ class PlayerAttackState : CharacterState
 
         if (attackEnemy.health == 0)
         {
+            @attackEnemy = null;
+            ownner.SetTarget(null);
             int i = RandomInt(4) + 1;
             ownner.PlaySound("Sfx/big (" + i + ")" + ".ogg");
         }

@@ -11,10 +11,10 @@ class Enemy : Character
     void Start()
     {
         Character::Start();
-        @target = cast<Character@>(scene.GetChild("player", false).scriptObject);
         EnemyManager@ em = cast<EnemyManager>(scene.GetScriptObject("EnemyManager"));
         if (em !is null)
             em.RegisterEnemy(this);
+        SetTarget(GetPlayer());
     }
 
     void Remove()

@@ -133,11 +133,16 @@ class ThirdPersonCameraController : CameraController
 
     void Update(float dt)
     {
-        Node@ _node = GetPlayer().GetNode();
-        if (_node is null)
-            return;
+        Player@ p = GetPlayer();
+        Node@ _node = p.GetNode();
 
         Vector3 target_pos = _node.worldPosition;
+        if (p.target !is null)
+        {
+           // target_pos += p.target.GetNode().worldPosition;
+           // target_pos /= 2.0f;
+        }
+
         target_pos.y += cameraHeight;
 
         float pitch = gInput.m_rightStickY;
