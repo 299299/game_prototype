@@ -46,7 +46,8 @@ class GameObject : ScriptObject
     void SetTimeScale(float scale)
     {
         timeScale = scale;
-        Print(GetName() + " SetTimeScale:" + scale);
+        if (d_log)
+            Print(GetName() + " SetTimeScale:" + scale);
     }
 
     void FixedUpdate(float timeStep)
@@ -57,7 +58,7 @@ class GameObject : ScriptObject
         {
             duration -= timeStep;
             if (duration <= 0)
-                node.Remove();
+                Remove();
         }
     }
 
@@ -156,6 +157,11 @@ class GameObject : ScriptObject
         Node@ _node = GetNode();
         _node.worldPosition = pos;
         _node.worldRotation = qua;
+    }
+
+    void Remove()
+    {
+        node.Remove();
     }
 };
 

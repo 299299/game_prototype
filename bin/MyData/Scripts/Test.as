@@ -20,7 +20,7 @@ int drawDebug = 0;
 bool autoCounter = false;
 bool bHdr = true;
 bool bigHeadMode = false;
-bool nobgm = false;
+bool nobgm = true;
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
@@ -68,7 +68,7 @@ void InitAudio()
 
     audio.masterGain[SOUND_MASTER] = 0.5f;
     audio.masterGain[SOUND_MUSIC] = 0.5f;
-    audio.masterGain[SOUND_EFFECT] = 0.75f;
+    audio.masterGain[SOUND_EFFECT] = 0.5f;
 
     if (!nobgm)
     {
@@ -91,7 +91,6 @@ void SetWindowTitleAndIcon()
 {
     Image@ icon = cache.GetResource("Image", "Textures/UrhoIcon.png");
     graphics.windowIcon = icon;
-    graphics.windowTitle = "Test";
 }
 
 void CreateConsoleAndDebugHud()
@@ -522,7 +521,7 @@ void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
 
 void HandleCameraEvent(StringHash eventType, VariantMap& eventData)
 {
-    Print("HandleCameraEvent");
+    // Print("HandleCameraEvent");
     gCameraMgr.OnCameraEvent(eventData);
 }
 

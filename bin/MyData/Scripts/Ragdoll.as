@@ -166,7 +166,8 @@ class Ragdoll : ScriptObject
             return;
 
         int old_state = state;
-        Print(rootNode.name + " Ragdoll ChangeState from " + old_state + " to " + newState);
+        if (d_log)
+            Print(rootNode.name + " Ragdoll ChangeState from " + old_state + " to " + newState);
         state = newState;
 
         if (newState == RAGDOLL_STATIC)

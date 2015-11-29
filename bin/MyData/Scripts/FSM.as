@@ -108,7 +108,7 @@ class FSM
     {
         State@ newState = FindState(nameHash);
         if (currentState is newState) {
-            Print("same state !!!");
+            // Print("same state !!!");
             if (!currentState.CanReEntered())
                 return;
             currentState.Exit(newState);

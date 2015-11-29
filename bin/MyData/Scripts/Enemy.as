@@ -17,13 +17,12 @@ class Enemy : Character
             em.RegisterEnemy(this);
     }
 
-    void Stop()
+    void Remove()
     {
-        Character::Stop();
-
         EnemyManager@ em = cast<EnemyManager>(scene.GetScriptObject("EnemyManager"));
         if (em !is null)
             em.UnRegisterEnemy(this);
+        Character::Remove();
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -107,6 +106,7 @@ class EnemyManager : ScriptObject
 
     void UnRegisterEnemy(Enemy@ e)
     {
+        Print("UnRegisterEnemy");
         int i = enemyList.FindByRef(e);
         if (i < 0)
             return;

@@ -6,7 +6,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.8f;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.9f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
@@ -182,7 +182,14 @@ class MultiMotionState : CharacterState
     void Enter(State@ lastState)
     {
         selectIndex = PickIndex();
-        Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
+        if (selectIndex >= motions.length)
+        {
+            Print("Error a large animation index=" + selectIndex);
+            selectIndex = 0;
+        }
+
+        if (d_log)
+            Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner);
     }
 
@@ -542,7 +549,7 @@ class Character : GameObject
 
     int                     health = INITIAL_HEALTH;
 
-    float                   attackRadius = 0.5f;
+    float                   attackRadius = 0.15f;
     int                     attackDamage = 10;
 
     // ==============================================
@@ -629,7 +636,8 @@ class Character : GameObject
         for (uint i=0; i<num; ++i)
         {
             AnimationState@ state = animModel.GetAnimationState(i);
-            Print("SetSpeed " + state.animation.name + " scale " + scale);
+            if (d_log)
+                Print("SetSpeed " + state.animation.name + " scale " + scale);
             animCtrl.SetSpeed(state.animation.name, scale);
         }
         sceneNode.vars[TIME_SCALE] = scale;
@@ -720,7 +728,7 @@ class Character : GameObject
 
     void Reset()
     {
-        flags = 0;
+        flags = FLAGS_ATTACK;
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
         health = INITIAL_HEALTH;

@@ -309,6 +309,12 @@ class TestGameState : GameState
         pauseMenu.Remove();
         if (newState == GAME_RUNNING)
         {
+            Print("=====================================================================");
+            Print("=====================================================================");
+            Print("         GAME RUNNING START !!");
+            Print("=====================================================================");
+            Print("=====================================================================");
+
             Player@ player = GetPlayer();
             if (player !is null)
             {
@@ -363,7 +369,6 @@ class TestGameState : GameState
     {
         Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
         renderer.viewports[0] = viewport;
-        graphics.windowTitle = "Test";
         if (bHdr)
         {
             RenderPath@ renderpath = viewport.renderPath.Clone();

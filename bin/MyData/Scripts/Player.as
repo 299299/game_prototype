@@ -575,7 +575,7 @@ class PlayerAttackState : CharacterState
         else
         {
             bestIndex = index_start + RandomInt(index_num);
-            if (lastAttackDirection == dir && index_num > 1)
+            if (lastAttackDirection == dir && bestIndex == lastAttackIndex && index_num > 1)
             {
                 bestIndex ++;
                 int max_index = index_start + index_num - 1;
@@ -584,7 +584,7 @@ class PlayerAttackState : CharacterState
             }
             lastAttackDirection = dir;
             lastAttackIndex = bestIndex;
-            Print("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num"+index_num);
+            Print("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num="+index_num);
         }
 
         @currentAttack = attacks[bestIndex];
@@ -593,7 +593,7 @@ class PlayerAttackState : CharacterState
         // alignTime *= ownner.timeScale;
 
         predictPosition = myPos + diff * toEnenmyDistance;
-        Print("Player Pick attack motion = " + currentAttack.motion.animationName);
+        Print("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex + " Pick attack motion = " + currentAttack.motion.animationName);
     }
 
     void StartAttack()
@@ -873,7 +873,7 @@ class PlayerCounterState : CharacterCounterState
 
             int idx = RandomInt(counterMotions.length);
             int cur_direction = GetCounterDirection(attackType, isBack);
-            if (cur_direction == lastCounterDirection)
+            if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
             {
                 idx ++;
                 int max_index = counterMotions.length - 1;

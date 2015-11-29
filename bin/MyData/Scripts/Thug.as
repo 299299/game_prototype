@@ -12,7 +12,7 @@ float STEP_MAX_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.01f;
 const int HIT_WAIT_FRAMES = 3;
 const float MIN_THINK_TIME = 0.25f;
-const float MAX_THINK_TIME = 2.0f;
+const float MAX_THINK_TIME = 1.5f;
 const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 
 class ThugStandState : CharacterState
@@ -56,7 +56,8 @@ class ThugStandState : CharacterState
             firstEnter = false;
         }
         thinkTime = Random(min_think_time, max_think_time);
-        Print(ownner.GetName() + " thinkTime=" + thinkTime);
+        if (d_log)
+            Print(ownner.GetName() + " thinkTime=" + thinkTime);
         checkAvoidanceTime = Random(0.1f, 0.2f);
         CharacterState::Enter(lastState);
     }
@@ -117,7 +118,9 @@ class ThugStandState : CharacterState
             else
             {
                 ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-                _node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+                int index = state.GetStepMoveIndex();
+                Print(ownner.GetName() + " apply animation index for step move in thug stand state: " + index);
+                _node.vars[ANIMATION_INDEX] = index;
             }
             ownner.ChangeState(nextState);
         }
@@ -126,7 +129,9 @@ class ThugStandState : CharacterState
             if (dist >= KEEP_DIST_WITHIN_PLAYER)
             {
                 ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-                _node.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+                int index = state.GetStepMoveIndex();
+                Print(ownner.GetName() + " apply animation index for keep with with player in stand state: " + index);
+                _node.vars[ANIMATION_INDEX] = index;
                 ownner.ChangeState("StepMoveState");
                 return;
             }
@@ -134,7 +139,9 @@ class ThugStandState : CharacterState
             rand_i = RandomInt(2);
             if (rand_i == 0)
             {
-                _node.vars[ANIMATION_INDEX] = RandomInt(4);
+                int index = RandomInt(4);
+                _node.vars[ANIMATION_INDEX] = index;
+                Print(ownner.GetName() + " apply animation index for random move in stand state: " + index);
                 ownner.ChangeState("StepMoveState");
             }
             else if (rand_i == 1)
@@ -196,7 +203,9 @@ class ThugCombatIdleState : CharacterState
         if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-            ownner.GetNode().vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+            int index = state.GetStepMoveIndex();
+            Print(ownner.GetName() + " apply animation index for keep away from player in combat idle state: " + index);
+            ownner.GetNode().vars[ANIMATION_INDEX] = index;
             ownner.ChangeState("StepMoveState");
             return;
         }
@@ -448,7 +457,7 @@ class ThugAttackState : CharacterState
 {
     AttackMotion@               currentAttack;
     Array<AttackMotion@>        attacks;
-    float                       turnSpeed = 1.0f;
+    float                       turnSpeed = 1.25f;
     bool                        doAttackCheck = false;
     Node@                       attackCheckNode;
 
@@ -485,6 +494,12 @@ class ThugAttackState : CharacterState
         // TODO ....
         bool finished = motion.Move(ownner, dt);
         if (finished)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
+        if (!ownner.target.HasFlag(FLAGS_ATTACK))
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -577,7 +592,7 @@ class ThugAttackState : CharacterState
         Vector3 diff = targetPosition - position;
         diff.y = 0;
         float distance = diff.length;
-        if (distance < ownner.attackRadius + COLLISION_RADIUS * 0.75f)
+        if (distance < ownner.attackRadius + COLLISION_RADIUS * 0.8f)
         {
             Vector3 dir = position - targetPosition;
             dir.y = 0;
@@ -650,7 +665,8 @@ class ThugRedirectState : MultiMotionState
     void Enter(State@ lastState)
     {
         selectIndex = PickIndex();
-        Print(name + " pick " + motions[selectIndex].animationName);
+        if (d_log)
+            Print(name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner, 0.0f, 0.5f);
     }
 
@@ -898,7 +914,9 @@ class Thug : Enemy
             return 0;
 
         outDir = DirectionMapToIndex(totalAngle / len, 4);
-        Print("GetSperateDirection() totalAngle=" + totalAngle + " outDir=" + outDir + " len=" + len);
+
+        if (d_log)
+            Print("GetSperateDirection() totalAngle=" + totalAngle + " outDir=" + outDir + " len=" + len);
 
         return len;
     }
@@ -927,7 +945,9 @@ class Thug : Enemy
         if (dist < KEEP_DIST_WITH_PLAYER && !HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(FindState("StepMoveState"));
-            sceneNode.vars[ANIMATION_INDEX] = state.GetStepMoveIndex();
+            int index = state.GetStepMoveIndex();
+            Print(GetName() + " KeepDistanceWithPlayer index=" + index);
+            sceneNode.vars[ANIMATION_INDEX] = index;
             ChangeState("StepMoveState");
             return true;
         }

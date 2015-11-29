@@ -121,7 +121,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraDistance = 20.0f;
     float   cameraDistSpeed = 200.0f;
     float   targetFov = BASE_FOV;
-    float   fovSpeed = 5.0f;
+    float   fovSpeed = 2.5f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -230,7 +230,12 @@ class DeathCameraController : CameraController
         Node@ playerNode = GetPlayer().GetNode();
 
         Vector3 dir = _node.worldPosition - playerNode.worldPosition;
-        float angle = Atan2(dir.x, dir.z) + 90;
+        int i = RandomInt(1);
+        float angle = Atan2(dir.x, dir.z);
+        if (i == 0)
+            angle -= 90;
+        else
+            angle += 90;
         Vector3 v1(Sin(angle) * cameraDist, cameraHeight, Cos(angle) * cameraDist);
         v1 += _node.worldPosition;
         Vector3 v2 = _node.worldPosition + playerNode.worldPosition;
