@@ -20,7 +20,9 @@ int drawDebug = 0;
 bool autoCounter = false;
 bool bHdr = true;
 bool bigHeadMode = false;
-bool nobgm = true;
+bool nobgm = false;
+bool has_redirect = false;
+
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
@@ -394,6 +396,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         else
             gCameraMgr.SetCameraController("Debug");
     }
+    else if (key == KEY_5)
+    {
+        VariantMap data;
+        data[TARGET_FOV] = 60;
+        SendEvent("CameraEvent", data);
+    }
 
     if (test_ragdoll)
     {
@@ -453,8 +461,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         }
         else if (key == 'F')
         {
-            scene_.timeScale = 1.0f;
-            SetWorldTimeScale(scene_, 1);
+            scene_.timeScale = 0.25f;
+            // SetWorldTimeScale(scene_, 1);
         }
         else if (key == 'O')
         {

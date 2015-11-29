@@ -733,7 +733,8 @@ class Thug : Enemy
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
         stateMachine.AddState(ThugRunState(this));
-        stateMachine.AddState(ThugRedirectState(this));
+        if (has_redirect)
+            stateMachine.AddState(ThugRedirectState(this));
         stateMachine.AddState(ThugAttackState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugGetUpState(this));

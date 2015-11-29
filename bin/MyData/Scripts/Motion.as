@@ -254,7 +254,7 @@ class Motion
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
-        object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed * object.timeScale);
+        object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
         InnerStart(object);
     }
 
@@ -420,7 +420,8 @@ class MotionManager
         CreateMotion("BM_Movement/Evade_Left_01", kMotion_XZR, kMotion_XZR);
         CreateMotion("BM_Movement/Evade_Right_01", kMotion_XZR, kMotion_XZR);
 
-        CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
+        if (has_redirect)
+            CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
 
         String preFix = "BM_Combat_HitReaction/";
         CreateMotion(preFix + "HitReaction_Back", kMotion_XZ); // back attacked
@@ -559,8 +560,12 @@ class MotionManager
         CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
 
         CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_XZR, -1, 0, true);
-        CreateMotion(preFix + "Redirect_push_back");
-        CreateMotion(preFix + "Redirect_Stumble_JK");
+
+        if (has_redirect)
+        {
+            CreateMotion(preFix + "Redirect_push_back");
+            CreateMotion(preFix + "Redirect_Stumble_JK");
+        }
 
         CreateMotion(preFix + "Attack_Kick");
         CreateMotion(preFix + "Attack_Kick_01");

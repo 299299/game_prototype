@@ -121,7 +121,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraDistance = 20.0f;
     float   cameraDistSpeed = 200.0f;
     float   targetFov = BASE_FOV;
-    float   fovSpeed = 2.5f;
+    float   fovSpeed = 1.5f;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {

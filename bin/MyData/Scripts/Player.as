@@ -449,6 +449,7 @@ class PlayerAttackState : CharacterState
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
                 attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
+                // ownner.SetSceneTimeScale(0.0f);
             }
         }
         else if (state == ATTACK_STATE_BEFORE_IMPACT)
@@ -536,7 +537,7 @@ class PlayerAttackState : CharacterState
         Vector3 enemyPos = attackEnemy.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
-        float toEnenmyDistance = diff.length - COLLISION_RADIUS * 1.65f;
+        float toEnenmyDistance = diff.length - COLLISION_RADIUS * 1.75f;
         if (toEnenmyDistance < 0.0f)
             toEnenmyDistance = 0.0f;
         int bestIndex = 0;
@@ -548,7 +549,7 @@ class PlayerAttackState : CharacterState
         float min_dist = toEnenmyDistance - 3.0f;
         if (min_dist < 0.0f)
             min_dist = 0.0f;
-        float max_dist = toEnenmyDistance + 0.1f;
+        float max_dist = toEnenmyDistance + 1.5f;
         Print("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
         for (uint i=0; i<attacks.length; ++i)
@@ -680,6 +681,10 @@ class PlayerAttackState : CharacterState
          else
             Print("No Attack Enemy");
         StartAttack();
+
+        //slowMotion = false;
+        //ownner.SetSceneTimeScale(0.25f);
+        //ownner.SetTimeScale(1.5f);
     }
 
     void Enter(State@ lastState)
@@ -774,17 +779,15 @@ class PlayerAttackState : CharacterState
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
         ownner.OnAttackSuccess(attackEnemy);
 
-        if (currentAttack.type == ATTACK_PUNCH)
+        if (attackEnemy.health == 0)
         {
-            int i = RandomInt(6) + 1;
-            String name = "Sfx/punch_0" + i + ".ogg";
-            ownner.PlaySound(name);
+            int i = RandomInt(4) + 1;
+            ownner.PlaySound("Sfx/big (" + i + ")" + ".ogg");
         }
         else
         {
-            int i = RandomInt(6) + 1;
-            String name = "Sfx/kick_0" + i + ".ogg";
-            ownner.PlaySound(name);
+            int i = RandomInt(num_of_sounds) + 1;
+            ownner.PlaySound("Sfx/impact_ (" + i + ")" + ".ogg");
         }
     }
 };
@@ -969,7 +972,8 @@ class PlayerCounterState : CharacterCounterState
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
             if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
-            ownner.PlaySound("Sfx/kick_04.ogg");
+            int index = RandomInt(num_of_sounds) + 1;
+            ownner.PlaySound("Sfx/impact_ (" + index + ")" + ".ogg");
 
             Vector3 my_pos = _node.worldPosition;
             if (counterEnemies.length > 1)
@@ -1091,7 +1095,8 @@ class Player : Character
         stateMachine.AddState(PlayerCounterState(this));
         stateMachine.AddState(PlayerEvadeState(this));
         stateMachine.AddState(PlayerHitState(this));
-        stateMachine.AddState(PlayerRedirectState(this));
+        if (has_redirect)
+            stateMachine.AddState(PlayerRedirectState(this));
         stateMachine.AddState(AnimationTestState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(PlayerGetUpState(this));
@@ -1108,8 +1113,6 @@ class Player : Character
         tail.SetEndColor(Color(1.0f,0.2f,1.0f,1), Color(1.0f,1.0f,1.0f,5.0f));
         // t.endNodeName = "Bip01";
         tail.enabled = false;
-
-        // animModel.skeleton.GetBone("Bip01_Head").animated = false;
 
         // attackDamage = 100;
     }
@@ -1138,7 +1141,12 @@ class Player : Character
     bool Evade()
     {
         Print("Player::Evade()");
-        Enemy@ redirectEnemy = PickRedirectEnemy();
+
+        Enemy@ redirectEnemy = null;
+        if (has_redirect)
+        {
+            @redirectEnemy = PickRedirectEnemy();
+        }
 
         if (redirectEnemy !is null)
         {

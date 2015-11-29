@@ -52,6 +52,8 @@ const StringHash IMPACT("Impact");
 Vector3 WORLD_SIZE(0, 0, 0);
 Vector3 WORLD_HALF_SIZE(0, 0, 0);
 
+int num_of_sounds = 21;
+
 class CharacterState : State
 {
     Character@                  ownner;
@@ -96,16 +98,8 @@ class CharacterState : State
     void OnCombatSound(const String& boneName)
     {
         int comb_type = GetAttackType(boneName);
-        if (comb_type == ATTACK_PUNCH)
-        {
-            int i = RandomInt(6) + 1;
-            ownner.PlaySound("Sfx/punch_0" + i + ".ogg");
-        }
-        else
-        {
-            int i = RandomInt(6) + 1;
-            ownner.PlaySound("Sfx/kick_0" + i + ".ogg");
-        }
+        int i = RandomInt(num_of_sounds) + 1;
+        ownner.PlaySound("Sfx/impact_ (" + i + ")" + ".ogg");
 
         Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
         if (boneNode !is null)
@@ -182,9 +176,9 @@ class MultiMotionState : CharacterState
     void Enter(State@ lastState)
     {
         selectIndex = PickIndex();
-        if (selectIndex >= motions.length)
+        if (selectIndex >= int(motions.length))
         {
-            Print("Error a large animation index=" + selectIndex);
+            Print("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
             selectIndex = 0;
         }
 
@@ -495,6 +489,14 @@ class CharacterGetUpState : MultiMotionState
     {
         state = 0;
         selectIndex = PickIndex();
+
+        selectIndex = PickIndex();
+        if (selectIndex >= int(motions.length))
+        {
+            Print("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            selectIndex = 0;
+        }
+
         Motion@ motion = motions[selectIndex];
         //if (blend_to_anim)
         //    ragdollToAnimTime = 0.2f;
@@ -1009,7 +1011,7 @@ class Character : GameObject
         {
             duration -= dt;
             if (duration <= 0)
-                node.Remove();
+                Remove();
         }
     }
 
