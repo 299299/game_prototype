@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="34" />
 	<attribute name="Next Replicated Component ID" value="50" />
-	<attribute name="Next Local Node ID" value="16779637" />
-	<attribute name="Next Local Component ID" value="16777921" />
+	<attribute name="Next Local Node ID" value="16779638" />
+	<attribute name="Next Local Component ID" value="16777933" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -52,7 +52,7 @@
 	</node>
 	<node id="8">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="thug" />
+		<attribute name="Name" value="thug11" />
 		<attribute name="Position" value="-9.28978 0 6.07221" />
 		<attribute name="Rotation" value="-0.291436 0 -0.95659 0" />
 		<attribute name="Scale" value="1 1 1" />
@@ -4691,7 +4691,7 @@
 	</node>
 	<node id="29">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="thug" />
+		<attribute name="Name" value="thug12" />
 		<attribute name="Position" value="-12.6919 0 1.19822" />
 		<attribute name="Rotation" value="-0.481764 0 -0.8763 0" />
 		<attribute name="Scale" value="1 1 1" />
@@ -5397,7 +5397,7 @@
 	</node>
 	<node id="30">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="thug" />
+		<attribute name="Name" value="thug31" />
 		<attribute name="Position" value="11.8712 0 2.32606" />
 		<attribute name="Rotation" value="0.402328 0 -0.915495 0" />
 		<attribute name="Scale" value="1 1 1" />
@@ -6103,7 +6103,7 @@
 	</node>
 	<node id="31">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="thug5" />
+		<attribute name="Name" value="thug51" />
 		<attribute name="Position" value="2.77619 0 13.4591" />
 		<attribute name="Rotation" value="0.0294626 0 0.999566 0" />
 		<attribute name="Scale" value="1 1 1" />
@@ -6809,7 +6809,7 @@
 	</node>
 	<node id="32">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="thug5" />
+		<attribute name="Name" value="thug52" />
 		<attribute name="Position" value="7.40672 0 13.4591" />
 		<attribute name="Rotation" value="0.0294626 0 0.999566 0" />
 		<attribute name="Scale" value="1 1 1" />
@@ -7515,7 +7515,7 @@
 	</node>
 	<node id="33">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="thug5" />
+		<attribute name="Name" value="thug53" />
 		<attribute name="Position" value="-6.1415 0 13.4591" />
 		<attribute name="Rotation" value="0.0294626 0 0.999566 0" />
 		<attribute name="Scale" value="1 1 1" />

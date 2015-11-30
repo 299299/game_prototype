@@ -9,7 +9,7 @@ const float MIN_TURN_ANGLE = 30;
 float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
-float KEEP_DIST_WITH_PLAYER = -0.01f;
+float KEEP_DIST_WITH_PLAYER = -0.25f;
 const int HIT_WAIT_FRAMES = 3;
 const float MIN_THINK_TIME = 0.25f;
 const float MAX_THINK_TIME = 1.5f;
@@ -22,6 +22,7 @@ class ThugStandState : CharacterState
 
     float           checkAvoidanceTimer = 0.0f;
     float           checkAvoidanceTime = 0.1f;
+    float           attackRange;
 
     bool            firstEnter = true;
 
@@ -59,6 +60,7 @@ class ThugStandState : CharacterState
         if (d_log)
             Print(ownner.GetName() + " thinkTime=" + thinkTime);
         checkAvoidanceTime = Random(0.1f, 0.2f);
+        attackRange = Random(0.0f, 2.0f);
         CharacterState::Enter(lastState);
     }
 
@@ -96,10 +98,9 @@ class ThugStandState : CharacterState
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        float attack_dist = KICK_DIST + 0.5f;
-        if (ownner.CanAttack() && dist <= attack_dist)
+        if (ownner.CanAttack() && dist <= attackRange)
         {
-            Print("do attack because dist <= " + attack_dist);
+            Print("do attack because dist <= " + attackRange);
             if (ownner.Attack())
                 return;
         }
@@ -151,6 +152,8 @@ class ThugStandState : CharacterState
                     ownner.ChangeState("CombatIdleState");
             }
         }
+
+        attackRange = Random(0.0f, 2.0f);
     }
 
     void FixedUpdate(float dt)
@@ -302,7 +305,7 @@ class ThugStepMoveState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        attackRange = Random(0.0, 6.0);
+        attackRange = Random(0.0, 2.0);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING);
         MultiMotionState::Enter(lastState);
     }
@@ -356,7 +359,7 @@ class ThugRunState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        attackRange = Random(0.0, 6.0);
+        attackRange = Random(0.0, 2.0);
         checkAvoidanceTime = Random(0.1f, 0.2f);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING);
     }
@@ -514,7 +517,7 @@ class ThugAttackState : CharacterState
         float punchDist = attacks[0].motion.endDistance;
         Print("targetDistance=" + targetDistance + " punchDist=" + punchDist);
         int index = RandomInt(3);
-        if (targetDistance > punchDist + 0.5f)
+        if (targetDistance > punchDist + 1.0f)
             index += 3; // a kick attack
         @currentAttack = attacks[index];
         ownner.GetNode().vars[ATTACK_TYPE] = currentAttack.type;

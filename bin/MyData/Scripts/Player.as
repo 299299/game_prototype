@@ -5,7 +5,7 @@
 // ==============================================
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
-const float MAX_COUNTER_DIST = 5.0f;
+const float MAX_COUNTER_DIST = 6.0f;
 const float MAX_ATTACK_DIST = 25.0f;
 
 class PlayerStandState : CharacterState
@@ -1123,7 +1123,7 @@ class Player : Character
         // t.endNodeName = "Bip01";
         tail.enabled = false;
 
-        attackDamage = 100;
+        // attackDamage = 100;
     }
 
     bool Attack()

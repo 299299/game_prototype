@@ -389,7 +389,7 @@ class Ragdoll : ScriptObject
         body.angularDamping = 0.85f;
         // Set rest thresholds to ensure the ragdoll rigid bodies come to rest to not consume CPU endlessly
         body.linearRestThreshold = 2.5f;
-        body.angularRestThreshold = 1.5;
+        body.angularRestThreshold = 1.5f;
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
         body.friction = 1.0f;
