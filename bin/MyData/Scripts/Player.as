@@ -604,7 +604,9 @@ class PlayerAttackState : CharacterState
             state = ATTACK_STATE_ALIGN;
             float diff = ownner.ComputeAngleDiff(attackEnemy.GetNode());
             int r = DirectionMapToIndex(diff, 4);
-            Print("Attack-align " + " r-index=" + r + " diff=" + diff);
+
+            if (d_log)
+                Print("Attack-align " + " r-index=" + r + " diff=" + diff);
 
             if (r == 0)
                 PickBestMotion(forwardAttacks, r);
@@ -934,6 +936,9 @@ class PlayerCounterState : CharacterCounterState
     {
         Print("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
+
+        if (nextState !is this)
+            counterEnemies.Clear();
     }
 
     void OnAlignTimeOut()
@@ -1118,7 +1123,7 @@ class Player : Character
         // t.endNodeName = "Bip01";
         tail.enabled = false;
 
-        // attackDamage = 100;
+        attackDamage = 100;
     }
 
     bool Attack()
@@ -1270,8 +1275,6 @@ class Player : Character
     Enemy@ PickAttackEnemy()
     {
         uint t = time.systemTime;
-        Print("PickAttackEnemy() started");
-
         Scene@ _scene = GetScene();
         EnemyManager@ em = cast<EnemyManager>(_scene.GetScriptObject("EnemyManager"));
         if (em is null)

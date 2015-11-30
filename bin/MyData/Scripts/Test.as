@@ -32,8 +32,28 @@ String CAMERA_NAME = "camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
+int test_enemy_num_override = 9999;
+
 void Start()
 {
+    Array<String>@ arguments = GetArguments();
+    for (uint i = 0; i < arguments.length; ++i)
+    {
+        String argument = arguments[i].ToLower();
+        if (argument[0] == '-')
+        {
+            argument = argument.Substring(1);
+            if (argument == "nobgm")
+            {
+                nobgm = true;
+            }
+            else if (argument == "bighead")
+            {
+                bigHeadMode = true;
+            }
+        }
+    }
+
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;

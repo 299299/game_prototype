@@ -403,15 +403,23 @@ class TestGameState : GameState
         playerNode.CreateScriptObject(scriptFile, "Ragdoll");
         playerId = playerNode.id;
 
+        int enemyNum = 0;
         for (uint i=0; i<scene_.numChildren; ++i)
         {
             Node@ _node = scene_.children[i];
             if (_node.name.StartsWith("thug"))
             {
+                if (enemyNum >= test_enemy_num_override)
+                {
+                    _node.enabled = false;
+                    continue;
+                }
+
                 _node.CreateScriptObject(scriptFile, "Thug");
                 _node.CreateScriptObject(scriptFile, "Ragdoll");
                 enemyResetPositions.Push(_node.worldPosition);
                 enemyResetRotations.Push(_node.worldRotation);
+                ++enemyNum;
             }
         }
 

@@ -632,7 +632,7 @@ class Character : GameObject
 
     void Remove()
     {
-        @target = null;
+        Stop();
         GameObject::Remove();
     }
 
@@ -898,6 +898,7 @@ class Character : GameObject
 
     void OnDead()
     {
+        Print(GetName() + " OnDead !!!");
         stateMachine.ChangeState("DeadState");
     }
 
@@ -1011,7 +1012,9 @@ class Character : GameObject
     void FixedUpdate(float dt)
     {
         dt *= timeScale;
-        stateMachine.FixedUpdate(dt);
+
+        if (stateMachine !is null)
+            stateMachine.FixedUpdate(dt);
 
         // Disappear when duration expired
         if (duration >= 0)
@@ -1025,7 +1028,9 @@ class Character : GameObject
     void Update(float dt)
     {
         dt *= timeScale;
-        stateMachine.Update(dt);
+
+        if (stateMachine !is null)
+            stateMachine.Update(dt);
     }
 
     bool IsTargetSightBlocked()
