@@ -379,7 +379,6 @@ class Ragdoll : ScriptObject
 
     void CreateRagdollBone(RagdollBoneType boneType, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation)
     {
-        float scale = 100;
         Node@ boneNode = boneNodes[boneType];
         RigidBody@ body = boneNode.CreateComponent("RigidBody");
         // Set mass to make movable
@@ -403,11 +402,11 @@ class Ragdoll : ScriptObject
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
         // We use either a box or a capsule shape for all of the bones
         if (type == SHAPE_BOX)
-            shape.SetBox(size * scale, position * scale, rotation);
+            shape.SetBox(size * BONE_SCALE, position * BONE_SCALE, rotation);
         else if (type == SHAPE_SPHERE)
-            shape.SetSphere(size.x * scale, position * scale, rotation);
+            shape.SetSphere(size.x * BONE_SCALE, position * BONE_SCALE, rotation);
         else
-            shape.SetCapsule(size.x * scale, size.y * scale, position * scale, rotation);
+            shape.SetCapsule(size.x * BONE_SCALE, size.y * BONE_SCALE, position * BONE_SCALE, rotation);
     }
 
     void CreateRagdollConstraint(Node@ boneNode, Node@ parentNode, ConstraintType type,

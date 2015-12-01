@@ -32,6 +32,7 @@ const String L_ARM = "Bip01_L_Forearm";
 const String R_ARM = "Bip01_R_Forearm";
 const String L_CALF = "Bip01_L_Calf";
 const String R_CALF = "Bip01_R_Calf";
+const float BONE_SCALE = 100.0f;
 
 Scene@  processScene;
 Node@   processNode;

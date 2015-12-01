@@ -544,7 +544,7 @@ class ThugAttackState : CharacterState
         Print("===============================================================");
         Print("Counter Start " + bshow);
         Print("===============================================================");
-        ownner.SetHintText("COUNTER!!!!!!!", bshow);
+        ownner.SetHintText("!!!!!!!!!!", bshow);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -766,14 +766,14 @@ class Thug : Enemy
         body.collisionEventMode = COLLISION_ALWAYS;
 
         Node@ hintNode = sceneNode.CreateChild("HintNode");
-        hintNode.position = Vector3(0, 5, 0);
+        hintNode.position = Vector3(0, 5.5f, 0);
         Text3D@ text = hintNode.CreateComponent("Text3D");
-        text.SetFont("Fonts/UbuntuMono-R.ttf", 30);
+        text.SetFont("Fonts/UbuntuMono-R.ttf", HINT_FONT_SIZE);
         text.SetAlignment(HA_CENTER, VA_CENTER);
         text.color = Color(1, 0, 0);
         text.textAlignment = HA_CENTER;
         text.text = sceneNode.name;
-        text.faceCameraMode = FC_LOOKAT_XYZ;
+        text.faceCameraMode = FC_LOOKAT_Y;
         text.enabled = false;
 
         //attackDamage = 50;

@@ -20,7 +20,7 @@ int drawDebug = 0;
 bool autoCounter = false;
 bool bHdr = true;
 bool bigHeadMode = false;
-bool nobgm = false;
+bool nobgm = true;
 bool has_redirect = false;
 
 Node@ musicNode;
@@ -33,6 +33,7 @@ uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
 int test_enemy_num_override = 9999;
+const float HINT_FONT_SIZE = 50;
 
 void Start()
 {
@@ -170,7 +171,7 @@ void CreateUI()
     // input.SetMouseVisible(true);
     Text@ text = ui.root.CreateChild("Text", "debug");
     // for preload font
-    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 30);
+    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), HINT_FONT_SIZE);
     text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;

@@ -916,7 +916,7 @@ class Character : GameObject
 
     void SetHintText(const String&in text, bool bSet)
     {
-        Node@ hintNode = sceneNode.GetChild("HintNode", false);
+        Node@ hintNode = sceneNode.GetChild("HintNode", true);
         Text3D@ text3d = hintNode.GetComponent("Text3D");
         text3d.text = text;
         text3d.enabled = bSet;

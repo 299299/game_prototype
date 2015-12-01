@@ -415,10 +415,10 @@ class MotionManager
         //CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
 
         // Evades
-        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion("BM_Movement/Evade_Left_01", kMotion_XZR, kMotion_XZR);
-        CreateMotion("BM_Movement/Evade_Right_01", kMotion_XZR, kMotion_XZR);
+        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZR, kMotion_XZR, 50);
+        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZR, kMotion_XZR, 48);
+        CreateMotion("BM_Movement/Evade_Left_01", kMotion_XZR, kMotion_XZR, 48);
+        CreateMotion("BM_Movement/Evade_Right_01", kMotion_XZR, kMotion_XZR, 48);
 
         if (has_redirect)
             CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
