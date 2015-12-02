@@ -52,7 +52,8 @@ const StringHash IMPACT("Impact");
 Vector3 WORLD_SIZE(0, 0, 0);
 Vector3 WORLD_HALF_SIZE(0, 0, 0);
 
-int num_of_sounds = 21;
+int num_of_sounds = 37;
+int num_of_big_sounds = 6;
 
 class CharacterState : State
 {
@@ -99,7 +100,7 @@ class CharacterState : State
     {
         int comb_type = GetAttackType(boneName);
         int i = RandomInt(num_of_sounds) + 1;
-        ownner.PlaySound("Sfx/impact_ (" + i + ")" + ".ogg");
+        ownner.PlaySound("Sfx/impact_" + i + ".ogg");
 
         Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
         if (boneNode !is null)
@@ -1046,6 +1047,20 @@ class Character : GameObject
     void SetTarget(Character@ t)
     {
         @target = t;
+    }
+
+    void PlayRandomSound(int type)
+    {
+        if (type == 0)
+        {
+            int i = RandomInt(num_of_sounds) + 1;
+            PlaySound("Sfx/impact_" + i + ".ogg");
+        }
+        else if (type == 1)
+        {
+            int i = RandomInt(num_of_big_sounds) + 1;
+            PlaySound("Sfx/big_" + i + ".ogg");
+        }
     }
 };
 

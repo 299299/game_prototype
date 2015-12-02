@@ -91,7 +91,7 @@ void InitAudio()
 
     audio.masterGain[SOUND_MASTER] = 0.5f;
     audio.masterGain[SOUND_MUSIC] = 0.5f;
-    audio.masterGain[SOUND_EFFECT] = 0.5f;
+    audio.masterGain[SOUND_EFFECT] = 1.0f;
 
     if (!nobgm)
     {

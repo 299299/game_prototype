@@ -783,17 +783,12 @@ class PlayerAttackState : CharacterState
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
         ownner.OnAttackSuccess(attackEnemy);
 
+        int sound_type = attackEnemy.health == 0 ? 1 : 0;
+        ownner.PlayRandomSound(sound_type);
         if (attackEnemy.health == 0)
         {
             @attackEnemy = null;
             ownner.SetTarget(null);
-            int i = RandomInt(4) + 1;
-            ownner.PlaySound("Sfx/big (" + i + ")" + ".ogg");
-        }
-        else
-        {
-            int i = RandomInt(num_of_sounds) + 1;
-            ownner.PlaySound("Sfx/impact_ (" + i + ")" + ".ogg");
         }
     }
 };
@@ -981,8 +976,7 @@ class PlayerCounterState : CharacterCounterState
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
             if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
-            int index = RandomInt(num_of_sounds) + 1;
-            ownner.PlaySound("Sfx/impact_ (" + index + ")" + ".ogg");
+            ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
 
             Vector3 my_pos = _node.worldPosition;
             if (counterEnemies.length > 1)

@@ -715,6 +715,7 @@ class ThugDeadState : CharacterState
 
     void Enter(State@ lastState)
     {
+        Print(ownner.GetName() + " Entering ThugDeadState");
         ownner.MakeMeRagdoll(1);
         ownner.duration = 5.0f;
         CharacterState::Enter(lastState);
