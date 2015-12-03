@@ -7,16 +7,18 @@ enum FadeOP
     FADE_NONE,
     FADE_IN,
     FADE_OUT,
+    FADE_OUT_AUTO,
 };
 
 class FadeOverlay
 {
+    String              textureFile = "Data/Textures/Fade.png";
     BorderImage@        fullscreenUI;
     float               alpha;
     float               curTime;
     float               totalTime;
     int                 curOp = FADE_NONE;
-    String              textureFile = "Data/Textures/Fade.png";
+    float               fadeInTime;
 
     void Init()
     {
@@ -27,8 +29,7 @@ class FadeOverlay
         fullscreenUI = BorderImage("FullScreenImage");
         fullscreenUI.visible = false;
         fullscreenUI.priority = -9999;
-        Texture2D@ overlayTexture = cache.GetResource("Texture2D",textureFile);
-        fullscreenUI.texture = overlayTexture;
+        fullscreenUI.texture = cache.GetResource("Texture2D",textureFile);
         fullscreenUI.SetFullImageRect();
         ui.root.AddChild(fullscreenUI);
     }
@@ -41,6 +42,12 @@ class FadeOverlay
             return UpdateFadeIn(dt);
         case FADE_OUT:
             return UpdateFadeOut(dt);
+        case FADE_OUT_AUTO:
+            {
+                if (UpdateFadeOut(dt))
+                    StartFadeIn(fadeInTime);
+                return false;
+            }
         }
         return false;
     }
@@ -79,6 +86,13 @@ class FadeOverlay
         if(fullscreenUI is null)
             return;
         fullscreenUI.visible = true;
+    }
+
+    void StartFade(float fadeOutDuration, float fadeInDuration)
+    {
+        StartFadeOut(fadeOutDuration);
+        curOp = FADE_OUT_AUTO;
+        fadeInTime = fadeInDuration;
     }
 
     void ResizeUI()
