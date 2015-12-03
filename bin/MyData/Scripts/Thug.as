@@ -754,6 +754,7 @@ class Thug : Enemy
         STEP_MAX_DIST = stepMotion.endDistance;
         Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
 
+        /*
         Node@ collsionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
         shape.SetCapsule(COLLISION_RADIUS * 2.5f, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT / 2, 0.0f));
@@ -776,6 +777,7 @@ class Thug : Enemy
         text.text = sceneNode.name;
         text.faceCameraMode = FC_LOOKAT_Y;
         text.enabled = false;
+        */
 
         //attackDamage = 50;
     }
@@ -900,6 +902,9 @@ class Thug : Enemy
             //Print("neighbors[" + i + "] = " + n_node.name);
 
             Character@ object = cast<Character>(n_node.scriptObject);
+            if (object is null)
+                continue;
+
             if (object.HasFlag(FLAGS_MOVING))
                 continue;
 

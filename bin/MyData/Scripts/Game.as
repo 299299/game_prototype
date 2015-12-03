@@ -387,7 +387,7 @@ class TestGameState : GameState
         scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
         Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
-        scene_.CreateScriptObject(scriptFile, "EnemyManager");
+        EnemyManager@ em = cast<EnemyManager>(scene_.CreateScriptObject(scriptFile, "EnemyManager"));
 
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
         Camera@ cam = cameraNode.CreateComponent("Camera");
@@ -414,25 +414,33 @@ class TestGameState : GameState
             p.Remove();
         }
 
+        Array<uint> nodes_to_remove;
         int enemyNum = 0;
         for (uint i=0; i<scene_.numChildren; ++i)
         {
             Node@ _node = scene_.children[i];
+            Print("_node.name=" + _node.name);
             if (_node.name.StartsWith("thug"))
             {
+                nodes_to_remove.Push(_node.id);
                 if (enemyNum >= test_enemy_num_override)
-                {
-                    _node.enabled = false;
                     continue;
-                }
-
-                _node.CreateScriptObject(scriptFile, "Thug");
-                _node.CreateScriptObject(scriptFile, "Ragdoll");
-                enemyResetPositions.Push(_node.worldPosition);
+                Vector3 v = _node.worldPosition;
+                v.y = 0;
+                enemyResetPositions.Push(v);
                 enemyResetRotations.Push(_node.worldRotation);
                 ++enemyNum;
             }
+            else if (_node.name.StartsWith("preload_"))
+                nodes_to_remove.Push(_node.id);
         }
+
+        for (uint i=0; i<nodes_to_remove.length; ++i)
+        {
+            scene_.GetNode(nodes_to_remove[i]).Remove();
+        }
+
+        ResetEnemies();
 
         maxKilled = enemyResetRotations.length;
 

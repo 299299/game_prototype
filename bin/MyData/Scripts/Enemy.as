@@ -158,6 +158,7 @@ class EnemyManager : ScriptObject
         if (thugName == "")
             thugName = "Thug_" + thugId;
         thugId ++;
+        Print("Creating Thug " + thugName);
         XMLFile@ xml = cache.GetResource("XMLFile", "Objects/thug.xml");
         Node@ thugNode = script.defaultScene.InstantiateXML(xml, position, rotation);
         thugNode.name = thugName;

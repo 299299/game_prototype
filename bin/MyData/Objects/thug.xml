@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <node id="8">
 	<attribute name="Is Enabled" value="true" />
-	<attribute name="Name" value="thug" />
-	<attribute name="Position" value="-9.28978 0 6.07221" />
-	<attribute name="Rotation" value="-0.291436 0 -0.95659 0" />
+	<attribute name="Name" value="preload_thug" />
+	<attribute name="Position" value="-7.96838 0 -7.10246" />
+	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
 	<node id="16778007">
@@ -703,5 +703,51 @@
 				</node>
 			</node>
 		</node>
+	</node>
+	<node id="42">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="HintNode" />
+		<attribute name="Position" value="0 5.5 0" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="Text3D" id="59">
+			<attribute name="Is Enabled" value="false" />
+			<attribute name="Font" value="Font;Fonts/UbuntuMono-R.ttf" />
+			<attribute name="Font Size" value="50" />
+			<attribute name="Text" value="FUCK" />
+			<attribute name="Text Alignment" value="Center" />
+			<attribute name="Face Camera Mode" value="LookAt Y" />
+			<attribute name="Width" value="136" />
+			<attribute name="Horiz Alignment" value="Center" />
+			<attribute name="Vert Alignment" value="Center" />
+			<attribute name="Color" value="1 0 0 1" />
+			<attribute name="Top Left Color" value="1 0 0 1" />
+			<attribute name="Top Right Color" value="1 0 0 1" />
+			<attribute name="Bottom Left Color" value="1 0 0 1" />
+			<attribute name="Bottom Right Color" value="1 0 0 1" />
+		</component>
+	</node>
+	<node id="43">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Collision" />
+		<attribute name="Position" value="0 0 0" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="CollisionShape" id="61">
+			<attribute name="Shape Type" value="Capsule" />
+			<attribute name="Size" value="3.75 5 1" />
+			<attribute name="Offset Position" value="0 2.5 0" />
+		</component>
+		<component type="RigidBody" id="62">
+			<attribute name="Physics Position" value="-7.96838 0 -7.10246" />
+			<attribute name="Mass" value="10" />
+			<attribute name="Angular Factor" value="0 0 0" />
+			<attribute name="Collision Mask" value="1" />
+			<attribute name="Collision Event Mode" value="Always" />
+			<attribute name="Is Kinematic" value="true" />
+			<attribute name="Is Trigger" value="true" />
+		</component>
 	</node>
 </node>

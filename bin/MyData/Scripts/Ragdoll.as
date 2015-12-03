@@ -114,7 +114,7 @@ class Ragdoll : ScriptObject
         Node@ renderNode = node;
         AnimatedModel@ model = node.GetComponent("AnimatedModel");
         if (model is null)
-            renderNode = node.children[0];
+            renderNode = node.GetChild("RenderNode", false);
 
         if (blend_to_anim)
         {

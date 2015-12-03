@@ -583,7 +583,7 @@ class Character : GameObject
     void ObjectStart()
     {
         @sceneNode = node;
-        renderNode = sceneNode.children[0];
+        renderNode = sceneNode.GetChild("RenderNode", false);
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
 
