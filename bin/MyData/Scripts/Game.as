@@ -403,6 +403,17 @@ class TestGameState : GameState
         playerNode.CreateScriptObject(scriptFile, "Ragdoll");
         playerId = playerNode.id;
 
+        Array<String> node_names = { "player", "hq", "babara"};
+        for (uint i=0; i<node_names.length; ++i)
+        {
+            if (node_names[i] == PLAYER_NAME)
+                continue;
+            Node@ p = scene_.GetChild(node_names[i], true);
+            if (p is null)
+                continue;
+            p.Remove();
+        }
+
         int enemyNum = 0;
         for (uint i=0; i<scene_.numChildren; ++i)
         {

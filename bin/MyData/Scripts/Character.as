@@ -567,6 +567,9 @@ class Character : GameObject
     bool                    motion_translateEnabled = true;
     bool                    motion_rotateEnabled = true;
 
+    int                     last_snd_impact = -1;
+    int                     last_snd_big = -1;
+
     Character()
     {
         Print("Character()");
@@ -1054,11 +1057,17 @@ class Character : GameObject
         if (type == 0)
         {
             int i = RandomInt(num_of_sounds) + 1;
+            if (last_snd_impact == i)
+                i = (i+1) % num_of_sounds;
+            last_snd_impact = i;
             PlaySound("Sfx/impact_" + i + ".ogg");
         }
         else if (type == 1)
         {
             int i = RandomInt(num_of_big_sounds) + 1;
+            if (last_snd_big == i)
+                i = (i+1) % num_of_sounds;
+            last_snd_big = i;
             PlaySound("Sfx/big_" + i + ".ogg");
         }
     }

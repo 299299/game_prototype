@@ -26,7 +26,7 @@ bool has_redirect = false;
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
-String PLAYER_NAME = "player";
+String PLAYER_NAME = "babara";
 String CAMERA_NAME = "camera";
 
 uint cameraId = M_MAX_UNSIGNED;

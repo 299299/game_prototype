@@ -878,12 +878,7 @@ class PlayerCounterState : CharacterCounterState
             int idx = RandomInt(counterMotions.length);
             int cur_direction = GetCounterDirection(attackType, isBack);
             if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
-            {
-                idx ++;
-                int max_index = counterMotions.length - 1;
-                if (idx > max_index)
-                    idx = 0;
-            }
+                idx = (idx + 1) % counterMotions.length;
 
             lastCounterDirection = cur_direction;
             lastCounterIndex = idx;
