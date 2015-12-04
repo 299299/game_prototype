@@ -1105,3 +1105,13 @@ float FaceAngleDiff(Node@ thisNode, Node@ targetNode)
     float targetAngle = Atan2(posDiff.x, posDiff.y);
     return AngleDiff(targetAngle - thisAngle);
 }
+
+Node@ CreateCharacter(const String&in name, const String&in objectName, const String&in scriptClass, const Vector3&in position, const Quaternion& rotation)
+{
+    XMLFile@ xml = cache.GetResource("XMLFile", "Objects/" + objectName + ".xml");
+    Node@ p_node = script.defaultScene.InstantiateXML(xml, position, rotation);
+    p_node.name = name;
+    p_node.CreateScriptObject(scriptFile, scriptClass);
+    p_node.CreateScriptObject(scriptFile, "Ragdoll");
+    return p_node;
+}

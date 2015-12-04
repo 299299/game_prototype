@@ -12,7 +12,7 @@ float STEP_MAX_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.25f;
 const int HIT_WAIT_FRAMES = 3;
 const float MIN_THINK_TIME = 0.25f;
-const float MAX_THINK_TIME = 1.5f;
+const float MAX_THINK_TIME = 1.0f;
 const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 
 class ThugStandState : CharacterState

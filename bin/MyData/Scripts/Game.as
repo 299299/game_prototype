@@ -396,23 +396,20 @@ class TestGameState : GameState
 
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
-        Node@ playerNode = scene_.GetChild(PLAYER_NAME, true);
-        audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
-
-        playerNode.CreateScriptObject(scriptFile, "Player");
-        playerNode.CreateScriptObject(scriptFile, "Ragdoll");
-        playerId = playerNode.id;
-
-        Array<String> node_names = { "player", "hq", "babara"};
-        for (uint i=0; i<node_names.length; ++i)
+        Node@ tmpPlayerNode = scene_.GetChild("player", true);
+        Vector3 playerPos;
+        Quaternion playerRot;
+        if (tmpPlayerNode !is null)
         {
-            if (node_names[i] == PLAYER_NAME)
-                continue;
-            Node@ p = scene_.GetChild(node_names[i], true);
-            if (p is null)
-                continue;
-            p.Remove();
+            playerPos = tmpPlayerNode.worldPosition;
+            playerRot = tmpPlayerNode.worldRotation;
+            playerPos.y = 0;
+            tmpPlayerNode.Remove();
         }
+
+        Node@ playerNode = CreateCharacter("player", PLAYER_NAME, "Player", playerPos, playerRot);
+        audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
+        playerId = playerNode.id;
 
         Array<uint> nodes_to_remove;
         int enemyNum = 0;

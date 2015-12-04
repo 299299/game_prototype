@@ -20,14 +20,14 @@ int drawDebug = 0;
 bool autoCounter = false;
 bool bHdr = true;
 bool bigHeadMode = false;
-bool nobgm = true;
+bool nobgm = false;
 bool has_redirect = false;
 
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
-String PLAYER_NAME = "babara";
 String CAMERA_NAME = "camera";
+String PLAYER_NAME = "dk"; //"bruce";
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
@@ -51,6 +51,10 @@ void Start()
             else if (argument == "bighead")
             {
                 bigHeadMode = true;
+            }
+            else if (argument == "player")
+            {
+                PLAYER_NAME = arguments[i+1];
             }
         }
     }

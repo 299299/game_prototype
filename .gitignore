@@ -96,3 +96,4 @@ Thumbs.db
 /bin/Asset/*.zip
 *.asc
 /bin/Release/
+/bin/Release.zip
