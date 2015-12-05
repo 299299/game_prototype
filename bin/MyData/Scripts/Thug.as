@@ -52,8 +52,8 @@ class ThugStandState : CharacterState
         float max_think_time = MAX_THINK_TIME;
         if (firstEnter)
         {
-            min_think_time = 2.5f;
-            max_think_time = 5.0f;
+            min_think_time = 2.0f;
+            max_think_time = 3.0f;
             firstEnter = false;
         }
         thinkTime = Random(min_think_time, max_think_time);
@@ -187,15 +187,30 @@ class ThugCombatIdleState : CharacterState
 
     void Enter(State@ lastState)
     {
-        index = RandomInt(animations.length);
-        ownner.PlayAnimation(animations[index], LAYER_MOVE, false, 0.25f);
+        //index = RandomInt(animations.length);
+        EnemyManager@ em = GetEnemyMgr();
+        for (int i=0; i<3; ++i)
+        {
+            int flag = (1 << i);
+            int b = em.thugCombatIdleFlags & flag;
+            if (b == 0)
+            {
+                index = i;
+                break;
+            }
+        }
+        Print("em.thugCombatIdleFlags=" + em.thugCombatIdleFlags + " index=" + index);
+        em.thugCombatIdleFlags |= (1 << index);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         checkAvoidanceTime = Random(0.1f, 0.2f);
+        ownner.PlayAnimation(animations[index], LAYER_MOVE, false);
         CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
+        EnemyManager@ em = GetEnemyMgr();
+        em.thugCombatIdleFlags &= ~(1 << index);
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
         CharacterState::Exit(nextState);
     }
@@ -206,9 +221,9 @@ class ThugCombatIdleState : CharacterState
         if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-            int index = state.GetStepMoveIndex();
-            Print(ownner.GetName() + " apply animation index for keep away from player in combat idle state: " + index);
-            ownner.GetNode().vars[ANIMATION_INDEX] = index;
+            int stepIndex = state.GetStepMoveIndex();
+            Print(ownner.GetName() + " apply animation index for keep away from player in combat idle state: " + stepIndex);
+            ownner.GetNode().vars[ANIMATION_INDEX] = stepIndex;
             ownner.ChangeState("StepMoveState");
             return;
         }

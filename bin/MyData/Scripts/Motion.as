@@ -479,7 +479,7 @@ class MotionManager
         // far right
         CreateMotion(preFix + "Attack_Far_Right");
         CreateMotion(preFix + "Attack_Far_Right_01");
-        CreateMotion(preFix + "Attack_Far_Right_02");
+        // CreateMotion(preFix + "Attack_Far_Right_02");
         CreateMotion(preFix + "Attack_Far_Right_03");
         CreateMotion(preFix + "Attack_Far_Right_04");
 

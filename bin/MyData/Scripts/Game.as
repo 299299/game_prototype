@@ -195,8 +195,6 @@ enum GameSubState
 class TestGameState : GameState
 {
     Scene@              gameScene;
-    Array<Vector3>      enemyResetPositions;
-    Array<Quaternion>   enemyResetRotations;
 
     FadeOverlay@        fade;
     TextMenu@           pauseMenu;
@@ -338,12 +336,13 @@ class TestGameState : GameState
             {
                 EnemyManager@ em = GetEnemyMgr();
                 if (em !is null)
+                {
                     em.RemoveAll();
+                    em.CreateEnemies();
+                }
 
                 if (player !is null)
                     player.Reset();
-
-                ResetEnemies();
             }
 
             if (player !is null)
@@ -425,8 +424,8 @@ class TestGameState : GameState
                     continue;
                 Vector3 v = _node.worldPosition;
                 v.y = 0;
-                enemyResetPositions.Push(v);
-                enemyResetRotations.Push(_node.worldRotation);
+                em.enemyResetPositions.Push(v);
+                em.enemyResetRotations.Push(_node.worldRotation);
                 ++enemyNum;
             }
             else if (_node.name.StartsWith("preload_"))
@@ -446,9 +445,9 @@ class TestGameState : GameState
             scene_.GetNode(nodes_to_remove[i]).Remove();
         }
 
-        ResetEnemies();
+        em.CreateEnemies();
 
-        maxKilled = enemyResetRotations.length;
+        maxKilled = em.enemyResetRotations.length;
 
         Vector3 v_pos = playerNode.worldPosition;
         cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
@@ -520,15 +519,6 @@ class TestGameState : GameState
         }
 
         GameState::OnKeyDown(key);
-    }
-
-    void ResetEnemies()
-    {
-        EnemyManager@ em = GetEnemyMgr();
-        for (uint i=0; i<enemyResetPositions.length; ++i)
-        {
-            em.CreateEnemy(enemyResetPositions[i], enemyResetRotations[i], "Thug");
-        }
     }
 
     void OnPlayerStatusUpdate(Player@ player)

@@ -69,7 +69,11 @@ class Enemy : Character
 
 class EnemyManager : ScriptObject
 {
+    Array<Vector3>      enemyResetPositions;
+    Array<Quaternion>   enemyResetRotations;
+
     int thugId = 0;
+    int thugCombatIdleFlags = 0;
 
     EnemyManager()
     {
@@ -168,6 +172,21 @@ class EnemyManager : ScriptObject
             enemyList[i].GetNode().Remove();
         }
         enemyList.Clear();
+        Reset();
+    }
+
+    void Reset()
+    {
+        thugCombatIdleFlags = 0;
+        thugId = 0;
+    }
+
+    void CreateEnemies()
+    {
+        for (uint i=0; i<enemyResetPositions.length; ++i)
+        {
+            CreateEnemy(enemyResetPositions[i], enemyResetRotations[i], "Thug");
+        }
     }
 
     Array<Enemy@>             enemyList;

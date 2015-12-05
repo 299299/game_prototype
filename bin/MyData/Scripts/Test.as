@@ -27,7 +27,7 @@ Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "camera";
-String PLAYER_NAME = "dk"; //"bruce";
+String PLAYER_NAME = "bruce"; //"bruce";
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
@@ -58,6 +58,10 @@ void Start()
             else if (argument == "player")
             {
                 PLAYER_NAME = arguments[i+1];
+            }
+            else if (argument == "lowend")
+            {
+                lowend_platform = true;
             }
         }
     }

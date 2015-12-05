@@ -5,7 +5,7 @@
 // ==============================================
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
-const float MAX_COUNTER_DIST = 6.0f;
+const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
 
 class PlayerStandState : CharacterState
@@ -307,7 +307,7 @@ class PlayerAttackState : CharacterState
         // right far
         AddAttackMotion(rightAttacks, "Attack_Far_Right", 25, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(rightAttacks, "Attack_Far_Right_01", 15, ATTACK_KICK, L_CALF);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH, R_HAND);
+        // AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(rightAttacks, "Attack_Far_Right_03", 29, ATTACK_KICK, L_FOOT);
         AddAttackMotion(rightAttacks, "Attack_Far_Right_04", 22, ATTACK_KICK, R_FOOT);
 
@@ -576,12 +576,16 @@ class PlayerAttackState : CharacterState
         else
         {
             bestIndex = index_start + RandomInt(index_num);
-            if (lastAttackDirection == dir && bestIndex == lastAttackIndex && index_num > 1)
+            if (lastAttackDirection == dir && bestIndex == lastAttackIndex)
             {
-                bestIndex ++;
-                int max_index = index_start + index_num - 1;
-                if (bestIndex > max_index)
-                    bestIndex = 0;
+                Print("Repeat Attack index index_num=" + index_num);
+                if (index_num > 1)
+                {
+                    bestIndex ++;
+                    int max_index = index_start + index_num - 1;
+                    if (bestIndex > max_index)
+                        bestIndex = 0;
+                }
             }
             lastAttackDirection = dir;
             lastAttackIndex = bestIndex;
@@ -1249,7 +1253,7 @@ class Player : Character
             const float max_time_scale = 1.2f;
             float time_scale = Lerp(1.0f, max_time_scale, a);
             SetTimeScale(time_scale);
-            const float max_fov = 60;
+            const float max_fov = 75;
             fov = Lerp(BASE_FOV, max_fov, a);
         }
         VariantMap data;
