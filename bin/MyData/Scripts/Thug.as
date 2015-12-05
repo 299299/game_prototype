@@ -621,11 +621,11 @@ class ThugAttackState : CharacterState
 
             if (currentAttack.type == ATTACK_PUNCH)
             {
-                ownner.PlaySound("Sfx/thug_punch.ogg");
+                ownner.PlaySound("Sfx/impact_10.ogg");
             }
             else
             {
-                ownner.PlaySound("Sfx/thug_kick.ogg");
+                ownner.PlaySound("Sfx/impact_13.ogg");
             }
             ownner.OnAttackSuccess(target);
         }

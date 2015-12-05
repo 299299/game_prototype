@@ -374,6 +374,14 @@ class TestGameState : GameState
             renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
+            if (tonemapping)
+                renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));
+            renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
+            if (tonemapping)
+            {
+                renderpath.SetEnabled("TonemapReinhardEq3", false);
+                renderpath.SetEnabled("TonemapUncharted2", true);
+            }
             viewport.renderPath = renderpath;
         }
     }
@@ -432,11 +440,11 @@ class TestGameState : GameState
                 nodes_to_remove.Push(_node.id);
             else if (_node.name.StartsWith("light"))
             {
+                Light@ light = _node.GetComponent("Light");
                 if (lowend_platform)
-                {
-                    Light@ light = _node.GetComponent("Light");
                     light.castShadows = false;
-                }
+                else if (bHdr && tonemapping)
+                    light.brightness = light.brightness * 5;
             }
         }
 

@@ -216,10 +216,31 @@ class DeathCameraController : CameraController
     float   cameraSpeed = 3.5f;
     float   cameraDist = 15.0f;
     float   cameraHeight = 1.5f;
+    float   sideAngle = 0.0;
 
     DeathCameraController(Node@ n, const String&in name)
     {
         super(n, name);
+    }
+
+    void Enter()
+    {
+        Node@ _node = cameraNode.scene.GetNode(nodeId);
+        if (_node is null)
+        {
+            gCameraMgr.SetCameraController("ThirdPerson");
+            return;
+        }
+        Node@ playerNode = GetPlayer().GetNode();
+        Vector3 dir = _node.worldPosition - playerNode.worldPosition;
+        float angle = Atan2(dir.x, dir.z);
+        float angle_1 = AngleDiff(angle - 90);
+        float angle_2 = AngleDiff(angle + 90);
+        float cur_angle = gCameraMgr.GetCameraAngle();
+        if (Abs(cur_angle - angle_1) > Abs(cur_angle - angle_2))
+            sideAngle = 90.0f;
+        else
+            sideAngle = -90.0f;
     }
 
     void Exit()
@@ -238,15 +259,7 @@ class DeathCameraController : CameraController
         Node@ playerNode = GetPlayer().GetNode();
 
         Vector3 dir = _node.worldPosition - playerNode.worldPosition;
-        int i = RandomInt(1);
-        float angle = Atan2(dir.x, dir.z);
-        float angle_1 = AngleDiff(angle - 90);
-        float angle_2 = AngleDiff(angle + 90);
-        float cur_angle = gCameraMgr.GetCameraAngle();
-        if (Abs(cur_angle - angle_1) > Abs(cur_angle - angle_2))
-            angle = angle_2;
-        else
-            angle = angle_1;
+        float angle = Atan2(dir.x, dir.z) + sideAngle;
 
         Vector3 v1(Sin(angle) * cameraDist, cameraHeight, Cos(angle) * cameraDist);
         v1 += _node.worldPosition;

@@ -20,8 +20,9 @@ int drawDebug = 0;
 bool autoCounter = false;
 bool bHdr = true;
 bool bigHeadMode = false;
-bool nobgm = false;
+bool nobgm = true;
 bool has_redirect = false;
+bool tonemapping = true;
 
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
@@ -38,7 +39,7 @@ bool lowend_platform = false;
 void Start()
 {
     Print("Game Running Platform: " + GetPlatform());
-    lowend_platform = GetPlatform() != "WIndows";
+    lowend_platform = GetPlatform() != "Windows";
 
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)
@@ -49,11 +50,11 @@ void Start()
             argument = argument.Substring(1);
             if (argument == "nobgm")
             {
-                nobgm = true;
+                nobgm = !nobgm;
             }
             else if (argument == "bighead")
             {
-                bigHeadMode = true;
+                bigHeadMode = !bigHeadMode;
             }
             else if (argument == "player")
             {
@@ -62,6 +63,14 @@ void Start()
             else if (argument == "lowend")
             {
                 lowend_platform = true;
+            }
+            else if (argument == "hdr")
+            {
+                bHdr = !bHdr;
+            }
+            else if (argument == "tonemapping")
+            {
+                tonemapping = !tonemapping;
             }
         }
     }
