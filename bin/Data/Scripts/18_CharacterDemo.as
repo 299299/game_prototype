@@ -58,6 +58,16 @@ void CreateScene()
     camera.farClip = 300.0f;
     renderer.viewports[0] = Viewport(scene_, camera);
 
+    RenderPath@ renderpath =  renderer.viewports[0].renderPath.Clone();
+    renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
+    renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
+    renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
+    //renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));
+    renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
+    renderpath.SetEnabled("TonemapReinhardEq3", false);
+    renderpath.SetEnabled("TonemapUncharted2", true);
+    renderer.viewports[0].renderPath = renderpath;
+
     // Create a Zone component for ambient lighting & fog control
     Node@ zoneNode = scene_.CreateChild("Zone");
     Zone@ zone = zoneNode.CreateComponent("Zone");

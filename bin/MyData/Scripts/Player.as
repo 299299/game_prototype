@@ -1116,7 +1116,7 @@ class Player : Character
         // t.endNodeName = "Bip01";
         tail.enabled = false;
 
-        // attackDamage = 100;
+        attackDamage = 100;
     }
 
     bool Attack()

@@ -223,26 +223,6 @@ class DeathCameraController : CameraController
         super(n, name);
     }
 
-    void Enter()
-    {
-        Node@ _node = cameraNode.scene.GetNode(nodeId);
-        if (_node is null)
-        {
-            gCameraMgr.SetCameraController("ThirdPerson");
-            return;
-        }
-        Node@ playerNode = GetPlayer().GetNode();
-        Vector3 dir = _node.worldPosition - playerNode.worldPosition;
-        float angle = Atan2(dir.x, dir.z);
-        float angle_1 = AngleDiff(angle - 90);
-        float angle_2 = AngleDiff(angle + 90);
-        float cur_angle = gCameraMgr.GetCameraAngle();
-        if (Abs(cur_angle - angle_1) > Abs(cur_angle - angle_2))
-            sideAngle = 90.0f;
-        else
-            sideAngle = -90.0f;
-    }
-
     void Exit()
     {
         nodeId = M_MAX_UNSIGNED;
@@ -279,6 +259,25 @@ class DeathCameraController : CameraController
         //    return;
         //Node@ headNode = _node.GetChild("Bip01_Head", true);
         //headNode.scale = Vector3(0.1f, 0.1f, 0.1f);
+
+        Node@ _node = cameraNode.scene.GetNode(nodeId);
+        if (_node is null)
+        {
+            gCameraMgr.SetCameraController("ThirdPerson");
+            return;
+        }
+        Node@ playerNode = GetPlayer().GetNode();
+        Vector3 dir = _node.worldPosition - playerNode.worldPosition;
+        float angle = Atan2(dir.x, dir.z);
+        float angle_1 = AngleDiff(angle - 90);
+        float angle_2 = AngleDiff(angle + 90);
+        float cur_angle = gCameraMgr.GetCameraAngle();
+        if (Abs(cur_angle - angle_1) > Abs(cur_angle - angle_2))
+            sideAngle = 90.0f;
+        else
+            sideAngle = -90.0f;
+
+        Print("sideAngle="+sideAngle);
     }
 };
 

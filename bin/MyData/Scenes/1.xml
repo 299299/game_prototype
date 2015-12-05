@@ -1893,7 +1893,7 @@
 			<attribute name="Bounding Box Min" value="-100 -100 -100" />
 			<attribute name="Bounding Box Max" value="100 100 100" />
 			<attribute name="Ambient Color" value="0.5 0.5 0.5 1" />
-			<attribute name="Fog Color" value="0.5 0.5 0.5 1" />
+			<attribute name="Fog Color" value="0.75 0.75 0.75 1" />
 			<attribute name="Fog Start" value="10" />
 			<attribute name="Fog End" value="100" />
 			<attribute name="Fog Height" value="0.5" />
