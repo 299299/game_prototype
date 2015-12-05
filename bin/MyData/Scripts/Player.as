@@ -670,7 +670,7 @@ class PlayerAttackState : CharacterState
             slowMotion = false;
         }
 
-        ownner.EnableComponent("TailNode", "TailGenerator", true);
+        ownner.SetNodeEnabled("TailNode", true);
     }
 
     void Start()
@@ -705,7 +705,7 @@ class PlayerAttackState : CharacterState
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
-        ownner.EnableComponent("TailNode", "TailGenerator", false);
+        ownner.SetNodeEnabled("TailNode", false);
 
         if (nextState !is this)
             cast<Player>(ownner).lastAttackId = -1;

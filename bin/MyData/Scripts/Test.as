@@ -33,10 +33,13 @@ uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
 int test_enemy_num_override = 9999;
-const float HINT_FONT_SIZE = 50;
+bool lowend_platform = false;
 
 void Start()
 {
+    Print("Game Running Platform: " + GetPlatform());
+    lowend_platform = GetPlatform() != "WIndows";
+
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)
     {
@@ -175,7 +178,6 @@ void CreateUI()
     // input.SetMouseVisible(true);
     Text@ text = ui.root.CreateChild("Text", "debug");
     // for preload font
-    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), HINT_FONT_SIZE);
     text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;

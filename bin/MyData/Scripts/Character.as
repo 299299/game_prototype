@@ -473,6 +473,12 @@ class CharacterRagdollState : CharacterState
         }
         CharacterState::Update(dt);
     }
+
+    void Enter(State@ lastState)
+    {
+        CharacterState::Enter(lastState);
+        ownner.SetNodeEnabled("Collision", false);
+    }
 };
 
 class CharacterGetUpState : MultiMotionState
@@ -503,6 +509,12 @@ class CharacterGetUpState : MultiMotionState
         //    ragdollToAnimTime = 0.2f;
         ownner.PlayAnimation(motion.animationName, LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
         CharacterState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        MultiMotionState::Exit(nextState);
+        ownner.SetNodeEnabled("Collision", true);
     }
 
     void Update(float dt)
@@ -974,7 +986,7 @@ class Character : GameObject
         return newNode;
     }
 
-    void EnableComponent(const String&in boneName, const String&in componentName, bool bEnable)
+    void SetComponentEnabled(const String&in boneName, const String&in componentName, bool bEnable)
     {
         Node@ _node = sceneNode.GetChild(boneName, true);
         if (_node is null)
@@ -983,6 +995,13 @@ class Character : GameObject
         if (comp is null)
             return;
         comp.enabled = bEnable;
+    }
+
+    void SetNodeEnabled(const String&in nodeName, bool bEnable)
+    {
+        Node@ n = sceneNode.GetChild(nodeName, true);
+        if (n !is null)
+            n.enabled = bEnable;
     }
 
     State@ GetState()

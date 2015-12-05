@@ -692,7 +692,7 @@ class ThugGetUpState : CharacterGetUpState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterState::OnAnimationTrigger(animState, eventData);
+        CharacterGetUpState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
             ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
@@ -701,7 +701,7 @@ class ThugGetUpState : CharacterGetUpState
     void Exit(State@ nextState)
     {
         ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
-        CharacterState::Exit(nextState);
+        CharacterGetUpState::Exit(nextState);
     }
 };
 
@@ -753,31 +753,6 @@ class Thug : Enemy
         Motion@ stepMotion = gMotionMgr.FindMotion("TG_Combat/Step_Forward_Long");
         STEP_MAX_DIST = stepMotion.endDistance;
         Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
-
-        /*
-        Node@ collsionNode = sceneNode.CreateChild("Collision");
-        CollisionShape@ shape = collsionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS * 2.5f, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT / 2, 0.0f));
-        RigidBody@ body = collsionNode.CreateComponent("RigidBody");
-        body.collisionLayer = COLLISION_LAYER_CHARACTER;
-        body.collisionMask = COLLISION_LAYER_CHARACTER;
-        body.mass = 10.0f;
-        body.trigger = true;
-        body.kinematic = true;
-        body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
-        body.collisionEventMode = COLLISION_ALWAYS;
-
-        Node@ hintNode = sceneNode.CreateChild("HintNode");
-        hintNode.position = Vector3(0, 5.5f, 0);
-        Text3D@ text = hintNode.CreateComponent("Text3D");
-        text.SetFont("Fonts/UbuntuMono-R.ttf", HINT_FONT_SIZE);
-        text.SetAlignment(HA_CENTER, VA_CENTER);
-        text.color = Color(1, 0, 0);
-        text.textAlignment = HA_CENTER;
-        text.text = sceneNode.name;
-        text.faceCameraMode = FC_LOOKAT_Y;
-        text.enabled = false;
-        */
 
         //attackDamage = 50;
     }

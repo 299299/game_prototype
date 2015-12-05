@@ -369,7 +369,7 @@ class TestGameState : GameState
     {
         Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
         renderer.viewports[0] = viewport;
-        if (bHdr)
+        if (bHdr && !lowend_platform)
         {
             RenderPath@ renderpath = viewport.renderPath.Clone();
             renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
@@ -411,6 +411,7 @@ class TestGameState : GameState
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         playerId = playerNode.id;
 
+        // preprocess current scene
         Array<uint> nodes_to_remove;
         int enemyNum = 0;
         for (uint i=0; i<scene_.numChildren; ++i)
@@ -430,6 +431,14 @@ class TestGameState : GameState
             }
             else if (_node.name.StartsWith("preload_"))
                 nodes_to_remove.Push(_node.id);
+            else if (_node.name.StartsWith("light"))
+            {
+                if (lowend_platform)
+                {
+                    Light@ light = _node.GetComponent("Light");
+                    light.castShadows = false;
+                }
+            }
         }
 
         for (uint i=0; i<nodes_to_remove.length; ++i)
