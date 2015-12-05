@@ -139,8 +139,11 @@ class ThirdPersonCameraController : CameraController
         Vector3 target_pos = _node.worldPosition;
         if (p.target !is null)
         {
-           // target_pos += p.target.GetNode().worldPosition;
-           // target_pos /= 2.0f;
+            if (!p.target.animModel.inView)
+            {
+                target_pos += p.target.GetNode().worldPosition;
+                target_pos /= 2.0f;
+            }
         }
 
         target_pos.y += cameraHeight;
@@ -237,10 +240,14 @@ class DeathCameraController : CameraController
         Vector3 dir = _node.worldPosition - playerNode.worldPosition;
         int i = RandomInt(1);
         float angle = Atan2(dir.x, dir.z);
-        if (i == 0)
-            angle -= 90;
+        float angle_1 = AngleDiff(angle - 90);
+        float angle_2 = AngleDiff(angle + 90);
+        float cur_angle = gCameraMgr.GetCameraAngle();
+        if (Abs(cur_angle - angle_1) > Abs(cur_angle - angle_2))
+            angle = angle_2;
         else
-            angle += 90;
+            angle = angle_1;
+
         Vector3 v1(Sin(angle) * cameraDist, cameraHeight, Cos(angle) * cameraDist);
         v1 += _node.worldPosition;
         Vector3 v2 = _node.worldPosition + playerNode.worldPosition;
