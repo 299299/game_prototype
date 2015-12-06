@@ -6,12 +6,12 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.9f;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2.0f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
-const int MAX_NUM_OF_ATTACK = 4;
-const int MAX_NUM_OF_MOVING = 5;
+const int MAX_NUM_OF_ATTACK = 3;
+const int MAX_NUM_OF_MOVING = 3;
 const int MAX_NUM_OF_COMBAT_IDLE = 3;
 
 const int INITIAL_HEALTH = 100;

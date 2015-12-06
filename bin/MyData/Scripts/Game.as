@@ -102,7 +102,7 @@ class LoadingState : GameState
     void Exit(State@ nextState)
     {
         State::Exit(nextState);
-        SetLogoVisible(false);
+        //SetLogoVisible(false);
         Text@ text = ui.root.GetChild("loading_text");
         if (text !is null)
             text.Remove();
@@ -269,7 +269,7 @@ class TestGameState : GameState
         }
         else if (state == GAME_FAIL || state == GAME_WIN)
         {
-            if (gInput.IsAttackPressed() || gInput.IsEvadePressed())
+            if (gInput.IsAttackPressed())
             {
                 ChangeSubState(GAME_RESTARTING);
                 ShowMessage("", false);
@@ -358,11 +358,11 @@ class TestGameState : GameState
         }
         else if (newState == GAME_WIN)
         {
-            ShowMessage("You Win! Press Stride or Evade to restart!", true);
+            ShowMessage("You Win! Press Stride to restart!", true);
         }
         else if (newState == GAME_FAIL)
         {
-            ShowMessage("You Died! Press Stride or Evade to restart!", true);
+            ShowMessage("You Died! Press Stride to restart!", true);
         }
     }
 

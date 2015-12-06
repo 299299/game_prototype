@@ -9,11 +9,13 @@ const float MIN_TURN_ANGLE = 30;
 float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
+float STEP_MIN_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.25f;
 const int HIT_WAIT_FRAMES = 3;
 const float MIN_THINK_TIME = 0.25f;
 const float MAX_THINK_TIME = 1.0f;
 const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
+const float MAX_ATTACK_RANGE = 3.0f;
 
 class ThugStandState : CharacterState
 {
@@ -60,7 +62,7 @@ class ThugStandState : CharacterState
         if (d_log)
             Print(ownner.GetName() + " thinkTime=" + thinkTime);
         checkAvoidanceTime = Random(0.1f, 0.2f);
-        attackRange = Random(0.0f, 2.0f);
+        attackRange = Random(0.0f, MAX_ATTACK_RANGE);
         CharacterState::Enter(lastState);
     }
 
@@ -153,7 +155,7 @@ class ThugStandState : CharacterState
             }
         }
 
-        attackRange = Random(0.0f, 2.0f);
+        attackRange = Random(0.0f, MAX_ATTACK_RANGE);
     }
 
     void FixedUpdate(float dt)
@@ -320,7 +322,7 @@ class ThugStepMoveState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        attackRange = Random(0.0, 2.0);
+        attackRange = Random(0.0, MAX_ATTACK_RANGE);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING);
         MultiMotionState::Enter(lastState);
     }
@@ -374,7 +376,7 @@ class ThugRunState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        attackRange = Random(0.0, 2.0);
+        attackRange = Random(0.0, MAX_ATTACK_RANGE);
         checkAvoidanceTime = Random(0.1f, 0.2f);
         ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING);
     }
@@ -767,6 +769,8 @@ class Thug : Enemy
         PUNCH_DIST = punchMotion.endDistance;
         Motion@ stepMotion = gMotionMgr.FindMotion("TG_Combat/Step_Forward_Long");
         STEP_MAX_DIST = stepMotion.endDistance;
+        @stepMotion = gMotionMgr.FindMotion("TG_Combat/Step_Forward");
+        STEP_MIN_DIST = stepMotion.endDistance;
         Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
 
         //attackDamage = 50;
@@ -934,6 +938,19 @@ class Thug : Enemy
         if (GetSperateDirection(dir) == 0)
             return false;
         Print(GetName() + " CollisionAvoidance index=" + dir);
+
+        ThugStepMoveState@ state = cast<ThugStepMoveState>(FindState("StepMoveState"));
+        Motion@ motion = state.motions[dir];
+        Vector4 motionOut = motion.GetKey(motion.endTime);
+        Vector3 endPos = sceneNode.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + sceneNode.worldPosition;
+        Vector3 diff = endPos - target.sceneNode.worldPosition;
+        diff.y = 0;
+        if((diff.length - COLLISION_SAFE_DIST) < -0.25f)
+        {
+            Print("can not avoid collision because player is in front of me.");
+            return false;
+        }
+
         sceneNode.vars[ANIMATION_INDEX] = dir;
         ChangeState("StepMoveState");
         return true;
