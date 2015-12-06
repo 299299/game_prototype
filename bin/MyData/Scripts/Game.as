@@ -325,6 +325,8 @@ class TestGameState : GameState
             data[NAME] = CHANGE_STATE;
             data[VALUE] = StringHash("ThirdPerson");
             SendEvent("CameraEvent", data);
+            //data[TARGET_FOV] = BASE_FOV;
+            //SendEvent("CameraEvent", data);
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)
         {
@@ -382,6 +384,8 @@ class TestGameState : GameState
                 renderpath.SetEnabled("TonemapReinhardEq3", false);
                 renderpath.SetEnabled("TonemapUncharted2", true);
             }
+            renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
+            renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
             viewport.renderPath = renderpath;
         }
     }
@@ -443,8 +447,6 @@ class TestGameState : GameState
                 Light@ light = _node.GetComponent("Light");
                 if (lowend_platform)
                     light.castShadows = false;
-                else if (bHdr && tonemapping)
-                    light.brightness = light.brightness * 5;
             }
         }
 

@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="259.026" />
 	<attribute name="Next Replicated Node ID" value="51" />
 	<attribute name="Next Replicated Component ID" value="79" />
-	<attribute name="Next Local Node ID" value="16780416" />
-	<attribute name="Next Local Component ID" value="16778019" />
+	<attribute name="Next Local Node ID" value="16780418" />
+	<attribute name="Next Local Component ID" value="16778043" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -1892,9 +1892,9 @@
 		<component type="Zone" id="17">
 			<attribute name="Bounding Box Min" value="-100 -100 -100" />
 			<attribute name="Bounding Box Max" value="100 100 100" />
-			<attribute name="Ambient Color" value="0.5 0.5 0.5 1" />
-			<attribute name="Fog Color" value="0.75 0.75 0.75 1" />
-			<attribute name="Fog Start" value="10" />
+			<attribute name="Ambient Color" value="0.25 0.25 0.25 1" />
+			<attribute name="Fog Color" value="0.5 0.5 0.7 1" />
+			<attribute name="Fog Start" value="50" />
 			<attribute name="Fog End" value="100" />
 			<attribute name="Fog Height" value="0.5" />
 			<attribute name="Height Fog Mode" value="true" />
@@ -1916,16 +1916,15 @@
 	<node id="23">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="light2" />
-		<attribute name="Position" value="0 3.11241 -26.0594" />
-		<attribute name="Rotation" value="0.9925 0.12224 0 0" />
+		<attribute name="Position" value="0 11.7584 -26.0594" />
+		<attribute name="Rotation" value="0.916988 0.398912 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="Light" id="49">
 			<attribute name="Light Type" value="Spot" />
-			<attribute name="Color" value="0.75 0.75 0.75 1" />
 			<attribute name="Brightness Multiplier" value="2.5" />
 			<attribute name="Range" value="100" />
-			<attribute name="Spot FOV" value="75" />
+			<attribute name="Spot FOV" value="90" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="CSM Splits" value="1000.11 0 0 0" />
 		</component>

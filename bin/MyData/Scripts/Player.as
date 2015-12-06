@@ -643,8 +643,8 @@ class PlayerAttackState : CharacterState
             movePerSec = ( predictPosition - motionPosition ) / alignTime;
             movePerSec.y = 0;
 
-            if (attackEnemy.HasFlag(FLAGS_COUNTER))
-                slowMotion = true;
+            //if (attackEnemy.HasFlag(FLAGS_COUNTER))
+            //    slowMotion = true;
 
             EnemyManager@ em = cast<EnemyManager>(ownner.GetScene().GetScriptObject("EnemyManager"));
             if (em !is null)
@@ -779,7 +779,7 @@ class PlayerAttackState : CharacterState
         if (lastKill)
             damage = 9999;
         else
-            damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 10);
+            damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
         bool b = attackEnemy.OnDamage(ownner, position, dir, damage, weakAttack);
         if (!b)
             return;
@@ -1116,7 +1116,7 @@ class Player : Character
         // t.endNodeName = "Bip01";
         tail.enabled = false;
 
-        attackDamage = 100;
+        //attackDamage = 100;
     }
 
     bool Attack()
@@ -1253,7 +1253,7 @@ class Player : Character
             const float max_time_scale = 1.2f;
             float time_scale = Lerp(1.0f, max_time_scale, a);
             SetTimeScale(time_scale);
-            const float max_fov = 75;
+            const float max_fov = 60;
             fov = Lerp(BASE_FOV, max_fov, a);
         }
         VariantMap data;

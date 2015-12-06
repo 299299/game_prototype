@@ -168,6 +168,11 @@ class ThirdPersonCameraController : CameraController
             return;
         targetFov = eventData[TARGET_FOV].GetFloat();
     }
+
+    void Enter()
+    {
+        targetFov = BASE_FOV;
+    }
 };
 
 class TransitionCameraController : CameraController
@@ -215,7 +220,7 @@ class DeathCameraController : CameraController
     uint nodeId = M_MAX_UNSIGNED;
     float   cameraSpeed = 3.5f;
     float   cameraDist = 15.0f;
-    float   cameraHeight = 1.5f;
+    float   cameraHeight = 1.0f;
     float   sideAngle = 0.0;
 
     DeathCameraController(Node@ n, const String&in name)
@@ -273,9 +278,9 @@ class DeathCameraController : CameraController
         float angle_2 = AngleDiff(angle + 90);
         float cur_angle = gCameraMgr.GetCameraAngle();
         if (Abs(cur_angle - angle_1) > Abs(cur_angle - angle_2))
-            sideAngle = 90.0f;
-        else
             sideAngle = -90.0f;
+        else
+            sideAngle = +90.0f;
 
         Print("sideAngle="+sideAngle);
     }
