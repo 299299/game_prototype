@@ -1114,7 +1114,8 @@ class Player : Character
         tail.SetStartColor(Color(0.9f,0.5f,0.2f,1), Color(1.0f,1.0f,1.0f,5.0f));
         tail.SetEndColor(Color(1.0f,0.2f,1.0f,1), Color(1.0f,1.0f,1.0f,5.0f));
         // t.endNodeName = "Bip01";
-        tail.enabled = false;
+        //tail.enabled = false;
+        _node.enabled = false;
 
         //attackDamage = 100;
     }

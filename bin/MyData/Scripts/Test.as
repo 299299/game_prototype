@@ -23,6 +23,7 @@ bool bigHeadMode = false;
 bool nobgm = true;
 bool has_redirect = false;
 bool tonemapping = true;
+int colorGradingIndex = 0;
 
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
@@ -442,10 +443,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         data[TARGET_FOV] = 60;
         SendEvent("CameraEvent", data);
     }
+    else if (key == KEY_6)
+    {
+        colorGradingIndex ++;
+        SetColorGrading(colorGradingIndex);
+    }
 
     if (test_ragdoll)
     {
-
         if (key == 'E')
         {
             Player@ player = GetPlayer();
@@ -571,6 +576,41 @@ void HandleCameraEvent(StringHash eventType, VariantMap& eventData)
 {
     // Print("HandleCameraEvent");
     gCameraMgr.OnCameraEvent(eventData);
+}
+
+int FindRenderCommand(RenderPath@ path, const String&in tag)
+{
+    for (uint i=0; i<path.numCommands; ++i)
+    {
+        if (path.commands[i].tag == tag)
+            return i;
+    }
+    return -1;
+}
+
+void ChangeRenderCommandTexture(RenderPath@ path, const String&in tag, const String&in texture, TextureUnit unit)
+{
+    int i = FindRenderCommand(path, tag);
+    if (i < 0)
+    {
+        Print("Can not find renderpath tag " + tag);
+        return;
+    }
+
+    RenderPathCommand cmd = path.commands[i];
+    cmd.textureNames[unit] = texture;
+    path.commands[i] = cmd;
+}
+
+void SetColorGrading(int index)
+{
+    Array<String> colorGradingTextures = { "Vintage", "BleachBypass",
+    "CrossProcess", "LUT_01", "colorLUT_01", "colorLUT_02", "LUT_Greenish", "LUT_Reddish", "LUT_Sepia",
+    "Dream", "Negative", "Rainbow", "Posterize", "Noire", "SciFi", "SinCity"};
+    if (index >= colorGradingTextures.length)
+        index = 0;
+    colorGradingIndex = index;
+    ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
 }
 
 void ExecuteCommand()

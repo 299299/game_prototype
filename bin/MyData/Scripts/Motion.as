@@ -372,7 +372,7 @@ class MotionManager
         Print("MotionManager");
     }
 
-    MotionManager()
+    ~MotionManager()
     {
         Print("~MotionManager");
     }

@@ -1,0 +1,5 @@
+<texture3d>
+    <colorlut name="LUT_01.png" />
+    <mipmap enable="false" />
+    <quality low="0" />
+</texture3d>

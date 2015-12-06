@@ -4,7 +4,6 @@
 //
 // ==============================================
 
-
 class GameState : State
 {
     void PostRenderUpdate()
@@ -387,6 +386,8 @@ class TestGameState : GameState
             renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
             renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
             viewport.renderPath = renderpath;
+
+            SetColorGrading(colorGradingIndex);
         }
     }
 
