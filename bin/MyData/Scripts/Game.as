@@ -385,6 +385,8 @@ class TestGameState : GameState
             }
             renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
             renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
+            renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.6f * 2;
+
             viewport.renderPath = renderpath;
 
             SetColorGrading(colorGradingIndex);

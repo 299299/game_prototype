@@ -50,29 +50,17 @@ void Start()
         {
             argument = argument.Substring(1);
             if (argument == "nobgm")
-            {
                 nobgm = !nobgm;
-            }
             else if (argument == "bighead")
-            {
                 bigHeadMode = !bigHeadMode;
-            }
             else if (argument == "player")
-            {
                 PLAYER_NAME = arguments[i+1];
-            }
             else if (argument == "lowend")
-            {
-                lowend_platform = true;
-            }
+                lowend_platform = !lowend_platform;
             else if (argument == "hdr")
-            {
                 bHdr = !bHdr;
-            }
             else if (argument == "tonemapping")
-            {
                 tonemapping = !tonemapping;
-            }
         }
     }
 
@@ -82,7 +70,9 @@ void Start()
     if (renderer !is null)
         renderer.hdrRendering = bHdr;
 
-    SetRandomSeed(time.systemTime);
+    uint t = time.systemTime;
+    SetRandomSeed(t);
+    Print("RandomSeed = " + t);
 
     if (!engine.headless)
     {
@@ -321,7 +311,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     gCameraMgr.Update(timeStep);
     gGame.Update(timeStep);
 
-    ExecuteCommand();
+    if (engine.headless)
+        ExecuteCommand();
 
     if (script.defaultScene is null)
         return;
@@ -604,9 +595,25 @@ void ChangeRenderCommandTexture(RenderPath@ path, const String&in tag, const Str
 
 void SetColorGrading(int index)
 {
-    Array<String> colorGradingTextures = { "Vintage", "BleachBypass",
-    "CrossProcess", "LUT_01", "colorLUT_01", "colorLUT_02", "LUT_Greenish", "LUT_Reddish", "LUT_Sepia",
-    "Dream", "Negative", "Rainbow", "Posterize", "Noire", "SciFi", "SinCity"};
+    Array<String> colorGradingTextures =
+    {
+        "Vintage",
+        "LUT_Greenish",
+        "BleachBypass",
+        "CrossProcess",
+        "LUT_01",
+        "colorLUT_01",
+        "colorLUT_02",
+        "LUT_Reddish",
+        "LUT_Sepia",
+        "Dream",
+        "Negative",
+        "Rainbow",
+        "Posterize",
+        "Noire",
+        "SciFi",
+        "SinCity"
+    };
     if (index >= colorGradingTextures.length)
         index = 0;
     colorGradingIndex = index;
@@ -652,7 +659,7 @@ void ExecuteCommand()
         Scene@ scene_ = script.defaultScene;
         if (scene_ is null)
             return;
-        scene_.Remove();
+        scene_.Clear();
     }
     else if (command == "attack")
     {

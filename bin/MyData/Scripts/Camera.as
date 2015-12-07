@@ -134,6 +134,8 @@ class ThirdPersonCameraController : CameraController
     void Update(float dt)
     {
         Player@ p = GetPlayer();
+        if (p is null)
+            return;
         Node@ _node = p.GetNode();
 
         Vector3 target_pos = _node.worldPosition;
