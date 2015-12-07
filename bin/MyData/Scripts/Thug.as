@@ -715,6 +715,12 @@ class ThugGetUpState : CharacterGetUpState
             ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
     }
 
+    void Enter(State@ lastState)
+    {
+        CharacterGetUpState::Enter(lastState);
+        ownner.SetNodeEnabled("Collision", true);
+    }
+
     void Exit(State@ nextState)
     {
         ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);

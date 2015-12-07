@@ -511,12 +511,6 @@ class CharacterGetUpState : MultiMotionState
         CharacterState::Enter(lastState);
     }
 
-    void Exit(State@ nextState)
-    {
-        MultiMotionState::Exit(nextState);
-        ownner.SetNodeEnabled("Collision", true);
-    }
-
     void Update(float dt)
     {
         Motion@ motion = motions[selectIndex];

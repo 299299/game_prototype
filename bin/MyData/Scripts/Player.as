@@ -7,6 +7,7 @@
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
+const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 
 class PlayerStandState : CharacterState
 {
@@ -478,7 +479,7 @@ class PlayerAttackState : CharacterState
         if (attackEnemy !is null)
         {
             targetDistance = ownner.GetTargetDistance(attackEnemy.GetNode());
-            if (ownner.motion_translateEnabled && targetDistance < COLLISION_SAFE_DIST)
+            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
                 ownner.motion_translateEnabled = false;
@@ -537,7 +538,7 @@ class PlayerAttackState : CharacterState
         Vector3 enemyPos = attackEnemy.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
-        float toEnenmyDistance = diff.length - COLLISION_RADIUS * 1.75f;
+        float toEnenmyDistance = diff.length - PLAYER_COLLISION_DIST;
         if (toEnenmyDistance < 0.0f)
             toEnenmyDistance = 0.0f;
         int bestIndex = 0;
@@ -549,7 +550,7 @@ class PlayerAttackState : CharacterState
         float min_dist = toEnenmyDistance - 3.0f;
         if (min_dist < 0.0f)
             min_dist = 0.0f;
-        float max_dist = toEnenmyDistance + 1.5f;
+        float max_dist = toEnenmyDistance + 2.0f;
         Print("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
         for (uint i=0; i<attacks.length; ++i)
@@ -745,7 +746,7 @@ class PlayerAttackState : CharacterState
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) +
+        return " name=" + name + " timeInState=" + String(timeInState) + "\n" +
                 "currentAttack=" + currentAttack.motion.animationName +
                 " distToEnemy=" + targetDistance +
                 " isInAir=" + isInAir +
@@ -851,7 +852,7 @@ class PlayerCounterState : CharacterCounterState
             {
                 Enemy@ e = counterEnemies[i];
                 Node@ eNode = e.GetNode();
-                Vector3 expect_pos = eNode.worldPosition + eNode.worldRotation * Vector3(0, 0, COLLISION_RADIUS * 2);
+                Vector3 expect_pos = eNode.worldPosition + eNode.worldRotation * Vector3(0, 0, COLLISION_SAFE_DIST);
                 vPos += expect_pos;
                 e.ChangeState("CounterState");
                 CharacterCounterState@ eCState = cast<CharacterCounterState>(e.GetState());
@@ -1251,7 +1252,7 @@ class Player : Character
             int max_comb = 60;
             int c = Min(combo, max_comb);
             float a = float(c)/float(max_comb);
-            const float max_time_scale = 1.2f;
+            const float max_time_scale = 1.25f;
             float time_scale = Lerp(1.0f, max_time_scale, a);
             SetTimeScale(time_scale);
             const float max_fov = 60;
@@ -1345,6 +1346,32 @@ class Player : Character
                 @attackEnemy = em.enemyList[i];
             }
         }
+
+        if (attackEnemy !is null)
+        {
+            Vector3 v_pos = sceneNode.worldPosition;
+            v_pos.y = CHARACTER_HEIGHT / 2;
+            Vector3 e_pos = attackEnemy.GetNode().worldPosition;
+            e_pos.y = v_pos.y;
+            Vector3 dir = e_pos - v_pos;
+            float len = dir.length;
+            dir.Normalize();
+            Ray ray;
+            ray.Define(v_pos, dir);
+            PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_CHARACTER);
+            if (result.body !is null)
+            {
+                Node@ n = result.body.node.parent;
+                Enemy@ e = cast<Enemy>(n.scriptObject);
+                if (e !is null && e !is attackEnemy && e.HasFlag(FLAGS_ATTACK))
+                {
+                    Print("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
+                    @attackEnemy = e;
+                    // sceneNode.scene.timeScale = 0.0f;
+                }
+            }
+        }
+
 
         Print("PickAttackEnemy() time-cost = " + (time.systemTime - t) + " ms");
         lastAttackId = (attackEnemy !is null) ? int(attackEnemy.sceneNode.id) : -1;

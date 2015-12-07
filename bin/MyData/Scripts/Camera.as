@@ -120,6 +120,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraHeight = 5.5f;
     float   cameraDistance = 20.0f;
     float   cameraDistSpeed = 200.0f;
+    float   cameraAutoDistance = 20.0f;
     float   targetFov = BASE_FOV;
     float   fovSpeed = 1.5f;
 
@@ -138,13 +139,16 @@ class ThirdPersonCameraController : CameraController
             return;
         Node@ _node = p.GetNode();
 
+        bool blockView = false;
         Vector3 target_pos = _node.worldPosition;
         if (p.target !is null)
         {
             if (!p.target.animModel.inView)
             {
-                target_pos += p.target.GetNode().worldPosition;
-                target_pos /= 2.0f;
+                //target_pos += p.target.GetNode().worldPosition;
+                //target_pos /= 2.0f;
+                //cameraAutoDistance += cameraDistSpeed * dt;
+                //blockView = true;
             }
         }
 
@@ -154,8 +158,12 @@ class ThirdPersonCameraController : CameraController
         float yaw = gInput.m_rightStickX;
         pitch = Clamp(pitch, -10.0f, 60.0f);
 
+        float dist = cameraDistance;
+        if (blockView)
+            dist = cameraAutoDistance;
+
         Quaternion q(pitch, yaw, 0);
-        Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
+        Vector3 pos = q * Vector3(0, 0, -dist) + target_pos;
         UpdateView(pos, target_pos, dt * cameraSpeed);
 
         cameraDistance += float(input.mouseMoveWheel) * dt * -cameraDistSpeed;

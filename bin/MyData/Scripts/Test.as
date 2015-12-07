@@ -439,6 +439,11 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         colorGradingIndex ++;
         SetColorGrading(colorGradingIndex);
     }
+    else if (key == KEY_7)
+    {
+        colorGradingIndex --;
+        SetColorGrading(colorGradingIndex);
+    }
 
     if (test_ragdoll)
     {
@@ -616,6 +621,8 @@ void SetColorGrading(int index)
     };
     if (index >= colorGradingTextures.length)
         index = 0;
+    if (index < 0)
+        index = colorGradingTextures.length - 1;
     colorGradingIndex = index;
     ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
 }
