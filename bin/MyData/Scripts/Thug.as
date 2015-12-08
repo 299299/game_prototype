@@ -75,7 +75,7 @@ class ThugStandState : CharacterState
     void Update(float dt)
     {
         //if (engine.headless)
-        //    return;
+        //   return;
 
         if (timeInState > thinkTime)
         {
@@ -778,6 +778,16 @@ class Thug : Enemy
         @stepMotion = gMotionMgr.FindMotion("TG_Combat/Step_Forward");
         STEP_MIN_DIST = stepMotion.endDistance;
         Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
+
+        /*
+        Node@ hintNode = sceneNode.GetChild("HintNode", true);
+        if (hintNode !is null)
+        {
+            Text3D@ text3d = hintNode.GetComponent("Text3D");
+            text3d.text = GetName();
+            text3d.enabled = true;
+        }
+        */
 
         //attackDamage = 50;
     }

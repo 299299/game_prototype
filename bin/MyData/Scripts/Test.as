@@ -36,6 +36,7 @@ uint playerId = M_MAX_UNSIGNED;
 
 int test_enemy_num_override = 9999;
 bool lowend_platform = false;
+bool auto_target = false;
 
 void Start()
 {
@@ -61,6 +62,8 @@ void Start()
                 bHdr = !bHdr;
             else if (argument == "tonemapping")
                 tonemapping = !tonemapping;
+            else if (argument == "autotarget")
+                auto_target = !auto_target;
         }
     }
 
@@ -502,7 +505,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         }
         else if (key == 'F')
         {
-            scene_.timeScale = 0.25f;
+            scene_.timeScale = 1.0f;
             // SetWorldTimeScale(scene_, 1);
         }
         else if (key == 'O')
@@ -603,6 +606,7 @@ void SetColorGrading(int index)
     Array<String> colorGradingTextures =
     {
         "Vintage",
+        "Hollywood",
         "LUT_Greenish",
         "BleachBypass",
         "CrossProcess",

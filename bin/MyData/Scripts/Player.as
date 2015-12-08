@@ -624,8 +624,17 @@ class PlayerAttackState : CharacterState
 
             attackEnemy.RequestDoNotMove();
         }
-        else {
-            currentAttack = forwardAttacks[RandomInt(forwadCloseNum)];
+        else
+        {
+            int index = ownner.RadialSelectAnimation(4);
+            if (index == 0)
+                currentAttack = forwardAttacks[RandomInt(forwadCloseNum)];
+            else if (index == 1)
+                currentAttack = rightAttacks[RandomInt(rightCloseNum)];
+            else if (index == 2)
+                currentAttack = backAttacks[RandomInt(backCloseNum)];
+            else if (index == 3)
+                currentAttack = leftAttacks[RandomInt(leftCloseNum)];
             state = ATTACK_STATE_BEFORE_IMPACT;
         }
 
@@ -684,9 +693,14 @@ class PlayerAttackState : CharacterState
         Player@ p = cast<Player>(ownner);
         @attackEnemy = p.PickAttackEnemy();
         if (attackEnemy !is null)
-             Print("Choose Attack Enemy " + attackEnemy.GetNode().name + " state=" + attackEnemy.GetState().name);
-         else
+        {
+            // ownner.SetSceneTimeScale(0.0f);
+            Print("Choose Attack Enemy " + attackEnemy.GetNode().name + " state=" + attackEnemy.GetState().name);
+        }
+        else
+        {
             Print("No Attack Enemy");
+        }
         StartAttack();
 
         //slowMotion = false;
@@ -739,7 +753,7 @@ class PlayerAttackState : CharacterState
     {
         if (currentAttack is null || attackEnemy is null)
             return;
-        debug.AddLine(ownner.GetNode().worldPosition, attackEnemy.GetNode().worldPosition, Color(0.27f, 0.28f, 0.7f), false);
+        debug.AddLine(ownner.GetNode().worldPosition, attackEnemy.GetNode().worldPosition, RED, false);
         debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
         debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
     }
@@ -990,6 +1004,8 @@ class PlayerCounterState : CharacterCounterState
                     counterEnemies[i].MakeMeRagdoll(0, true, v);
                 }
             }
+
+            ownner.OnCounterSuccess();
         }
     }
 
@@ -1226,7 +1242,7 @@ class Player : Character
     void OnAttackSuccess(Character@ target)
     {
         combo ++;
-        Print("combo add to " + combo);
+        Print("OnAttackSuccess combo add to " + combo);
 
         if (target.health == 0)
         {
@@ -1235,6 +1251,13 @@ class Player : Character
             gGame.OnCharacterKilled(this, target);
         }
 
+        StatusChanged();
+    }
+
+    void OnCounterSuccess()
+    {
+        combo ++;
+        Print("OnCounterSuccess combo add to " + combo);
         StatusChanged();
     }
 
@@ -1283,6 +1306,7 @@ class Player : Character
         float targetAngle = gInput.m_leftStickAngle + cameraAngle;
         em.scoreCache.Clear();
 
+        int out_of_condition_num = 0;
         Enemy@ attackEnemy = null;
         for (uint i=0; i<em.enemyList.length; ++i)
         {
@@ -1304,6 +1328,7 @@ class Player : Character
                 if (d_log)
                     Print(e.GetName() + " far way from player");
                 em.scoreCache.Push(-1);
+                ++out_of_condition_num;
                 continue;
             }
             bool isAttacking = false;
@@ -1313,11 +1338,23 @@ class Player : Character
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
 
+            if (!auto_target)
+            {
+                if (Abs(diffAngle) > 90)
+                {
+                    if (d_log)
+                        Print(e.GetName() + " diffAngle=" + diffAngle + " too large");
+                    ++out_of_condition_num;
+                    em.scoreCache.Push(-1);
+                    continue;
+                }
+            }
+
             if (d_log)
                 Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             int threatScore = 0;
-            if (isAttacking && dist < 5.0f)
+            if (isAttacking && dist < 1.0f + COLLISION_SAFE_DIST)
                 threatScore += 30;
             int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 30.0f);
             int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * 20.0f);
@@ -1349,6 +1386,7 @@ class Player : Character
 
         if (attackEnemy !is null)
         {
+            Print("attackEnemy is " + attackEnemy.GetName());
             Vector3 v_pos = sceneNode.worldPosition;
             v_pos.y = CHARACTER_HEIGHT / 2;
             Vector3 e_pos = attackEnemy.GetNode().worldPosition;
@@ -1367,11 +1405,17 @@ class Player : Character
                 {
                     Print("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
                     @attackEnemy = e;
-                    // sceneNode.scene.timeScale = 0.0f;
                 }
             }
         }
-
+        else
+        {
+            if (out_of_condition_num > 0 && !auto_target)
+            {
+                combo = 0;
+                StatusChanged();
+            }
+        }
 
         Print("PickAttackEnemy() time-cost = " + (time.systemTime - t) + " ms");
         lastAttackId = (attackEnemy !is null) ? int(attackEnemy.sceneNode.id) : -1;
@@ -1458,7 +1502,7 @@ class Player : Character
     String GetDebugText()
     {
         return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
-              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + "\n";
+              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + " tAngle=" + GetTargetAngle() + "\n";
     }
 
     void Reset()
@@ -1476,7 +1520,7 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), KEEP_DIST_WITHIN_PLAYER + COLLISION_RADIUS, RED, 32, false);
+        //debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), KEEP_DIST_WITHIN_PLAYER + COLLISION_RADIUS, RED, 32, false);
     }
 
     void PostUpdate(float dt)

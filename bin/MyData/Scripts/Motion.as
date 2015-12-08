@@ -319,7 +319,7 @@ class Motion
             Vector4 tFinnal = GetKey(endTime);
             Vector3 tMotionEnd = Quaternion(0, object.motion_startRotation, 0) * Vector3(tFinnal.x, tFinnal.y, tFinnal.z);
             debug.AddLine(tMotionEnd + object.motion_startPosition,  object.motion_startPosition, Color(0.5f, 0.5f, 0.7f), false);
-            DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, Color(0,1,0), 2.0);
+            DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, GREEN, 2.0);
         }
     }
 };

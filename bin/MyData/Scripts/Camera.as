@@ -383,7 +383,7 @@ class CameraManager
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(cameraTarget, 1.0f, RED, false);
+        //debug.AddCross(cameraTarget, 1.0f, RED, false);
 
         if (currentController !is null)
             currentController.DebugDraw(debug);

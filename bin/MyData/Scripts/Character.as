@@ -781,9 +781,9 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
-        debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, YELLOW, false);
+        //debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, YELLOW, false);
         DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, BLUE, COLLISION_RADIUS);
-        DebugDrawDirection(debug, sceneNode, GetTargetAngle(), YELLOW, 2.0f);
+        DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1,0.5,0), 2.0f);
         /*
         Node@ handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
         Node@ handNode_R = renderNode.GetChild("Bip01_R_Hand", true);
@@ -933,6 +933,11 @@ class Character : GameObject
     }
 
     void OnAttackSuccess(Character@ object)
+    {
+
+    }
+
+    void OnCounterSuccess()
     {
 
     }
