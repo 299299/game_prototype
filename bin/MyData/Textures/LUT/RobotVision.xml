@@ -1,5 +1,5 @@
 <texture3d>
-    <colorlut name="colorLUT_01.png" />
+    <colorlut name="RobotVision3D16.png" />
     <mipmap enable="false" />
     <quality low="0" />
 </texture3d>

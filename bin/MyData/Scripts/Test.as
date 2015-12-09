@@ -38,6 +38,8 @@ int test_enemy_num_override = 9999;
 bool lowend_platform = false;
 bool auto_target = false;
 
+String LUT = "";
+
 void Start()
 {
     Print("Game Running Platform: " + GetPlatform());
@@ -322,7 +324,8 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (drawDebug > 0)
     {
-        String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+        String debugText = "current LUT: " + LUT + "\n";
+        debugText += "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
 
         Player@ player = GetPlayer();
@@ -606,22 +609,55 @@ void SetColorGrading(int index)
     Array<String> colorGradingTextures =
     {
         "Vintage",
+        "Hipster",
         "Hollywood",
-        "LUT_Greenish",
         "BleachBypass",
         "CrossProcess",
-        "LUT_01",
-        "colorLUT_01",
-        "colorLUT_02",
-        "LUT_Reddish",
-        "LUT_Sepia",
         "Dream",
         "Negative",
         "Rainbow",
         "Posterize",
         "Noire",
         "SciFi",
-        "SinCity"
+        "SinCity",
+        "Saw",
+        "Sepia",
+        "1960",
+        "Action",
+        "AlienInvasion",
+        "BadFilm",
+        "Beach",
+        "Cyberpunk",
+        "Dark",
+        "DayForNight",
+        "Documentary",
+        "FinalBattle",
+        "Fire",
+        "Flashback",
+        "Hackers",
+        "HeatSignature",
+        "Hitchcock",
+        "AlienWorld",
+        "Horror",
+        "HotSun",
+        "Intensity",
+        "Matrix",
+        "Millennium",
+        "MusicVideo",
+        "OldCountry",
+        "OrangeTeal",
+        "PurpleHaze",
+        "RedAndBlue",
+        "RedRoom",
+        "RobotVision",
+        "Romantic",
+        "TexMex",
+        "Toxic",
+        "TritonePurple",
+        "Underwater",
+        "War",
+        "Warm",
+        "Weathered"
     };
     if (index >= colorGradingTextures.length)
         index = 0;
@@ -629,6 +665,7 @@ void SetColorGrading(int index)
         index = colorGradingTextures.length - 1;
     colorGradingIndex = index;
     ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
+    LUT = colorGradingTextures[index];
 }
 
 void ExecuteCommand()

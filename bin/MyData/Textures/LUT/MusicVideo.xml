@@ -1,5 +1,5 @@
 <texture3d>
-    <colorlut name="LUT_Sepia.jpg" />
+    <colorlut name="MusicVideo3D16.png" />
     <mipmap enable="false" />
     <quality low="0" />
 </texture3d>

@@ -483,6 +483,7 @@ class PlayerAttackState : CharacterState
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
                 ownner.motion_translateEnabled = false;
+                //ownner.SetSceneTimeScale(0.0f);
             }
         }
 

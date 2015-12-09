@@ -1,5 +1,5 @@
 <texture3d>
-    <colorlut name="colorLUT_02.png" />
+    <colorlut name="Dark3D16.png" />
     <mipmap enable="false" />
     <quality low="0" />
 </texture3d>
