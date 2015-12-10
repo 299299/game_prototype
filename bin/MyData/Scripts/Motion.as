@@ -196,9 +196,7 @@ class Motion
             endTime = this.animation.length;
         }
         else
-        {
             endTime = float(endFrame) * SEC_PER_FRAME;
-        }
     }
 
     void GetMotion(float t, float dt, bool loop, Vector4& out out_motion)
@@ -543,6 +541,21 @@ class MotionManager
         CreateMotion(preFix + "Death_Side_Left");
         CreateMotion(preFix + "Death_Side_Right");
 
+        preFix = "BM_Attack/";
+        CreateMotion(preFix + "Beatdown_Strike_Start_01");
+        CreateMotion(preFix + "Beatdown_Test_01");
+        CreateMotion(preFix + "Beatdown_Test_02");
+        CreateMotion(preFix + "Beatdown_Test_03");
+        CreateMotion(preFix + "Beatdown_Test_04");
+        CreateMotion(preFix + "Beatdown_Test_05");
+        CreateMotion(preFix + "Beatdown_Test_06");
+
+        preFix = "BM_TG_Beatdown/";
+        CreateMotion(preFix + "Beatdown_Strike_End_01");
+        CreateMotion(preFix + "Beatdown_Strike_End_02");
+        CreateMotion(preFix + "Beatdown_Strike_End_03");
+        CreateMotion(preFix + "Beatdown_Strike_End_04");
+
         //========================================================================
         // THUG MOTIONS
         //========================================================================
@@ -591,6 +604,19 @@ class MotionManager
 
         preFix = "TG_BM_Counter/";
         AddCounterMotions(preFix);
+
+        preFix = "TG_BM_Beatdown/";
+        CreateMotion(preFix + "Beatdown_Start_01");
+        CreateMotion(preFix + "Beatdown_HitReaction_01");
+        CreateMotion(preFix + "Beatdown_HitReaction_02");
+        CreateMotion(preFix + "Beatdown_HitReaction_03");
+        CreateMotion(preFix + "Beatdown_HitReaction_04");
+        CreateMotion(preFix + "Beatdown_HitReaction_05");
+        CreateMotion(preFix + "Beatdown_HitReaction_06");
+        CreateMotion(preFix + "Beatdown_Strike_End_01");
+        CreateMotion(preFix + "Beatdown_Strike_End_02");
+        CreateMotion(preFix + "Beatdown_Strike_End_03");
+        CreateMotion(preFix + "Beatdown_Strike_End_04");
     }
 
     void Stop()

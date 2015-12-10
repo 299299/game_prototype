@@ -64,13 +64,7 @@ class PlayerStandState : CharacterState
                 ownner.ChangeState("TurnState");
         }
 
-        if (gInput.IsAttackPressed())
-            ownner.Attack();
-        else if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
-
+        ownner.ActionCheck(true, true, true);
         CharacterState::Update(dt);
     }
 };
@@ -91,14 +85,7 @@ class PlayerTurnState : MultiMotionState
     void Update(float dt)
     {
         ownner.motion_deltaRotation += turnSpeed * dt;
-
-        if (gInput.IsAttackPressed())
-            ownner.Attack();
-        else if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
-
+        ownner.ActionCheck(true, true, true);
         if (motions[selectIndex].Move(ownner, dt))
         {
             ownner.CommonStateFinishedOnGroud();
@@ -156,13 +143,7 @@ class PlayerMoveState : SingleMotionState
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
             ownner.ChangeState("StandState");
 
-        if (gInput.IsAttackPressed())
-            ownner.Attack();
-        else if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
-
+        ownner.ActionCheck(true, true, true);
         CharacterState::Update(dt);
     }
 
@@ -509,20 +490,7 @@ class PlayerAttackState : CharacterState
         int addition_frames = slowMotion ? slowMotionFrames : 0;
         bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1 + addition_frames);
         bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME * addition_frames;
-
-        if (check_attack)
-        {
-            if (gInput.IsAttackPressed())
-                ownner.Attack();
-        }
-
-        if (check_others)
-        {
-            if (gInput.IsCounterPressed())
-                ownner.Counter();
-            else if (gInput.IsEvadePressed())
-                ownner.Evade();
-        }
+        ownner.ActionCheck(check_attack, check_others, check_others);
     }
 
     void ResetValues()
@@ -1098,6 +1066,52 @@ class PlayerDeadState : MultiMotionState
     }
 };
 
+
+class PlayerBeatDownStartState : SingleMotionState
+{
+    PlayerBeatDownStartState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownStart");
+        SetMotion("BM_Attack/Beatdown_Strike_Start_01");
+    }
+};
+
+class PlayerBeatDownEndState : MultiMotionState
+{
+    PlayerBeatDownEndState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownEnd");
+        String preFix = "BM_TG_Beatdown/";
+        AddMotion("Beatdown_Strike_End_01");
+        AddMotion("Beatdown_Strike_End_02");
+        AddMotion("Beatdown_Strike_End_03");
+        AddMotion("Beatdown_Strike_End_04");
+    }
+};
+
+class PlayerBeatDownHitState : MultiMotionState
+{
+    PlayerBeatDownHitState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownHit");
+        String preFix = "BM_Attack/";
+        AddMotion(preFix + "Beatdown_Test_01");
+        AddMotion(preFix + "Beatdown_Test_02");
+        AddMotion(preFix + "Beatdown_Test_03");
+        AddMotion(preFix + "Beatdown_Test_04");
+        AddMotion(preFix + "Beatdown_Test_05");
+        AddMotion(preFix + "Beatdown_Test_06");
+    }
+
+    bool CanReEntered()
+    {
+        return true;
+    }
+};
+
 class Player : Character
 {
     int combo;
@@ -1121,6 +1135,10 @@ class Player : Character
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(PlayerGetUpState(this));
         stateMachine.AddState(PlayerDeadState(this));
+        stateMachine.AddState(PlayerBeatDownStartState(this));
+        stateMachine.AddState(PlayerBeatDownHitState(this));
+        stateMachine.AddState(PlayerBeatDownEndState(this));
+
         stateMachine.ChangeState("StandState");
 
         Node@ _node = sceneNode.CreateChild("TailNode");
@@ -1332,9 +1350,7 @@ class Player : Character
                 ++out_of_condition_num;
                 continue;
             }
-            bool isAttacking = false;
-            if (e.GetState().nameHash == ATTACK_STATE)
-                isAttacking = true;
+
             float enemyAngle = Atan2(posDiff.x, posDiff.z);
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
@@ -1355,8 +1371,11 @@ class Player : Character
                 Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             int threatScore = 0;
-            if (isAttacking && dist < 1.0f + COLLISION_SAFE_DIST)
-                threatScore += 30;
+            if (dist < 1.0f + COLLISION_SAFE_DIST)
+            {
+                CharacterState@ state = cast<CharacterState>(e.GetState());
+                threatScore += state.GetThreatScore();
+            }
             int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 30.0f);
             int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * 20.0f);
             score += distScore;
@@ -1527,5 +1546,33 @@ class Player : Character
     void PostUpdate(float dt)
     {
 
+    }
+
+    void ActionCheck(bool bAttack, bool bCounter, bool bEvade)
+    {
+        if (bAttack)
+        {
+            if (gInput.IsBeatPressed())
+                Beat();
+            else if (gInput.IsAttackPressed())
+                Attack();
+        }
+
+        if (bCounter)
+        {
+            if (gInput.IsCounterPressed())
+                Counter();
+        }
+
+        if (bEvade)
+        {
+            if (gInput.IsEvadePressed())
+                Evade();
+        }
+    }
+
+    bool Beat()
+    {
+        return true;
     }
 };

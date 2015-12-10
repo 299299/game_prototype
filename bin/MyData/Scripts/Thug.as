@@ -332,6 +332,11 @@ class ThugStepMoveState : MultiMotionState
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING);
         MultiMotionState::Exit(nextState);
     }
+
+    int GetThreatScore()
+    {
+        return 10;
+    }
 };
 
 class ThugRunState : SingleMotionState
@@ -396,6 +401,11 @@ class ThugRunState : SingleMotionState
             ownner.CheckCollision();
         }
         CharacterState::FixedUpdate(dt);
+    }
+
+    int GetThreatScore()
+    {
+        return 10;
     }
 };
 
@@ -633,6 +643,11 @@ class ThugAttackState : CharacterState
         }
     }
 
+    int GetThreatScore()
+    {
+        return 30;
+    }
+
 };
 
 class ThugHitState : MultiMotionState
@@ -745,6 +760,50 @@ class ThugDeadState : CharacterState
     }
 };
 
+class ThugBeatDownStartState : SingleMotionState
+{
+    ThugBeatDownStartState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownStart");
+        SetMotion("TG_BM_Beatdown/Beatdown_Start_01");
+    }
+};
+
+class ThugBeatDownEndState : MultiMotionState
+{
+    ThugBeatDownEndState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownEnd");
+        String preFix = "TG_BM_Beatdown/";
+        AddMotion(preFix + "Beatdown_Strike_End_01");
+        AddMotion(preFix + "Beatdown_Strike_End_02");
+        AddMotion(preFix + "Beatdown_Strike_End_03");
+        AddMotion(preFix + "Beatdown_Strike_End_04");
+    }
+};
+
+class ThugBeatDownHitState : MultiMotionState
+{
+    ThugBeatDownHitState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownHit");
+        String preFix = "TG_BM_Beatdown/";
+        AddMotion(preFix + "Beatdown_HitReaction_01");
+        AddMotion(preFix + "Beatdown_HitReaction_02");
+        AddMotion(preFix + "Beatdown_HitReaction_03");
+        AddMotion(preFix + "Beatdown_HitReaction_04");
+        AddMotion(preFix + "Beatdown_HitReaction_05");
+        AddMotion(preFix + "Beatdown_HitReaction_06");
+    }
+
+    bool CanReEntered()
+    {
+        return true;
+    }
+};
 
 class Thug : Enemy
 {
@@ -767,6 +826,9 @@ class Thug : Enemy
         stateMachine.AddState(ThugGetUpState(this));
         stateMachine.AddState(ThugDeadState(this));
         stateMachine.AddState(ThugCombatIdleState(this));
+        stateMachine.AddState(ThugBeatDownStartState(this));
+        stateMachine.AddState(ThugBeatDownHitState(this));
+        stateMachine.AddState(ThugBeatDownEndState(this));
         stateMachine.ChangeState("StandState");
 
         Motion@ kickMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Kick");

@@ -114,6 +114,11 @@ class CharacterState : State
             ownner.SpawnParticleEffect(boneNode.worldPosition,
                 particleName.empty ? "Particle/SnowExplosionFade.xml" : particleName, 5, 5.0f);
     }
+
+    int GetThreatScore()
+    {
+        return 0;
+    }
 };
 
 
@@ -740,6 +745,11 @@ class Character : GameObject
         return false;
     }
 
+    bool Beat()
+    {
+        return false;
+    }
+
     void CommonStateFinishedOnGroud()
     {
         stateMachine.ChangeState("StandState");
@@ -1088,6 +1098,11 @@ class Character : GameObject
             last_snd_big = i;
             PlaySound("Sfx/big_" + i + ".ogg");
         }
+    }
+
+    void ActionCheck(bool bAttack, bool bCounter, bool bEvade)
+    {
+
     }
 };
 

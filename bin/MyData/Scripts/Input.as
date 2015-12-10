@@ -221,6 +221,22 @@ class GameInput
         return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE] || input.mouseButtonPress[MOUSEB_LEFT];
     }
 
+    bool IsBeatPressed()
+    {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+        {
+            if (!joystick.buttonDown[3])
+                return false;
+        }
+        else
+        {
+            if (!input.mouseButtonDown[MOUSEB_RIGHT])
+                return false;
+        }
+        return IsAttackPressed();
+    }
+
     int GetDirectionPressed()
     {
         JoystickState@ joystick = GetJoystick();
