@@ -84,6 +84,10 @@ class CharacterState : State
             if (animState !is null && animState.weight > 0.5f)
                 OnFootStep(eventData[VALUE].GetString());
         }
+        else if (name == TIME_SCALE) {
+            float scale = eventData[VALUE].GetFloat();
+            SetWorldTimeScale(ownner.GetNode(), scale);
+        }
     }
 
     void OnFootStep(const String&in boneName)
@@ -1041,28 +1045,22 @@ class Character : GameObject
         return stateMachine.FindState(name);
     }
 
-    void FixedUpdate(float dt)
+    void FixedUpdate(float timeStep)
     {
-        dt *= timeScale;
+        timeStep *= timeScale;
 
         if (stateMachine !is null)
-            stateMachine.FixedUpdate(dt);
+            stateMachine.FixedUpdate(timeStep);
 
-        // Disappear when duration expired
-        if (duration >= 0)
-        {
-            duration -= dt;
-            if (duration <= 0)
-                Remove();
-        }
+        CheckDuration(timeStep);
     }
 
-    void Update(float dt)
+    void Update(float timeStep)
     {
-        dt *= timeScale;
+        timeStep *= timeScale;
 
         if (stateMachine !is null)
-            stateMachine.Update(dt);
+            stateMachine.Update(timeStep);
     }
 
     bool IsTargetSightBlocked()

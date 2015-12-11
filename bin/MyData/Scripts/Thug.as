@@ -803,6 +803,11 @@ class ThugBeatDownHitState : MultiMotionState
     {
         return true;
     }
+
+    float GetThreatScore()
+    {
+        return 0.9f;
+    }
 };
 
 class Thug : Enemy

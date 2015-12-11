@@ -56,6 +56,11 @@ class GameObject : ScriptObject
     void FixedUpdate(float timeStep)
     {
         timeStep *= timeScale;
+        CheckDuration(timeStep);
+    }
+
+    void CheckDuration(float timeStep)
+    {
         // Disappear when duration expired
         if (duration >= 0)
         {

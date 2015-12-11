@@ -9,6 +9,10 @@ const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
 const float MAX_ATTACK_ANGLE_DIFF = 90.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
+const float DIST_SCORE = 20.0f;
+const float ANGLE_SCORE = 30.0f;
+const float THREAT_SCORE = 30.0f;
+const int   LAST_ENEMY_SCORE = 25;
 
 class PlayerStandState : CharacterState
 {
@@ -178,7 +182,7 @@ class PlayerEvadeState : MultiMotionState
 
 class PlayerRedirectState : SingleMotionState
 {
-    Enemy@ redirectEnemy;
+    uint redirectEnemyId = M_MAX_UNSIGNED;
 
     PlayerRedirectState(Character@ c)
     {
@@ -189,7 +193,7 @@ class PlayerRedirectState : SingleMotionState
 
     void Exit(State@ nextState)
     {
-        @redirectEnemy = null;
+        redirectEnemyId = M_MAX_UNSIGNED;
         SingleMotionState::Exit(nextState);
     }
 };
@@ -574,6 +578,7 @@ class PlayerAttackState : CharacterState
 
     void StartAttack()
     {
+        Player@ p = cast<Player>(ownner);
         if (attackEnemy !is null)
         {
             state = ATTACK_STATE_ALIGN;
@@ -593,6 +598,7 @@ class PlayerAttackState : CharacterState
                 PickBestMotion(leftAttacks, r);
 
             attackEnemy.RequestDoNotMove();
+            p.lastAttackId = attackEnemy.sceneNode.id;
         }
         else
         {
@@ -606,6 +612,11 @@ class PlayerAttackState : CharacterState
             else if (index == 3)
                 currentAttack = leftAttacks[RandomInt(leftCloseNum)];
             state = ATTACK_STATE_BEFORE_IMPACT;
+            p.lastAttackId = M_MAX_UNSIGNED;
+
+            // lost combo
+            p.combo = 0;
+            p.StatusChanged();
         }
 
         Motion@ motion = currentAttack.motion;
@@ -697,26 +708,17 @@ class PlayerAttackState : CharacterState
         ownner.SetNodeEnabled("TailNode", false);
 
         if (nextState !is this)
-            cast<Player>(ownner).lastAttackId = -1;
+            cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
 
         if (attackEnemy !is null)
             attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
+
         @attackEnemy = null;
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
         ownner.SetSceneTimeScale(1.0f);
         ownner.SetTarget(null);
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
-    }
-
-    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
-    {
-        CharacterState::OnAnimationTrigger(animState, eventData);
-        StringHash name = eventData[NAME].GetStringHash();
-        if (name == TIME_SCALE) {
-            float scale = eventData[VALUE].GetFloat();
-            SetWorldTimeScale(ownner.GetNode(), scale);
-        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -989,12 +991,7 @@ class PlayerCounterState : CharacterCounterState
         if (isInAir)
             return;
 
-        if (gInput.IsAttackPressed())
-            ownner.Attack();
-        else if (gInput.IsCounterPressed())
-            ownner.Counter();
-        else if (gInput.IsEvadePressed())
-            ownner.Evade();
+        ownner.ActionCheck(true, true, true);
     }
 
     bool CanReEntered()
@@ -1117,7 +1114,7 @@ class Player : Character
 {
     int combo;
     int killed;
-    int lastAttackId = -1;
+    uint lastAttackId = M_MAX_UNSIGNED;
 
     void ObjectStart()
     {
@@ -1184,14 +1181,12 @@ class Player : Character
 
         Enemy@ redirectEnemy = null;
         if (has_redirect)
-        {
             @redirectEnemy = PickRedirectEnemy();
-        }
 
         if (redirectEnemy !is null)
         {
             PlayerRedirectState@ s = cast<PlayerRedirectState>(stateMachine.FindState("RedirectState"));
-            @s.redirectEnemy = redirectEnemy;
+            s.redirectEnemyId = redirectEnemy.GetNode().id;
             stateMachine.ChangeState("RedirectState");
             redirectEnemy.Redirect();
         }
@@ -1326,7 +1321,6 @@ class Player : Character
         float targetAngle = gInput.m_leftStickAngle + cameraAngle;
         em.scoreCache.Clear();
 
-        int out_of_condition_num = 0;
         Enemy@ attackEnemy = null;
         for (uint i=0; i<em.enemyList.length; ++i)
         {
@@ -1348,7 +1342,6 @@ class Player : Character
                 if (d_log)
                     Print(e.GetName() + " far way from player");
                 em.scoreCache.Push(-1);
-                ++out_of_condition_num;
                 continue;
             }
 
@@ -1362,7 +1355,6 @@ class Player : Character
                 {
                     if (d_log)
                         Print(e.GetName() + " diffAngle=" + diffAngle + " too large");
-                    ++out_of_condition_num;
                     em.scoreCache.Push(-1);
                     continue;
                 }
@@ -1382,18 +1374,18 @@ class Player : Character
             if (dist < 1.0f + COLLISION_SAFE_DIST)
             {
                 CharacterState@ state = cast<CharacterState>(e.GetState());
-                threatScore += int(state.GetThreatScore() * 30.0f);
+                threatScore += int(state.GetThreatScore() * THREAT_SCORE);
             }
-            int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 30.0f);
-            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * 20.0f);
+            int angleScore = int((180.0f - Abs(diffAngle))/180.0f * ANGLE_SCORE);
+            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * DIST_SCORE);
             score += distScore;
             score += angleScore;
             score += threatScore;
 
-            if (lastAttackId == int(e.sceneNode.id))
+            if (lastAttackId == e.sceneNode.id)
             {
                 if (diffAngle < 90.0f)
-                    score += 30;
+                    score += LAST_ENEMY_SCORE;
             }
 
             em.scoreCache.Push(score);
@@ -1436,17 +1428,8 @@ class Player : Character
                 }
             }
         }
-        else
-        {
-            if (out_of_condition_num > 0 && !auto_target)
-            {
-                combo = 0;
-                StatusChanged();
-            }
-        }
 
         Print("PickAttackEnemy() time-cost = " + (time.systemTime - t) + " ms");
-        lastAttackId = (attackEnemy !is null) ? int(attackEnemy.sceneNode.id) : -1;
         return attackEnemy;
     }
 
@@ -1525,6 +1508,17 @@ class Player : Character
         }
 
         return redirectEnemy;
+    }
+
+    Enemy@ CommonPickEnemy(float maxDiffAngle, float maxDiffDist, int flags)
+    {
+        uint t = time.systemTime;
+        Scene@ _scene = GetScene();
+        EnemyManager@ em = cast<EnemyManager>(_scene.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return null;
+
+        return null;
     }
 
     String GetDebugText()
