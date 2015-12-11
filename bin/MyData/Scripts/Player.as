@@ -7,6 +7,7 @@
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
+const float MAX_ATTACK_ANGLE_DIFF = 90.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 
 class PlayerStandState : CharacterState
@@ -1357,7 +1358,7 @@ class Player : Character
 
             if (!auto_target)
             {
-                if (Abs(diffAngle) > 90)
+                if (Abs(diffAngle) > MAX_ATTACK_ANGLE_DIFF)
                 {
                     if (d_log)
                         Print(e.GetName() + " diffAngle=" + diffAngle + " too large");
@@ -1370,11 +1371,18 @@ class Player : Character
             if (d_log)
                 Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
+            /*
+
+                threat score    --> 30
+                angle score     --> 30
+                dist scrore     --> 20
+                last attack id  --> 30
+            */
             int threatScore = 0;
             if (dist < 1.0f + COLLISION_SAFE_DIST)
             {
                 CharacterState@ state = cast<CharacterState>(e.GetState());
-                threatScore += state.GetThreatScore();
+                threatScore += int(state.GetThreatScore() * 30.0f);
             }
             int angleScore = int((180.0f - Abs(diffAngle))/180.0f * 30.0f);
             int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * 20.0f);

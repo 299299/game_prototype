@@ -333,9 +333,9 @@ class ThugStepMoveState : MultiMotionState
         MultiMotionState::Exit(nextState);
     }
 
-    int GetThreatScore()
+    float GetThreatScore()
     {
-        return 10;
+        return 0.333f;
     }
 };
 
@@ -403,9 +403,9 @@ class ThugRunState : SingleMotionState
         CharacterState::FixedUpdate(dt);
     }
 
-    int GetThreatScore()
+    float GetThreatScore()
     {
-        return 10;
+        return 0.333f;
     }
 };
 
@@ -643,9 +643,9 @@ class ThugAttackState : CharacterState
         }
     }
 
-    int GetThreatScore()
+    float GetThreatScore()
     {
-        return 30;
+        return 0.75f;
     }
 
 };

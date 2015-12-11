@@ -3,4 +3,5 @@
 3. audio
 4. model replacement
 5. camera issue
-6. camera shake ?
+6. camera shake or animation ?
+7. beat down

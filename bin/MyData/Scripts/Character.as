@@ -115,9 +115,9 @@ class CharacterState : State
                 particleName.empty ? "Particle/SnowExplosionFade.xml" : particleName, 5, 5.0f);
     }
 
-    int GetThreatScore()
+    float GetThreatScore()
     {
-        return 0;
+        return 0.0f;
     }
 };
 

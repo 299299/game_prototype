@@ -104,13 +104,13 @@ class FSM
         return null;
     }
 
-    void ChangeState(const StringHash&in nameHash)
+    bool ChangeState(const StringHash&in nameHash)
     {
         State@ newState = FindState(nameHash);
         if (currentState is newState) {
             // Print("same state !!!");
             if (!currentState.CanReEntered())
-                return;
+                return false;
             currentState.Exit(newState);
             currentState.Enter(newState);
         }
@@ -134,11 +134,13 @@ class FSM
 
         if (d_log)
             Print("FSM Change State " + oldStateName + " -> " + newStateName);
+
+        return true;
     }
 
-    void ChangeState(const String&in name)
+    bool ChangeState(const String&in name)
     {
-        ChangeState(StringHash(name));
+        return ChangeState(StringHash(name));
     }
 
     void Update(float dt)

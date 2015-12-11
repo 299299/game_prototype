@@ -659,10 +659,11 @@ void SetColorGrading(int index)
         "Warm",
         "Weathered"
     };
-    if (index >= colorGradingTextures.length)
+    int len = int(colorGradingTextures.length);
+    if (index >= len)
         index = 0;
     if (index < 0)
-        index = colorGradingTextures.length - 1;
+        index = len - 1;
     colorGradingIndex = index;
     ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
     LUT = colorGradingTextures[index];
