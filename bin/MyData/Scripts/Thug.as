@@ -773,7 +773,7 @@ class ThugBeatDownStartState : SingleMotionState
 
     void Enter(State@ lastState)
     {
-        ownner.AddFlag(FLAGS_STUN);
+        ownner.AddFlag(FLAGS_STUN | FLAGS_ATTACK);
         SingleMotionState::Enter(lastState);
 
         float alignTime = motion.endTime;
@@ -785,7 +785,7 @@ class ThugBeatDownStartState : SingleMotionState
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_STUN);
+        ownner.RemoveFlag(FLAGS_STUN | FLAGS_ATTACK);
         SingleMotionState::Exit(nextState);
     }
 
@@ -837,14 +837,39 @@ class ThugBeatDownHitState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        ownner.AddFlag(FLAGS_STUN);
+        ownner.AddFlag(FLAGS_STUN | FLAGS_ATTACK);
         MultiMotionState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_STUN);
+        ownner.RemoveFlag(FLAGS_STUN | FLAGS_ATTACK);
         MultiMotionState::Exit(nextState);
+    }
+};
+
+class ThugStunState : CharacterState
+{
+     String animationName;
+
+     ThugStunState(Character@ ownner)
+     {
+        super(ownner);
+        SetName("StunState");
+        animationName = GetAnimationName("TG_Blocking/Block_Idle");
+     }
+
+    void Enter(State@ lastState)
+    {
+        ownner.AddFlag(FLAGS_STUN | FLAGS_ATTACK);
+        ownner.PlayAnimation(animationName, LAYER_MOVE, true, 0.2f);
+        CharacterState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.RemoveFlag(FLAGS_STUN | FLAGS_ATTACK);
+        CharacterState::Exit(nextState);
     }
 };
 
@@ -872,6 +897,8 @@ class Thug : Enemy
         stateMachine.AddState(ThugBeatDownStartState(this));
         stateMachine.AddState(ThugBeatDownHitState(this));
         stateMachine.AddState(ThugBeatDownEndState(this));
+        stateMachine.AddState(ThugStunState(this));
+
         ChangeState("StandState");
 
         Motion@ kickMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Kick");
@@ -1097,6 +1124,12 @@ class Thug : Enemy
         if (KeepDistanceWithPlayer())
             return;
         KeepDistanceWithEnemy();
+    }
+
+    bool Distract()
+    {
+        ChangeState("StunState");
+        return true;
     }
 };
 

@@ -749,7 +749,7 @@ class Character : GameObject
         return false;
     }
 
-    bool Beat()
+    bool Distract()
     {
         return false;
     }
@@ -1098,7 +1098,7 @@ class Character : GameObject
         }
     }
 
-    void ActionCheck(bool bAttack, bool bCounter, bool bEvade)
+    void ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
     {
 
     }

@@ -250,6 +250,11 @@ class Motion
             return Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
     }
 
+    float GetFutureRotation(Character@ object, float t)
+    {
+        return AngleDiff(object.GetNode().worldRotation.eulerAngles.y + GetKey(t).w);
+    }
+
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
     {
         object.PlayAnimation(animationName, LAYER_MOVE, looped, blendTime, localTime, speed);
@@ -543,6 +548,7 @@ class MotionManager
 
         preFix = "BM_Attack/";
         CreateMotion(preFix + "Beatdown_Strike_Start_01");
+        CreateMotion(preFix + "CapeDistract_Close_Forward");
         CreateMotion(preFix + "Beatdown_Test_01");
         CreateMotion(preFix + "Beatdown_Test_02");
         CreateMotion(preFix + "Beatdown_Test_03");
@@ -1035,6 +1041,9 @@ class MotionManager
 
         AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
         AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
+
+        preFix = "BM_Attack/";
+        AddAnimationTrigger(preFix + "CapeDistract_Close_Forward", 12, IMPACT);
     }
 };
 

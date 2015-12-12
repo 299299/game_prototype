@@ -499,7 +499,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_Getup/GetUp_Back";
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
-            String testName = "BM_Movement/Evade_Right_01";
+            String testName = "BM_Attack/CapeDistract_Close_Forward";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             Player@ player = GetPlayer();

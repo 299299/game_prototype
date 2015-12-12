@@ -7,7 +7,7 @@
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
-const float MAX_ATTACK_ANGLE_DIFF = 75.0f;
+const float MAX_ATTACK_ANGLE_DIFF = 60.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 const float DIST_SCORE = 20.0f;
 const float ANGLE_SCORE = 30.0f;
@@ -15,7 +15,7 @@ const float THREAT_SCORE = 30.0f;
 const float LAST_ENEMY_ANGLE = 45.0f;
 const int   LAST_ENEMY_SCORE = 5;
 const int   MAX_WEAK_ATTACK_COMBO = 3;
-const float MAX_BEAT_DIST = 10.0f;
+const float MAX_DISTRACT_DIST = 3.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -72,7 +72,7 @@ class PlayerStandState : CharacterState
                 ownner.ChangeState("TurnState");
         }
 
-        ownner.ActionCheck(true, true, true);
+        ownner.ActionCheck(true, true, true, true);
         CharacterState::Update(dt);
     }
 };
@@ -93,7 +93,7 @@ class PlayerTurnState : MultiMotionState
     void Update(float dt)
     {
         ownner.motion_deltaRotation += turnSpeed * dt;
-        ownner.ActionCheck(true, true, true);
+        ownner.ActionCheck(true, true, true, true);
         if (motions[selectIndex].Move(ownner, dt))
         {
             ownner.CommonStateFinishedOnGroud();
@@ -151,7 +151,7 @@ class PlayerMoveState : SingleMotionState
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
             ownner.ChangeState("StandState");
 
-        ownner.ActionCheck(true, true, true);
+        ownner.ActionCheck(true, true, true, true);
         CharacterState::Update(dt);
     }
 
@@ -496,7 +496,7 @@ class PlayerAttackState : CharacterState
         int addition_frames = slowMotion ? slowMotionFrames : 0;
         bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1 + addition_frames);
         bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME * addition_frames;
-        ownner.ActionCheck(check_attack, check_others, check_others);
+        ownner.ActionCheck(check_attack, check_others, check_others, check_others);
     }
 
     void PickBestMotion(Array<AttackMotion@>@ attacks, int dir)
@@ -968,7 +968,7 @@ class PlayerCounterState : CharacterCounterState
         if (isInAir)
             return;
 
-        ownner.ActionCheck(true, true, true);
+        ownner.ActionCheck(true, true, true, true);
     }
 
     bool CanReEntered()
@@ -1041,6 +1041,44 @@ class PlayerDeadState : MultiMotionState
     }
 };
 
+class PlayerDistractState : SingleMotionState
+{
+    PlayerDistractState(Character@ c)
+    {
+        super(c);
+        SetName("DistractState");
+        SetMotion("BM_Attack/CapeDistract_Close_Forward");
+    }
+
+    void Enter(State@ lastState)
+    {
+        float targetRotation = ownner.GetTargetAngle();
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+
+        SingleMotionState::Enter(lastState);
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == IMPACT)
+        {
+            Player@ p = cast<Player>(ownner);
+            Array<Enemy@> enemies;
+            p.CommonCollectEnemies(enemies, 9999, MAX_DISTRACT_DIST, FLAGS_ATTACK);
+            if (enemies.length == 0)
+            {
+                p.combo = 0;
+                p.StatusChanged();
+                return;
+            }
+
+            for (uint i=0; i<enemies.length; ++i)
+                enemies[i].Distract();
+        }
+    }
+};
 
 class PlayerBeatDownStartState : SingleMotionState
 {
@@ -1066,15 +1104,21 @@ class PlayerBeatDownStartState : SingleMotionState
 
         Vector3 myPos = ownner.GetNode().worldPosition;
         Vector3 enemyPos = ownner.target.GetNode().worldPosition;
-        Vector3 diff = enemyPos - myPos;
-        diff.y = 0;
-        float toEnenmyDistance = diff.length - PLAYER_COLLISION_DIST;
-        diff.Normalize();
-        predictPosition = myPos + diff * toEnenmyDistance;
+        Vector3 diffPos = enemyPos - myPos;
+        diffPos.y = 0;
+        float toEnenmyDistance = diffPos.length - PLAYER_COLLISION_DIST;
+        //float targetRotation = Atan2(diffPos.x, diffPos.z);
+
+        diffPos.Normalize();
+        predictPosition = myPos + diffPos * toEnenmyDistance;
 
         motionPosition = motion.GetFuturePosition(ownner, alignTime);
         movePerSec = ( predictPosition - motionPosition ) / alignTime;
         movePerSec.y = 0;
+
+        //float motionRotation = motion.GetFutureRotation(ownner, alignTime);
+        //float diffAngle = AngleDiff(targetRotation - motionRotation);
+        //rotatePerSec = diffAngle / alignTime;
 
         if (!ownner.target.HasFlag(FLAGS_STUN))
             ownner.target.ChangeState("BeatDownStartState");
@@ -1087,7 +1131,7 @@ class PlayerBeatDownStartState : SingleMotionState
         if (state == 0)
         {
             ownner.motion_deltaPosition += movePerSec * dt;
-            ownner.motion_deltaRotation += rotatePerSec * dt;
+            // ownner.motion_deltaRotation += rotatePerSec * dt;
 
             if (timeInState >= alignTime)
                 state = 1;
@@ -1163,6 +1207,7 @@ class Player : Character
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(PlayerGetUpState(this));
         stateMachine.AddState(PlayerDeadState(this));
+        stateMachine.AddState(PlayerDistractState(this));
         stateMachine.AddState(PlayerBeatDownStartState(this));
         stateMachine.AddState(PlayerBeatDownHitState(this));
         stateMachine.AddState(PlayerBeatDownEndState(this));
@@ -1436,7 +1481,8 @@ class Player : Character
             Vector3 posDiff = e.GetNode().worldPosition - myPos;
             posDiff.y = 0;
             int score = 0;
-            float dist = posDiff.length;
+            float dist = posDiff.length - PLAYER_COLLISION_DIST;
+
             if (dist > maxDiffDist)
             {
                 if (d_log)
@@ -1526,6 +1572,46 @@ class Player : Character
         return attackEnemy;
     }
 
+    void CommonCollectEnemies(Array<Enemy@>@ enemies, float maxDiffAngle, float maxDiffDist, int flags)
+    {
+        enemies.Clear();
+
+        uint t = time.systemTime;
+        Scene@ _scene = GetScene();
+        EnemyManager@ em = cast<EnemyManager>(_scene.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return;
+
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        float myAngle = Atan2(myDir.x, myDir.z);
+        float cameraAngle = gCameraMgr.GetCameraAngle();
+        float targetAngle = gInput.m_leftStickAngle + cameraAngle;
+
+        for (uint i=0; i<em.enemyList.length; ++i)
+        {
+            Enemy@ e = em.enemyList[i];
+            if (!e.HasFlag(flags))
+                continue;
+            Vector3 posDiff = e.GetNode().worldPosition - myPos;
+            posDiff.y = 0;
+            int score = 0;
+            float dist = posDiff.length - PLAYER_COLLISION_DIST;
+            if (dist > maxDiffDist)
+                continue;
+
+            float enemyAngle = Atan2(posDiff.x, posDiff.z);
+            float diffAngle = targetAngle - enemyAngle;
+            diffAngle = AngleDiff(diffAngle);
+            if (Abs(diffAngle) > maxDiffAngle)
+                continue;
+
+            enemies.Push(e);
+        }
+
+        Print("CommonCollectEnemies() len=" + enemies.length + " time-cost = " + (time.systemTime - t) + " ms");
+    }
+
     String GetDebugText()
     {
         return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
@@ -1555,27 +1641,19 @@ class Player : Character
 
     }
 
-    void ActionCheck(bool bAttack, bool bCounter, bool bEvade)
+    void ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
     {
-        if (bAttack)
-        {
-            if (gInput.IsBeatPressed())
-                Beat();
-            else if (gInput.IsAttackPressed())
-                Attack();
-        }
+        if (bAttack && gInput.IsAttackPressed())
+            Attack();
 
-        if (bCounter)
-        {
-            if (gInput.IsCounterPressed())
-                Counter();
-        }
+        if (bDistract && gInput.IsDistractPressed())
+            Distract();
 
-        if (bEvade)
-        {
-            if (gInput.IsEvadePressed())
-                Evade();
-        }
+        if (bCounter && gInput.IsCounterPressed())
+            Counter();
+
+        if (bEvade && gInput.IsEvadePressed())
+            Evade();
     }
 
     bool Attack()
@@ -1589,14 +1667,9 @@ class Player : Character
         return true;
     }
 
-    bool Beat()
+    bool Distract()
     {
-        Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_BEAT_DIST, FLAGS_ATTACK, true, true);
-        SetTarget(e);
-        if (e !is null)
-            ChangeState("BeatDownStartState");
-        else
-            ChangeState("AttackState");
+        ChangeState("DistractState");
         return true;
     }
 };
