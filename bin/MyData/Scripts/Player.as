@@ -7,12 +7,15 @@
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
-const float MAX_ATTACK_ANGLE_DIFF = 90.0f;
+const float MAX_ATTACK_ANGLE_DIFF = 75.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 const float DIST_SCORE = 20.0f;
 const float ANGLE_SCORE = 30.0f;
 const float THREAT_SCORE = 30.0f;
-const int   LAST_ENEMY_SCORE = 25;
+const float LAST_ENEMY_ANGLE = 45.0f;
+const int   LAST_ENEMY_SCORE = 5;
+const int   MAX_WEAK_ATTACK_COMBO = 3;
+const float MAX_BEAT_DIST = 10.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -213,7 +216,6 @@ class PlayerAttackState : CharacterState
     Array<AttackMotion@>    backAttacks;
 
     AttackMotion@           currentAttack;
-    Enemy@                  attackEnemy;
 
     int                     state;
     Vector3                 movePerSec;
@@ -406,7 +408,6 @@ class PlayerAttackState : CharacterState
 
     ~PlayerAttackState()
     {
-        @attackEnemy = null;
         @currentAttack = null;
     }
 
@@ -435,7 +436,7 @@ class PlayerAttackState : CharacterState
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
-                attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
+                ownner.target.RemoveFlag(FLAGS_NO_MOVE);
                 // ownner.SetSceneTimeScale(0.0f);
             }
         }
@@ -462,9 +463,9 @@ class PlayerAttackState : CharacterState
         }
 
 
-        if (attackEnemy !is null)
+        if (ownner.target !is null)
         {
-            targetDistance = ownner.GetTargetDistance(attackEnemy.GetNode());
+            targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
             if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
@@ -498,18 +499,10 @@ class PlayerAttackState : CharacterState
         ownner.ActionCheck(check_attack, check_others, check_others);
     }
 
-    void ResetValues()
-    {
-        @currentAttack = null;
-        @attackEnemy = null;
-        state = ATTACK_STATE_ALIGN;
-        movePerSec = Vector3(0, 0, 0);
-    }
-
     void PickBestMotion(Array<AttackMotion@>@ attacks, int dir)
     {
         Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 enemyPos = attackEnemy.GetNode().worldPosition;
+        Vector3 enemyPos = ownner.target.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
         float toEnenmyDistance = diff.length - PLAYER_COLLISION_DIST;
@@ -579,10 +572,10 @@ class PlayerAttackState : CharacterState
     void StartAttack()
     {
         Player@ p = cast<Player>(ownner);
-        if (attackEnemy !is null)
+        if (ownner.target !is null)
         {
             state = ATTACK_STATE_ALIGN;
-            float diff = ownner.ComputeAngleDiff(attackEnemy.GetNode());
+            float diff = ownner.ComputeAngleDiff(ownner.target.GetNode());
             int r = DirectionMapToIndex(diff, 4);
 
             if (d_log)
@@ -597,8 +590,8 @@ class PlayerAttackState : CharacterState
             else if (r == 3)
                 PickBestMotion(leftAttacks, r);
 
-            attackEnemy.RequestDoNotMove();
-            p.lastAttackId = attackEnemy.sceneNode.id;
+            ownner.target.RequestDoNotMove();
+            p.lastAttackId = ownner.target.GetNode().id;
         }
         else
         {
@@ -622,13 +615,13 @@ class PlayerAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         isInAir = false;
-        weakAttack = cast<Player>(ownner).combo < 3;
+        weakAttack = cast<Player>(ownner).combo < MAX_WEAK_ATTACK_COMBO;
         if (cast<Player>(ownner).combo >= 3)
             slowMotion = (RandomInt(10) == 1);
         else
             slowMotion = false;
 
-        if (attackEnemy !is null)
+        if (ownner.target !is null)
         {
             motionPosition = motion.GetFuturePosition(ownner, currentAttack.impactTime);
             movePerSec = ( predictPosition - motionPosition ) / alignTime;
@@ -645,7 +638,7 @@ class PlayerAttackState : CharacterState
                     lastKill = true;
 
                     VariantMap data;
-                    data[NODE] = attackEnemy.GetNode().id;
+                    data[NODE] = ownner.target.GetNode().id;
                     data[NAME] = CHANGE_STATE;
                     data[VALUE] = StringHash("Death");
                     SendEvent("CameraEvent", data);
@@ -668,38 +661,21 @@ class PlayerAttackState : CharacterState
         ownner.SetNodeEnabled("TailNode", true);
     }
 
-    void Start()
-    {
-        ResetValues();
-        Player@ p = cast<Player>(ownner);
-        @attackEnemy = p.PickAttackEnemy();
-        if (attackEnemy !is null)
-        {
-            // ownner.SetSceneTimeScale(0.0f);
-            Print("Choose Attack Enemy " + attackEnemy.GetNode().name + " state=" + attackEnemy.GetState().name);
-        }
-        else
-        {
-            Print("No Attack Enemy");
-        }
-        StartAttack();
-
-        //slowMotion = false;
-        //ownner.SetSceneTimeScale(0.25f);
-        //ownner.SetTimeScale(1.5f);
-    }
-
     void Enter(State@ lastState)
     {
         Print("################## Player::AttackState Enter from " + lastState.name  + " #####################");
         //Reset variables
         lastKill = false;
         slowMotion = false;
+        @currentAttack = null;
+        state = ATTACK_STATE_ALIGN;
+        movePerSec = Vector3(0, 0, 0);
+        StartAttack();
+        //ownner.SetSceneTimeScale(0.25f);
+        //ownner.SetTimeScale(1.5f);
 
-        Start();
         CharacterState::Enter(lastState);
         ownner.AddFlag(FLAGS_ATTACK);
-        ownner.SetTarget(attackEnemy);
     }
 
     void Exit(State@ nextState)
@@ -708,24 +684,26 @@ class PlayerAttackState : CharacterState
         ownner.SetNodeEnabled("TailNode", false);
 
         if (nextState !is this)
+        {
             cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
+            ownner.SetTarget(null);
+        }
 
-        if (attackEnemy !is null)
-            attackEnemy.RemoveFlag(FLAGS_NO_MOVE);
+        if (ownner.target !is null)
+            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
 
-        @attackEnemy = null;
         @currentAttack = null;
         ownner.RemoveFlag(FLAGS_ATTACK);
         ownner.SetSceneTimeScale(1.0f);
-        ownner.SetTarget(null);
+
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        if (currentAttack is null || attackEnemy is null)
+        if (currentAttack is null || ownner.target is null)
             return;
-        debug.AddLine(ownner.GetNode().worldPosition, attackEnemy.GetNode().worldPosition, RED, false);
+        debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, RED, false);
         debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
         debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
     }
@@ -748,14 +726,16 @@ class PlayerAttackState : CharacterState
 
     void AttackImpact()
     {
-        if (attackEnemy is null)
+        Character@ e = ownner.target;
+
+        if (e is null)
             return;
 
         Node@ _node = ownner.GetNode();
-        Vector3 dir = _node.worldPosition - attackEnemy.GetNode().worldPosition;
+        Vector3 dir = _node.worldPosition - e.GetNode().worldPosition;
         dir.y = 0;
         dir.Normalize();
-        Print("PlayerAttackState::" +  attackEnemy.GetName() + " OnDamage!!!!");
+        Print("PlayerAttackState::" +  e.GetName() + " OnDamage!!!!");
 
         Node@ n = _node.GetChild(currentAttack.boneName, true);
         Vector3 position = _node.worldPosition;
@@ -767,20 +747,17 @@ class PlayerAttackState : CharacterState
             damage = 9999;
         else
             damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
-        bool b = attackEnemy.OnDamage(ownner, position, dir, damage, weakAttack);
+        bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
         if (!b)
             return;
 
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
-        ownner.OnAttackSuccess(attackEnemy);
+        ownner.OnAttackSuccess(e);
 
-        int sound_type = attackEnemy.health == 0 ? 1 : 0;
+        int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
-        if (attackEnemy.health == 0)
-        {
-            @attackEnemy = null;
+        if (e.health == 0)
             ownner.SetTarget(null);
-        }
     }
 };
 
@@ -1067,11 +1044,49 @@ class PlayerDeadState : MultiMotionState
 
 class PlayerBeatDownStartState : SingleMotionState
 {
+    float       alignTime = 0.2f;
+    int         state = 0;
+    Vector3     movePerSec;
+    float       rotatePerSec;
+
+    Vector3     predictPosition;
+    Vector3     motionPosition;
+
     PlayerBeatDownStartState(Character@ c)
     {
         super(c);
-        SetName("BeatDownStart");
+        SetName("BeatDownStartState");
         SetMotion("BM_Attack/Beatdown_Strike_Start_01");
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        alignTime = motion.endTime;
+
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 enemyPos = ownner.target.GetNode().worldPosition;
+        Vector3 diff = enemyPos - myPos;
+        diff.y = 0;
+        float toEnenmyDistance = diff.length - PLAYER_COLLISION_DIST;
+        alignTime = currentAttack.impactTime;
+        // alignTime *= ownner.timeScale;
+
+        predictPosition = myPos + diff * toEnenmyDistance;
+    }
+
+    void Update(float dt)
+    {
+        SingleMotionState::Update(dt);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        if (ownner.target is null)
+            return;
+        debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, RED, false);
+        debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
+        debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
     }
 };
 
@@ -1080,7 +1095,7 @@ class PlayerBeatDownEndState : MultiMotionState
     PlayerBeatDownEndState(Character@ c)
     {
         super(c);
-        SetName("BeatDownEnd");
+        SetName("BeatDownEndState");
         String preFix = "BM_TG_Beatdown/";
         AddMotion("Beatdown_Strike_End_01");
         AddMotion("Beatdown_Strike_End_02");
@@ -1094,7 +1109,7 @@ class PlayerBeatDownHitState : MultiMotionState
     PlayerBeatDownHitState(Character@ c)
     {
         super(c);
-        SetName("BeatDownHit");
+        SetName("BeatDownHitStates");
         String preFix = "BM_Attack/";
         AddMotion(preFix + "Beatdown_Test_01");
         AddMotion(preFix + "Beatdown_Test_02");
@@ -1137,7 +1152,7 @@ class Player : Character
         stateMachine.AddState(PlayerBeatDownHitState(this));
         stateMachine.AddState(PlayerBeatDownEndState(this));
 
-        stateMachine.ChangeState("StandState");
+        ChangeState("StandState");
 
         Node@ _node = sceneNode.CreateChild("TailNode");
         TailGenerator@ tail = _node.CreateComponent("TailGenerator");
@@ -1154,12 +1169,6 @@ class Player : Character
         //attackDamage = 100;
     }
 
-    bool Attack()
-    {
-        stateMachine.ChangeState("AttackState");
-        return true;
-    }
-
     bool Counter()
     {
         Print("Player::Counter");
@@ -1171,7 +1180,7 @@ class Player : Character
         if (len == 0)
             return false;
 
-        stateMachine.ChangeState("CounterState");
+        ChangeState("CounterState");
         return true;
     }
 
@@ -1187,7 +1196,7 @@ class Player : Character
         {
             PlayerRedirectState@ s = cast<PlayerRedirectState>(stateMachine.FindState("RedirectState"));
             s.redirectEnemyId = redirectEnemy.GetNode().id;
-            stateMachine.ChangeState("RedirectState");
+            ChangeState("RedirectState");
             redirectEnemy.Redirect();
         }
         else
@@ -1197,7 +1206,7 @@ class Player : Character
                 int index = RadialSelectAnimation(4);
                 Print("Evade Index = " + index);
                 sceneNode.vars[ANIMATION_INDEX] = index;
-                stateMachine.ChangeState("EvadeState");
+                ChangeState("EvadeState");
             }
         }
 
@@ -1209,10 +1218,9 @@ class Player : Character
         if (health > 0)
         {
             if (gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-                stateMachine.ChangeState("StandState");
-            else {
-                stateMachine.ChangeState("MoveState");
-            }
+                ChangeState("StandState");
+            else
+                ChangeState("MoveState");
         }
         else
         {
@@ -1247,7 +1255,7 @@ class Player : Character
         else
         {
             sceneNode.vars[ANIMATION_INDEX] = index;
-            stateMachine.ChangeState("HitState");
+            ChangeState("HitState");
         }
 
         StatusChanged();
@@ -1305,134 +1313,6 @@ class Player : Character
     //====================================================================
     //      SMART ENEMY PICK FUNCTIONS
     //====================================================================
-    Enemy@ PickAttackEnemy()
-    {
-        uint t = time.systemTime;
-        Scene@ _scene = GetScene();
-        EnemyManager@ em = cast<EnemyManager>(_scene.GetScriptObject("EnemyManager"));
-        if (em is null)
-            return null;
-
-        // Find the best enemy
-        Vector3 myPos = sceneNode.worldPosition;
-        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
-        float myAngle = Atan2(myDir.x, myDir.z);
-        float cameraAngle = gCameraMgr.GetCameraAngle();
-        float targetAngle = gInput.m_leftStickAngle + cameraAngle;
-        em.scoreCache.Clear();
-
-        Enemy@ attackEnemy = null;
-        for (uint i=0; i<em.enemyList.length; ++i)
-        {
-            Enemy@ e = em.enemyList[i];
-            if (!e.CanBeAttacked())
-            {
-                if (d_log)
-                    Print(e.GetName() + " can not be attacked");
-                em.scoreCache.Push(-1);
-                continue;
-            }
-
-            Vector3 posDiff = e.sceneNode.worldPosition - myPos;
-            posDiff.y = 0;
-            int score = 0;
-            float dist = posDiff.length;
-            if (dist > MAX_ATTACK_DIST)
-            {
-                if (d_log)
-                    Print(e.GetName() + " far way from player");
-                em.scoreCache.Push(-1);
-                continue;
-            }
-
-            float enemyAngle = Atan2(posDiff.x, posDiff.z);
-            float diffAngle = targetAngle - enemyAngle;
-            diffAngle = AngleDiff(diffAngle);
-
-            if (!auto_target)
-            {
-                if (Abs(diffAngle) > MAX_ATTACK_ANGLE_DIFF)
-                {
-                    if (d_log)
-                        Print(e.GetName() + " diffAngle=" + diffAngle + " too large");
-                    em.scoreCache.Push(-1);
-                    continue;
-                }
-            }
-
-            if (d_log)
-                Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
-
-            /*
-
-                threat score    --> 30
-                angle score     --> 30
-                dist scrore     --> 20
-                last attack id  --> 30
-            */
-            int threatScore = 0;
-            if (dist < 1.0f + COLLISION_SAFE_DIST)
-            {
-                CharacterState@ state = cast<CharacterState>(e.GetState());
-                threatScore += int(state.GetThreatScore() * THREAT_SCORE);
-            }
-            int angleScore = int((180.0f - Abs(diffAngle))/180.0f * ANGLE_SCORE);
-            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * DIST_SCORE);
-            score += distScore;
-            score += angleScore;
-            score += threatScore;
-
-            if (lastAttackId == e.sceneNode.id)
-            {
-                if (diffAngle < 90.0f)
-                    score += LAST_ENEMY_SCORE;
-            }
-
-            em.scoreCache.Push(score);
-
-            if (d_log)
-                Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
-        }
-
-        int bestScore = 0;
-        for (uint i=0; i<em.scoreCache.length;++i)
-        {
-            int score = em.scoreCache[i];
-            if (score >= bestScore) {
-                bestScore = score;
-                @attackEnemy = em.enemyList[i];
-            }
-        }
-
-        if (attackEnemy !is null)
-        {
-            Print("attackEnemy is " + attackEnemy.GetName());
-            Vector3 v_pos = sceneNode.worldPosition;
-            v_pos.y = CHARACTER_HEIGHT / 2;
-            Vector3 e_pos = attackEnemy.GetNode().worldPosition;
-            e_pos.y = v_pos.y;
-            Vector3 dir = e_pos - v_pos;
-            float len = dir.length;
-            dir.Normalize();
-            Ray ray;
-            ray.Define(v_pos, dir);
-            PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_CHARACTER);
-            if (result.body !is null)
-            {
-                Node@ n = result.body.node.parent;
-                Enemy@ e = cast<Enemy>(n.scriptObject);
-                if (e !is null && e !is attackEnemy && e.HasFlag(FLAGS_ATTACK))
-                {
-                    Print("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
-                    @attackEnemy = e;
-                }
-            }
-        }
-
-        Print("PickAttackEnemy() time-cost = " + (time.systemTime - t) + " ms");
-        return attackEnemy;
-    }
-
     int PickCounterEnemy(Array<Enemy@>@ counterEnemies)
     {
         EnemyManager@ em = cast<EnemyManager>(GetScene().GetScriptObject("EnemyManager"));
@@ -1510,7 +1390,7 @@ class Player : Character
         return redirectEnemy;
     }
 
-    Enemy@ CommonPickEnemy(float maxDiffAngle, float maxDiffDist, int flags)
+    Enemy@ CommonPickEnemy(float maxDiffAngle, float maxDiffDist, int flags, bool checkBlock, bool checkLastAttack)
     {
         uint t = time.systemTime;
         Scene@ _scene = GetScene();
@@ -1518,7 +1398,117 @@ class Player : Character
         if (em is null)
             return null;
 
-        return null;
+        // Find the best enemy
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        float myAngle = Atan2(myDir.x, myDir.z);
+        float cameraAngle = gCameraMgr.GetCameraAngle();
+        float targetAngle = gInput.m_leftStickAngle + cameraAngle;
+        em.scoreCache.Clear();
+
+        Enemy@ attackEnemy = null;
+        for (uint i=0; i<em.enemyList.length; ++i)
+        {
+            Enemy@ e = em.enemyList[i];
+            if (!e.HasFlag(flags))
+            {
+                if (d_log)
+                    Print(e.GetName() + " no flag: " + flags);
+                em.scoreCache.Push(-1);
+                continue;
+            }
+
+            Vector3 posDiff = e.GetNode().worldPosition - myPos;
+            posDiff.y = 0;
+            int score = 0;
+            float dist = posDiff.length;
+            if (dist > maxDiffDist)
+            {
+                if (d_log)
+                    Print(e.GetName() + " far way from player");
+                em.scoreCache.Push(-1);
+                continue;
+            }
+
+            float enemyAngle = Atan2(posDiff.x, posDiff.z);
+            float diffAngle = targetAngle - enemyAngle;
+            diffAngle = AngleDiff(diffAngle);
+
+            if (Abs(diffAngle) > maxDiffAngle)
+            {
+                if (d_log)
+                    Print(e.GetName() + " diffAngle=" + diffAngle + " too large");
+                em.scoreCache.Push(-1);
+                continue;
+            }
+
+            if (d_log)
+                Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
+
+            int threatScore = 0;
+            if (dist < 1.0f + COLLISION_SAFE_DIST)
+            {
+                CharacterState@ state = cast<CharacterState>(e.GetState());
+                threatScore += int(state.GetThreatScore() * THREAT_SCORE);
+            }
+            int angleScore = int((180.0f - Abs(diffAngle))/180.0f * ANGLE_SCORE);
+            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * DIST_SCORE);
+            score += distScore;
+            score += angleScore;
+            score += threatScore;
+
+            if (checkLastAttack)
+            {
+                if (lastAttackId == e.sceneNode.id)
+                {
+                    if (diffAngle <= LAST_ENEMY_ANGLE)
+                        score += LAST_ENEMY_SCORE;
+                }
+            }
+
+            em.scoreCache.Push(score);
+
+            if (d_log)
+                Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
+        }
+
+        int bestScore = 0;
+        for (uint i=0; i<em.scoreCache.length;++i)
+        {
+            int score = em.scoreCache[i];
+            if (score >= bestScore) {
+                bestScore = score;
+                @attackEnemy = em.enemyList[i];
+            }
+        }
+
+        if (attackEnemy !is null && checkBlock)
+        {
+            Print("CommonPicKEnemy-> attackEnemy is " + attackEnemy.GetName());
+            Vector3 v_pos = sceneNode.worldPosition;
+            v_pos.y = CHARACTER_HEIGHT / 2;
+            Vector3 e_pos = attackEnemy.GetNode().worldPosition;
+            e_pos.y = v_pos.y;
+            Vector3 dir = e_pos - v_pos;
+            float len = dir.length;
+            dir.Normalize();
+            Ray ray;
+            ray.Define(v_pos, dir);
+            PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_CHARACTER);
+            if (result.body !is null)
+            {
+                Node@ n = result.body.node.parent;
+                Enemy@ e = cast<Enemy>(n.scriptObject);
+                if (e !is null && e !is attackEnemy && e.HasFlag(FLAGS_ATTACK))
+                {
+                    Print("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
+                    @attackEnemy = e;
+                }
+            }
+        }
+
+        Print("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms");
+        return attackEnemy;
     }
 
     String GetDebugText()
@@ -1573,8 +1563,25 @@ class Player : Character
         }
     }
 
+    bool Attack()
+    {
+        Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
+        SetTarget(e);
+        if (e !is null && e.HasFlag(FLAGS_STUN))
+            ChangeState("BeatDownStartState");
+        else
+            ChangeState("AttackState");
+        return true;
+    }
+
     bool Beat()
     {
+        Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_BEAT_DIST, FLAGS_ATTACK, true, true);
+        SetTarget(e);
+        if (e !is null)
+            ChangeState("BeatDownStartState");
+        else
+            ChangeState("AttackState");
         return true;
     }
 };

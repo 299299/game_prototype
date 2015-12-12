@@ -14,6 +14,7 @@ const int FLAGS_REDIRECTED = (1 << 2);
 const int FLAGS_NO_MOVE = (1 << 3);
 const int FLAGS_MOVING = (1 << 4);
 const int FLAGS_INVINCIBLE = (1 << 5);
+const int FLAGS_STUN = (1 << 6);
 
 const int COLLISION_LAYER_CHARACTER = (1 << 0);
 const int COLLISION_LAYER_LANDSCAPE = (1 << 1);
@@ -171,6 +172,11 @@ class GameObject : ScriptObject
     {
         Print(node.name + ".Remove()");
         node.Remove();
+    }
+
+    bool IsVisible()
+    {
+        return true;
     }
 };
 

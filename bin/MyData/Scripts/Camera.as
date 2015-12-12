@@ -143,7 +143,7 @@ class ThirdPersonCameraController : CameraController
         Vector3 target_pos = _node.worldPosition;
         if (p.target !is null)
         {
-            if (!p.target.animModel.inView)
+            if (!p.target.IsVisible())
             {
                 //target_pos += p.target.GetNode().worldPosition;
                 //target_pos /= 2.0f;

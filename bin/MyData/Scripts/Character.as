@@ -86,7 +86,7 @@ class CharacterState : State
         }
         else if (name == TIME_SCALE) {
             float scale = eventData[VALUE].GetFloat();
-            SetWorldTimeScale(ownner.GetNode(), scale);
+            SetWorldTimeScale(ownner.GetScene(), scale);
         }
     }
 
@@ -745,7 +745,7 @@ class Character : GameObject
 
     bool Redirect()
     {
-        stateMachine.ChangeState("RedirectState");
+        ChangeState("RedirectState");
         return false;
     }
 
@@ -756,7 +756,7 @@ class Character : GameObject
 
     void CommonStateFinishedOnGroud()
     {
-        stateMachine.ChangeState("StandState");
+        ChangeState("StandState");
     }
 
     void Reset()
@@ -766,7 +766,7 @@ class Character : GameObject
         sceneNode.worldRotation = startRotation;
         health = INITIAL_HEALTH;
         SetTimeScale(1.0f);
-        stateMachine.ChangeState("StandState");
+        ChangeState("StandState");
     }
 
     bool CanBeAttacked()
@@ -822,7 +822,7 @@ class Character : GameObject
         if (state is null)
             return;
         state.animationName = animationName;
-        stateMachine.ChangeState("AnimationTestState");
+        ChangeState("AnimationTestState");
     }
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
@@ -911,7 +911,7 @@ class Character : GameObject
 
     bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
     {
-        stateMachine.ChangeState("HitState");
+        ChangeState("HitState");
         return true;
     }
 
@@ -923,7 +923,7 @@ class Character : GameObject
     void OnDead()
     {
         Print(GetName() + " OnDead !!!");
-        stateMachine.ChangeState("DeadState");
+        ChangeState("DeadState");
     }
 
     void MakeMeRagdoll(int stickToDynamic = 0, bool hasVelocity = false, const Vector3&in velocity = Vector3(0, 0, 0))
@@ -1101,6 +1101,11 @@ class Character : GameObject
     void ActionCheck(bool bAttack, bool bCounter, bool bEvade)
     {
 
+    }
+
+    bool IsVisible()
+    {
+        return animModel.inView;
     }
 };
 

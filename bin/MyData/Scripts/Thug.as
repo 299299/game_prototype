@@ -765,7 +765,7 @@ class ThugBeatDownStartState : SingleMotionState
     ThugBeatDownStartState(Character@ c)
     {
         super(c);
-        SetName("BeatDownStart");
+        SetName("BeatDownStartState");
         SetMotion("TG_BM_Beatdown/Beatdown_Start_01");
     }
 };
@@ -775,7 +775,7 @@ class ThugBeatDownEndState : MultiMotionState
     ThugBeatDownEndState(Character@ c)
     {
         super(c);
-        SetName("BeatDownEnd");
+        SetName("BeatDownEndState");
         String preFix = "TG_BM_Beatdown/";
         AddMotion(preFix + "Beatdown_Strike_End_01");
         AddMotion(preFix + "Beatdown_Strike_End_02");
@@ -789,7 +789,7 @@ class ThugBeatDownHitState : MultiMotionState
     ThugBeatDownHitState(Character@ c)
     {
         super(c);
-        SetName("BeatDownHit");
+        SetName("BeatDownHitState");
         String preFix = "TG_BM_Beatdown/";
         AddMotion(preFix + "Beatdown_HitReaction_01");
         AddMotion(preFix + "Beatdown_HitReaction_02");
@@ -834,7 +834,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugBeatDownStartState(this));
         stateMachine.AddState(ThugBeatDownHitState(this));
         stateMachine.AddState(ThugBeatDownEndState(this));
-        stateMachine.ChangeState("StandState");
+        ChangeState("StandState");
 
         Motion@ kickMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Kick");
         KICK_DIST = kickMotion.endDistance;
@@ -883,19 +883,19 @@ class Thug : Enemy
             return false;
         if (KeepDistanceWithEnemy())
             return false;
-        stateMachine.ChangeState("AttackState");
+        ChangeState("AttackState");
         return true;
     }
 
     bool Redirect()
     {
-        stateMachine.ChangeState("RedirectState");
+        ChangeState("RedirectState");
         return true;
     }
 
     void CommonStateFinishedOnGroud()
     {
-        stateMachine.ChangeState("StandState");
+        ChangeState("StandState");
     }
 
     bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
@@ -924,7 +924,7 @@ class Thug : Enemy
                 if (Abs(diff) > 135)
                     index = 2 + RandomInt(2);
                 sceneNode.vars[ANIMATION_INDEX] = index;
-                stateMachine.ChangeState("HitState");
+                ChangeState("HitState");
             }
             else {
                 Vector3 v = direction * -1;
@@ -943,7 +943,7 @@ class Thug : Enemy
         StringHash nameHash = stateMachine.currentState.nameHash;
         if (HasFlag(FLAGS_MOVING))
         {
-            stateMachine.ChangeState("StandState");
+            ChangeState("StandState");
             return;
         }
 

@@ -516,7 +516,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             Node@ n = scene_.GetChild("thug2");
             n.vars[ANIMATION_INDEX] = RandomInt(4);
             Thug@ thug = cast<Thug>(n.scriptObject);
-            thug.stateMachine.ChangeState("HitState");
+            thug.ChangeState("HitState");
         }
     }
 }
