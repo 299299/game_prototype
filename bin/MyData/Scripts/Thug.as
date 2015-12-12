@@ -762,11 +762,37 @@ class ThugDeadState : CharacterState
 
 class ThugBeatDownStartState : SingleMotionState
 {
+    float rotatePerSec;
+
     ThugBeatDownStartState(Character@ c)
     {
         super(c);
         SetName("BeatDownStartState");
         SetMotion("TG_BM_Beatdown/Beatdown_Start_01");
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.AddFlag(FLAGS_STUN);
+        SingleMotionState::Enter(lastState);
+
+        float alignTime = motion.endTime;
+        float targetRotation = AngleDiff(ownner.target.GetCharacterAngle() + 180);
+        float myAngle = ownner.GetCharacterAngle();
+        float diffAngle = AngleDiff(targetRotation - myAngle);
+        rotatePerSec = diffAngle / alignTime;
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.RemoveFlag(FLAGS_STUN);
+        SingleMotionState::Exit(nextState);
+    }
+
+    void Update(float dt)
+    {
+        ownner.motion_deltaRotation += rotatePerSec * dt;
+        SingleMotionState::Update(dt);
     }
 };
 
@@ -807,6 +833,18 @@ class ThugBeatDownHitState : MultiMotionState
     float GetThreatScore()
     {
         return 0.9f;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.AddFlag(FLAGS_STUN);
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.RemoveFlag(FLAGS_STUN);
+        MultiMotionState::Exit(nextState);
     }
 };
 

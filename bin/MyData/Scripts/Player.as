@@ -1069,14 +1069,29 @@ class PlayerBeatDownStartState : SingleMotionState
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
         float toEnenmyDistance = diff.length - PLAYER_COLLISION_DIST;
-        alignTime = currentAttack.impactTime;
-        // alignTime *= ownner.timeScale;
-
+        diff.Normalize();
         predictPosition = myPos + diff * toEnenmyDistance;
+
+        motionPosition = motion.GetFuturePosition(ownner, alignTime);
+        movePerSec = ( predictPosition - motionPosition ) / alignTime;
+        movePerSec.y = 0;
+
+        if (!ownner.target.HasFlag(FLAGS_STUN))
+            ownner.target.ChangeState("BeatDownStartState");
+
+        ownner.SetSceneTimeScale(0.0f);
     }
 
     void Update(float dt)
     {
+        if (state == 0)
+        {
+            ownner.motion_deltaPosition += movePerSec * dt;
+            ownner.motion_deltaRotation += rotatePerSec * dt;
+
+            if (timeInState >= alignTime)
+                state = 1;
+        }
         SingleMotionState::Update(dt);
     }
 
