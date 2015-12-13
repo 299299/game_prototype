@@ -549,12 +549,14 @@ class MotionManager
         preFix = "BM_Attack/";
         CreateMotion(preFix + "Beatdown_Strike_Start_01");
         CreateMotion(preFix + "CapeDistract_Close_Forward");
-        CreateMotion(preFix + "Beatdown_Test_01");
-        CreateMotion(preFix + "Beatdown_Test_02");
-        CreateMotion(preFix + "Beatdown_Test_03");
-        CreateMotion(preFix + "Beatdown_Test_04");
-        CreateMotion(preFix + "Beatdown_Test_05");
-        CreateMotion(preFix + "Beatdown_Test_06");
+
+        int beat_motion_flags = kMotion_XZR;
+        CreateMotion(preFix + "Beatdown_Test_01", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_Test_02", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_Test_03", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_Test_04", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_Test_05", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_Test_06", kMotion_XZR, beat_motion_flags);
 
         preFix = "BM_TG_Beatdown/";
         CreateMotion(preFix + "Beatdown_Strike_End_01");
@@ -595,14 +597,14 @@ class MotionManager
 
 
         preFix = "TG_HitReaction/";
-        CreateMotion(preFix + "HitReaction_Left", kMotion_XZ);
-        CreateMotion(preFix + "HitReaction_Right", kMotion_XZ);
-        CreateMotion(preFix + "HitReaction_Back_NoTurn", kMotion_XZ);
+        CreateMotion(preFix + "HitReaction_Left");
+        CreateMotion(preFix + "HitReaction_Right");
+        CreateMotion(preFix + "HitReaction_Back_NoTurn");
         CreateMotion(preFix + "HitReaction_Back");
-        // CreateMotion(preFix + "Generic_Hit_Reaction", 0, kMotion_XZR, -1, kMotion_XZ);
+        CreateMotion(preFix + "CapeDistract_Close_Forward");
 
-        CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
-        CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
+        //CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
+        //CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
 
         preFix = "TG_Getup/";
         CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
@@ -613,12 +615,13 @@ class MotionManager
 
         preFix = "TG_BM_Beatdown/";
         CreateMotion(preFix + "Beatdown_Start_01");
-        CreateMotion(preFix + "Beatdown_HitReaction_01");
-        CreateMotion(preFix + "Beatdown_HitReaction_02");
-        CreateMotion(preFix + "Beatdown_HitReaction_03");
-        CreateMotion(preFix + "Beatdown_HitReaction_04");
-        CreateMotion(preFix + "Beatdown_HitReaction_05");
-        CreateMotion(preFix + "Beatdown_HitReaction_06");
+        CreateMotion(preFix + "Beatdown_HitReaction_01", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_02", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_03", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_04", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_05", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_06", kMotion_XZR, beat_motion_flags);
+
         CreateMotion(preFix + "Beatdown_Strike_End_01");
         CreateMotion(preFix + "Beatdown_Strike_End_02");
         CreateMotion(preFix + "Beatdown_Strike_End_03");
@@ -788,9 +791,15 @@ class MotionManager
         AddRagdollTrigger(preFix + "Counter_Leg_Back_04", -1, 43);
         AddRagdollTrigger(preFix + "Counter_Leg_Back_05", 48, 52);
 
-        preFix = "TG_HitReaction/";
-        AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);
-        AddRagdollTrigger(preFix + "Push_Reaction_From_Back", 6, 9);
+        preFix = "TG_BM_Beatdown/";
+        AddRagdollTrigger(preFix + "Beatdown_Strike_End_01", 24, 28);
+        AddRagdollTrigger(preFix + "Beatdown_Strike_End_02", -1, 48);
+        AddRagdollTrigger(preFix + "Beatdown_Strike_End_03", -1, 28);
+        AddRagdollTrigger(preFix + "Beatdown_Strike_End_04", -1, 50);
+
+        //preFix = "TG_HitReaction/";
+        //AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);
+        //AddRagdollTrigger(preFix + "Push_Reaction_From_Back", 6, 9);
 
         preFix = "TG_Combat/";
         int frame_fixup = 6;
@@ -1044,6 +1053,28 @@ class MotionManager
 
         preFix = "BM_Attack/";
         AddAnimationTrigger(preFix + "CapeDistract_Close_Forward", 12, IMPACT);
+
+        AddAnimationTrigger(preFix + "Beatdown_Test_01", 4, IMPACT);
+        AddAnimationTrigger(preFix + "Beatdown_Test_02", 4, IMPACT);
+        AddAnimationTrigger(preFix + "Beatdown_Test_03", 4, IMPACT);
+        AddAnimationTrigger(preFix + "Beatdown_Test_04", 4, IMPACT);
+        AddAnimationTrigger(preFix + "Beatdown_Test_05", 4, IMPACT);
+        AddAnimationTrigger(preFix + "Beatdown_Test_06", 4, IMPACT);
+
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_01", 4, COMBAT_SOUND, L_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_02", 4, COMBAT_SOUND, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_03", 4, COMBAT_SOUND, L_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_04", 4, COMBAT_SOUND, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_05", 4, COMBAT_SOUND, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_06", 4, COMBAT_SOUND, R_HAND);
+
+        AddStringAnimationTrigger(preFix + "Beatdown_Strike_Start_01", 7, COMBAT_SOUND, L_HAND);
+
+        preFix = "BM_TG_Beatdown/";
+        AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
+        AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
+        AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
     }
 };
 

@@ -16,6 +16,7 @@ const float LAST_ENEMY_ANGLE = 45.0f;
 const int   LAST_ENEMY_SCORE = 5;
 const int   MAX_WEAK_ATTACK_COMBO = 3;
 const float MAX_DISTRACT_DIST = 3.0f;
+const float MAX_DISTRACT_DIR = 45.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -28,6 +29,7 @@ class PlayerStandState : CharacterState
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle"));
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_01"));
         animations.Push(GetAnimationName(MOVEMENT_GROUP + "Stand_Idle_02"));
+        flags = FLAGS_ATTACK;
     }
 
     void Enter(State@ lastState)
@@ -47,14 +49,7 @@ class PlayerStandState : CharacterState
         }
         */
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
-        ownner.AddFlag(FLAGS_ATTACK);
         CharacterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        ownner.RemoveFlag(FLAGS_ATTACK);
-        CharacterState::Exit(nextState);
     }
 
     void Update(float dt)
@@ -88,6 +83,7 @@ class PlayerTurnState : MultiMotionState
         AddMotion(MOVEMENT_GROUP + "Turn_Right_90");
         AddMotion(MOVEMENT_GROUP + "Turn_Right_180");
         AddMotion(MOVEMENT_GROUP + "Turn_Left_90");
+        flags = FLAGS_ATTACK;
     }
 
     void Update(float dt)
@@ -106,7 +102,6 @@ class PlayerTurnState : MultiMotionState
     void Enter(State@ lastState)
     {
         MultiMotionState::Enter(lastState);
-        ownner.AddFlag(FLAGS_ATTACK);
         Motion@ motion = motions[selectIndex];
         Vector4 endKey = motion.GetKey(motion.endTime);
         float motionTargetAngle = ownner.motion_startRotation + endKey.w;
@@ -114,12 +109,6 @@ class PlayerTurnState : MultiMotionState
         float diff = AngleDiff(targetAngle - motionTargetAngle);
         turnSpeed = diff / motion.endTime;
         Print("motionTargetAngle=" + String(motionTargetAngle) + " targetAngle=" + String(targetAngle) + " diff=" + String(diff) + " turnSpeed=" + String(turnSpeed));
-    }
-
-    void Exit(State@ nextState)
-    {
-        MultiMotionState::Exit(nextState);
-        ownner.RemoveFlag(FLAGS_ATTACK);
     }
 };
 
@@ -132,6 +121,7 @@ class PlayerMoveState : SingleMotionState
         super(c);
         SetName("MoveState");
         SetMotion(MOVEMENT_GROUP + "Walk_Forward");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
     }
 
     void Update(float dt)
@@ -158,14 +148,7 @@ class PlayerMoveState : SingleMotionState
     void Enter(State@ lastState)
     {
         motion.Start(ownner, 0.0f, 0.1f, 1.25f);
-        ownner.AddFlag(FLAGS_ATTACK | FLAGS_MOVING);
         CharacterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        SingleMotionState::Exit(nextState);
-        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_MOVING);
     }
 };
 
@@ -244,6 +227,7 @@ class PlayerAttackState : CharacterState
     {
         super(c);
         SetName("AttackState");
+        flags = FLAGS_ATTACK;
 
         //========================================================================
         // FORWARD
@@ -616,7 +600,7 @@ class PlayerAttackState : CharacterState
         motion.Start(ownner);
         isInAir = false;
         weakAttack = cast<Player>(ownner).combo < MAX_WEAK_ATTACK_COMBO;
-        if (cast<Player>(ownner).combo >= 3)
+        if (p.combo >= 3)
             slowMotion = (RandomInt(10) == 1);
         else
             slowMotion = false;
@@ -630,20 +614,7 @@ class PlayerAttackState : CharacterState
             //if (attackEnemy.HasFlag(FLAGS_COUNTER))
             //    slowMotion = true;
 
-            EnemyManager@ em = cast<EnemyManager>(ownner.GetScene().GetScriptObject("EnemyManager"));
-            if (em !is null)
-            {
-                if (em.GetNumOfEnemyAlive() == 1)
-                {
-                    lastKill = true;
-
-                    VariantMap data;
-                    data[NODE] = ownner.target.GetNode().id;
-                    data[NAME] = CHANGE_STATE;
-                    data[VALUE] = StringHash("Death");
-                    SendEvent("CameraEvent", data);
-                }
-            }
+            lastKill = p.CheckLastKill();
         }
         else
         {
@@ -675,7 +646,6 @@ class PlayerAttackState : CharacterState
         //ownner.SetTimeScale(1.5f);
 
         CharacterState::Enter(lastState);
-        ownner.AddFlag(FLAGS_ATTACK);
     }
 
     void Exit(State@ nextState)
@@ -693,7 +663,6 @@ class PlayerAttackState : CharacterState
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
 
         @currentAttack = null;
-        ownner.RemoveFlag(FLAGS_ATTACK);
         ownner.SetSceneTimeScale(1.0f);
 
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
@@ -938,7 +907,7 @@ class PlayerCounterState : CharacterCounterState
             Node@ _node = ownner.GetNode();
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
             if (boneNode !is null)
-            ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
+                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
             ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
 
             Vector3 my_pos = _node.worldPosition;
@@ -950,7 +919,7 @@ class PlayerCounterState : CharacterCounterState
                     v.y = 0;
                     v.Normalize();
                     v *= 7.5f;
-                    counterEnemies[i].MakeMeRagdoll(0, true, v);
+                    counterEnemies[i].MakeMeRagdoll(true, v);
                 }
             }
 
@@ -1048,6 +1017,7 @@ class PlayerDistractState : SingleMotionState
         super(c);
         SetName("DistractState");
         SetMotion("BM_Attack/CapeDistract_Close_Forward");
+        flags = FLAGS_ATTACK;
     }
 
     void Enter(State@ lastState)
@@ -1066,7 +1036,7 @@ class PlayerDistractState : SingleMotionState
         {
             Player@ p = cast<Player>(ownner);
             Array<Enemy@> enemies;
-            p.CommonCollectEnemies(enemies, 9999, MAX_DISTRACT_DIST, FLAGS_ATTACK);
+            p.CommonCollectEnemies(enemies, MAX_DISTRACT_DIR, MAX_DISTRACT_DIST, FLAGS_ATTACK);
             if (enemies.length == 0)
             {
                 p.combo = 0;
@@ -1095,6 +1065,7 @@ class PlayerBeatDownStartState : SingleMotionState
         super(c);
         SetName("BeatDownStartState");
         SetMotion("BM_Attack/Beatdown_Strike_Start_01");
+        flags = FLAGS_ATTACK;
     }
 
     void Enter(State@ lastState)
@@ -1120,10 +1091,9 @@ class PlayerBeatDownStartState : SingleMotionState
         //float diffAngle = AngleDiff(targetRotation - motionRotation);
         //rotatePerSec = diffAngle / alignTime;
 
-        if (!ownner.target.HasFlag(FLAGS_STUN))
-            ownner.target.ChangeState("BeatDownStartState");
+        ownner.target.ChangeState("BeatDownStartState");
 
-        ownner.SetSceneTimeScale(0.0f);
+        // ownner.SetSceneTimeScale(0.0f);
     }
 
     void Update(float dt)
@@ -1136,6 +1106,18 @@ class PlayerBeatDownStartState : SingleMotionState
             if (timeInState >= alignTime)
                 state = 1;
         }
+
+        if (ownner.target !is null)
+        {
+            float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
+            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
+            {
+                Print("Player::PlayerBeatDownStartState TooClose set translateEnabled to false");
+                ownner.motion_translateEnabled = false;
+                //ownner.SetSceneTimeScale(0.0f);
+            }
+        }
+
         SingleMotionState::Update(dt);
     }
 
@@ -1147,6 +1129,11 @@ class PlayerBeatDownStartState : SingleMotionState
         debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
         debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
     }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("BeatDownHitState");
+    }
 };
 
 class PlayerBeatDownEndState : MultiMotionState
@@ -1156,19 +1143,63 @@ class PlayerBeatDownEndState : MultiMotionState
         super(c);
         SetName("BeatDownEndState");
         String preFix = "BM_TG_Beatdown/";
-        AddMotion("Beatdown_Strike_End_01");
-        AddMotion("Beatdown_Strike_End_02");
-        AddMotion("Beatdown_Strike_End_03");
-        AddMotion("Beatdown_Strike_End_04");
+        AddMotion(preFix + "Beatdown_Strike_End_01");
+        AddMotion(preFix + "Beatdown_Strike_End_02");
+        AddMotion(preFix + "Beatdown_Strike_End_03");
+        AddMotion(preFix + "Beatdown_Strike_End_04");
+    }
+
+    void Enter(State@ lastState)
+    {
+        MultiMotionState::Enter(lastState);
+
+        if (ownner.target !is null)
+        {
+            ownner.target.GetNode().vars[ANIMATION_INDEX] = selectIndex;
+            ownner.target.ChangeState("BeatDownEndState");
+        }
+
+        if (cast<Player>(ownner).CheckLastKill())
+            ownner.SetSceneTimeScale(0.2f);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(motions.length);
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == IMPACT)
+        {
+            Node@ _node = ownner.GetNode();
+            Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
+            if (boneNode !is null)
+                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
+            ownner.PlayRandomSound(1);
+        }
     }
 };
 
 class PlayerBeatDownHitState : MultiMotionState
 {
+    int beatIndex = 0;
+    int beatNum = 0;
+    int maxBeatNum = 20;
+    int minBeatNum = 10;
+    int beatTotal = 0;
+
+    bool combatReady = false;
+
+    float moveSpeed = 5.0f;
+    float rotateSpeed = 5.0f;
+
     PlayerBeatDownHitState(Character@ c)
     {
         super(c);
-        SetName("BeatDownHitStates");
+        SetName("BeatDownHitState");
         String preFix = "BM_Attack/";
         AddMotion(preFix + "Beatdown_Test_01");
         AddMotion(preFix + "Beatdown_Test_02");
@@ -1176,11 +1207,73 @@ class PlayerBeatDownHitState : MultiMotionState
         AddMotion(preFix + "Beatdown_Test_04");
         AddMotion(preFix + "Beatdown_Test_05");
         AddMotion(preFix + "Beatdown_Test_06");
+        flags = FLAGS_ATTACK;
     }
 
     bool CanReEntered()
     {
         return true;
+    }
+
+    void Update(float dt)
+    {
+        if (combatReady && gInput.IsAttackPressed())
+        {
+            ++ beatIndex;
+            ++ beatNum;
+            beatIndex = beatIndex % motions.length;
+            ownner.ChangeState("BeatDownHitState");
+            return;
+        }
+
+        // Motion@ motion = motions[selectIndex];
+        float angle = ownner.ComputeAngleDiff(ownner.target.GetNode());
+        ownner.motion_deltaRotation += angle * rotateSpeed * dt;
+
+        MultiMotionState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        combatReady = false;
+        MultiMotionState::Enter(lastState);
+
+        if (lastState !is this)
+        {
+            beatNum = 0;
+            beatTotal = RandomInt(minBeatNum, maxBeatNum);
+        }
+
+        if (ownner.target !is null)
+        {
+            ownner.target.GetNode().vars[ANIMATION_INDEX] = beatIndex;
+            ownner.target.ChangeState("BeatDownHitState");
+        }
+
+        // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == IMPACT)
+        {
+            combatReady = true;
+            ownner.OnAttackSuccess(ownner.target);
+
+            Print("Beat Impact Total = " + beatTotal + " Num = " + beatNum);
+
+            if (beatNum >= beatTotal)
+            {
+                ownner.ChangeState("BeatDownEndState");
+            }
+        }
+    }
+
+    int PickIndex()
+    {
+        return beatIndex;
     }
 };
 
@@ -1301,17 +1394,15 @@ class Player : Character
             return false;
         }
 
-        combo = 0;
         health -= damage;
+        health = Max(0, health);
+        SetHealth(health);
+
         int index = RadialSelectAnimation(attacker.GetNode(), 4);
         Print("Player::OnDamage RadialSelectAnimation index=" + index);
 
         if (health <= 0)
-        {
-            sceneNode.vars[ANIMATION_INDEX] = index;
             OnDead();
-            health = 0;
-        }
         else
         {
             sceneNode.vars[ANIMATION_INDEX] = index;
@@ -1671,5 +1762,25 @@ class Player : Character
     {
         ChangeState("DistractState");
         return true;
+    }
+
+    bool CheckLastKill()
+    {
+        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        if (em is null)
+            return false;
+
+        int alive = em.GetNumOfEnemyAlive();
+        Print("CheckLastKill() alive=" + alive);
+        if (alive == 1)
+        {
+            VariantMap data;
+            data[NODE] = target.GetNode().id;
+            data[NAME] = CHANGE_STATE;
+            data[VALUE] = StringHash("Death");
+            SendEvent("CameraEvent", data);
+            return true;
+        }
+        return false;
     }
 };

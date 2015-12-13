@@ -48,6 +48,7 @@ const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
 const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
+const StringHash HEALTH("Health");
 
 Vector3 WORLD_SIZE(0, 0, 0);
 Vector3 WORLD_HALF_SIZE(0, 0, 0);
@@ -58,6 +59,7 @@ int num_of_big_sounds = 6;
 class CharacterState : State
 {
     Character@                  ownner;
+    int                         flags;
 
     CharacterState(Character@ c)
     {
@@ -123,6 +125,20 @@ class CharacterState : State
     {
         return 0.0f;
     }
+
+    void Enter(State@ lastState)
+    {
+        if (flags >= 0)
+            ownner.AddFlag(flags);
+        State::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        if (flags >= 0)
+            ownner.RemoveFlag(flags);
+        State::Exit(nextState);
+    }
 };
 
 
@@ -138,7 +154,7 @@ class SingleMotionState : CharacterState
     void Update(float dt)
     {
         if (motion.Move(ownner, dt)) {
-            ownner.CommonStateFinishedOnGroud();
+            OnMotionFinished();
             return;
         }
         CharacterState::Update(dt);
@@ -162,6 +178,11 @@ class SingleMotionState : CharacterState
             return;
         @motion = m;
     }
+
+    void OnMotionFinished()
+    {
+        ownner.CommonStateFinishedOnGroud();
+    }
 };
 
 class MultiMotionState : CharacterState
@@ -177,7 +198,7 @@ class MultiMotionState : CharacterState
     void Update(float dt)
     {
         if (motions[selectIndex].Move(ownner, dt)) {
-            ownner.CommonStateFinishedOnGroud();
+            OnMotionFinished();
             return;
         }
         CharacterState::Update(dt);
@@ -195,6 +216,7 @@ class MultiMotionState : CharacterState
         if (d_log)
             Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner);
+        CharacterState::Enter(lastState);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -219,6 +241,11 @@ class MultiMotionState : CharacterState
             return;
         motions.Push(motion);
     }
+
+    void OnMotionFinished()
+    {
+        ownner.CommonStateFinishedOnGroud();
+    }
 };
 
 class AnimationTestState : CharacterState
@@ -241,6 +268,7 @@ class AnimationTestState : CharacterState
             testMotion.Start(ownner);
         else
             ownner.PlayAnimation(animationName);
+        CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
@@ -619,6 +647,7 @@ class Character : GameObject
             cache.AddManualResource(ragdollPoseAnim);
         }
 
+        SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
 
@@ -764,9 +793,15 @@ class Character : GameObject
         flags = FLAGS_ATTACK;
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
-        health = INITIAL_HEALTH;
+        SetHealth(INITIAL_HEALTH);
         SetTimeScale(1.0f);
         ChangeState("StandState");
+    }
+
+    void SetHealth(int h)
+    {
+        health = h;
+        sceneNode.vars[HEALTH] = h;
     }
 
     bool CanBeAttacked()
@@ -926,11 +961,10 @@ class Character : GameObject
         ChangeState("DeadState");
     }
 
-    void MakeMeRagdoll(int stickToDynamic = 0, bool hasVelocity = false, const Vector3&in velocity = Vector3(0, 0, 0))
+    void MakeMeRagdoll(bool hasVelocity = false, const Vector3&in velocity = Vector3(0, 0, 0))
     {
         VariantMap anim_data;
         anim_data[NAME] = RAGDOLL_START;
-        anim_data[VALUE] = stickToDynamic;
         if (hasVelocity)
             anim_data[VELOCITY] = velocity;
         VariantMap data;
@@ -1076,6 +1110,7 @@ class Character : GameObject
     void SetTarget(Character@ t)
     {
         @target = t;
+        Print(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
     }
 
     void PlayRandomSound(int type)

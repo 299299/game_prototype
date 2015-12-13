@@ -50,8 +50,7 @@ class GameObject : ScriptObject
     void SetTimeScale(float scale)
     {
         timeScale = scale;
-        if (d_log)
-            Print(GetName() + " SetTimeScale:" + scale);
+        Print(GetName() + " SetTimeScale:" + scale);
     }
 
     void FixedUpdate(float timeStep)

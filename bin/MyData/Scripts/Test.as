@@ -34,7 +34,7 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 9999;
+int test_enemy_num_override = 2;
 bool lowend_platform = false;
 bool auto_target = false;
 
@@ -450,6 +450,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         colorGradingIndex --;
         SetColorGrading(colorGradingIndex);
     }
+    else if (key == 'Q')
+        engine.Exit();
 
     if (test_ragdoll)
     {
@@ -499,7 +501,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_Getup/GetUp_Back";
             //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
             //String testName = "TG_HitReaction/Push_Reaction";
-            String testName = "BM_Attack/CapeDistract_Close_Forward";
+            String testName = "BM_TG_Beatdown/Beatdown_Strike_End_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             Player@ player = GetPlayer();

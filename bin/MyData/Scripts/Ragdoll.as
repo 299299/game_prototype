@@ -61,7 +61,6 @@ class Ragdoll : ScriptObject
     float             maxRagdollStateTime = 6.0f;
 
     int               getUpIndex = 0;
-    int               stickToDynamic = 0;
 
     void Start()
     {
@@ -253,7 +252,7 @@ class Ragdoll : ScriptObject
             // Print("Ragdoll Dynamic time " + timeInState);
             timeInState += dt;
 
-            if (stickToDynamic == 1)
+            if (rootNode.vars[HEALTH].GetInt() <= 0)
                 return;
 
             uint num_of_freeze_objects = 0;
@@ -503,12 +502,10 @@ class Ragdoll : ScriptObject
         if (name == RAGDOLL_PERPARE)
             new_state = RAGDOLL_STATIC;
         else if (name == RAGDOLL_START)
-        {
             new_state = RAGDOLL_DYNAMIC;
-            stickToDynamic = value;
-        }
         else if (name == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;
+
         state_request = new_state;
 
         if (data.Contains(VELOCITY))
