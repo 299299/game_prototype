@@ -175,6 +175,9 @@ class Motion
         uint startTime = time.systemTime;
         this.animationName = GetAnimationName(this.name);
         this.animation = cache.GetResource("Animation", animationName);
+        if (this.animation is null)
+            return;
+
         gMotionMgr.memoryUse += this.animation.memoryUse;
         bool dump = false;
         ProcessAnimation(animationName, motionFlag, originFlag, allowMotion, cutRotation, motionKeys, startFromOrigin, dump);

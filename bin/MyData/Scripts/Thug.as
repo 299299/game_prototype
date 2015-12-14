@@ -803,6 +803,12 @@ class ThugDistractState : SingleMotionState
         flags = FLAGS_STUN | FLAGS_ATTACK;
     }
 
+    void Enter(State@ lastState)
+    {
+        ownner.GetNode().Yaw(ownner.ComputeAngleDiff());
+        SingleMotionState::Enter(lastState);
+    }
+
     void OnMotionFinished()
     {
         ownner.ChangeState("StunState");

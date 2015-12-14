@@ -1055,10 +1055,8 @@ class PlayerBeatDownStartState : SingleMotionState
     float       alignTime = 0.2f;
     int         state = 0;
     Vector3     movePerSec;
-    float       rotatePerSec;
-
     Vector3     predictPosition;
-    Vector3     motionPosition;
+    bool        move = true;
 
     PlayerBeatDownStartState(Character@ c)
     {
@@ -1082,16 +1080,12 @@ class PlayerBeatDownStartState : SingleMotionState
 
         diffPos.Normalize();
         predictPosition = myPos + diffPos * toEnenmyDistance;
-
-        motionPosition = motion.GetFuturePosition(ownner, alignTime);
-        movePerSec = ( predictPosition - motionPosition ) / alignTime;
+        movePerSec = ( predictPosition - ownner.GetNode().worldPosition ) / alignTime;
         movePerSec.y = 0;
 
-        //float motionRotation = motion.GetFutureRotation(ownner, alignTime);
-        //float diffAngle = AngleDiff(targetRotation - motionRotation);
-        //rotatePerSec = diffAngle / alignTime;
-
         ownner.target.ChangeState("BeatDownStartState");
+        ownner.motion_translateEnabled = false;
+        move = true;
 
         // ownner.SetSceneTimeScale(0.0f);
     }
@@ -1100,8 +1094,8 @@ class PlayerBeatDownStartState : SingleMotionState
     {
         if (state == 0)
         {
-            ownner.motion_deltaPosition += movePerSec * dt;
-            // ownner.motion_deltaRotation += rotatePerSec * dt;
+            if (move)
+                ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
 
             if (timeInState >= alignTime)
                 state = 1;
@@ -1110,15 +1104,18 @@ class PlayerBeatDownStartState : SingleMotionState
         if (ownner.target !is null)
         {
             float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
-            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
+            if (move && targetDistance < PLAYER_COLLISION_DIST)
             {
-                Print("Player::PlayerBeatDownStartState TooClose set translateEnabled to false");
-                ownner.motion_translateEnabled = false;
-                //ownner.SetSceneTimeScale(0.0f);
+                Print("Player::PlayerBeatDownStartState TooClose set move to false");
+                move = false;
             }
         }
 
-        SingleMotionState::Update(dt);
+        if (motion.Move(ownner, dt)) {
+            ownner.ChangeState("BeatDownHitState");
+            return;
+        }
+        CharacterState::Update(dt);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1127,12 +1124,7 @@ class PlayerBeatDownStartState : SingleMotionState
             return;
         debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, RED, false);
         debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
-        debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.ChangeState("BeatDownHitState");
+        // debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
     }
 };
 
@@ -1706,7 +1698,8 @@ class Player : Character
     String GetDebugText()
     {
         return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
-              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + " tAngle=" + GetTargetAngle() + "\n";
+              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale +
+              " tAngle=" + GetTargetAngle() + "\n";
     }
 
     void Reset()
