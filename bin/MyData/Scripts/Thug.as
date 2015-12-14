@@ -791,6 +791,11 @@ class ThugBeatDownHitState : MultiMotionState
     {
         return 0.9f;
     }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("StunState");
+    }
 };
 
 class ThugDistractState : SingleMotionState
@@ -837,7 +842,7 @@ class ThugStunState : CharacterState
 
     void Update(float dt)
     {
-        if (timeInState > 3.0f)
+        if (timeInState > 5.0f)
         {
             ownner.CommonStateFinishedOnGroud();
             return;

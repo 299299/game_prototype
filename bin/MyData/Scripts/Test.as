@@ -34,7 +34,7 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 2;
+int test_enemy_num_override = 10;
 bool lowend_platform = false;
 bool auto_target = false;
 
@@ -610,8 +610,8 @@ void SetColorGrading(int index)
 {
     Array<String> colorGradingTextures =
     {
-        "Vintage",
         "Hipster",
+        "Vintage",
         "Hollywood",
         "BleachBypass",
         "CrossProcess",

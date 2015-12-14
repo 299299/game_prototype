@@ -1075,9 +1075,13 @@ class MotionManager
 
         preFix = "BM_TG_Beatdown/";
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);
+        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, COMBAT_SOUND, R_HAND);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
+        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, COMBAT_SOUND, HEAD);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
+        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, COMBAT_SOUND, R_FOOT);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
+        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, COMBAT_SOUND, L_CALF);
     }
 };
 

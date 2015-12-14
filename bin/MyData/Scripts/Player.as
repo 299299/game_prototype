@@ -15,8 +15,8 @@ const float THREAT_SCORE = 30.0f;
 const float LAST_ENEMY_ANGLE = 45.0f;
 const int   LAST_ENEMY_SCORE = 5;
 const int   MAX_WEAK_ATTACK_COMBO = 3;
-const float MAX_DISTRACT_DIST = 3.0f;
-const float MAX_DISTRACT_DIR = 45.0f;
+const float MAX_DISTRACT_DIST = 4.0f;
+const float MAX_DISTRACT_DIR = 90.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -624,7 +624,7 @@ class PlayerAttackState : CharacterState
 
         if (lastKill)
         {
-            ownner.SetSceneTimeScale(0.2f);
+            ownner.SetSceneTimeScale(0.5f);
             weakAttack = false;
             slowMotion = false;
         }
@@ -654,10 +654,7 @@ class PlayerAttackState : CharacterState
         ownner.SetNodeEnabled("TailNode", false);
 
         if (nextState !is this)
-        {
             cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
-            ownner.SetTarget(null);
-        }
 
         if (ownner.target !is null)
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
@@ -725,8 +722,6 @@ class PlayerAttackState : CharacterState
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
-        if (e.health == 0)
-            ownner.SetTarget(null);
     }
 };
 
@@ -1034,15 +1029,20 @@ class PlayerDistractState : SingleMotionState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
+            ownner.PlaySound("Sfx/swing.ogg");
+
             Player@ p = cast<Player>(ownner);
             Array<Enemy@> enemies;
             p.CommonCollectEnemies(enemies, MAX_DISTRACT_DIR, MAX_DISTRACT_DIST, FLAGS_ATTACK);
+
+            /*
             if (enemies.length == 0)
             {
                 p.combo = 0;
                 p.StatusChanged();
                 return;
             }
+            */
 
             for (uint i=0; i<enemies.length; ++i)
                 enemies[i].Distract();
@@ -1069,7 +1069,7 @@ class PlayerBeatDownStartState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        alignTime = motion.endTime;
+        // alignTime = motion.endTime;
 
         Vector3 myPos = ownner.GetNode().worldPosition;
         Vector3 enemyPos = ownner.target.GetNode().worldPosition;
@@ -1086,6 +1086,7 @@ class PlayerBeatDownStartState : SingleMotionState
         ownner.target.ChangeState("BeatDownStartState");
         ownner.motion_translateEnabled = false;
         move = true;
+        state = 0;
 
         // ownner.SetSceneTimeScale(0.0f);
     }
@@ -1145,14 +1146,20 @@ class PlayerBeatDownEndState : MultiMotionState
     {
         MultiMotionState::Enter(lastState);
 
+        if (cast<Player>(ownner).CheckLastKill())
+            ownner.SetSceneTimeScale(0.5f);
+
         if (ownner.target !is null)
         {
             ownner.target.GetNode().vars[ANIMATION_INDEX] = selectIndex;
             ownner.target.ChangeState("BeatDownEndState");
         }
+    }
 
-        if (cast<Player>(ownner).CheckLastKill())
-            ownner.SetSceneTimeScale(0.2f);
+    void Exit(State@ nextState)
+    {
+        ownner.OnAttackSuccess(ownner.target);
+        MultiMotionState::Exit(nextState);
     }
 
     int PickIndex()
@@ -1179,8 +1186,8 @@ class PlayerBeatDownHitState : MultiMotionState
 {
     int beatIndex = 0;
     int beatNum = 0;
-    int maxBeatNum = 20;
-    int minBeatNum = 10;
+    int maxBeatNum = 10;
+    int minBeatNum = 5;
     int beatTotal = 0;
 
     bool combatReady = false;
@@ -1218,9 +1225,25 @@ class PlayerBeatDownHitState : MultiMotionState
             return;
         }
 
+        if (gInput.IsCounterPressed())
+        {
+            ownner.Counter();
+            return;
+        }
+
         // Motion@ motion = motions[selectIndex];
         float angle = ownner.ComputeAngleDiff(ownner.target.GetNode());
         ownner.motion_deltaRotation += angle * rotateSpeed * dt;
+
+        if (ownner.target !is null)
+        {
+            float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
+            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST * 0.75f)
+            {
+                Print("Player::PlayerBeatDownStartState TooClose set motion_translateEnabled to false");
+                ownner.motion_translateEnabled = false;
+            }
+        }
 
         MultiMotionState::Update(dt);
     }
@@ -1742,7 +1765,12 @@ class Player : Character
 
     bool Attack()
     {
+        Print("Do--Attack--->");
         Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
+        Character@ oldTarget = target;
+        if (oldTarget !is null)
+            oldTarget.RemoveFlag(FLAGS_NO_MOVE);
+
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownStartState");
@@ -1753,6 +1781,7 @@ class Player : Character
 
     bool Distract()
     {
+        Print("Do--Attack--->");
         ChangeState("DistractState");
         return true;
     }
