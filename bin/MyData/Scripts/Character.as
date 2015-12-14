@@ -49,6 +49,7 @@ const StringHash FOOT_STEP("FootStep");
 const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
 const StringHash HEALTH("Health");
+const StringHash SOUND("Sound");
 
 Vector3 WORLD_SIZE(0, 0, 0);
 Vector3 WORLD_HALF_SIZE(0, 0, 0);
@@ -86,10 +87,10 @@ class CharacterState : State
             if (animState !is null && animState.weight > 0.5f)
                 OnFootStep(eventData[VALUE].GetString());
         }
-        else if (name == TIME_SCALE) {
-            float scale = eventData[VALUE].GetFloat();
-            SetWorldTimeScale(ownner.GetScene(), scale);
-        }
+        else if (name == TIME_SCALE)
+            ownner.SetTimeScale(eventData[VALUE].GetFloat());
+        else if (name == SOUND)
+            ownner.PlaySound(eventData[VALUE].GetString());
     }
 
     void OnFootStep(const String&in boneName)

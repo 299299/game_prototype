@@ -189,6 +189,7 @@ void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&i
 
 void SetWorldTimeScale(Scene@ _scene, float scale)
 {
+    Print("SetWorldTimeScale:" + scale);
     Array<Node@> nodes = _scene.GetChildrenWithScript(false);
     for (uint i=0; i<nodes.length; ++i)
     {
