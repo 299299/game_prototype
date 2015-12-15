@@ -553,13 +553,15 @@ class MotionManager
         CreateMotion(preFix + "Beatdown_Strike_Start_01");
         CreateMotion(preFix + "CapeDistract_Close_Forward");
 
-        int beat_motion_flags = kMotion_XZR;
-        CreateMotion(preFix + "Beatdown_Test_01", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_Test_02", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_Test_03", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_Test_04", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_Test_05", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_Test_06", kMotion_XZR, beat_motion_flags);
+        int beat_motion_flags = kMotion_XZ;
+        int beat_allow_flags = kMotion_XZR;
+
+        CreateMotion(preFix + "Beatdown_Test_01", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_Test_02", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_Test_03", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_Test_04", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_Test_05", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_Test_06", beat_motion_flags, beat_allow_flags);
 
         preFix = "BM_TG_Beatdown/";
         CreateMotion(preFix + "Beatdown_Strike_End_01");
@@ -618,12 +620,12 @@ class MotionManager
 
         preFix = "TG_BM_Beatdown/";
         CreateMotion(preFix + "Beatdown_Start_01");
-        CreateMotion(preFix + "Beatdown_HitReaction_01", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_02", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_03", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_04", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_05", kMotion_XZR, beat_motion_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_06", kMotion_XZR, beat_motion_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_01", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_02", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_03", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_04", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_05", beat_motion_flags, beat_allow_flags);
+        CreateMotion(preFix + "Beatdown_HitReaction_06", beat_motion_flags, beat_allow_flags);
 
         CreateMotion(preFix + "Beatdown_Strike_End_01");
         CreateMotion(preFix + "Beatdown_Strike_End_02");

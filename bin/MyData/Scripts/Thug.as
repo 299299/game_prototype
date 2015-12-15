@@ -69,7 +69,7 @@ class ThugStandState : CharacterState
     void Update(float dt)
     {
         //if (engine.headless)
-        //   return;
+           return;
 
         if (timeInState > thinkTime)
         {
@@ -795,6 +795,12 @@ class ThugBeatDownHitState : MultiMotionState
     void OnMotionFinished()
     {
         ownner.ChangeState("StunState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        //ownner.GetNode().Yaw(ownner.ComputeAngleDiff());
+        MultiMotionState::Enter(lastState);
     }
 };
 
