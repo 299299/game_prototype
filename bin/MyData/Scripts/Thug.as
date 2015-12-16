@@ -68,7 +68,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        //if (engine.headless)
+        if (engine.headless)
            return;
 
         if (timeInState > thinkTime)
