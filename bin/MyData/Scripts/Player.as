@@ -1054,7 +1054,7 @@ class PlayerBeatDownStartState : SingleMotionState
     int         state = 0;
     Vector3     movePerSec;
     Vector3     predictPosition;
-    bool        move = true;
+    float       rotatePerSec = 0;
 
     PlayerBeatDownStartState(Character@ c)
     {
@@ -1074,7 +1074,6 @@ class PlayerBeatDownStartState : SingleMotionState
         Vector3 diffPos = enemyPos - myPos;
         diffPos.y = 0;
         float toEnenmyDistance = diffPos.length - PLAYER_COLLISION_DIST;
-        //float targetRotation = Atan2(diffPos.x, diffPos.z);
 
         diffPos.Normalize();
         predictPosition = myPos + diffPos * toEnenmyDistance;
@@ -1102,31 +1101,23 @@ class PlayerBeatDownStartState : SingleMotionState
 
         ownner.target.ChangeState("BeatDownStartState");
         ownner.motion_translateEnabled = false;
-        move = true;
-        state = 0;
+        ownner.motion_rotateEnabled = false;
 
-        // ownner.SetSceneTimeScale(0.0f);
+        state = 0;
+        rotatePerSec = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / alignTime;
+
+        //ownner.SetSceneTimeScale(0.0f);
     }
 
     void Update(float dt)
     {
         if (state == 0)
         {
-            if (move)
-                ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
+            ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
+            ownner.GetNode().Yaw(rotatePerSec * dt);
 
             if (timeInState >= alignTime)
                 state = 1;
-        }
-
-        if (ownner.target !is null)
-        {
-            float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
-            if (move && targetDistance < PLAYER_COLLISION_DIST)
-            {
-                Print("Player::PlayerBeatDownStartState TooClose set move to false");
-                move = false;
-            }
         }
 
         if (motion.Move(ownner, dt)) {
@@ -1161,16 +1152,42 @@ class PlayerBeatDownEndState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        MultiMotionState::Enter(lastState);
+        selectIndex = PickIndex();
+        if (selectIndex >= int(motions.length))
+        {
+            Print("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            selectIndex = 0;
+        }
 
         if (cast<Player>(ownner).CheckLastKill())
             ownner.SetSceneTimeScale(0.5f);
 
-        if (ownner.target !is null)
+        Character@ target = ownner.target;
+        if (target !is null)
         {
-            ownner.target.GetNode().vars[ANIMATION_INDEX] = selectIndex;
-            ownner.target.ChangeState("BeatDownEndState");
+
+            Motion@ m1 = motions[selectIndex];
+            ThugBeatDownEndState@ state = cast<ThugBeatDownEndState>(target.FindState("BeatDownEndState"));
+            Motion@ m2 = state.motions[selectIndex];
+            Vector3 s1 = m1.startFromOrigin;
+            Vector3 s2 = m2.startFromOrigin;
+            Vector3 originDiff = s1 - s2;
+            originDiff.x = Abs(originDiff.x);
+            originDiff.z = Abs(originDiff.z);
+
+            Vector3 predictPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
+            predictPosition.y = ownner.GetNode().worldPosition.y;
+            ownner.MoveTo(predictPosition, 1.0f/60.0f);
+
+            target.GetNode().vars[ANIMATION_INDEX] = selectIndex;
+            target.ChangeState("BeatDownEndState");
         }
+
+        if (d_log)
+            Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
+        motions[selectIndex].Start(ownner);
+
+        CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)

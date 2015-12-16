@@ -550,7 +550,7 @@ class MotionManager
         CreateMotion(preFix + "Death_Side_Right");
 
         preFix = "BM_Attack/";
-        CreateMotion(preFix + "Beatdown_Strike_Start_01");
+        CreateMotion(preFix + "Beatdown_Strike_Start_01", kMotion_XZR, 0);
         CreateMotion(preFix + "CapeDistract_Close_Forward");
 
         int beat_motion_flags = kMotion_XZ;
@@ -619,7 +619,7 @@ class MotionManager
         AddCounterMotions(preFix);
 
         preFix = "TG_BM_Beatdown/";
-        CreateMotion(preFix + "Beatdown_Start_01");
+        CreateMotion(preFix + "Beatdown_Start_01", kMotion_XZR, 0);
         CreateMotion(preFix + "Beatdown_HitReaction_01", beat_motion_flags, beat_allow_flags);
         CreateMotion(preFix + "Beatdown_HitReaction_02", beat_motion_flags, beat_allow_flags);
         CreateMotion(preFix + "Beatdown_HitReaction_03", beat_motion_flags, beat_allow_flags);

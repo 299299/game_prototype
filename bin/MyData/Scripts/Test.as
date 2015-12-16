@@ -504,7 +504,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "BM_TG_Beatdown/Beatdown_Strike_End_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
-            String testName = "BM_Attack/Beatdown_Test_01";
+            String testName = "BM_Attack/Beatdown_Strike_Start_01";
             //String testName = "TG_BM_Beatdown/Beatdown_HitReaction_01";
             Player@ player = GetPlayer();
             if (player !is null)
@@ -612,8 +612,8 @@ void SetColorGrading(int index)
 {
     Array<String> colorGradingTextures =
     {
-        "Hipster",
         "Vintage",
+        "Hipster",
         "Hollywood",
         "BleachBypass",
         "CrossProcess",
