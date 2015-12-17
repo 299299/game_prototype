@@ -1005,6 +1005,8 @@ class PlayerDeadState : MultiMotionState
 
 class PlayerDistractState : SingleMotionState
 {
+    bool combatReady = false;
+
     PlayerDistractState(Character@ c)
     {
         super(c);
@@ -1017,7 +1019,8 @@ class PlayerDistractState : SingleMotionState
     {
         float targetRotation = ownner.GetTargetAngle();
         ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-
+        combatReady = false;
+        
         SingleMotionState::Enter(lastState);
     }
 
@@ -1032,7 +1035,8 @@ class PlayerDistractState : SingleMotionState
             Player@ p = cast<Player>(ownner);
             Array<Enemy@> enemies;
             p.CommonCollectEnemies(enemies, MAX_DISTRACT_DIR, MAX_DISTRACT_DIST, FLAGS_ATTACK);
-
+        
+            combatReady = true;
             /*
             if (enemies.length == 0)
             {
@@ -1045,6 +1049,13 @@ class PlayerDistractState : SingleMotionState
             for (uint i=0; i<enemies.length; ++i)
                 enemies[i].Distract();
         }
+    }
+    
+    void Update(float dt)
+    {
+        if (combatReady && gInput.IsAttackPressed())
+            ownner.Attack();
+        SingleMotionState::Update(dt);
     }
 };
 
