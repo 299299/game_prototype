@@ -650,6 +650,17 @@ class Character : GameObject
 
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+
+        if (use_navmesh)
+        {
+            // Subscribe HandleCrowdAgentFailure() function for resolving invalidation issues with agents, during which we
+            // use a larger extents for finding a point on the navmesh to fix the agent's position
+            SubscribeToEvent(sceneNode, "CrowdAgentFailure", "HandleCrowdAgentFailure");
+            // Subscribe HandleCrowdAgentReposition() function for controlling the animation
+            SubscribeToEvent(sceneNode, "CrowdAgentReposition", "HandleCrowdAgentReposition");
+            // Subscribe HandleCrowdAgentFormation() function for positioning agent into a formation
+            SubscribeToEvent(sceneNode, "CrowdAgentFormation", "HandleCrowdAgentFormation");
+        }
     }
 
     void Start()
@@ -861,14 +872,6 @@ class Character : GameObject
             return;
         state.animationName = animationName;
         ChangeState("AnimationTestState");
-    }
-
-    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
-    {
-        AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
-        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
-        if (cs !is null)
-            cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }
 
     float GetTargetAngle()
@@ -1144,6 +1147,79 @@ class Character : GameObject
     bool IsVisible()
     {
         return animModel.inView;
+    }
+
+    // ========================================================
+    //  EVENT HANDLERS
+    // ========================================================
+    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
+    {
+        AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
+        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
+        if (cs !is null)
+            cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
+    }
+
+    void HandleCrowdAgentFailure(StringHash eventType, VariantMap& eventData)
+    {
+        int state = eventData["CrowdAgentState"].GetInt();
+
+        // If the agent's state is invalid, likely from spawning on the side of a box, find a point in a larger area
+        if (state == CA_STATE_INVALID)
+        {
+            // Get a point on the navmesh using more generous extents
+            Vector3 newPos = cast<DynamicNavigationMesh>(GetScene().GetComponent("DynamicNavigationMesh")).FindNearestPoint(node.position, Vector3(5.0f,5.0f,5.0f));
+            // Set the new node position, CrowdAgent component will automatically reset the state of the agent
+            node.position = newPos;
+        }
+    }
+
+    void HandleCrowdAgentFormation(StringHash eventType, VariantMap& eventData)
+    {
+        uint index = eventData["Index"].GetUInt();
+        uint size = eventData["Size"].GetUInt();
+        Vector3 position = eventData["Position"].GetVector3();
+
+        // The first agent will always move to the exact position, all other agents will select a random point nearby
+        if (index > 0)
+        {
+            CrowdManager@ crowdManager =GetEventSender();
+            CrowdAgent@ agent = eventData["CrowdAgent"].GetPtr();
+            eventData["Position"] = crowdManager.GetRandomPointInCircle(position, agent.radius, agent.queryFilterType);
+        }
+    }
+
+    void HandleCrowdAgentReposition(StringHash eventType, VariantMap& eventData)
+    {
+        const String WALKING_ANI = "Models/Jack_Walk.ani";
+        const Vector3 FORWARD(0.0f, 0.0f, 1.0f);
+
+        CrowdAgent@ agent = eventData["CrowdAgent"].GetPtr();
+        Vector3 velocity = eventData["Velocity"].GetVector3();
+        float timeStep = eventData["TimeStep"].GetFloat();
+
+        // Only Jack agent has animation controller
+        /*
+        AnimationController@ animCtrl = node.GetComponent("AnimationController");
+        if (animCtrl !is null)
+        {
+            float speed = velocity.length;
+            if (animCtrl.IsPlaying(WALKING_ANI))
+            {
+                float speedRatio = speed / agent.maxSpeed;
+                // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
+                node.rotation = node.rotation.Slerp(Quaternion(FORWARD, velocity), 10.f * timeStep * speedRatio);
+                // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
+                animCtrl.SetSpeed(WALKING_ANI, speedRatio);
+            }
+            else
+                animCtrl.Play(WALKING_ANI, 0, true, 0.1f);
+
+            // If speed is too low then stopping the animation
+            if (speed < agent.radius)
+                animCtrl.Stop(WALKING_ANI, 0.8f);
+        }
+        */
     }
 };
 

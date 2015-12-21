@@ -37,6 +37,7 @@ uint playerId = M_MAX_UNSIGNED;
 int test_enemy_num_override = 10;
 bool lowend_platform = false;
 bool auto_target = false;
+bool use_navmesh = true;
 
 String LUT = "";
 
@@ -382,7 +383,11 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
             em.DebugDraw(debug);
     }
     if (drawDebug > 2)
-        scene_.physicsWorld.DrawDebugGeometry(false);
+    {
+        scene_.physicsWorld.DrawDebugGeometry(true);
+        cast<DynamicNavigationMesh>(scene_.GetComponent("DynamicNavigationMesh")).DrawDebugGeometry(true);
+        cast<CrowdManager>(scene_.GetComponent("CrowdManager")).DrawDebugGeometry(true);
+    }
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
