@@ -68,7 +68,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        if (engine.headless)
+        //if (engine.headless)
            return;
 
         if (timeInState > thinkTime)
@@ -154,6 +154,8 @@ class ThugStandState : CharacterState
 
     void FixedUpdate(float dt)
     {
+        if (use_navmesh)
+            return;
         checkAvoidanceTimer += dt;
         if (checkAvoidanceTimer >= checkAvoidanceTime)
         {
@@ -897,15 +899,10 @@ class Thug : Enemy
         STEP_MIN_DIST = stepMotion.endDistance;
         Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
 
-        /*
-        Node@ hintNode = sceneNode.GetChild("HintNode", true);
-        if (hintNode !is null)
+        if (use_navmesh)
         {
-            Text3D@ text3d = hintNode.GetComponent("Text3D");
-            text3d.text = GetName();
-            text3d.enabled = true;
+            SetNodeEnabled("Collision", false);
         }
-        */
 
         //attackDamage = 50;
     }

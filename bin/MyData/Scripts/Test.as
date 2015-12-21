@@ -45,6 +45,7 @@ void Start()
 {
     Print("Game Running Platform: " + GetPlatform());
     lowend_platform = GetPlatform() != "Windows";
+    lowend_platform = true;
 
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)
@@ -68,6 +69,12 @@ void Start()
             else if (argument == "autotarget")
                 auto_target = !auto_target;
         }
+    }
+
+    if (lowend_platform)
+    {
+        bHdr = false;
+        tonemapping = false;
     }
 
     cache.autoReloadResources = true;
@@ -384,9 +391,12 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     }
     if (drawDebug > 2)
     {
-        scene_.physicsWorld.DrawDebugGeometry(true);
-        cast<DynamicNavigationMesh>(scene_.GetComponent("DynamicNavigationMesh")).DrawDebugGeometry(true);
-        cast<CrowdManager>(scene_.GetComponent("CrowdManager")).DrawDebugGeometry(true);
+        scene_.physicsWorld.DrawDebugGeometry(false);
+        if (use_navmesh)
+        {
+            cast<DynamicNavigationMesh>(scene_.GetComponent("DynamicNavigationMesh")).DrawDebugGeometry(false);
+            cast<CrowdManager>(scene_.GetComponent("CrowdManager")).DrawDebugGeometry(false);
+        }
     }
 }
 

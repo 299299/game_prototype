@@ -369,28 +369,25 @@ class TestGameState : GameState
     {
         Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
         renderer.viewports[0] = viewport;
-        if (bHdr && !lowend_platform)
+        RenderPath@ renderpath = viewport.renderPath.Clone();
+        if (bHdr)
         {
-            RenderPath@ renderpath = viewport.renderPath.Clone();
             renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
             if (tonemapping)
-                renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));
-            renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
-            if (tonemapping)
             {
+                renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));
                 renderpath.SetEnabled("TonemapReinhardEq3", false);
                 renderpath.SetEnabled("TonemapUncharted2", true);
+                renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
+                renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
+                renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.8f;
             }
-            renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
-            renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
-            renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.8f;
-
-            viewport.renderPath = renderpath;
-
-            SetColorGrading(colorGradingIndex);
         }
+        renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
+        viewport.renderPath = renderpath;
+        SetColorGrading(colorGradingIndex);
     }
 
     void CreateScene()
@@ -400,6 +397,26 @@ class TestGameState : GameState
         script.defaultScene = scene_;
         scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
         Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
+
+        if (use_navmesh)
+        {
+            DynamicNavigationMesh@ navMesh = scene_.CreateComponent("DynamicNavigationMesh");
+            navMesh.drawObstacles = true;
+            navMesh.drawOffMeshConnections = true;
+            navMesh.agentHeight = 10;
+            navMesh.cellHeight = 0.05f;
+            scene_.CreateComponent("Navigable");
+            navMesh.padding = Vector3(0.0f, 10.0f, 0.0f);
+            navMesh.Build();
+
+            CrowdManager@ crowdManager = scene_.CreateComponent("CrowdManager");
+            CrowdObstacleAvoidanceParams params = crowdManager.GetObstacleAvoidanceParams(0);
+            params.velBias = 0.5f;
+            params.adaptiveDivs = 7;
+            params.adaptiveRings = 3;
+            params.adaptiveDepth = 3;
+            crowdManager.SetObstacleAvoidanceParams(0, params);
+        }
 
         EnemyManager@ em = cast<EnemyManager>(scene_.CreateScriptObject(scriptFile, "EnemyManager"));
 

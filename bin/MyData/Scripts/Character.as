@@ -653,12 +653,13 @@ class Character : GameObject
 
         if (use_navmesh)
         {
-            // Subscribe HandleCrowdAgentFailure() function for resolving invalidation issues with agents, during which we
-            // use a larger extents for finding a point on the navmesh to fix the agent's position
+            CrowdAgent@ agent = sceneNode.CreateComponent("CrowdAgent");
+            agent.height = CHARACTER_HEIGHT;
+            agent.maxSpeed = 3.0f;
+            agent.maxAccel = 3.0f;
+            agent.radius = COLLISION_RADIUS;
             SubscribeToEvent(sceneNode, "CrowdAgentFailure", "HandleCrowdAgentFailure");
-            // Subscribe HandleCrowdAgentReposition() function for controlling the animation
             SubscribeToEvent(sceneNode, "CrowdAgentReposition", "HandleCrowdAgentReposition");
-            // Subscribe HandleCrowdAgentFormation() function for positioning agent into a formation
             SubscribeToEvent(sceneNode, "CrowdAgentFormation", "HandleCrowdAgentFormation");
         }
     }
