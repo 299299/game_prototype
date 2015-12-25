@@ -69,7 +69,7 @@ class ThugStandState : CharacterState
     void Update(float dt)
     {
         //if (engine.headless)
-           return;
+        //   return;
 
         if (timeInState > thinkTime)
         {
@@ -710,7 +710,7 @@ class ThugGetUpState : CharacterGetUpState
     void Enter(State@ lastState)
     {
         CharacterGetUpState::Enter(lastState);
-        ownner.SetNodeEnabled("Collision", true);
+        ownner.SetNavEnabled(true);
     }
 
     void Exit(State@ nextState)
@@ -899,9 +899,18 @@ class Thug : Enemy
         STEP_MIN_DIST = stepMotion.endDistance;
         Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
 
-        if (use_navmesh)
+        if (!use_navmesh)
         {
-            SetNodeEnabled("Collision", false);
+            Node@ collisionNode = sceneNode.CreateChild("Collision");
+            CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
+            shape.SetCapsule(3, 5);
+            RigidBody@ body = collisionNode.CreateComponent("RigidBody");
+            body.mass = 10;
+            body.collisionLayer = COLLISION_LAYER_CHARACTER;
+            body.collisionMask = COLLISION_LAYER_CHARACTER;
+            body.kinematic = true;
+            body.trigger = true;
+            body.collisionEventMode = COLLISION_ALWAYS;
         }
 
         //attackDamage = 50;

@@ -515,7 +515,7 @@ class CharacterRagdollState : CharacterState
     void Enter(State@ lastState)
     {
         CharacterState::Enter(lastState);
-        ownner.SetNodeEnabled("Collision", false);
+        ownner.SetNavEnabled(false);
     }
 };
 
@@ -658,9 +658,13 @@ class Character : GameObject
             agent.maxSpeed = 3.0f;
             agent.maxAccel = 3.0f;
             agent.radius = COLLISION_RADIUS;
+            agent.updateNodePosition = false;
             SubscribeToEvent(sceneNode, "CrowdAgentFailure", "HandleCrowdAgentFailure");
             SubscribeToEvent(sceneNode, "CrowdAgentReposition", "HandleCrowdAgentReposition");
             SubscribeToEvent(sceneNode, "CrowdAgentFormation", "HandleCrowdAgentFormation");
+
+            Vector3 newPos = cast<DynamicNavigationMesh>(GetScene().GetComponent("DynamicNavigationMesh")).FindNearestPoint(sceneNode.worldPosition, Vector3(5.0f,5.0f,5.0f));
+            sceneNode.worldPosition = newPos;
         }
     }
 
@@ -1164,14 +1168,13 @@ class Character : GameObject
     void HandleCrowdAgentFailure(StringHash eventType, VariantMap& eventData)
     {
         int state = eventData["CrowdAgentState"].GetInt();
-
         // If the agent's state is invalid, likely from spawning on the side of a box, find a point in a larger area
         if (state == CA_STATE_INVALID)
         {
             // Get a point on the navmesh using more generous extents
-            Vector3 newPos = cast<DynamicNavigationMesh>(GetScene().GetComponent("DynamicNavigationMesh")).FindNearestPoint(node.position, Vector3(5.0f,5.0f,5.0f));
+            Vector3 newPos = cast<DynamicNavigationMesh>(GetScene().GetComponent("DynamicNavigationMesh")).FindNearestPoint(sceneNode.worldPosition, Vector3(5.0f,5.0f,5.0f));
             // Set the new node position, CrowdAgent component will automatically reset the state of the agent
-            node.position = newPos;
+            sceneNode.worldPosition = newPos;
         }
     }
 
@@ -1221,6 +1224,17 @@ class Character : GameObject
                 animCtrl.Stop(WALKING_ANI, 0.8f);
         }
         */
+    }
+
+    void SetNavEnabled(bool bEnable)
+    {
+        if (use_navmesh)
+        {
+            CrowdAgent@ agent = sceneNode.GetComponent("CrowdAgent");
+            agent.enabled = bEnable;
+        }
+        else
+            SetNodeEnabled("Collision", bEnable);
     }
 };
 
