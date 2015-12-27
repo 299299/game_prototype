@@ -154,13 +154,14 @@ class ThugStandState : CharacterState
 
     void FixedUpdate(float dt)
     {
-        if (use_navmesh)
-            return;
-        checkAvoidanceTimer += dt;
-        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        if (!use_navmesh)
         {
-            checkAvoidanceTimer -= checkAvoidanceTime;
-            ownner.CheckCollision();
+            checkAvoidanceTimer += dt;
+            if (checkAvoidanceTimer >= checkAvoidanceTime)
+            {
+                checkAvoidanceTimer -= checkAvoidanceTime;
+                ownner.CheckCollision();
+            }
         }
         CharacterState::FixedUpdate(dt);
     }
@@ -236,11 +237,14 @@ class ThugCombatIdleState : CharacterState
 
     void FixedUpdate(float dt)
     {
-        checkAvoidanceTimer += dt;
-        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        if (!use_navmesh)
         {
-            checkAvoidanceTimer -= checkAvoidanceTime;
-            ownner.CheckCollision();
+            checkAvoidanceTimer += dt;
+            if (checkAvoidanceTimer >= checkAvoidanceTime)
+            {
+                checkAvoidanceTimer -= checkAvoidanceTime;
+                ownner.CheckCollision();
+            }
         }
         CharacterState::FixedUpdate(dt);
     }
@@ -333,8 +337,8 @@ class ThugRunState : SingleMotionState
     float turnSpeed = 5.0f;
     float attackRange;
 
-    float           checkAvoidanceTimer = 0.0f;
-    float           checkAvoidanceTime = 0.1f;
+    float checkAvoidanceTimer = 0.0f;
+    float checkAvoidanceTime = 0.1f;
 
     ThugRunState(Character@ c)
     {
@@ -392,6 +396,121 @@ class ThugRunState : SingleMotionState
     }
 };
 
+class ThugRunState_NavMesh : CharacterState
+{
+    float turnSpeed = 5.0f;
+    float attackRange;
+
+    float checkAvoidanceTimer = 0.0f;
+    float checkAvoidanceTime = 0.1f;
+
+    float run_motion_speed = 0.0f;
+    float walk_motion_speed = 0.0f;
+
+    Motion@ run_motion;
+    Motion@ walk_motion;
+
+    float run_walk_ratio = 1.0f;
+    float walk_weight = 1.0f;
+    float weight_speed = 1.0f;
+
+    ThugRunState_NavMesh(Character@ c)
+    {
+        super(c);
+        SetName("RunState");
+
+        @run_motion = gMotionMgr.FindMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
+        @walk_motion = gMotionMgr.FindMotion(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
+
+        flags = FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING;
+
+        run_motion_speed = run_motion.endDistance / run_motion.endTime;
+        walk_motion_speed = walk_motion.endDistance / walk_motion.endTime;
+
+        run_walk_ratio = run_motion.endTime / walk_motion.endTime;
+
+        Print("run_motion_speed=" + run_motion_speed + " walk_motion_speed=" + walk_motion_speed + " run_walk_ratio=" + run_walk_ratio);
+    }
+
+    void Update(float dt)
+    {
+        CrowdAgent@ agent = ownner.GetNode().GetComponent("CrowdAgent");
+        agent.targetPosition = ownner.target.GetNode().worldPosition;
+        float rotation = Atan2(agent.actualVelocity.x, agent.actualVelocity.z);
+        ownner.GetNode().worldRotation = Quaternion(0, rotation, 0);
+        ApplyWalkWeight(dt);
+    }
+
+    void ApplyWalkWeight(float dt)
+    {   
+        CrowdAgent@ agent = ownner.GetNode().GetComponent("CrowdAgent");
+        float speed = agent.actualVelocity.length;
+        float _walk_weight = 1.0f;
+        float min_speed = walk_motion_speed;
+        float max_speed = run_motion_speed * run_walk_ratio;
+        if (speed < min_speed)
+        {
+            _walk_weight = 1.0f;
+        }
+        else if (speed > max_speed)
+        {
+            _walk_weight = 0.0f;
+        }
+        else
+        {
+            _walk_weight = (speed - min_speed) / (max_speed - min_speed);
+        }
+        
+        float diff = _walk_weight - walk_weight;
+        walk_weight += diff * weight_speed;
+        walk_weight = Clamp(walk_weight, 0.0f, 1.0f);
+
+        ownner.animCtrl.SetWeight(walk_motion.animationName, walk_weight);
+        ownner.animCtrl.SetWeight(run_motion.animationName, 1.0f - walk_weight);
+
+        Print(ownner.GetName() + " Running speed=" + speed + " walk_weight=" + walk_weight + " _walk_weight=" + _walk_weight);
+    }
+
+    void Enter(State@ lastState)
+    {
+        CharacterState::Enter(lastState);
+     
+        AnimationController@ ctrl = ownner.animCtrl;
+        float blendTime = 0.1f;
+        ctrl.StopLayer(LAYER_MOVE, blendTime);
+        ctrl.Play(run_motion.animationName, LAYER_MOVE, true, blendTime);
+        ctrl.SetTime(run_motion.animationName, 0.0f);
+        ctrl.SetSpeed(run_motion.animationName, run_walk_ratio);
+        ctrl.Play(walk_motion.animationName, LAYER_MOVE, true, blendTime);
+        ctrl.SetTime(walk_motion.animationName, 0.0f);
+        ctrl.SetSpeed(walk_motion.animationName, 1.0f);
+        ApplyWalkWeight(1.0f/weight_speed);
+
+        attackRange = Random(0.0, MAX_ATTACK_RANGE);
+
+        CrowdAgent@ agent = ownner.GetNode().GetComponent("CrowdAgent");
+        if (agent !is null)
+        {
+            agent.updateNodePosition = true;
+        }
+    }
+
+    void Exit(State@ nextState)
+    {
+        CharacterState::Exit(nextState);
+        CrowdAgent@ agent = ownner.GetNode().GetComponent("CrowdAgent");
+        if (agent !is null)
+        {
+            agent.updateNodePosition = false;
+        }
+    }
+
+    float GetThreatScore()
+    {
+        return 0.333f;
+    }
+};
+
 class ThugTurnState : MultiMotionState
 {
     float turnSpeed;
@@ -439,11 +558,14 @@ class ThugTurnState : MultiMotionState
 
     void FixedUpdate(float dt)
     {
-        checkAvoidanceTimer += dt;
-        if (checkAvoidanceTimer >= checkAvoidanceTime)
+        if (!use_navmesh)
         {
-            checkAvoidanceTimer -= checkAvoidanceTime;
-            ownner.CheckCollision();
+            checkAvoidanceTimer += dt;
+            if (checkAvoidanceTimer >= checkAvoidanceTime)
+            {
+                checkAvoidanceTimer -= checkAvoidanceTime;
+                ownner.CheckCollision();
+            }
         }
         CharacterState::FixedUpdate(dt);
     }
@@ -873,7 +995,10 @@ class Thug : Enemy
         stateMachine.AddState(ThugHitState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
-        stateMachine.AddState(ThugRunState(this));
+        if (use_navmesh)
+            stateMachine.AddState(ThugRunState_NavMesh(this));
+        else
+            stateMachine.AddState(ThugRunState(this));
         if (has_redirect)
             stateMachine.AddState(ThugRedirectState(this));
         stateMachine.AddState(ThugAttackState(this));

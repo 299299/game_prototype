@@ -586,6 +586,7 @@ class MotionManager
         CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
 
         CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_XZR, -1, 0, true);
+        CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_XZR, -1, 0, true);
 
         if (has_redirect)
         {

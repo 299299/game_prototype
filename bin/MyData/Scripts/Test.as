@@ -34,7 +34,7 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 10;
+int test_enemy_num_override = 1;
 bool lowend_platform = false;
 bool auto_target = false;
 bool use_navmesh = true;
@@ -45,7 +45,7 @@ void Start()
 {
     Print("Game Running Platform: " + GetPlatform());
     lowend_platform = GetPlatform() != "Windows";
-    lowend_platform = true;
+    // lowend_platform = true;
 
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)

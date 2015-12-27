@@ -655,8 +655,8 @@ class Character : GameObject
         {
             CrowdAgent@ agent = sceneNode.CreateComponent("CrowdAgent");
             agent.height = CHARACTER_HEIGHT;
-            agent.maxSpeed = 3.0f;
-            agent.maxAccel = 3.0f;
+            agent.maxSpeed = 10.0f;
+            agent.maxAccel = 2.0f;
             agent.radius = COLLISION_RADIUS;
             agent.updateNodePosition = false;
             SubscribeToEvent(sceneNode, "CrowdAgentFailure", "HandleCrowdAgentFailure");
