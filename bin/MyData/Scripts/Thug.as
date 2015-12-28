@@ -768,7 +768,29 @@ class ThugBeatDownHitState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        //ownner.GetNode().Yaw(ownner.ComputeAngleDiff());
+        int beatIndex = PickIndex();
+        Character@ target = ownner.target;
+        PlayerBeatDownHitState@ state = cast<PlayerBeatDownHitState>(target.GetState());
+        if (state !is null)
+        {
+            Motion@ m1 = motions[beatIndex];
+            Motion@ m2 = state.motions[beatIndex];
+
+            float enemyYaw = target.GetNode().worldRotation.eulerAngles.y;
+            float targetRotation = enemyYaw + 180;
+
+            Vector3 s1 = m1.startFromOrigin;
+            Vector3 s2 = m2.startFromOrigin;
+            Vector3 originDiff = s1 - s2;
+            originDiff.x = Abs(originDiff.x);
+            originDiff.z = Abs(originDiff.z);
+
+            Vector3 targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
+            targetPosition.y = ownner.GetNode().worldPosition.y;
+            ownner.MoveTo(targetPosition, 1.0f/60.0f);
+            ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        }
+
         MultiMotionState::Enter(lastState);
     }
 };

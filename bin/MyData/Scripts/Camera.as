@@ -232,6 +232,7 @@ class DeathCameraController : CameraController
     float   cameraDist = 15.0f;
     float   cameraHeight = 1.0f;
     float   sideAngle = 0.0;
+    float   timeInState = 0.0f;
 
     DeathCameraController(Node@ n, const String&in name)
     {
@@ -245,8 +246,9 @@ class DeathCameraController : CameraController
 
     void Update(float dt)
     {
+        timeInState += dt;
         Node@ _node = cameraNode.scene.GetNode(nodeId);
-        if (_node is null)
+        if (_node is null || timeInState > 5.0f)
         {
             gCameraMgr.SetCameraController("ThirdPerson");
             return;

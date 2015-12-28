@@ -7,7 +7,7 @@
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
-const float MAX_ATTACK_ANGLE_DIFF = 60.0f;
+const float MAX_ATTACK_ANGLE_DIFF = 90.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 const float DIST_SCORE = 20.0f;
 const float ANGLE_SCORE = 30.0f;
@@ -222,6 +222,8 @@ class PlayerAttackState : CharacterState
     bool                    slowMotion = false;
     bool                    isInAir = false;
     bool                    lastKill = false;
+
+    bool                    beatAttack = false;
 
     PlayerAttackState(Character@ c)
     {
@@ -708,14 +710,26 @@ class PlayerAttackState : CharacterState
         if (n !is null)
             position = n.worldPosition;
 
-        int damage = ownner.attackDamage;
-        if (lastKill)
-            damage = 9999;
+        if (beatAttack)
+        {
+            // e.Distract();
+            ownner.ChangeState("BeatDownHitState");
+        }
+        else if (e.HasFlag(FLAGS_STUN))
+        {
+            // e.ChangeState("BeatDownStartState");
+        }
         else
-            damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
-        bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
-        if (!b)
-            return;
+        {
+            int damage = ownner.attackDamage;
+            if (lastKill)
+                damage = 9999;
+            else
+                damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
+            bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
+            if (!b)
+                return;
+        }
 
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
         ownner.OnAttackSuccess(e);
@@ -1307,31 +1321,7 @@ class PlayerBeatDownHitState : MultiMotionState
         if (target !is null)
         {
             target.GetNode().vars[ANIMATION_INDEX] = beatIndex;
-
             target.ChangeState("BeatDownHitState");
-
-            ThugBeatDownHitState@ state = cast<ThugBeatDownHitState>(target.GetState());
-            if (state !is null)
-            {
-                Motion@ m1 = motions[beatIndex];
-                Motion@ m2 = state.motions[beatIndex];
-
-                float enemyYaw = target.GetNode().worldRotation.eulerAngles.y;
-                float targetRotation = enemyYaw + 180;
-
-                Vector3 s1 = m1.startFromOrigin;
-                Vector3 s2 = m2.startFromOrigin;
-                Vector3 originDiff = s1 - s2;
-                originDiff.x = Abs(originDiff.x);
-                originDiff.z = Abs(originDiff.z);
-
-                Vector3 targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
-                targetPosition.y = ownner.GetNode().worldPosition.y;
-                ownner.MoveTo(targetPosition, 1.0f/60.0f);
-                ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-
-                // ownner.SetSceneTimeScale(0.0f);
-            }
         }
 
         MultiMotionState::Enter(lastState);
@@ -1836,23 +1826,39 @@ class Player : Character
     bool Attack()
     {
         Print("Do--Attack--->");
+
         Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
         Character@ oldTarget = target;
         if (oldTarget !is null)
             oldTarget.RemoveFlag(FLAGS_NO_MOVE);
 
         SetTarget(e);
-        if (e !is null && e.HasFlag(FLAGS_STUN))
-            ChangeState("BeatDownStartState");
-        else
-            ChangeState("AttackState");
+
+        //PlayerAttackState@ state = cast<PlayerAttackState>(FindState("AttackState"));
+        //state.beatAttack = false;
+
+        ChangeState("AttackState");
+
         return true;
     }
 
     bool Distract()
     {
-        Print("Do--Attack--->");
-        ChangeState("DistractState");
+        Print("Do--Distract--->");
+        //ChangeState("DistractState");
+
+        Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
+        Character@ oldTarget = target;
+        if (oldTarget !is null)
+            oldTarget.RemoveFlag(FLAGS_NO_MOVE);
+
+        SetTarget(e);
+
+        PlayerAttackState@ state = cast<PlayerAttackState>(FindState("AttackState"));
+        state.beatAttack = true;
+
+        ChangeState("AttackState");
+
         return true;
     }
 
