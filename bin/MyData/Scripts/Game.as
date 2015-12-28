@@ -398,26 +398,6 @@ class TestGameState : GameState
         scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
         Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
-        if (use_navmesh)
-        {
-            DynamicNavigationMesh@ navMesh = scene_.CreateComponent("DynamicNavigationMesh");
-            navMesh.drawObstacles = true;
-            navMesh.drawOffMeshConnections = true;
-            navMesh.agentHeight = 10;
-            navMesh.cellHeight = 0.05f;
-            scene_.CreateComponent("Navigable");
-            navMesh.padding = Vector3(0.0f, 10.0f, 0.0f);
-            navMesh.Build();
-
-            CrowdManager@ crowdManager = scene_.CreateComponent("CrowdManager");
-            CrowdObstacleAvoidanceParams params = crowdManager.GetObstacleAvoidanceParams(0);
-            params.velBias = 0.5f;
-            params.adaptiveDivs = 7;
-            params.adaptiveRings = 3;
-            params.adaptiveDepth = 3;
-            crowdManager.SetObstacleAvoidanceParams(0, params);
-        }
-
         EnemyManager@ em = cast<EnemyManager>(scene_.CreateScriptObject(scriptFile, "EnemyManager"));
 
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);

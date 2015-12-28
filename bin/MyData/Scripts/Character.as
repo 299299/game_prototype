@@ -515,7 +515,7 @@ class CharacterRagdollState : CharacterState
     void Enter(State@ lastState)
     {
         CharacterState::Enter(lastState);
-        ownner.SetNavEnabled(false);
+        ownner.SetNodeEnabled("Collision", false);
     }
 };
 
@@ -533,8 +533,6 @@ class CharacterGetUpState : MultiMotionState
     void Enter(State@ lastState)
     {
         state = 0;
-        selectIndex = PickIndex();
-
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
@@ -650,22 +648,6 @@ class Character : GameObject
 
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-
-        if (use_navmesh)
-        {
-            CrowdAgent@ agent = sceneNode.CreateComponent("CrowdAgent");
-            agent.height = CHARACTER_HEIGHT;
-            agent.maxSpeed = 10.0f;
-            agent.maxAccel = 2.0f;
-            agent.radius = COLLISION_RADIUS;
-            agent.updateNodePosition = false;
-            SubscribeToEvent(sceneNode, "CrowdAgentFailure", "HandleCrowdAgentFailure");
-            SubscribeToEvent(sceneNode, "CrowdAgentReposition", "HandleCrowdAgentReposition");
-            SubscribeToEvent(sceneNode, "CrowdAgentFormation", "HandleCrowdAgentFormation");
-
-            Vector3 newPos = cast<DynamicNavigationMesh>(GetScene().GetComponent("DynamicNavigationMesh")).FindNearestPoint(sceneNode.worldPosition, Vector3(5.0f,5.0f,5.0f));
-            sceneNode.worldPosition = newPos;
-        }
     }
 
     void Start()
@@ -1165,76 +1147,14 @@ class Character : GameObject
             cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }
 
-    void HandleCrowdAgentFailure(StringHash eventType, VariantMap& eventData)
+    void CheckAvoidance(float dt)
     {
-        int state = eventData["CrowdAgentState"].GetInt();
-        // If the agent's state is invalid, likely from spawning on the side of a box, find a point in a larger area
-        if (state == CA_STATE_INVALID)
-        {
-            // Get a point on the navmesh using more generous extents
-            Vector3 newPos = cast<DynamicNavigationMesh>(GetScene().GetComponent("DynamicNavigationMesh")).FindNearestPoint(sceneNode.worldPosition, Vector3(5.0f,5.0f,5.0f));
-            // Set the new node position, CrowdAgent component will automatically reset the state of the agent
-            sceneNode.worldPosition = newPos;
-        }
+
     }
 
-    void HandleCrowdAgentFormation(StringHash eventType, VariantMap& eventData)
+    void ClearAvoidance()
     {
-        uint index = eventData["Index"].GetUInt();
-        uint size = eventData["Size"].GetUInt();
-        Vector3 position = eventData["Position"].GetVector3();
 
-        // The first agent will always move to the exact position, all other agents will select a random point nearby
-        if (index > 0)
-        {
-            CrowdManager@ crowdManager =GetEventSender();
-            CrowdAgent@ agent = eventData["CrowdAgent"].GetPtr();
-            eventData["Position"] = crowdManager.GetRandomPointInCircle(position, agent.radius, agent.queryFilterType);
-        }
-    }
-
-    void HandleCrowdAgentReposition(StringHash eventType, VariantMap& eventData)
-    {
-        const String WALKING_ANI = "Models/Jack_Walk.ani";
-        const Vector3 FORWARD(0.0f, 0.0f, 1.0f);
-
-        CrowdAgent@ agent = eventData["CrowdAgent"].GetPtr();
-        Vector3 velocity = eventData["Velocity"].GetVector3();
-        float timeStep = eventData["TimeStep"].GetFloat();
-
-        // Only Jack agent has animation controller
-        /*
-        AnimationController@ animCtrl = node.GetComponent("AnimationController");
-        if (animCtrl !is null)
-        {
-            float speed = velocity.length;
-            if (animCtrl.IsPlaying(WALKING_ANI))
-            {
-                float speedRatio = speed / agent.maxSpeed;
-                // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
-                node.rotation = node.rotation.Slerp(Quaternion(FORWARD, velocity), 10.f * timeStep * speedRatio);
-                // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
-                animCtrl.SetSpeed(WALKING_ANI, speedRatio);
-            }
-            else
-                animCtrl.Play(WALKING_ANI, 0, true, 0.1f);
-
-            // If speed is too low then stopping the animation
-            if (speed < agent.radius)
-                animCtrl.Stop(WALKING_ANI, 0.8f);
-        }
-        */
-    }
-
-    void SetNavEnabled(bool bEnable)
-    {
-        if (use_navmesh)
-        {
-            CrowdAgent@ agent = sceneNode.GetComponent("CrowdAgent");
-            agent.enabled = bEnable;
-        }
-        else
-            SetNodeEnabled("Collision", bEnable);
     }
 };
 

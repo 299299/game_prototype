@@ -34,10 +34,9 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 1;
+int test_enemy_num_override = 5;
 bool lowend_platform = false;
 bool auto_target = false;
-bool use_navmesh = true;
 
 String LUT = "";
 
@@ -392,11 +391,6 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     if (drawDebug > 2)
     {
         scene_.physicsWorld.DrawDebugGeometry(false);
-        if (use_navmesh)
-        {
-            cast<DynamicNavigationMesh>(scene_.GetComponent("DynamicNavigationMesh")).DrawDebugGeometry(false);
-            cast<CrowdManager>(scene_.GetComponent("CrowdManager")).DrawDebugGeometry(false);
-        }
     }
 }
 
