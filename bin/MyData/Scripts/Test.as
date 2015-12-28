@@ -684,7 +684,7 @@ void SetColorGrading(int index)
     if (index < 0)
         index = len - 1;
     colorGradingIndex = index;
-    ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
+    ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "Textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
     LUT = colorGradingTextures[index];
 }
 
