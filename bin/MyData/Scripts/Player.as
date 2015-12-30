@@ -720,7 +720,11 @@ class PlayerAttackState : CharacterState
         }
         else if (e.HasFlag(FLAGS_STUN))
         {
-            // e.ChangeState("BeatDownStartState");
+            Vector3 dir = n.worldPosition - ownner.GetNode().worldPosition;
+            float angle = Atan2(dir.x, dir.z);
+            // reset batman`s direction
+            ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
+            ownner.ChangeState("BeatDownHitState");
         }
         else
         {
