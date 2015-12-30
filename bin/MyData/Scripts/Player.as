@@ -213,7 +213,7 @@ class PlayerAttackState : CharacterState
     int                     rightCloseNum = 0;
     int                     backCloseNum = 0;
 
-    int                     slowMotionFrames = 2;
+    int                     slowMotionFrames = 3;
 
     int                     lastAttackDirection = -1;
     int                     lastAttackIndex = -1;
@@ -222,8 +222,6 @@ class PlayerAttackState : CharacterState
     bool                    slowMotion = false;
     bool                    isInAir = false;
     bool                    lastKill = false;
-
-    bool                    beatAttack = false;
 
     PlayerAttackState(Character@ c)
     {
@@ -441,9 +439,9 @@ class PlayerAttackState : CharacterState
 
         if (slowMotion)
         {
-            float t_diff = Abs(currentAttack.impactTime - t);
-            if (t_diff < SEC_PER_FRAME * slowMotionFrames)
-                ownner.SetSceneTimeScale(0.5f);
+            float t_diff = currentAttack.impactTime - t;
+            if (t_diff > 0 && t_diff < SEC_PER_FRAME * slowMotionFrames)
+                ownner.SetSceneTimeScale(0.1f);
             else
                 ownner.SetSceneTimeScale(1.0f);
         }
@@ -710,33 +708,14 @@ class PlayerAttackState : CharacterState
         if (n !is null)
             position = n.worldPosition;
 
-        if (beatAttack)
-        {
-            Vector3 dir = n.worldPosition - ownner.GetNode().worldPosition;
-            float angle = Atan2(dir.x, dir.z);
-            // reset batman`s direction
-            ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
-            ownner.ChangeState("BeatDownHitState");
-        }
-        else if (e.HasFlag(FLAGS_STUN))
-        {
-            Vector3 dir = n.worldPosition - ownner.GetNode().worldPosition;
-            float angle = Atan2(dir.x, dir.z);
-            // reset batman`s direction
-            ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
-            ownner.ChangeState("BeatDownHitState");
-        }
+        int damage = ownner.attackDamage;
+        if (lastKill)
+            damage = 9999;
         else
-        {
-            int damage = ownner.attackDamage;
-            if (lastKill)
-                damage = 9999;
-            else
-                damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
-            bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
-            if (!b)
-                return;
-        }
+            damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
+        bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
+        if (!b)
+            return;
 
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
         ownner.OnAttackSuccess(e);
@@ -1840,10 +1819,6 @@ class Player : Character
             oldTarget.RemoveFlag(FLAGS_NO_MOVE);
 
         SetTarget(e);
-
-        //PlayerAttackState@ state = cast<PlayerAttackState>(FindState("AttackState"));
-        //state.beatAttack = false;
-
         ChangeState("AttackState");
 
         return true;
@@ -1852,20 +1827,7 @@ class Player : Character
     bool Distract()
     {
         Print("Do--Distract--->");
-        //ChangeState("DistractState");
-
-        Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
-        Character@ oldTarget = target;
-        if (oldTarget !is null)
-            oldTarget.RemoveFlag(FLAGS_NO_MOVE);
-
-        SetTarget(e);
-
-        PlayerAttackState@ state = cast<PlayerAttackState>(FindState("AttackState"));
-        state.beatAttack = true;
-
-        ChangeState("AttackState");
-
+        ChangeState("DistractState");
         return true;
     }
 

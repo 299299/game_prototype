@@ -334,7 +334,7 @@ class CharacterCounterState : CharacterState
     Motion@             currentMotion;
     int                 state; // sub state
 
-    float               alignTime = 0.2f;
+    float               alignTime = 0.1f;
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;
