@@ -700,7 +700,7 @@ class PlayerAttackState : CharacterState
             return;
 
         Node@ _node = ownner.GetNode();
-        Vector3 dir = _node.worldPosition - e.GetNode().worldPosition;
+        Vector3 dir = _node.worldPosition - _node.worldPosition;
         dir.y = 0;
         dir.Normalize();
         Print("PlayerAttackState::" +  e.GetName() + " OnDamage!!!!");
@@ -712,7 +712,10 @@ class PlayerAttackState : CharacterState
 
         if (beatAttack)
         {
-            // e.Distract();
+            Vector3 dir = n.worldPosition - ownner.GetNode().worldPosition;
+            float angle = Atan2(dir.x, dir.z);
+            // reset batman`s direction
+            ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
             ownner.ChangeState("BeatDownHitState");
         }
         else if (e.HasFlag(FLAGS_STUN))
@@ -1034,7 +1037,7 @@ class PlayerDistractState : SingleMotionState
         float targetRotation = ownner.GetTargetAngle();
         ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
         combatReady = false;
-        
+
         SingleMotionState::Enter(lastState);
     }
 
@@ -1049,7 +1052,7 @@ class PlayerDistractState : SingleMotionState
             Player@ p = cast<Player>(ownner);
             Array<Enemy@> enemies;
             p.CommonCollectEnemies(enemies, MAX_DISTRACT_DIR, MAX_DISTRACT_DIST, FLAGS_ATTACK);
-        
+
             combatReady = true;
             /*
             if (enemies.length == 0)
@@ -1064,7 +1067,7 @@ class PlayerDistractState : SingleMotionState
                 enemies[i].Distract();
         }
     }
-    
+
     void Update(float dt)
     {
         if (combatReady && gInput.IsAttackPressed())
