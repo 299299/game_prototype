@@ -213,7 +213,7 @@ class PlayerAttackState : CharacterState
     int                     rightCloseNum = 0;
     int                     backCloseNum = 0;
 
-    int                     slowMotionFrames = 3;
+    int                     slowMotionFrames = 2;
 
     int                     lastAttackDirection = -1;
     int                     lastAttackIndex = -1;
@@ -722,6 +722,9 @@ class PlayerAttackState : CharacterState
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
+
+        e.RemoveFlag(FLAGS_NO_MOVE);
+        ownner.SetTarget(null);
     }
 };
 

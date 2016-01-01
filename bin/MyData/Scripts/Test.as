@@ -621,8 +621,8 @@ void SetColorGrading(int index)
 {
     Array<String> colorGradingTextures =
     {
-        "Vintage",
         "Hipster",
+        "Vintage",
         "Hollywood",
         "BleachBypass",
         "CrossProcess",

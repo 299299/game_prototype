@@ -16,6 +16,7 @@ const float MIN_THINK_TIME = 0.25f;
 const float MAX_THINK_TIME = 1.0f;
 const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 const float MAX_ATTACK_RANGE = 3.0f;
+const float KEEP_DIST = 1.5f;
 
 class ThugStandState : CharacterState
 {
@@ -629,6 +630,42 @@ class ThugHitState : MultiMotionState
     {
         return timeInState >= recoverTimer;
     }
+
+    void FixedUpdate(float dt)
+    {
+        Node@ _node = ownner.GetNode().GetChild("Collision");
+        if (_node is null)
+            return;
+
+        RigidBody@ body = _node.GetComponent("RigidBody");
+        if (body is null)
+            return;
+
+        Array<RigidBody@>@ neighbors = body.collidingBodies;
+        for (uint i=0; i<neighbors.length; ++i)
+        {
+            Node@ n_node = neighbors[i].node.parent;
+            if (n_node is null)
+                continue;
+            Character@ object = cast<Character>(n_node.scriptObject);
+            if (object is null)
+                continue;
+            if (object.HasFlag(FLAGS_MOVING))
+                continue;
+            
+            float dist = ownner.GetTargetDistance(n_node);
+            if (dist < 1.0f)
+            {
+                State@ state = ownner.GetState();
+                if (state.nameHash == RUN_STATE || 
+                    state.nameHash == COMBAT_IDLE_STATE || 
+                    state.nameHash == STAND_STATE)
+                {
+                    object.ChangeState("PushBack");
+                }
+            }   
+        }
+    }
 };
 
 class ThugRedirectState : MultiMotionState
@@ -849,6 +886,17 @@ class ThugStunState : CharacterState
     }
 };
 
+class ThugPushBackState : SingleMotionState
+{
+    ThugPushBackState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("PushBack");
+        flags = FLAGS_ATTACK;
+        SetMotion("TG_HitReaction/CapeDistract_Close_Forward");
+    }
+};
+
 class Thug : Enemy
 {
     float           checkAvoidanceTimer = 0.0f;
@@ -878,6 +926,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugBeatDownEndState(this));
         stateMachine.AddState(ThugStunState(this));
         stateMachine.AddState(ThugDistractState(this));
+        stateMachine.AddState(ThugPushBackState(this));
 
         ChangeState("StandState");
 
@@ -893,7 +942,7 @@ class Thug : Enemy
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(3, 5, Vector3(0, CHARACTER_HEIGHT/2, 0));
+        shape.SetCapsule(KEEP_DIST*2, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
         RigidBody@ body = collisionNode.CreateComponent("RigidBody");
         body.mass = 10;
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
