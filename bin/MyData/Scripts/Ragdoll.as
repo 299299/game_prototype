@@ -201,7 +201,6 @@ class Ragdoll : ScriptObject
 
             if (hasvelocity_request)
             {
-
                 for (uint i=0; i<RAGDOLL_BONE_NUM; ++i)
                 {
                     RigidBody@ rb = boneNodes[i].GetComponent("RigidBody");

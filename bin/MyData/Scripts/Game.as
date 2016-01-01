@@ -304,6 +304,9 @@ class TestGameState : GameState
             script.defaultScene.updateEnabled = true;
 
         pauseMenu.Remove();
+
+        Player@ player = GetPlayer();
+
         if (newState == GAME_RUNNING)
         {
             Print("=====================================================================");
@@ -332,7 +335,6 @@ class TestGameState : GameState
             fade.Show(1.0f);
             fade.StartFadeIn(2.0f);
             gInput.m_freeze = true;
-            Player@ player = GetPlayer();
             if (newState == GAME_RESTARTING)
             {
                 EnemyManager@ em = GetEnemyMgr();
@@ -362,6 +364,11 @@ class TestGameState : GameState
         else if (newState == GAME_FAIL)
         {
             ShowMessage("You Died! Press Stride to restart!", true);
+        }
+
+        if (player !is null)
+        {
+            player.SetTarget(null);
         }
     }
 

@@ -17,6 +17,7 @@ const int   LAST_ENEMY_SCORE = 5;
 const int   MAX_WEAK_ATTACK_COMBO = 3;
 const float MAX_DISTRACT_DIST = 4.0f;
 const float MAX_DISTRACT_DIR = 90.0f;
+const int   HIT_WAIT_FRAMES = 3;
 
 class PlayerStandState : CharacterState
 {
@@ -327,7 +328,6 @@ class PlayerAttackState : CharacterState
         AddAttackMotion(leftAttacks, "Attack_Close_Left_07", 15, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(leftAttacks, "Attack_Close_Left_08", 20, ATTACK_KICK, L_FOOT);
 
-
         // left far
         AddAttackMotion(leftAttacks, "Attack_Far_Left", 19, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 22, ATTACK_KICK, R_FOOT);
@@ -421,7 +421,6 @@ class PlayerAttackState : CharacterState
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
                 ownner.target.RemoveFlag(FLAGS_NO_MOVE);
-                // ownner.SetSceneTimeScale(0.0f);
             }
         }
         else if (state == ATTACK_STATE_BEFORE_IMPACT)
@@ -431,10 +430,6 @@ class PlayerAttackState : CharacterState
                 ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
                 AttackImpact();
             }
-        }
-        else
-        {
-
         }
 
         if (slowMotion)
@@ -454,7 +449,6 @@ class PlayerAttackState : CharacterState
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
                 ownner.motion_translateEnabled = false;
-                //ownner.SetSceneTimeScale(0.0f);
             }
         }
 
@@ -545,9 +539,7 @@ class PlayerAttackState : CharacterState
         }
 
         @currentAttack = attacks[bestIndex];
-        //alignTime = Min(0.5f, currentAttack.impactTime);
         alignTime = currentAttack.impactTime;
-        // alignTime *= ownner.timeScale;
 
         predictPosition = myPos + diff * toEnenmyDistance;
         Print("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex + " Pick attack motion = " + currentAttack.motion.animationName);
@@ -659,6 +651,9 @@ class PlayerAttackState : CharacterState
         if (ownner.target !is null)
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
 
+        if (nextState !is this)
+            ownner.SetTarget(null);
+
         @currentAttack = null;
         ownner.SetSceneTimeScale(1.0f);
 
@@ -698,7 +693,7 @@ class PlayerAttackState : CharacterState
             return;
 
         Node@ _node = ownner.GetNode();
-        Vector3 dir = _node.worldPosition - _node.worldPosition;
+        Vector3 dir = _node.worldPosition - e.GetNode().worldPosition;
         dir.y = 0;
         dir.Normalize();
         Print("PlayerAttackState::" +  e.GetName() + " OnDamage!!!!");
@@ -722,9 +717,6 @@ class PlayerAttackState : CharacterState
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
-
-        e.RemoveFlag(FLAGS_NO_MOVE);
-        ownner.SetTarget(null);
     }
 };
 
@@ -1286,7 +1278,7 @@ class PlayerBeatDownHitState : MultiMotionState
         if (ownner.target !is null)
         {
             float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
-            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST * 0.75f)
+            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
             {
                 Print("Player::PlayerBeatDownStartState TooClose set motion_translateEnabled to false");
                 ownner.motion_translateEnabled = false;

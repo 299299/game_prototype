@@ -789,6 +789,7 @@ class MotionManager
         AddRagdollTrigger(preFix + "Counter_Arm_Back_01", -1, 42);
         AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 50);
         AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 33, 35);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_05", 40, 48);
         AddRagdollTrigger(preFix + "Counter_Arm_Back_06", -1, 72);
 
         AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 50, 54);
@@ -796,6 +797,21 @@ class MotionManager
         AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 72);
         AddRagdollTrigger(preFix + "Counter_Leg_Back_04", -1, 43);
         AddRagdollTrigger(preFix + "Counter_Leg_Back_05", 48, 52);
+
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 50, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_02", 40, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_03", 88, READY_TO_FIGHT);
+
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 50, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_03", 100, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_04", 70, READY_TO_FIGHT);
+
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 55, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 76, READY_TO_FIGHT);
+
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 50, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_01", 65, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 65, READY_TO_FIGHT);
 
         preFix = "TG_BM_Beatdown/";
         AddRagdollTrigger(preFix + "Beatdown_Strike_End_01", 24, 28);

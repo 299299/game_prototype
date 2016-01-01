@@ -957,10 +957,10 @@ class Character : GameObject
 
     void MakeMeRagdoll(bool hasVelocity = false, const Vector3&in velocity = Vector3(0, 0, 0))
     {
+        Print("MakeMeRagdoll -- velocity=" + velocity.ToString());
         VariantMap anim_data;
         anim_data[NAME] = RAGDOLL_START;
-        if (hasVelocity)
-            anim_data[VELOCITY] = velocity;
+        anim_data[VELOCITY] = velocity;
         VariantMap data;
         data[DATA] = anim_data;
         renderNode.SendEvent("AnimationTrigger", data);

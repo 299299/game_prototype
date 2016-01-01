@@ -4,19 +4,22 @@
 //
 // ==============================================
 
+// --- CONST
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 const float MIN_TURN_ANGLE = 30;
+const float MIN_THINK_TIME = 0.5f;
+const float MAX_THINK_TIME = 1.5f;
+const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
+const float MAX_ATTACK_RANGE = 3.0f;
+const float KEEP_DIST = 1.5f;
+const float HIT_RAGDOLL_FORCE = 10.0f;
+
+// -- NON CONST
 float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
 float STEP_MIN_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.25f;
-const int HIT_WAIT_FRAMES = 3;
-const float MIN_THINK_TIME = 0.25f;
-const float MAX_THINK_TIME = 1.0f;
-const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
-const float MAX_ATTACK_RANGE = 3.0f;
-const float KEEP_DIST = 1.5f;
 
 class ThugStandState : CharacterState
 {
@@ -40,15 +43,7 @@ class ThugStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        float blendTime = 0.2f;
-        /*
-        if (lastState !is null)
-        {
-            if (lastState.nameHash == ATTACK_STATE || lastState.nameHash == TURN_STATE)
-                blendTime = 5.0f;
-        }
-        */
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
         float min_think_time = MIN_THINK_TIME;
         float max_think_time = MAX_THINK_TIME;
         if (firstEnter)
@@ -424,6 +419,20 @@ class ThugCounterState : CharacterCounterState
     {
         super(c);
         AddCounterMotions("TG_BM_Counter/");
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterCounterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == READY_TO_FIGHT)
+            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        CharacterCounterState::Exit(nextState);
     }
 };
 
@@ -1002,6 +1011,7 @@ class Thug : Enemy
             return false;
         }
 
+        Print(GetName() + " OnDamage: pos=" + position.ToString() + " dir=" + direction.ToString() + " damage=" + damage + " weak=" + weak);
         health -= damage;
         health = Max(0, health);
         SetHealth(health);
@@ -1025,7 +1035,8 @@ class Thug : Enemy
                 Vector3 v = direction * -1;
                 v.y = 0;
                 v.Normalize();
-                v *= 7.5f;
+                float f = Random(HIT_RAGDOLL_FORCE*0.5f, HIT_RAGDOLL_FORCE*1.5f);
+                v *= f;
                 MakeMeRagdoll(true, v);
             }
         }
