@@ -34,6 +34,7 @@ const StringHash RAGDOLL_START("Ragdoll_Start");
 const StringHash RAGDOLL_STOP("Ragdoll_Stop");
 const StringHash RAGDOLL_ROOT("Ragdoll_Root");
 const StringHash VELOCITY("Velocity");
+const StringHash POSITION("Position");
 
 bool test_ragdoll = false;
 bool blend_to_anim = false;
@@ -47,9 +48,10 @@ class Ragdoll : ScriptObject
     Node@             rootNode;
 
     int               state = RAGDOLL_NONE;
-    int               state_request = -1;
-    bool              hasvelocity_request = false;
-    Vector3           velocity_request = Vector3(0, 0, 0);
+    int               stateRequest = -1;
+    bool              hasVelRequest = false;
+    Vector3           velocityRequest = Vector3(0, 0, 0);
+    Vector3           hitPosition;
 
     float             timeInState;
 
@@ -57,7 +59,7 @@ class Ragdoll : ScriptObject
     Animation@        blendingAnim_2;
 
     float             ragdollToAnimBlendTime = 1.0f;
-    float             minRagdollStateTime = 0.5f;
+    float             minRagdollStateTime = 2.0f;
     float             maxRagdollStateTime = 6.0f;
 
     int               getUpIndex = 0;
@@ -199,16 +201,24 @@ class Ragdoll : ScriptObject
                 }
             }
 
-            if (hasvelocity_request)
+            if (hasVelRequest)
             {
                 for (uint i=0; i<RAGDOLL_BONE_NUM; ++i)
                 {
                     RigidBody@ rb = boneNodes[i].GetComponent("RigidBody");
                     if (rb !is null)
-                        rb.linearVelocity = velocity_request;
+                    {
+                        Vector3 pos = boneNodes[i].worldPosition;
+                        float y_diff = Abs(pos.y - hitPosition.y);
+                        Print("Ragdoll -- " + boneNodes[i].name + " y_diff = " + y_diff);
+                        if (y_diff < 1.0f)
+                            rb.linearVelocity = velocityRequest;
+                    }
                 }
-                velocity_request = Vector3(0, 0, 0);
-                hasvelocity_request = false;
+                velocityRequest = Vector3(0, 0, 0);
+                hasVelRequest = false;
+
+                // rootNode.scene.timeScale = 0.0f;
             }
         }
         else if (newState == RAGDOLL_BLEND_TO_ANIMATION)
@@ -237,9 +247,9 @@ class Ragdoll : ScriptObject
 
     void FixedUpdate(float dt)
     {
-        if (state_request >= 0) {
-            ChangeState(state_request);
-            state_request = -1;
+        if (stateRequest >= 0) {
+            ChangeState(stateRequest);
+            stateRequest = -1;
         }
 
         if (state == RAGDOLL_STATIC)
@@ -505,13 +515,14 @@ class Ragdoll : ScriptObject
         else if (name == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;
 
-        state_request = new_state;
+        stateRequest = new_state;
 
         if (data.Contains(VELOCITY))
         {
-            hasvelocity_request = true;
-            velocity_request = data[VELOCITY].GetVector3();
-            Print("velocity_request="+ velocity_request.ToString());
+            hasVelRequest = true;
+            velocityRequest = data[VELOCITY].GetVector3();
+            hitPosition = data[POSITION].GetVector3();
+            Print("velocityRequest="+ velocityRequest.ToString() + " hitPosition=" + hitPosition.ToString());
         }
     }
 

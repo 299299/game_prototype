@@ -24,7 +24,6 @@ const StringHash GETUP_STATE("GetUpState");
 const StringHash STEPMOVE_STATE("StepMoveState");
 const StringHash RUN_STATE("RunState");
 const StringHash HIT_STATE("HitState");
-const StringHash COMBAT_IDLE_STATE("CombatIdleState");
 const StringHash STAND_STATE("StandState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
@@ -88,10 +87,10 @@ class CharacterState : State
             if (animState !is null && animState.weight > 0.5f)
                 OnFootStep(eventData[VALUE].GetString());
         }
-        else if (name == TIME_SCALE)
-            ownner.SetTimeScale(eventData[VALUE].GetFloat());
         else if (name == SOUND)
+        {
             ownner.PlaySound(eventData[VALUE].GetString());
+        }
     }
 
     void OnFootStep(const String&in boneName)
@@ -335,7 +334,7 @@ class CharacterCounterState : CharacterState
     Motion@             currentMotion;
     int                 state; // sub state
 
-    float               alignTime = 0.1f;
+    float               alignTime = 0.15f;
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;
@@ -649,6 +648,7 @@ class Character : GameObject
 
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+        SetHintText("", false);
     }
 
     void Start()
@@ -712,8 +712,7 @@ class Character : GameObject
 
     String GetDebugText()
     {
-        String debugText = "========================================================================\n";
-        debugText += stateMachine.GetDebugText();
+        String debugText = stateMachine.GetDebugText();
         debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + " health:" + health + "\n";
         uint num = animModel.numAnimationStates;
         if (num > 0)
@@ -955,12 +954,13 @@ class Character : GameObject
         ChangeState("DeadState");
     }
 
-    void MakeMeRagdoll(bool hasVelocity = false, const Vector3&in velocity = Vector3(0, 0, 0))
+    void MakeMeRagdoll(const Vector3&in velocity = Vector3(0, 0, 0), const Vector3&in position = Vector3(0, 0, 0))
     {
-        Print("MakeMeRagdoll -- velocity=" + velocity.ToString());
+        Print("MakeMeRagdoll -- velocity=" + velocity.ToString() + " position=" + position.ToString());
         VariantMap anim_data;
         anim_data[NAME] = RAGDOLL_START;
         anim_data[VELOCITY] = velocity;
+        anim_data[POSITION] = position;
         VariantMap data;
         data[DATA] = anim_data;
         renderNode.SendEvent("AnimationTrigger", data);
@@ -969,9 +969,21 @@ class Character : GameObject
     void SetHintText(const String&in text, bool bSet)
     {
         Node@ hintNode = sceneNode.GetChild("HintNode", true);
+        if (hintNode is null)
+            return;
         Text3D@ text3d = hintNode.GetComponent("Text3D");
-        text3d.text = text;
-        text3d.enabled = bSet;
+        if (text3d is null)
+            return;
+        if (debugLevel == 0)
+        {
+            text3d.text = text;
+            text3d.enabled = bSet;
+        }
+        else
+        {
+            text3d.text = bSet ? text : GetName();
+            text3d.enabled = true;
+        }
     }
 
     void OnAttackSuccess(Character@ object)

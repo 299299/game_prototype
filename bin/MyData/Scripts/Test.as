@@ -34,11 +34,14 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 5;
+int test_enemy_num_override = 99;
 bool lowend_platform = false;
 bool auto_target = false;
 
 String LUT = "";
+const String UI_FONT = "Fonts/GAEN.ttf";
+
+int debugLevel = 0;
 
 void Start()
 {
@@ -191,14 +194,14 @@ void CreateUI()
     //ui.cursor = cursor;
     // Set starting position of the cursor at the rendering window center
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
-    // input.SetMouseVisible(true);
+    //input.SetMouseVisible(true);
     Text@ text = ui.root.CreateChild("Text", "debug");
-    // for preload font
-    text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
+    text.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
     text.SetPosition(0, 20);
     text.color = Color(0, 0, 1);
+    text.priority = -99999;
     // text.textEffect = TE_SHADOW;
 }
 
@@ -331,10 +334,13 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (drawDebug > 0)
     {
-        String debugText = "current LUT: " + LUT + "\n";
+        String debugText;
+        debugText += gGame.GetDebugText();
+        debugText += "-------------------------------------------------------------------------------------------------------\n";
+        debugText += "current LUT: " + LUT + "\n";
         debugText += "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
-
+        debugText += "-------------------------------------------------------------------------------------------------------\n";
         Player@ player = GetPlayer();
         if (player !is null)
             debugText += player.GetDebugText();

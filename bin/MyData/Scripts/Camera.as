@@ -12,6 +12,10 @@ const float BASE_FOV = 45.0f;
 
 class CameraController
 {
+    StringHash nameHash;
+    Node@      cameraNode;
+    Camera@    camera;
+
     CameraController(Node@ n, const String&in name)
     {
         cameraNode = n;
@@ -60,10 +64,6 @@ class CameraController
         cameraNode.LookAt(target);
         gCameraMgr.cameraTarget = target;
     }
-
-    StringHash nameHash;
-    Node@      cameraNode;
-    Camera@    camera;
 };
 
 
@@ -242,6 +242,7 @@ class DeathCameraController : CameraController
     void Exit()
     {
         nodeId = M_MAX_UNSIGNED;
+        timeInState = 0;
     }
 
     void Update(float dt)
@@ -326,6 +327,9 @@ class CameraManager
         CameraController@ cc = FindCameraController(nameHash);
         if (currentController is cc)
             return;
+        
+        Print("SetCameraController -- " + nameHash.ToString());
+
         if (currentController !is null)
             currentController.Exit();
         @currentController = cc;

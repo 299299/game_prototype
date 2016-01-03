@@ -4,6 +4,7 @@
 //
 // ==============================================
 
+
 class GameState : State
 {
     void PostRenderUpdate()
@@ -81,7 +82,7 @@ class LoadingState : GameState
     {
         CreateLogo();
         Text@ text = ui.root.CreateChild("Text", "loading_text");
-        text.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 14);
+        text.SetFont(cache.GetResource("Font", UI_FONT), 30);
         text.horizontalAlignment = HA_CENTER;
         text.verticalAlignment = VA_CENTER;
         text.SetPosition(0, 0);
@@ -206,7 +207,7 @@ class TestGameState : GameState
         SetName("TestGameState");
         Print("TestGameState()");
         @fade = FadeOverlay();
-        @pauseMenu = TextMenu("Fonts/UbuntuMono-R.ttf", 30);
+        @pauseMenu = TextMenu(UI_FONT, 30);
         pauseMenu.texts.Push("RESUME");
         pauseMenu.texts.Push("EXIT");
         fade.Init();
@@ -239,14 +240,14 @@ class TestGameState : GameState
         if (height > 64)
             height = 64;
         Text@ messageText = ui.root.CreateChild("Text", "message");
-        messageText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
+        messageText.SetFont(cache.GetResource("Font", UI_FONT), 14);
         messageText.SetAlignment(HA_CENTER, VA_CENTER);
         messageText.SetPosition(0, -height * 2);
         messageText.color = Color(1, 0, 0);
         messageText.visible = false;
 
         Text@ statusText = ui.root.CreateChild("Text", "status");
-        statusText.SetFont(cache.GetResource("Font", "Fonts/UbuntuMono-R.ttf"), 12);
+        statusText.SetFont(cache.GetResource("Font", UI_FONT), 14);
         statusText.SetAlignment(HA_LEFT, VA_TOP);
         statusText.SetPosition(0, 0);
         statusText.color = Color(1, 1, 0);
@@ -389,7 +390,7 @@ class TestGameState : GameState
                 renderpath.SetEnabled("TonemapUncharted2", true);
                 renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
                 renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
-                renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.8f;
+                // renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.8f;
             }
         }
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
@@ -567,6 +568,11 @@ class TestGameState : GameState
         if (s is null)
             return;
         s.frequency = BGM_BASE_FREQ * scale;
+    }
+
+    String GetDebugText()
+    {
+        return "timeInState=" + timeInState + " state=" + state + " lastState=" + lastState + "\n";
     }
 };
 

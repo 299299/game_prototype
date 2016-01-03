@@ -8,8 +8,9 @@ const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 const float MAX_COUNTER_DIST = 5.0f;
 const float MAX_ATTACK_DIST = 25.0f;
 const float MAX_ATTACK_ANGLE_DIFF = 90.0f;
+const float MAX_BEAT_DIST = 10.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
-const float DIST_SCORE = 20.0f;
+const float DIST_SCORE = 10.0f;
 const float ANGLE_SCORE = 30.0f;
 const float THREAT_SCORE = 30.0f;
 const float LAST_ENEMY_ANGLE = 45.0f;
@@ -35,21 +36,7 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        float blendTime = 0.2f;
-        /*
-        if (lastState !is null)
-        {
-            if (lastState.nameHash == ATTACK_STATE)
-                blendTime = 10.0f;
-            else if (lastState.nameHash == REDIRECT_STATE)
-                blendTime = 2.5f;
-            else if (lastState.nameHash == COUNTER_STATE)
-                blendTime = 2.5f;
-            else if (lastState.nameHash == GETUP_STATE)
-                blendTime = 0.5f;
-        }
-        */
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, blendTime);
+        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
         CharacterState::Enter(lastState);
     }
 
@@ -441,10 +428,10 @@ class PlayerAttackState : CharacterState
                 ownner.SetSceneTimeScale(1.0f);
         }
 
-
         if (ownner.target !is null)
         {
             targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
+            // Print("PlayerAttackState targetDistance=" + targetDistance);
             if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
             {
                 Print("Player::AttackState TooClose set translateEnabled to false");
@@ -492,9 +479,7 @@ class PlayerAttackState : CharacterState
         int index_start = -1;
         int index_num = 0;
 
-        float min_dist = toEnenmyDistance - 3.0f;
-        if (min_dist < 0.0f)
-            min_dist = 0.0f;
+        float min_dist = Max(0.0f, toEnenmyDistance - 2.0f);
         float max_dist = toEnenmyDistance + 2.0f;
         Print("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
@@ -894,8 +879,14 @@ class PlayerCounterState : CharacterCounterState
         {
             Node@ _node = ownner.GetNode();
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
+            Vector3 pos = _node.worldPosition;
+
             if (boneNode !is null)
+            {
                 ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
+                pos = boneNode.worldPosition;
+            }
+            
             ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
 
             Vector3 my_pos = _node.worldPosition;
@@ -904,10 +895,10 @@ class PlayerCounterState : CharacterCounterState
                 for (uint i=0; i<counterEnemies.length; ++i)
                 {
                     Vector3 v = counterEnemies[i].GetNode().worldPosition - my_pos;
-                    v.y = 0;
+                    v.y = 1.0f;
                     v.Normalize();
-                    v *= 7.5f;
-                    counterEnemies[i].MakeMeRagdoll(true, v);
+                    v *= GetRagdollForce();
+                    counterEnemies[i].MakeMeRagdoll(v, pos);
                 }
             }
 
@@ -985,14 +976,11 @@ class PlayerDeadState : MultiMotionState
     {
         if (state == 0)
         {
-            if (motions[selectIndex].Move(ownner, dt)) {
+            if (motions[selectIndex].Move(ownner, dt)) 
+            {
                 state = 1;
                 gGame.OnCharacterKilled(null, ownner);
             }
-        }
-        else
-        {
-
         }
         CharacterState::Update(dt);
     }
@@ -1032,14 +1020,6 @@ class PlayerDistractState : SingleMotionState
             p.CommonCollectEnemies(enemies, MAX_DISTRACT_DIR, MAX_DISTRACT_DIST, FLAGS_ATTACK);
 
             combatReady = true;
-            /*
-            if (enemies.length == 0)
-            {
-                p.combo = 0;
-                p.StatusChanged();
-                return;
-            }
-            */
 
             for (uint i=0; i<enemies.length; ++i)
                 enemies[i].Distract();
@@ -1054,65 +1034,52 @@ class PlayerDistractState : SingleMotionState
     }
 };
 
-class PlayerBeatDownStartState : SingleMotionState
+class PlayerBeatDownStartState : CharacterState
 {
+    Motion@     motion;
+
     float       alignTime = 0.2f;
     int         state = 0;
     Vector3     movePerSec;
-    Vector3     predictPosition;
-    float       rotatePerSec = 0;
+    Vector3     targetPosition;
 
     PlayerBeatDownStartState(Character@ c)
     {
         super(c);
         SetName("BeatDownStartState");
-        SetMotion("BM_Attack/Beatdown_Strike_Start_01");
         flags = FLAGS_ATTACK;
+        @motion = gMotionMgr.FindMotion("BM_Combat/Attempt_Takedown");
+        Print("Attempt_Takedown endDistance=" + motion.endDistance);
     }
 
     void Enter(State@ lastState)
     {
-        SingleMotionState::Enter(lastState);
-        // alignTime = motion.endTime;
         Character@ target = ownner.target;
+        float angle = ownner.GetTargetAngle();
+        ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
+
+        target.RequestDoNotMove();
+
+        alignTime = 0.2f;
         Vector3 myPos = ownner.GetNode().worldPosition;
         Vector3 enemyPos = target.GetNode().worldPosition;
-        Vector3 diffPos = enemyPos - myPos;
-        diffPos.y = 0;
-        float toEnenmyDistance = diffPos.length - PLAYER_COLLISION_DIST;
 
-        diffPos.Normalize();
-        predictPosition = myPos + diffPos * toEnenmyDistance;
-
-        PlayerBeatDownHitState@ state1 = cast<PlayerBeatDownHitState>(ownner.FindState("BeatDownHitState"));
-        ThugBeatDownHitState@ state2 = cast<ThugBeatDownHitState>(target.FindState("BeatDownHitState"));
-
-        Motion@ m1 = state1.motions[0];
-        Motion@ m2 = state2.motions[0];
-
-        float enemyYaw = target.GetNode().worldRotation.eulerAngles.y;
-        float targetRotation = enemyYaw + 180;
-
-        Vector3 s1 = m1.startFromOrigin;
-        Vector3 s2 = m2.startFromOrigin;
-        Vector3 originDiff = s1 - s2;
-        originDiff.x = Abs(originDiff.x);
-        originDiff.z = Abs(originDiff.z);
-
-        predictPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
-        predictPosition.y = ownner.GetNode().worldPosition.y;
-
-        movePerSec = ( predictPosition - ownner.GetNode().worldPosition ) / alignTime;
+        float dist = COLLISION_RADIUS*2 + motion.endDistance;
+        targetPosition = enemyPos + ownner.GetNode().worldRotation * Vector3(0, 0, -dist); 
+        movePerSec = ( targetPosition - myPos ) / alignTime;
         movePerSec.y = 0;
 
-        ownner.target.ChangeState("BeatDownStartState");
-        ownner.motion_translateEnabled = false;
-        ownner.motion_rotateEnabled = false;
-
         state = 0;
-        rotatePerSec = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / alignTime;
-
         //ownner.SetSceneTimeScale(0.0f);
+
+        CharacterState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        CharacterState::Exit(nextState);
+        if (ownner.target !is null)
+            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
     }
 
     void Update(float dt)
@@ -1120,16 +1087,26 @@ class PlayerBeatDownStartState : SingleMotionState
         if (state == 0)
         {
             ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
-            ownner.GetNode().Yaw(rotatePerSec * dt);
 
             if (timeInState >= alignTime)
+            {
                 state = 1;
-        }
+                motion.Start(ownner);
 
-        if (motion.Move(ownner, dt)) {
-            ownner.ChangeState("BeatDownHitState");
-            return;
+                Character@ target = ownner.target;
+                float angle = ownner.GetTargetAngle();
+                target.GetNode().worldRotation = Quaternion(0, angle + 180, 0);
+                target.ChangeState("BeatDownStartState");
+            }
         }
+        else if (state == 1)
+        {
+            if (motion.Move(ownner, dt)) {
+                ownner.ChangeState("BeatDownHitState");
+                return;
+            }
+        }
+        
         CharacterState::Update(dt);
     }
 
@@ -1138,9 +1115,9 @@ class PlayerBeatDownStartState : SingleMotionState
         if (ownner.target is null)
             return;
         debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, RED, false);
-        debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
-        // debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
+        debug.AddCross(targetPosition, 1.0f, RED, false);
     }
+
 };
 
 class PlayerBeatDownEndState : MultiMotionState
@@ -1303,6 +1280,27 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             target.GetNode().vars[ANIMATION_INDEX] = beatIndex;
             target.ChangeState("BeatDownHitState");
+
+            MultiMotionState@ state = cast<MultiMotionState>(target.GetState());
+            if (state !is null)
+            {
+                Motion@ m1 = motions[beatIndex];
+                Motion@ m2 = state.motions[beatIndex];
+
+                float enemyYaw = target.GetNode().worldRotation.eulerAngles.y;
+                float targetRotation = enemyYaw + 180;
+
+                Vector3 s1 = m1.startFromOrigin;
+                Vector3 s2 = m2.startFromOrigin;
+                Vector3 originDiff = s1 - s2;
+                originDiff.x = Abs(originDiff.x);
+                originDiff.z = Abs(originDiff.z);
+
+                Vector3 targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
+                targetPosition.y = ownner.GetNode().worldPosition.y;
+                ownner.MoveTo(targetPosition, 1.0f/60.0f);
+                ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+            }
         }
 
         MultiMotionState::Enter(lastState);
@@ -1822,7 +1820,19 @@ class Player : Character
     bool Distract()
     {
         Print("Do--Distract--->");
-        ChangeState("DistractState");
+        //hangeState("DistractState");
+
+        Enemy@ e = CommonPickEnemy(30, MAX_BEAT_DIST, FLAGS_ATTACK, true, true);
+        if (e is null)
+            return false;
+
+        Character@ oldTarget = target;
+        if (oldTarget !is null)
+            oldTarget.RemoveFlag(FLAGS_NO_MOVE);
+
+        SetTarget(e);
+        ChangeState("BeatDownStartState");
+
         return true;
     }
 

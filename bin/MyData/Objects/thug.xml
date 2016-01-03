@@ -719,7 +719,7 @@
 		<attribute name="Variables" />
 		<component type="Text3D" id="59">
 			<attribute name="Is Enabled" value="false" />
-			<attribute name="Font" value="Font;Fonts/UbuntuMono-R.ttf" />
+			<attribute name="Font" value="Font;Fonts/GAEN.ttf" />
 			<attribute name="Font Size" value="50" />
 			<attribute name="Text" value="FUCK" />
 			<attribute name="Text Alignment" value="Center" />

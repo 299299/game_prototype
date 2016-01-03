@@ -73,7 +73,6 @@ class EnemyManager : ScriptObject
     Array<Quaternion>   enemyResetRotations;
 
     int thugId = 0;
-    int thugCombatIdleFlags = 0;
 
     EnemyManager()
     {
@@ -177,7 +176,6 @@ class EnemyManager : ScriptObject
 
     void Reset()
     {
-        thugCombatIdleFlags = 0;
         thugId = 0;
     }
 

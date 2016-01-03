@@ -569,6 +569,10 @@ class MotionManager
         CreateMotion(preFix + "Beatdown_Strike_End_03");
         CreateMotion(preFix + "Beatdown_Strike_End_04");
 
+        preFix = "BM_Combat/";
+        CreateMotion(preFix + "Attempt_Takedown");
+        CreateMotion(preFix + "Into_Takedown");
+
         //========================================================================
         // THUG MOTIONS
         //========================================================================

@@ -7,12 +7,12 @@
 // --- CONST
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 const float MIN_TURN_ANGLE = 30;
-const float MIN_THINK_TIME = 0.5f;
-const float MAX_THINK_TIME = 1.5f;
+const float MIN_THINK_TIME = 0.1f;
+const float MAX_THINK_TIME = 0.75f;
 const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 const float MAX_ATTACK_RANGE = 3.0f;
 const float KEEP_DIST = 1.5f;
-const float HIT_RAGDOLL_FORCE = 10.0f;
+const Vector3 HIT_RAGDOLL_FORCE(27.5f, 15.0f, 0.0f);
 
 // -- NON CONST
 float PUNCH_DIST = 0.0f;
@@ -105,7 +105,9 @@ class ThugStandState : CharacterState
             String nextState = "StepMoveState";
             float run_dist = STEP_MAX_DIST + 0.5f;
             if (dist >= run_dist || rand_i == 1)
+            {
                 nextState = "RunState";
+            }
             else
             {
                 ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
@@ -127,95 +129,17 @@ class ThugStandState : CharacterState
                 return;
             }
 
-            rand_i = RandomInt(2);
-            if (rand_i == 0)
+            rand_i = RandomInt(10);
+            if (rand_i > 8)
             {
                 int index = RandomInt(4);
                 _node.vars[ANIMATION_INDEX] = index;
                 Print(ownner.GetName() + " apply animation index for random move in stand state: " + index);
                 ownner.ChangeState("StepMoveState");
             }
-            else if (rand_i == 1)
-            {
-                int num_of_combat_idle = em.GetNumOfEnemyInState(COMBAT_IDLE_STATE);
-                if (num_of_combat_idle < MAX_NUM_OF_COMBAT_IDLE)
-                    ownner.ChangeState("CombatIdleState");
-            }
         }
 
         attackRange = Random(0.0f, MAX_ATTACK_RANGE);
-    }
-
-    void FixedUpdate(float dt)
-    {
-        ownner.CheckAvoidance(dt);
-        CharacterState::FixedUpdate(dt);
-    }
-};
-
-class ThugCombatIdleState : CharacterState
-{
-    Array<String> animations;
-    int index = 0;
-
-    ThugCombatIdleState(Character@ c)
-    {
-        super(c);
-        SetName("CombatIdleState");
-        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Combat_Overlays_01"));
-        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Combat_Overlays_02"));
-        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Combat_Overlays_03"));
-        flags = FLAGS_REDIRECTED | FLAGS_ATTACK;
-    }
-
-    void Enter(State@ lastState)
-    {
-        //index = RandomInt(animations.length);
-        EnemyManager@ em = GetEnemyMgr();
-        for (int i=0; i<3; ++i)
-        {
-            int flag = (1 << i);
-            int b = em.thugCombatIdleFlags & flag;
-            if (b == 0)
-            {
-                index = i;
-                break;
-            }
-        }
-        Print("em.thugCombatIdleFlags=" + em.thugCombatIdleFlags + " index=" + index);
-        em.thugCombatIdleFlags |= (1 << index);
-        ownner.ClearAvoidance();
-        ownner.PlayAnimation(animations[index], LAYER_MOVE, false);
-        CharacterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        EnemyManager@ em = GetEnemyMgr();
-        em.thugCombatIdleFlags &= ~(1 << index);
-        CharacterState::Exit(nextState);
-    }
-
-    void Update(float dt)
-    {
-        float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
-        if (dist < KEEP_DIST_WITH_PLAYER && !ownner.HasFlag(FLAGS_NO_MOVE))
-        {
-            ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-            int stepIndex = state.GetStepMoveIndex();
-            Print(ownner.GetName() + " apply animation index for keep away from player in combat idle state: " + stepIndex);
-            ownner.GetNode().vars[ANIMATION_INDEX] = stepIndex;
-            ownner.ChangeState("StepMoveState");
-            return;
-        }
-
-        if (ownner.animCtrl.IsAtEnd(animations[index]))
-        {
-            ownner.CommonStateFinishedOnGroud();
-            return;
-        }
-
-        CharacterState::Update(dt);
     }
 
     void FixedUpdate(float dt)
@@ -666,9 +590,7 @@ class ThugHitState : MultiMotionState
             if (dist < 1.0f)
             {
                 State@ state = ownner.GetState();
-                if (state.nameHash == RUN_STATE || 
-                    state.nameHash == COMBAT_IDLE_STATE || 
-                    state.nameHash == STAND_STATE)
+                if (state.nameHash == RUN_STATE || state.nameHash == STAND_STATE)
                 {
                     object.ChangeState("PushBack");
                 }
@@ -744,7 +666,6 @@ class ThugDeadState : CharacterState
     void Enter(State@ lastState)
     {
         Print(ownner.GetName() + " Entering ThugDeadState");
-        ownner.MakeMeRagdoll();
         ownner.duration = 5.0f;
         CharacterState::Enter(lastState);
     }
@@ -810,34 +731,6 @@ class ThugBeatDownHitState : MultiMotionState
     void OnMotionFinished()
     {
         ownner.ChangeState("StunState");
-    }
-
-    void Enter(State@ lastState)
-    {
-        int beatIndex = PickIndex();
-        Character@ target = ownner.target;
-        PlayerBeatDownHitState@ state = cast<PlayerBeatDownHitState>(target.GetState());
-        if (state !is null)
-        {
-            Motion@ m1 = motions[beatIndex];
-            Motion@ m2 = state.motions[beatIndex];
-
-            float enemyYaw = target.GetNode().worldRotation.eulerAngles.y;
-            float targetRotation = enemyYaw + 180;
-
-            Vector3 s1 = m1.startFromOrigin;
-            Vector3 s2 = m2.startFromOrigin;
-            Vector3 originDiff = s1 - s2;
-            originDiff.x = Abs(originDiff.x);
-            originDiff.z = Abs(originDiff.z);
-
-            Vector3 targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
-            targetPosition.y = ownner.GetNode().worldPosition.y;
-            ownner.MoveTo(targetPosition, 1.0f/60.0f);
-            ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-        }
-
-        MultiMotionState::Enter(lastState);
     }
 };
 
@@ -929,7 +822,6 @@ class Thug : Enemy
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugGetUpState(this));
         stateMachine.AddState(ThugDeadState(this));
-        stateMachine.AddState(ThugCombatIdleState(this));
         stateMachine.AddState(ThugBeatDownStartState(this));
         stateMachine.AddState(ThugBeatDownHitState(this));
         stateMachine.AddState(ThugBeatDownEndState(this));
@@ -960,7 +852,7 @@ class Thug : Enemy
         body.trigger = true;
         body.collisionEventMode = COLLISION_ALWAYS;
 
-        //attackDamage = 50;
+        attackDamage = 20;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1016,11 +908,20 @@ class Thug : Enemy
         health = Max(0, health);
         SetHealth(health);
 
+        Node@ attackNode = attacker.GetNode();
+
+        Vector3 v = direction * -1;
+        v.y = 1.0f;
+        v.Normalize();
+        v *= GetRagdollForce();
+
         if (health <= 0)
+        {
+            MakeMeRagdoll(v, position);
             OnDead();
+        }
         else
         {
-            Node@ attackNode = attacker.GetNode();
             float diff = ComputeAngleDiff(attackNode);
             if (weak) {
                 int index = 0;
@@ -1032,12 +933,7 @@ class Thug : Enemy
                 ChangeState("HitState");
             }
             else {
-                Vector3 v = direction * -1;
-                v.y = 0;
-                v.Normalize();
-                float f = Random(HIT_RAGDOLL_FORCE*0.5f, HIT_RAGDOLL_FORCE*1.5f);
-                v *= f;
-                MakeMeRagdoll(true, v);
+                MakeMeRagdoll(v, position);
             }
         }
         return true;
@@ -1192,3 +1088,9 @@ class Thug : Enemy
     }
 };
 
+Vector3 GetRagdollForce()
+{
+    float x = Random(HIT_RAGDOLL_FORCE.x*0.75f, HIT_RAGDOLL_FORCE.x*1.25f);
+    float y = Random(HIT_RAGDOLL_FORCE.y*0.75f, HIT_RAGDOLL_FORCE.y*1.25f);
+    return Vector3(x, y, x);
+}

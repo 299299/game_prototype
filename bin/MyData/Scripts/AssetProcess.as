@@ -47,7 +47,7 @@ Vector3 pelvisOrign;
 
 const float FRAME_PER_SEC = 30.0f;
 const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
-const int   PROCESS_TIME_PER_FRAME = 16; // ms
+const int   PROCESS_TIME_PER_FRAME = 30; // ms
 
 bool d_log = false;
 
