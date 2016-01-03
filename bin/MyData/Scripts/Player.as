@@ -1028,8 +1028,8 @@ class PlayerDistractState : SingleMotionState
 
     void Update(float dt)
     {
-        if (combatReady && gInput.IsAttackPressed())
-            ownner.Attack();
+        if (combatReady)
+            ownner.ActionCheck(true, true, true, true);
         SingleMotionState::Update(dt);
     }
 };
@@ -1121,6 +1121,8 @@ class PlayerBeatDownStartState : CharacterState
 
 class PlayerBeatDownEndState : MultiMotionState
 {
+    bool combatReady = false;
+
     PlayerBeatDownEndState(Character@ c)
     {
         super(c);
@@ -1134,6 +1136,7 @@ class PlayerBeatDownEndState : MultiMotionState
 
     void Enter(State@ lastState)
     {
+        combatReady = false;
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
@@ -1178,6 +1181,13 @@ class PlayerBeatDownEndState : MultiMotionState
         MultiMotionState::Exit(nextState);
     }
 
+    void Update(float dt)
+    {
+        if (combatReady)
+            ownner.ActionCheck(true, true, true, true);
+        MultiMotionState::Update(dt);
+    }
+
     int PickIndex()
     {
         return RandomInt(motions.length);
@@ -1194,6 +1204,7 @@ class PlayerBeatDownEndState : MultiMotionState
             if (boneNode !is null)
                 ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
             ownner.PlayRandomSound(1);
+            combatReady = true;
         }
     }
 };
@@ -1295,8 +1306,8 @@ class PlayerBeatDownHitState : MultiMotionState
         Vector3 tPos = target.GetNode().worldPosition;
         Vector3 dir = tPos - myPos;
         float targetRotation = Atan2(dir.x, dir.z);
-        ownner.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
-        target.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        target.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
 
         targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
         if (bFirst)
@@ -1312,6 +1323,7 @@ class PlayerBeatDownHitState : MultiMotionState
             target.GetNode().vars[ANIMATION_INDEX] = i;
             target.ChangeState("BeatDownHitState");
             motions[i].Start(ownner);
+            selectIndex = i;
         }
     }
 
@@ -1322,7 +1334,7 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             beatNum = 0;
             beatTotal = RandomInt(minBeatNum, maxBeatNum);
-            ownner.SetSceneTimeScale(0.0f);
+            // ownner.SetSceneTimeScale(0.0f);
         }
         Start(lastState !is this, beatIndex);
         CharacterState::Enter(lastState);
@@ -1337,6 +1349,9 @@ class PlayerBeatDownHitState : MultiMotionState
         Vector3 originDiff = m1.startFromOrigin - m2.startFromOrigin;
         originDiff.x = Abs(originDiff.x);
         originDiff.z = Abs(originDiff.z);
+        originDiff.x = 0;
+        originDiff.y = 0;
+        Print("GetStartOriginDiff("+i+")=" + originDiff.ToString());
         return originDiff;
     }
 
@@ -1842,7 +1857,11 @@ class Player : Character
         Print("Do--Attack--->");
         Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
         SetTarget(e);
-        ChangeState("AttackState");
+
+        if (e.HasFlag(FLAGS_STUN))
+            ChangeState("BeatDownHitState");
+        else
+            ChangeState("AttackState");
         return true;
     }
 

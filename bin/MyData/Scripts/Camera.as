@@ -117,8 +117,8 @@ class DebugFPSCameraController: CameraController
 class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 4.5f;
-    float   cameraHeight = 5.5f;
-    float   cameraDistance = 20.0f;
+    float   cameraHeight = 3.0f;
+    float   cameraDistance = 18.0f;
     float   cameraDistSpeed = 200.0f;
     float   cameraAutoDistance = 20.0f;
     float   targetFov = BASE_FOV;
@@ -159,8 +159,8 @@ class ThirdPersonCameraController : CameraController
         pitch = Clamp(pitch, -10.0f, 60.0f);
 
         float dist = cameraDistance;
-        if (blockView)
-            dist = cameraAutoDistance;
+        //if (blockView)
+        //    dist = cameraAutoDistance;
 
         Quaternion q(pitch, yaw, 0);
         Vector3 pos = q * Vector3(0, 0, -dist) + target_pos;

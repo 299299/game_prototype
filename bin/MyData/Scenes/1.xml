@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="259.026" />
-	<attribute name="Next Replicated Node ID" value="51" />
-	<attribute name="Next Replicated Component ID" value="79" />
-	<attribute name="Next Local Node ID" value="16780420" />
-	<attribute name="Next Local Component ID" value="16778067" />
+	<attribute name="Next Replicated Node ID" value="59" />
+	<attribute name="Next Replicated Component ID" value="100" />
+	<attribute name="Next Local Node ID" value="16780423" />
+	<attribute name="Next Local Component ID" value="16778091" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -2047,6 +2047,76 @@
 		<component type="StaticModel" id="63">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
 			<attribute name="Material" value="Material;" />
+		</component>
+	</node>
+	<node id="55">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Wall" />
+		<attribute name="Position" value="25.2366 5 -0.0220528" />
+		<attribute name="Rotation" value="0.707107 0 0.707107 0" />
+		<attribute name="Scale" value="50 10 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="88">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
+		</component>
+		<component type="CollisionShape" id="89" />
+		<component type="RigidBody" id="90">
+			<attribute name="Physics Rotation" value="0.707107 0 0.707107 0" />
+			<attribute name="Physics Position" value="25.2366 5 -0.0220528" />
+			<attribute name="Collision Layer" value="2" />
+		</component>
+	</node>
+	<node id="56">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Wall" />
+		<attribute name="Position" value="0 5 25.5283" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="50 10 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="91">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
+		</component>
+		<component type="CollisionShape" id="92" />
+		<component type="RigidBody" id="93">
+			<attribute name="Physics Position" value="0 5 25.5283" />
+			<attribute name="Collision Layer" value="2" />
+		</component>
+	</node>
+	<node id="57">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Wall" />
+		<attribute name="Position" value="0 5 -25.5873" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="50 10 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="94">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
+		</component>
+		<component type="CollisionShape" id="95" />
+		<component type="RigidBody" id="96">
+			<attribute name="Physics Position" value="0 5 -25.5873" />
+			<attribute name="Collision Layer" value="2" />
+		</component>
+	</node>
+	<node id="58">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Wall" />
+		<attribute name="Position" value="-25.3864 5 -0.0220528" />
+		<attribute name="Rotation" value="0.707107 0 0.707107 0" />
+		<attribute name="Scale" value="50 10 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="97">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
+		</component>
+		<component type="CollisionShape" id="98" />
+		<component type="RigidBody" id="99">
+			<attribute name="Physics Rotation" value="0.707107 0 0.707107 0" />
+			<attribute name="Physics Position" value="-25.3864 5 -0.0220528" />
+			<attribute name="Collision Layer" value="2" />
 		</component>
 	</node>
 </scene>

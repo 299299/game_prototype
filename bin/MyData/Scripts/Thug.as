@@ -7,12 +7,12 @@
 // --- CONST
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 const float MIN_TURN_ANGLE = 30;
-const float MIN_THINK_TIME = 0.1f;
-const float MAX_THINK_TIME = 0.75f;
+const float MIN_THINK_TIME = 0.25f;
+const float MAX_THINK_TIME = 1.0f;
 const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 const float MAX_ATTACK_RANGE = 3.0f;
 const float KEEP_DIST = 1.5f;
-const Vector3 HIT_RAGDOLL_FORCE(27.5f, 15.0f, 0.0f);
+const Vector3 HIT_RAGDOLL_FORCE(30.0f, 15.0f, 0.0f);
 
 // -- NON CONST
 float PUNCH_DIST = 0.0f;
@@ -65,6 +65,14 @@ class ThugStandState : CharacterState
         //if (engine.headless)
         //   return;
 
+        float diff = Abs(ownner.ComputeAngleDiff());
+        if (diff > MIN_TURN_ANGLE)
+        {
+            // I should always turn to look at player.
+            ownner.ChangeState("TurnState");
+            return;
+        }
+
         if (timeInState > thinkTime)
         {
             OnThinkTimeOut();
@@ -77,14 +85,6 @@ class ThugStandState : CharacterState
 
     void OnThinkTimeOut()
     {
-        float diff = Abs(ownner.ComputeAngleDiff());
-        if (diff > MIN_TURN_ANGLE)
-        {
-            // I should always turn to look at player.
-            ownner.ChangeState("TurnState");
-            return;
-        }
-
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;

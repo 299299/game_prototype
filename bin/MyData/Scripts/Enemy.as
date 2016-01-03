@@ -153,12 +153,12 @@ class EnemyManager : ScriptObject
     {
         if (enemyList.empty)
             return;
-        Character@ player = enemyList[0].target;
-        Vector3 v1 = player.GetNode().worldPosition;
+        // Character@ player = enemyList[0].target;
+        // Vector3 v1 = player.GetNode().worldPosition;
         for (uint i=0; i<enemyList.length; ++i)
         {
             enemyList[i].DebugDraw(debug);
-            debug.AddLine(v1, enemyList[i].GetNode().worldPosition, Color(1.0f, 0.25f, 0.25f), false);
+            // debug.AddLine(v1, enemyList[i].GetNode().worldPosition, Color(0.25f, 0.55f, 0.65f), false);
         }
     }
 
