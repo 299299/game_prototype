@@ -202,6 +202,8 @@ class TestGameState : GameState
     int                 lastState = -1;
     int                 maxKilled = 5;
 
+    bool                postInited = false;
+
     TestGameState()
     {
         SetName("TestGameState");
@@ -287,6 +289,14 @@ class TestGameState : GameState
                 ChangeSubState(GAME_RUNNING);
             else if (selection == 1)
                 engine.Exit();
+        }
+        else if (state == GAME_RUNNING) {
+            if (!postInited) {
+                if (timeInState > 1.0f) {
+                    postInit();
+                    postInited = true;
+                }
+            }
         }
         GameState::Update(dt);
     }
@@ -390,7 +400,7 @@ class TestGameState : GameState
                 renderpath.SetEnabled("TonemapUncharted2", true);
                 renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
                 renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
-                // renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.8f;
+                renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.8f;
             }
         }
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
@@ -573,6 +583,11 @@ class TestGameState : GameState
     String GetDebugText()
     {
         return "timeInState=" + timeInState + " state=" + state + " lastState=" + lastState + "\n";
+    }
+
+    void postInit()
+    {
+        renderer.viewports[0].renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.5f;
     }
 };
 

@@ -1115,6 +1115,8 @@ class Character : GameObject
 
     void SetTarget(Character@ t)
     {
+        if (t is target)
+            return;
         @target = t;
         Print(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
     }

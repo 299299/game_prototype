@@ -886,7 +886,7 @@ class PlayerCounterState : CharacterCounterState
                 ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
                 pos = boneNode.worldPosition;
             }
-            
+
             ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
 
             Vector3 my_pos = _node.worldPosition;
@@ -976,7 +976,7 @@ class PlayerDeadState : MultiMotionState
     {
         if (state == 0)
         {
-            if (motions[selectIndex].Move(ownner, dt)) 
+            if (motions[selectIndex].Move(ownner, dt))
             {
                 state = 1;
                 gGame.OnCharacterKilled(null, ownner);
@@ -1065,7 +1065,7 @@ class PlayerBeatDownStartState : CharacterState
         Vector3 enemyPos = target.GetNode().worldPosition;
 
         float dist = COLLISION_RADIUS*2 + motion.endDistance;
-        targetPosition = enemyPos + ownner.GetNode().worldRotation * Vector3(0, 0, -dist); 
+        targetPosition = enemyPos + ownner.GetNode().worldRotation * Vector3(0, 0, -dist);
         movePerSec = ( targetPosition - myPos ) / alignTime;
         movePerSec.y = 0;
 
@@ -1106,7 +1106,7 @@ class PlayerBeatDownStartState : CharacterState
                 return;
             }
         }
-        
+
         CharacterState::Update(dt);
     }
 
@@ -1805,15 +1805,9 @@ class Player : Character
     bool Attack()
     {
         Print("Do--Attack--->");
-
         Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
-        Character@ oldTarget = target;
-        if (oldTarget !is null)
-            oldTarget.RemoveFlag(FLAGS_NO_MOVE);
-
         SetTarget(e);
         ChangeState("AttackState");
-
         return true;
     }
 
@@ -1821,18 +1815,11 @@ class Player : Character
     {
         Print("Do--Distract--->");
         //hangeState("DistractState");
-
         Enemy@ e = CommonPickEnemy(30, MAX_BEAT_DIST, FLAGS_ATTACK, true, true);
         if (e is null)
             return false;
-
-        Character@ oldTarget = target;
-        if (oldTarget !is null)
-            oldTarget.RemoveFlag(FLAGS_NO_MOVE);
-
         SetTarget(e);
         ChangeState("BeatDownStartState");
-
         return true;
     }
 
@@ -1854,5 +1841,14 @@ class Player : Character
             return true;
         }
         return false;
+    }
+
+    void SetTarget(Character@ t)
+    {
+        if (target is t)
+            return;
+        if (target !is null)
+            target.RemoveFlag(FLAGS_NO_MOVE);
+        Character::SetTarget(t);
     }
 };
