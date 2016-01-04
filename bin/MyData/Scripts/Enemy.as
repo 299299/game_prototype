@@ -151,8 +151,15 @@ class EnemyManager : ScriptObject
 
     void DebugDraw(DebugRenderer@ debug)
     {
+        if (enemyList.empty)
+            return;
+        Character@ player = enemyList[0].target;
+        Vector3 v1 = player.GetNode().worldPosition;
         for (uint i=0; i<enemyList.length; ++i)
+        {
             enemyList[i].DebugDraw(debug);
+            debug.AddLine(v1, enemyList[i].GetNode().worldPosition, Color(1.0f, 0.25f, 0.25f), false);
+        }
     }
 
     Node@ CreateThug(const String&in name, const Vector3&in position, const Quaternion& rotation)

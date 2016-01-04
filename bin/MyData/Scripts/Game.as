@@ -338,8 +338,6 @@ class TestGameState : GameState
             data[NAME] = CHANGE_STATE;
             data[VALUE] = StringHash("ThirdPerson");
             SendEvent("CameraEvent", data);
-            //data[TARGET_FOV] = BASE_FOV;
-            //SendEvent("CameraEvent", data);
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)
         {
@@ -378,9 +376,7 @@ class TestGameState : GameState
         }
 
         if (player !is null)
-        {
             player.SetTarget(null);
-        }
     }
 
     void CreateViewPort()
@@ -587,7 +583,8 @@ class TestGameState : GameState
 
     void postInit()
     {
-        renderer.viewports[0].renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.5f;
+        if (bHdr && tonemapping && graphics !is null)
+            renderer.viewports[0].renderPath.shaderParameters["AutoExposureAdaptRate"] = 0.5f;
     }
 };
 

@@ -732,27 +732,9 @@ class Character : GameObject
         Vector3 old_pos = sceneNode.worldPosition;
         float x = position.x;
         float z = position.z;
-        if (x > 0)
-        {
-            if (x + COLLISION_RADIUS > WORLD_HALF_SIZE.x)
-                x = WORLD_HALF_SIZE.x - COLLISION_RADIUS;
-        }
-        else
-        {
-             if (x - COLLISION_RADIUS < -WORLD_HALF_SIZE.x)
-                x = COLLISION_RADIUS - WORLD_HALF_SIZE.x;
-        }
-        if (z > 0)
-        {
-            if (z + COLLISION_RADIUS > WORLD_HALF_SIZE.z)
-                z = WORLD_HALF_SIZE.z - COLLISION_RADIUS;
-        }
-        else
-        {
-             if (z - COLLISION_RADIUS < -WORLD_HALF_SIZE.z)
-                z = COLLISION_RADIUS - WORLD_HALF_SIZE.z;
-        }
-
+        float radius = COLLISION_RADIUS + 1.0f;
+        x = Clamp(x, radius - WORLD_HALF_SIZE.x, WORLD_HALF_SIZE.x - radius);
+        z = Clamp(z, radius - WORLD_HALF_SIZE.z, WORLD_HALF_SIZE.z - radius);
         sceneNode.worldPosition = Vector3(x, 0, z);
     }
 
