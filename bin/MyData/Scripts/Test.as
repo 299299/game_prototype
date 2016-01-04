@@ -182,6 +182,9 @@ void CreateLogo()
     logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
     logoSprite.opacity = 0.75f;
     logoSprite.priority = -100;
+
+    if (graphics.width < 300)
+        SetLogoVisible(false);
 }
 
 void CreateUI()

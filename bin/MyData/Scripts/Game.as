@@ -326,11 +326,9 @@ class TestGameState : GameState
             Print("=====================================================================");
             Print("=====================================================================");
 
-            Player@ player = GetPlayer();
             if (player !is null)
-            {
                 player.RemoveFlag(FLAGS_INVINCIBLE);
-            }
+
             gInput.m_freeze = false;
             script.defaultScene.updateEnabled = true;
 

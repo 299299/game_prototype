@@ -1295,8 +1295,8 @@ class PlayerBeatDownHitState : MultiMotionState
         Vector3 tPos = target.GetNode().worldPosition;
         Vector3 dir = tPos - myPos;
         float targetRotation = Atan2(dir.x, dir.z);
-        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-        target.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
+        target.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
 
         targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
         if (bFirst)
@@ -1410,7 +1410,6 @@ class Player : Character
         // t.endNodeName = "Bip01";
         //tail.enabled = false;
         _node.enabled = false;
-
         //attackDamage = 100;
     }
 
@@ -1782,13 +1781,11 @@ class Player : Character
             float dist = posDiff.length - PLAYER_COLLISION_DIST;
             if (dist > maxDiffDist)
                 continue;
-
             float enemyAngle = Atan2(posDiff.x, posDiff.z);
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
             if (Abs(diffAngle) > maxDiffAngle)
                 continue;
-
             enemies.Push(e);
         }
 
