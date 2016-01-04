@@ -4,11 +4,11 @@
 	<attribute name="Time Scale" value="1" />
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
-	<attribute name="Elapsed Time" value="259.026" />
+	<attribute name="Elapsed Time" value="259.546" />
 	<attribute name="Next Replicated Node ID" value="59" />
 	<attribute name="Next Replicated Component ID" value="100" />
-	<attribute name="Next Local Node ID" value="16780423" />
-	<attribute name="Next Local Component ID" value="16778091" />
+	<attribute name="Next Local Node ID" value="16780425" />
+	<attribute name="Next Local Component ID" value="16778115" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -60,7 +60,7 @@
 		<node id="16778007">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RenderNode" />
-			<attribute name="Position" value="0 0 0" />
+			<attribute name="Position" value="8.73048 0 9.05991e-006" />
 			<attribute name="Rotation" value="-4.37114e-008 -0 -1 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
@@ -817,7 +817,7 @@
 		<node id="16778358">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RenderNode" />
-			<attribute name="Position" value="0 0 0" />
+			<attribute name="Position" value="-9.59953 0 -3.8147e-006" />
 			<attribute name="Rotation" value="-4.37114e-008 0 1 -0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
@@ -2040,7 +2040,7 @@
 	<node id="44">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="player" />
-		<attribute name="Position" value="0 2.5 -14.6618" />
+		<attribute name="Position" value="0 2.5 -7.8067" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 5 1" />
 		<attribute name="Variables" />

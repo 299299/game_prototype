@@ -467,6 +467,14 @@ void AddStringAnimationTrigger(const String&in name, int frame, const StringHash
     Animation_AddTrigger(name, frame, eventData);
 }
 
+void AddStringHashAnimationTrigger(const String&in name, int frame, const StringHash&in tag, const StringHash&in value)
+{
+    VariantMap eventData;
+    eventData[NAME] = tag;
+    eventData[VALUE] = value;
+    Animation_AddTrigger(name, frame, eventData);
+}
+
 void AddAttackTrigger(const String&in name, int startFrame, int endFrame, const String&in boneName)
 {
     VariantMap eventData;

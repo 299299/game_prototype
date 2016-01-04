@@ -790,11 +790,11 @@ class MotionManager
         AddRagdollTrigger(preFix + "Counter_Arm_Front_13", 58, 68);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_14", 72, 78);
 
-        AddRagdollTrigger(preFix + "Counter_Arm_Back_01", -1, 42);
-        AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 50);
-        AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 33, 35);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_01", 35, 40);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_02", 45, 50);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 30, 35);
         AddRagdollTrigger(preFix + "Counter_Arm_Back_05", 40, 48);
-        AddRagdollTrigger(preFix + "Counter_Arm_Back_06", -1, 72);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_06", 65, 70);
 
         AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 50, 54);
         AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 60, 54);
@@ -819,9 +819,13 @@ class MotionManager
 
         preFix = "TG_BM_Beatdown/";
         AddRagdollTrigger(preFix + "Beatdown_Strike_End_01", 24, 28);
+        AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_01", 28, HEALTH, 0);
         AddRagdollTrigger(preFix + "Beatdown_Strike_End_02", -1, 48);
+        AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_02", 48, HEALTH, 0);
         AddRagdollTrigger(preFix + "Beatdown_Strike_End_03", -1, 28);
+        AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_03", 28, HEALTH, 0);
         AddRagdollTrigger(preFix + "Beatdown_Strike_End_04", -1, 50);
+        AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_04", 50, HEALTH, 0);
 
         //preFix = "TG_HitReaction/";
         //AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);
@@ -1080,7 +1084,7 @@ class MotionManager
         preFix = "BM_Attack/";
         AddAnimationTrigger(preFix + "CapeDistract_Close_Forward", 12, IMPACT);
 
-        int beat_impact_frame = 2;
+        int beat_impact_frame = 4;
         AddAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT);
         AddAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT);
         AddAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, IMPACT);
@@ -1099,13 +1103,9 @@ class MotionManager
 
         preFix = "BM_TG_Beatdown/";
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);
-        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, COMBAT_SOUND, R_HAND);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
-        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, COMBAT_SOUND, HEAD);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
-        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, COMBAT_SOUND, R_FOOT);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
-        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, COMBAT_SOUND, L_CALF);
     }
 };
 

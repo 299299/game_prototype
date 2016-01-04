@@ -19,6 +19,7 @@ const int   MAX_WEAK_ATTACK_COMBO = 3;
 const float MAX_DISTRACT_DIST = 4.0f;
 const float MAX_DISTRACT_DIR = 90.0f;
 const int   HIT_WAIT_FRAMES = 3;
+const float LAST_KILL_SPEED = 0.35f;
 
 class PlayerStandState : CharacterState
 {
@@ -353,7 +354,7 @@ class PlayerAttackState : CharacterState
             leftCloseNum++;
         }
 
-        if (d_log)
+        // if (d_log)
         {
             Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
             DumpAttacks(forwardAttacks);
@@ -486,6 +487,7 @@ class PlayerAttackState : CharacterState
         for (uint i=0; i<attacks.length; ++i)
         {
             AttackMotion@ am = attacks[i];
+            // Print("am.impactDist=" + am.impactDist);
             if (am.impactDist > max_dist)
                 break;
 
@@ -520,8 +522,9 @@ class PlayerAttackState : CharacterState
             }
             lastAttackDirection = dir;
             lastAttackIndex = bestIndex;
-            Print("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num="+index_num);
         }
+
+        Print("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num="+index_num);
 
         @currentAttack = attacks[bestIndex];
         alignTime = currentAttack.impactTime;
@@ -601,7 +604,7 @@ class PlayerAttackState : CharacterState
 
         if (lastKill)
         {
-            ownner.SetSceneTimeScale(0.5f);
+            ownner.SetSceneTimeScale(LAST_KILL_SPEED);
             weakAttack = false;
             slowMotion = false;
         }
@@ -1145,12 +1148,11 @@ class PlayerBeatDownEndState : MultiMotionState
         }
 
         if (cast<Player>(ownner).CheckLastKill())
-            ownner.SetSceneTimeScale(0.5f);
+            ownner.SetSceneTimeScale(LAST_KILL_SPEED);
 
         Character@ target = ownner.target;
         if (target !is null)
         {
-
             Motion@ m1 = motions[selectIndex];
             ThugBeatDownEndState@ state = cast<ThugBeatDownEndState>(target.FindState("BeatDownEndState"));
             Motion@ m2 = state.motions[selectIndex];
@@ -1177,7 +1179,10 @@ class PlayerBeatDownEndState : MultiMotionState
 
     void Exit(State@ nextState)
     {
+        Print("BeatDownEndState Exit!!");
         ownner.OnAttackSuccess(ownner.target);
+        ownner.SetSceneTimeScale(1.0f);
+        ownner.SetTarget(null);
         MultiMotionState::Exit(nextState);
     }
 
@@ -1202,7 +1207,7 @@ class PlayerBeatDownEndState : MultiMotionState
             Node@ _node = ownner.GetNode();
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
             if (boneNode !is null)
-                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
+                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 10.0f);
             ownner.PlayRandomSound(1);
             combatReady = true;
         }
@@ -1278,16 +1283,6 @@ class PlayerBeatDownHitState : MultiMotionState
                 return;
             }
 
-            if (ownner.target !is null)
-            {
-                float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
-                if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
-                {
-                    Print("Player::PlayerBeatDownStartState TooClose set motion_translateEnabled to false");
-                    ownner.motion_translateEnabled = false;
-                }
-            }
-
             if (motions[selectIndex].Move(ownner, dt)) {
                 OnMotionFinished();
                 return;
@@ -1335,6 +1330,7 @@ class PlayerBeatDownHitState : MultiMotionState
     void Enter(State@ lastState)
     {
         combatReady = false;
+        attackPressed = false;
         if (lastState !is this)
         {
             beatNum = 0;
@@ -1342,7 +1338,7 @@ class PlayerBeatDownHitState : MultiMotionState
         }
         Start(lastState !is this, beatIndex);
         CharacterState::Enter(lastState);
-        Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
+        // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
     }
 
     Vector3 GetStartOriginDiff(int i)
@@ -1367,7 +1363,7 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             combatReady = true;
             ownner.OnAttackSuccess(ownner.target);
-            Print("Beat Impact Total = " + beatTotal + " Num = " + beatNum);
+            // Print("Beat Impact Total = " + beatTotal + " Num = " + beatNum);
             if (beatNum >= beatTotal)
             {
                 ownner.ChangeState("BeatDownEndState");
@@ -1523,6 +1519,12 @@ class Player : Character
 
     void OnAttackSuccess(Character@ target)
     {
+        if (target is null)
+        {
+            Print("Player::OnAttackSuccess target is null");
+            return;
+        }
+
         combo ++;
         Print("OnAttackSuccess combo add to " + combo);
 
@@ -1870,7 +1872,7 @@ class Player : Character
     bool Distract()
     {
         Print("Do--Distract--->");
-        Enemy@ e = CommonPickEnemy(30, MAX_BEAT_DIST, FLAGS_ATTACK, true, true);
+        Enemy@ e = CommonPickEnemy(30, MAX_BEAT_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)
             return false;
         SetTarget(e);

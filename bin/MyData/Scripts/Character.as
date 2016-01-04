@@ -26,6 +26,7 @@ const StringHash RUN_STATE("RunState");
 const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
 const StringHash BEATHIT_STATE("BeatDownHitState");
+const StringHash DEAD_STATE("DeadState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
@@ -89,9 +90,11 @@ class CharacterState : State
                 OnFootStep(eventData[VALUE].GetString());
         }
         else if (name == SOUND)
-        {
             ownner.PlaySound(eventData[VALUE].GetString());
-        }
+        else if (name == CHANGE_STATE)
+            ownner.ChangeState(eventData[VALUE].GetStringHash());
+        else if (name == HEALTH)
+            ownner.SetHealth(eventData[VALUE].GetInt());
     }
 
     void OnFootStep(const String&in boneName)
@@ -506,8 +509,15 @@ class CharacterRagdollState : CharacterState
             int ragdoll_state = ownner.GetNode().vars[RAGDOLL_STATE].GetInt();
             if (ragdoll_state == RAGDOLL_NONE)
             {
-                ownner.PlayCurrentPose();
-                ownner.ChangeState("GetUpState");
+                if (ownner.health > 0)
+                {
+                    ownner.PlayCurrentPose();
+                    ownner.ChangeState("GetUpState");
+                }
+                else
+                {
+                    ownner.ChangeState("DeadState");
+                }
             }
         }
         CharacterState::Update(dt);
@@ -609,9 +619,6 @@ class Character : GameObject
 
     bool                    motion_translateEnabled = true;
     bool                    motion_rotateEnabled = true;
-
-    int                     last_snd_impact = -1;
-    int                     last_snd_big = -1;
 
     Character()
     {
@@ -783,7 +790,7 @@ class Character : GameObject
     void SetHealth(int h)
     {
         health = h;
-        sceneNode.vars[HEALTH] = h;
+        // sceneNode.vars[HEALTH] = h;
     }
 
     bool CanBeAttacked()
@@ -1063,6 +1070,11 @@ class Character : GameObject
         stateMachine.ChangeState(name);
     }
 
+    void ChangeState(const StringHash&in nameHash)
+    {
+        stateMachine.ChangeState(nameHash);
+    }
+
     State@ FindState(const String&in name)
     {
         return stateMachine.FindState(name);
@@ -1107,21 +1119,9 @@ class Character : GameObject
     void PlayRandomSound(int type)
     {
         if (type == 0)
-        {
-            int i = RandomInt(num_of_sounds) + 1;
-            if (last_snd_impact == i)
-                i = (i+1) % num_of_sounds;
-            last_snd_impact = i;
-            PlaySound("Sfx/impact_" + i + ".ogg");
-        }
+            PlaySound("Sfx/impact_" + (RandomInt(num_of_sounds) + 1) + ".ogg");
         else if (type == 1)
-        {
-            int i = RandomInt(num_of_big_sounds) + 1;
-            if (last_snd_big == i)
-                i = (i+1) % num_of_sounds;
-            last_snd_big = i;
-            PlaySound("Sfx/big_" + i + ".ogg");
-        }
+            PlaySound("Sfx/big_" + (RandomInt(num_of_big_sounds) + 1) + ".ogg");
     }
 
     void ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)

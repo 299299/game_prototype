@@ -261,9 +261,6 @@ class Ragdoll : ScriptObject
             // Print("Ragdoll Dynamic time " + timeInState);
             timeInState += dt;
 
-            if (rootNode.vars[HEALTH].GetInt() <= 0)
-                return;
-
             uint num_of_freeze_objects = 0;
             for (uint i=0; i<RAGDOLL_BONE_NUM; ++i)
             {
