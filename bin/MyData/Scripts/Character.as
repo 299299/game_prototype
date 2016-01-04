@@ -25,6 +25,7 @@ const StringHash STEPMOVE_STATE("StepMoveState");
 const StringHash RUN_STATE("RunState");
 const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
+const StringHash BEATHIT_STATE("BeatDownHitState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");

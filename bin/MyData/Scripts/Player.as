@@ -1070,7 +1070,6 @@ class PlayerBeatDownStartState : CharacterState
         movePerSec.y = 0;
 
         state = 0;
-        //ownner.SetSceneTimeScale(0.0f);
 
         CharacterState::Enter(lastState);
     }
@@ -1209,8 +1208,11 @@ class PlayerBeatDownHitState : MultiMotionState
 
     bool combatReady = false;
 
-    float moveSpeed = 5.0f;
-    float rotateSpeed = 5.0f;
+    float alignTime = 0.1f;
+    Vector3 movePerSec;
+    Vector3 targetPosition;
+
+    int state = 0;
 
     PlayerBeatDownHitState(Character@ c)
     {
@@ -1233,78 +1235,109 @@ class PlayerBeatDownHitState : MultiMotionState
 
     void Update(float dt)
     {
-        if (combatReady && gInput.IsAttackPressed())
+        if (state == 0)
         {
-            ++ beatIndex;
-            ++ beatNum;
-            beatIndex = beatIndex % motions.length;
-            ownner.ChangeState("BeatDownHitState");
-            return;
-        }
+            ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
 
-        if (gInput.IsCounterPressed())
-        {
-            ownner.Counter();
-            return;
-        }
-
-        // Motion@ motion = motions[selectIndex];
-        // float angle = ownner.ComputeAngleDiff(ownner.target.GetNode());
-        // ownner.motion_deltaRotation += angle * rotateSpeed * dt;
-
-        if (ownner.target !is null)
-        {
-            float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
-            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
+            if (timeInState >= alignTime)
             {
-                Print("Player::PlayerBeatDownStartState TooClose set motion_translateEnabled to false");
-                ownner.motion_translateEnabled = false;
+                state = 1;
+                Start(false, beatIndex);
+            }
+        }
+        else
+        {
+            if (combatReady && gInput.IsAttackPressed())
+            {
+                ++ beatIndex;
+                ++ beatNum;
+                beatIndex = beatIndex % motions.length;
+                ownner.ChangeState("BeatDownHitState");
+                return;
+            }
+
+            if (gInput.IsCounterPressed())
+            {
+                ownner.Counter();
+                return;
+            }
+
+            if (ownner.target !is null)
+            {
+                float targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
+                if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
+                {
+                    Print("Player::PlayerBeatDownStartState TooClose set motion_translateEnabled to false");
+                    ownner.motion_translateEnabled = false;
+                }
+            }
+
+            if (motions[selectIndex].Move(ownner, dt)) {
+                OnMotionFinished();
+                return;
             }
         }
 
-        MultiMotionState::Update(dt);
+        CharacterState::Update(dt);
+    }
+
+    void Start(bool bFirst, int i)
+    {
+        Character@ target = ownner.target;
+        if (target is null)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
+        Vector3 originDiff = GetStartOriginDiff(i);
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 tPos = target.GetNode().worldPosition;
+        Vector3 dir = tPos - myPos;
+        float targetRotation = Atan2(dir.x, dir.z);
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        target.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
+
+        targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
+        if (bFirst)
+        {
+            state = 0;
+            movePerSec = (targetPosition - myPos)/alignTime;
+            movePerSec.y = 0;
+        }
+        else
+        {
+            state = 1;
+            ownner.GetNode().worldPosition = targetPosition;
+            target.GetNode().vars[ANIMATION_INDEX] = i;
+            target.ChangeState("BeatDownHitState");
+            motions[i].Start(ownner);
+        }
     }
 
     void Enter(State@ lastState)
     {
         combatReady = false;
-
         if (lastState !is this)
         {
             beatNum = 0;
             beatTotal = RandomInt(minBeatNum, maxBeatNum);
+            ownner.SetSceneTimeScale(0.0f);
         }
+        Start(lastState !is this, beatIndex);
+        CharacterState::Enter(lastState);
+        Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
+    }
 
-        Character@ target = ownner.target;
-        if (target !is null)
-        {
-            target.GetNode().vars[ANIMATION_INDEX] = beatIndex;
-            target.ChangeState("BeatDownHitState");
-
-            MultiMotionState@ state = cast<MultiMotionState>(target.GetState());
-            if (state !is null)
-            {
-                Motion@ m1 = motions[beatIndex];
-                Motion@ m2 = state.motions[beatIndex];
-
-                float enemyYaw = target.GetNode().worldRotation.eulerAngles.y;
-                float targetRotation = enemyYaw + 180;
-
-                Vector3 s1 = m1.startFromOrigin;
-                Vector3 s2 = m2.startFromOrigin;
-                Vector3 originDiff = s1 - s2;
-                originDiff.x = Abs(originDiff.x);
-                originDiff.z = Abs(originDiff.z);
-
-                Vector3 targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
-                targetPosition.y = ownner.GetNode().worldPosition.y;
-                ownner.MoveTo(targetPosition, 1.0f/60.0f);
-                ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-            }
-        }
-
-        MultiMotionState::Enter(lastState);
-        // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
+    Vector3 GetStartOriginDiff(int i)
+    {
+        MultiMotionState@ state = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
+        Motion@ m1 = motions[i];
+        Motion@ m2 = state.motions[i];
+        Vector3 originDiff = m1.startFromOrigin - m2.startFromOrigin;
+        originDiff.x = Abs(originDiff.x);
+        originDiff.z = Abs(originDiff.z);
+        return originDiff;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1328,6 +1361,11 @@ class PlayerBeatDownHitState : MultiMotionState
     int PickIndex()
     {
         return beatIndex;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(targetPosition, 1.0f, RED, false);
     }
 };
 
@@ -1814,12 +1852,11 @@ class Player : Character
     bool Distract()
     {
         Print("Do--Distract--->");
-        //hangeState("DistractState");
         Enemy@ e = CommonPickEnemy(30, MAX_BEAT_DIST, FLAGS_ATTACK, true, true);
         if (e is null)
             return false;
         SetTarget(e);
-        ChangeState("BeatDownStartState");
+        ChangeState("BeatDownHitState");
         return true;
     }
 

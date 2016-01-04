@@ -553,8 +553,8 @@ class MotionManager
         CreateMotion(preFix + "Beatdown_Strike_Start_01", kMotion_XZR, 0);
         CreateMotion(preFix + "CapeDistract_Close_Forward");
 
-        int beat_motion_flags = kMotion_XZ;
-        int beat_allow_flags = kMotion_XZR;
+        int beat_motion_flags = kMotion_XZR;
+        int beat_allow_flags = kMotion_Z;
 
         CreateMotion(preFix + "Beatdown_Test_01", beat_motion_flags, beat_allow_flags);
         CreateMotion(preFix + "Beatdown_Test_02", beat_motion_flags, beat_allow_flags);

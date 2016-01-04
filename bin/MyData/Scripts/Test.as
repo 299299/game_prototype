@@ -760,4 +760,10 @@ void ExecuteCommand()
         autoCounter = !autoCounter;
         Print("Set autoCounter=" + autoCounter);
     }
+    else if (command == "distract")
+    {
+        Player@ player = GetPlayer();
+        if (player !is null)
+            player.Distract();
+    }
 }
