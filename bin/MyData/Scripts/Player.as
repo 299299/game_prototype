@@ -34,6 +34,7 @@ class PlayerStandState : CharacterState
 
     void Enter(State@ lastState)
     {
+        ownner.SetTarget(null);
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
         CharacterState::Enter(lastState);
     }
@@ -87,6 +88,7 @@ class PlayerTurnState : MultiMotionState
 
     void Enter(State@ lastState)
     {
+        ownner.SetTarget(null);
         MultiMotionState::Enter(lastState);
         Motion@ motion = motions[selectIndex];
         Vector4 endKey = motion.GetKey(motion.endTime);
@@ -133,6 +135,7 @@ class PlayerMoveState : SingleMotionState
 
     void Enter(State@ lastState)
     {
+        ownner.SetTarget(null);
         motion.Start(ownner, 0.0f, 0.1f, 1.25f);
         CharacterState::Enter(lastState);
     }
@@ -625,9 +628,6 @@ class PlayerAttackState : CharacterState
 
         if (ownner.target !is null)
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
-
-        if (nextState !is this)
-            ownner.SetTarget(null);
 
         @currentAttack = null;
         ownner.SetSceneTimeScale(1.0f);
@@ -1167,7 +1167,6 @@ class PlayerBeatDownEndState : MultiMotionState
     {
         Print("BeatDownEndState Exit!!");
         ownner.SetSceneTimeScale(1.0f);
-        ownner.SetTarget(null);
         MultiMotionState::Exit(nextState);
     }
 
