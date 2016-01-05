@@ -1218,6 +1218,7 @@ class PlayerBeatDownHitState : MultiMotionState
     int beatTotal = 0;
 
     bool combatReady = false;
+    bool attackPressed = false;
 
     float alignTime = 0.1f;
     Vector3 movePerSec;
@@ -1254,11 +1255,15 @@ class PlayerBeatDownHitState : MultiMotionState
             {
                 state = 1;
                 Start(false, beatIndex);
+                timeInState = 0.0f;
             }
         }
         else
         {
-            if (combatReady && gInput.IsAttackPressed())
+            if (gInput.IsAttackPressed())
+                attackPressed = true;
+
+            if (combatReady && attackPressed)
             {
                 ++ beatIndex;
                 ++ beatNum;
@@ -1334,7 +1339,6 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             beatNum = 0;
             beatTotal = RandomInt(minBeatNum, maxBeatNum);
-            // ownner.SetSceneTimeScale(0.0f);
         }
         Start(lastState !is this, beatIndex);
         CharacterState::Enter(lastState);
@@ -1363,9 +1367,7 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             combatReady = true;
             ownner.OnAttackSuccess(ownner.target);
-
             Print("Beat Impact Total = " + beatTotal + " Num = " + beatNum);
-
             if (beatNum >= beatTotal)
             {
                 ownner.ChangeState("BeatDownEndState");
