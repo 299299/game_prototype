@@ -1385,6 +1385,22 @@ class PlayerBeatDownHitState : MultiMotionState
     }
 };
 
+class PlayerTransitionState : SingleMotionState
+{
+    String nextStateName;
+
+    PlayerTransitionState(Character@ c)
+    {
+        super(c);
+        SetName("Transition");
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.CommonStateFinishedOnGroud();
+    }
+};
+
 class Player : Character
 {
     int combo;
