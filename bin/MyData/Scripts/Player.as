@@ -1166,7 +1166,6 @@ class PlayerBeatDownEndState : MultiMotionState
     void Exit(State@ nextState)
     {
         Print("BeatDownEndState Exit!!");
-        ownner.OnAttackSuccess(ownner.target);
         ownner.SetSceneTimeScale(1.0f);
         ownner.SetTarget(null);
         MultiMotionState::Exit(nextState);
@@ -1205,6 +1204,7 @@ class PlayerBeatDownEndState : MultiMotionState
                 dir.y = 0;
                 dir.Normalize();
                 target.OnDamage(ownner, position, dir, 9999, false);
+                ownner.OnAttackSuccess(target);
             }
         }
     }
@@ -1280,6 +1280,7 @@ class PlayerBeatDownHitState : MultiMotionState
             }
 
             if (motions[selectIndex].Move(ownner, dt)) {
+                Print("Beat Animation finished");
                 OnMotionFinished();
                 return;
             }
@@ -1357,6 +1358,7 @@ class PlayerBeatDownHitState : MultiMotionState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
+            Print("BeatDownHitState On Impact");
             combatReady = true;
             ownner.OnAttackSuccess(ownner.target);
             // Print("Beat Impact Total = " + beatTotal + " Num = " + beatNum);
@@ -1375,6 +1377,12 @@ class PlayerBeatDownHitState : MultiMotionState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 1.0f, RED, false);
+    }
+
+    String GetDebugText()
+    {
+        return " name=" + name + " timeInState=" + String(timeInState) + " current motion=" + motions[selectIndex].animationName + "\n" +
+        " combatReady=" + combatReady + " attackPressed=" + attackPressed + "\n";
     }
 };
 

@@ -767,7 +767,7 @@ class MotionManager
      void AddThugAnimationTriggers()
     {
         String preFix = "TG_BM_Counter/";
-        AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 34, 42);
+        AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 30, 35);
         AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 46, 56);
         AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 38, 48);
         AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 30, 46);
@@ -779,19 +779,19 @@ class MotionManager
 
         AddRagdollTrigger(preFix + "Counter_Arm_Front_01", 34, 35);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_02", 44, 48);
-        AddRagdollTrigger(preFix + "Counter_Arm_Front_03", 40, 44);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_03", 35, 40);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_04", 36, 40);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_05", 60, 66);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_06", -1, 44);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_07", 38, 43);
-        AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 54, 62);
+        AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 54, 60);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 60, 68);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_10", -1, 56);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_13", 58, 68);
         AddRagdollTrigger(preFix + "Counter_Arm_Front_14", 72, 78);
 
         AddRagdollTrigger(preFix + "Counter_Arm_Back_01", 35, 40);
-        AddRagdollTrigger(preFix + "Counter_Arm_Back_02", 45, 50);
+        AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 48);
         AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 30, 35);
         AddRagdollTrigger(preFix + "Counter_Arm_Back_05", 40, 48);
         AddRagdollTrigger(preFix + "Counter_Arm_Back_06", 65, 70);

@@ -691,6 +691,7 @@ class ThugBeatDownEndState : MultiMotionState
         AddMotion(preFix + "Beatdown_Strike_End_02");
         AddMotion(preFix + "Beatdown_Strike_End_03");
         AddMotion(preFix + "Beatdown_Strike_End_04");
+        flags = FLAGS_ATTACK;
     }
 
     void Enter(State@ lastState)
@@ -863,7 +864,7 @@ class Thug : Enemy
         EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
         if (em is null)
             return false;
-        int num = em.GetNumOfEnemyInState(ATTACK_STATE);
+        int num = em.GetNumOfEnemyAttackValid();
         if (num >= MAX_NUM_OF_ATTACK)
             return false;
         if (!target.CanBeAttacked())
@@ -896,8 +897,7 @@ class Thug : Enemy
     {
         if (!CanBeAttacked())
         {
-            if (d_log)
-                Print("OnDamage failed because I can no be attacked " + GetName());
+            Print("OnDamage failed because I can no be attacked " + GetName());
             return false;
         }
 
@@ -915,6 +915,7 @@ class Thug : Enemy
 
         if (health <= 0)
         {
+            v *= 1.5f;
             MakeMeRagdoll(v, position);
             OnDead();
         }

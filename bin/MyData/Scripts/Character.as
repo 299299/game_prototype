@@ -234,7 +234,7 @@ class MultiMotionState : CharacterState
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) + "current motion=" + motions[selectIndex].animationName + "\n";
+        return " name=" + name + " timeInState=" + String(timeInState) + " current motion=" + motions[selectIndex].animationName + "\n";
     }
 
     void AddMotion(const String&in name)

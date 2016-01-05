@@ -320,12 +320,6 @@ class TestGameState : GameState
 
         if (newState == GAME_RUNNING)
         {
-            Print("=====================================================================");
-            Print("=====================================================================");
-            Print("         GAME RUNNING START !!");
-            Print("=====================================================================");
-            Print("=====================================================================");
-
             if (player !is null)
                 player.RemoveFlag(FLAGS_INVINCIBLE);
 
@@ -367,14 +361,15 @@ class TestGameState : GameState
         else if (newState == GAME_WIN)
         {
             ShowMessage("You Win! Press Stride to restart!", true);
+            if (player !is null)
+                player.SetTarget(null);
         }
         else if (newState == GAME_FAIL)
         {
             ShowMessage("You Died! Press Stride to restart!", true);
+            if (player !is null)
+                player.SetTarget(null);
         }
-
-        if (player !is null)
-            player.SetTarget(null);
     }
 
     void CreateViewPort()
@@ -575,7 +570,7 @@ class TestGameState : GameState
 
     String GetDebugText()
     {
-        return "timeInState=" + timeInState + " state=" + state + " lastState=" + lastState + "\n";
+        return  " name=" + name + " timeInState=" + timeInState + " state=" + state + " lastState=" + lastState + "\n";
     }
 
     void postInit()

@@ -68,11 +68,16 @@ class EnemyManager : ScriptObject
     Array<Vector3>      enemyResetPositions;
     Array<Quaternion>   enemyResetRotations;
 
+    Array<Enemy@>       enemyList;
+    Array<int>          scoreCache;
+
     int                 thugId = 0;
     float               updateTimer = 0.0f;
     float               updateTime = 0.25f;
     int                 maxNearEnemies = 4;
     float               nearDist = 3.0f;
+
+    float               attackValidDist = 6.0f;
 
     EnemyManager()
     {
@@ -122,6 +127,18 @@ class EnemyManager : ScriptObject
         for (uint i=0; i<enemyList.length; ++i)
         {
             if (enemyList[i].IsInState(nameHash))
+                ++ret;
+        }
+        return ret;
+    }
+
+    int GetNumOfEnemyAttackValid()
+    {
+        int ret = 0;
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            Enemy@ e = enemyList[i];
+            if (e.IsInState(ATTACK_STATE) && e.GetTargetDistance() < attackValidDist)
                 ++ret;
         }
         return ret;
@@ -217,7 +234,4 @@ class EnemyManager : ScriptObject
                 e.KeepDistanceWithPlayer(0);
         }
     }
-
-    Array<Enemy@>             enemyList;
-    Array<int>                scoreCache;
 };

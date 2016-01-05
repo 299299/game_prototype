@@ -34,7 +34,7 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 1;
+int test_enemy_num_override = 50;
 bool lowend_platform = false;
 bool auto_target = false;
 
@@ -337,16 +337,27 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
     if (drawDebug > 0)
     {
-        String debugText;
+        String seperator = "-------------------------------------------------------------------------------------------------------\n";
+        String debugText = seperator;
         debugText += gGame.GetDebugText();
-        debugText += "-------------------------------------------------------------------------------------------------------\n";
+        debugText += seperator;
         debugText += "current LUT: " + LUT + "\n";
         debugText += "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
         debugText += gInput.GetDebugText();
-        debugText += "-------------------------------------------------------------------------------------------------------\n";
+        debugText += seperator;
         Player@ player = GetPlayer();
         if (player !is null)
             debugText += player.GetDebugText();
+        debugText += seperator;
+        if (drawDebug > 1)
+        {
+            EnemyManager@ em = GetEnemyMgr();
+            if (em !is null && !em.enemyList.empty)
+            {
+                debugText += em.enemyList[0].GetDebugText();
+                debugText += seperator;
+            }
+        }
 
         Text@ text = ui.root.GetChild("debug", true);
         if (text !is null)
