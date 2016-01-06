@@ -6,7 +6,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2.0f;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 
@@ -53,7 +53,6 @@ const StringHash IMPACT("Impact");
 const StringHash HEALTH("Health");
 const StringHash SOUND("Sound");
 
-Vector3 WORLD_SIZE(0, 0, 0);
 Vector3 WORLD_HALF_SIZE(0, 0, 0);
 
 int num_of_sounds = 37;
@@ -1153,6 +1152,17 @@ class Character : GameObject
     void ClearAvoidance()
     {
 
+    }
+
+    void CheckTargetDistance(Character@ t, float dist)
+    {
+        if (t is null)
+            return;
+        if (motion_translateEnabled && GetTargetDistance(t.GetNode()) < dist)
+        {
+            Print(GetName() + " is too close to " + t.GetName() + " set translateEnabled to false");
+            motion_translateEnabled = false;
+        }
     }
 };
 

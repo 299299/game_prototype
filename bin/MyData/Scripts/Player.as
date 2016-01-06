@@ -6,9 +6,6 @@
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 const float MAX_COUNTER_DIST = 5.0f;
-const float MAX_ATTACK_DIST = 25.0f;
-const float MAX_ATTACK_ANGLE_DIFF = 90.0f;
-const float MAX_BEAT_DIST = 10.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 const float DIST_SCORE = 10.0f;
 const float ANGLE_SCORE = 30.0f;
@@ -194,7 +191,6 @@ class PlayerAttackState : CharacterState
     Vector3                 predictPosition;
     Vector3                 motionPosition;
 
-    float                   targetDistance;
     float                   alignTime = 0.3f;
 
     int                     forwadCloseNum = 0;
@@ -429,16 +425,7 @@ class PlayerAttackState : CharacterState
                 ownner.SetSceneTimeScale(1.0f);
         }
 
-        if (ownner.target !is null)
-        {
-            targetDistance = ownner.GetTargetDistance(ownner.target.GetNode());
-            // Print("PlayerAttackState targetDistance=" + targetDistance);
-            if (ownner.motion_translateEnabled && targetDistance < PLAYER_COLLISION_DIST)
-            {
-                Print("Player::AttackState TooClose set translateEnabled to false");
-                ownner.motion_translateEnabled = false;
-            }
-        }
+        ownner.CheckTargetDistance(ownner.target, PLAYER_COLLISION_DIST);
 
         bool finished = motion.Move(ownner, dt);
         if (finished) {
@@ -661,7 +648,6 @@ class PlayerAttackState : CharacterState
     {
         return " name=" + name + " timeInState=" + String(timeInState) + "\n" +
                 "currentAttack=" + currentAttack.motion.animationName +
-                " distToEnemy=" + targetDistance +
                 " isInAir=" + isInAir +
                 " weakAttack=" + weakAttack +
                 " slowMotion=" + slowMotion +
@@ -1714,7 +1700,7 @@ class Player : Character
                 threatScore += int(state.GetThreatScore() * THREAT_SCORE);
             }
             int angleScore = int((180.0f - Abs(diffAngle))/180.0f * ANGLE_SCORE);
-            int distScore = int((MAX_ATTACK_DIST - dist) / MAX_ATTACK_DIST * DIST_SCORE);
+            int distScore = int((maxDiffDist - dist) / maxDiffDist * DIST_SCORE);
             score += distScore;
             score += angleScore;
             score += threatScore;
@@ -1859,7 +1845,7 @@ class Player : Character
     bool Attack()
     {
         Print("Do--Attack--->");
-        Enemy@ e = CommonPickEnemy(MAX_ATTACK_ANGLE_DIFF, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
+        Enemy@ e = CommonPickEnemy(90, 25.0f, FLAGS_ATTACK, true, true);
         SetTarget(e);
 
         if (e.HasFlag(FLAGS_STUN))
@@ -1872,7 +1858,7 @@ class Player : Character
     bool Distract()
     {
         Print("Do--Distract--->");
-        Enemy@ e = CommonPickEnemy(30, MAX_BEAT_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
+        Enemy@ e = CommonPickEnemy(60, 15.0f, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)
             return false;
         SetTarget(e);

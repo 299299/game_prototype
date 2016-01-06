@@ -389,9 +389,7 @@ class ThugAttackState : CharacterState
     void Update(float dt)
     {
         Motion@ motion = currentAttack.motion;
-        float targetDistance = ownner.GetTargetDistance();
-        if (ownner.motion_translateEnabled && targetDistance < COLLISION_SAFE_DIST)
-            ownner.motion_translateEnabled = false;
+        ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST);
 
         float characterDifference = ownner.ComputeAngleDiff();
         ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
@@ -585,7 +583,7 @@ class ThugHitState : MultiMotionState
                 continue;
             if (object.HasFlag(FLAGS_MOVING))
                 continue;
-            
+
             float dist = ownner.GetTargetDistance(n_node);
             if (dist < 1.0f)
             {
@@ -594,7 +592,7 @@ class ThugHitState : MultiMotionState
                 {
                     object.ChangeState("PushBack");
                 }
-            }   
+            }
         }
     }
 };

@@ -482,12 +482,11 @@ class TestGameState : GameState
         Node@ floor = scene_.GetChild("floor", true);
         StaticModel@ model = floor.GetComponent("StaticModel");
         WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
-        WORLD_SIZE = WORLD_HALF_SIZE * 2;
 
         gameScene = scene_;
 
         //DumpSkeletonNames(playerNode);
-        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + WORLD_SIZE.ToString());
+        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + (WORLD_HALF_SIZE * 2).ToString());
     }
 
     void ShowMessage(const String&in msg, bool show)
