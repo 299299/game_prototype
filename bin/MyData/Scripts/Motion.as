@@ -539,7 +539,10 @@ class MotionManager
 
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
-        CreateMotion(preFix + "Double_Counter_2ThugsA");
+        int flags = kMotion_Ext_Ignore_First_Frame | kMotion_Ext_No_Auto_Flip;
+        //(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, int originFlag = 0, bool loop = false, bool cutRotation = false)
+        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, flags, false, true);
+
         CreateMotion(preFix + "Double_Counter_2ThugsB");
         CreateMotion(preFix + "Double_Counter_2ThugsD");
         CreateMotion(preFix + "Double_Counter_2ThugsE");

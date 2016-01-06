@@ -11,6 +11,10 @@ enum RootMotionFlag
     kMotion_Y   = (1 << 1),
     kMotion_Z   = (1 << 2),
     kMotion_R   = (1 << 3),
+
+    kMotion_Ext_Ignore_First_Frame = (1 << 6),
+    kMotion_Ext_No_Auto_Flip = (1 << 7),
+
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_XZ  = kMotion_X | kMotion_Z,
     kMotion_XR  = kMotion_X | kMotion_R,
@@ -157,17 +161,19 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     //if (track.channelMask & CHANNEL_SCALE != 0)
     //    Print("CHANNEL_SCALE");
 
-    bool fixOriginFlag = originFlag <= 0;
+    bool fixOriginFlag = (originFlag & kMotion_XZR) == 0;
+    bool noAutoFlip = originFlag & kMotion_Ext_No_Auto_Flip != 0;
+    bool ignoreFirstFrame = originFlag & kMotion_Ext_Ignore_First_Frame != 0;
 
+    Print(animationFile + " noAutoFlip=" + noAutoFlip + " ignoreFirstFrame=" + ignoreFirstFrame);
     // ==============================================================
     // pre process key frames
-    if (rotateTrack !is null && fixOriginFlag)
+    if (rotateTrack !is null && fixOriginFlag && noAutoFlip)
     {
         float rotation = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(rotation) > 75)
         {
-            if (d_log)
-                Print("Need to flip rotate track since object is start opposite, rotation=" + rotation);
+            Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + rotation);
             originFlag |= kMotion_R;
         }
     }
@@ -177,8 +183,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         Vector3 position = translateTrack.keyFrames[0].position - pelvisOrign;
         const float minDist = 0.5f;
         if (Abs(position.x) > minDist) {
-            if (d_log)
-                Print("Need reset x position");
+            Print(animationFile + " Need reset x position");
             originFlag |= kMotion_X;
         }
         if (Abs(position.y) > 2.0f) {
@@ -186,8 +191,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             // riginFlag |= kMotion_Y;
         }
         if (Abs(position.z) > minDist) {
-            if (d_log)
-                Print("Need reset z position");
+            Print(animationFile + " Need reset z position");
             originFlag |= kMotion_Z;
         }
         if (d_log)

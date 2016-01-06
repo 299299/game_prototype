@@ -62,8 +62,8 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        if (engine.headless)
-          return;
+        // if (engine.headless)
+           return;
 
         float diff = Abs(ownner.ComputeAngleDiff());
         if (diff > MIN_TURN_ANGLE)
