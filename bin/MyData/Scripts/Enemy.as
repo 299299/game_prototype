@@ -30,20 +30,6 @@ class Enemy : Character
 
     }
 
-    float GetTargetAngle()
-    {
-        if (target is null)
-            return 0;
-        return GetTargetAngle(target.sceneNode);
-    }
-
-    float GetTargetDistance()
-    {
-        if (target is null)
-            return 0;
-        return GetTargetDistance(target.sceneNode);
-    }
-
     String GetDebugText()
     {
         return Character::GetDebugText() + "health=" + health +  " flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
@@ -65,6 +51,16 @@ class Enemy : Character
             return false;
         return true;
     }
+
+    bool KeepDistanceWithEnemy()
+    {
+        return false;
+    }
+
+    bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
+    {
+        return false;
+    }
 };
 
 class EnemyManager : ScriptObject
@@ -72,7 +68,11 @@ class EnemyManager : ScriptObject
     Array<Vector3>      enemyResetPositions;
     Array<Quaternion>   enemyResetRotations;
 
-    int thugId = 0;
+    int                 thugId = 0;
+    float               updateTimer = 0.0f;
+    float               updateTime = 0.25f;
+    int                 maxNearEnemies = 4;
+    float               nearDist = 3.0f;
 
     EnemyManager()
     {
@@ -191,6 +191,30 @@ class EnemyManager : ScriptObject
         for (uint i=0; i<enemyResetPositions.length; ++i)
         {
             CreateEnemy(enemyResetPositions[i], enemyResetRotations[i], "Thug");
+        }
+    }
+
+    void Update(float dt)
+    {
+        updateTimer += dt;
+        if (updateTimer >= updateTime)
+        {
+            DoUpdate();
+            updateTimer -= updateTime;
+        }
+    }
+
+    void DoUpdate()
+    {
+        int num_of_near = 0;
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            Enemy@ e = enemyList[i];
+            float dis = e.GetTargetDistance();
+            if (dis <= nearDist)
+                num_of_near ++;
+            if (num_of_near > maxNearEnemies)
+                e.KeepDistanceWithPlayer(0);
         }
     }
 

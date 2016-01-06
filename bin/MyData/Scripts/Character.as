@@ -12,7 +12,6 @@ const float CHARACTER_HEIGHT = 5.0f;
 
 const int MAX_NUM_OF_ATTACK = 3;
 const int MAX_NUM_OF_MOVING = 3;
-const int MAX_NUM_OF_COMBAT_IDLE = 3;
 
 const int INITIAL_HEALTH = 100;
 
@@ -852,12 +851,12 @@ class Character : GameObject
 
     float GetTargetAngle()
     {
-        return 0;
+        return target !is null ? GetTargetAngle(target.GetNode()) : 0.0f;
     }
 
     float GetTargetDistance()
     {
-        return 0;
+        return target !is null ? GetTargetDistance(target.GetNode()) : 0.0f;
     }
 
     float ComputeAngleDiff()
@@ -1066,12 +1065,17 @@ class Character : GameObject
 
     void ChangeState(const String&in name)
     {
+        String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
+        Print(GetName() + " ChangeState from " + oldStateName + " to " + name);
         stateMachine.ChangeState(name);
     }
 
     void ChangeState(const StringHash&in nameHash)
     {
+        String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
         stateMachine.ChangeState(nameHash);
+        String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
+        Print(GetName() + " ChangeState from " + oldStateName + " to " + newStateName);
     }
 
     State@ FindState(const String&in name)

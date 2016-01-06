@@ -817,6 +817,7 @@ class MotionManager
         AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_01", 65, READY_TO_FIGHT);
         AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 65, READY_TO_FIGHT);
 
+        /*
         preFix = "TG_BM_Beatdown/";
         AddRagdollTrigger(preFix + "Beatdown_Strike_End_01", 24, 28);
         AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_01", 28, HEALTH, 0);
@@ -826,6 +827,7 @@ class MotionManager
         AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_03", 28, HEALTH, 0);
         AddRagdollTrigger(preFix + "Beatdown_Strike_End_04", -1, 50);
         AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_04", 50, HEALTH, 0);
+        */
 
         //preFix = "TG_HitReaction/";
         //AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);

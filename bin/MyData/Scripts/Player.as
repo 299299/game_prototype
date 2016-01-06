@@ -1192,10 +1192,20 @@ class PlayerBeatDownEndState : MultiMotionState
         {
             Node@ _node = ownner.GetNode();
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
+            Vector3 position = _node.worldPosition;
             if (boneNode !is null)
-                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 10.0f);
+                position = boneNode.worldPosition;
+            ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 5, 10.0f);
             ownner.PlayRandomSound(1);
             combatReady = true;
+            Character@ target = ownner.target;
+            if (target !is null)
+            {
+                Vector3 dir = _node.worldPosition - target.GetNode().worldPosition;
+                dir.y = 0;
+                dir.Normalize();
+                target.OnDamage(ownner, position, dir, 9999, false);
+            }
         }
     }
 };
@@ -1822,11 +1832,6 @@ class Player : Character
         //debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), KEEP_DIST_WITHIN_PLAYER + COLLISION_RADIUS, RED, 32, false);
     }
 
-    void PostUpdate(float dt)
-    {
-
-    }
-
     void ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
     {
         if (bAttack && gInput.IsAttackPressed())
@@ -1848,10 +1853,11 @@ class Player : Character
         Enemy@ e = CommonPickEnemy(90, 25.0f, FLAGS_ATTACK, true, true);
         SetTarget(e);
 
-        if (e.HasFlag(FLAGS_STUN))
+        if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");
         else
             ChangeState("AttackState");
+
         return true;
     }
 

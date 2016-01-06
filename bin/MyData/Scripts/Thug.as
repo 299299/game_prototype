@@ -1008,11 +1008,6 @@ class Thug : Enemy
         return len;
     }
 
-    void FixedUpdate(float dt)
-    {
-        Enemy::FixedUpdate(dt);
-    }
-
     void CheckAvoidance(float dt)
     {
         checkAvoidanceTimer += dt;
@@ -1037,8 +1032,7 @@ class Thug : Enemy
         if (GetSperateDirection(dir) == 0)
             return false;
         Print(GetName() + " CollisionAvoidance index=" + dir);
-
-        ThugStepMoveState@ state = cast<ThugStepMoveState>(FindState("StepMoveState"));
+        MultiMotionState@ state = cast<MultiMotionState>(FindState("StepMoveState"));
         Motion@ motion = state.motions[dir];
         Vector4 motionOut = motion.GetKey(motion.endTime);
         Vector3 endPos = sceneNode.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + sceneNode.worldPosition;
@@ -1049,27 +1043,24 @@ class Thug : Enemy
             Print("can not avoid collision because player is in front of me.");
             return false;
         }
-
         sceneNode.vars[ANIMATION_INDEX] = dir;
         ChangeState("StepMoveState");
         return true;
     }
 
-    bool KeepDistanceWithPlayer()
+    bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
     {
         if (HasFlag(FLAGS_NO_MOVE))
             return false;
         float dist = GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist < KEEP_DIST_WITH_PLAYER && !HasFlag(FLAGS_NO_MOVE))
-        {
-            ThugStepMoveState@ state = cast<ThugStepMoveState>(FindState("StepMoveState"));
-            int index = state.GetStepMoveIndex();
-            Print(GetName() + " KeepDistanceWithPlayer index=" + index);
-            sceneNode.vars[ANIMATION_INDEX] = index;
-            ChangeState("StepMoveState");
-            return true;
-        }
-        return false;
+        if (dist >= max_dist)
+            return false;
+        int index = RadialSelectAnimation(4);
+        index = (index + 2) % 4;
+        Print(GetName() + " KeepDistanceWithPlayer index=" + index + " max_dist=" + max_dist);
+        sceneNode.vars[ANIMATION_INDEX] = index;
+        ChangeState("StepMoveState");
+        return true;
     }
 
     void CheckCollision()
