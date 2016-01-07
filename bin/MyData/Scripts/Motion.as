@@ -539,9 +539,16 @@ class MotionManager
 
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
+        CreateMotion(preFix + "Double_Counter_2ThugsA");
+        CreateMotion(preFix + "Double_Counter_2ThugsB");
+        CreateMotion(preFix + "Double_Counter_2ThugsD");
+        CreateMotion(preFix + "Double_Counter_2ThugsE");
         CreateMotion(preFix + "Double_Counter_2ThugsF");
         CreateMotion(preFix + "Double_Counter_2ThugsG");
+        CreateMotion(preFix + "Double_Counter_2ThugsH");
+        CreateMotion(preFix + "Double_Counter_3ThugsA");
         CreateMotion(preFix + "Double_Counter_3ThugsB");
+        CreateMotion(preFix + "Double_Counter_3ThugsC");
 
         preFix = "BM_Death_Primers/";
         CreateMotion(preFix + "Death_Front");
@@ -622,6 +629,32 @@ class MotionManager
 
         preFix = "TG_BM_Counter/";
         AddCounterMotions(preFix);
+
+        preFix = "BM_TG_Counter/";
+        AddCounterMotions(preFix);
+        CreateMotion(preFix + "Double_Counter_2ThugsA_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsA_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsB_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsB_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsD_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsD_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsE_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsE_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsF_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsF_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsG_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsG_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsH_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsH_02");
+        CreateMotion(preFix + "Double_Counter_3ThugsA_01");
+        CreateMotion(preFix + "Double_Counter_3ThugsA_02");
+        CreateMotion(preFix + "Double_Counter_3ThugsA_03");
+        CreateMotion(preFix + "Double_Counter_3ThugsB_01");
+        CreateMotion(preFix + "Double_Counter_3ThugsB_02");
+        CreateMotion(preFix + "Double_Counter_3ThugsB_03");
+        CreateMotion(preFix + "Double_Counter_3ThugsC_01");
+        CreateMotion(preFix + "Double_Counter_3ThugsC_02");
+        CreateMotion(preFix + "Double_Counter_3ThugsC_03");
 
         preFix = "TG_BM_Beatdown/";
         CreateMotion(preFix + "Beatdown_Start_01", kMotion_XZR, 0);

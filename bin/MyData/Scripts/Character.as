@@ -331,14 +331,19 @@ enum CounterSubState
 
 class CharacterCounterState : CharacterState
 {
+    Array<Motion@>      doubleCounterMotions;
+    Array<Motion@>      tripleCounterMotions;
+
     Array<Motion@>      frontArmMotions;
     Array<Motion@>      frontLegMotions;
     Array<Motion@>      backArmMotions;
     Array<Motion@>      backLegMotions;
     Motion@             currentMotion;
     int                 state; // sub state
+    int                 type;
+    int                 index;
 
-    float               alignTime = 0.15f;
+    float               alignTime = 0.1f;
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;
@@ -491,6 +496,49 @@ class CharacterCounterState : CharacterState
         DumpCounterMotions(backArmMotions);
         DumpCounterMotions(frontLegMotions);
         DumpCounterMotions(backLegMotions);
+    }
+
+    void AddMultiCounterMotions(const String&in preFix, bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH"));
+            tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsA"));
+            tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB"));
+            tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC"));
+        }
+        else
+        {
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH_02"));
+            tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsA_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsA_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsA_03"));
+            tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB_03"));
+            tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC_01"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC_02"));
+            doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC_03"));
+        }
     }
 };
 

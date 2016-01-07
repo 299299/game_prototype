@@ -342,7 +342,9 @@ class ThugCounterState : CharacterCounterState
     ThugCounterState(Character@ c)
     {
         super(c);
-        AddCounterMotions("TG_BM_Counter/");
+        String preFix = "TG_BM_Counter/";
+        AddCounterMotions(preFix);
+        AddMultiCounterMotions(preFix, false);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -357,6 +359,11 @@ class ThugCounterState : CharacterCounterState
     {
         ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
         CharacterCounterState::Exit(nextState);
+    }
+
+    void OnAlignTimeOut()
+    {
+
     }
 };
 

@@ -690,7 +690,6 @@ class PlayerAttackState : CharacterState
 
 class PlayerCounterState : CharacterCounterState
 {
-    Array<Motion@>  doubleCounterMotions;
     Array<Enemy@>   counterEnemies;
     int             lastCounterIndex = -1;
     int             lastCounterDirection = -1;
@@ -702,9 +701,7 @@ class PlayerCounterState : CharacterCounterState
         super(c);
         String preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
-        //doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB"));
+        AddMultiCounterMotions(preFix, true);
     }
 
     ~PlayerCounterState()
@@ -713,6 +710,12 @@ class PlayerCounterState : CharacterCounterState
 
     void Update(float dt)
     {
+        if (counterEnemies.length == 0 || currentMotion is null)
+        {
+            ownner.ChangeState("StandState"); // Something Error Happened
+            return;
+        }
+
         CheckInput();
         CharacterCounterState::Update(dt);
     }
@@ -732,42 +735,47 @@ class PlayerCounterState : CharacterCounterState
         Vector3 positionDiff(0, 0, 0);
 
         Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
+        type = counterEnemies.length;
 
         // POST_PROCESS
-        if (counterEnemies.length > 1)
+        if (type > 1)
         {
             Vector3 vPos(0, 0, 0);
+            int animIndex = 0;
+            if (type == 2)
+                animIndex = RandomInt(doubleCounterMotions.length);
+            else if (type == 3)
+                animIndex = RandomInt(tripleCounterMotions.length);
+
             for (uint i=0; i<counterEnemies.length; ++i)
             {
                 Enemy@ e = counterEnemies[i];
-                Node@ eNode = e.GetNode();
-                Vector3 expect_pos = eNode.worldPosition + eNode.worldRotation * Vector3(0, 0, COLLISION_SAFE_DIST);
-                vPos += expect_pos;
                 e.ChangeState("CounterState");
-                CharacterCounterState@ eCState = cast<CharacterCounterState>(e.GetState());
-                eCState.ChangeSubState(COUNTER_WAITING);
+                CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+                s.ChangeSubState(COUNTER_WAITING);
+                s.index = int(i);
             }
             @currentMotion = doubleCounterMotions[RandomInt(doubleCounterMotions.length)];
-            targetRotation = myRotation;
-            targetPosition = vPos / counterEnemies.length;
         }
         else if (counterEnemies.length == 1)
         {
-            Enemy@ counterEnemy = counterEnemies[0];
-            Node@ enemyNode = counterEnemy.GetNode();
-            float dAngle = ownner.ComputeAngleDiff(enemyNode);
+            Enemy@ e = counterEnemies[0];
+            Node@ eNode = e.GetNode();
+            float dAngle = ownner.ComputeAngleDiff(eNode);
             bool isBack = false;
             if (Abs(dAngle) > 90)
                 isBack = true;
             Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack);
 
-            int attackType = enemyNode.vars[ATTACK_TYPE].GetInt();
-            CharacterCounterState@ eCState = cast<CharacterCounterState>(counterEnemy.stateMachine.FindState("CounterState"));
-            if (eCState is null)
+            e.ChangeState("CounterState");
+
+            int attackType = eNode.vars[ATTACK_TYPE].GetInt();
+            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+            if (s is null)
                 return;
 
             Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
-            Array<Motion@>@ enemyCounterMotions = eCState.GetCounterMotions(attackType, isBack);
+            Array<Motion@>@ eCounterMotions = s.GetCounterMotions(attackType, isBack);
 
             int idx = RandomInt(counterMotions.length);
             int cur_direction = GetCounterDirection(attackType, isBack);
@@ -778,47 +786,41 @@ class PlayerCounterState : CharacterCounterState
             lastCounterIndex = idx;
 
             @currentMotion = counterMotions[idx];
-            @eCState.currentMotion = enemyCounterMotions[idx];
+            @s.currentMotion = eCounterMotions[idx];
 
             rotationDiff = isBack ? 0 : 180;
-            float enemyYaw = enemyNode.worldRotation.eulerAngles.y;
+            float enemyYaw = eNode.worldRotation.eulerAngles.y;
             targetRotation = enemyYaw + rotationDiff;
 
             Vector3 s1 = currentMotion.startFromOrigin;
-            Vector3 s2 = eCState.currentMotion.startFromOrigin;
+            Vector3 s2 = s.currentMotion.startFromOrigin;
             Vector3 originDiff = s1 - s2;
             originDiff.x = Abs(originDiff.x);
             originDiff.z = Abs(originDiff.z);
-            Print("SingleCounter s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
+            // Print("SingleCounter s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
 
-            targetPosition = enemyNode.worldPosition + enemyNode.worldRotation * originDiff;
+            targetPosition = eNode.worldPosition + eNode.worldRotation * originDiff;
             targetPosition.y = myPos.y;
+            s.ChangeSubState(COUNTER_WAITING);
+            ChangeSubState(COUNTER_ALIGNING);
 
-            counterEnemy.ChangeState("CounterState");
-            eCState.ChangeSubState(COUNTER_WAITING);
+            positionDiff = targetPosition - myPos;
+            rotationDiff = AngleDiff(targetRotation - myRotation);
+
+            yawPerSec = rotationDiff / alignTime;
+            movePerSec = positionDiff / alignTime;
+            movePerSec.y = 0;
+            Print("Player Single Counter-> targetPosition=" + targetPosition.ToString() + " positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff);
         }
 
         bCheckInput = false;
-
-        positionDiff = targetPosition - myPos;
-        rotationDiff = AngleDiff(targetRotation - myRotation);
-
-        yawPerSec = rotationDiff / alignTime;
-        movePerSec = positionDiff / alignTime;
-        movePerSec.y = 0;
-
-        ChangeSubState(COUNTER_ALIGNING);
-        Print("PlayerCounter-> targetPosition=" + targetPosition.ToString() + " positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff + " time-cost=" + (time.systemTime - t));
-
-        if (counterEnemies.length == 0 || currentMotion is null)
-            ownner.ChangeState("StandState"); // Something Error Happened
+        Print("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
     }
 
     void Exit(State@ nextState)
     {
         Print("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
-
         if (nextState !is this)
             counterEnemies.Clear();
     }
