@@ -629,9 +629,6 @@ class MotionManager
 
         preFix = "TG_BM_Counter/";
         AddCounterMotions(preFix);
-
-        preFix = "BM_TG_Counter/";
-        AddCounterMotions(preFix);
         CreateMotion(preFix + "Double_Counter_2ThugsA_01");
         CreateMotion(preFix + "Double_Counter_2ThugsA_02");
         CreateMotion(preFix + "Double_Counter_2ThugsB_01");

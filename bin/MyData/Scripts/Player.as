@@ -832,8 +832,8 @@ class PlayerCounterState : CharacterCounterState
         StartCounterMotion();
         for (uint i=0; i<counterEnemies.length; ++i)
         {
-            CharacterCounterState@ enemyCounterState = cast<CharacterCounterState>(counterEnemies[i].GetState());
-            enemyCounterState.StartCounterMotion();
+            CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
+            s.StartCounterMotion();
         }
 
         if (counterEnemies.length > 1)
