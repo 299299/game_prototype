@@ -186,8 +186,8 @@ class Motion
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
         endDistance = Vector3(diff.x, diff.y, diff.z).length;
         processed = true;
-        if (d_log)
-            Print("Motion " + name + " endDistance="  + endDistance + " timeCost=" + String(time.systemTime - startTime) + " ms startFromOrigin=" + startFromOrigin.ToString());
+        //if (d_log)
+        Print("Motion " + name + " endDistance="  + endDistance + " startFromOrigin=" + startFromOrigin.ToString()  + " timeCost=" + String(time.systemTime - startTime) + " ms");
     }
 
     void SetEndFrame(int frame)
@@ -550,8 +550,8 @@ class MotionManager
         CreateMotion(preFix + "Death_Side_Right");
 
         preFix = "BM_Attack/";
-        CreateMotion(preFix + "Beatdown_Strike_Start_01", kMotion_XZR, 0);
-        CreateMotion(preFix + "CapeDistract_Close_Forward");
+        //CreateMotion(preFix + "Beatdown_Strike_Start_01", kMotion_XZR, 0);
+        //CreateMotion(preFix + "CapeDistract_Close_Forward");
 
         int beat_motion_flags = kMotion_XZR;
         int beat_allow_flags = kMotion_Z;
@@ -570,8 +570,8 @@ class MotionManager
         CreateMotion(preFix + "Beatdown_Strike_End_04");
 
         preFix = "BM_Combat/";
-        CreateMotion(preFix + "Attempt_Takedown");
-        CreateMotion(preFix + "Into_Takedown");
+        // CreateMotion(preFix + "Attempt_Takedown", kMotion_XZR, kMotion_Z);
+        CreateMotion(preFix + "Into_Takedown", kMotion_XZR, kMotion_Z);
 
         //========================================================================
         // THUG MOTIONS
@@ -1101,7 +1101,7 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, COMBAT_SOUND, R_HAND);
         AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, COMBAT_SOUND, R_HAND);
 
-        AddStringAnimationTrigger(preFix + "Beatdown_Strike_Start_01", 7, COMBAT_SOUND, L_HAND);
+        //AddStringAnimationTrigger(preFix + "Beatdown_Strike_Start_01", 7, COMBAT_SOUND, L_HAND);
 
         preFix = "BM_TG_Beatdown/";
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);

@@ -18,7 +18,7 @@ class State
 
     ~State()
     {
-        Print("~State() " + String(name));
+        //Print("~State() " + String(name));
     }
 
     void Enter(State@ lastState)
@@ -71,15 +71,17 @@ class FSM
 
     FSM()
     {
-        Print("FSM()");
+        //Print("FSM()");
     }
 
     ~FSM()
     {
+        /*
         if (currentState !is null)
             Print("~FSM() currentState=" + currentState.name);
         else
             Print("~FSM()");
+        */
         @currentState = null;
         states.Clear();
     }

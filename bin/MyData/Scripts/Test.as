@@ -34,7 +34,7 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 50;
+int test_enemy_num_override = 2;
 bool lowend_platform = false;
 bool auto_target = false;
 
@@ -704,11 +704,13 @@ void SetColorGrading(int index)
 
 void ExecuteCommand()
 {
-    String command = GetConsoleInput();
-    if(command.length == 0)
+    String commands = GetConsoleInput();
+    if(commands.length == 0)
         return;
 
-    Print("######### Console Input: [" + command + "] #############");
+    Print("######### Console Input: [" + commands + "] #############");
+    Array<String> command_list = commands.Split(',');
+    String command = command_list.empty ? commands : command_list[0];
 
     if (command == "dump")
     {
@@ -779,5 +781,15 @@ void ExecuteCommand()
         Player@ player = GetPlayer();
         if (player !is null)
             player.Distract();
+    }
+    else if (command == "kill")
+    {
+        Node@ _node = script.defaultScene.GetChild(command_list[1]);
+        if (_node !is null)
+        {
+            Character@ c = cast<Character>(_node.scriptObject);
+            if (c !is null)
+                c.duration = 0.0f;
+        }
     }
 }

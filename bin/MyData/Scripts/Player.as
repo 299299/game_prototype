@@ -605,7 +605,6 @@ class PlayerAttackState : CharacterState
     void Enter(State@ lastState)
     {
         Print("################## Player::AttackState Enter from " + lastState.name  + " #####################");
-        //Reset variables
         lastKill = false;
         slowMotion = false;
         @currentAttack = null;
@@ -614,7 +613,6 @@ class PlayerAttackState : CharacterState
         StartAttack();
         //ownner.SetSceneTimeScale(0.25f);
         //ownner.SetTimeScale(1.5f);
-
         CharacterState::Enter(lastState);
     }
 
@@ -622,16 +620,12 @@ class PlayerAttackState : CharacterState
     {
         CharacterState::Exit(nextState);
         ownner.SetNodeEnabled("TailNode", false);
-
-        if (nextState !is this)
-            cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
-
+        //if (nextState !is this)
+        //    cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
         if (ownner.target !is null)
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
-
         @currentAttack = null;
         ownner.SetSceneTimeScale(1.0f);
-
         Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
@@ -687,10 +681,9 @@ class PlayerAttackState : CharacterState
             return;
 
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5, 5.0f);
-        ownner.OnAttackSuccess(e);
-
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
+        ownner.OnAttackSuccess(e);
     }
 };
 
@@ -1037,8 +1030,7 @@ class PlayerBeatDownStartState : CharacterState
         super(c);
         SetName("BeatDownStartState");
         flags = FLAGS_ATTACK;
-        @motion = gMotionMgr.FindMotion("BM_Combat/Attempt_Takedown");
-        Print("Attempt_Takedown endDistance=" + motion.endDistance);
+        @motion = gMotionMgr.FindMotion("BM_Combat/Into_Takedown");
     }
 
     void Enter(State@ lastState)
@@ -1105,7 +1097,6 @@ class PlayerBeatDownStartState : CharacterState
         debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, RED, false);
         debug.AddCross(targetPosition, 1.0f, RED, false);
     }
-
 };
 
 class PlayerBeatDownEndState : MultiMotionState
@@ -1225,6 +1216,7 @@ class PlayerBeatDownHitState : MultiMotionState
     Vector3 targetPosition;
 
     int state = 0;
+    bool distToFar = false;
 
     PlayerBeatDownHitState(Character@ c)
     {
@@ -1247,14 +1239,34 @@ class PlayerBeatDownHitState : MultiMotionState
 
     void Update(float dt)
     {
+        // Print("PlayerBeatDownHitState::Update() " + dt);
+        Character@ target = ownner.target;
+        if (target is null)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
+        if (distToFar)
+        {
+            ownner.ChangeState("TransitionState");
+            PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.GetState());
+            if (s !is null)
+            {
+                s.nextStateName = name;
+                return;
+            }
+        }
+
         if (state == 0)
         {
             ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
 
             if (timeInState >= alignTime)
             {
+                Print("PlayerBeatDownHitState::Update align time-out");
                 state = 1;
-                Start(false, beatIndex);
+                HitStart(false, beatIndex);
                 timeInState = 0.0f;
             }
         }
@@ -1288,14 +1300,11 @@ class PlayerBeatDownHitState : MultiMotionState
         CharacterState::Update(dt);
     }
 
-    void Start(bool bFirst, int i)
+    void HitStart(bool bFirst, int i)
     {
         Character@ target = ownner.target;
         if (target is null)
-        {
-            ownner.CommonStateFinishedOnGroud();
             return;
-        }
 
         Vector3 originDiff = GetStartOriginDiff(i);
         Vector3 myPos = ownner.GetNode().worldPosition;
@@ -1303,8 +1312,13 @@ class PlayerBeatDownHitState : MultiMotionState
         Vector3 dir = tPos - myPos;
         float targetRotation = Atan2(dir.x, dir.z);
         ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-        target.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
+        float curDist = ownner.GetTargetDistance();
+        Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
 
+        if (curDist >= 12.5f)
+            distToFar = true;
+
+        target.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
         targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
         if (bFirst)
         {
@@ -1325,16 +1339,19 @@ class PlayerBeatDownHitState : MultiMotionState
 
     void Enter(State@ lastState)
     {
+        Print("========================= BeatDownHitState Enter start ===========================");
         combatReady = false;
         attackPressed = false;
+        distToFar = false;
         if (lastState !is this)
         {
             beatNum = 0;
             beatTotal = RandomInt(minBeatNum, maxBeatNum);
         }
-        Start(lastState !is this, beatIndex);
+        HitStart(lastState !is this, beatIndex);
         CharacterState::Enter(lastState);
         // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
+        Print("========================= BeatDownHitState Enter end ===========================");
     }
 
     Vector3 GetStartOriginDiff(int i)
@@ -1347,7 +1364,7 @@ class PlayerBeatDownHitState : MultiMotionState
         originDiff.z = Abs(originDiff.z);
         originDiff.x = 0;
         originDiff.y = 0;
-        Print("GetStartOriginDiff("+i+")=" + originDiff.ToString());
+        // Print("GetStartOriginDiff("+i+")=" + originDiff.ToString());
         return originDiff;
     }
 
@@ -1392,12 +1409,36 @@ class PlayerTransitionState : SingleMotionState
     PlayerTransitionState(Character@ c)
     {
         super(c);
-        SetName("Transition");
+        SetName("TransitionState");
+        SetMotion("BM_Combat/Into_Takedown");
     }
 
     void OnMotionFinished()
     {
-        ownner.CommonStateFinishedOnGroud();
+        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        if (!nextStateName.empty)
+            ownner.ChangeState(nextStateName);
+        else
+            ownner.CommonStateFinishedOnGroud();
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        if (ownner.target !is null)
+            ownner.target.RequestDoNotMove();
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        if (ownner.target !is null)
+            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
+    }
+
+    String GetDebugText()
+    {
+        return " name=" + name + " timeInState=" + String(timeInState) + " nextState=" + nextStateName + "\n";
     }
 };
 
@@ -1424,10 +1465,11 @@ class Player : Character
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(PlayerGetUpState(this));
         stateMachine.AddState(PlayerDeadState(this));
-        stateMachine.AddState(PlayerDistractState(this));
-        stateMachine.AddState(PlayerBeatDownStartState(this));
+        // stateMachine.AddState(PlayerDistractState(this));
+        // stateMachine.AddState(PlayerBeatDownStartState(this));
         stateMachine.AddState(PlayerBeatDownHitState(this));
         stateMachine.AddState(PlayerBeatDownEndState(this));
+        stateMachine.AddState(PlayerTransitionState(this));
 
         ChangeState("StandState");
 
@@ -1497,10 +1539,6 @@ class Player : Character
                 ChangeState("StandState");
             else
                 ChangeState("MoveState");
-        }
-        else
-        {
-            // ..............
         }
     }
 
@@ -1875,19 +1913,17 @@ class Player : Character
         Print("Do--Attack--->");
         Enemy@ e = CommonPickEnemy(90, 25.0f, FLAGS_ATTACK, true, true);
         SetTarget(e);
-
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");
         else
             ChangeState("AttackState");
-
         return true;
     }
 
     bool Distract()
     {
         Print("Do--Distract--->");
-        Enemy@ e = CommonPickEnemy(60, 15.0f, FLAGS_ATTACK | FLAGS_STUN, true, true);
+        Enemy@ e = CommonPickEnemy(60, 25.0f, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)
             return false;
         SetTarget(e);

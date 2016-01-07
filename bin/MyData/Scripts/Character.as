@@ -184,6 +184,7 @@ class SingleMotionState : CharacterState
 
     void OnMotionFinished()
     {
+        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
         ownner.CommonStateFinishedOnGroud();
     }
 };
@@ -247,6 +248,7 @@ class MultiMotionState : CharacterState
 
     void OnMotionFinished()
     {
+        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
         ownner.CommonStateFinishedOnGroud();
     }
 };
@@ -1075,7 +1077,7 @@ class Character : GameObject
         String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
         stateMachine.ChangeState(nameHash);
         String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        Print(GetName() + " ChangeState from " + oldStateName + " to " + newStateName);
+        Print(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
     }
 
     State@ FindState(const String&in name)
@@ -1137,17 +1139,6 @@ class Character : GameObject
         return animModel.inView;
     }
 
-    // ========================================================
-    //  EVENT HANDLERS
-    // ========================================================
-    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
-    {
-        AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
-        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
-        if (cs !is null)
-            cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
-    }
-
     void CheckAvoidance(float dt)
     {
 
@@ -1167,6 +1158,17 @@ class Character : GameObject
             Print(GetName() + " is too close to " + t.GetName() + " set translateEnabled to false");
             motion_translateEnabled = false;
         }
+    }
+
+    // ========================================================
+    //  EVENT HANDLERS
+    // ========================================================
+    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
+    {
+        AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
+        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
+        if (cs !is null)
+            cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }
 };
 

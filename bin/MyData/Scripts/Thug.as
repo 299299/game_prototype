@@ -62,8 +62,8 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        //if (engine.headless)
-        //   return;
+        if (engine.headless)
+          return;
 
         float diff = Abs(ownner.ComputeAngleDiff());
         if (diff > MIN_TURN_ANGLE)
@@ -655,6 +655,8 @@ class ThugGetUpState : CharacterGetUpState
 
 class ThugDeadState : CharacterState
 {
+    float  duration = 5.0f;
+
     ThugDeadState(Character@ c)
     {
         super(c);
@@ -664,8 +666,19 @@ class ThugDeadState : CharacterState
     void Enter(State@ lastState)
     {
         Print(ownner.GetName() + " Entering ThugDeadState");
-        ownner.duration = 5.0f;
         CharacterState::Enter(lastState);
+    }
+
+    void Update(float dt)
+    {
+        duration -= dt;
+        if (duration <= 0)
+        {
+            if (!ownner.IsVisible())
+                ownner.duration = 0;
+            else
+                duration = 0;
+        }
     }
 };
 
@@ -729,6 +742,7 @@ class ThugBeatDownHitState : MultiMotionState
 
     void OnMotionFinished()
     {
+        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
         ownner.ChangeState("StunState");
     }
 };
@@ -751,6 +765,7 @@ class ThugDistractState : SingleMotionState
 
     void OnMotionFinished()
     {
+        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
         ownner.ChangeState("StunState");
     }
 };
@@ -821,11 +836,11 @@ class Thug : Enemy
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugGetUpState(this));
         stateMachine.AddState(ThugDeadState(this));
-        stateMachine.AddState(ThugBeatDownStartState(this));
+        //stateMachine.AddState(ThugBeatDownStartState(this));
         stateMachine.AddState(ThugBeatDownHitState(this));
         stateMachine.AddState(ThugBeatDownEndState(this));
         stateMachine.AddState(ThugStunState(this));
-        stateMachine.AddState(ThugDistractState(this));
+        //stateMachine.AddState(ThugDistractState(this));
         stateMachine.AddState(ThugPushBackState(this));
 
         ChangeState("StandState");
