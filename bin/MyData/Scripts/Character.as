@@ -450,7 +450,7 @@ class CharacterCounterState : CharacterState
             Motion@ motion = motions[i];
             String other_name = motion.name.Replaced("BM_TG_Counter", "TG_BM_Counter");
             Motion@ other_motion = gMotionMgr.FindMotion(other_name);
-            Vector3 startDiff = other_motion.startFromOrigin - motion.startFromOrigin;
+            Vector3 startDiff = other_motion.GetStartPos() - motion.GetStartPos();
             Print("couter-motion " + motion.name + " diff-len=" + startDiff.length);
         }
     }
@@ -758,7 +758,7 @@ class Character : GameObject
 
     void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
     {
-        // Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+        Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
         AnimationController@ ctrl = animCtrl;
         ctrl.StopLayer(layer, blendTime);
         ctrl.PlayExclusive(animName, layer, loop, blendTime);
@@ -770,14 +770,14 @@ class Character : GameObject
     {
         String debugText = stateMachine.GetDebugText();
         debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + " health:" + health + "\n";
-        uint num = animModel.numAnimationStates;
-        if (num > 0)
+        if (animModel.numAnimationStates > 0)
         {
             debugText += "Debug-Animations:\n";
-            for (uint i=0; i<num ; ++i)
+            for (uint i=0; i<animModel.numAnimationStates; ++i)
             {
                 AnimationState@ state = animModel.GetAnimationState(i);
-                debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
+                if (state.weight > 0.0f && state.enabled)
+                    debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
             }
         }
         return debugText;

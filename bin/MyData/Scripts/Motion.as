@@ -125,7 +125,7 @@ class Motion
     float                   endTime;
     bool                    looped;
 
-    Vector3                 startFromOrigin;
+    Vector4                 startFromOrigin;
 
     float                   endDistance;
 
@@ -328,6 +328,16 @@ class Motion
             debug.AddLine(tMotionEnd + object.motion_startPosition,  object.motion_startPosition, Color(0.5f, 0.5f, 0.7f), false);
             DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, GREEN, 2.0);
         }
+    }
+
+    Vector3 GetStartPos()
+    {
+        return Vector3(startFromOrigin.x, startFromOrigin.y, startFromOrigin.z);
+    }
+
+    float GetStartRot()
+    {
+        return startFromOrigin.w;
     }
 };
 
@@ -541,17 +551,17 @@ class MotionManager
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
         int flags = kMotion_Ext_Ignore_First_Frame | kMotion_Ext_No_Auto_Flip | kMotion_Ext_Rotate_From_Start;
-        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, flags, false);
-
-        CreateMotion(preFix + "Double_Counter_2ThugsB");
-        CreateMotion(preFix + "Double_Counter_2ThugsD");
-        CreateMotion(preFix + "Double_Counter_2ThugsE");
-        CreateMotion(preFix + "Double_Counter_2ThugsF");
-        CreateMotion(preFix + "Double_Counter_2ThugsG");
-        CreateMotion(preFix + "Double_Counter_2ThugsH");
-        CreateMotion(preFix + "Double_Counter_3ThugsA");
-        CreateMotion(preFix + "Double_Counter_3ThugsB");
-        CreateMotion(preFix + "Double_Counter_3ThugsC");
+        int al_flags = kMotion_XZ;
+        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsE", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsF", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsG", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsH", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, al_flags, -1, flags);
 
         preFix = "BM_Death_Primers/";
         CreateMotion(preFix + "Death_Front");
@@ -581,7 +591,7 @@ class MotionManager
 
         preFix = "BM_Combat/";
         // CreateMotion(preFix + "Attempt_Takedown", kMotion_XZR, kMotion_Z);
-        CreateMotion(preFix + "Into_Takedown", kMotion_XZR, kMotion_Z);
+        CreateMotion(preFix + "Into_Takedown", kMotion_XZR, kMotion_XZR);
 
         //========================================================================
         // THUG MOTIONS

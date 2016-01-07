@@ -136,7 +136,7 @@ void AssetPreProcess()
     pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, Array<Vector4>&out outKeys, Vector3&out startFromOrigin)
+void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
     if (d_log)
         Print("Processing animation " + animationFile);
@@ -174,7 +174,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     // ==============================================================
     // pre process key frames
-    if (rotateTrack !is null && fixOriginFlag && noAutoFlip)
+
+    if (rotateTrack !is null && fixOriginFlag && !noAutoFlip)
     {
         float rotation = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(rotation) > 75)
@@ -236,7 +237,10 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         Vector3 t_ws1 = translateNode.worldPosition;
         translateNode.position = pelvisOrign;
         Vector3 t_ws2 = translateNode.worldPosition;
-        startFromOrigin = t_ws1 - t_ws2;
+        Vector3 diff = t_ws1 - t_ws2;
+        startFromOrigin.x = diff.x;
+        startFromOrigin.y = diff.y;
+        startFromOrigin.z = diff.z;
     }
 
     outKeys.Resize(translateTrack.numKeyFrames);
@@ -256,6 +260,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
                 firstRotateFromRoot = q.eulerAngles.y;
         }
     }
+
+    startFromOrigin.w = firstRotateFromRoot;
 
     // process rotate key frames first
     if ((motionFlag & kMotion_R != 0) && rotateTrack !is null)
@@ -369,7 +375,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
 
     if (ignoreFirstFrame)
     {
-        int w = outKeys[0].w;
+        float w = outKeys[0].w;
         for (int i=0; i<outKeys.length; ++i)
         {
             outKeys[i].w -= w;

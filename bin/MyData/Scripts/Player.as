@@ -570,10 +570,7 @@ class PlayerAttackState : CharacterState
         motion.Start(ownner);
         isInAir = false;
         weakAttack = cast<Player>(ownner).combo < MAX_WEAK_ATTACK_COMBO;
-        if (p.combo >= 3)
-            slowMotion = (RandomInt(10) == 1);
-        else
-            slowMotion = false;
+        slowMotion = (p.combo >= 3) ? (RandomInt(10) == 1) : false;
 
         if (ownner.target !is null)
         {
@@ -792,8 +789,8 @@ class PlayerCounterState : CharacterCounterState
             float enemyYaw = eNode.worldRotation.eulerAngles.y;
             targetRotation = enemyYaw + rotationDiff;
 
-            Vector3 s1 = currentMotion.startFromOrigin;
-            Vector3 s2 = s.currentMotion.startFromOrigin;
+            Vector3 s1 = currentMotion.GetStartPos();
+            Vector3 s2 = s.currentMotion.GetStartPos();
             Vector3 originDiff = s1 - s2;
             originDiff.x = Abs(originDiff.x);
             originDiff.z = Abs(originDiff.z);
@@ -1135,8 +1132,8 @@ class PlayerBeatDownEndState : MultiMotionState
             Motion@ m1 = motions[selectIndex];
             ThugBeatDownEndState@ state = cast<ThugBeatDownEndState>(target.FindState("BeatDownEndState"));
             Motion@ m2 = state.motions[selectIndex];
-            Vector3 s1 = m1.startFromOrigin;
-            Vector3 s2 = m2.startFromOrigin;
+            Vector3 s1 = m1.GetStartPos();
+            Vector3 s2 = m2.GetStartPos();
             Vector3 originDiff = s1 - s2;
             originDiff.x = Abs(originDiff.x);
             originDiff.z = Abs(originDiff.z);
@@ -1361,7 +1358,7 @@ class PlayerBeatDownHitState : MultiMotionState
         MultiMotionState@ state = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
         Motion@ m1 = motions[i];
         Motion@ m2 = state.motions[i];
-        Vector3 originDiff = m1.startFromOrigin - m2.startFromOrigin;
+        Vector3 originDiff = m1.GetStartPos() - m2.GetStartPos();
         originDiff.x = Abs(originDiff.x);
         originDiff.z = Abs(originDiff.z);
         originDiff.x = 0;
