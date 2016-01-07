@@ -666,6 +666,7 @@ class ThugDeadState : CharacterState
     void Enter(State@ lastState)
     {
         Print(ownner.GetName() + " Entering ThugDeadState");
+        ownner.SetNodeEnabled("Collision", false);
         CharacterState::Enter(lastState);
     }
 

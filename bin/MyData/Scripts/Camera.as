@@ -227,7 +227,7 @@ class TransitionCameraController : CameraController
 
 class DeathCameraController : CameraController
 {
-    uint nodeId = M_MAX_UNSIGNED;
+    uint    nodeId = M_MAX_UNSIGNED;
     float   cameraSpeed = 3.5f;
     float   cameraDist = 12.5f;
     float   cameraHeight = 0.5f;
@@ -272,12 +272,6 @@ class DeathCameraController : CameraController
         if (!eventData.Contains(NODE))
             return;
         nodeId = eventData[NODE].GetUInt();
-        //Node@ _node = cameraNode.scene.GetNode(nodeId);
-        //if (_node is null)
-        //    return;
-        //Node@ headNode = _node.GetChild("Bip01_Head", true);
-        //headNode.scale = Vector3(0.1f, 0.1f, 0.1f);
-
         Node@ _node = cameraNode.scene.GetNode(nodeId);
         if (_node is null)
         {
@@ -295,7 +289,63 @@ class DeathCameraController : CameraController
         else
             sideAngle = +90.0f;
 
-        Print("sideAngle="+sideAngle);
+        Print("DeathCamera sideAngle="+sideAngle);
+    }
+};
+
+class AnimationCameraController : CameraController
+{
+    Array<String> animations;
+    uint nodeId = M_MAX_UNSIGNED;
+    int playingIndex = 0;
+
+    AnimationCameraController(Node@ n, const String&in name)
+    {
+        super(n, name);
+    }
+
+    void Enter()
+    {
+    }
+
+    void Update(float dt)
+    {
+        Node@ _node = script.defaultScene.GetNode(nodeId);
+        AnimationController@ ac = _node.GetComponent("AnimationController");
+        if (ac.IsAtEnd(animations[playingIndex]))
+        {
+            // finished.
+            // todo.
+            gCameraMgr.SetCameraController("ThirdPerson");
+        }
+    }
+
+    Node@ CreateAnimationNode()
+    {
+        if (nodeId == M_MAX_UNSIGNED)
+        {
+            Node@ _node = script.defaultScene.CreateChild("AnimatedCamera");
+            nodeId = _node.id;
+
+            AnimatedModel@ model = _node.CreateComponent("AnimatedModel");
+            AnimationController@ ac = _node.CreateComponent("AnimationController");
+            model.model = cache.GetResource("Model", "Models/Camera_Rig.mdl");
+            return _node;
+        }
+        else
+            return script.defaultScene.GetNode(nodeId);
+    }
+
+    void PlayCamAnimation(const String&in animName)
+    {
+        PlayAnimation(CreateAnimationNode().GetComponent("AnimationController"), animName);
+    }
+
+    void OnCameraEvent(VariantMap& eventData)
+    {
+        if (!eventData.Contains(ANIMATION))
+            return;
+        PlayCamAnimation(animations[eventData[ANIMATION].GetInt()]);
     }
 };
 
@@ -327,7 +377,7 @@ class CameraManager
         CameraController@ cc = FindCameraController(nameHash);
         if (currentController is cc)
             return;
-        
+
         Print("SetCameraController -- " + nameHash.ToString());
 
         if (currentController !is null)
@@ -344,6 +394,7 @@ class CameraManager
         cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
         cameraControllers.Push(TransitionCameraController(n, "Transition"));
         cameraControllers.Push(DeathCameraController(n, "Death"));
+        cameraControllers.Push(AnimationCameraController(n, "Animation"));
     }
 
     void Stop()

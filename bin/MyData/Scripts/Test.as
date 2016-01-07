@@ -789,7 +789,7 @@ void ExecuteCommand()
         {
             Character@ c = cast<Character>(_node.scriptObject);
             if (c !is null)
-                c.duration = 0.0f;
+                c.ChangeState("DeadState");
         }
     }
 }
