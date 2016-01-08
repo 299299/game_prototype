@@ -123,7 +123,8 @@ Vector4 GetTargetTransform(Node@ alignNode, Node@ baseNode, Motion@ alignMotion,
     float baseYaw = baseNode.worldRotation.eulerAngles.y;
     float targetRotation = baseYaw + (r1 - r2);
     Vector3 diff_ws = Quaternion(0, r2, 0) * (s1 - s2);
-    Print("GetTargetTransform 1=" + alignNode.name + " 2=" + baseNode.name + "1-start-pos=" + s1.ToString() + " 2-start-pos=" + s2.ToString() + " 1-start-rot=" + r1 + " 2-start-rot=" + r2);
+    Print("GetTargetTransform 1=" + alignNode.name + " 2=" + baseNode.name + " 1-start-pos=" + s1.ToString() + 
+        " 2-start-pos=" + s2.ToString() + " 1-start-rot=" + r1 + " 2-start-rot=" + r2 + " p-diff=" + (s1 - s2).ToString() + " r-diff=" + (r1 - r2));
 
     Vector3 targetPosition = baseNode.worldPosition + baseNode.worldRotation * diff_ws;
     return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);

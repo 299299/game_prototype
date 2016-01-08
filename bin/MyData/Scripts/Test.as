@@ -488,6 +488,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         TestAnimations_Group_3();
     else if (key == 'L')
         TestAnimations_Group_4();
+    else if (key == 'H')
+        TestAnimations_Group_Beat();
 
     if (test_ragdoll)
     {
@@ -522,7 +524,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             Player@ player = GetPlayer();
             if (player is null)
                 return;
-
             Node@ renderNode = player.GetNode().children[0];
             AnimationController@ ctl = renderNode.GetComponent("AnimationController");
             int ragdoll_direction = player.GetNode().vars[ANIMATION_INDEX].GetInt();
@@ -709,100 +710,69 @@ void SetColorGrading(int index)
     LUT = colorGradingTextures[index];
 }
 
-void TestAnimations_Group_2()
+void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
 {
     Player@ player = GetPlayer();
     EnemyManager@ em = GetEnemyMgr();
 
-    if (em.enemyList.length < 1)
+    if (em.enemyList.length < thugAnims.length)
         return;
 
-    String test = "Counter_Leg_Front_01";
-    String playerAnim = "BM_TG_Counter/" + test;
-    String thugAnim = "TG_BM_Counter/" + test;
-
-    Motion@ m0 = gMotionMgr.FindMotion(playerAnim);
-    Motion@ m1 = gMotionMgr.FindMotion(thugAnim);
-
-    Enemy@ e1 = em.enemyList[0];
-    Vector4 t1 = GetTargetTransform(e1.GetNode(), player.GetNode(), m1, m0);
-    e1.Transform(Vector3(t1.x, t1.y, t1.z), Quaternion(0, t1.w, 0));
-
+    Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
+    
     player.TestAnimation(playerAnim);
-    e1.TestAnimation(thugAnim);
+    for (uint i=0; i<thugAnims.length; ++i)
+    {
+        Motion@ m = gMotionMgr.FindMotion(thugAnims[i]);
+        Enemy@ e = em.enemyList[0];
+        Vector4 t = GetTargetTransform(e.GetNode(), player.GetNode(), m, m_player);
+        e.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+        e.TestAnimation(thugAnims[i]);
+    }
 
     player.SetSceneTimeScale(0.0f);
+}
+
+int test_beat_index = 1;
+void TestAnimations_Group_Beat()
+{
+    String playerAnim = "BM_Attack/Beatdown_Test_0" + test_beat_index;
+    Array<String> thugAnims;
+    thugAnims.Push("TG_BM_Beatdown/Beatdown_HitReaction_0" + test_beat_index);
+    test_beat_index ++;
+    if (test_beat_index > 6)
+        test_beat_index = 1;
+    TestAnimation_Group(playerAnim, thugAnims);
+}
+
+void TestAnimations_Group_2()
+{
+    String test = "Counter_Leg_Front_01";
+    String playerAnim = "BM_TG_Counter/" + test;
+    Array<String> thugAnims;
+    thugAnims.Push("TG_BM_Counter/" + test);
+    TestAnimation_Group(playerAnim, thugAnims);
 }
 
 void TestAnimations_Group_3()
 {
-    Player@ player = GetPlayer();
-    EnemyManager@ em = GetEnemyMgr();
-
-    if (em.enemyList.length < 2)
-        return;
-
     String test = "Double_Counter_2ThugsA";
     String playerAnim = "BM_TG_Counter/" + test;
-    String thugAnim1 = "TG_BM_Counter/" + test + "_01";
-    String thugAnim2 = "TG_BM_Counter/" + test + "_02";
-
-    Motion@ m0 = gMotionMgr.FindMotion(playerAnim);
-    Motion@ m1 = gMotionMgr.FindMotion(thugAnim1);
-    Motion@ m2 = gMotionMgr.FindMotion(thugAnim2);
-
-    Enemy@ e1 = em.enemyList[0];
-    Enemy@ e2 = em.enemyList[1];
-
-    Vector4 t1 = GetTargetTransform(e1.GetNode(), player.GetNode(), m1, m0);
-    Vector4 t2 = GetTargetTransform(e2.GetNode(), player.GetNode(), m2, m0);
-    e1.Transform(Vector3(t1.x, t1.y, t1.z), Quaternion(0, t1.w, 0));
-    e2.Transform(Vector3(t2.x, t2.y, t2.z), Quaternion(0, t2.w, 0));
-
-    player.TestAnimation(playerAnim);
-    e1.TestAnimation(thugAnim1);
-    e2.TestAnimation(thugAnim2);
-
-    player.SetSceneTimeScale(0.0f);
+    Array<String> thugAnims;
+    thugAnims.Push("TG_BM_Counter/" + test + "_01");
+    thugAnims.Push("TG_BM_Counter/" + test + "_02");
+    TestAnimation_Group(playerAnim, thugAnims);
 }
 
 void TestAnimations_Group_4()
 {
-    Player@ player = GetPlayer();
-    EnemyManager@ em = GetEnemyMgr();
-
-    if (em.enemyList.length < 3)
-        return;
-
     String test = "Double_Counter_3ThugsA";
     String playerAnim = "BM_TG_Counter/" + test;
-    String thugAnim1 = "TG_BM_Counter/" + test + "_01";
-    String thugAnim2 = "TG_BM_Counter/" + test + "_02";
-    String thugAnim3 = "TG_BM_Counter/" + test + "_03";
-
-    Motion@ m0 = gMotionMgr.FindMotion(playerAnim);
-    Motion@ m1 = gMotionMgr.FindMotion(thugAnim1);
-    Motion@ m2 = gMotionMgr.FindMotion(thugAnim2);
-    Motion@ m3 = gMotionMgr.FindMotion(thugAnim3);
-
-    Enemy@ e1 = em.enemyList[0];
-    Enemy@ e2 = em.enemyList[1];
-    Enemy@ e3 = em.enemyList[2];
-
-    Vector4 t1 = GetTargetTransform(e1.GetNode(), player.GetNode(), m1, m0);
-    Vector4 t2 = GetTargetTransform(e2.GetNode(), player.GetNode(), m2, m0);
-    Vector4 t3 = GetTargetTransform(e2.GetNode(), player.GetNode(), m3, m0);
-
-    e1.Transform(Vector3(t1.x, t1.y, t1.z), Quaternion(0, t1.w, 0));
-    e2.Transform(Vector3(t2.x, t2.y, t2.z), Quaternion(0, t2.w, 0));
-    e2.Transform(Vector3(t3.x, t3.y, t3.z), Quaternion(0, t3.w, 0));
-
-    player.TestAnimation(playerAnim);
-    e1.TestAnimation(thugAnim1);
-    e2.TestAnimation(thugAnim2);
-    e3.TestAnimation(thugAnim3);
-
-    player.SetSceneTimeScale(0.0f);
+    Array<String> thugAnims;
+    thugAnims.Push("TG_BM_Counter/" + test + "_01");
+    thugAnims.Push("TG_BM_Counter/" + test + "_02");
+    thugAnims.Push("TG_BM_Counter/" + test + "_03");
+    TestAnimation_Group(playerAnim, thugAnims);
 }
 
 void ExecuteCommand()

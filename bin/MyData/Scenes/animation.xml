@@ -4,11 +4,11 @@
 	<attribute name="Time Scale" value="1" />
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
-	<attribute name="Elapsed Time" value="14.2266" />
+	<attribute name="Elapsed Time" value="9.57799" />
 	<attribute name="Next Replicated Node ID" value="18" />
 	<attribute name="Next Replicated Component ID" value="32" />
-	<attribute name="Next Local Node ID" value="16778902" />
-	<attribute name="Next Local Component ID" value="16777719" />
+	<attribute name="Next Local Node ID" value="16778901" />
+	<attribute name="Next Local Component ID" value="16777707" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -23,7 +23,7 @@
 		<attribute name="Variables" />
 		<component type="Light" id="4">
 			<attribute name="Light Type" value="Directional" />
-			<attribute name="Specular Intensity" value="10" />
+			<attribute name="Color" value="0.577734 0.775074 0.972656 1" />
 			<attribute name="Range" value="50" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>

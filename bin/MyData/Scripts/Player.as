@@ -1207,7 +1207,7 @@ class PlayerBeatDownHitState : MultiMotionState
     float targetRotation;
 
     int state = 0;
-    bool distToFar = false;
+    bool distTooFar = false;
 
     PlayerBeatDownHitState(Character@ c)
     {
@@ -1238,7 +1238,7 @@ class PlayerBeatDownHitState : MultiMotionState
             return;
         }
 
-        if (distToFar)
+        if (distTooFar)
         {
             ownner.ChangeState("TransitionState");
             PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.GetState());
@@ -1259,6 +1259,7 @@ class PlayerBeatDownHitState : MultiMotionState
                 state = 1;
                 HitStart(false, beatIndex);
                 timeInState = 0.0f;
+                ownner.SetSceneTimeScale(0.0f);
             }
         }
         else if (state == 1)
@@ -1302,7 +1303,7 @@ class PlayerBeatDownHitState : MultiMotionState
 
         if (curDist >= 12.5f)
         {
-            distToFar = true;
+            distTooFar = true;
             return;
         }
 
@@ -1327,7 +1328,6 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             state = 0;
             movePerSec = (targetPosition - myPos)/alignTime;
-            ownner.SetSceneTimeScale(0.0f);
         }
         else
         {
@@ -1345,7 +1345,7 @@ class PlayerBeatDownHitState : MultiMotionState
         Print("========================= BeatDownHitState Enter start ===========================");
         combatReady = false;
         attackPressed = false;
-        distToFar = false;
+        distTooFar = false;
         if (lastState !is this)
         {
             beatNum = 0;
@@ -1366,11 +1366,8 @@ class PlayerBeatDownHitState : MultiMotionState
             Print("BeatDownHitState On Impact");
             combatReady = true;
             ownner.OnAttackSuccess(ownner.target);
-            // Print("Beat Impact Total = " + beatTotal + " Num = " + beatNum);
             if (beatNum >= beatTotal)
-            {
                 ownner.ChangeState("BeatDownEndState");
-            }
         }
     }
 
