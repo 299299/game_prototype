@@ -134,7 +134,6 @@ class Motion
     int                     originFlag;
     int                     allowMotion;
 
-    bool                    cutRotation;
     bool                    processed = false;
 
     Motion()
@@ -154,7 +153,6 @@ class Motion
         motionFlag = other.motionFlag;
         originFlag = other.originFlag;
         allowMotion = other.allowMotion;
-        cutRotation = other.cutRotation;
     }
 
     void SetName(const String&in _name)
@@ -180,7 +178,10 @@ class Motion
 
         gMotionMgr.memoryUse += this.animation.memoryUse;
         bool dump = false;
-        ProcessAnimation(animationName, motionFlag, originFlag, allowMotion, cutRotation, motionKeys, startFromOrigin, dump);
+        int flag = originFlag;
+        if (dump)
+            flag |= kMotion_Ext_Debug_Dump;
+        ProcessAnimation(animationName, motionFlag, flag, allowMotion, motionKeys, startFromOrigin);
         SetEndFrame(endFrame);
         Vector4 v = motionKeys[0];
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
@@ -539,9 +540,8 @@ class MotionManager
 
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
-        int flags = kMotion_Ext_Ignore_First_Frame | kMotion_Ext_No_Auto_Flip;
-        //(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, int originFlag = 0, bool loop = false, bool cutRotation = false)
-        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, flags, false, true);
+        int flags = kMotion_Ext_Ignore_First_Frame | kMotion_Ext_No_Auto_Flip | kMotion_Ext_Rotate_From_Start;
+        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, flags, false);
 
         CreateMotion(preFix + "Double_Counter_2ThugsB");
         CreateMotion(preFix + "Double_Counter_2ThugsD");
@@ -657,7 +657,7 @@ class MotionManager
         CreateMotion(preFix + "Double_Counter_3ThugsC_03");
 
         preFix = "TG_BM_Beatdown/";
-        CreateMotion(preFix + "Beatdown_Start_01", kMotion_XZR, 0);
+        // CreateMotion(preFix + "Beatdown_Start_01", kMotion_XZR, 0);
         CreateMotion(preFix + "Beatdown_HitReaction_01", beat_motion_flags, beat_allow_flags);
         CreateMotion(preFix + "Beatdown_HitReaction_02", beat_motion_flags, beat_allow_flags);
         CreateMotion(preFix + "Beatdown_HitReaction_03", beat_motion_flags, beat_allow_flags);
@@ -676,14 +676,13 @@ class MotionManager
         motions.Clear();
     }
 
-    Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, int originFlag = 0, bool loop = false, bool cutRotation = false)
+    Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, int originFlag = 0, bool loop = false)
     {
         Motion@ motion = Motion();
         motion.SetName(name);
         motion.motionFlag = motionFlag;
         motion.originFlag = originFlag;
         motion.allowMotion = allowMotion;
-        motion.cutRotation = cutRotation;
         motion.looped = loop;
         motion.endFrame = endFrame;
         motions.Push(motion);

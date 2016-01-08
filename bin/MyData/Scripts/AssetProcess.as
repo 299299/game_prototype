@@ -12,8 +12,10 @@ enum RootMotionFlag
     kMotion_Z   = (1 << 2),
     kMotion_R   = (1 << 3),
 
-    kMotion_Ext_Ignore_First_Frame = (1 << 6),
-    kMotion_Ext_No_Auto_Flip = (1 << 7),
+    kMotion_Ext_Ignore_First_Frame = (1 << 4),
+    kMotion_Ext_No_Auto_Flip = (1 << 5),
+    kMotion_Ext_Rotate_From_Start = (1 << 6),
+    kMotion_Ext_Debug_Dump = (1 << 7),
 
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_XZ  = kMotion_X | kMotion_Z,
@@ -134,7 +136,7 @@ void AssetPreProcess()
     pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, bool cutRotation, Array<Vector4>&out outKeys, Vector3&out startFromOrigin, bool dump = false)
+void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, Array<Vector4>&out outKeys, Vector3&out startFromOrigin)
 {
     if (d_log)
         Print("Processing animation " + animationFile);
@@ -161,11 +163,15 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
     //if (track.channelMask & CHANNEL_SCALE != 0)
     //    Print("CHANNEL_SCALE");
 
-    bool fixOriginFlag = (originFlag & kMotion_XZR) == 0;
+    bool fixOriginFlag = originFlag & kMotion_XZR == 0;
     bool noAutoFlip = originFlag & kMotion_Ext_No_Auto_Flip != 0;
     bool ignoreFirstFrame = originFlag & kMotion_Ext_Ignore_First_Frame != 0;
+    bool cutRotation = originFlag & kMotion_Ext_Rotate_From_Start != 0;
+    bool dump = originFlag & kMotion_Ext_Debug_Dump != 0;
 
-    Print(animationFile + " noAutoFlip=" + noAutoFlip + " ignoreFirstFrame=" + ignoreFirstFrame);
+    if (d_log)
+        Print(animationFile + " noAutoFlip=" + noAutoFlip + " ignoreFirstFrame=" + ignoreFirstFrame + " cutRotation=" + cutRotation);
+
     // ==============================================================
     // pre process key frames
     if (rotateTrack !is null && fixOriginFlag && noAutoFlip)
@@ -359,6 +365,15 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             outKeys[i].z = 0;
         if (allowMotion & kMotion_R == 0)
             outKeys[i].w = 0;
+    }
+
+    if (ignoreFirstFrame)
+    {
+        int w = outKeys[0].w;
+        for (int i=0; i<outKeys.length; ++i)
+        {
+            outKeys[i].w -= w;
+        }
     }
 
     if (dump)
