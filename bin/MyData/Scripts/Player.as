@@ -758,8 +758,8 @@ class PlayerCounterState : CharacterCounterState
                 else if (type == 3)
                     @s.currentMotion = s.tripleCounterMotions[animIndex * type + s.index];
                 Vector3 ePos = e.GetNode().worldPosition;
-                Vector4 t = GetTargetTransform(e.GetNode(), myNode, s.currentMotion, currentMotion);
-                s.SetTargetTransform(Vector3(t.x, t.y, t.z), t.w);
+                Vector4 vt = GetTargetTransform(e.GetNode(), myNode, s.currentMotion, currentMotion);
+                s.SetTargetTransform(Vector3(vt.x, vt.y, vt.z), vt.w);
                 s.ChangeSubState(COUNTER_ALIGNING);
             }
             ChangeSubState(COUNTER_WAITING);
@@ -1259,7 +1259,6 @@ class PlayerBeatDownHitState : MultiMotionState
                 state = 1;
                 HitStart(false, beatIndex);
                 timeInState = 0.0f;
-                ownner.SetSceneTimeScale(0.0f);
             }
         }
         else if (state == 1)
@@ -1317,6 +1316,7 @@ class PlayerBeatDownHitState : MultiMotionState
             Vector3 dir = myPos - target.GetNode().worldPosition;
             float e_targetRotation = Atan2(dir.x, dir.z);
             target.GetNode().worldRotation = Quaternion(0, e_targetRotation, 0);
+            ownner.SetSceneTimeScale(0.0f);
         }
 
         Vector4 t = GetTargetTransform(ownner.GetNode(), target.GetNode(), m1, m2);

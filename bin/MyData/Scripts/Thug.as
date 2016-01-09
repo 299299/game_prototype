@@ -62,7 +62,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        if (freeze_ai)
+        if (freeze_ai != 0)
            return;
 
         float diff = Abs(ownner.ComputeAngleDiff());
@@ -179,7 +179,7 @@ class ThugStepMoveState : MultiMotionState
 
             if (dist <= attackRange && dist >= -0.5f)
             {
-                if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
+                if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE && freeze_ai == 0)
                 {
                     if (ownner.Attack())
                         return;
@@ -190,6 +190,7 @@ class ThugStepMoveState : MultiMotionState
                     return;
                 }
             }
+            
             ownner.CommonStateFinishedOnGroud();
             return;
         }
@@ -256,7 +257,7 @@ class ThugRunState : SingleMotionState
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist <= attackRange)
         {
-            if (ownner.Attack())
+            if (ownner.Attack() && freeze_ai == 0)
                 return;
             ownner.CommonStateFinishedOnGroud();
             return;

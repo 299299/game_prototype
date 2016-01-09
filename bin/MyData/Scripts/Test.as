@@ -34,15 +34,21 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 2;
+int test_enemy_num_override = 3;
 bool lowend_platform = false;
 bool auto_target = false;
-bool freeze_ai = true;
+int freeze_ai = 1;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
 
 int debugLevel = 0;
+
+int test_beat_index = 1;
+bool base_on_player = false;
+int test_counter_index = 0;
+int test_double_counter_index = 0;
+int test_triple_counter_index = 0;
 
 void Start()
 {
@@ -541,8 +547,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "BM_TG_Beatdown/Beatdown_Strike_End_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
-            String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
-            //String testName = "TG_BM_Beatdown/Beatdown_HitReaction_01";
+            //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
+            String testName = "TG_BM_Beatdown/Beatdown_HitReaction_01";
             Player@ player = GetPlayer();
             if (player !is null)
                 player.TestAnimation(testName);
@@ -719,44 +725,120 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
         return;
 
     Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
-    
-    player.TestAnimation(playerAnim);
     for (uint i=0; i<thugAnims.length; ++i)
     {
         Motion@ m = gMotionMgr.FindMotion(thugAnims[i]);
-        Enemy@ e = em.enemyList[0];
+        Enemy@ e = em.enemyList[i];
         Vector4 t = GetTargetTransform(e.GetNode(), player.GetNode(), m, m_player);
         e.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
         e.TestAnimation(thugAnims[i]);
     }
-
+    player.TestAnimation(playerAnim);
     player.SetSceneTimeScale(0.0f);
 }
 
-int test_beat_index = 1;
+void TestAnimation_Group_s(const String&in playerAnim, String thugAnim, bool baseOnPlayer = false)
+{
+    Player@ player = GetPlayer();
+    EnemyManager@ em = GetEnemyMgr();
+
+    if (em.enemyList.empty)
+        return;
+
+    Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
+    Motion@ m = gMotionMgr.FindMotion(thugAnim);
+    Enemy@ e = em.enemyList[0];
+
+    if (baseOnPlayer)
+    {
+        Vector4 t = GetTargetTransform(e.GetNode(), player.GetNode(), m, m_player);
+        e.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+    }
+    else
+    {
+        Vector4 t = GetTargetTransform(player.GetNode(), e.GetNode(), m_player, m);
+        player.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+    }
+
+    e.TestAnimation(thugAnim);
+    player.TestAnimation(playerAnim);
+    player.SetSceneTimeScale(0.0f);
+}
+
 void TestAnimations_Group_Beat()
 {
     String playerAnim = "BM_Attack/Beatdown_Test_0" + test_beat_index;
-    Array<String> thugAnims;
-    thugAnims.Push("TG_BM_Beatdown/Beatdown_HitReaction_0" + test_beat_index);
+    String thugAnim = "TG_BM_Beatdown/Beatdown_HitReaction_0" + test_beat_index;
     test_beat_index ++;
     if (test_beat_index > 6)
+    {
         test_beat_index = 1;
-    TestAnimation_Group(playerAnim, thugAnims);
+        base_on_player = !base_on_player;
+    }
+    TestAnimation_Group_s(playerAnim, thugAnim, base_on_player);
 }
 
 void TestAnimations_Group_2()
 {
-    String test = "Counter_Leg_Front_01";
-    String playerAnim = "BM_TG_Counter/" + test;
-    Array<String> thugAnims;
-    thugAnims.Push("TG_BM_Counter/" + test);
-    TestAnimation_Group(playerAnim, thugAnims);
+    Player@ player = GetPlayer();
+    EnemyManager@ em = GetEnemyMgr();
+    if (em.enemyList.empty)
+        return;
+
+    Enemy@ e = em.enemyList[0];
+    CharacterCounterState@ s1 = cast<CharacterCounterState>(player.FindState("CounterState"));
+    CharacterCounterState@ s2 = cast<CharacterCounterState>(e.FindState("CounterState"));
+    Motion@ m1, m2;
+    int i = RandomInt(4);
+    if (i == 0)
+    {
+        int k = RandomInt(s1.frontArmMotions.length);
+        @m1 = s1.frontArmMotions[k];
+        @m2 = s2.frontArmMotions[k];
+    }
+    else if (i == 1)
+    {
+        int k = RandomInt(s1.frontLegMotions.length);
+        @m1 = s1.frontLegMotions[k];
+        @m2 = s2.frontLegMotions[k];
+    }
+    else if (i == 2)
+    {
+        int k = RandomInt(s1.backArmMotions.length);
+        @m1 = s1.backArmMotions[k];
+        @m2 = s2.backArmMotions[k];
+    }
+    else if (i == 3)
+    {
+        int k = RandomInt(s1.backLegMotions.length);
+        @m1 = s1.backLegMotions[k];
+        @m2 = s2.backLegMotions[k];
+    }
+
+    Vector4 t = GetTargetTransform(player.GetNode(), e.GetNode(), m1, m2);
+    player.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+
+    e.TestAnimation(m2.name);
+    player.TestAnimation(m1.name);
+    // player.SetSceneTimeScale(0.0f);
 }
 
 void TestAnimations_Group_3()
 {
-    String test = "Double_Counter_2ThugsA";
+    Array<String> tests =
+    {
+        "Double_Counter_2ThugsA",
+        "Double_Counter_2ThugsB",
+        "Double_Counter_2ThugsD",
+        "Double_Counter_2ThugsE",
+        "Double_Counter_2ThugsF",
+        "Double_Counter_2ThugsG",
+        "Double_Counter_2ThugsH"
+    };
+    String test = tests[test_double_counter_index];
+    test_double_counter_index ++;
+    if (test_double_counter_index >= tests.length)
+        test_double_counter_index = 0;
     String playerAnim = "BM_TG_Counter/" + test;
     Array<String> thugAnims;
     thugAnims.Push("TG_BM_Counter/" + test + "_01");
@@ -766,7 +848,16 @@ void TestAnimations_Group_3()
 
 void TestAnimations_Group_4()
 {
-    String test = "Double_Counter_3ThugsA";
+    Array<String> tests =
+    {
+        "Double_Counter_3ThugsA",
+        "Double_Counter_3ThugsB",
+        "Double_Counter_3ThugsC",
+    };
+    String test = tests[test_triple_counter_index];
+    test_triple_counter_index ++;
+    if (test_triple_counter_index >= tests.length)
+        test_triple_counter_index = 0;
     String playerAnim = "BM_TG_Counter/" + test;
     Array<String> thugAnims;
     thugAnims.Push("TG_BM_Counter/" + test + "_01");

@@ -191,20 +191,21 @@ void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);
             kf.position += diff;
+            translateTrack.keyFrames[i] = kf;
         }
     }
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
+float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
-    if (d_log)
-        Print("Processing animation " + animationFile);
+    Print("---------------------------------------------------------------------------------------");
+    Print("Processing animation " + animationFile);
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
         ErrorDialog(TITLE, animationFile + " not found!");
         engine.Exit();
-        return;
+        return 0;
     }
 
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
@@ -227,6 +228,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
             Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
             flip = true;
         }
+        startFromOrigin.w = firstRotateFromRoot;
     }
 
     if (translateTrack !is null)
@@ -295,10 +297,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
                     Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
             }
             if (i == 0)
-            {
                 firstRotateFromRoot = q.eulerAngles.y;
-                startFromOrigin.w = firstRotateFromRoot;
-            }
         }
     }
 
@@ -393,6 +392,9 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
             Print("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
         }
     }
+
+    Print("---------------------------------------------------------------------------------------");
+    return flip ? 180 : 0;
 }
 
 Animation@ CreateAnimation(const String&in originAnimationName, const String&in name, int start_frame, int num_of_frames)

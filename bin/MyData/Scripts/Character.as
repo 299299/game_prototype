@@ -270,9 +270,9 @@ class AnimationTestState : CharacterState
         Print("AnimationTestState::Enter");
         @testMotion = gMotionMgr.FindMotion(animationName);
         if (testMotion !is null)
-            testMotion.Start(ownner);
+            testMotion.Start(ownner, 0.0f, 0.0f);
         else
-            ownner.PlayAnimation(animationName);
+            ownner.PlayAnimation(animationName, LAYER_MOVE, false, 0.0f);
         CharacterState::Enter(lastState);
     }
 
@@ -338,6 +338,7 @@ class CharacterCounterState : CharacterState
     Array<Motion@>      frontLegMotions;
     Array<Motion@>      backArmMotions;
     Array<Motion@>      backLegMotions;
+    
     Motion@             currentMotion;
     int                 state; // sub state
     int                 type;

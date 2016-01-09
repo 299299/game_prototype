@@ -122,12 +122,16 @@ Vector4 GetTargetTransform(Node@ alignNode, Node@ baseNode, Motion@ alignMotion,
 
     float baseYaw = baseNode.worldRotation.eulerAngles.y;
     float targetRotation = baseYaw + (r1 - r2);
-    Vector3 diff_ws = Quaternion(0, r2, 0) * (s1 - s2);
-    Print("GetTargetTransform 1=" + alignNode.name + " 2=" + baseNode.name + " 1-start-pos=" + s1.ToString() + 
-        " 2-start-pos=" + s2.ToString() + " 1-start-rot=" + r1 + " 2-start-rot=" + r2 + " p-diff=" + (s1 - s2).ToString() + " r-diff=" + (r1 - r2));
+    Vector3 diff_ws = Quaternion(0, baseYaw + r2, 0) * (s1 - s2);
+    Vector3 targetPosition = baseNode.worldPosition + diff_ws;
 
-    Vector3 targetPosition = baseNode.worldPosition + baseNode.worldRotation * diff_ws;
-    return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);
+    Print("---------------------------- GetTargetTransform align-motion=" + alignMotion.name + " base-motion=" + baseMotion.name + " ---------------------------");
+    Print("GetTargetTransform 1=" + alignNode.name + " 2=" + baseNode.name + " 1-start-pos=" + s1.ToString() + " 2-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
+    Print("baseYaw=" + baseYaw + " targetRotation=" + targetRotation + " 1-start-rot=" + r1 + " 2-start-rot=" + r2 + " r-diff=" + (r1 - r2));
+    Print("basePosition=" + baseNode.worldPosition.ToString() + " diff_ws=" + diff_ws.ToString() + " targetPosition=" + targetPosition.ToString());
+    Print("--------------------------------------------------------------------------------------------------------------");
+
+    return Vector4(targetPosition.x,  alignNode.worldPosition.y, targetPosition.z, targetRotation);
 }
 
 class Motion
@@ -193,10 +197,12 @@ class Motion
             return;
 
         gMotionMgr.memoryUse += this.animation.memoryUse;
-        bool dump = false;
         if (rotateAngle < 360)
             RotateAnimation(animationName, rotateAngle);
-        ProcessAnimation(animationName, motionFlag, allowMotion, motionKeys, startFromOrigin);
+        float r = ProcessAnimation(animationName, motionFlag, allowMotion, motionKeys, startFromOrigin);
+        if (rotateAngle > 360)
+            rotateAngle = r;
+
         SetEndFrame(endFrame);
         Vector4 v = motionKeys[0];
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
@@ -352,7 +358,7 @@ class Motion
 
     float GetStartRot()
     {
-        return startFromOrigin.w;
+        return rotateAngle;
     }
 };
 
