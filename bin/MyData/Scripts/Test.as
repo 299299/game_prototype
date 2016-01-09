@@ -34,9 +34,10 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 1;
+int test_enemy_num_override = 2;
 bool lowend_platform = false;
 bool auto_target = false;
+bool freeze_ai = true;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
@@ -481,6 +482,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == 'Q')
         engine.Exit();
+    else if (key == 'J')
+        TestAnimations_Group_2();
+    else if (key == 'K')
+        TestAnimations_Group_3();
+    else if (key == 'L')
+        TestAnimations_Group_4();
 
     if (test_ragdoll)
     {
@@ -700,6 +707,102 @@ void SetColorGrading(int index)
     colorGradingIndex = index;
     ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "Textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
     LUT = colorGradingTextures[index];
+}
+
+void TestAnimations_Group_2()
+{
+    Player@ player = GetPlayer();
+    EnemyManager@ em = GetEnemyMgr();
+
+    if (em.enemyList.length < 1)
+        return;
+
+    String test = "Counter_Leg_Front_01";
+    String playerAnim = "BM_TG_Counter/" + test;
+    String thugAnim = "TG_BM_Counter/" + test;
+
+    Motion@ m0 = gMotionMgr.FindMotion(playerAnim);
+    Motion@ m1 = gMotionMgr.FindMotion(thugAnim);
+
+    Enemy@ e1 = em.enemyList[0];
+    Vector4 t1 = GetTargetTransform(e1.GetNode(), player.GetNode(), m1, m0);
+    e1.Transform(Vector3(t1.x, t1.y, t1.z), Quaternion(0, t1.w, 0));
+
+    player.TestAnimation(playerAnim);
+    e1.TestAnimation(thugAnim);
+
+    player.SetSceneTimeScale(0.0f);
+}
+
+void TestAnimations_Group_3()
+{
+    Player@ player = GetPlayer();
+    EnemyManager@ em = GetEnemyMgr();
+
+    if (em.enemyList.length < 2)
+        return;
+
+    String test = "Double_Counter_2ThugsA";
+    String playerAnim = "BM_TG_Counter/" + test;
+    String thugAnim1 = "TG_BM_Counter/" + test + "_01";
+    String thugAnim2 = "TG_BM_Counter/" + test + "_02";
+
+    Motion@ m0 = gMotionMgr.FindMotion(playerAnim);
+    Motion@ m1 = gMotionMgr.FindMotion(thugAnim1);
+    Motion@ m2 = gMotionMgr.FindMotion(thugAnim2);
+
+    Enemy@ e1 = em.enemyList[0];
+    Enemy@ e2 = em.enemyList[1];
+
+    Vector4 t1 = GetTargetTransform(e1.GetNode(), player.GetNode(), m1, m0);
+    Vector4 t2 = GetTargetTransform(e2.GetNode(), player.GetNode(), m2, m0);
+    e1.Transform(Vector3(t1.x, t1.y, t1.z), Quaternion(0, t1.w, 0));
+    e2.Transform(Vector3(t2.x, t2.y, t2.z), Quaternion(0, t2.w, 0));
+
+    player.TestAnimation(playerAnim);
+    e1.TestAnimation(thugAnim1);
+    e2.TestAnimation(thugAnim2);
+
+    player.SetSceneTimeScale(0.0f);
+}
+
+void TestAnimations_Group_4()
+{
+    Player@ player = GetPlayer();
+    EnemyManager@ em = GetEnemyMgr();
+
+    if (em.enemyList.length < 3)
+        return;
+
+    String test = "Double_Counter_3ThugsA";
+    String playerAnim = "BM_TG_Counter/" + test;
+    String thugAnim1 = "TG_BM_Counter/" + test + "_01";
+    String thugAnim2 = "TG_BM_Counter/" + test + "_02";
+    String thugAnim3 = "TG_BM_Counter/" + test + "_03";
+
+    Motion@ m0 = gMotionMgr.FindMotion(playerAnim);
+    Motion@ m1 = gMotionMgr.FindMotion(thugAnim1);
+    Motion@ m2 = gMotionMgr.FindMotion(thugAnim2);
+    Motion@ m3 = gMotionMgr.FindMotion(thugAnim3);
+
+    Enemy@ e1 = em.enemyList[0];
+    Enemy@ e2 = em.enemyList[1];
+    Enemy@ e3 = em.enemyList[2];
+
+    Vector4 t1 = GetTargetTransform(e1.GetNode(), player.GetNode(), m1, m0);
+    Vector4 t2 = GetTargetTransform(e2.GetNode(), player.GetNode(), m2, m0);
+    Vector4 t3 = GetTargetTransform(e2.GetNode(), player.GetNode(), m3, m0);
+
+    e1.Transform(Vector3(t1.x, t1.y, t1.z), Quaternion(0, t1.w, 0));
+    e2.Transform(Vector3(t2.x, t2.y, t2.z), Quaternion(0, t2.w, 0));
+    e2.Transform(Vector3(t3.x, t3.y, t3.z), Quaternion(0, t3.w, 0));
+
+    player.TestAnimation(playerAnim);
+    e1.TestAnimation(thugAnim1);
+    e2.TestAnimation(thugAnim2);
+    e3.TestAnimation(thugAnim3);
+
+    player.SetSceneTimeScale(0.0f);
 }
 
 void ExecuteCommand()

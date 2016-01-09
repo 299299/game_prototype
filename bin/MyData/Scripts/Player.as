@@ -757,12 +757,9 @@ class PlayerCounterState : CharacterCounterState
                     @s.currentMotion = s.doubleCounterMotions[animIndex * type + s.index];
                 else if (type == 3)
                     @s.currentMotion = s.tripleCounterMotions[animIndex * type + s.index];
-
-
-                Vector4 t = GetTargetPositionAndRotation(myNode, e.GetNode(), currentMotion, s.currentMotion);
-                s.targetPosition = Vector3(t.x, t.y, t.z);
-                s.movePerSec = (s.targetPosition - e.GetNode().worldPosition) / s.alignTime;
-                s.targetRotation = t.w;
+                Vector3 ePos = e.GetNode().worldPosition;
+                Vector4 t = GetTargetTransform(e.GetNode(), myNode, s.currentMotion, currentMotion);
+                s.SetTargetTransform(Vector3(t.x, t.y, t.z), t.w);
                 s.ChangeSubState(COUNTER_ALIGNING);
             }
             ChangeSubState(COUNTER_WAITING);
@@ -801,18 +798,8 @@ class PlayerCounterState : CharacterCounterState
             s.ChangeSubState(COUNTER_WAITING);
             ChangeSubState(COUNTER_ALIGNING);
 
-            Vector4 targetTransform = GetTargetPositionAndRotation(myNode, eNode, currentMotion, s.currentMotion);
-            targetPosition = Vector3(targetTransform.x, myPos.y, targetTransform.z);
-            targetRotation = targetTransform.w;
-
-            Vector3 positionDiff = targetPosition - myPos;
-            float rotationDiff = AngleDiff(targetRotation - myRot.eulerAngles.y);
-
-            yawPerSec = rotationDiff / alignTime;
-            movePerSec = positionDiff / alignTime;
-            movePerSec.y = 0;
-            Print("Player Single Counter-> targetPosition=" + targetPosition.ToString() + " positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff);
-
+            Vector4 t = GetTargetTransform(myNode, eNode, currentMotion, s.currentMotion);
+            SetTargetTransform(Vector3(t.x, t.y, t.z), t.w);
             // ownner.SetSceneTimeScale(0.0f);
         }
 
@@ -859,6 +846,7 @@ class PlayerCounterState : CharacterCounterState
     {
         CharacterCounterState::OnWaitingTimeOut();
         StartAnimating();
+        ownner.SetSceneTimeScale(0.0f);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1143,7 +1131,7 @@ class PlayerBeatDownEndState : MultiMotionState
             Motion@ m1 = motions[selectIndex];
             ThugBeatDownEndState@ state = cast<ThugBeatDownEndState>(target.FindState("BeatDownEndState"));
             Motion@ m2 = state.motions[selectIndex];
-            Vector4 t = GetTargetPositionAndRotation(ownner.GetNode(), target.GetNode(), m1, m2);
+            Vector4 t = GetTargetTransform(ownner.GetNode(), target.GetNode(), m1, m2);
             ownner.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
             target.GetNode().vars[ANIMATION_INDEX] = selectIndex;
             target.ChangeState("BeatDownEndState");
@@ -1273,7 +1261,7 @@ class PlayerBeatDownHitState : MultiMotionState
                 timeInState = 0.0f;
             }
         }
-        else
+        else if (state == 1)
         {
             if (gInput.IsAttackPressed())
                 attackPressed = true;
@@ -1313,39 +1301,43 @@ class PlayerBeatDownHitState : MultiMotionState
         Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
 
         if (curDist >= 12.5f)
+        {
             distToFar = true;
+            return;
+        }
 
         MultiMotionState@ s = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
         Motion@ m1 = motions[i];
         Motion@ m2 = s.motions[i];
 
         Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 tPos = target.GetNode().worldPosition;
-        Vector3 dir = myPos - tPos;
-        float e_targetRotation = Atan2(dir.x, dir.z);
-        target.GetNode().worldRotation = Quaternion(0, e_targetRotation, 0);
-        Vector4 t = GetTargetPositionAndRotation(ownner.GetNode(), target.GetNode(), m1, m2);
+        if (bFirst)
+        {
+            Vector3 dir = myPos - target.GetNode().worldPosition;
+            float e_targetRotation = Atan2(dir.x, dir.z);
+            target.GetNode().worldRotation = Quaternion(0, e_targetRotation, 0);
+        }
+
+        Vector4 t = GetTargetTransform(ownner.GetNode(), target.GetNode(), m1, m2);
         targetRotation = t.w;
-        targetPosition = Vector3(t.x, t.y, t.z);
+        targetPosition = Vector3(t.x, myPos.y, t.z);
         ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
 
         if (bFirst)
         {
             state = 0;
             movePerSec = (targetPosition - myPos)/alignTime;
-            movePerSec.y = 0;
+            ownner.SetSceneTimeScale(0.0f);
         }
         else
         {
             state = 1;
             ownner.GetNode().worldPosition = targetPosition;
             target.GetNode().vars[ANIMATION_INDEX] = i;
-            target.ChangeState("BeatDownHitState");
             motions[i].Start(ownner);
             selectIndex = i;
+            target.ChangeState("BeatDownHitState");
         }
-
-        ownner.SetSceneTimeScale(0.0f);
     }
 
     void Enter(State@ lastState)
@@ -1459,7 +1451,6 @@ class Player : Character
         stateMachine.AddState(PlayerHitState(this));
         if (has_redirect)
             stateMachine.AddState(PlayerRedirectState(this));
-        stateMachine.AddState(AnimationTestState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(PlayerGetUpState(this));
         stateMachine.AddState(PlayerDeadState(this));
@@ -1468,6 +1459,7 @@ class Player : Character
         stateMachine.AddState(PlayerBeatDownHitState(this));
         stateMachine.AddState(PlayerBeatDownEndState(this));
         stateMachine.AddState(PlayerTransitionState(this));
+        stateMachine.AddState(AnimationTestState(this));
 
         ChangeState("StandState");
 

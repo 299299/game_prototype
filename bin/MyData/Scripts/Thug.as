@@ -62,7 +62,7 @@ class ThugStandState : CharacterState
 
     void Update(float dt)
     {
-        if (engine.headless)
+        if (freeze_ai)
            return;
 
         float diff = Abs(ownner.ComputeAngleDiff());
@@ -103,7 +103,7 @@ class ThugStandState : CharacterState
             // try to move to player
             rand_i = RandomInt(2);
             String nextState = "StepMoveState";
-            float run_dist = STEP_MAX_DIST + 0.5f;
+            float run_dist = STEP_MAX_DIST + 1.0f;
             if (dist >= run_dist || rand_i == 1)
             {
                 nextState = "RunState";
@@ -205,17 +205,14 @@ class ThugStepMoveState : MultiMotionState
         {
             index = ownner.RadialSelectAnimation(4);
             index = (index + 2) % 4;
+            Print("ThugStepMoveState->GetStepMoveIndex() Keep Dist Within Player =->" + index);
         }
         else
         {
-            bool step_long = false;
-            if (dist > motions[0].endDistance + 0.25f)
-                step_long = true;
-            if (step_long)
-                index += 3;
+            if (dist > motions[4].endDistance + 2.0f)
+                index += 4;
+            Print("ThugStepMoveState->GetStepMoveIndex()=->" + index + " dist=" + dist);
         }
-
-        Print("ThugStepMoveState->GetStepMoveIndex()=" + index);
         return index;
     }
 
@@ -850,6 +847,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugStunState(this));
         //stateMachine.AddState(ThugDistractState(this));
         stateMachine.AddState(ThugPushBackState(this));
+        stateMachine.AddState(AnimationTestState(this));
 
         ChangeState("StandState");
 

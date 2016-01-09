@@ -553,6 +553,16 @@ class CharacterCounterState : CharacterState
             tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC_03"));
         }
     }
+
+    void SetTargetTransform(const Vector3&in pos, float rot)
+    {
+        Vector3 pos1 = ownner.GetNode().worldPosition;
+        targetPosition = pos;
+        targetPosition.y = pos1.y;
+        targetRotation = rot;
+        movePerSec = (targetPosition - pos1) / alignTime;
+        yawPerSec = AngleDiff(rot - ownner.GetNode().worldRotation.eulerAngles.y) / alignTime;
+    }
 };
 
 class CharacterRagdollState : CharacterState

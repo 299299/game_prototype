@@ -113,7 +113,7 @@ void SendAnimationTriger(Node@ _node, const StringHash&in nameHash, int value = 
     _node.SendEvent("AnimationTrigger", data);
 }
 
-Vector4 GetTargetPositionAndRotation(Node@ alignNode, Node@ baseNode, Motion@ alignMotion, Motion@ baseMotion)
+Vector4 GetTargetTransform(Node@ alignNode, Node@ baseNode, Motion@ alignMotion, Motion@ baseMotion)
 {
     float r1 = alignMotion.GetStartRot();
     float r2 = baseMotion.GetStartRot();
@@ -123,7 +123,7 @@ Vector4 GetTargetPositionAndRotation(Node@ alignNode, Node@ baseNode, Motion@ al
     float baseYaw = baseNode.worldRotation.eulerAngles.y;
     float targetRotation = baseYaw + (r1 - r2);
     Vector3 diff_ws = Quaternion(0, r2, 0) * (s1 - s2);
-    Print("GetTargetPositionAndRotation 1=" + alignNode.name + " 2=" + baseNode.name + "1-start-pos=" + s1.ToString() + " 2-start-pos=" + s2.ToString() + " 1-start-rot=" + r1 + " 2-start-rot=" + r2);
+    Print("GetTargetTransform 1=" + alignNode.name + " 2=" + baseNode.name + "1-start-pos=" + s1.ToString() + " 2-start-pos=" + s2.ToString() + " 1-start-rot=" + r1 + " 2-start-rot=" + r2);
 
     Vector3 targetPosition = baseNode.worldPosition + baseNode.worldRotation * diff_ws;
     return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);
@@ -565,9 +565,9 @@ class MotionManager
 
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
-        int flags = kMotion_Ext_No_Auto_Flip;
-        int m_flags = kMotion_XZ;
-        int al_flags = kMotion_XZ;
+        int flags = kMotion_Ext_No_Auto_Flip | kMotion_Ext_Rotate_From_Start;
+        int m_flags = kMotion_XZR;
+        int al_flags = kMotion_XZR;
         CreateMotion(preFix + "Double_Counter_2ThugsA", m_flags, al_flags, -1, flags);
         CreateMotion(preFix + "Double_Counter_2ThugsB", m_flags, al_flags, -1, flags);
         CreateMotion(preFix + "Double_Counter_2ThugsD", m_flags, al_flags, -1, flags);
