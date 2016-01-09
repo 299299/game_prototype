@@ -859,29 +859,9 @@ class PlayerCounterState : CharacterCounterState
         {
             Node@ _node = ownner.GetNode();
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
-            Vector3 pos = _node.worldPosition;
-
             if (boneNode !is null)
-            {
                 ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
-                pos = boneNode.worldPosition;
-            }
-
             ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
-
-            Vector3 my_pos = _node.worldPosition;
-            if (counterEnemies.length > 1)
-            {
-                for (uint i=0; i<counterEnemies.length; ++i)
-                {
-                    Vector3 v = counterEnemies[i].GetNode().worldPosition - my_pos;
-                    v.y = 1.0f;
-                    v.Normalize();
-                    v *= GetRagdollForce();
-                    counterEnemies[i].MakeMeRagdoll(v, pos);
-                }
-            }
-
             ownner.OnCounterSuccess();
         }
     }

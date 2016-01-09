@@ -319,6 +319,20 @@ class AnimationTestState : CharacterState
     {
         return true;
     }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == IMPACT)
+        {
+            Node@ _node = ownner.GetNode();
+            Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
+            if (boneNode !is null)
+                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
+            ownner.PlayRandomSound(1);
+        }
+    }
 };
 
 enum CounterSubState
@@ -338,7 +352,7 @@ class CharacterCounterState : CharacterState
     Array<Motion@>      frontLegMotions;
     Array<Motion@>      backArmMotions;
     Array<Motion@>      backLegMotions;
-    
+
     Motion@             currentMotion;
     int                 state; // sub state
     int                 type;

@@ -37,13 +37,12 @@ uint playerId = M_MAX_UNSIGNED;
 int test_enemy_num_override = 3;
 bool lowend_platform = false;
 bool auto_target = false;
-int freeze_ai = 1;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
 
-int debugLevel = 0;
-
+int debugLevel = 1;
+int freeze_ai = 1;
 int test_beat_index = 1;
 bool base_on_player = false;
 int test_counter_index = 0;
@@ -762,7 +761,7 @@ void TestAnimation_Group_s(const String&in playerAnim, String thugAnim, bool bas
 
     e.TestAnimation(thugAnim);
     player.TestAnimation(playerAnim);
-    player.SetSceneTimeScale(0.0f);
+    // player.SetSceneTimeScale(0.0f);
 }
 
 void TestAnimations_Group_Beat()
