@@ -147,8 +147,9 @@ class Motion
 
     int                     endFrame;
     int                     motionFlag;
-    int                     originFlag;
     int                     allowMotion;
+
+    float                   rotateAngle = 361;
 
     bool                    processed = false;
 
@@ -167,7 +168,6 @@ class Motion
         endDistance = other.endDistance;
         endFrame = other.endFrame;
         motionFlag = other.motionFlag;
-        originFlag = other.originFlag;
         allowMotion = other.allowMotion;
     }
 
@@ -194,10 +194,9 @@ class Motion
 
         gMotionMgr.memoryUse += this.animation.memoryUse;
         bool dump = false;
-        int flag = originFlag;
-        if (dump)
-            flag |= kMotion_Ext_Debug_Dump;
-        ProcessAnimation(animationName, motionFlag, flag, allowMotion, motionKeys, startFromOrigin);
+        if (rotateAngle < 360)
+            RotateAnimation(animationName, rotateAngle);
+        ProcessAnimation(animationName, motionFlag, allowMotion, motionKeys, startFromOrigin);
         SetEndFrame(endFrame);
         Vector4 v = motionKeys[0];
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
@@ -437,10 +436,10 @@ class MotionManager
         // PLAYER MOTIONS
         //========================================================================
         // Locomotions
-        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, kMotion_R, 16, 0, false);
-        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, kMotion_R, 28, 0, false);
-        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, kMotion_R, 22, 0, false);
-        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, 0, true);
+        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, kMotion_R, 16);
+        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, kMotion_R, 28);
+        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, kMotion_R, 22);
+        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
 
         //CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, kMotion_R, 16, 0, false);
         //CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, kMotion_R, 25, 0, false);
@@ -566,19 +565,18 @@ class MotionManager
 
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
-        int flags = kMotion_Ext_No_Auto_Flip | kMotion_Ext_Rotate_From_Start;
         int m_flags = kMotion_XZR;
         int al_flags = kMotion_XZR;
-        CreateMotion(preFix + "Double_Counter_2ThugsA", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsB", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsD", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsE", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsF", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsG", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsH", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsA", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsB", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsC", m_flags, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsA", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsB", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsD", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsE", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsF", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsG", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsH", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsA", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsB", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsC", m_flags, al_flags);
 
         preFix = "BM_Death_Primers/";
         CreateMotion(preFix + "Death_Front");
@@ -626,8 +624,8 @@ class MotionManager
         CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
         CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
 
-        CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_XZR, -1, 0, true);
-        CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_XZR, -1, 0, true);
+        CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_XZR, -1, true);
+        CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_XZR, -1, true);
 
         if (has_redirect)
         {
@@ -659,29 +657,29 @@ class MotionManager
 
         preFix = "TG_BM_Counter/";
         AddCounterMotions(preFix);
-        CreateMotion(preFix + "Double_Counter_2ThugsA_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsA_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsB_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsB_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsD_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsD_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsE_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsE_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsF_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsF_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsG_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsG_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsH_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_2ThugsH_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsA_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsA_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsA_03", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsB_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsB_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsB_03", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsC_01", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsC_02", m_flags, al_flags, -1, flags);
-        CreateMotion(preFix + "Double_Counter_3ThugsC_03", m_flags, al_flags, -1, flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsA_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsA_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsB_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsB_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsD_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsD_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsE_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsE_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsF_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsF_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsG_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsG_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsH_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_2ThugsH_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsA_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsA_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsA_03", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsB_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsB_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsB_03", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsC_01", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsC_02", m_flags, al_flags);
+        CreateMotion(preFix + "Double_Counter_3ThugsC_03", m_flags, al_flags);
 
         preFix = "TG_BM_Beatdown/";
         // CreateMotion(preFix + "Beatdown_Start_01", kMotion_XZR, 0);
@@ -703,15 +701,15 @@ class MotionManager
         motions.Clear();
     }
 
-    Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, int originFlag = 0, bool loop = false)
+    Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, bool loop = false, float rotateAngle = 361)
     {
         Motion@ motion = Motion();
         motion.SetName(name);
         motion.motionFlag = motionFlag;
-        motion.originFlag = originFlag;
         motion.allowMotion = allowMotion;
         motion.looped = loop;
         motion.endFrame = endFrame;
+        motion.rotateAngle = rotateAngle;
         motions.Push(motion);
         return motion;
     }

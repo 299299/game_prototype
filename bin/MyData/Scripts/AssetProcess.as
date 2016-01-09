@@ -12,10 +12,8 @@ enum RootMotionFlag
     kMotion_Z   = (1 << 2),
     kMotion_R   = (1 << 3),
 
-    kMotion_Ext_Ignore_First_Frame = (1 << 4),
-    kMotion_Ext_No_Auto_Flip = (1 << 5),
-    kMotion_Ext_Rotate_From_Start = (1 << 6),
-    kMotion_Ext_Debug_Dump = (1 << 7),
+    kMotion_Ext_Rotate_From_Start = (1 << 4),
+    kMotion_Ext_Debug_Dump = (1 << 5),
 
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_XZ  = kMotion_X | kMotion_Z,
@@ -136,7 +134,68 @@ void AssetPreProcess()
     pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int originFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
+void RotateAnimation(const String&in animationFile, float rotateAngle)
+{
+    Print("Rotating animation " + animationFile);
+
+    Animation@ anim = cache.GetResource("Animation", animationFile);
+    if (anim is null) {
+        ErrorDialog(TITLE, animationFile + " not found!");
+        engine.Exit();
+        return;
+    }
+
+    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
+    Quaternion q(0, rotateAngle, 0);
+
+    if (rotateTrack !is null)
+    {
+        for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf(rotateTrack.keyFrames[i]);
+            rotateNode.rotation = kf.rotation;
+            Quaternion wq = rotateNode.worldRotation;
+            wq = q * wq;
+            rotateNode.worldRotation = wq;
+            kf.rotation = rotateNode.rotation;
+            rotateTrack.keyFrames[i] = kf;
+        }
+    }
+    if (translateTrack !is null)
+    {
+        for (uint i=0; i<translateTrack.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf(translateTrack.keyFrames[i]);
+            kf.position = q * kf.position;
+            translateTrack.keyFrames[i] = kf;
+        }
+    }
+}
+
+void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
+{
+    Print("Translating animation " + animationFile);
+
+    Animation@ anim = cache.GetResource("Animation", animationFile);
+    if (anim is null) {
+        ErrorDialog(TITLE, animationFile + " not found!");
+        engine.Exit();
+        return;
+    }
+
+    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    if (translateTrack !is null)
+    {
+        for (uint i=0; i<translateTrack.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf(translateTrack.keyFrames[i]);
+            kf.position += diff;
+        }
+    }
+}
+
+void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
     if (d_log)
         Print("Processing animation " + animationFile);
@@ -148,58 +207,43 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         return;
     }
 
-    /*
-    if (anim.tracks["Bip01_$AssimpFbx$_PreRotation"] !is null)
-        Print("Bip01_$AssimpFbx$_PreRotation has track");
-    if (anim.tracks["Bip01_$AssimpFbx$_Scaling"] !is null)
-        Print("Bip01_$AssimpFbx$_Scaling");
-    */
-
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
 
-    //AnimationTrack@ track = anim.tracks["Bip01_L_Hand"];
-    //if (track.channelMask & CHANNEL_SCALE != 0)
-    //    Print("CHANNEL_SCALE");
-
-    bool fixOriginFlag = originFlag & kMotion_XZR == 0;
-    bool noAutoFlip = originFlag & kMotion_Ext_No_Auto_Flip != 0;
-    bool ignoreFirstFrame = originFlag & kMotion_Ext_Ignore_First_Frame != 0;
-    bool cutRotation = originFlag & kMotion_Ext_Rotate_From_Start != 0;
-    bool dump = originFlag & kMotion_Ext_Debug_Dump != 0;
-
-    if (d_log)
-        Print(animationFile + " noAutoFlip=" + noAutoFlip + " ignoreFirstFrame=" + ignoreFirstFrame + " cutRotation=" + cutRotation);
+    bool cutRotation = motionFlag & kMotion_Ext_Rotate_From_Start != 0;
+    bool dump = motionFlag & kMotion_Ext_Debug_Dump != 0;
+    float firstRotateFromRoot = 0;
+    bool flip = false;
+    int translateFlag = 0;
 
     // ==============================================================
     // pre process key frames
-
-    if (rotateTrack !is null && fixOriginFlag && !noAutoFlip)
+    if (rotateTrack !is null)
     {
-        float rotation = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
-        if (Abs(rotation) > 75)
+        firstRotateFromRoot = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
+        if (Abs(firstRotateFromRoot) > 75)
         {
-            Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + rotation);
-            originFlag |= kMotion_R;
+            Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
+            flip = true;
         }
     }
 
-    if (translateTrack !is null && fixOriginFlag)
+    if (translateTrack !is null)
     {
         Vector3 position = translateTrack.keyFrames[0].position - pelvisOrign;
         const float minDist = 0.5f;
         if (Abs(position.x) > minDist) {
             Print(animationFile + " Need reset x position");
-            originFlag |= kMotion_X;
+            translateFlag |= kMotion_X;
         }
         if (Abs(position.y) > 2.0f) {
             // Print("Need reset y position");
-            // riginFlag |= kMotion_Y;
+            // translateFlag |= kMotion_Y;
         }
         if (Abs(position.z) > minDist) {
             Print(animationFile + " Need reset z position");
-            originFlag |= kMotion_Z;
+            translateFlag |= kMotion_Z;
         }
         if (d_log)
             Print("t-diff-position=" + position.ToString());
@@ -217,7 +261,29 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         startFromOrigin.z = diff.z;
     }
 
-    float firstRotateFromRoot = 0;
+    if (flip)
+        RotateAnimation(animationFile, 180);
+
+    if (translateFlag != 0 && translateTrack !is null)
+    {
+        Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
+        translateNode.position = firstKeyPos;
+        Vector3 currentWS = translateNode.worldPosition;
+        Vector3 oldWS = currentWS;
+
+        if (translateFlag & kMotion_X != 0)
+            currentWS.x = pelvisOrign.x;
+        if (translateFlag & kMotion_Y != 0)
+            currentWS.y = pelvisOrign.y;
+        if (translateFlag & kMotion_Z != 0)
+            currentWS.z = pelvisOrign.z;
+
+        translateNode.worldPosition = currentWS;
+        Vector3 currentLS = translateNode.position;
+        Vector3 originDiffLS = currentLS - firstKeyPos;
+        TranslateAnimation(animationFile, originDiffLS);
+    }
+
     if (rotateTrack !is null)
     {
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
@@ -232,32 +298,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             {
                 firstRotateFromRoot = q.eulerAngles.y;
                 startFromOrigin.w = firstRotateFromRoot;
-            }
-        }
-    }
-
-    if (originFlag & kMotion_R != 0)
-    {
-        if (rotateTrack !is null)
-        {
-            for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
-            {
-                AnimationKeyFrame kf(rotateTrack.keyFrames[i]);
-                rotateNode.rotation = kf.rotation;
-                Quaternion wq = rotateNode.worldRotation;
-                wq = flipZ_Rot * wq;
-                rotateNode.worldRotation = wq;
-                kf.rotation = rotateNode.rotation;
-                rotateTrack.keyFrames[i] = kf;
-            }
-        }
-        if (translateTrack !is null)
-        {
-            for (uint i=0; i<translateTrack.numKeyFrames; ++i)
-            {
-                AnimationKeyFrame kf(translateTrack.keyFrames[i]);
-                kf.position = flipZ_Rot * kf.position;
-                translateTrack.keyFrames[i] = kf;
             }
         }
     }
@@ -288,34 +328,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             kf.rotation = rotateNode.rotation;
 
             rotateTrack.keyFrames[i] = kf;
-        }
-    }
-
-    originFlag &= (~kMotion_R);
-    if (originFlag != 0 && translateTrack !is null)
-    {
-        Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
-        translateNode.position = firstKeyPos;
-        Vector3 currentWS = translateNode.worldPosition;
-        Vector3 oldWS = currentWS;
-
-        if (originFlag & kMotion_X != 0)
-            currentWS.x = pelvisOrign.x;
-        if (originFlag & kMotion_Y != 0)
-            currentWS.y = pelvisOrign.y;
-        if (originFlag & kMotion_Z != 0)
-            currentWS.z = pelvisOrign.z;
-
-        translateNode.worldPosition = currentWS;
-        Vector3 currentLS = translateNode.position;
-        Vector3 originDiffLS = currentLS - firstKeyPos;
-
-        for (uint i=0; i<translateTrack.numKeyFrames; ++i)
-        {
-            AnimationKeyFrame kf(translateTrack.keyFrames[i]);
-            Vector3 old = kf.position;
-            kf.position += originDiffLS;
-            translateTrack.keyFrames[i] = kf;
         }
     }
 
@@ -372,15 +384,6 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             outKeys[i].z = 0;
         if (allowMotion & kMotion_R == 0)
             outKeys[i].w = 0;
-    }
-
-    if (ignoreFirstFrame)
-    {
-        float w = outKeys[0].w;
-        for (int i=0; i<outKeys.length; ++i)
-        {
-            outKeys[i].w -= w;
-        }
     }
 
     if (dump)
