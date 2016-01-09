@@ -727,9 +727,7 @@ class PlayerCounterState : CharacterCounterState
 
         Node@ myNode = ownner.GetNode();
         Vector3 myPos = myNode.worldPosition;
-        float myRotation = myNode.worldRotation.eulerAngles.y;
-        float rotationDiff = 0;
-        Vector3 positionDiff(0, 0, 0);
+        Quaternion myRot = myNode.worldRotation;
 
         Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
         type = counterEnemies.length;
@@ -739,20 +737,35 @@ class PlayerCounterState : CharacterCounterState
         {
             Vector3 vPos(0, 0, 0);
             int animIndex = 0;
+            Array<Motion@>@ tmp_motions = null;
+
             if (type == 2)
-                animIndex = RandomInt(doubleCounterMotions.length);
+                @tmp_motions = doubleCounterMotions;
             else if (type == 3)
-                animIndex = RandomInt(tripleCounterMotions.length);
+                @tmp_motions = tripleCounterMotions;
+
+            animIndex = RandomInt(tmp_motions.length);
+            @currentMotion = tmp_motions[animIndex];
 
             for (uint i=0; i<counterEnemies.length; ++i)
             {
                 Enemy@ e = counterEnemies[i];
                 e.ChangeState("CounterState");
                 CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-                s.ChangeSubState(COUNTER_WAITING);
                 s.index = int(i);
+                if (type == 2)
+                    @s.currentMotion = s.doubleCounterMotions[animIndex * type + s.index];
+                else if (type == 3)
+                    @s.currentMotion = s.tripleCounterMotions[animIndex * type + s.index];
+
+
+                Vector4 t = GetTargetPositionAndRotation(myNode, e.GetNode(), currentMotion, s.currentMotion);
+                s.targetPosition = Vector3(t.x, t.y, t.z);
+                s.movePerSec = (s.targetPosition - e.GetNode().worldPosition) / s.alignTime;
+                s.targetRotation = t.w;
+                s.ChangeSubState(COUNTER_ALIGNING);
             }
-            @currentMotion = doubleCounterMotions[RandomInt(doubleCounterMotions.length)];
+            ChangeSubState(COUNTER_WAITING);
         }
         else if (counterEnemies.length == 1)
         {
@@ -762,7 +775,6 @@ class PlayerCounterState : CharacterCounterState
             bool isBack = false;
             if (Abs(dAngle) > 90)
                 isBack = true;
-            Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack);
 
             e.ChangeState("CounterState");
 
@@ -784,30 +796,24 @@ class PlayerCounterState : CharacterCounterState
 
             @currentMotion = counterMotions[idx];
             @s.currentMotion = eCounterMotions[idx];
+            Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName);
 
-            rotationDiff = isBack ? 0 : 180;
-            float enemyYaw = eNode.worldRotation.eulerAngles.y;
-            targetRotation = enemyYaw + rotationDiff;
-
-            Vector3 s1 = currentMotion.GetStartPos();
-            Vector3 s2 = s.currentMotion.GetStartPos();
-            Vector3 originDiff = s1 - s2;
-            originDiff.x = Abs(originDiff.x);
-            originDiff.z = Abs(originDiff.z);
-            // Print("SingleCounter s1=" + s1.ToString() + " s2=" + s2.ToString() + " originDiff=" + originDiff.ToString());
-
-            targetPosition = eNode.worldPosition + eNode.worldRotation * originDiff;
-            targetPosition.y = myPos.y;
             s.ChangeSubState(COUNTER_WAITING);
             ChangeSubState(COUNTER_ALIGNING);
 
-            positionDiff = targetPosition - myPos;
-            rotationDiff = AngleDiff(targetRotation - myRotation);
+            Vector4 targetTransform = GetTargetPositionAndRotation(myNode, eNode, currentMotion, s.currentMotion);
+            targetPosition = Vector3(targetTransform.x, myPos.y, targetTransform.z);
+            targetRotation = targetTransform.w;
+
+            Vector3 positionDiff = targetPosition - myPos;
+            float rotationDiff = AngleDiff(targetRotation - myRot.eulerAngles.y);
 
             yawPerSec = rotationDiff / alignTime;
             movePerSec = positionDiff / alignTime;
             movePerSec.y = 0;
             Print("Player Single Counter-> targetPosition=" + targetPosition.ToString() + " positionDiff=" + positionDiff.ToString() + " rotationDiff=" + rotationDiff);
+
+            // ownner.SetSceneTimeScale(0.0f);
         }
 
         bCheckInput = false;
@@ -822,23 +828,6 @@ class PlayerCounterState : CharacterCounterState
             counterEnemies.Clear();
     }
 
-    void OnAlignTimeOut()
-    {
-        Print("Player::OnAlignTimeOut");
-        ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
-        StartCounterMotion();
-        for (uint i=0; i<counterEnemies.length; ++i)
-        {
-            CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
-            s.StartCounterMotion();
-        }
-
-        if (counterEnemies.length > 1)
-        {
-            // ownner.SetSceneTimeScale(0.1f);
-        }
-    }
-
     String GetDebugText()
     {
         return "current motion=" + currentMotion.animationName + " isInAir=" + isInAir + " bCheckInput=" + bCheckInput + "\n";
@@ -847,7 +836,29 @@ class PlayerCounterState : CharacterCounterState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 1.0f, RED, false);
-        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, RED);
+        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW);
+    }
+
+    void StartAnimating()
+    {
+        StartCounterMotion();
+        for (uint i=0; i<counterEnemies.length; ++i)
+        {
+            CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
+            s.StartCounterMotion();
+        }
+    }
+
+    void OnAlignTimeOut()
+    {
+        CharacterCounterState::OnAlignTimeOut();
+        StartAnimating();
+    }
+
+    void OnWaitingTimeOut()
+    {
+        CharacterCounterState::OnWaitingTimeOut();
+        StartAnimating();
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1132,16 +1143,8 @@ class PlayerBeatDownEndState : MultiMotionState
             Motion@ m1 = motions[selectIndex];
             ThugBeatDownEndState@ state = cast<ThugBeatDownEndState>(target.FindState("BeatDownEndState"));
             Motion@ m2 = state.motions[selectIndex];
-            Vector3 s1 = m1.GetStartPos();
-            Vector3 s2 = m2.GetStartPos();
-            Vector3 originDiff = s1 - s2;
-            originDiff.x = Abs(originDiff.x);
-            originDiff.z = Abs(originDiff.z);
-
-            Vector3 predictPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
-            predictPosition.y = ownner.GetNode().worldPosition.y;
-            ownner.MoveTo(predictPosition, 1.0f/60.0f);
-
+            Vector4 t = GetTargetPositionAndRotation(ownner.GetNode(), target.GetNode(), m1, m2);
+            ownner.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
             target.GetNode().vars[ANIMATION_INDEX] = selectIndex;
             target.ChangeState("BeatDownEndState");
         }
@@ -1213,6 +1216,7 @@ class PlayerBeatDownHitState : MultiMotionState
     float alignTime = 0.1f;
     Vector3 movePerSec;
     Vector3 targetPosition;
+    float targetRotation;
 
     int state = 0;
     bool distToFar = false;
@@ -1305,20 +1309,26 @@ class PlayerBeatDownHitState : MultiMotionState
         if (target is null)
             return;
 
-        Vector3 originDiff = GetStartOriginDiff(i);
-        Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 tPos = target.GetNode().worldPosition;
-        Vector3 dir = tPos - myPos;
-        float targetRotation = Atan2(dir.x, dir.z);
-        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
         float curDist = ownner.GetTargetDistance();
         Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
 
         if (curDist >= 12.5f)
             distToFar = true;
 
-        target.GetNode().worldRotation = Quaternion(0, targetRotation + 180, 0);
-        targetPosition = target.GetNode().worldPosition + target.GetNode().worldRotation * originDiff;
+        MultiMotionState@ s = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
+        Motion@ m1 = motions[i];
+        Motion@ m2 = s.motions[i];
+
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 tPos = target.GetNode().worldPosition;
+        Vector3 dir = myPos - tPos;
+        float e_targetRotation = Atan2(dir.x, dir.z);
+        target.GetNode().worldRotation = Quaternion(0, e_targetRotation, 0);
+        Vector4 t = GetTargetPositionAndRotation(ownner.GetNode(), target.GetNode(), m1, m2);
+        targetRotation = t.w;
+        targetPosition = Vector3(t.x, t.y, t.z);
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+
         if (bFirst)
         {
             state = 0;
@@ -1334,6 +1344,8 @@ class PlayerBeatDownHitState : MultiMotionState
             motions[i].Start(ownner);
             selectIndex = i;
         }
+
+        ownner.SetSceneTimeScale(0.0f);
     }
 
     void Enter(State@ lastState)
@@ -1351,20 +1363,6 @@ class PlayerBeatDownHitState : MultiMotionState
         CharacterState::Enter(lastState);
         // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
         Print("========================= BeatDownHitState Enter end ===========================");
-    }
-
-    Vector3 GetStartOriginDiff(int i)
-    {
-        MultiMotionState@ state = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
-        Motion@ m1 = motions[i];
-        Motion@ m2 = state.motions[i];
-        Vector3 originDiff = m1.GetStartPos() - m2.GetStartPos();
-        originDiff.x = Abs(originDiff.x);
-        originDiff.z = Abs(originDiff.z);
-        originDiff.x = 0;
-        originDiff.y = 0;
-        // Print("GetStartOriginDiff("+i+")=" + originDiff.ToString());
-        return originDiff;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1392,6 +1390,7 @@ class PlayerBeatDownHitState : MultiMotionState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 1.0f, RED, false);
+        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW);
     }
 
     String GetDebugText()

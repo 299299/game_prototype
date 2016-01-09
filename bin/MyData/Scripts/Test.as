@@ -34,7 +34,7 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 2;
+int test_enemy_num_override = 1;
 bool lowend_platform = false;
 bool auto_target = false;
 
@@ -533,7 +533,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "BM_TG_Beatdown/Beatdown_Strike_End_01";
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
-            String testName = "BM_TG_Counter/Double_Counter_2ThugsB";
+            String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
             //String testName = "TG_BM_Beatdown/Beatdown_HitReaction_01";
             Player@ player = GetPlayer();
             if (player !is null)

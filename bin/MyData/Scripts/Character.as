@@ -473,12 +473,25 @@ class CharacterCounterState : CharacterState
                 return;
              }
         }
+        else if (state == COUNTER_WAITING)
+        {
+            if (timeInState >= alignTime)
+                OnWaitingTimeOut();
+        }
         CharacterState::Update(dt);
     }
 
     void OnAlignTimeOut()
     {
+        Print(ownner.GetName() + " OnAlignTimeOut-- at: " + time.systemTime);
+        ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
+        //StartCounterMotion();
+    }
 
+    void OnWaitingTimeOut()
+    {
+        Print(ownner.GetName() + " OnWaitingTimeOut-- at: " + time.systemTime);
+        // StartCounterMotion();
     }
 
     void ChangeSubState(int newState)
@@ -785,13 +798,7 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        Vector3 old_pos = sceneNode.worldPosition;
-        float x = position.x;
-        float z = position.z;
-        float radius = COLLISION_RADIUS + 1.0f;
-        x = Clamp(x, radius - WORLD_HALF_SIZE.x, WORLD_HALF_SIZE.x - radius);
-        z = Clamp(z, radius - WORLD_HALF_SIZE.z, WORLD_HALF_SIZE.z - radius);
-        sceneNode.worldPosition = Vector3(x, 0, z);
+        sceneNode.worldPosition = FilterPosition(position);
     }
 
     bool Attack()

@@ -205,6 +205,37 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
             Print("t-diff-position=" + position.ToString());
     }
 
+    if (translateTrack !is null)
+    {
+        translateNode.position = translateTrack.keyFrames[0].position;
+        Vector3 t_ws1 = translateNode.worldPosition;
+        translateNode.position = pelvisOrign;
+        Vector3 t_ws2 = translateNode.worldPosition;
+        Vector3 diff = t_ws1 - t_ws2;
+        startFromOrigin.x = diff.x;
+        startFromOrigin.y = diff.y;
+        startFromOrigin.z = diff.z;
+    }
+
+    float firstRotateFromRoot = 0;
+    if (rotateTrack !is null)
+    {
+        for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
+        {
+            Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[i].rotation);
+            if (d_log)
+            {
+                if (i == 0 || i == rotateTrack.numKeyFrames - 1)
+                    Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
+            }
+            if (i == 0)
+            {
+                firstRotateFromRoot = q.eulerAngles.y;
+                startFromOrigin.w = firstRotateFromRoot;
+            }
+        }
+    }
+
     if (originFlag & kMotion_R != 0)
     {
         if (rotateTrack !is null)
@@ -231,37 +262,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int originF
         }
     }
 
-    if (translateTrack !is null)
-    {
-        translateNode.position = translateTrack.keyFrames[0].position;
-        Vector3 t_ws1 = translateNode.worldPosition;
-        translateNode.position = pelvisOrign;
-        Vector3 t_ws2 = translateNode.worldPosition;
-        Vector3 diff = t_ws1 - t_ws2;
-        startFromOrigin.x = diff.x;
-        startFromOrigin.y = diff.y;
-        startFromOrigin.z = diff.z;
-    }
-
     outKeys.Resize(translateTrack.numKeyFrames);
-
-    float firstRotateFromRoot = 0;
-    if (rotateTrack !is null)
-    {
-        for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
-        {
-            Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[i].rotation);
-            if (d_log)
-            {
-                if (i == 0 || i == rotateTrack.numKeyFrames - 1)
-                    Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
-            }
-            if (i == 0)
-                firstRotateFromRoot = q.eulerAngles.y;
-        }
-    }
-
-    startFromOrigin.w = firstRotateFromRoot;
 
     // process rotate key frames first
     if ((motionFlag & kMotion_R != 0) && rotateTrack !is null)
