@@ -501,6 +501,9 @@ class Ragdoll : ScriptObject
 
     void OnAnimationTrigger(VariantMap& data)
     {
+        if (rootNode.vars[STATE].GetStringHash() == ANIMTEST_STATE)
+            return;
+
         StringHash name = data[NAME].GetStringHash();
         int value = data[VALUE].GetInt();
 

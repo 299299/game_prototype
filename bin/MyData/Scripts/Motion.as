@@ -125,11 +125,15 @@ Vector4 GetTargetTransform(Node@ baseNode, Motion@ alignMotion, Motion@ baseMoti
     Vector3 diff_ws = Quaternion(0, baseYaw - r2, 0) * (s1 - s2);
     Vector3 targetPosition = baseNode.worldPosition + diff_ws;
 
-    Print("---------------------------- GetTargetTransform align-motion=" + alignMotion.name + " base-motion=" + baseMotion.name + " ---------------------------");
-    Print("GetTargetTransform base=" + baseNode.name + " 1-start-pos=" + s1.ToString() + " 2-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
-    Print("baseYaw=" + baseYaw + " targetRotation=" + targetRotation + " 1-start-rot=" + r1 + " 2-start-rot=" + r2 + " r-diff=" + (r1 - r2));
-    Print("basePosition=" + baseNode.worldPosition.ToString() + " diff_ws=" + diff_ws.ToString() + " targetPosition=" + targetPosition.ToString());
-    Print("--------------------------------------------------------------------------------------------------------------");
+    if (d_log)
+    {
+        Print("------------------------------------------------------------------------------------------------------------------------------------------------");
+        Print("GetTargetTransform align-motion=" + alignMotion.name + " base-motion=" + baseMotion.name);
+        Print("GetTargetTransform base=" + baseNode.name + " align-start-pos=" + s1.ToString() + " base-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
+        Print("baseYaw=" + baseYaw + " targetRotation=" + targetRotation + " align-start-rot=" + r1 + " base-start-rot=" + r2 + " r-diff=" + (r1 - r2));
+        Print("basePosition=" + baseNode.worldPosition.ToString() + " diff_ws=" + diff_ws.ToString() + " targetPosition=" + targetPosition.ToString());
+        Print("------------------------------------------------------------------------------------------------------------------------------------------------");
+    }
 
     return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);
 }
@@ -183,7 +187,8 @@ class Motion
 
     ~Motion()
     {
-        @animation = null;
+        animation = null;
+        cache.ReleaseResource("Animation", animationName);
     }
 
     void Process()
@@ -354,7 +359,7 @@ class Motion
 
     float GetStartRot()
     {
-        return rotateAngle;
+        return -rotateAngle;
     }
 };
 
@@ -568,15 +573,15 @@ class MotionManager
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
         CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_2ThugsB");
-        CreateMotion(preFix + "Double_Counter_2ThugsD");
+        CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);
         CreateMotion(preFix + "Double_Counter_2ThugsE");
         CreateMotion(preFix + "Double_Counter_2ThugsF");
         CreateMotion(preFix + "Double_Counter_2ThugsG");
         CreateMotion(preFix + "Double_Counter_2ThugsH");
-        CreateMotion(preFix + "Double_Counter_3ThugsA");
-        CreateMotion(preFix + "Double_Counter_3ThugsB");
-        CreateMotion(preFix + "Double_Counter_3ThugsC");
+        CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
+        CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
 
         preFix = "BM_Death_Primers/";
         CreateMotion(preFix + "Death_Front");
@@ -659,8 +664,8 @@ class MotionManager
         AddCounterMotions(preFix);
         CreateMotion(preFix + "Double_Counter_2ThugsA_01");
         CreateMotion(preFix + "Double_Counter_2ThugsA_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsB_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsB_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
+        CreateMotion(preFix + "Double_Counter_2ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
         CreateMotion(preFix + "Double_Counter_2ThugsD_01");
         CreateMotion(preFix + "Double_Counter_2ThugsD_02");
         CreateMotion(preFix + "Double_Counter_2ThugsE_01");
@@ -668,17 +673,17 @@ class MotionManager
         CreateMotion(preFix + "Double_Counter_2ThugsF_01");
         CreateMotion(preFix + "Double_Counter_2ThugsF_02");
         CreateMotion(preFix + "Double_Counter_2ThugsG_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsG_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
         CreateMotion(preFix + "Double_Counter_2ThugsH_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsH_02");
-        CreateMotion(preFix + "Double_Counter_3ThugsA_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsH_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_3ThugsA_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
         CreateMotion(preFix + "Double_Counter_3ThugsA_02");
-        CreateMotion(preFix + "Double_Counter_3ThugsA_03");
+        CreateMotion(preFix + "Double_Counter_3ThugsA_03", kMotion_XZR, kMotion_XZR, -1, false, 90);
         CreateMotion(preFix + "Double_Counter_3ThugsB_01");
-        CreateMotion(preFix + "Double_Counter_3ThugsB_02");
+        CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
         CreateMotion(preFix + "Double_Counter_3ThugsB_03");
         CreateMotion(preFix + "Double_Counter_3ThugsC_01");
-        CreateMotion(preFix + "Double_Counter_3ThugsC_02");
+        CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
         CreateMotion(preFix + "Double_Counter_3ThugsC_03");
 
         preFix = "TG_BM_Beatdown/";

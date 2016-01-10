@@ -220,7 +220,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 
     // ==============================================================
     // pre process key frames
-    if (rotateTrack !is null)
+    if (rotateTrack !is null && rotateAngle > 360)
     {
         firstRotateFromRoot = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(firstRotateFromRoot) > 75)

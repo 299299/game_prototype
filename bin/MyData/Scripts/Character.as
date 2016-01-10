@@ -26,6 +26,7 @@ const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
 const StringHash BEATHIT_STATE("BeatDownHitState");
 const StringHash DEAD_STATE("DeadState");
+const StringHash ANIMTEST_STATE("AnimationTestState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
@@ -74,7 +75,6 @@ class CharacterState : State
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        //Print("ownner.name= " + ownner.GetName() + "name=" + eventData[NAME].GetStringHash().ToString() + " name1=" + RAGDOLL_START.ToString());
         StringHash name = eventData[NAME].GetStringHash();
         if (name == RAGDOLL_START)
             ownner.ChangeState("RagdollState");
@@ -267,7 +267,6 @@ class AnimationTestState : CharacterState
 
     void Enter(State@ lastState)
     {
-        Print("AnimationTestState::Enter");
         @testMotion = gMotionMgr.FindMotion(animationName);
         if (testMotion !is null)
             testMotion.Start(ownner, 0.0f, 0.0f);
@@ -278,7 +277,6 @@ class AnimationTestState : CharacterState
 
     void Exit(State@ nextState)
     {
-        Print("AnimationTestState::Exit");
         @testMotion = null;
         CharacterState::Exit(nextState);
     }
@@ -297,6 +295,7 @@ class AnimationTestState : CharacterState
             finished = ownner.animCtrl.IsAtEnd(animationName);
 
         if (finished) {
+            Print("AnimationTestState finished!");
             ownner.CommonStateFinishedOnGroud();
             return;
         }
@@ -1155,6 +1154,7 @@ class Character : GameObject
         String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
         Print(GetName() + " ChangeState from " + oldStateName + " to " + name);
         stateMachine.ChangeState(name);
+        sceneNode.vars[STATE] = GetState().nameHash;
     }
 
     void ChangeState(const StringHash&in nameHash)
@@ -1163,6 +1163,7 @@ class Character : GameObject
         stateMachine.ChangeState(nameHash);
         String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
         Print(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
+        sceneNode.vars[STATE] = GetState().nameHash;
     }
 
     State@ FindState(const String&in name)

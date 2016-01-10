@@ -17,7 +17,7 @@ const float MAX_DISTRACT_DIST = 4.0f;
 const float MAX_DISTRACT_DIR = 90.0f;
 const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
-const float COUNTER_ALIGN_MAX_DIST = 2.0f;
+const float COUNTER_ALIGN_MAX_DIST = 1.5f;
 
 class PlayerStandState : CharacterState
 {
@@ -750,7 +750,7 @@ class PlayerCounterState : CharacterCounterState
 
         Enemy@ e = counterEnemies[possed];
         CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-        s.currentMotion = alignMotion;
+        @s.currentMotion = alignMotion;
         s.index = possed;
         s.SetTargetTransform(Vector3(v4.x, e.GetNode().worldPosition.y, v4.z), v4.w);
     }
@@ -787,7 +787,7 @@ class PlayerCounterState : CharacterCounterState
                 Motion@ m1 = s.doubleCounterMotions[i * 2 + 0];
                 ChooseBestIndices(m1, 0);
                 Motion@ m2 = s.doubleCounterMotions[i * 2 + 1];
-                ChooseBestIndices(m1, 1);
+                ChooseBestIndices(m2, 1);
             }
             else if (type == 3)
             {
@@ -802,6 +802,7 @@ class PlayerCounterState : CharacterCounterState
             }
 
             ChangeSubState(COUNTER_WAITING);
+            // ownner.SetSceneTimeScale(0.0f);
         }
         else if (counterEnemies.length == 1)
         {
@@ -824,6 +825,9 @@ class PlayerCounterState : CharacterCounterState
 
             intCache.Clear();
             float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
+            float bestDistSQR = 999999;
+            int bestIndex = -1;
+
             for (uint i=0; i<counterMotions.length; ++i)
             {
                 Motion@ alignMotion = counterMotions[i];
@@ -831,18 +835,22 @@ class PlayerCounterState : CharacterCounterState
                 Vector4 v4 = GetTargetTransform(eNode, alignMotion, baseMotion);
                 Vector3 v3 = Vector3(v4.x, myPos.y, v4.z);
                 float distSQR = (v3 - myPos).lengthSquared;
+                if (distSQR < bestDistSQR)
+                {
+                    bestDistSQR = distSQR;
+                    bestIndex = int(i);
+                }
                 if (distSQR > maxDistSQR)
                     continue;
                 intCache.Push(i);
             }
 
+            Print("CounterState - intCache.length=" + intCache.length);
             int cur_direction = GetCounterDirection(attackType, isBack);
             int idx;
             if (intCache.empty)
             {
-                idx = RandomInt(counterMotions.length);
-                if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
-                    idx = (idx + 1) % counterMotions.length;
+                idx = bestIndex;
             }
             else
             {
@@ -867,7 +875,6 @@ class PlayerCounterState : CharacterCounterState
 
             Vector4 vt = GetTargetTransform(eNode, currentMotion, s.currentMotion);
             SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
-            // ownner.SetSceneTimeScale(0.0f);
         }
 
         bCheckInput = false;
@@ -913,7 +920,6 @@ class PlayerCounterState : CharacterCounterState
     {
         CharacterCounterState::OnWaitingTimeOut();
         StartAnimating();
-        ownner.SetSceneTimeScale(0.0f);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1311,7 +1317,7 @@ class PlayerBeatDownHitState : MultiMotionState
             {
                 Print("PlayerBeatDownHitState::Update align time-out");
                 state = 1;
-                HitStart(false, beatIndex);
+                HitStart(false, beatIndex, false);
                 timeInState = 0.0f;
             }
         }
@@ -1345,19 +1351,22 @@ class PlayerBeatDownHitState : MultiMotionState
         CharacterState::Update(dt);
     }
 
-    void HitStart(bool bFirst, int i)
+    void HitStart(bool bFirst, int i, bool checkDist)
     {
         Character@ target = ownner.target;
         if (target is null)
             return;
 
-        float curDist = ownner.GetTargetDistance();
-        Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
-
-        if (curDist >= 12.5f)
+        if (checkDist)
         {
-            distTooFar = true;
-            return;
+            float curDist = ownner.GetTargetDistance();
+            Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
+
+            if (curDist >= 12.5f)
+            {
+                distTooFar = true;
+                return;
+            }
         }
 
         MultiMotionState@ s = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
@@ -1370,7 +1379,6 @@ class PlayerBeatDownHitState : MultiMotionState
             Vector3 dir = myPos - target.GetNode().worldPosition;
             float e_targetRotation = Atan2(dir.x, dir.z);
             target.GetNode().worldRotation = Quaternion(0, e_targetRotation, 0);
-            ownner.SetSceneTimeScale(0.0f);
         }
 
         Vector4 t = GetTargetTransform(target.GetNode(), m1, m2);
@@ -1405,7 +1413,7 @@ class PlayerBeatDownHitState : MultiMotionState
             beatNum = 0;
             beatTotal = RandomInt(minBeatNum, maxBeatNum);
         }
-        HitStart(lastState !is this, beatIndex);
+        HitStart(lastState !is this, beatIndex, lastState.name != "TransitionState");
         CharacterState::Enter(lastState);
         // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
         Print("========================= BeatDownHitState Enter end ===========================");

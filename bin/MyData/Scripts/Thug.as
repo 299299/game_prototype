@@ -12,7 +12,7 @@ const float MAX_THINK_TIME = 1.0f;
 const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 const float MAX_ATTACK_RANGE = 3.0f;
 const float KEEP_DIST = 1.5f;
-const Vector3 HIT_RAGDOLL_FORCE(30.0f, 15.0f, 0.0f);
+const Vector3 HIT_RAGDOLL_FORCE(25.0f, 10.0f, 0.0f);
 
 // -- NON CONST
 float PUNCH_DIST = 0.0f;

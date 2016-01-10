@@ -34,15 +34,15 @@ String PLAYER_NAME = "bruce"; //"bruce";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 3;
+int test_enemy_num_override = 99;
 bool lowend_platform = false;
 bool auto_target = false;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
 
-int debugLevel = 1;
-int freeze_ai = 1;
+int debugLevel = 0;
+int freeze_ai = 0;
 int test_beat_index = 1;
 bool base_on_player = false;
 int test_counter_index = 0;
@@ -547,7 +547,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
-            String testName = "TG_BM_Beatdown/Beatdown_HitReaction_01";
+            String testName = "TG_BM_Counter/Double_Counter_2ThugsB_02";
             Player@ player = GetPlayer();
             if (player !is null)
                 player.TestAnimation(testName);
@@ -733,7 +733,7 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
         e.TestAnimation(thugAnims[i]);
     }
     player.TestAnimation(playerAnim);
-    player.SetSceneTimeScale(0.0f);
+    // player.SetSceneTimeScale(0.0f);
 }
 
 void TestAnimation_Group_s(const String&in playerAnim, String thugAnim, bool baseOnPlayer = false)
@@ -851,7 +851,7 @@ void TestAnimations_Group_4()
     {
         "Double_Counter_3ThugsA",
         "Double_Counter_3ThugsB",
-        "Double_Counter_3ThugsC",
+        "Double_Counter_3ThugsC"
     };
     String test = tests[test_triple_counter_index];
     test_triple_counter_index ++;
