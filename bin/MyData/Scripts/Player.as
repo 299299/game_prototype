@@ -5,7 +5,7 @@
 // ==============================================
 
 const String MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
-const float MAX_COUNTER_DIST = 5.0f;
+const float MAX_COUNTER_DIST = 4.0f;
 const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 const float DIST_SCORE = 10.0f;
 const float ANGLE_SCORE = 30.0f;
@@ -18,6 +18,7 @@ const float MAX_DISTRACT_DIR = 90.0f;
 const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.5f;
+const float PLAYER_NEAR_DIST = 6.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -1940,7 +1941,7 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        //debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), KEEP_DIST_WITHIN_PLAYER + COLLISION_RADIUS, RED, 32, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), PLAYER_NEAR_DIST, YELLOW, 32, false);
     }
 
     void ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)

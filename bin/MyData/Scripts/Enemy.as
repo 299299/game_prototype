@@ -74,8 +74,6 @@ class EnemyManager : ScriptObject
     int                 thugId = 0;
     float               updateTimer = 0.0f;
     float               updateTime = 0.25f;
-    int                 maxNearEnemies = 4;
-    float               nearDist = 3.0f;
 
     float               attackValidDist = 6.0f;
 
@@ -166,6 +164,17 @@ class EnemyManager : ScriptObject
         return ret;
     }
 
+    int GetNumOfEnemyWithinDistance(float dist)
+    {
+        int ret = 0;
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            if (enemyList[i].GetTargetDistance() < dist)
+                ++ret;
+        }
+        return ret;
+    }
+
     void DebugDraw(DebugRenderer@ debug)
     {
         if (enemyList.empty)
@@ -228,10 +237,14 @@ class EnemyManager : ScriptObject
         {
             Enemy@ e = enemyList[i];
             float dis = e.GetTargetDistance();
-            if (dis <= nearDist)
+            if (dis <= PLAYER_NEAR_DIST)
                 num_of_near ++;
-            if (num_of_near > maxNearEnemies)
-                e.KeepDistanceWithPlayer(0);
+            if (num_of_near > MAX_NUM_OF_NEAR)
+            {
+                Print(e.GetName() + " too crowd with player !!!");
+                if (e.GetState().nameHash == STAND_STATE || e.GetState().nameHash == TURN_STATE)
+                    e.KeepDistanceWithPlayer(0);
+            }
         }
     }
 };

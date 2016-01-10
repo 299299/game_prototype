@@ -98,7 +98,8 @@ class ThugStandState : CharacterState
         int rand_i = 0;
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
         //bool can_i_see_player = !ownner.IsTargetSightBlocked();
-        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && !ownner.HasFlag(FLAGS_NO_MOVE))
+        int num_of_with_player = em.GetNumOfEnemyWithinDistance(PLAYER_NEAR_DIST);
+        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && num_of_with_player <  MAX_NUM_OF_NEAR && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             // try to move to player
             rand_i = RandomInt(2);
