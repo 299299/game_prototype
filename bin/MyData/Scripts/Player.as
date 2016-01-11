@@ -123,10 +123,10 @@ class PlayerMoveState : SingleMotionState
 
     void Enter(State@ lastState)
     {
+        CharacterState::Enter(lastState);
         ownner.SetTarget(null);
         motion.Start(ownner, 0.0f, 0.1f, 1.25f);
         combatReady = true;
-        CharacterState::Enter(lastState);
     }
 };
 
@@ -597,9 +597,9 @@ class PlayerCounterState : CharacterCounterState
 
     int TestTrippleCounterMotions(int i)
     {
-        for (int i=0; i<type; ++i)
+        for (int k=0; k<counterEnemies.length; ++k)
         {
-            cast<CharacterCounterState>(counterEnemies[i].GetState()).index = -1;
+            cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
         }
 
         CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
@@ -615,9 +615,9 @@ class PlayerCounterState : CharacterCounterState
 
     int TestDoubleCounterMotions(int i)
     {
-        for (int i=0; i<type; ++i)
+        for (int k=0; k<counterEnemies.length; ++k)
         {
-            cast<CharacterCounterState>(counterEnemies[i].GetState()).index = -1;
+            cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
         }
 
         CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
@@ -651,8 +651,6 @@ class PlayerCounterState : CharacterCounterState
             s.type = type;
             s.ChangeSubState(COUNTER_ALIGNING);
         }
-
-        CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
 
         if (counterEnemies.length == 3)
         {
@@ -1187,9 +1185,14 @@ class PlayerTransitionState : SingleMotionState
 
     void Enter(State@ lastState)
     {
+        Character@ target = ownner.target;
+        if (target !is null)
+        {
+            target.RequestDoNotMove();
+            Vector3 dir = target.GetNode().worldPosition - ownner.GetNode().worldPosition;
+            ownner.GetNode().worldRotation = Quaternion(0, Atan2(dir.x, dir.z), 0);
+        }
         SingleMotionState::Enter(lastState);
-        if (ownner.target !is null)
-            ownner.target.RequestDoNotMove();
     }
 
     void Exit(State@ nextState)
@@ -1672,7 +1675,7 @@ class Player : Character
     bool Distract()
     {
         Print("Do--Distract--->");
-        Enemy@ e = CommonPickEnemy(60, 25.0f, FLAGS_ATTACK | FLAGS_STUN, true, true);
+        Enemy@ e = CommonPickEnemy(45, 25.0f, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)
             return false;
         SetTarget(e);
