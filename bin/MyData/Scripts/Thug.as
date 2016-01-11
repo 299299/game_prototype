@@ -347,10 +347,15 @@ class ThugCounterState : CharacterCounterState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterCounterState::OnAnimationTrigger(animState, eventData);
+        StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
+        {
             ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            return;
+        }
+        CharacterCounterState::OnAnimationTrigger(animState, eventData);
     }
+
     void Exit(State@ nextState)
     {
         ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
@@ -638,10 +643,13 @@ class ThugGetUpState : CharacterGetUpState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterGetUpState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
+        {
             ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            return;
+        }
+        CharacterGetUpState::OnAnimationTrigger(animState, eventData);
     }
 
     void Enter(State@ lastState)

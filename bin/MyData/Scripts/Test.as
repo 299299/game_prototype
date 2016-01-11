@@ -728,8 +728,8 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
     {
         Motion@ m = gMotionMgr.FindMotion(thugAnims[i]);
         Enemy@ e = em.enemyList[i];
-        Vector4 t = GetTargetTransform(e.GetNode(), player.GetNode(), m, m_player);
-        e.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+        Vector4 t = GetTargetTransform(player.GetNode(), m, m_player);
+        e.Transform(Vector3(t.x, e.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
         e.TestAnimation(thugAnims[i]);
     }
     player.TestAnimation(playerAnim);
@@ -750,13 +750,13 @@ void TestAnimation_Group_s(const String&in playerAnim, String thugAnim, bool bas
 
     if (baseOnPlayer)
     {
-        Vector4 t = GetTargetTransform(e.GetNode(), player.GetNode(), m, m_player);
-        e.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+        Vector4 t = GetTargetTransform(player.GetNode(), m, m_player);
+        e.Transform(Vector3(t.x, e.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
     }
     else
     {
-        Vector4 t = GetTargetTransform(player.GetNode(), e.GetNode(), m_player, m);
-        player.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+        Vector4 t = GetTargetTransform(e.GetNode(), m_player, m);
+        player.Transform(Vector3(t.x, player.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
     }
 
     e.TestAnimation(thugAnim);
@@ -814,8 +814,8 @@ void TestAnimations_Group_2()
         @m2 = s2.backLegMotions[k];
     }
 
-    Vector4 t = GetTargetTransform(player.GetNode(), e.GetNode(), m1, m2);
-    player.Transform(Vector3(t.x, t.y, t.z), Quaternion(0, t.w, 0));
+    Vector4 t = GetTargetTransform(e.GetNode(), m1, m2);
+    player.Transform(Vector3(t.x, player.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
 
     e.TestAnimation(m2.name);
     player.TestAnimation(m1.name);
@@ -836,7 +836,7 @@ void TestAnimations_Group_3()
     };
     String test = tests[test_double_counter_index];
     test_double_counter_index ++;
-    if (test_double_counter_index >= tests.length)
+    if (test_double_counter_index >= int(tests.length))
         test_double_counter_index = 0;
     String playerAnim = "BM_TG_Counter/" + test;
     Array<String> thugAnims;
@@ -855,7 +855,7 @@ void TestAnimations_Group_4()
     };
     String test = tests[test_triple_counter_index];
     test_triple_counter_index ++;
-    if (test_triple_counter_index >= tests.length)
+    if (test_triple_counter_index >= int(tests.length))
         test_triple_counter_index = 0;
     String playerAnim = "BM_TG_Counter/" + test;
     Array<String> thugAnims;

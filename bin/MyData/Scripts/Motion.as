@@ -113,7 +113,7 @@ void SendAnimationTriger(Node@ _node, const StringHash&in nameHash, int value = 
     _node.SendEvent("AnimationTrigger", data);
 }
 
-Vector4 GetTargetTransform(Node@ alignNode, Node@ baseNode, Motion@ alignMotion, Motion@ baseMotion)
+Vector4 GetTargetTransform(Node@ baseNode, Motion@ alignMotion, Motion@ baseMotion)
 {
     float r1 = alignMotion.GetStartRot();
     float r2 = baseMotion.GetStartRot();
@@ -126,12 +126,12 @@ Vector4 GetTargetTransform(Node@ alignNode, Node@ baseNode, Motion@ alignMotion,
     Vector3 targetPosition = baseNode.worldPosition + diff_ws;
 
     Print("---------------------------- GetTargetTransform align-motion=" + alignMotion.name + " base-motion=" + baseMotion.name + " ---------------------------");
-    Print("GetTargetTransform 1=" + alignNode.name + " 2=" + baseNode.name + " 1-start-pos=" + s1.ToString() + " 2-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
+    Print("GetTargetTransform base=" + baseNode.name + " 1-start-pos=" + s1.ToString() + " 2-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
     Print("baseYaw=" + baseYaw + " targetRotation=" + targetRotation + " 1-start-rot=" + r1 + " 2-start-rot=" + r2 + " r-diff=" + (r1 - r2));
     Print("basePosition=" + baseNode.worldPosition.ToString() + " diff_ws=" + diff_ws.ToString() + " targetPosition=" + targetPosition.ToString());
     Print("--------------------------------------------------------------------------------------------------------------");
 
-    return Vector4(targetPosition.x,  alignNode.worldPosition.y, targetPosition.z, targetRotation);
+    return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);
 }
 
 class Motion
