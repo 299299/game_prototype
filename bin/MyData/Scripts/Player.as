@@ -851,10 +851,12 @@ class PlayerCounterState : CharacterCounterState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
+        {
             bCheckInput = true;
+            return;
+        }
         else if (name == IMPACT)
         {
             Node@ _node = ownner.GetNode();
@@ -863,7 +865,9 @@ class PlayerCounterState : CharacterCounterState
                 ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
             ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
             ownner.OnCounterSuccess();
+            return;
         }
+        CharacterState::OnAnimationTrigger(animState, eventData);
     }
 
     void CheckInput()
@@ -969,7 +973,6 @@ class PlayerDistractState : SingleMotionState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
@@ -983,7 +986,10 @@ class PlayerDistractState : SingleMotionState
 
             for (uint i=0; i<enemies.length; ++i)
                 enemies[i].Distract();
+
+            return;
         }
+        CharacterState::OnAnimationTrigger(animState, eventData);
     }
 
     void Update(float dt)
@@ -1145,7 +1151,6 @@ class PlayerBeatDownEndState : MultiMotionState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
@@ -1166,7 +1171,9 @@ class PlayerBeatDownEndState : MultiMotionState
                 target.OnDamage(ownner, position, dir, 9999, false);
                 ownner.OnAttackSuccess(target);
             }
+            return;
         }
+        CharacterState::OnAnimationTrigger(animState, eventData);
     }
 };
 
@@ -1339,7 +1346,6 @@ class PlayerBeatDownHitState : MultiMotionState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
@@ -1348,7 +1354,9 @@ class PlayerBeatDownHitState : MultiMotionState
             ownner.OnAttackSuccess(ownner.target);
             if (beatNum >= beatTotal)
                 ownner.ChangeState("BeatDownEndState");
+            return;
         }
+        CharacterState::OnAnimationTrigger(animState, eventData);
     }
 
     int PickIndex()

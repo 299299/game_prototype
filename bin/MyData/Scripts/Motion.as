@@ -122,7 +122,7 @@ Vector4 GetTargetTransform(Node@ alignNode, Node@ baseNode, Motion@ alignMotion,
 
     float baseYaw = baseNode.worldRotation.eulerAngles.y;
     float targetRotation = baseYaw + (r1 - r2);
-    Vector3 diff_ws = Quaternion(0, baseYaw + r2, 0) * (s1 - s2);
+    Vector3 diff_ws = Quaternion(0, baseYaw - r2, 0) * (s1 - s2);
     Vector3 targetPosition = baseNode.worldPosition + diff_ws;
 
     Print("---------------------------- GetTargetTransform align-motion=" + alignMotion.name + " base-motion=" + baseMotion.name + " ---------------------------");
@@ -197,11 +197,7 @@ class Motion
             return;
 
         gMotionMgr.memoryUse += this.animation.memoryUse;
-        if (rotateAngle < 360)
-            RotateAnimation(animationName, rotateAngle);
-        float r = ProcessAnimation(animationName, motionFlag, allowMotion, motionKeys, startFromOrigin);
-        if (rotateAngle > 360)
-            rotateAngle = r;
+        rotateAngle = ProcessAnimation(animationName, motionFlag, allowMotion, rotateAngle, motionKeys, startFromOrigin);
 
         SetEndFrame(endFrame);
         Vector4 v = motionKeys[0];
@@ -571,7 +567,7 @@ class MotionManager
 
         preFix = "BM_TG_Counter/";
         AddCounterMotions(preFix);
-        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, -90);
+        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
         CreateMotion(preFix + "Double_Counter_2ThugsB");
         CreateMotion(preFix + "Double_Counter_2ThugsD");
         CreateMotion(preFix + "Double_Counter_2ThugsE");

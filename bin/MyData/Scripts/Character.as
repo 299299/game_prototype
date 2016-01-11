@@ -322,16 +322,19 @@ class AnimationTestState : CharacterState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
-        if (name == IMPACT)
+        if (name == RAGDOLL_START)
+            return;
+        else if (name == IMPACT)
         {
             Node@ _node = ownner.GetNode();
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
             if (boneNode !is null)
                 ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
             ownner.PlayRandomSound(1);
+            return;
         }
+        CharacterState::OnAnimationTrigger(animState, eventData);
     }
 };
 
@@ -363,6 +366,8 @@ class CharacterCounterState : CharacterState
     float               yawPerSec;
     Vector3             targetPosition;
     float               targetRotation;
+
+
 
     CharacterCounterState(Character@ c)
     {

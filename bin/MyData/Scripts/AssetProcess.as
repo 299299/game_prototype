@@ -196,7 +196,7 @@ void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
     }
 }
 
-float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
+float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, float rotateAngle, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
     Print("---------------------------------------------------------------------------------------");
     Print("Processing animation " + animationFile);
@@ -233,6 +233,23 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 
     if (translateTrack !is null)
     {
+        translateNode.position = translateTrack.keyFrames[0].position;
+        Vector3 t_ws1 = translateNode.worldPosition;
+        translateNode.position = pelvisOrign;
+        Vector3 t_ws2 = translateNode.worldPosition;
+        Vector3 diff = t_ws1 - t_ws2;
+        startFromOrigin.x = diff.x;
+        startFromOrigin.y = diff.y;
+        startFromOrigin.z = diff.z;
+    }
+
+    if (rotateAngle < 360)
+        RotateAnimation(animationFile, rotateAngle);
+    else if (flip)
+        RotateAnimation(animationFile, 180);
+
+    if (translateTrack !is null)
+    {
         Vector3 position = translateTrack.keyFrames[0].position - pelvisOrign;
         const float minDist = 0.5f;
         if (Abs(position.x) > minDist) {
@@ -250,21 +267,6 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         if (d_log)
             Print("t-diff-position=" + position.ToString());
     }
-
-    if (translateTrack !is null)
-    {
-        translateNode.position = translateTrack.keyFrames[0].position;
-        Vector3 t_ws1 = translateNode.worldPosition;
-        translateNode.position = pelvisOrign;
-        Vector3 t_ws2 = translateNode.worldPosition;
-        Vector3 diff = t_ws1 - t_ws2;
-        startFromOrigin.x = diff.x;
-        startFromOrigin.y = diff.y;
-        startFromOrigin.z = diff.z;
-    }
-
-    if (flip)
-        RotateAnimation(animationFile, 180);
 
     if (translateFlag != 0 && translateTrack !is null)
     {
@@ -394,7 +396,10 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     }
 
     Print("---------------------------------------------------------------------------------------");
-    return flip ? 180 : 0;
+    if (rotateAngle < 360)
+        return rotateAngle;
+    else
+        return flip ? 180 : 0;
 }
 
 Animation@ CreateAnimation(const String&in originAnimationName, const String&in name, int start_frame, int num_of_frames)

@@ -190,7 +190,7 @@ class ThugStepMoveState : MultiMotionState
                     return;
                 }
             }
-            
+
             ownner.CommonStateFinishedOnGroud();
             return;
         }
@@ -348,20 +348,13 @@ class ThugCounterState : CharacterCounterState
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         CharacterCounterState::OnAnimationTrigger(animState, eventData);
-        StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
             ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
     }
-
     void Exit(State@ nextState)
     {
         ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
         CharacterCounterState::Exit(nextState);
-    }
-
-    void OnAlignTimeOut()
-    {
-
     }
 };
 
@@ -457,12 +450,12 @@ class ThugAttackState : CharacterState
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
-        CharacterState::OnAnimationTrigger(animState, eventData);
         StringHash name = eventData[NAME].GetStringHash();
         if (name == TIME_SCALE)
         {
             float scale = eventData[VALUE].GetFloat();
             ownner.SetTimeScale(scale);
+            return;
         }
         else if (name == COUNTER_CHECK)
         {
@@ -472,6 +465,7 @@ class ThugAttackState : CharacterState
                 ownner.AddFlag(FLAGS_COUNTER);
             else
                 ownner.RemoveFlag(FLAGS_COUNTER);
+            return;
         }
         else if (name == ATTACK_CHECK)
         {
@@ -487,7 +481,12 @@ class ThugAttackState : CharacterState
                 Print("Thug AttackCheck bone=" + attackCheckNode.name);
                 AttackCollisionCheck();
             }
+
+            return;
         }
+
+        CharacterState::OnAnimationTrigger(animState, eventData);
+        return;
     }
 
     void AttackCollisionCheck()
