@@ -402,9 +402,11 @@ class AttackMotion
 class MotionManager
 {
     Array<Motion@>          motions;
+    Array<String>           animations;
     uint                    assetProcessTime;
     int                     memoryUse;
     int                     processedMotions;
+    int                     processedAnimations;
 
     MotionManager()
     {
@@ -460,10 +462,16 @@ class MotionManager
         return motion;
     }
 
+    void AddAnimation(const String&in animation)
+    {
+        animations.Push(animation);
+    }
+
     bool Update(float dt)
     {
-        if (processedMotions >= int(motions.length))
+        if (processedMotions >= int(motions.length) && processedAnimations >= int(animations.length))
             return true;
+
         uint t = time.systemTime;
         int len = int(motions.length);
         for (int i=processedMotions; i<len; ++i)
@@ -474,8 +482,20 @@ class MotionManager
             if (time_diff >= PROCESS_TIME_PER_FRAME)
                 break;
         }
-        Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions);
-        return processedMotions >= int(motions.length);
+
+
+        len = int(animations.length);
+        for (int i=processedAnimations; i<len; ++i)
+        {
+            cache.GetResource("Animation", GetAnimationName(animations[i]));
+            ++processedAnimations;
+            int time_diff = int(time.systemTime - t);
+            if (time_diff >= PROCESS_TIME_PER_FRAME)
+                break;
+        }
+
+        Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions + " processedAnimations=" + processedAnimations);
+        return processedMotions >= int(motions.length) && processedAnimations >= int(animations.length);
     }
 
     void ProcessAll()
@@ -1080,6 +1100,16 @@ class MotionManager
         CreateMotion(preFix + "Beatdown_Strike_End_02");
         CreateMotion(preFix + "Beatdown_Strike_End_03");
         CreateMotion(preFix + "Beatdown_Strike_End_04");
+
+        preFix = "TG_Combat/";
+        AddAnimation(preFix + "Stand_Idle_Additive_01");
+        AddAnimation(preFix + "Stand_Idle_Additive_02");
+        AddAnimation(preFix + "Stand_Idle_Additive_03");
+        AddAnimation(preFix + "Stand_Idle_Additive_04");
+
+        preFix = "TG_HitReaction/";
+        AddAnimation(preFix + "CapeHitReaction_Idle");
+        AddAnimation(preFix + "CapeHitReaction_Idle_02");
     }
 
     void CreateBruceMotions()
@@ -1254,6 +1284,11 @@ class MotionManager
         preFix = "BM_Combat/";
         // CreateMotion(preFix + "Attempt_Takedown", kMotion_XZR, kMotion_Z);
         CreateMotion(preFix + "Into_Takedown", kMotion_XZR, kMotion_XZR);
+
+        preFix = "BM_Combat_Movement/";
+        AddAnimation(preFix + "Stand_Idle");
+        AddAnimation(preFix + "Stand_Idle_01");
+        AddAnimation(preFix + "Stand_Idle_02");
     }
 };
 

@@ -64,6 +64,7 @@ class CharacterState : State
     Character@                  ownner;
     int                         flags;
     bool                        combatReady = false;
+    bool                        firstUpdate = true;
 
     CharacterState(Character@ c)
     {
@@ -141,6 +142,7 @@ class CharacterState : State
             ownner.AddFlag(flags);
         State::Enter(lastState);
         combatReady = false;
+        firstUpdate = true;
     }
 
     void Exit(State@ nextState)
@@ -158,6 +160,7 @@ class CharacterState : State
             return;
         }
         State::Update(dt);
+        firstUpdate = false;
     }
 };
 
@@ -377,7 +380,7 @@ class CharacterCounterState : CharacterState
     int                 type;
     int                 index;
 
-    float               alignTime = 0.1f;
+    float               alignTime = 0.3f;
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;

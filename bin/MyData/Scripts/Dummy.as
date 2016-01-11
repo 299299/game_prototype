@@ -125,3 +125,37 @@ class PlayerBeatDownStartState : CharacterState
         debug.AddCross(targetPosition, 1.0f, RED, false);
     }
 };
+
+class ThugBeatDownStartState : SingleMotionState
+{
+    ThugBeatDownStartState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownStartState");
+        SetMotion("TG_BM_Beatdown/Beatdown_Start_01");
+        flags = FLAGS_STUN | FLAGS_ATTACK;
+    }
+};
+
+class ThugDistractState : SingleMotionState
+{
+    ThugDistractState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("DistractState");
+        SetMotion("TG_HitReaction/CapeDistract_Close_Forward");
+        flags = FLAGS_STUN | FLAGS_ATTACK;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.GetNode().Yaw(ownner.ComputeAngleDiff());
+        SingleMotionState::Enter(lastState);
+    }
+
+    void OnMotionFinished()
+    {
+        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        ownner.ChangeState("StunState");
+    }
+};

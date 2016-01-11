@@ -392,6 +392,12 @@ class ThugAttackState : CharacterState
 
     void Update(float dt)
     {
+        if (firstUpdate)
+        {
+            if (cast<Thug>(ownner).KeepDistanceWithEnemy())
+                return;
+        }
+
         Motion@ motion = currentAttack.motion;
         ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST);
 
@@ -696,38 +702,6 @@ class ThugDeadState : CharacterState
     }
 };
 
-class ThugBeatDownStartState : SingleMotionState
-{
-    ThugBeatDownStartState(Character@ c)
-    {
-        super(c);
-        SetName("BeatDownStartState");
-        SetMotion("TG_BM_Beatdown/Beatdown_Start_01");
-        flags = FLAGS_STUN | FLAGS_ATTACK;
-    }
-};
-
-class ThugBeatDownEndState : MultiMotionState
-{
-    ThugBeatDownEndState(Character@ c)
-    {
-        super(c);
-        SetName("BeatDownEndState");
-        String preFix = "TG_BM_Beatdown/";
-        AddMotion(preFix + "Beatdown_Strike_End_01");
-        AddMotion(preFix + "Beatdown_Strike_End_02");
-        AddMotion(preFix + "Beatdown_Strike_End_03");
-        AddMotion(preFix + "Beatdown_Strike_End_04");
-        flags = FLAGS_ATTACK;
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.SetHealth(0);
-        MultiMotionState::Enter(lastState);
-    }
-};
-
 class ThugBeatDownHitState : MultiMotionState
 {
     ThugBeatDownHitState(Character@ c)
@@ -761,28 +735,27 @@ class ThugBeatDownHitState : MultiMotionState
     }
 };
 
-class ThugDistractState : SingleMotionState
+class ThugBeatDownEndState : MultiMotionState
 {
-    ThugDistractState(Character@ ownner)
+    ThugBeatDownEndState(Character@ c)
     {
-        super(ownner);
-        SetName("DistractState");
-        SetMotion("TG_HitReaction/CapeDistract_Close_Forward");
-        flags = FLAGS_STUN | FLAGS_ATTACK;
+        super(c);
+        SetName("BeatDownEndState");
+        String preFix = "TG_BM_Beatdown/";
+        AddMotion(preFix + "Beatdown_Strike_End_01");
+        AddMotion(preFix + "Beatdown_Strike_End_02");
+        AddMotion(preFix + "Beatdown_Strike_End_03");
+        AddMotion(preFix + "Beatdown_Strike_End_04");
+        flags = FLAGS_ATTACK;
     }
 
     void Enter(State@ lastState)
     {
-        ownner.GetNode().Yaw(ownner.ComputeAngleDiff());
-        SingleMotionState::Enter(lastState);
-    }
-
-    void OnMotionFinished()
-    {
-        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
-        ownner.ChangeState("StunState");
+        ownner.SetHealth(0);
+        MultiMotionState::Enter(lastState);
     }
 };
+
 
 class ThugStunState : CharacterState
 {
@@ -850,11 +823,9 @@ class Thug : Enemy
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugGetUpState(this));
         stateMachine.AddState(ThugDeadState(this));
-        //stateMachine.AddState(ThugBeatDownStartState(this));
         stateMachine.AddState(ThugBeatDownHitState(this));
         stateMachine.AddState(ThugBeatDownEndState(this));
         stateMachine.AddState(ThugStunState(this));
-        //stateMachine.AddState(ThugDistractState(this));
         stateMachine.AddState(ThugPushBackState(this));
         stateMachine.AddState(AnimationTestState(this));
 
@@ -1052,7 +1023,7 @@ class Thug : Enemy
     void ClearAvoidance()
     {
         checkAvoidanceTimer = 0.0;
-        checkAvoidanceTime = Random(0.1f, 0.2f);
+        checkAvoidanceTime = Random(0.05f, 0.1f);
     }
 
     bool KeepDistanceWithEnemy()

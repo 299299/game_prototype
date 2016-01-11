@@ -16,7 +16,7 @@ const float MAX_DISTRACT_DIST = 4.0f;
 const float MAX_DISTRACT_DIR = 90.0f;
 const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
-const float COUNTER_ALIGN_MAX_DIST = 1.5f;
+const float COUNTER_ALIGN_MAX_DIST = 1.25f;
 const float PLAYER_NEAR_DIST = 6.0f;
 
 class PlayerStandState : CharacterState
@@ -569,10 +569,64 @@ class PlayerCounterState : CharacterCounterState
         }
 
         Enemy@ e = counterEnemies[possed];
+        float dist_good = 3.0f;
+        if (minDistSQR > dist_good)
+        {
+            Print(alignMotion.name + " too far");
+            return;
+        }
+
         CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
         @s.currentMotion = alignMotion;
         s.index = possed;
         s.SetTargetTransform(Vector3(v4.x, e.GetNode().worldPosition.y, v4.z), v4.w);
+    }
+
+    int GetValidNumOfCounterEnemy()
+    {
+        int num = 0;
+        for (uint i=0; i<counterEnemies.length; ++i)
+        {
+            Enemy@ e = counterEnemies[i];
+            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+            if (s.index >= 0)
+                num ++;
+        }
+        return num;
+    }
+
+    int TestTrippleCounterMotions(int i)
+    {
+        for (int i=0; i<type; ++i)
+        {
+            cast<CharacterCounterState>(counterEnemies[i].GetState()).index = -1;
+        }
+
+        CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
+        @currentMotion = tripleCounterMotions[i];
+        Motion@ m1 = s.tripleCounterMotions[i * 3 + 0];
+        ChooseBestIndices(m1, 0);
+        Motion@ m2 = s.tripleCounterMotions[i * 3 + 1];
+        ChooseBestIndices(m2, 1);
+        Motion@ m3 = s.tripleCounterMotions[i * 3 + 2];
+        ChooseBestIndices(m3, 2);
+        return GetValidNumOfCounterEnemy();
+    }
+
+    int TestDoubleCounterMotions(int i)
+    {
+        for (int i=0; i<type; ++i)
+        {
+            cast<CharacterCounterState>(counterEnemies[i].GetState()).index = -1;
+        }
+
+        CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
+        @currentMotion = doubleCounterMotions[i];
+        Motion@ m1 = s.doubleCounterMotions[i * 2 + 0];
+        ChooseBestIndices(m1, 0);
+        Motion@ m2 = s.doubleCounterMotions[i * 2 + 1];
+        ChooseBestIndices(m2, 1);
+        return GetValidNumOfCounterEnemy();
     }
 
     void Enter(State@ lastState)
@@ -588,67 +642,63 @@ class PlayerCounterState : CharacterCounterState
         checkInput = false;
 
         // POST_PROCESS
-        if (type > 1)
+        for (int i=0; i<type; ++i)
         {
-            for (int i=0; i<type; ++i)
+            Enemy@ e = counterEnemies[i];
+            e.ChangeState("CounterState");
+            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+            s.index = -1;
+            s.type = type;
+            s.ChangeSubState(COUNTER_ALIGNING);
+        }
+
+        CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
+
+        if (counterEnemies.length == 3)
+        {
+            for (uint i=0; i<tripleCounterMotions.length; ++i)
+            {
+                if (TestTrippleCounterMotions(i) == 3)
+                    break;
+            }
+
+            for (uint i=0; i<counterEnemies.length; ++i)
             {
                 Enemy@ e = counterEnemies[i];
-                e.ChangeState("CounterState");
                 CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-                s.index = -1;
-                s.type = type;
-                s.ChangeSubState(COUNTER_ALIGNING);
-            }
-
-            CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
-            if (type == 2)
-            {
-                Vector3 v1 = counterEnemies[0].GetNode().worldPosition;
-                Vector3 v2 = counterEnemies[1].GetNode().worldPosition;
-                Vector3 vm = ownner.GetNode().worldPosition;
-                v1 -= vm;
-                v2 -= vm;
-                float d1 = Atan2(v1.x, v1.z);
-                float d2 = Atan2(v2.x, v2.z);
-                float diff = Abs(d1 - d2);
-                Print("DoubleCounter -- d1=" + d1 + " d2=" + d2 + " diff=" + diff);
-
-                intCache.Clear();
-                for (uint i=0; i<doubleCounterMotions.length; ++i)
+                if (s.index < 0)
                 {
-                    Motion@ m = doubleCounterMotions[i];
-                    Motion@ m1 = s.doubleCounterMotions[i * 2 + 0];
-                    Motion@ m2 = s.doubleCounterMotions[i * 2 + 0];
-                    float r = Abs(m1.GetStartRot() - m2.GetStartRot());
-                    float r_diff = Abs(r - diff);
-                    if (r_diff > 45)
-                        continue;
-                    intCache.Push(i);
+                    e.CommonStateFinishedOnGroud();
+                    counterEnemies.Erase(i);
                 }
-
-                int i = intCache[RandomInt(intCache.length)];
-                @currentMotion = doubleCounterMotions[i];
-                Motion@ m1 = s.doubleCounterMotions[i * 2 + 0];
-                ChooseBestIndices(m1, 0);
-                Motion@ m2 = s.doubleCounterMotions[i * 2 + 1];
-                ChooseBestIndices(m2, 1);
-            }
-            else if (type == 3)
-            {
-                int i = RandomInt(tripleCounterMotions.length);
-                @currentMotion = tripleCounterMotions[i];
-                Motion@ m1 = s.tripleCounterMotions[i * 3 + 0];
-                ChooseBestIndices(m1, 0);
-                Motion@ m2 = s.tripleCounterMotions[i * 3 + 1];
-                ChooseBestIndices(m2, 1);
-                Motion@ m3 = s.tripleCounterMotions[i * 3 + 2];
-                ChooseBestIndices(m3, 2);
             }
 
             ChangeSubState(COUNTER_WAITING);
-            // ownner.SetSceneTimeScale(0.0f);
         }
-        else if (counterEnemies.length == 1)
+
+        if (counterEnemies.length == 2)
+        {
+            for (uint i=0; i<doubleCounterMotions.length; ++i)
+            {
+                if (TestDoubleCounterMotions(i) == 2)
+                    break;
+            }
+
+            for (uint i=0; i<counterEnemies.length; ++i)
+            {
+                Enemy@ e = counterEnemies[i];
+                CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+                if (s.index < 0)
+                {
+                    e.CommonStateFinishedOnGroud();
+                    counterEnemies.Erase(i);
+                }
+            }
+
+            ChangeSubState(COUNTER_WAITING);
+        }
+
+        if (counterEnemies.length == 1)
         {
             Node@ myNode = ownner.GetNode();
             Vector3 myPos = myNode.worldPosition;
@@ -928,8 +978,8 @@ class PlayerBeatDownHitState : MultiMotionState
 {
     int beatIndex = 0;
     int beatNum = 0;
-    int maxBeatNum = 10;
-    int minBeatNum = 5;
+    int maxBeatNum = 15;
+    int minBeatNum = 7;
     int beatTotal = 0;
 
     float alignTime = 0.1f;

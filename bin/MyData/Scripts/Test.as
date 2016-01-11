@@ -29,8 +29,8 @@ int colorGradingIndex = 0;
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
-String CAMERA_NAME = "camera";
-String PLAYER_NAME = "bruce"; //"bruce";
+String CAMERA_NAME = "Camera";
+String PLAYER_NAME = "Bruce";;
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
