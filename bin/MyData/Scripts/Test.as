@@ -15,6 +15,7 @@
 #include "Scripts/Enemy.as"
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
+#include "Scripts/Bruce.as"
 
 int drawDebug = 0;
 bool autoCounter = false;
