@@ -693,8 +693,8 @@ class PlayerCounterState : CharacterCounterState
     Array<int>      intCache;
     int             lastCounterIndex = -1;
     int             lastCounterDirection = -1;
-    bool            bCheckInput = false;
     bool            isInAir = false;
+    bool            checkInput = false;
 
     PlayerCounterState(Character@ c)
     {
@@ -766,6 +766,7 @@ class PlayerCounterState : CharacterCounterState
 
         Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
         type = counterEnemies.length;
+        checkInput = false;
 
         // POST_PROCESS
         if (type > 1)
@@ -901,7 +902,6 @@ class PlayerCounterState : CharacterCounterState
             SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
         }
 
-        bCheckInput = false;
         Print("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
     }
 
@@ -915,7 +915,7 @@ class PlayerCounterState : CharacterCounterState
 
     String GetDebugText()
     {
-        return "current motion=" + currentMotion.animationName + " isInAir=" + isInAir + " bCheckInput=" + bCheckInput + "\n";
+        return "current motion=" + currentMotion.animationName + " isInAir=" + isInAir + " checkInput=" + checkInput + "\n";
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -949,12 +949,7 @@ class PlayerCounterState : CharacterCounterState
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         StringHash name = eventData[NAME].GetStringHash();
-        if (name == READY_TO_FIGHT)
-        {
-            bCheckInput = true;
-            return;
-        }
-        else if (name == IMPACT)
+        if (name == IMPACT)
         {
             Node@ _node = ownner.GetNode();
             Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
@@ -964,12 +959,17 @@ class PlayerCounterState : CharacterCounterState
             ownner.OnCounterSuccess();
             return;
         }
+        else if (name == READY_TO_FIGHT)
+        {
+            checkInput = true;
+            return;
+        }
         CharacterState::OnAnimationTrigger(animState, eventData);
     }
 
     void CheckInput()
     {
-        if (!bCheckInput)
+        if (!checkInput)
             return;
 
         float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
@@ -982,7 +982,7 @@ class PlayerCounterState : CharacterCounterState
 
     bool CanReEntered()
     {
-        return !isInAir && bCheckInput;
+        return !isInAir && checkInput;
     }
 };
 
@@ -1049,8 +1049,6 @@ class PlayerDeadState : MultiMotionState
 
 class PlayerDistractState : SingleMotionState
 {
-    bool combatReady = false;
-
     PlayerDistractState(Character@ c)
     {
         super(c);
@@ -1063,8 +1061,6 @@ class PlayerDistractState : SingleMotionState
     {
         float targetRotation = ownner.GetTargetAngle();
         ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-        combatReady = false;
-
         SingleMotionState::Enter(lastState);
     }
 
@@ -1087,13 +1083,6 @@ class PlayerDistractState : SingleMotionState
             return;
         }
         CharacterState::OnAnimationTrigger(animState, eventData);
-    }
-
-    void Update(float dt)
-    {
-        if (combatReady)
-            ownner.ActionCheck(true, true, true, true);
-        SingleMotionState::Update(dt);
     }
 };
 
@@ -1182,8 +1171,6 @@ class PlayerBeatDownStartState : CharacterState
 
 class PlayerBeatDownEndState : MultiMotionState
 {
-    bool combatReady = false;
-
     PlayerBeatDownEndState(Character@ c)
     {
         super(c);
@@ -1197,7 +1184,6 @@ class PlayerBeatDownEndState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        combatReady = false;
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
@@ -1232,13 +1218,6 @@ class PlayerBeatDownEndState : MultiMotionState
         Print("BeatDownEndState Exit!!");
         ownner.SetSceneTimeScale(1.0f);
         MultiMotionState::Exit(nextState);
-    }
-
-    void Update(float dt)
-    {
-        if (combatReady)
-            ownner.ActionCheck(true, true, true, true);
-        MultiMotionState::Update(dt);
     }
 
     int PickIndex()
@@ -1282,9 +1261,6 @@ class PlayerBeatDownHitState : MultiMotionState
     int minBeatNum = 5;
     int beatTotal = 0;
 
-    bool combatReady = false;
-    bool attackPressed = false;
-
     float alignTime = 0.1f;
     Vector3 movePerSec;
     Vector3 targetPosition;
@@ -1292,6 +1268,7 @@ class PlayerBeatDownHitState : MultiMotionState
 
     int state = 0;
     bool distTooFar = false;
+    bool attackPressed = false;
 
     PlayerBeatDownHitState(Character@ c)
     {
@@ -1429,7 +1406,6 @@ class PlayerBeatDownHitState : MultiMotionState
     void Enter(State@ lastState)
     {
         Print("========================= BeatDownHitState Enter start ===========================");
-        combatReady = false;
         attackPressed = false;
         distTooFar = false;
         if (lastState !is this)

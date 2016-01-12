@@ -438,267 +438,8 @@ class MotionManager
     {
         assetProcessTime = time.systemTime;
         AssetPreProcess();
-
-        //========================================================================
-        // PLAYER MOTIONS
-        //========================================================================
-        // Locomotions
-        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, kMotion_R, 16);
-        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, kMotion_R, 28);
-        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, kMotion_R, 22);
-        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
-
-        //CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, kMotion_R, 16, 0, false);
-        //CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, kMotion_R, 25, 0, false);
-        //CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, kMotion_R, 14, 0, false);
-        //CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
-
-        // Evades
-        CreateMotion("BM_Movement/Evade_Forward_01", kMotion_XZR, kMotion_XZR, 50);
-        CreateMotion("BM_Movement/Evade_Back_01", kMotion_XZR, kMotion_XZR, 48);
-        CreateMotion("BM_Movement/Evade_Left_01", kMotion_XZR, kMotion_XZR, 48);
-        CreateMotion("BM_Movement/Evade_Right_01", kMotion_XZR, kMotion_XZR, 48);
-
-        if (has_redirect)
-            CreateMotion("BM_Combat/Redirect", kMotion_XZR, kMotion_XZR, 58);
-
-        String preFix = "BM_Combat_HitReaction/";
-        CreateMotion(preFix + "HitReaction_Back", kMotion_XZ); // back attacked
-        CreateMotion(preFix + "HitReaction_Face_Right", kMotion_XZ); // front punched
-        CreateMotion(preFix + "Hit_Reaction_SideLeft", kMotion_XZ); // left attacked
-        CreateMotion(preFix + "Hit_Reaction_SideRight", kMotion_XZ); // right attacked
-        //CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
-        //CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
-
-        // Attacks
-        preFix = "BM_Attack/";
-        //========================================================================
-        // FORWARD
-        //========================================================================
-        // weak forward
-        CreateMotion(preFix + "Attack_Close_Weak_Forward");
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_01");
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_02");
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_03");
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_04");
-        CreateMotion(preFix + "Attack_Close_Weak_Forward_05");
-        // close forward
-        CreateMotion(preFix + "Attack_Close_Forward_02");
-        CreateMotion(preFix + "Attack_Close_Forward_03");
-        CreateMotion(preFix + "Attack_Close_Forward_04");
-        CreateMotion(preFix + "Attack_Close_Forward_05");
-        CreateMotion(preFix + "Attack_Close_Forward_06");
-        CreateMotion(preFix + "Attack_Close_Forward_07");
-        CreateMotion(preFix + "Attack_Close_Forward_08");
-        CreateMotion(preFix + "Attack_Close_Run_Forward");
-        // far forward
-        CreateMotion(preFix + "Attack_Far_Forward");
-        CreateMotion(preFix + "Attack_Far_Forward_01");
-        CreateMotion(preFix + "Attack_Far_Forward_02");
-        CreateMotion(preFix + "Attack_Far_Forward_03");
-        CreateMotion(preFix + "Attack_Far_Forward_04");
-        CreateMotion(preFix + "Attack_Run_Far_Forward");
-
-        //========================================================================
-        // RIGHT
-        //========================================================================
-        // weak right
-        CreateMotion(preFix + "Attack_Close_Weak_Right");
-        CreateMotion(preFix + "Attack_Close_Weak_Right_01");
-        CreateMotion(preFix + "Attack_Close_Weak_Right_02");
-        // close right
-        CreateMotion(preFix + "Attack_Close_Right");
-        CreateMotion(preFix + "Attack_Close_Right_01");
-        CreateMotion(preFix + "Attack_Close_Right_03");
-        CreateMotion(preFix + "Attack_Close_Right_04");
-        CreateMotion(preFix + "Attack_Close_Right_05");
-        CreateMotion(preFix + "Attack_Close_Right_06");
-        CreateMotion(preFix + "Attack_Close_Right_07");
-        CreateMotion(preFix + "Attack_Close_Right_08");
-        // far right
-        CreateMotion(preFix + "Attack_Far_Right");
-        CreateMotion(preFix + "Attack_Far_Right_01");
-        // CreateMotion(preFix + "Attack_Far_Right_02");
-        CreateMotion(preFix + "Attack_Far_Right_03");
-        CreateMotion(preFix + "Attack_Far_Right_04");
-
-        //========================================================================
-        // BACK
-        //========================================================================
-        // weak back
-        CreateMotion(preFix + "Attack_Close_Weak_Back");
-        CreateMotion(preFix + "Attack_Close_Weak_Back_01");
-        // close back
-        CreateMotion(preFix + "Attack_Close_Back");
-        CreateMotion(preFix + "Attack_Close_Back_01");
-        CreateMotion(preFix + "Attack_Close_Back_02");
-        CreateMotion(preFix + "Attack_Close_Back_03");
-        CreateMotion(preFix + "Attack_Close_Back_04");
-        CreateMotion(preFix + "Attack_Close_Back_05");
-        CreateMotion(preFix + "Attack_Close_Back_06");
-        CreateMotion(preFix + "Attack_Close_Back_07");
-        CreateMotion(preFix + "Attack_Close_Back_08");
-        // far back
-        CreateMotion(preFix + "Attack_Far_Back");
-        CreateMotion(preFix + "Attack_Far_Back_01");
-        CreateMotion(preFix + "Attack_Far_Back_02");
-        //CreateMotion(preFix + "Attack_Far_Back_03");
-        CreateMotion(preFix + "Attack_Far_Back_04");
-
-        //========================================================================
-        // LEFT
-        //========================================================================
-        // weak left
-        CreateMotion(preFix + "Attack_Close_Weak_Left");
-        CreateMotion(preFix + "Attack_Close_Weak_Left_01");
-        CreateMotion(preFix + "Attack_Close_Weak_Left_02");
-
-        // close left
-        CreateMotion(preFix + "Attack_Close_Left");
-        CreateMotion(preFix + "Attack_Close_Left_01");
-        CreateMotion(preFix + "Attack_Close_Left_02");
-        CreateMotion(preFix + "Attack_Close_Left_03");
-        CreateMotion(preFix + "Attack_Close_Left_04");
-        CreateMotion(preFix + "Attack_Close_Left_05");
-        CreateMotion(preFix + "Attack_Close_Left_06");
-        CreateMotion(preFix + "Attack_Close_Left_07");
-        CreateMotion(preFix + "Attack_Close_Left_08");
-        // far left
-        CreateMotion(preFix + "Attack_Far_Left");
-        CreateMotion(preFix + "Attack_Far_Left_01");
-        CreateMotion(preFix + "Attack_Far_Left_02");
-        CreateMotion(preFix + "Attack_Far_Left_03");
-        CreateMotion(preFix + "Attack_Far_Left_04");
-
-        preFix = "BM_TG_Counter/";
-        AddCounterMotions(preFix);
-        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);
-        CreateMotion(preFix + "Double_Counter_2ThugsE");
-        CreateMotion(preFix + "Double_Counter_2ThugsF");
-        CreateMotion(preFix + "Double_Counter_2ThugsG");
-        CreateMotion(preFix + "Double_Counter_2ThugsH");
-        CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
-        CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
-
-        preFix = "BM_Death_Primers/";
-        CreateMotion(preFix + "Death_Front");
-        CreateMotion(preFix + "Death_Back");
-        CreateMotion(preFix + "Death_Side_Left");
-        CreateMotion(preFix + "Death_Side_Right");
-
-        preFix = "BM_Attack/";
-        //CreateMotion(preFix + "Beatdown_Strike_Start_01", kMotion_XZR, 0);
-        //CreateMotion(preFix + "CapeDistract_Close_Forward");
-
-        int beat_motion_flags = kMotion_XZR;
-        int beat_allow_flags = kMotion_XZR;
-
-        CreateMotion(preFix + "Beatdown_Test_01", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_Test_02", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_Test_03", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_Test_04", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_Test_05", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_Test_06", beat_motion_flags, beat_allow_flags);
-
-        preFix = "BM_TG_Beatdown/";
-        CreateMotion(preFix + "Beatdown_Strike_End_01");
-        CreateMotion(preFix + "Beatdown_Strike_End_02");
-        CreateMotion(preFix + "Beatdown_Strike_End_03");
-        CreateMotion(preFix + "Beatdown_Strike_End_04");
-
-        preFix = "BM_Combat/";
-        // CreateMotion(preFix + "Attempt_Takedown", kMotion_XZR, kMotion_Z);
-        CreateMotion(preFix + "Into_Takedown", kMotion_XZR, kMotion_XZR);
-
-        //========================================================================
-        // THUG MOTIONS
-        //========================================================================
-        preFix = "TG_Combat/";
-        CreateMotion(preFix + "Step_Forward", kMotion_Z);
-        CreateMotion(preFix + "Step_Right", kMotion_X);
-        CreateMotion(preFix + "Step_Back", kMotion_Z);
-        CreateMotion(preFix + "Step_Left", kMotion_X);
-        CreateMotion(preFix + "Step_Forward_Long", kMotion_Z);
-        CreateMotion(preFix + "Step_Right_Long", kMotion_X);
-        CreateMotion(preFix + "Step_Back_Long", kMotion_Z);
-        CreateMotion(preFix + "Step_Left_Long", kMotion_X);
-
-        CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
-        CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
-
-        CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_XZR, -1, true);
-        CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_XZR, -1, true);
-
-        if (has_redirect)
-        {
-            CreateMotion(preFix + "Redirect_push_back");
-            CreateMotion(preFix + "Redirect_Stumble_JK");
-        }
-
-        CreateMotion(preFix + "Attack_Kick");
-        CreateMotion(preFix + "Attack_Kick_01");
-        CreateMotion(preFix + "Attack_Kick_02");
-        CreateMotion(preFix + "Attack_Punch");
-        CreateMotion(preFix + "Attack_Punch_01");
-        CreateMotion(preFix + "Attack_Punch_02");
-
-
-        preFix = "TG_HitReaction/";
-        CreateMotion(preFix + "HitReaction_Left");
-        CreateMotion(preFix + "HitReaction_Right");
-        CreateMotion(preFix + "HitReaction_Back_NoTurn");
-        CreateMotion(preFix + "HitReaction_Back");
-        CreateMotion(preFix + "CapeDistract_Close_Forward");
-
-        //CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
-        //CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
-
-        preFix = "TG_Getup/";
-        CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
-        CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
-
-        preFix = "TG_BM_Counter/";
-        AddCounterMotions(preFix);
-        CreateMotion(preFix + "Double_Counter_2ThugsA_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsA_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
-        CreateMotion(preFix + "Double_Counter_2ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_2ThugsD_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsD_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsE_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsE_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsF_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsF_02");
-        CreateMotion(preFix + "Double_Counter_2ThugsG_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_2ThugsH_01");
-        CreateMotion(preFix + "Double_Counter_2ThugsH_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_3ThugsA_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
-        CreateMotion(preFix + "Double_Counter_3ThugsA_02");
-        CreateMotion(preFix + "Double_Counter_3ThugsA_03", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_3ThugsB_01");
-        CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_3ThugsB_03");
-        CreateMotion(preFix + "Double_Counter_3ThugsC_01");
-        CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-        CreateMotion(preFix + "Double_Counter_3ThugsC_03");
-
-        preFix = "TG_BM_Beatdown/";
-        // CreateMotion(preFix + "Beatdown_Start_01", kMotion_XZR, 0);
-        CreateMotion(preFix + "Beatdown_HitReaction_01", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_02", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_03", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_04", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_05", beat_motion_flags, beat_allow_flags);
-        CreateMotion(preFix + "Beatdown_HitReaction_06", beat_motion_flags, beat_allow_flags);
-
-        CreateMotion(preFix + "Beatdown_Strike_End_01");
-        CreateMotion(preFix + "Beatdown_Strike_End_02");
-        CreateMotion(preFix + "Beatdown_Strike_End_03");
-        CreateMotion(preFix + "Beatdown_Strike_End_04");
+        CreateBruceMotions();
+        CreateThugMotions();
     }
 
     void Stop()
@@ -821,7 +562,7 @@ class MotionManager
         AddThugAnimationTriggers();
 
         // Player animation triggers
-        AddPlayerAnimationTriggers();
+        AddBruceAnimationTriggers();
 
         Print("MotionManager::PostProcess time-cost=" + (time.systemTime - t) + " ms");
     }
@@ -970,9 +711,19 @@ class MotionManager
         AddAnimationTrigger(preFix + "GetUp_Back", 68, READY_TO_FIGHT);
     }
 
-    void AddPlayerAnimationTriggers()
+    void AddBruceAnimationTriggers()
     {
-        String preFix = "BM_TG_Counter/";
+        String preFix = "BM_Movement/";
+
+        AddAnimationTrigger(preFix + "Evade_Forward_01", 48, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Evade_Back_01", 48, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
+        AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
+
+        if (has_redirect)
+            AddAnimationTrigger("BM_Combat/Redirect", 58, READY_TO_FIGHT);
+
+        preFix = "BM_TG_Counter/";
         AddStringAnimationTrigger(preFix + "Counter_Arm_Back_01", 9, COMBAT_SOUND, R_ARM);
         AddStringAnimationTrigger(preFix + "Counter_Arm_Back_01", 38, COMBAT_SOUND, R_ARM);
         AddAnimationTrigger(preFix + "Counter_Arm_Back_01", 40, READY_TO_FIGHT);
@@ -1243,6 +994,266 @@ class MotionManager
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
         AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
+    }
+
+    void CreateThugMotions()
+    {
+        String preFix = "TG_Combat/";
+        CreateMotion(preFix + "Step_Forward");
+        CreateMotion(preFix + "Step_Right");
+        CreateMotion(preFix + "Step_Back");
+        CreateMotion(preFix + "Step_Left");
+        CreateMotion(preFix + "Step_Forward_Long");
+        CreateMotion(preFix + "Step_Right_Long");
+        CreateMotion(preFix + "Step_Back_Long");
+        CreateMotion(preFix + "Step_Left_Long");
+
+        CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
+        CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
+
+        CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
+        CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
+
+        if (has_redirect)
+        {
+            CreateMotion(preFix + "Redirect_push_back");
+            CreateMotion(preFix + "Redirect_Stumble_JK");
+        }
+
+        CreateMotion(preFix + "Attack_Kick");
+        CreateMotion(preFix + "Attack_Kick_01");
+        CreateMotion(preFix + "Attack_Kick_02");
+        CreateMotion(preFix + "Attack_Punch");
+        CreateMotion(preFix + "Attack_Punch_01");
+        CreateMotion(preFix + "Attack_Punch_02");
+
+
+        preFix = "TG_HitReaction/";
+        CreateMotion(preFix + "HitReaction_Left");
+        CreateMotion(preFix + "HitReaction_Right");
+        CreateMotion(preFix + "HitReaction_Back_NoTurn");
+        CreateMotion(preFix + "HitReaction_Back");
+        CreateMotion(preFix + "CapeDistract_Close_Forward");
+        //CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
+        //CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
+
+        preFix = "TG_Getup/";
+        CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
+        CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
+
+        preFix = "TG_BM_Counter/";
+        AddCounterMotions(preFix);
+        CreateMotion(preFix + "Double_Counter_2ThugsA_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsA_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
+        CreateMotion(preFix + "Double_Counter_2ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_2ThugsD_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsD_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsE_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsE_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsF_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsF_02");
+        CreateMotion(preFix + "Double_Counter_2ThugsG_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_2ThugsH_01");
+        CreateMotion(preFix + "Double_Counter_2ThugsH_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_3ThugsA_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
+        CreateMotion(preFix + "Double_Counter_3ThugsA_02");
+        CreateMotion(preFix + "Double_Counter_3ThugsA_03", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_3ThugsB_01");
+        CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_3ThugsB_03");
+        CreateMotion(preFix + "Double_Counter_3ThugsC_01");
+        CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_3ThugsC_03");
+
+        preFix = "TG_BM_Beatdown/";
+        // CreateMotion(preFix + "Beatdown_Start_01");
+        CreateMotion(preFix + "Beatdown_HitReaction_01");
+        CreateMotion(preFix + "Beatdown_HitReaction_02");
+        CreateMotion(preFix + "Beatdown_HitReaction_03");
+        CreateMotion(preFix + "Beatdown_HitReaction_04");
+        CreateMotion(preFix + "Beatdown_HitReaction_05");
+        CreateMotion(preFix + "Beatdown_HitReaction_06");
+
+        CreateMotion(preFix + "Beatdown_Strike_End_01");
+        CreateMotion(preFix + "Beatdown_Strike_End_02");
+        CreateMotion(preFix + "Beatdown_Strike_End_03");
+        CreateMotion(preFix + "Beatdown_Strike_End_04");
+    }
+
+    void CreateBruceMotions()
+    {
+        //========================================================================
+        // PLAYER MOTIONS
+        //========================================================================
+        // Locomotions
+        CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, kMotion_R, 16);
+        CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, kMotion_R, 28);
+        CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, kMotion_R, 22);
+        CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
+
+        //CreateMotion("BM_Movement/Turn_Right_90", kMotion_R, kMotion_R, 16, 0, false);
+        //CreateMotion("BM_Movement/Turn_Right_180", kMotion_R, kMotion_R, 25, 0, false);
+        //CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, kMotion_R, 14, 0, false);
+        //CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
+
+        // Evades
+        CreateMotion("BM_Movement/Evade_Forward_01");
+        CreateMotion("BM_Movement/Evade_Back_01");
+        CreateMotion("BM_Movement/Evade_Left_01");
+        CreateMotion("BM_Movement/Evade_Right_01");
+
+        if (has_redirect)
+            CreateMotion("BM_Combat/Redirect");
+
+        String preFix = "BM_Combat_HitReaction/";
+        CreateMotion(preFix + "HitReaction_Back"); // back attacked
+        CreateMotion(preFix + "HitReaction_Face_Right"); // front punched
+        CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
+        CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
+        //CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
+        //CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
+
+        // Attacks
+        preFix = "BM_Attack/";
+        //========================================================================
+        // FORWARD
+        //========================================================================
+        // weak forward
+        CreateMotion(preFix + "Attack_Close_Weak_Forward");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_01");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_02");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_03");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_04");
+        CreateMotion(preFix + "Attack_Close_Weak_Forward_05");
+        // close forward
+        CreateMotion(preFix + "Attack_Close_Forward_02");
+        CreateMotion(preFix + "Attack_Close_Forward_03");
+        CreateMotion(preFix + "Attack_Close_Forward_04");
+        CreateMotion(preFix + "Attack_Close_Forward_05");
+        CreateMotion(preFix + "Attack_Close_Forward_06");
+        CreateMotion(preFix + "Attack_Close_Forward_07");
+        CreateMotion(preFix + "Attack_Close_Forward_08");
+        CreateMotion(preFix + "Attack_Close_Run_Forward");
+        // far forward
+        CreateMotion(preFix + "Attack_Far_Forward");
+        CreateMotion(preFix + "Attack_Far_Forward_01");
+        CreateMotion(preFix + "Attack_Far_Forward_02");
+        CreateMotion(preFix + "Attack_Far_Forward_03");
+        CreateMotion(preFix + "Attack_Far_Forward_04");
+        CreateMotion(preFix + "Attack_Run_Far_Forward");
+
+        //========================================================================
+        // RIGHT
+        //========================================================================
+        // weak right
+        CreateMotion(preFix + "Attack_Close_Weak_Right");
+        CreateMotion(preFix + "Attack_Close_Weak_Right_01");
+        CreateMotion(preFix + "Attack_Close_Weak_Right_02");
+        // close right
+        CreateMotion(preFix + "Attack_Close_Right");
+        CreateMotion(preFix + "Attack_Close_Right_01");
+        CreateMotion(preFix + "Attack_Close_Right_03");
+        CreateMotion(preFix + "Attack_Close_Right_04");
+        CreateMotion(preFix + "Attack_Close_Right_05");
+        CreateMotion(preFix + "Attack_Close_Right_06");
+        CreateMotion(preFix + "Attack_Close_Right_07");
+        CreateMotion(preFix + "Attack_Close_Right_08");
+        // far right
+        CreateMotion(preFix + "Attack_Far_Right");
+        CreateMotion(preFix + "Attack_Far_Right_01");
+        // CreateMotion(preFix + "Attack_Far_Right_02");
+        CreateMotion(preFix + "Attack_Far_Right_03");
+        CreateMotion(preFix + "Attack_Far_Right_04");
+
+        //========================================================================
+        // BACK
+        //========================================================================
+        // weak back
+        CreateMotion(preFix + "Attack_Close_Weak_Back");
+        CreateMotion(preFix + "Attack_Close_Weak_Back_01");
+        // close back
+        CreateMotion(preFix + "Attack_Close_Back");
+        CreateMotion(preFix + "Attack_Close_Back_01");
+        CreateMotion(preFix + "Attack_Close_Back_02");
+        CreateMotion(preFix + "Attack_Close_Back_03");
+        CreateMotion(preFix + "Attack_Close_Back_04");
+        CreateMotion(preFix + "Attack_Close_Back_05");
+        CreateMotion(preFix + "Attack_Close_Back_06");
+        CreateMotion(preFix + "Attack_Close_Back_07");
+        CreateMotion(preFix + "Attack_Close_Back_08");
+        // far back
+        CreateMotion(preFix + "Attack_Far_Back");
+        CreateMotion(preFix + "Attack_Far_Back_01");
+        CreateMotion(preFix + "Attack_Far_Back_02");
+        //CreateMotion(preFix + "Attack_Far_Back_03");
+        CreateMotion(preFix + "Attack_Far_Back_04");
+
+        //========================================================================
+        // LEFT
+        //========================================================================
+        // weak left
+        CreateMotion(preFix + "Attack_Close_Weak_Left");
+        CreateMotion(preFix + "Attack_Close_Weak_Left_01");
+        CreateMotion(preFix + "Attack_Close_Weak_Left_02");
+
+        // close left
+        CreateMotion(preFix + "Attack_Close_Left");
+        CreateMotion(preFix + "Attack_Close_Left_01");
+        CreateMotion(preFix + "Attack_Close_Left_02");
+        CreateMotion(preFix + "Attack_Close_Left_03");
+        CreateMotion(preFix + "Attack_Close_Left_04");
+        CreateMotion(preFix + "Attack_Close_Left_05");
+        CreateMotion(preFix + "Attack_Close_Left_06");
+        CreateMotion(preFix + "Attack_Close_Left_07");
+        CreateMotion(preFix + "Attack_Close_Left_08");
+        // far left
+        CreateMotion(preFix + "Attack_Far_Left");
+        CreateMotion(preFix + "Attack_Far_Left_01");
+        CreateMotion(preFix + "Attack_Far_Left_02");
+        CreateMotion(preFix + "Attack_Far_Left_03");
+        CreateMotion(preFix + "Attack_Far_Left_04");
+
+        preFix = "BM_TG_Counter/";
+        AddCounterMotions(preFix);
+        CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);
+        CreateMotion(preFix + "Double_Counter_2ThugsE");
+        CreateMotion(preFix + "Double_Counter_2ThugsF");
+        CreateMotion(preFix + "Double_Counter_2ThugsG");
+        CreateMotion(preFix + "Double_Counter_2ThugsH");
+        CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
+        CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
+        CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
+
+        preFix = "BM_Death_Primers/";
+        CreateMotion(preFix + "Death_Front");
+        CreateMotion(preFix + "Death_Back");
+        CreateMotion(preFix + "Death_Side_Left");
+        CreateMotion(preFix + "Death_Side_Right");
+
+        preFix = "BM_Attack/";
+        //CreateMotion(preFix + "Beatdown_Strike_Start_01");
+        //CreateMotion(preFix + "CapeDistract_Close_Forward");
+
+        CreateMotion(preFix + "Beatdown_Test_01");
+        CreateMotion(preFix + "Beatdown_Test_02");
+        CreateMotion(preFix + "Beatdown_Test_03");
+        CreateMotion(preFix + "Beatdown_Test_04");
+        CreateMotion(preFix + "Beatdown_Test_05");
+        CreateMotion(preFix + "Beatdown_Test_06");
+
+        preFix = "BM_TG_Beatdown/";
+        CreateMotion(preFix + "Beatdown_Strike_End_01");
+        CreateMotion(preFix + "Beatdown_Strike_End_02");
+        CreateMotion(preFix + "Beatdown_Strike_End_03");
+        CreateMotion(preFix + "Beatdown_Strike_End_04");
+
+        preFix = "BM_Combat/";
+        // CreateMotion(preFix + "Attempt_Takedown", kMotion_XZR, kMotion_Z);
+        CreateMotion(preFix + "Into_Takedown", kMotion_XZR, kMotion_XZR);
     }
 };
 

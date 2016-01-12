@@ -63,6 +63,7 @@ class CharacterState : State
 {
     Character@                  ownner;
     int                         flags;
+    bool                        combatReady = false;
 
     CharacterState(Character@ c)
     {
@@ -94,6 +95,10 @@ class CharacterState : State
             ownner.ChangeState(eventData[VALUE].GetStringHash());
         else if (name == HEALTH)
             ownner.SetHealth(eventData[VALUE].GetInt());
+        else if (name == IMPACT)
+            combatReady = true;
+        else if (name == READY_TO_FIGHT)
+            combatReady = true;
     }
 
     void OnFootStep(const String&in boneName)
@@ -135,6 +140,7 @@ class CharacterState : State
         if (flags >= 0)
             ownner.AddFlag(flags);
         State::Enter(lastState);
+        combatReady = false;
     }
 
     void Exit(State@ nextState)
@@ -142,6 +148,16 @@ class CharacterState : State
         if (flags >= 0)
             ownner.RemoveFlag(flags);
         State::Exit(nextState);
+    }
+
+    void Update(float dt)
+    {
+        if (combatReady)
+        {
+            ownner.ActionCheck(true, true, true, true);
+            return;
+        }
+        State::Update(dt);
     }
 };
 
