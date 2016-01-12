@@ -783,7 +783,30 @@ class PlayerCounterState : CharacterCounterState
             CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
             if (type == 2)
             {
-                int i = RandomInt(doubleCounterMotions.length);
+                Vector3 v1 = counterEnemies[0].GetNode().worldPosition;
+                Vector3 v2 = counterEnemies[1].GetNode().worldPosition;
+                Vector3 vm = ownner.GetNode().worldPosition;
+                v1 -= vm;
+                v2 -= vm;
+                float d1 = Atan2(v1.x, v1.z);
+                float d2 = Atan2(v2.x, v2.z);
+                float diff = Abs(d1 - d2);
+                Print("DoubleCounter -- d1=" + d1 + " d2=" + d2 + " diff=" + diff);
+
+                intCache.Clear();
+                for (uint i=0; i<doubleCounterMotions.length; ++i)
+                {
+                    Motion@ m = doubleCounterMotions[i];
+                    Motion@ m1 = s.doubleCounterMotions[i * 2 + 0];
+                    Motion@ m2 = s.doubleCounterMotions[i * 2 + 0];
+                    float r = Abs(m1.GetStartRot() - m2.GetStartRot());
+                    float r_diff = Abs(r - diff);
+                    if (r_diff > 45)
+                        continue;
+                    intCache.Push(i);
+                }
+
+                int i = intCache[RandomInt(intCache.length)];
                 @currentMotion = doubleCounterMotions[i];
                 Motion@ m1 = s.doubleCounterMotions[i * 2 + 0];
                 ChooseBestIndices(m1, 0);

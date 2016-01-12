@@ -25,11 +25,6 @@ class Enemy : Character
         Character::Remove();
     }
 
-    void DebugDraw(DebugRenderer@ debug)
-    {
-
-    }
-
     String GetDebugText()
     {
         return Character::GetDebugText() + "health=" + health +  " flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
