@@ -35,7 +35,7 @@ String PLAYER_NAME = "Bruce";;
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 99;
+int test_enemy_num_override = 5;
 bool lowend_platform = false;
 bool auto_target = false;
 
@@ -555,7 +555,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
-            String testName = "TG_BM_Counter/Double_Counter_2ThugsB_02";
+            String testName = "BM_TG_Counter/Double_Counter_3ThugsB";
             Player@ player = GetPlayer();
             if (player !is null)
                 player.TestAnimation(testName);

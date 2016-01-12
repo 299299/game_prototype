@@ -292,9 +292,17 @@ class AnimationTestState : CharacterState
     {
         @testMotion = gMotionMgr.FindMotion(animationName);
         if (testMotion !is null)
+        {
             testMotion.Start(ownner, 0.0f, 0.0f);
+            if (ownner.side == 1)
+                gCameraMgr.CheckCameraAnimation(testMotion.name);
+        }
         else
+        {
             ownner.PlayAnimation(animationName, LAYER_MOVE, false, 0.0f);
+            if (ownner.side == 1)
+                gCameraMgr.CheckCameraAnimation(animationName);
+        }
         CharacterState::Enter(lastState);
     }
 
@@ -1250,7 +1258,7 @@ class Character : GameObject
 
     bool IsVisible()
     {
-        return animModel.inView;
+        return animModel.IsInView(gCameraMgr.GetCamera());
     }
 
     void CheckAvoidance(float dt)

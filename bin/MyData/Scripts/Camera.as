@@ -296,9 +296,10 @@ class DeathCameraController : CameraController
 
 class AnimationCameraController : CameraController
 {
-    Array<String> animations;
     uint nodeId = M_MAX_UNSIGNED;
     int playingIndex = 0;
+    String animation;
+    float cameraSpeed = 5.0f;
 
     AnimationCameraController(Node@ n, const String&in name)
     {
@@ -307,18 +308,37 @@ class AnimationCameraController : CameraController
 
     void Enter()
     {
+        CreateAnimationNode();
     }
 
     void Update(float dt)
     {
+        Player@ p = GetPlayer();
+        if (p is null)
+            return;
+
         Node@ _node = script.defaultScene.GetNode(nodeId);
+        Node@ n = _node.GetChild("Camera_ROOT", true);
+        Vector3 v = GetTarget();
+        UpdateView(n.worldPosition, v, cameraSpeed*dt);
+
         AnimationController@ ac = _node.GetComponent("AnimationController");
-        if (ac.IsAtEnd(animations[playingIndex]))
+        if (ac.IsAtEnd(animation))
         {
             // finished.
             // todo.
             gCameraMgr.SetCameraController("ThirdPerson");
         }
+    }
+
+    Vector3 GetTarget()
+    {
+        Player@ p = GetPlayer();
+        if (p is null)
+            return Vector3(0, 0, 0);
+        Vector3 v = p.GetNode().worldPosition;
+        v.y += CHARACTER_HEIGHT;
+        return v;
     }
 
     Node@ CreateAnimationNode()
@@ -331,6 +351,8 @@ class AnimationCameraController : CameraController
             AnimatedModel@ model = _node.CreateComponent("AnimatedModel");
             AnimationController@ ac = _node.CreateComponent("AnimationController");
             model.model = cache.GetResource("Model", "Models/Camera_Rig.mdl");
+            model.updateInvisible = true;
+            model.viewMask = 0;
             return _node;
         }
         else
@@ -339,14 +361,24 @@ class AnimationCameraController : CameraController
 
     void PlayCamAnimation(const String&in animName)
     {
-        PlayAnimation(CreateAnimationNode().GetComponent("AnimationController"), animName);
+        animation = animName;
+        script.defaultScene.GetNode(nodeId).worldPosition = GetTarget();
+        PlayAnimation(CreateAnimationNode().GetComponent("AnimationController"), animName, LAYER_MOVE, false, 0.1f, 0.0f, 1.0f);
     }
 
     void OnCameraEvent(VariantMap& eventData)
     {
         if (!eventData.Contains(ANIMATION))
             return;
-        PlayCamAnimation(animations[eventData[ANIMATION].GetInt()]);
+        PlayCamAnimation(eventData[ANIMATION].GetString());
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        Node@ _node = script.defaultScene.GetNode(nodeId);
+        Node@ n = _node.GetChild("Camera_ROOT", true);
+        debug.AddNode(_node, 0.5f, false);
+        debug.AddNode(n, 0.5f, false);
     }
 };
 
@@ -356,6 +388,7 @@ class CameraManager
     CameraController@           currentController;
     Node@                       cameraNode;
     Vector3                     cameraTarget;
+    Array<StringHash>           cameraAnimations;
 
     CameraController@ FindCameraController(const StringHash&in nameHash)
     {
@@ -396,6 +429,20 @@ class CameraManager
         cameraControllers.Push(TransitionCameraController(n, "Transition"));
         cameraControllers.Push(DeathCameraController(n, "Death"));
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
+
+        cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));
+        cameraAnimations.Push(StringHash("Counter_Arm_Back_06"));
+        cameraAnimations.Push(StringHash("Counter_Arm_Front_07"));
+        cameraAnimations.Push(StringHash("Counter_Arm_Front_09"));
+        cameraAnimations.Push(StringHash("Counter_Arm_Front_13"));
+        cameraAnimations.Push(StringHash("Counter_Arm_Front_14"));
+        cameraAnimations.Push(StringHash("Counter_Leg_Back_04"));
+        cameraAnimations.Push(StringHash("Counter_Leg_Front_07"));
+        cameraAnimations.Push(StringHash("Double_Counter_2ThugsA"));
+        cameraAnimations.Push(StringHash("Double_Counter_2ThugsB"));
+        cameraAnimations.Push(StringHash("Double_Counter_2ThugsG"));
+        cameraAnimations.Push(StringHash("Double_Counter_2ThugsH"));
+        cameraAnimations.Push(StringHash("Double_Counter_3ThugsB"));
     }
 
     void Stop()
@@ -454,6 +501,35 @@ class CameraManager
 
         if (currentController !is null)
             currentController.OnCameraEvent(eventData);
+    }
+
+    void CheckCameraAnimation(const String&in anim)
+    {
+        uint pos = anim.FindLast('/');
+        String name = anim.Substring(pos + 1);
+        //Print("CheckCameraAnimation, name=" + name);
+        StringHash nameHash(name);
+        int k = -1;
+        for (uint i=0; i<cameraAnimations.length; ++i)
+        {
+            if (nameHash == cameraAnimations[i])
+            {
+                k = int(i);
+                break;
+            }
+        }
+
+        if (k < 0)
+            return;
+
+        String camAnim = GetAnimationName("BM_Combat_Cameras/" + name);
+        VariantMap eventData;
+        eventData[NAME] = CHANGE_STATE;
+        eventData[VALUE] = StringHash("Animation");
+        eventData[ANIMATION] = camAnim;
+        Print("camAnim=" + camAnim);
+
+        OnCameraEvent(eventData);
     }
 };
 

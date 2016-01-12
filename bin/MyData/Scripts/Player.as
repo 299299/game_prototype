@@ -794,6 +794,12 @@ class PlayerCounterState : CharacterCounterState
         StartAnimating();
     }
 
+    void StartCounterMotion()
+    {
+        CharacterCounterState::StartCounterMotion();
+        gCameraMgr.CheckCameraAnimation(currentMotion.name);
+    }
+
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         StringHash name = eventData[NAME].GetStringHash();
