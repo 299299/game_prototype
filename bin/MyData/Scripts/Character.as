@@ -1274,9 +1274,15 @@ class Character : GameObject
         }
     }
 
-    // ========================================================
+    bool IsInAir()
+    {
+        float diff = hipsNode.worldPosition.y - sceneNode.worldPosition.y;
+        return diff - pelvisOrign.y > 1.0f;
+    }
+
+    // ===============================================================================================
     //  EVENT HANDLERS
-    // ========================================================
+    // ===============================================================================================
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
         AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
@@ -1285,10 +1291,6 @@ class Character : GameObject
             cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }
 
-    bool IsInAir()
-    {
-        return hipsNode.worldPosition.y - pelvisOrign.y > 0.5f;
-    }
 };
 
 int DirectionMapToIndex(float directionDifference, int numDirections)

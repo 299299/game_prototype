@@ -323,7 +323,7 @@ class TestGameState : GameState
             if (player !is null)
                 player.RemoveFlag(FLAGS_INVINCIBLE);
 
-            gInput.m_freeze = false;
+            freezeInput = false;
             script.defaultScene.updateEnabled = true;
 
             VariantMap data;
@@ -335,7 +335,7 @@ class TestGameState : GameState
         {
             fade.Show(1.0f);
             fade.StartFadeIn(2.0f);
-            gInput.m_freeze = true;
+            freezeInput = true;
             if (newState == GAME_RESTARTING)
             {
                 EnemyManager@ em = GetEnemyMgr();
@@ -354,7 +354,6 @@ class TestGameState : GameState
         }
         else if (newState == GAME_PAUSE)
         {
-            // gInput.m_freeze = true;
             script.defaultScene.updateEnabled = false;
             pauseMenu.Add();
         }

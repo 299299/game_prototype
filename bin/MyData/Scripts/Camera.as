@@ -154,8 +154,9 @@ class ThirdPersonCameraController : CameraController
 
         target_pos.y += cameraHeight;
 
-        float pitch = gInput.m_rightStickY;
-        float yaw = gInput.m_rightStickX;
+        Vector3 v = gInput.GetRightAxis();
+        float pitch = v.y;
+        float yaw = v.x;
         pitch = Clamp(pitch, -10.0f, 60.0f);
 
         float dist = cameraDistance;

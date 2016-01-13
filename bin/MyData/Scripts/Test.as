@@ -50,8 +50,15 @@ int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 
+BaseInput@ gInput;
+
 void Start()
 {
+    if (engine.headless)
+        @gInput = BotInput();
+    else
+        @gInput = PlayerInput();
+
     Print("Game Running Platform: " + GetPlatform());
     lowend_platform = GetPlatform() != "Windows";
     // lowend_platform = true;

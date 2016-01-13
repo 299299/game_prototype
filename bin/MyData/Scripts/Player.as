@@ -44,7 +44,7 @@ class PlayerStandState : CharacterState
             int index = ownner.RadialSelectAnimation(4);
             ownner.GetNode().vars[ANIMATION_INDEX] = index -1;
 
-            Print("Stand->Move|Turn hold-frames=" + gInput.m_leftStickHoldFrames + " hold-time=" + gInput.m_leftStickHoldTime);
+            Print("Stand->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
 
             if (index == 0)
                 ownner.ChangeState("MoveState");
@@ -1259,7 +1259,7 @@ class Player : Character
 
     float GetTargetAngle()
     {
-        return gInput.m_leftStickAngle + gCameraMgr.GetCameraAngle();
+        return gInput.GetLeftAxisAngle() + gCameraMgr.GetCameraAngle();
     }
 
     bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
@@ -1435,8 +1435,7 @@ class Player : Character
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
         float myAngle = Atan2(myDir.x, myDir.z);
-        float cameraAngle = gCameraMgr.GetCameraAngle();
-        float targetAngle = gInput.m_leftStickAngle + cameraAngle;
+        float targetAngle = GetTargetAngle();
         em.scoreCache.Clear();
 
         Enemy@ attackEnemy = null;
@@ -1558,8 +1557,7 @@ class Player : Character
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
         float myAngle = Atan2(myDir.x, myDir.z);
-        float cameraAngle = gCameraMgr.GetCameraAngle();
-        float targetAngle = gInput.m_leftStickAngle + cameraAngle;
+        float targetAngle = GetTargetAngle();
 
         for (uint i=0; i<em.enemyList.length; ++i)
         {

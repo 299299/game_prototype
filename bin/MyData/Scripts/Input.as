@@ -8,7 +8,31 @@
 //
 // ==============================================
 
-class GameInput
+bool  freezeInput = false;
+
+interface BaseInput
+{
+    void Update(float);
+    bool HasLeftStickBeenStationary(float value);
+    bool IsLeftStickStationary();
+    bool IsLeftStickInDeadZone();
+    bool IsRightStickInDeadZone();
+    bool IsAttackPressed();
+    bool IsEvadePressed();
+    bool IsDistractPressed();
+    bool IsCounterPressed();
+    bool IsEnterPressed();
+    int  GetDirectionPressed();
+    String GetDebugText();
+    Vector3 GetLeftAxis();
+    Vector3 GetRightAxis();
+    int GetLeftAxisHoldingFrames();
+    float GetLeftAxisAngle();
+    float GetLeftAxisHoldingTime();
+};
+
+
+class PlayerInput : BaseInput
 {
     float m_leftStickX;
     float m_leftStickY;
@@ -33,22 +57,16 @@ class GameInput
 
     int   m_leftStickHoldFrames = 0;
 
-    bool  m_freeze = false;
-
-    GameInput()
+    PlayerInput()
     {
         JoystickState@ js = GetJoystick();
         if (js !is null)
             Print("joystick " + js.name);
     }
 
-    ~GameInput()
-    {
-    }
-
     void Update(float dt)
     {
-        if (m_freeze)
+        if (freezeInput)
             return;
 
         m_lastLeftStickX = m_leftStickX;
@@ -83,6 +101,31 @@ class GameInput
         }
 
         // Print("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
+    }
+
+    Vector3 GetLeftAxis()
+    {
+        return Vector3(m_leftStickX, m_leftStickY, m_leftStickMagnitude);
+    }
+
+    Vector3 GetRightAxis()
+    {
+        return Vector3(m_rightStickX, m_rightStickY, m_rightStickMagnitude);
+    }
+
+    float GetLeftAxisAngle()
+    {
+        return m_leftStickAngle;
+    }
+
+    int GetLeftAxisHoldingFrames()
+    {
+        return m_leftStickHoldFrames;
+    }
+
+    float GetLeftAxisHoldingTime()
+    {
+        return m_leftStickHoldTime;
     }
 
     Vector2 GetLeftStick()
@@ -176,7 +219,7 @@ class GameInput
 
     bool IsAttackPressed()
     {
-        if (m_freeze)
+        if (freezeInput)
             return false;
 
         JoystickState@ joystick = GetJoystick();
@@ -188,7 +231,7 @@ class GameInput
 
     bool IsCounterPressed()
     {
-        if (m_freeze)
+        if (freezeInput)
             return false;
 
         JoystickState@ joystick = GetJoystick();
@@ -200,7 +243,7 @@ class GameInput
 
     bool IsEvadePressed()
     {
-        if (m_freeze)
+        if (freezeInput)
             return false;
 
         JoystickState@ joystick = GetJoystick();
@@ -274,4 +317,113 @@ class GameInput
     }
 };
 
-GameInput@ gInput = GameInput();
+
+class BotInput : BaseInput
+{
+    float thinkTimer = 0.0f;
+    float thinkTime = 0.2f;
+
+    void Update(float dt)
+    {
+        if (freezeInput)
+            return;
+
+
+        thinkTimer += dt;
+        if (thinkTimer >= thinkTime)
+        {
+            OnThinkTimeOut();
+            thinkTimer -= thinkTime;
+        }
+    }
+
+    void OnThinkTimeOut()
+    {
+        Player@ player = GetPlayer();
+        EnemyManager@ em = GetEnemyMgr();
+
+        if (player is null or em is null)
+            return;
+    }
+
+    bool HasLeftStickBeenStationary(float value)
+    {
+        return false;
+    }
+
+    bool IsLeftStickStationary()
+    {
+        return false;
+    }
+
+    bool IsLeftStickInDeadZone()
+    {
+        return false;
+    }
+
+    bool IsRightStickInDeadZone()
+    {
+        return false;
+    }
+
+    bool IsAttackPressed()
+    {
+        return false;
+    }
+
+    bool IsEvadePressed()
+    {
+        return false;
+    }
+
+    bool IsDistractPressed()
+    {
+        return false;
+    }
+
+    bool IsCounterPressed()
+    {
+        return false;
+    }
+
+    bool IsEnterPressed()
+    {
+        return false;
+    }
+
+    int  GetDirectionPressed()
+    {
+        return 0;
+    }
+
+    Vector3 GetLeftAxis()
+    {
+        return Vector3(0,0,0);
+    }
+
+    Vector3 GetRightAxis()
+    {
+        return Vector3(0,0,0);
+    }
+
+    int GetLeftAxisHoldingFrames()
+    {
+        return 0;
+    }
+
+    float GetLeftAxisAngle()
+    {
+        return 0.0f;
+    }
+
+    float GetLeftAxisHoldingTime()
+    {
+        return 0.0f;
+    }
+
+    String GetDebugText()
+    {
+        String ret = "BotInput --";
+        return ret;
+    }
+};
