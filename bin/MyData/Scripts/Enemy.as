@@ -189,7 +189,7 @@ class EnemyManager : ScriptObject
         if (thugName == "")
             thugName = "Thug_" + thugId;
         thugId ++;
-        return CreateCharacter(thugName, "thug", "Thug", position, rotation);
+        return CreateCharacter(thugName, "Thug", "Thug", position, rotation);
     }
 
     void RemoveAll()

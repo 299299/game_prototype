@@ -156,8 +156,11 @@ class CharacterState : State
     {
         if (combatReady)
         {
-            ownner.ActionCheck(true, true, true, true);
-            return;
+            if (!ownner.IsInAir())
+            {
+                if (ownner.ActionCheck(true, true, true, true))
+                    return;
+            }
         }
         State::Update(dt);
         firstUpdate = false;
@@ -601,6 +604,11 @@ class CharacterCounterState : CharacterState
         targetRotation = rot;
         movePerSec = (targetPosition - pos1) / alignTime;
         yawPerSec = AngleDiff(rot - ownner.GetNode().worldRotation.eulerAngles.y) / alignTime;
+    }
+
+    String GetDebugText()
+    {
+        return "current motion=" + currentMotion.animationName;
     }
 };
 
@@ -1235,9 +1243,9 @@ class Character : GameObject
             PlaySound("Sfx/big_" + (RandomInt(num_of_big_sounds) + 1) + ".ogg");
     }
 
-    void ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
+    bool ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
     {
-
+        return false;
     }
 
     bool IsVisible()
@@ -1275,6 +1283,11 @@ class Character : GameObject
         CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
         if (cs !is null)
             cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
+    }
+
+    bool IsInAir()
+    {
+        return hipsNode.worldPosition.y - pelvisOrign.y > 0.5f;
     }
 };
 

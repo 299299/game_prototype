@@ -189,7 +189,6 @@ class PlayerAttackState : CharacterState
 
     bool                    weakAttack = true;
     bool                    slowMotion = false;
-    bool                    isInAir = false;
     bool                    lastKill = false;
 
     PlayerAttackState(Character@ c)
@@ -272,9 +271,7 @@ class PlayerAttackState : CharacterState
 
     void CheckInput(float t)
     {
-        float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
-        isInAir = y_diff > 0.5f;
-        if (isInAir)
+        if (ownner.IsInAir())
             return;
 
         int addition_frames = slowMotion ? slowMotionFrames : 0;
@@ -396,7 +393,6 @@ class PlayerAttackState : CharacterState
 
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
-        isInAir = false;
         weakAttack = cast<Player>(ownner).combo < MAX_WEAK_ATTACK_COMBO;
         slowMotion = (p.combo >= 3) ? (RandomInt(10) == 1) : false;
 
@@ -467,7 +463,6 @@ class PlayerAttackState : CharacterState
     {
         return " name=" + name + " timeInState=" + String(timeInState) + "\n" +
                 "currentAttack=" + currentAttack.motion.animationName +
-                " isInAir=" + isInAir +
                 " weakAttack=" + weakAttack +
                 " slowMotion=" + slowMotion +
                 "\n";
@@ -519,8 +514,6 @@ class PlayerCounterState : CharacterCounterState
     Array<int>      intCache;
     int             lastCounterIndex = -1;
     int             lastCounterDirection = -1;
-    bool            isInAir = false;
-    bool            checkInput = false;
 
     PlayerCounterState(Character@ c)
     {
@@ -530,13 +523,11 @@ class PlayerCounterState : CharacterCounterState
 
     void Update(float dt)
     {
-        if (counterEnemies.length == 0 || currentMotion is null)
+        if (counterEnemies.empty || currentMotion is null)
         {
-            ownner.ChangeState("StandState"); // Something Error Happened
+            ownner.CommonStateFinishedOnGroud(); // Something Error Happened
             return;
         }
-
-        CheckInput();
         CharacterCounterState::Update(dt);
     }
 
@@ -569,7 +560,7 @@ class PlayerCounterState : CharacterCounterState
         }
 
         Enemy@ e = counterEnemies[possed];
-        float dist_good = 3.0f;
+        float dist_good = 4.0f;
         if (minDistSQR > dist_good)
         {
             Print(alignMotion.name + " too far");
@@ -597,10 +588,8 @@ class PlayerCounterState : CharacterCounterState
 
     int TestTrippleCounterMotions(int i)
     {
-        for (int k=0; k<counterEnemies.length; ++k)
-        {
+        for (uint k=0; k<counterEnemies.length; ++k)
             cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
-        }
 
         CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
         @currentMotion = tripleCounterMotions[i];
@@ -615,10 +604,8 @@ class PlayerCounterState : CharacterCounterState
 
     int TestDoubleCounterMotions(int i)
     {
-        for (int k=0; k<counterEnemies.length; ++k)
-        {
+        for (uint k=0; k<counterEnemies.length; ++k)
             cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
-        }
 
         CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
         @currentMotion = doubleCounterMotions[i];
@@ -639,7 +626,6 @@ class PlayerCounterState : CharacterCounterState
 
         Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
         type = counterEnemies.length;
-        checkInput = false;
 
         // POST_PROCESS
         for (int i=0; i<type; ++i)
@@ -780,11 +766,6 @@ class PlayerCounterState : CharacterCounterState
             counterEnemies.Clear();
     }
 
-    String GetDebugText()
-    {
-        return "current motion=" + currentMotion.animationName + " isInAir=" + isInAir + " checkInput=" + checkInput + "\n";
-    }
-
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 1.0f, RED, false);
@@ -826,30 +807,12 @@ class PlayerCounterState : CharacterCounterState
             ownner.OnCounterSuccess();
             return;
         }
-        else if (name == READY_TO_FIGHT)
-        {
-            checkInput = true;
-            return;
-        }
         CharacterState::OnAnimationTrigger(animState, eventData);
-    }
-
-    void CheckInput()
-    {
-        if (!checkInput)
-            return;
-
-        float y_diff = ownner.hipsNode.worldPosition.y - pelvisOrign.y;
-        isInAir = y_diff > 0.5f;
-        if (isInAir)
-            return;
-
-        ownner.ActionCheck(true, true, true, true);
     }
 
     bool CanReEntered()
     {
-        return !isInAir && checkInput;
+        return true;
     }
 };
 
@@ -1623,8 +1586,7 @@ class Player : Character
     String GetDebugText()
     {
         return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
-              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale +
-              " tAngle=" + GetTargetAngle() + "\n";
+              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + " tAngle=" + GetTargetAngle() + "\n";
     }
 
     void Reset()
@@ -1645,19 +1607,21 @@ class Player : Character
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), PLAYER_NEAR_DIST, YELLOW, 32, false);
     }
 
-    void ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
+    bool ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
     {
         if (bAttack && gInput.IsAttackPressed())
-            Attack();
+            return Attack();
 
         if (bDistract && gInput.IsDistractPressed())
-            Distract();
+            return Distract();
 
         if (bCounter && gInput.IsCounterPressed())
-            Counter();
+            return Counter();
 
         if (bEvade && gInput.IsEvadePressed())
-            Evade();
+            return Evade();
+
+        return false;
     }
 
     bool Attack()
