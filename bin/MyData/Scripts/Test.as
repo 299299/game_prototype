@@ -35,7 +35,7 @@ String PLAYER_NAME = "Bruce";;
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 5;
+int test_enemy_num_override = 15;
 bool lowend_platform = false;
 bool auto_target = false;
 
@@ -662,6 +662,7 @@ void SetColorGrading(int index)
 {
     Array<String> colorGradingTextures =
     {
+        "Weathered",
         "Hipster",
         "Vintage",
         "Hollywood",
@@ -710,8 +711,7 @@ void SetColorGrading(int index)
         "TritonePurple",
         "Underwater",
         "War",
-        "Warm",
-        "Weathered"
+        "Warm"
     };
     int len = int(colorGradingTextures.length);
     if (index >= len)

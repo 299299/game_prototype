@@ -1179,9 +1179,10 @@ class PlayerTransitionState : SingleMotionState
 
 class Player : Character
 {
-    int combo;
-    int killed;
-    uint lastAttackId = M_MAX_UNSIGNED;
+    int         combo;
+    int         killed;
+    uint        lastAttackId = M_MAX_UNSIGNED;
+    uint        lightNodeId = M_MAX_UNSIGNED;
 
     void ObjectStart()
     {
@@ -1202,6 +1203,8 @@ class Player : Character
         //tail.enabled = false;
         _node.enabled = false;
         //attackDamage = 100;
+
+        lightNodeId = GetScene().GetChild("light").id;
     }
 
     void AddStates()
@@ -1678,5 +1681,18 @@ class Player : Character
         if (target !is null)
             target.RemoveFlag(FLAGS_NO_MOVE);
         Character::SetTarget(t);
+    }
+
+    void Update(float dt)
+    {
+        Node@ lightNode = GetScene().GetNode(lightNodeId);
+        if (lightNode !is null)
+        {
+            Vector3 v = sceneNode.worldPosition;
+            float h = lightNode.worldPosition.y;
+            lightNode.worldPosition = Vector3(v.x, h, v.z);
+        }
+
+        Character::Update(dt);
     }
 };

@@ -54,7 +54,7 @@ const StringHash IMPACT("Impact");
 const StringHash HEALTH("Health");
 const StringHash SOUND("Sound");
 
-Vector3 WORLD_HALF_SIZE(0, 0, 0);
+Vector3 WORLD_HALF_SIZE(99999, 0, 99999);
 
 int num_of_sounds = 37;
 int num_of_big_sounds = 6;
