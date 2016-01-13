@@ -430,6 +430,7 @@ class CameraManager
         cameraControllers.Push(DeathCameraController(n, "Death"));
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
 
+        /*
         cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));
         cameraAnimations.Push(StringHash("Counter_Arm_Back_06"));
         cameraAnimations.Push(StringHash("Counter_Arm_Front_07"));
@@ -443,6 +444,7 @@ class CameraManager
         cameraAnimations.Push(StringHash("Double_Counter_2ThugsG"));
         cameraAnimations.Push(StringHash("Double_Counter_2ThugsH"));
         cameraAnimations.Push(StringHash("Double_Counter_3ThugsB"));
+        */
     }
 
     void Stop()
