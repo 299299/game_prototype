@@ -99,9 +99,7 @@ void Start()
     if (renderer !is null)
         renderer.hdrRendering = bHdr;
 
-    uint t = time.systemTime;
-    SetRandomSeed(t);
-    Print("RandomSeed = " + t);
+    SetRandomSeed(time.systemTime);
 
     if (!engine.headless)
     {
