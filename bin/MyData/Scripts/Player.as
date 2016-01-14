@@ -16,8 +16,9 @@ const float MAX_DISTRACT_DIST = 4.0f;
 const float MAX_DISTRACT_DIR = 90.0f;
 const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
-const float COUNTER_ALIGN_MAX_DIST = 1.25f;
+const float COUNTER_ALIGN_MAX_DIST = 1.5f;
 const float PLAYER_NEAR_DIST = 6.0f;
+const float GOOD_COUNTER_DIST = 3.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -560,8 +561,7 @@ class PlayerCounterState : CharacterCounterState
         }
 
         Enemy@ e = counterEnemies[possed];
-        float dist_good = 4.0f;
-        if (minDistSQR > dist_good)
+        if (minDistSQR > GOOD_COUNTER_DIST * GOOD_COUNTER_DIST)
         {
             Print(alignMotion.name + " too far");
             return;

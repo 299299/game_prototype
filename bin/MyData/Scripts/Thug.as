@@ -102,7 +102,7 @@ class ThugStandState : CharacterState
         if (num_of_moving_thugs < MAX_NUM_OF_MOVING && num_of_with_player <  MAX_NUM_OF_NEAR && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             // try to move to player
-            rand_i = RandomInt(2);
+            rand_i = RandomInt(6);
             String nextState = "StepMoveState";
             float run_dist = STEP_MAX_DIST + 1.0f;
             if (dist >= run_dist || rand_i == 1)
