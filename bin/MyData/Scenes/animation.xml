@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="9.57799" />
 	<attribute name="Next Replicated Node ID" value="18" />
 	<attribute name="Next Replicated Component ID" value="32" />
-	<attribute name="Next Local Node ID" value="16778901" />
-	<attribute name="Next Local Component ID" value="16777707" />
+	<attribute name="Next Local Node ID" value="16778978" />
+	<attribute name="Next Local Component ID" value="16777720" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -1834,5 +1834,18 @@
 				</node>
 			</node>
 		</node>
+	</node>
+	<node id="16778902">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="" />
+		<attribute name="Position" value="-6.18255 2.74781 0.989547" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="AnimatedModel" id="16777719">
+			<attribute name="Animation States">
+				<variant type="Int" value="0" />
+			</attribute>
+		</component>
 	</node>
 </scene>
