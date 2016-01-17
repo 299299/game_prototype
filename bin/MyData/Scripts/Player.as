@@ -502,7 +502,7 @@ class PlayerAttackState : CharacterState
             return;
 
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5.0f, 5.0f);
-        ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 1.0f, 0.35f);
+        ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 0.5f, 0.4f);
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
@@ -807,10 +807,11 @@ class PlayerCounterState : CharacterCounterState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
-            Node@ _node = ownner.GetNode();
-            Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
+            Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
+            Vector3 position = ownner.GetNode().worldPosition;
             if (boneNode !is null)
-                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
+                position = boneNode.worldPosition;
+            ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 5, 5.0f);
             ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
             ownner.OnCounterSuccess();
             return;
@@ -920,18 +921,18 @@ class PlayerBeatDownEndState : MultiMotionState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
-            Node@ _node = ownner.GetNode();
-            Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
-            Vector3 position = _node.worldPosition;
+            Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
+            Vector3 position = ownner.GetNode().worldPosition;
             if (boneNode !is null)
                 position = boneNode.worldPosition;
             ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 5, 10.0f);
+            ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 0.5f, 0.5f);
             ownner.PlayRandomSound(1);
             combatReady = true;
             Character@ target = ownner.target;
             if (target !is null)
             {
-                Vector3 dir = _node.worldPosition - target.GetNode().worldPosition;
+                Vector3 dir = ownner.GetNode().worldPosition - target.GetNode().worldPosition;
                 dir.y = 0;
                 dir.Normalize();
                 target.OnDamage(ownner, position, dir, 9999, false);
@@ -1109,7 +1110,16 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             Print("BeatDownHitState On Impact");
             combatReady = true;
+            Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
+            Vector3 position = ownner.GetNode().worldPosition;
+            if (boneNode !is null)
+                position = boneNode.worldPosition;
+            ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 5, 10.0f);
+            ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 0.5f, 0.4f);
+            ownner.PlayRandomSound(0);
+
             ownner.OnAttackSuccess(ownner.target);
+
             if (beatNum >= beatTotal)
                 ownner.ChangeState("BeatDownEndState");
             return;

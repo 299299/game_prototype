@@ -993,19 +993,12 @@ class MotionManager
         AddAnimationTrigger(preFix + "CapeDistract_Close_Forward", 12, IMPACT);
 
         int beat_impact_frame = 4;
-        AddAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT);
-        AddAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT);
-        AddAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, IMPACT);
-        AddAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, IMPACT);
-        AddAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, IMPACT);
-        AddAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, IMPACT);
-
-        AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, COMBAT_SOUND, L_HAND);
-        AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, COMBAT_SOUND, R_HAND);
-        AddStringAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, COMBAT_SOUND, L_HAND);
-        AddStringAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, COMBAT_SOUND, R_HAND);
-        AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, COMBAT_SOUND, R_HAND);
-        AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, COMBAT_SOUND, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT, L_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, IMPACT, L_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, IMPACT, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, IMPACT, R_HAND);
+        AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, IMPACT, R_HAND);
 
         //AddStringAnimationTrigger(preFix + "Beatdown_Strike_Start_01", 7, COMBAT_SOUND, L_HAND);
 
