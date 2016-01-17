@@ -1350,13 +1350,13 @@ class Player : Character
         }
         else
         {
-            int max_comb = 60;
+            int max_comb = 80;
             int c = Min(combo, max_comb);
             float a = float(c)/float(max_comb);
-            const float max_time_scale = 1.25f;
+            const float max_time_scale = 1.35f;
             float time_scale = Lerp(1.0f, max_time_scale, a);
             SetTimeScale(time_scale);
-            const float max_fov = 60;
+            const float max_fov = 75;
             fov = Lerp(BASE_FOV, max_fov, a);
         }
         VariantMap data;

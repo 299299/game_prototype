@@ -286,7 +286,7 @@ class TestGameState : GameState
         {
             int selection = pauseMenu.Update(dt);
             if (selection == 0)
-                ChangeSubState(GAME_RUNNING);
+                ChangeSubState(lastState);
             else if (selection == 1)
                 engine.Exit();
         }
@@ -333,7 +333,7 @@ class TestGameState : GameState
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)
         {
-            if (lastState != GAME_PAUSE)
+            if (oldState != GAME_PAUSE)
             {
                 fade.Show(1.0f);
                 fade.StartFadeIn(2.0f);

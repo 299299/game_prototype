@@ -84,7 +84,7 @@ class GameObject : ScriptObject
         source.SetDistanceAttenuation(5, 50, 2);
         source.Play(sound);
         source.soundType = SOUND_EFFECT;
-        source.frequency = source.frequency * GetNode().scene.timeScale * timeScale;
+        source.frequency = source.frequency * GetNode().scene.timeScale; // * timeScale;
         // Subscribe to sound finished for cleaning up the source
         SubscribeToEvent(node, "SoundFinished", "HandleSoundFinished");
     }

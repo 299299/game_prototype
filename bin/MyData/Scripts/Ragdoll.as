@@ -59,8 +59,8 @@ class Ragdoll : ScriptObject
     Animation@        blendingAnim_2;
 
     float             ragdollToAnimBlendTime = 1.0f;
-    float             minRagdollStateTime = 2.0f;
-    float             maxRagdollStateTime = 6.0f;
+    float             minRagdollStateTime = 1.5f;
+    float             maxRagdollStateTime = 5.0f;
 
     int               getUpIndex = 0;
 
@@ -272,7 +272,7 @@ class Ragdoll : ScriptObject
                 }
 
                 Vector3 vel = rb.linearVelocity;
-                if (vel.lengthSquared < 0.01f)
+                if (vel.lengthSquared < 0.1f)
                     num_of_freeze_objects ++;
                 //Print(boneNodes[i].name + " vel=" + vel.ToString());
             }
