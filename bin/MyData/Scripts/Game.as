@@ -292,7 +292,7 @@ class TestGameState : GameState
         }
         else if (state == GAME_RUNNING) {
             if (!postInited) {
-                if (timeInState > 1.0f) {
+                if (timeInState > 2.0f) {
                     postInit();
                     postInited = true;
                 }
@@ -392,7 +392,7 @@ class TestGameState : GameState
                 renderpath.SetEnabled("TonemapUncharted2", true);
                 renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
                 renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
-                renderpath.shaderParameters["AutoExposureAdaptRate"] = 0.8f;
+                renderpath.shaderParameters["AutoExposureAdaptRate"] = 1.0f;
             }
         }
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
