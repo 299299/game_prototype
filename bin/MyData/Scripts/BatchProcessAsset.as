@@ -7,7 +7,7 @@
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
 const Array<String> MODEL_ARGS = {"-t", "na", "-l", "-cm", "-ct", "-nm",  "-nt"};
-const Array<String> ANIMATION_ARGS = {"-nm",  "-nt"};
+const Array<String> ANIMATION_ARGS = {"-nm",  "-nt", "-mb 75"};
 String exportFolder;
 
 void PreProcess()
