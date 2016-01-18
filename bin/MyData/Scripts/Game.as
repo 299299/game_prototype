@@ -333,8 +333,12 @@ class TestGameState : GameState
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)
         {
-            fade.Show(1.0f);
-            fade.StartFadeIn(2.0f);
+            if (lastStates != GAME_PAUSE)
+            {
+                fade.Show(1.0f);
+                fade.StartFadeIn(2.0f);
+            }
+
             freezeInput = true;
             if (newState == GAME_RESTARTING)
             {

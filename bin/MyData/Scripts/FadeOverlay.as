@@ -119,7 +119,6 @@ class FadeOverlay
         return false;
     }
 
-
     bool UpdateFadeOut(float dt)
     {
         ResizeUI();
