@@ -333,7 +333,7 @@ class TestGameState : GameState
         }
         else if (newState == GAME_FADING || newState == GAME_RESTARTING)
         {
-            if (lastStates != GAME_PAUSE)
+            if (lastState != GAME_PAUSE)
             {
                 fade.Show(1.0f);
                 fade.StartFadeIn(2.0f);
