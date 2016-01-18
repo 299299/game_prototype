@@ -6,6 +6,9 @@
 
 const String BRUCE_MOVEMENT_GROUP = "BM_Combat_Movement/"; //"BM_Combat_Movement/"
 
+// -- non cost
+float BRUCE_TRANSITION_DIST = 0.0f;
+
 class BruceStandState : PlayerStandState
 {
     BruceStandState(Character@ c)
@@ -285,6 +288,11 @@ class BruceBeatDownHitState : PlayerBeatDownHitState
         AddMotion(preFix + "Beatdown_Test_05");
         AddMotion(preFix + "Beatdown_Test_06");
     }
+
+    bool IsTransitionNeeded(float curDist)
+    {
+        return curDist > BRUCE_TRANSITION_DIST + 0.5f;
+    }
 };
 
 class BruceTransitionState : PlayerTransitionState
@@ -293,6 +301,8 @@ class BruceTransitionState : PlayerTransitionState
     {
         super(c);
         SetMotion("BM_Combat/Into_Takedown");
+        BRUCE_TRANSITION_DIST = motion.endDistance;
+        Print("Bruce-Transition Dist=" + BRUCE_TRANSITION_DIST);
     }
 };
 

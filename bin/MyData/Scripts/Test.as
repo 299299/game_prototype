@@ -55,7 +55,10 @@ BaseInput@ gInput;
 void Start()
 {
     if (engine.headless)
+    {
         @gInput = BotInput();
+        freeze_ai = 1;
+    }
     else
         @gInput = PlayerInput();
 
@@ -553,7 +556,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
             //String testName = "BM_Attack/Attack_Far_Back_04";
             //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
-            String testName = "BM_TG_Counter/Double_Counter_3ThugsB";
+            String testName = "BM_Attack/Attack_Far_Back_03";
             Player@ player = GetPlayer();
             if (player !is null)
                 player.TestAnimation(testName);

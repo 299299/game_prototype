@@ -957,7 +957,7 @@ class PlayerBeatDownHitState : MultiMotionState
     float targetRotation;
 
     int state = 0;
-    bool distTooFar = false;
+    bool needToTransition = false;
     bool attackPressed = false;
 
     PlayerBeatDownHitState(Character@ c)
@@ -972,6 +972,11 @@ class PlayerBeatDownHitState : MultiMotionState
         return true;
     }
 
+    bool IsTransitionNeeded(float curDist)
+    {
+        return false;
+    }
+
     void Update(float dt)
     {
         // Print("PlayerBeatDownHitState::Update() " + dt);
@@ -982,7 +987,7 @@ class PlayerBeatDownHitState : MultiMotionState
             return;
         }
 
-        if (distTooFar)
+        if (needToTransition)
         {
             ownner.ChangeState("TransitionState");
             PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.GetState());
@@ -1045,12 +1050,7 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             float curDist = ownner.GetTargetDistance();
             Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
-
-            if (curDist >= 12.5f)
-            {
-                distTooFar = true;
-                return;
-            }
+            needToTransition = IsTransitionNeeded(curDist - PLAYER_COLLISION_DIST);
         }
 
         MultiMotionState@ s = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
@@ -1090,7 +1090,7 @@ class PlayerBeatDownHitState : MultiMotionState
     {
         Print("========================= BeatDownHitState Enter start ===========================");
         attackPressed = false;
-        distTooFar = false;
+        needToTransition = false;
         if (lastState !is this)
         {
             beatNum = 0;
@@ -1161,7 +1161,9 @@ class PlayerTransitionState : SingleMotionState
         {
             target.RequestDoNotMove();
             Vector3 dir = target.GetNode().worldPosition - ownner.GetNode().worldPosition;
-            ownner.GetNode().worldRotation = Quaternion(0, Atan2(dir.x, dir.z), 0);
+            float angle = Atan2(dir.x, dir.z);
+            ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
+            target.GetNode().worldRotation = Quaternion(0, angle + 180, 0);
         }
         SingleMotionState::Enter(lastState);
     }
@@ -1171,6 +1173,7 @@ class PlayerTransitionState : SingleMotionState
         SingleMotionState::Exit(nextState);
         if (ownner.target !is null)
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
+        Print("After Player Transition Target dist = " + ownner.GetTargetDistance());
     }
 
     String GetDebugText()

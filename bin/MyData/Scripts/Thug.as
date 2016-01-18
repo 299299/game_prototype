@@ -169,6 +169,13 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Back_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
         flags = FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING;
+
+        if (STEP_MAX_DIST != 0.0f)
+        {
+            STEP_MIN_DIST = motions[0].endDistance;
+            STEP_MAX_DIST = motions[4].endDistance;
+            Print("Thug min-step-dist=" + STEP_MIN_DIST + " max-step-dist=" + STEP_MAX_DIST);
+        }
     }
 
     void Update(float dt)
@@ -383,6 +390,13 @@ class ThugAttackState : CharacterState
         AddAttackMotion("Attack_Kick", 24, ATTACK_KICK, "Bip01_L_Foot");
         AddAttackMotion("Attack_Kick_01", 24, ATTACK_KICK, "Bip01_L_Foot");
         AddAttackMotion("Attack_Kick_02", 24, ATTACK_KICK, "Bip01_L_Foot");
+
+        if (PUNCH_DIST != 0.0f)
+        {
+            PUNCH_DIST = attacks[0].motion.endDistance;
+            KICK_DIST = attacks[3].motion.endDistance;
+            Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + PUNCH_DIST);
+        }
     }
 
     void AddAttackMotion(const String&in name, int impactFrame, int type, const String&in bName)
@@ -830,16 +844,6 @@ class Thug : Enemy
         stateMachine.AddState(AnimationTestState(this));
 
         ChangeState("StandState");
-
-        Motion@ kickMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Kick");
-        KICK_DIST = kickMotion.endDistance;
-        Motion@ punchMotion = gMotionMgr.FindMotion("TG_Combat/Attack_Punch");
-        PUNCH_DIST = punchMotion.endDistance;
-        Motion@ stepMotion = gMotionMgr.FindMotion("TG_Combat/Step_Forward_Long");
-        STEP_MAX_DIST = stepMotion.endDistance;
-        @stepMotion = gMotionMgr.FindMotion("TG_Combat/Step_Forward");
-        STEP_MIN_DIST = stepMotion.endDistance;
-        Print("Thug kick-dist=" + KICK_DIST + " punch-dist=" + String(PUNCH_DIST) + " step-fwd-long-dis=" + STEP_MAX_DIST);
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
