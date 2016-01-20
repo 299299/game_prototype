@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="9.57799" />
-	<attribute name="Next Replicated Node ID" value="18" />
-	<attribute name="Next Replicated Component ID" value="32" />
-	<attribute name="Next Local Node ID" value="16779296" />
-	<attribute name="Next Local Component ID" value="16777745" />
+	<attribute name="Next Replicated Node ID" value="19" />
+	<attribute name="Next Replicated Component ID" value="33" />
+	<attribute name="Next Local Node ID" value="16779411" />
+	<attribute name="Next Local Component ID" value="16777757" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -2967,1041 +2967,1043 @@
 	</node>
 	<node id="16779103">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="" />
+		<attribute name="Name" value="catwoman" />
 		<attribute name="Position" value="4.85599 0 -1.52106" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="16777744">
-			<attribute name="Model" value="Model;Models/catwoman.mdl" />
-			<attribute name="Material" value="Material;;;;;;;" />
-			<attribute name="Bone Animation Enabled">
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-				<variant type="Bool" value="true" />
-			</attribute>
-			<attribute name="Animation States">
-				<variant type="Int" value="1" />
-				<variant type="ResourceRef" value="Animation;Animations/Test/test2_Take 001.ani" />
-				<variant type="String" value="RootNode" />
-				<variant type="Bool" value="true" />
-				<variant type="Float" value="1" />
-				<variant type="Float" value="0.26759" />
-				<variant type="Int" value="0" />
-			</attribute>
-		</component>
-		<node id="16779182">
+		<node id="18">
 			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="RootNode" />
-			<attribute name="Position" value="0 0 -0" />
-			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Name" value="RenderNode" />
+			<attribute name="Position" value="0 0 0" />
+			<attribute name="Rotation" value="-4.37114e-008 0 1 -0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<node id="16779183">
+			<component type="AnimatedModel" id="32">
+				<attribute name="Model" value="Model;Models/catwoman.mdl" />
+				<attribute name="Material" value="Material;Materials/Blue.xml;;;;Materials/DLC4_Catwoman_Legs_AS_MAT.xml;Materials/DLC4_Catwoman_Body.xml;Materials/DLC4_Catwoman_Body.xml" />
+				<attribute name="Bone Animation Enabled">
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+				</attribute>
+				<attribute name="Animation States">
+					<variant type="Int" value="0" />
+				</attribute>
+			</component>
+			<node id="16779297">
 				<attribute name="Is Enabled" value="true" />
-				<attribute name="Name" value="Bip01_$AssimpFbx$_Translation" />
-				<attribute name="Position" value="0.173876 3.04877 -3.16783" />
+				<attribute name="Name" value="RootNode" />
+				<attribute name="Position" value="0 0 -0" />
 				<attribute name="Rotation" value="1 0 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16779184">
+				<node id="16779298">
 					<attribute name="Is Enabled" value="true" />
-					<attribute name="Name" value="Bip01_$AssimpFbx$_PreRotation" />
-					<attribute name="Position" value="0 0 -0" />
-					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
+					<attribute name="Name" value="Bip01_$AssimpFbx$_Translation" />
+					<attribute name="Position" value="0 2.73182 0" />
+					<attribute name="Rotation" value="1 0 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16779185">
+					<node id="16779299">
 						<attribute name="Is Enabled" value="true" />
-						<attribute name="Name" value="Bip01_$AssimpFbx$_Rotation" />
+						<attribute name="Name" value="Bip01_$AssimpFbx$_PreRotation" />
 						<attribute name="Position" value="0 0 -0" />
-						<attribute name="Rotation" value="0.458978 -0.828574 -0.259631 -0.188139" />
+						<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 						<attribute name="Scale" value="1 1 1" />
 						<attribute name="Variables" />
-						<node id="16779186">
+						<node id="16779300">
 							<attribute name="Is Enabled" value="true" />
-							<attribute name="Name" value="Bip01_$AssimpFbx$_Scaling" />
+							<attribute name="Name" value="Bip01_$AssimpFbx$_Rotation" />
 							<attribute name="Position" value="0 0 -0" />
-							<attribute name="Rotation" value="1 0 0 0" />
-							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
+							<attribute name="Rotation" value="0.707107 0 0 -0.707106" />
+							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
-							<node id="16779187">
+							<node id="16779301">
 								<attribute name="Is Enabled" value="true" />
-								<attribute name="Name" value="Bip01" />
+								<attribute name="Name" value="Bip01_$AssimpFbx$_Scaling" />
 								<attribute name="Position" value="0 0 -0" />
 								<attribute name="Rotation" value="1 0 0 0" />
-								<attribute name="Scale" value="1 1 1" />
+								<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 								<attribute name="Variables" />
-								<node id="16779188">
+								<node id="16779302">
 									<attribute name="Is Enabled" value="true" />
-									<attribute name="Name" value="Bip01_Pelvis" />
+									<attribute name="Name" value="Bip01" />
 									<attribute name="Position" value="0 0 -0" />
-									<attribute name="Rotation" value="0.500166 0.500078 0.499922 -0.499834" />
+									<attribute name="Rotation" value="1 0 0 0" />
 									<attribute name="Scale" value="1 1 1" />
 									<attribute name="Variables" />
-									<node id="16779189">
+									<node id="16779303">
 										<attribute name="Is Enabled" value="true" />
-										<attribute name="Name" value="Bip01_Spine" />
-										<attribute name="Position" value="7.73386 2.17241 -4.22697e-007" />
-										<attribute name="Rotation" value="0.995991 0.00888071 -0.0107777 0.0883561" />
+										<attribute name="Name" value="Bip01_Pelvis" />
+										<attribute name="Position" value="0 0 -0" />
+										<attribute name="Rotation" value="0.5 0.5 0.5 -0.5" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
-										<node id="16779190">
+										<node id="16779304">
 											<attribute name="Is Enabled" value="true" />
-											<attribute name="Name" value="Bip01_Spine1" />
-											<attribute name="Position" value="11.4443 -0.00889587 -0" />
-											<attribute name="Rotation" value="0.992932 0.00243951 -0.00564553 -0.118522" />
+											<attribute name="Name" value="Bip01_Spine" />
+											<attribute name="Position" value="7.73385 2.1724 8.56554e-006" />
+											<attribute name="Rotation" value="0.995614 2.1442e-006 1.70973e-007 0.0935607" />
 											<attribute name="Scale" value="1 1 1" />
 											<attribute name="Variables" />
-											<node id="16779191">
+											<node id="16779305">
 												<attribute name="Is Enabled" value="true" />
-												<attribute name="Name" value="Bip01_Spine2" />
-												<attribute name="Position" value="11.445 -0.00902557 -0" />
-												<attribute name="Rotation" value="0.996741 0.0049588 -0.00621228 -0.0802755" />
+												<attribute name="Name" value="Bip01_Spine1" />
+												<attribute name="Position" value="11.4443 -0.0089035 -1.86889e-006" />
+												<attribute name="Rotation" value="0.994186 -1.92031e-006 -1.73785e-007 -0.10768" />
 												<attribute name="Scale" value="1 1 1" />
 												<attribute name="Variables" />
-												<node id="16779192">
+												<node id="16779306">
 													<attribute name="Is Enabled" value="true" />
-													<attribute name="Name" value="Bip01_Spine3" />
-													<attribute name="Position" value="11.4478 -0.00899484 1.52588e-005" />
-													<attribute name="Rotation" value="0.997434 0.00405379 -0.00638414 0.0711856" />
+													<attribute name="Name" value="Bip01_Spine2" />
+													<attribute name="Position" value="11.445 -0.00903225 -2.27829e-006" />
+													<attribute name="Rotation" value="0.997655 1.60705e-006 -2.44077e-008 -0.0684408" />
 													<attribute name="Scale" value="1 1 1" />
 													<attribute name="Variables" />
-													<node id="16779193">
+													<node id="16779307">
 														<attribute name="Is Enabled" value="true" />
-														<attribute name="Name" value="Bip01_Neck" />
-														<attribute name="Position" value="11.8196 -3.21563 7.62939e-005" />
-														<attribute name="Rotation" value="0.973328 0.0350912 -0.223626 0.0373298" />
+														<attribute name="Name" value="Bip01_Spine3" />
+														<attribute name="Position" value="11.4478 -0.00898743 -3.01468e-007" />
+														<attribute name="Rotation" value="0.996583 0.000863873 7.17485e-005 0.0825889" />
 														<attribute name="Scale" value="1 1 1" />
 														<attribute name="Variables" />
-														<node id="16779194">
+														<node id="16779308">
 															<attribute name="Is Enabled" value="true" />
-															<attribute name="Name" value="Bip01_L_Clavicle" />
-															<attribute name="Position" value="-6.76006 1.2231 -1.62131" />
-															<attribute name="Rotation" value="-0.0671259 -0.82932 0.0542635 0.552068" />
+															<attribute name="Name" value="Bip01_Neck" />
+															<attribute name="Position" value="11.8196 -3.21559 0.00561412" />
+															<attribute name="Rotation" value="0.99217 -0.000859712 0.000110291 0.124892" />
 															<attribute name="Scale" value="1 1 1" />
 															<attribute name="Variables" />
-															<node id="16779195">
+															<node id="16779309">
 																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="Bip01_L_UpperArm" />
-																<attribute name="Position" value="15.3546 0 7.62939e-006" />
-																<attribute name="Rotation" value="0.904148 0.0358535 0.284003 -0.317133" />
+																<attribute name="Name" value="Bip01_L_Clavicle" />
+																<attribute name="Position" value="-6.76004 1.22308 -1.62133" />
+																<attribute name="Rotation" value="0.0885905 -0.701535 0.0885905 0.701535" />
 																<attribute name="Scale" value="1 1 1" />
 																<attribute name="Variables" />
-																<node id="16779196">
+																<node id="16779310">
 																	<attribute name="Is Enabled" value="true" />
-																	<attribute name="Name" value="Bip01_L_Forearm" />
-																	<attribute name="Position" value="24.51 0 -0" />
-																	<attribute name="Rotation" value="0.999583 2.80988e-010 -2.62575e-011 -0.0288842" />
+																	<attribute name="Name" value="Bip01_L_UpperArm" />
+																	<attribute name="Position" value="15.3546 -1.07288e-006 -0" />
+																	<attribute name="Rotation" value="0.926165 -0.00957459 -0.376996 0.000757153" />
 																	<attribute name="Scale" value="1 1 1" />
 																	<attribute name="Variables" />
-																	<node id="16779197">
+																	<node id="16779311">
 																		<attribute name="Is Enabled" value="true" />
-																		<attribute name="Name" value="Bip01_L_Hand" />
-																		<attribute name="Position" value="24.939 -1.44134e-005 6.99535e-006" />
-																		<attribute name="Rotation" value="-0.265677 -0.821834 -0.423961 0.272512" />
+																		<attribute name="Name" value="Bip01_L_Forearm" />
+																		<attribute name="Position" value="24.51 9.53674e-007 -0" />
+																		<attribute name="Rotation" value="0.981711 -5.97108e-008 -3.39568e-008 -0.190379" />
 																		<attribute name="Scale" value="1 1 1" />
 																		<attribute name="Variables" />
-																		<node id="16779198">
+																		<node id="16779312">
 																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_L_Finger0" />
-																			<attribute name="Position" value="1.70326 1.65971 2.5271" />
-																			<attribute name="Rotation" value="0.688771 -0.618296 -0.371637 0.0720494" />
+																			<attribute name="Name" value="Bip01_L_Hand" />
+																			<attribute name="Position" value="24.939 0 -0" />
+																			<attribute name="Rotation" value="0.730449 0.679903 -0.0524623 -0.0377441" />
 																			<attribute name="Scale" value="1 1 1" />
 																			<attribute name="Variables" />
-																			<node id="16779199">
+																			<node id="16779313">
 																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_L_Finger01" />
-																				<attribute name="Position" value="4.57223 4.22697e-007 3.70902e-006" />
-																				<attribute name="Rotation" value="0.999221 -0 -0 -0.039473" />
+																				<attribute name="Name" value="Bip01_L_Finger0" />
+																				<attribute name="Position" value="1.70324 1.6597 2.52709" />
+																				<attribute name="Rotation" value="0.723862 -0.605235 -0.331191 -0.00515695" />
 																				<attribute name="Scale" value="1 1 1" />
 																				<attribute name="Variables" />
-																				<node id="16779200">
+																				<node id="16779314">
 																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_L_Finger02" />
-																					<attribute name="Position" value="2.77937 -8.45394e-007 -1.85451e-006" />
-																					<attribute name="Rotation" value="0.997377 -0 -0 -0.0723821" />
+																					<attribute name="Name" value="Bip01_L_Finger01" />
+																					<attribute name="Position" value="4.57224 1.52588e-005 7.62939e-006" />
+																					<attribute name="Rotation" value="0.995142 -2.88764e-007 3.4578e-007 0.0984484" />
 																					<attribute name="Scale" value="1 1 1" />
 																					<attribute name="Variables" />
+																					<node id="16779315">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_L_Finger02" />
+																						<attribute name="Position" value="2.77937 -1.14441e-005 -1.52588e-005" />
+																						<attribute name="Rotation" value="0.993941 1.96174e-007 -1.13234e-007 0.109916" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779316">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_L_Finger1" />
+																				<attribute name="Position" value="8.96652 -0.151428 3.5428" />
+																				<attribute name="Rotation" value="0.97588 -0.1638 -0.0917473 0.111404" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779317">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_L_Finger11" />
+																					<attribute name="Position" value="3.68077 0 7.62939e-006" />
+																					<attribute name="Rotation" value="0.990248 -1.10221e-007 1.95164e-007 0.139318" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779318">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_L_Finger12" />
+																						<attribute name="Position" value="2.82455 0 -7.62939e-006" />
+																						<attribute name="Rotation" value="0.999331 0 0 0.0365678" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779319">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_L_Finger2" />
+																				<attribute name="Position" value="9.27279 -0.471405 1.26766" />
+																				<attribute name="Rotation" value="0.994349 -0.0629956 -0.013527 0.0843687" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779320">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_L_Finger21" />
+																					<attribute name="Position" value="4.2324 7.62939e-006 -1.90735e-006" />
+																					<attribute name="Rotation" value="0.9913 -2.97635e-005 4.93063e-005 0.13162" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779321">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_L_Finger22" />
+																						<attribute name="Position" value="3.06174 -2.28882e-005 -0" />
+																						<attribute name="Rotation" value="0.994094 0.000378277 3.4091e-005 0.108517" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779322">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_L_Finger3" />
+																				<attribute name="Position" value="9.17012 -0.395599 -1.1118" />
+																				<attribute name="Rotation" value="0.993348 0.0147322 0.0816552 0.0798451" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779323">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_L_Finger31" />
+																					<attribute name="Position" value="3.79024 0 4.76837e-006" />
+																					<attribute name="Rotation" value="0.990262 -1.84911e-007 4.09997e-009 0.139215" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779324">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_L_Finger32" />
+																						<attribute name="Position" value="2.61391 0 -9.53674e-007" />
+																						<attribute name="Rotation" value="0.996068 -2.27831e-008 -3.53586e-007 0.0885872" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779325">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_L_Finger4" />
+																				<attribute name="Position" value="8.66712 -0.07901 -3.26299" />
+																				<attribute name="Rotation" value="0.980804 0.0983956 0.149834 0.0767578" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779326">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_L_Finger41" />
+																					<attribute name="Position" value="2.95425 0 5.72205e-006" />
+																					<attribute name="Rotation" value="0.991766 5.13806e-008 -1.36102e-007 0.128065" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779327">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_L_Finger42" />
+																						<attribute name="Position" value="2.37074 7.62939e-006 1.90735e-006" />
+																						<attribute name="Rotation" value="0.996521 6.12535e-008 5.12248e-009 0.0833366" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
 																				</node>
 																			</node>
 																		</node>
-																		<node id="16779201">
+																		<node id="16779328">
 																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_L_Finger1" />
-																			<attribute name="Position" value="8.96655 -0.151421 3.54279" />
-																			<attribute name="Rotation" value="0.979072 -0.143173 -0.121592 -0.0783244" />
+																			<attribute name="Name" value="Bip01_L_Foretwist" />
+																			<attribute name="Position" value="0 0 -0" />
+																			<attribute name="Rotation" value="0.999931 -0.0117659 1.05178e-007 -7.32734e-008" />
 																			<attribute name="Scale" value="1 1 1" />
 																			<attribute name="Variables" />
-																			<node id="16779202">
+																			<node id="16779329">
 																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_L_Finger11" />
-																				<attribute name="Position" value="3.68076 -1.46247e-005 1.52588e-005" />
-																				<attribute name="Rotation" value="0.99964 -4.12872e-010 -5.98739e-014 0.0268237" />
+																				<attribute name="Name" value="Bip01_L_Foretwist1" />
+																				<attribute name="Position" value="12.4695 3.8147e-006 -0" />
+																				<attribute name="Rotation" value="0.999931 -0.0117663 -3.42265e-007 -4.1283e-008" />
 																				<attribute name="Scale" value="1 1 1" />
 																				<attribute name="Variables" />
-																				<node id="16779203">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_L_Finger12" />
-																					<attribute name="Position" value="2.82455 -2.11348e-007 -0" />
-																					<attribute name="Rotation" value="0.994228 4.90475e-011 4.069e-010 -0.107285" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
-																			</node>
-																		</node>
-																		<node id="16779204">
-																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_L_Finger2" />
-																			<attribute name="Position" value="9.27281 -0.471409 1.26767" />
-																			<attribute name="Rotation" value="0.995578 -0.0588343 0.00669063 -0.0729279" />
-																			<attribute name="Scale" value="1 1 1" />
-																			<attribute name="Variables" />
-																			<node id="16779205">
-																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_L_Finger21" />
-																				<attribute name="Position" value="4.23239 -1.05674e-007 4.22697e-007" />
-																				<attribute name="Rotation" value="0.999542 4.12049e-010 -8.12195e-013 0.0302587" />
-																				<attribute name="Scale" value="1 1 1" />
-																				<attribute name="Variables" />
-																				<node id="16779206">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_L_Finger22" />
-																					<attribute name="Position" value="3.06174 -7.41805e-006 1.48361e-005" />
-																					<attribute name="Rotation" value="0.994845 -1.65081e-009 -1.62776e-008 -0.101411" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
-																			</node>
-																		</node>
-																		<node id="16779207">
-																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_L_Finger3" />
-																			<attribute name="Position" value="9.17013 -0.395596 -1.11179" />
-																			<attribute name="Rotation" value="0.996459 0.0083911 0.0836389 0.00188822" />
-																			<attribute name="Scale" value="1 1 1" />
-																			<attribute name="Variables" />
-																			<node id="16779208">
-																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_L_Finger31" />
-																				<attribute name="Position" value="3.79025 -3.65619e-006 -0" />
-																				<attribute name="Rotation" value="0.999996 1.44882e-008 5.09596e-011 0.00276459" />
-																				<attribute name="Scale" value="1 1 1" />
-																				<attribute name="Variables" />
-																				<node id="16779209">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_L_Finger32" />
-																					<attribute name="Position" value="2.61388 0 -0" />
-																					<attribute name="Rotation" value="0.997059 -0 -0 -0.0766437" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
-																			</node>
-																		</node>
-																		<node id="16779210">
-																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_L_Finger4" />
-																			<attribute name="Position" value="8.66714 -0.0790101 -3.26299" />
-																			<attribute name="Rotation" value="0.964935 0.113263 0.145156 0.187085" />
-																			<attribute name="Scale" value="1 1 1" />
-																			<attribute name="Variables" />
-																			<node id="16779211">
-																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_L_Finger41" />
-																				<attribute name="Position" value="2.95425 1.05674e-007 -4.22697e-007" />
-																				<attribute name="Rotation" value="0.999943 1.46347e-008 -1.50096e-010 -0.0106873" />
-																				<attribute name="Scale" value="1 1 1" />
-																				<attribute name="Variables" />
-																				<node id="16779212">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_L_Finger42" />
-																					<attribute name="Position" value="2.37073 -1.05674e-007 1.48361e-005" />
-																					<attribute name="Rotation" value="0.994061 -1.51999e-009 -1.40195e-008 -0.10882" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
 																			</node>
 																		</node>
 																	</node>
-																	<node id="16779213">
+																	<node id="16779330">
 																		<attribute name="Is Enabled" value="true" />
-																		<attribute name="Name" value="Bip01_L_Foretwist" />
+																		<attribute name="Name" value="Bip01_LUpArmTwist" />
 																		<attribute name="Position" value="0 0 -0" />
-																		<attribute name="Rotation" value="0.999931 -0.011765 -1.70409e-010 1.44834e-008" />
+																		<attribute name="Rotation" value="0.99991 -0.0134473 1.78798e-007 2.40457e-009" />
 																		<attribute name="Scale" value="1 1 1" />
 																		<attribute name="Variables" />
-																		<node id="16779214">
+																		<node id="16779331">
 																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_L_Foretwist1" />
-																			<attribute name="Position" value="12.4695 0 -0" />
-																			<attribute name="Rotation" value="0.999931 -0.0117662 -2.23459e-008 -2.62944e-010" />
+																			<attribute name="Name" value="Bip01_LUpArmTwist1" />
+																			<attribute name="Position" value="12.255 -4.76837e-007 -7.62939e-006" />
+																			<attribute name="Rotation" value="0.999977 0.0067238 -8.94049e-008 6.01154e-010" />
 																			<attribute name="Scale" value="1 1 1" />
 																			<attribute name="Variables" />
 																		</node>
-																	</node>
-																</node>
-																<node id="16779215">
-																	<attribute name="Is Enabled" value="true" />
-																	<attribute name="Name" value="Bip01_LUpArmTwist" />
-																	<attribute name="Position" value="0 0 -0" />
-																	<attribute name="Rotation" value="0.99991 -0.0134455 -1.44803e-008 -5.04333e-010" />
-																	<attribute name="Scale" value="1 1 1" />
-																	<attribute name="Variables" />
-																	<node id="16779216">
-																		<attribute name="Is Enabled" value="true" />
-																		<attribute name="Name" value="Bip01_LUpArmTwist1" />
-																		<attribute name="Position" value="12.255 0 -0" />
-																		<attribute name="Rotation" value="0.999977 0.00672484 -2.75651e-012 -4.09955e-010" />
-																		<attribute name="Scale" value="1 1 1" />
-																		<attribute name="Variables" />
 																	</node>
 																</node>
 															</node>
-														</node>
-														<node id="16779217">
-															<attribute name="Is Enabled" value="true" />
-															<attribute name="Name" value="Bip01_R_Clavicle" />
-															<attribute name="Position" value="-6.76007 1.22311 1.62121" />
-															<attribute name="Rotation" value="-0.0311828 -0.979222 0.0320859 -0.197796" />
-															<attribute name="Scale" value="1 1 1" />
-															<attribute name="Variables" />
-															<node id="16779218">
+															<node id="16779332">
 																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="Bip01_R_UpperArm" />
-																<attribute name="Position" value="15.3546 -2.11348e-007 1.48361e-005" />
-																<attribute name="Rotation" value="0.833807 -0.327706 -0.0436679 -0.442118" />
+																<attribute name="Name" value="Bip01_R_Clavicle" />
+																<attribute name="Position" value="-6.76004 1.2231 1.62119" />
+																<attribute name="Rotation" value="0.0885905 0.701535 -0.0885905 0.701535" />
 																<attribute name="Scale" value="1 1 1" />
 																<attribute name="Variables" />
-																<node id="16779219">
+																<node id="16779333">
 																	<attribute name="Is Enabled" value="true" />
-																	<attribute name="Name" value="Bip01_R_Forearm" />
-																	<attribute name="Position" value="24.51 0 -0" />
-																	<attribute name="Rotation" value="0.999984 9.01559e-009 -4.87901e-011 -0.00562065" />
+																	<attribute name="Name" value="Bip01_R_UpperArm" />
+																	<attribute name="Position" value="15.3546 7.03335e-006 -0" />
+																	<attribute name="Rotation" value="0.926164 0.00957399 0.376998 0.000758575" />
 																	<attribute name="Scale" value="1 1 1" />
 																	<attribute name="Variables" />
-																	<node id="16779220">
+																	<node id="16779334">
 																		<attribute name="Is Enabled" value="true" />
-																		<attribute name="Name" value="Bip01_R_Hand" />
-																		<attribute name="Position" value="24.9389 -1.05674e-007 -0" />
-																		<attribute name="Rotation" value="0.641659 -0.735679 -0.173134 -0.130668" />
+																		<attribute name="Name" value="Bip01_R_Forearm" />
+																		<attribute name="Position" value="24.51 -1.43051e-006 -7.62939e-006" />
+																		<attribute name="Rotation" value="0.981711 3.12056e-008 1.60915e-007 -0.190379" />
 																		<attribute name="Scale" value="1 1 1" />
 																		<attribute name="Variables" />
-																		<node id="16779221">
+																		<node id="16779335">
 																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_R_Finger0" />
-																			<attribute name="Position" value="1.70327 1.65971 -2.52709" />
-																			<attribute name="Rotation" value="0.680158 0.543823 0.491445 -0.0110973" />
+																			<attribute name="Name" value="Bip01_R_Hand" />
+																			<attribute name="Position" value="24.9389 5.72205e-006 -0" />
+																			<attribute name="Rotation" value="0.730449 -0.679903 0.0524624 -0.0377439" />
 																			<attribute name="Scale" value="1 1 1" />
 																			<attribute name="Variables" />
-																			<node id="16779222">
+																			<node id="16779336">
 																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_R_Finger01" />
-																				<attribute name="Position" value="4.57223 -2.11348e-007 -4.22697e-007" />
-																				<attribute name="Rotation" value="0.996368 -0 -0 -0.085148" />
+																				<attribute name="Name" value="Bip01_R_Finger0" />
+																				<attribute name="Position" value="1.70327 1.65971 -2.5271" />
+																				<attribute name="Rotation" value="0.723862 0.605235 0.331191 -0.00515684" />
 																				<attribute name="Scale" value="1 1 1" />
 																				<attribute name="Variables" />
-																				<node id="16779223">
+																				<node id="16779337">
 																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_R_Finger02" />
-																					<attribute name="Position" value="2.77937 -7.41805e-006 -1.44134e-005" />
-																					<attribute name="Rotation" value="0.99144 3.61604e-011 2.77125e-010 -0.130561" />
+																					<attribute name="Name" value="Bip01_R_Finger01" />
+																					<attribute name="Position" value="4.57222 7.62939e-006 -0" />
+																					<attribute name="Rotation" value="0.995142 2.69012e-008 -4.98964e-007 0.0984483" />
 																					<attribute name="Scale" value="1 1 1" />
 																					<attribute name="Variables" />
+																					<node id="16779338">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_R_Finger02" />
+																						<attribute name="Position" value="2.77936 -1.52588e-005 1.52588e-005" />
+																						<attribute name="Rotation" value="0.993941 6.79298e-008 9.74641e-008 0.109916" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779339">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_R_Finger1" />
+																				<attribute name="Position" value="8.96655 -0.151443 -3.5428" />
+																				<attribute name="Rotation" value="0.97588 0.1638 0.0917474 0.111404" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779340">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_R_Finger11" />
+																					<attribute name="Position" value="3.68076 7.62939e-006 -5.72205e-006" />
+																					<attribute name="Rotation" value="0.990248 -7.74682e-008 -1.0899e-008 0.139319" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779341">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_R_Finger12" />
+																						<attribute name="Position" value="2.82455 -7.62939e-006 -0" />
+																						<attribute name="Rotation" value="0.999331 1.47051e-007 5.38091e-009 0.0365678" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779342">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_R_Finger2" />
+																				<attribute name="Position" value="9.27282 -0.47142 -1.26766" />
+																				<attribute name="Rotation" value="0.994349 0.0629961 0.013527 0.0843687" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779343">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_R_Finger21" />
+																					<attribute name="Position" value="4.2324 0 -1.90735e-006" />
+																					<attribute name="Rotation" value="0.9913 2.93633e-005 -4.96601e-005 0.13162" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779344">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_R_Finger22" />
+																						<attribute name="Position" value="3.06174 2.28882e-005 -0" />
+																						<attribute name="Rotation" value="0.994094 -0.000377863 -3.36187e-005 0.108518" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779345">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_R_Finger3" />
+																				<attribute name="Position" value="9.17014 -0.395607 1.11179" />
+																				<attribute name="Rotation" value="0.993348 -0.0147321 -0.081655 0.0798452" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779346">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_R_Finger31" />
+																					<attribute name="Position" value="3.79025 1.52588e-005 3.8147e-006" />
+																					<attribute name="Rotation" value="0.990262 -8.62369e-008 -1.626e-007 0.139214" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779347">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_R_Finger32" />
+																						<attribute name="Position" value="2.61388 0 -1.90735e-006" />
+																						<attribute name="Rotation" value="0.996068 -8.55581e-008 1.4199e-007 0.0885874" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
+																				</node>
+																			</node>
+																			<node id="16779348">
+																				<attribute name="Is Enabled" value="true" />
+																				<attribute name="Name" value="Bip01_R_Finger4" />
+																				<attribute name="Position" value="8.66714 -0.0790329 3.26299" />
+																				<attribute name="Rotation" value="0.980804 -0.0983956 -0.149834 0.0767574" />
+																				<attribute name="Scale" value="1 1 1" />
+																				<attribute name="Variables" />
+																				<node id="16779349">
+																					<attribute name="Is Enabled" value="true" />
+																					<attribute name="Name" value="Bip01_R_Finger41" />
+																					<attribute name="Position" value="2.95427 2.28882e-005 -3.8147e-006" />
+																					<attribute name="Rotation" value="0.991766 -2.81367e-008 1.01541e-007 0.128065" />
+																					<attribute name="Scale" value="1 1 1" />
+																					<attribute name="Variables" />
+																					<node id="16779350">
+																						<attribute name="Is Enabled" value="true" />
+																						<attribute name="Name" value="Bip01_R_Finger42" />
+																						<attribute name="Position" value="2.37072 7.62939e-006 5.72205e-006" />
+																						<attribute name="Rotation" value="0.996521 -1.76303e-007 -1.26893e-007 0.0833367" />
+																						<attribute name="Scale" value="1 1 1" />
+																						<attribute name="Variables" />
+																					</node>
 																				</node>
 																			</node>
 																		</node>
-																		<node id="16779224">
+																		<node id="16779351">
 																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_R_Finger1" />
-																			<attribute name="Position" value="8.96656 -0.151413 -3.54279" />
-																			<attribute name="Rotation" value="0.968342 0.132171 0.133805 -0.164138" />
+																			<attribute name="Name" value="Bip01_R_Foretwist" />
+																			<attribute name="Position" value="0 0 -0" />
+																			<attribute name="Rotation" value="0.999931 0.0117661 2.96249e-008 -1.52508e-008" />
 																			<attribute name="Scale" value="1 1 1" />
 																			<attribute name="Variables" />
-																			<node id="16779225">
+																			<node id="16779352">
 																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_R_Finger11" />
-																				<attribute name="Position" value="3.68076 7.2067e-006 -2.11348e-007" />
-																				<attribute name="Rotation" value="0.999739 1.43208e-008 -3.24164e-010 -0.0228276" />
+																				<attribute name="Name" value="Bip01_R_Foretwist1" />
+																				<attribute name="Position" value="12.4695 0 -0" />
+																				<attribute name="Rotation" value="0.999931 0.0117661 -7.15201e-008 2.54179e-007" />
 																				<attribute name="Scale" value="1 1 1" />
 																				<attribute name="Variables" />
-																				<node id="16779226">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_R_Finger12" />
-																					<attribute name="Position" value="2.82455 -2.11348e-007 -0" />
-																					<attribute name="Rotation" value="0.991832 -0 -0 -0.127551" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
-																			</node>
-																		</node>
-																		<node id="16779227">
-																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_R_Finger2" />
-																			<attribute name="Position" value="9.27283 -0.471405 -1.26766" />
-																			<attribute name="Rotation" value="0.992663 0.0581354 -0.0149648 -0.104961" />
-																			<attribute name="Scale" value="1 1 1" />
-																			<attribute name="Variables" />
-																			<node id="16779228">
-																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_R_Finger21" />
-																				<attribute name="Position" value="4.23238 0 -0" />
-																				<attribute name="Rotation" value="0.999573 -1.80967e-008 5.25682e-010 -0.0292366" />
-																				<attribute name="Scale" value="1 1 1" />
-																				<attribute name="Variables" />
-																				<node id="16779229">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_R_Finger22" />
-																					<attribute name="Position" value="3.06171 0 -0" />
-																					<attribute name="Rotation" value="0.989675 2.55341e-010 -3.86678e-011 -0.143327" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
-																			</node>
-																		</node>
-																		<node id="16779230">
-																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_R_Finger3" />
-																			<attribute name="Position" value="9.17016 -0.395599 1.1118" />
-																			<attribute name="Rotation" value="0.989331 0.00200256 -0.0836314 -0.11927" />
-																			<attribute name="Scale" value="1 1 1" />
-																			<attribute name="Variables" />
-																			<node id="16779231">
-																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_R_Finger31" />
-																				<attribute name="Position" value="3.79022 0 7.41805e-006" />
-																				<attribute name="Rotation" value="0.998537 -8.24085e-010 -2.06021e-010 -0.0540681" />
-																				<attribute name="Scale" value="1 1 1" />
-																				<attribute name="Variables" />
-																				<node id="16779232">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_R_Finger32" />
-																					<attribute name="Position" value="2.61391 2.11348e-007 4.22697e-007" />
-																					<attribute name="Rotation" value="0.994512 -0 -0 -0.104626" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
-																			</node>
-																		</node>
-																		<node id="16779233">
-																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_R_Finger4" />
-																			<attribute name="Position" value="8.66717 -0.0790102 3.26299" />
-																			<attribute name="Rotation" value="0.982823 -0.0854168 -0.16247 -0.0191264" />
-																			<attribute name="Scale" value="1 1 1" />
-																			<attribute name="Variables" />
-																			<node id="16779234">
-																				<attribute name="Is Enabled" value="true" />
-																				<attribute name="Name" value="Bip01_R_Finger41" />
-																				<attribute name="Position" value="2.95425 -7.41805e-006 4.22697e-007" />
-																				<attribute name="Rotation" value="0.999454 -9.67541e-010 -1.05903e-008 -0.0330483" />
-																				<attribute name="Scale" value="1 1 1" />
-																				<attribute name="Variables" />
-																				<node id="16779235">
-																					<attribute name="Is Enabled" value="true" />
-																					<attribute name="Name" value="Bip01_R_Finger42" />
-																					<attribute name="Position" value="2.37073 -7.2067e-006 -4.22697e-007" />
-																					<attribute name="Rotation" value="0.988242 1.03321e-008 -2.54639e-008 -0.152898" />
-																					<attribute name="Scale" value="1 1 1" />
-																					<attribute name="Variables" />
-																				</node>
 																			</node>
 																		</node>
 																	</node>
-																	<node id="16779236">
+																	<node id="16779353">
 																		<attribute name="Is Enabled" value="true" />
-																		<attribute name="Name" value="Bip01_R_Foretwist" />
+																		<attribute name="Name" value="Bip01_RUpArmTwist" />
 																		<attribute name="Position" value="0 0 -0" />
-																		<attribute name="Rotation" value="0.999931 0.0117662 -2.97965e-008 3.50615e-010" />
+																		<attribute name="Rotation" value="0.99991 0.0134474 7.44991e-008 -1.00191e-009" />
 																		<attribute name="Scale" value="1 1 1" />
 																		<attribute name="Variables" />
-																		<node id="16779237">
+																		<node id="16779354">
 																			<attribute name="Is Enabled" value="true" />
-																			<attribute name="Name" value="Bip01_R_Foretwist1" />
-																			<attribute name="Position" value="12.4695 -1.05674e-007 1.52588e-005" />
-																			<attribute name="Rotation" value="0.999931 0.0117662 2.62967e-010 2.23479e-008" />
+																			<attribute name="Name" value="Bip01_RUpArmTwist1" />
+																			<attribute name="Position" value="12.255 -1.43051e-006 -0" />
+																			<attribute name="Rotation" value="0.999977 -0.00672382 -3.12992e-007 9.07157e-009" />
 																			<attribute name="Scale" value="1 1 1" />
 																			<attribute name="Variables" />
 																		</node>
 																	</node>
 																</node>
-																<node id="16779238">
+															</node>
+															<node id="16779355">
+																<attribute name="Is Enabled" value="true" />
+																<attribute name="Name" value="Bip01_Head" />
+																<attribute name="Position" value="8.45331 -3.8147e-006 7.87433e-007" />
+																<attribute name="Rotation" value="0.99217 -9.40716e-008 -2.11319e-006 -0.124891" />
+																<attribute name="Scale" value="1 1 1" />
+																<attribute name="Variables" />
+																<node id="16779356">
 																	<attribute name="Is Enabled" value="true" />
-																	<attribute name="Name" value="Bip01_RUpArmTwist" />
-																	<attribute name="Position" value="0 0 -0" />
-																	<attribute name="Rotation" value="0.99991 0.0134473 2.23437e-008 -3.0049e-010" />
+																	<attribute name="Name" value="FcFX_Jaw" />
+																	<attribute name="Position" value="4.00299 2.60095 -1.29084e-005" />
+																	<attribute name="Rotation" value="-4.74854e-007 -0.707107 -4.74854e-007 0.707107" />
 																	<attribute name="Scale" value="1 1 1" />
 																	<attribute name="Variables" />
-																	<node id="16779239">
-																		<attribute name="Is Enabled" value="true" />
-																		<attribute name="Name" value="Bip01_RUpArmTwist1" />
-																		<attribute name="Position" value="12.255 -1.05674e-007 1.56815e-005" />
-																		<attribute name="Rotation" value="0.999977 -0.00672379 -4.48015e-008 -3.01243e-010" />
-																		<attribute name="Scale" value="1 1 1" />
-																		<attribute name="Variables" />
-																	</node>
 																</node>
-															</node>
-														</node>
-														<node id="16779240">
-															<attribute name="Is Enabled" value="true" />
-															<attribute name="Name" value="Bip01_Head" />
-															<attribute name="Position" value="8.4533 1.48361e-005 2.96722e-005" />
-															<attribute name="Rotation" value="0.906081 0.0697523 0.104433 -0.404036" />
-															<attribute name="Scale" value="1 1 1" />
-															<attribute name="Variables" />
-															<node id="16779241">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Jaw" />
-																<attribute name="Position" value="4.00299 2.60095 -2.22541e-005" />
-																<attribute name="Rotation" value="-4.59399e-007 -0.707107 -4.90308e-007 0.707107" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779242">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyLd_Top_R" />
-																<attribute name="Position" value="6.17029 9.24116 3.55307" />
-																<attribute name="Rotation" value="-0.356532 -0.535469 -0.517052 0.564637" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779243">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFx_Eye_L" />
-																<attribute name="Position" value="6.17029 9.24117 -3.55311" />
-																<attribute name="Rotation" value="-4.59399e-007 -0.707107 -4.90308e-007 0.707107" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779244">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyLd_Top_L" />
-																<attribute name="Position" value="6.17029 9.24118 -3.55312" />
-																<attribute name="Rotation" value="0.517052 0.564637 0.356531 -0.53547" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779245">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFx_Eye_R" />
-																<attribute name="Position" value="6.1703 9.2412 3.55306" />
-																<attribute name="Rotation" value="-4.59399e-007 -0.707107 -4.90308e-007 0.707107" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779246">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyLd_Bottom_L" />
-																<attribute name="Position" value="6.17029 9.24117 -3.55311" />
-																<attribute name="Rotation" value="0.669623 0.360056 0.519218 -0.390356" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779247">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyLd_Bottom_R" />
-																<attribute name="Position" value="6.1703 9.24118 3.55306" />
-																<attribute name="Rotation" value="0.519219 0.390355 0.669622 -0.360057" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779248">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Cheek_L" />
-																<attribute name="Position" value="3.96616 11.2835 -4.29815" />
-																<attribute name="Rotation" value="-0.127377 -0.722902 0.168256 0.657934" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779249">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Nose_R" />
-																<attribute name="Position" value="2.15347 12.969 1.14805" />
-																<attribute name="Rotation" value="0.43033 -0.608943 -0.318528 0.585273" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779250">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Nose_L" />
-																<attribute name="Position" value="2.15347 12.969 -1.14811" />
-																<attribute name="Rotation" value="-0.318529 -0.585272 0.430332 0.608942" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779251">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Cheek_R" />
-																<attribute name="Position" value="3.96616 11.2835 4.29809" />
-																<attribute name="Rotation" value="0.168255 -0.657935 -0.127375 0.722902" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779252">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_01" />
-																<attribute name="Position" value="-1.18019 11.1136 2.34058" />
-																<attribute name="Rotation" value="0.132394 -0.674573 -0.3116 0.655994" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779253">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_02" />
-																<attribute name="Position" value="-0.446701 12.3922 1.64345" />
-																<attribute name="Rotation" value="0.206692 -0.804168 -0.21765 0.51305" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779254">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_03" />
-																<attribute name="Position" value="-0.226409 12.8838 -4.53537e-005" />
-																<attribute name="Rotation" value="0.0359094 -0.706194 0.0359094 0.706194" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779255">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_04" />
-																<attribute name="Position" value="-0.446701 12.3922 -1.6435" />
-																<attribute name="Rotation" value="-0.217651 -0.51305 0.206694 0.804168" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779256">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_05" />
-																<attribute name="Position" value="-1.18018 11.1137 -2.34064" />
-																<attribute name="Rotation" value="-0.311601 -0.655993 0.132395 0.674573" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779257">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyBrw_Inner_R" />
-																<attribute name="Position" value="7.86949 12.8603 1.55436" />
-																<attribute name="Rotation" value="-0.0497827 -0.600128 -0.0964462 0.792507" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779258">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyBrw_Mid_R" />
-																<attribute name="Position" value="8.98944 12.1571 4.51003" />
-																<attribute name="Rotation" value="0.196217 -0.654997 -0.167424 0.710244" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779259">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyBrw_Outer_R" />
-																<attribute name="Position" value="9.91997 8.65225 6.75762" />
-																<attribute name="Rotation" value="0.491976 -0.608479 -0.338921 0.522347" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779260">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyBrw_Inner_L" />
-																<attribute name="Position" value="7.86948 12.8603 -1.55439" />
-																<attribute name="Rotation" value="-0.0964488 -0.792506 -0.0497809 0.600128" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779261">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyBrw_Mid_L" />
-																<attribute name="Position" value="8.98944 12.1571 -4.51009" />
-																<attribute name="Rotation" value="-0.167426 -0.710244 0.196219 0.654997" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779262">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_EyBrw_Outer_L" />
-																<attribute name="Position" value="9.91998 8.65223 -6.75767" />
-																<attribute name="Rotation" value="-0.338923 -0.522346 0.491977 0.608477" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779263">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_BlowCheek_L" />
-																<attribute name="Position" value="-0.508484 9.08906 -5.20357" />
-																<attribute name="Rotation" value="-0.456418 -0.550632 0.224597 0.661848" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779264">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_BlowCheek_R" />
-																<attribute name="Position" value="-0.508499 9.0891 5.20355" />
-																<attribute name="Rotation" value="0.224596 -0.661848 -0.456417 0.550633" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779265">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_InsideCheek_L" />
-																<attribute name="Position" value="4.22107 12.5277 -1.05386" />
-																<attribute name="Rotation" value="-0.173536 -0.649537 0.394078 0.62665" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779266">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_InsideCheek_R" />
-																<attribute name="Position" value="4.22108 12.5277 1.05383" />
-																<attribute name="Rotation" value="0.394077 -0.626651 -0.173535 0.649537" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779267">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_FrHead_L" />
-																<attribute name="Position" value="11.4721 11.962 -3.39439" />
-																<attribute name="Rotation" value="0.033468 -0.674617 0.274993 0.684216" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779268">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_FrHead_R" />
-																<attribute name="Position" value="11.4721 11.962 3.39435" />
-																<attribute name="Rotation" value="0.274992 -0.684216 0.0334687 0.674617" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779269">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_FrHead_Cntr" />
-																<attribute name="Position" value="6.90334 12.6904 -5.27717e-005" />
-																<attribute name="Rotation" value="-0.062867 -0.704475 -0.0628372 0.704141" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779270">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_OuterEye_L" />
-																<attribute name="Position" value="5.50677 9.40908 -6.59418" />
-																<attribute name="Rotation" value="-0.407692 -0.873445 0.14605 0.222601" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779271">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_OuterEye_R" />
-																<attribute name="Position" value="5.50677 9.40909 6.59414" />
-																<attribute name="Rotation" value="0.14605 -0.222601 -0.40769 0.873445" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779272">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_BotNose" />
-																<attribute name="Position" value="2.32895 14.5181 -4.53537e-005" />
-																<attribute name="Rotation" value="0.135474 -0.694008 0.135474 0.694008" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779273">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_08" />
-																<attribute name="Position" value="-1.79767 11.7624 1.65907" />
-																<attribute name="Rotation" value="0.0769402 -0.541053 -0.320886 0.773547" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779274">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_06" />
-																<attribute name="Position" value="-1.79767 11.7625 -1.65913" />
-																<attribute name="Rotation" value="-0.320888 -0.773546 0.0769415 0.541052" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779275">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Mouth_07" />
-																<attribute name="Position" value="-2.08832 12.2475 -3.00949e-005" />
-																<attribute name="Rotation" value="-0.0643324 -0.704174 -0.0643324 0.704174" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779276">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Pinch_L" />
-																<attribute name="Position" value="0.49466 11.3029 -3.4871" />
-																<attribute name="Rotation" value="-0.145777 -0.357996 0.209765 0.898102" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
-															</node>
-															<node id="16779277">
-																<attribute name="Is Enabled" value="true" />
-																<attribute name="Name" value="FcFX_Pinch_R" />
-																<attribute name="Position" value="0.49466 11.3029 3.4871" />
-																<attribute name="Rotation" value="0.209764 -0.898102 -0.145777 0.357996" />
-																<attribute name="Scale" value="1 1 1" />
-																<attribute name="Variables" />
+																<node id="16779357">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyLd_Top_R" />
+																	<attribute name="Position" value="6.17027 9.24116 3.55308" />
+																	<attribute name="Rotation" value="-0.356532 -0.53547 -0.517051 0.564637" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779358">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFx_Eye_L" />
+																	<attribute name="Position" value="6.17029 9.24117 -3.55312" />
+																	<attribute name="Rotation" value="-4.74854e-007 -0.707107 -4.74854e-007 0.707107" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779359">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyLd_Top_L" />
+																	<attribute name="Position" value="6.17027 9.24117 -3.55312" />
+																	<attribute name="Rotation" value="0.517053 0.564636 0.356531 -0.53547" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779360">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFx_Eye_R" />
+																	<attribute name="Position" value="6.17029 9.24119 3.55306" />
+																	<attribute name="Rotation" value="-4.74854e-007 -0.707107 -4.74854e-007 0.707107" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779361">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyLd_Bottom_L" />
+																	<attribute name="Position" value="6.17029 9.24117 -3.55312" />
+																	<attribute name="Rotation" value="0.669623 0.360056 0.519218 -0.390355" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779362">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyLd_Bottom_R" />
+																	<attribute name="Position" value="6.17029 9.24118 3.55305" />
+																	<attribute name="Rotation" value="0.519218 0.390355 0.669622 -0.360057" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779363">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Cheek_L" />
+																	<attribute name="Position" value="3.96614 11.2835 -4.29814" />
+																	<attribute name="Rotation" value="0.127376 0.722903 -0.168256 -0.657934" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779364">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Nose_R" />
+																	<attribute name="Position" value="2.15346 12.969 1.14804" />
+																	<attribute name="Rotation" value="-0.43033 0.608943 0.318527 -0.585273" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779365">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Nose_L" />
+																	<attribute name="Position" value="2.15346 12.969 -1.14811" />
+																	<attribute name="Rotation" value="-0.318528 -0.585273 0.430331 0.608942" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779366">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Cheek_R" />
+																	<attribute name="Position" value="3.96614 11.2835 4.29809" />
+																	<attribute name="Rotation" value="0.168254 -0.657934 -0.127375 0.722903" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779367">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_01" />
+																	<attribute name="Position" value="-1.18019 11.1136 2.34058" />
+																	<attribute name="Rotation" value="-0.132394 0.674574 0.3116 -0.655994" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779368">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_02" />
+																	<attribute name="Position" value="-0.446716 12.3922 1.64345" />
+																	<attribute name="Rotation" value="-0.206692 0.804168 0.217651 -0.513051" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779369">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_03" />
+																	<attribute name="Position" value="-0.226395 12.8838 -4.12879e-005" />
+																	<attribute name="Rotation" value="0.0359094 -0.706194 0.0359094 0.706194" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779370">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_04" />
+																	<attribute name="Position" value="-0.446716 12.3922 -1.6435" />
+																	<attribute name="Rotation" value="-0.217651 -0.513049 0.206693 0.804168" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779371">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_05" />
+																	<attribute name="Position" value="-1.18019 11.1137 -2.34065" />
+																	<attribute name="Rotation" value="-0.311601 -0.655993 0.132394 0.674574" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779372">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyBrw_Inner_R" />
+																	<attribute name="Position" value="7.86948 12.8603 1.55435" />
+																	<attribute name="Rotation" value="-0.049782 -0.600127 -0.096447 0.792507" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779373">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyBrw_Mid_R" />
+																	<attribute name="Position" value="8.98944 12.1571 4.51003" />
+																	<attribute name="Rotation" value="0.196217 -0.654998 -0.167424 0.710244" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779374">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyBrw_Outer_R" />
+																	<attribute name="Position" value="9.91997 8.65225 6.75763" />
+																	<attribute name="Rotation" value="-0.491976 0.608479 0.338921 -0.522347" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779375">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyBrw_Inner_L" />
+																	<attribute name="Position" value="7.86948 12.8603 -1.55439" />
+																	<attribute name="Rotation" value="0.0964482 0.792507 0.0497814 -0.600127" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779376">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyBrw_Mid_L" />
+																	<attribute name="Position" value="8.98944 12.1571 -4.51009" />
+																	<attribute name="Rotation" value="0.167425 0.710243 -0.196218 -0.654997" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779377">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_EyBrw_Outer_L" />
+																	<attribute name="Position" value="9.91997 8.65224 -6.75766" />
+																	<attribute name="Rotation" value="-0.338922 -0.522346 0.491977 0.608478" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779378">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_BlowCheek_L" />
+																	<attribute name="Position" value="-0.508499 9.08907 -5.20357" />
+																	<attribute name="Rotation" value="-0.456418 -0.550632 0.224597 0.661848" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779379">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_BlowCheek_R" />
+																	<attribute name="Position" value="-0.508499 9.08909 5.20354" />
+																	<attribute name="Rotation" value="-0.224596 0.661849 0.456417 -0.550633" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779380">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_InsideCheek_L" />
+																	<attribute name="Position" value="4.22107 12.5277 -1.05387" />
+																	<attribute name="Rotation" value="0.173536 0.649537 -0.394077 -0.62665" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779381">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_InsideCheek_R" />
+																	<attribute name="Position" value="4.22107 12.5277 1.05383" />
+																	<attribute name="Rotation" value="0.394076 -0.62665 -0.173535 0.649538" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779382">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_FrHead_L" />
+																	<attribute name="Position" value="11.4721 11.962 -3.3944" />
+																	<attribute name="Rotation" value="0.0334679 -0.674617 0.274993 0.684215" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779383">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_FrHead_R" />
+																	<attribute name="Position" value="11.4721 11.962 3.39434" />
+																	<attribute name="Rotation" value="-0.274992 0.684216 -0.0334689 -0.674617" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779384">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_FrHead_Cntr" />
+																	<attribute name="Position" value="6.90334 12.6904 -4.31945e-005" />
+																	<attribute name="Rotation" value="-0.062852 -0.704308 -0.062852 0.704308" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779385">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_OuterEye_L" />
+																	<attribute name="Position" value="5.50677 9.40908 -6.59419" />
+																	<attribute name="Rotation" value="0.407691 0.873445 -0.14605 -0.222601" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779386">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_OuterEye_R" />
+																	<attribute name="Position" value="5.50677 9.4091 6.59413" />
+																	<attribute name="Rotation" value="0.14605 -0.222601 -0.40769 0.873445" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779387">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_BotNose" />
+																	<attribute name="Position" value="2.32895 14.5181 -4.47331e-005" />
+																	<attribute name="Rotation" value="0.135474 -0.694008 0.135474 0.694008" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779388">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_08" />
+																	<attribute name="Position" value="-1.79768 11.7624 1.65908" />
+																	<attribute name="Rotation" value="0.0769403 -0.541053 -0.320886 0.773547" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779389">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_06" />
+																	<attribute name="Position" value="-1.79768 11.7625 -1.65912" />
+																	<attribute name="Rotation" value="0.320887 0.773546 -0.0769413 -0.541053" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779390">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Mouth_07" />
+																	<attribute name="Position" value="-2.08832 12.2475 -4.01024e-005" />
+																	<attribute name="Rotation" value="-0.0643323 -0.704174 -0.0643324 0.704174" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779391">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Pinch_L" />
+																	<attribute name="Position" value="0.494659 11.3029 -3.4871" />
+																	<attribute name="Rotation" value="-0.145777 -0.357996 0.209765 0.898101" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
+																<node id="16779392">
+																	<attribute name="Is Enabled" value="true" />
+																	<attribute name="Name" value="FcFX_Pinch_R" />
+																	<attribute name="Position" value="0.494659 11.3029 3.48709" />
+																	<attribute name="Rotation" value="-0.209764 0.898102 0.145777 -0.357996" />
+																	<attribute name="Scale" value="1 1 1" />
+																	<attribute name="Variables" />
+																</node>
 															</node>
 														</node>
 													</node>
-												</node>
-												<node id="16779278">
-													<attribute name="Is Enabled" value="true" />
-													<attribute name="Name" value="Flappy_Breast_Right" />
-													<attribute name="Position" value="5.71111 6.63584 7.53302" />
-													<attribute name="Rotation" value="0.60116 0.134143 -0.133404 0.776412" />
-													<attribute name="Scale" value="1 1 1" />
-													<attribute name="Variables" />
-												</node>
-												<node id="16779279">
-													<attribute name="Is Enabled" value="true" />
-													<attribute name="Name" value="Flappy_Breast_Left" />
-													<attribute name="Position" value="5.7111 6.63582 -7.53329" />
-													<attribute name="Rotation" value="0.60116 -0.134144 0.133405 0.776412" />
-													<attribute name="Scale" value="1 1 1" />
-													<attribute name="Variables" />
+													<node id="16779393">
+														<attribute name="Is Enabled" value="true" />
+														<attribute name="Name" value="Flappy_Breast_Right" />
+														<attribute name="Position" value="5.71112 6.63585 7.53301" />
+														<attribute name="Rotation" value="0.60116 0.134143 -0.133404 0.776412" />
+														<attribute name="Scale" value="1 1 1" />
+														<attribute name="Variables" />
+													</node>
+													<node id="16779394">
+														<attribute name="Is Enabled" value="true" />
+														<attribute name="Name" value="Flappy_Breast_Left" />
+														<attribute name="Position" value="5.71112 6.63582 -7.53331" />
+														<attribute name="Rotation" value="0.60116 -0.134143 0.133405 0.776412" />
+														<attribute name="Scale" value="1 1 1" />
+														<attribute name="Variables" />
+													</node>
 												</node>
 											</node>
 										</node>
-									</node>
-									<node id="16779280">
-										<attribute name="Is Enabled" value="true" />
-										<attribute name="Name" value="Bip01_L_Thigh" />
-										<attribute name="Position" value="-1.48361e-005 2.24655e-005 -10.073" />
-										<attribute name="Rotation" value="-0.209863 0.0521513 -0.96165 0.168723" />
-										<attribute name="Scale" value="1 1 1" />
-										<attribute name="Variables" />
-										<node id="16779281">
+										<node id="16779395">
 											<attribute name="Is Enabled" value="true" />
-											<attribute name="Name" value="Bip01_LThighTwist" />
-											<attribute name="Position" value="0 0 -0" />
-											<attribute name="Rotation" value="1 0.000645309 6.0024e-012 9.30158e-009" />
+											<attribute name="Name" value="Bip01_L_Thigh" />
+											<attribute name="Position" value="0 1.71695e-005 -10.073" />
+											<attribute name="Rotation" value="-0.0180045 0.0100041 0.999788 0.000320005" />
 											<attribute name="Scale" value="1 1 1" />
 											<attribute name="Variables" />
-											<node id="16779282">
+											<node id="16779396">
 												<attribute name="Is Enabled" value="true" />
-												<attribute name="Name" value="Bip01_LThighTwist1" />
-												<attribute name="Position" value="23.0243 0 -0" />
-												<attribute name="Rotation" value="1 -0.000322647 -2.23518e-008 -7.21174e-012" />
-												<attribute name="Scale" value="1 1 1" />
-												<attribute name="Variables" />
-											</node>
-										</node>
-										<node id="16779283">
-											<attribute name="Is Enabled" value="true" />
-											<attribute name="Name" value="Bip01_L_Calf" />
-											<attribute name="Position" value="46.0485 -3.70902e-006 4.22697e-007" />
-											<attribute name="Rotation" value="0.943178 -0 -0 -0.332286" />
-											<attribute name="Scale" value="1 1 1" />
-											<attribute name="Variables" />
-											<node id="16779284">
-												<attribute name="Is Enabled" value="true" />
-												<attribute name="Name" value="Bip01_L_Foot" />
-												<attribute name="Position" value="46.3977 -3.92037e-006 -0" />
-												<attribute name="Rotation" value="0.979786 0.0416437 -0.0763351 -0.18016" />
-												<attribute name="Scale" value="1 1 1" />
-												<attribute name="Variables" />
-												<node id="16779285">
-													<attribute name="Is Enabled" value="true" />
-													<attribute name="Name" value="Bip01_L_Toe0" />
-													<attribute name="Position" value="15.1969 7.61809 4.22697e-007" />
-													<attribute name="Rotation" value="0.706892 0.000531128 -0.00118486 0.70732" />
-													<attribute name="Scale" value="1 1 1" />
-													<attribute name="Variables" />
-												</node>
-											</node>
-											<node id="16779286">
-												<attribute name="Is Enabled" value="true" />
-												<attribute name="Name" value="Bip01_LCalfTwist" />
+												<attribute name="Name" value="Bip01_LThighTwist" />
 												<attribute name="Position" value="0 0 -0" />
-												<attribute name="Rotation" value="1 0.000402196 2.23547e-008 -8.99099e-012" />
+												<attribute name="Rotation" value="1 0.000644978 1.02116e-011 1.58325e-008" />
 												<attribute name="Scale" value="1 1 1" />
 												<attribute name="Variables" />
-												<node id="16779287">
+												<node id="16779397">
 													<attribute name="Is Enabled" value="true" />
-													<attribute name="Name" value="Bip01_LCalfTwist1" />
-													<attribute name="Position" value="23.1989 0 -0" />
-													<attribute name="Rotation" value="1 0.000402201 -2.98023e-008 1.19865e-011" />
+													<attribute name="Name" value="Bip01_LThighTwist1" />
+													<attribute name="Position" value="23.0243 2.38419e-007 -9.53674e-007" />
+													<attribute name="Rotation" value="1 -0.000322576 0 0" />
 													<attribute name="Scale" value="1 1 1" />
 													<attribute name="Variables" />
 												</node>
 											</node>
-										</node>
-									</node>
-									<node id="16779288">
-										<attribute name="Is Enabled" value="true" />
-										<attribute name="Name" value="Bip01_R_Thigh" />
-										<attribute name="Position" value="1.52588e-005 -7.84074e-006 10.073" />
-										<attribute name="Rotation" value="0.48609 -0.512943 -0.619163 -0.342407" />
-										<attribute name="Scale" value="1 1 1" />
-										<attribute name="Variables" />
-										<node id="16779289">
-											<attribute name="Is Enabled" value="true" />
-											<attribute name="Name" value="Bip01_RThighTwist" />
-											<attribute name="Position" value="0 0 -0" />
-											<attribute name="Rotation" value="1 -0.000644632 7.26479e-008 2.23506e-008" />
-											<attribute name="Scale" value="1 1 1" />
-											<attribute name="Variables" />
-											<node id="16779290">
+											<node id="16779398">
 												<attribute name="Is Enabled" value="true" />
-												<attribute name="Name" value="Bip01_RThighTwist1" />
-												<attribute name="Position" value="23.0243 3.49767e-006 -3.70902e-006" />
-												<attribute name="Rotation" value="1 0.000322679 5.96046e-008 -1.92331e-011" />
+												<attribute name="Name" value="Bip01_L_Calf" />
+												<attribute name="Position" value="46.0485 -7.15256e-007 9.53674e-007" />
+												<attribute name="Rotation" value="0.999561 -7.82515e-007 3.81134e-008 -0.0296423" />
 												<attribute name="Scale" value="1 1 1" />
 												<attribute name="Variables" />
-											</node>
-										</node>
-										<node id="16779291">
-											<attribute name="Is Enabled" value="true" />
-											<attribute name="Name" value="Bip01_R_Calf" />
-											<attribute name="Position" value="46.0485 1.12327e-005 -1.14441e-005" />
-											<attribute name="Rotation" value="1 -0 -0 -0.000927452" />
-											<attribute name="Scale" value="1 1 1" />
-											<attribute name="Variables" />
-											<node id="16779292">
-												<attribute name="Is Enabled" value="true" />
-												<attribute name="Name" value="Bip01_R_Foot" />
-												<attribute name="Position" value="46.3977 -1.96019e-006 -0" />
-												<attribute name="Rotation" value="0.93537 -0.0891804 0.0260507 -0.34125" />
-												<attribute name="Scale" value="1 1 1" />
-												<attribute name="Variables" />
-												<node id="16779293">
+												<node id="16779399">
 													<attribute name="Is Enabled" value="true" />
-													<attribute name="Name" value="Bip01_R_Toe0" />
-													<attribute name="Position" value="15.1969 7.61809 7.52372e-006" />
-													<attribute name="Rotation" value="0.764323 0.0102213 0.00462099 0.644736" />
+													<attribute name="Name" value="Bip01_L_Foot" />
+													<attribute name="Position" value="46.3977 1.66893e-006 7.62939e-006" />
+													<attribute name="Rotation" value="0.999645 0.00085374 -0.0179872 0.0196369" />
 													<attribute name="Scale" value="1 1 1" />
 													<attribute name="Variables" />
+													<node id="16779400">
+														<attribute name="Is Enabled" value="true" />
+														<attribute name="Name" value="Bip01_L_Toe0" />
+														<attribute name="Position" value="15.1969 7.61808 -2.38419e-006" />
+														<attribute name="Rotation" value="0.707107 1.84392e-008 1.08001e-007 0.707107" />
+														<attribute name="Scale" value="1 1 1" />
+														<attribute name="Variables" />
+													</node>
+												</node>
+												<node id="16779401">
+													<attribute name="Is Enabled" value="true" />
+													<attribute name="Name" value="Bip01_LCalfTwist" />
+													<attribute name="Position" value="0 0 -0" />
+													<attribute name="Rotation" value="1 0.000403157 -3.91156e-008 1.57697e-011" />
+													<attribute name="Scale" value="1 1 1" />
+													<attribute name="Variables" />
+													<node id="16779402">
+														<attribute name="Is Enabled" value="true" />
+														<attribute name="Name" value="Bip01_LCalfTwist1" />
+														<attribute name="Position" value="23.1989 1.07288e-006 -0" />
+														<attribute name="Rotation" value="1 0.000402114 1.13632e-007 2.60313e-008" />
+														<attribute name="Scale" value="1 1 1" />
+														<attribute name="Variables" />
+													</node>
 												</node>
 											</node>
-											<node id="16779294">
+										</node>
+										<node id="16779403">
+											<attribute name="Is Enabled" value="true" />
+											<attribute name="Name" value="Bip01_R_Thigh" />
+											<attribute name="Position" value="0 -7.76706e-006 10.073" />
+											<attribute name="Rotation" value="0.0180045 0.0100042 0.999788 -0.000318815" />
+											<attribute name="Scale" value="1 1 1" />
+											<attribute name="Variables" />
+											<node id="16779404">
 												<attribute name="Is Enabled" value="true" />
-												<attribute name="Name" value="Bip01_RCalfTwist" />
+												<attribute name="Name" value="Bip01_RThighTwist" />
 												<attribute name="Position" value="0 0 -0" />
-												<attribute name="Rotation" value="1 -0.000401192 4.40856e-008 1.76862e-011" />
+												<attribute name="Rotation" value="1 -0.000645284 1.80658e-007 2.80563e-008" />
 												<attribute name="Scale" value="1 1 1" />
 												<attribute name="Variables" />
-												<node id="16779295">
+												<node id="16779405">
 													<attribute name="Is Enabled" value="true" />
-													<attribute name="Name" value="Bip01_RCalfTwist1" />
-													<attribute name="Position" value="23.1989 3.70902e-006 1.05674e-007" />
-													<attribute name="Rotation" value="1 -0.000400749 3.02156e-008 1.26779e-008" />
+													<attribute name="Name" value="Bip01_RThighTwist1" />
+													<attribute name="Position" value="23.0243 -2.38419e-007 -4.76837e-007" />
+													<attribute name="Rotation" value="1 0.00032257 0 0" />
 													<attribute name="Scale" value="1 1 1" />
 													<attribute name="Variables" />
+												</node>
+											</node>
+											<node id="16779406">
+												<attribute name="Is Enabled" value="true" />
+												<attribute name="Name" value="Bip01_R_Calf" />
+												<attribute name="Position" value="46.0485 4.76837e-007 -1.62125e-005" />
+												<attribute name="Rotation" value="0.999561 -8.46466e-008 1.06864e-007 -0.0296423" />
+												<attribute name="Scale" value="1 1 1" />
+												<attribute name="Variables" />
+												<node id="16779407">
+													<attribute name="Is Enabled" value="true" />
+													<attribute name="Name" value="Bip01_R_Foot" />
+													<attribute name="Position" value="46.3977 1.07288e-006 -0" />
+													<attribute name="Rotation" value="0.999645 -0.000852887 0.017987 0.0196369" />
+													<attribute name="Scale" value="1 1 1" />
+													<attribute name="Variables" />
+													<node id="16779408">
+														<attribute name="Is Enabled" value="true" />
+														<attribute name="Name" value="Bip01_R_Toe0" />
+														<attribute name="Position" value="15.1969 7.61808 -2.38419e-006" />
+														<attribute name="Rotation" value="0.707107 2.89965e-008 5.13458e-008 0.707107" />
+														<attribute name="Scale" value="1 1 1" />
+														<attribute name="Variables" />
+													</node>
+												</node>
+												<node id="16779409">
+													<attribute name="Is Enabled" value="true" />
+													<attribute name="Name" value="Bip01_RCalfTwist" />
+													<attribute name="Position" value="0 0 -0" />
+													<attribute name="Rotation" value="1 -0.000401428 1.06166e-007 1.30811e-008" />
+													<attribute name="Scale" value="1 1 1" />
+													<attribute name="Variables" />
+													<node id="16779410">
+														<attribute name="Is Enabled" value="true" />
+														<attribute name="Name" value="Bip01_RCalfTwist1" />
+														<attribute name="Position" value="23.1989 1.19209e-007 4.29153e-006" />
+														<attribute name="Rotation" value="1 -0.000402712 -7.45013e-008 -1.12059e-008" />
+														<attribute name="Scale" value="1 1 1" />
+														<attribute name="Variables" />
+													</node>
 												</node>
 											</node>
 										</node>
