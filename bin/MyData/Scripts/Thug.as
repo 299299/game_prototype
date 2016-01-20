@@ -348,7 +348,7 @@ class ThugCounterState : CharacterCounterState
     ThugCounterState(Character@ c)
     {
         super(c);
-        String preFix = "TG_BM_Counter/";
+        String preFix = GetTGCounterPrefix();
         AddCounterMotions(preFix);
         AddMultiCounterMotions(preFix, false);
     }
@@ -722,7 +722,7 @@ class ThugBeatDownHitState : MultiMotionState
     {
         super(c);
         SetName("BeatDownHitState");
-        String preFix = "TG_BM_Beatdown/";
+        String preFix = GetTGBeatdownPrefix();
         AddMotion(preFix + "Beatdown_HitReaction_01");
         AddMotion(preFix + "Beatdown_HitReaction_02");
         AddMotion(preFix + "Beatdown_HitReaction_03");
@@ -755,7 +755,7 @@ class ThugBeatDownEndState : MultiMotionState
     {
         super(c);
         SetName("BeatDownEndState");
-        String preFix = "TG_BM_Beatdown/";
+        String preFix = GetTGBeatdownPrefix();
         AddMotion(preFix + "Beatdown_Strike_End_01");
         AddMotion(preFix + "Beatdown_Strike_End_02");
         AddMotion(preFix + "Beatdown_Strike_End_03");
@@ -1088,4 +1088,24 @@ Vector3 GetRagdollForce()
     float x = Random(HIT_RAGDOLL_FORCE.x*0.75f, HIT_RAGDOLL_FORCE.x*1.25f);
     float y = Random(HIT_RAGDOLL_FORCE.y*0.75f, HIT_RAGDOLL_FORCE.y*1.25f);
     return Vector3(x, y, x);
+}
+
+String GetTGBeatdownPrefix()
+{
+    if (playerType == 0)
+        return "TG_BM_Beatdown/";
+    else if (playerType == 1)
+        return "TG_CW_Beatdown/";
+    else
+        return "";
+}
+
+String GetTGCounterPrefix()
+{
+    if (playerType == 0)
+        return "TG_BM_Counter/";
+    else if (playerType == 1)
+        return "TG_CW_Counter/";
+    else
+        return "";
 }

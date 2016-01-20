@@ -16,6 +16,7 @@
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
 #include "Scripts/Bruce.as"
+#include "Scripts/Catwoman.as"
 
 int drawDebug = 0;
 bool autoCounter = false;
@@ -30,7 +31,7 @@ Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "Camera";
-String PLAYER_NAME = "Bruce";;
+int playerType = 0;
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
@@ -78,7 +79,13 @@ void Start()
             else if (argument == "bighead")
                 bigHeadMode = !bigHeadMode;
             else if (argument == "player")
-                PLAYER_NAME = arguments[i+1];
+            {
+                String name = arguments[i+1];
+                if (name == "bruce")
+                    playerType = 0;
+                else if (name == "catwoman")
+                    playerType = 1;
+            }
             else if (argument == "lowend")
                 lowend_platform = !lowend_platform;
             else if (argument == "hdr")
