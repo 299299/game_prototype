@@ -430,7 +430,7 @@ class TestGameState : GameState
 
         Node@ playerNode;
         if (playerType == 0)
-            playerNode = CreateCharacter("player", "Bruce", "Bruce", playerPos, playerRot);
+            playerNode = CreateCharacter("player", "bruce_w", "Bruce", playerPos, playerRot);
         else if (playerType == 1)
             playerNode = CreateCharacter("player", "Catwoman", "Catwoman", playerPos, playerRot);
 
