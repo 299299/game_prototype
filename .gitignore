@@ -92,7 +92,7 @@ Thumbs.db
 /bin/MyData/Models
 /bin/Asset/Animations
 /bin/Urho3DPlayer_d.exe
-/bin/MyData/CharacterTextures
+# /bin/MyData/CharacterTextures
 /bin/Asset/*.zip
 *.asc
 /bin/Release/
