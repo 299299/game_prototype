@@ -26,9 +26,9 @@ class BruceTurnState : PlayerTurnState
     BruceTurnState(Character@ c)
     {
         super(c);
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_90");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_180");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Left_90");
+        AddMotion("BW_Movement/" + "Turn_Right_90");
+        AddMotion("BW_Movement/" + "Turn_Right_180");
+        AddMotion("BW_Movement/" + "Turn_Left_90");
     }
 };
 
@@ -37,7 +37,7 @@ class BruceMoveState : PlayerMoveState
     BruceMoveState(Character@ c)
     {
         super(c);
-        SetMotion(BRUCE_MOVEMENT_GROUP + "Walk_Forward");
+        SetMotion("BW_Movement/" + "Walk_Forward");
     }
 };
 

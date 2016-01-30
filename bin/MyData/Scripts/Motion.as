@@ -1121,6 +1121,11 @@ class MotionManager
         //CreateMotion("BM_Movement/Turn_Left_90", kMotion_R, kMotion_R, 14, 0, false);
         //CreateMotion("BM_Movement/Walk_Forward", kMotion_Z, kMotion_Z, -1, 0, true);
 
+        CreateMotion("BW_Movement/Turn_Left_90");
+        CreateMotion("BW_Movement/Turn_Right_180");
+        CreateMotion("BW_Movement/Turn_Left_90");
+        CreateMotion("BW_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
+
         // Evades
         CreateMotion("BM_Movement/Evade_Forward_01");
         CreateMotion("BM_Movement/Evade_Back_01");
