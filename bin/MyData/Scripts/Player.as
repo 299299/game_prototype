@@ -124,9 +124,8 @@ class PlayerMoveState : SingleMotionState
 
     void Enter(State@ lastState)
     {
-        CharacterState::Enter(lastState);
+        SingleMotionState::Enter(lastState);
         ownner.SetTarget(null);
-        motion.Start(ownner, 0.0f, 0.1f, 1.25f);
         combatReady = true;
     }
 };

@@ -1109,3 +1109,243 @@ String GetTGCounterPrefix()
     else
         return "";
 }
+
+void CreateThugMotions()
+{
+    String preFix = "TG_Combat/";
+    Global_CreateMotion(preFix + "Step_Forward");
+    Global_CreateMotion(preFix + "Step_Right");
+    Global_CreateMotion(preFix + "Step_Back");
+    Global_CreateMotion(preFix + "Step_Left");
+    Global_CreateMotion(preFix + "Step_Forward_Long");
+    Global_CreateMotion(preFix + "Step_Right_Long");
+    Global_CreateMotion(preFix + "Step_Back_Long");
+    Global_CreateMotion(preFix + "Step_Left_Long");
+
+    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
+
+    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
+    Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
+
+    if (has_redirect)
+    {
+        Global_CreateMotion(preFix + "Redirect_push_back");
+        Global_CreateMotion(preFix + "Redirect_Stumble_JK");
+    }
+
+    Global_CreateMotion(preFix + "Attack_Kick");
+    Global_CreateMotion(preFix + "Attack_Kick_01");
+    Global_CreateMotion(preFix + "Attack_Kick_02");
+    Global_CreateMotion(preFix + "Attack_Punch");
+    Global_CreateMotion(preFix + "Attack_Punch_01");
+    Global_CreateMotion(preFix + "Attack_Punch_02");
+
+
+    preFix = "TG_HitReaction/";
+    Global_CreateMotion(preFix + "HitReaction_Left");
+    Global_CreateMotion(preFix + "HitReaction_Right");
+    Global_CreateMotion(preFix + "HitReaction_Back_NoTurn");
+    Global_CreateMotion(preFix + "HitReaction_Back");
+    Global_CreateMotion(preFix + "CapeDistract_Close_Forward");
+    //Global_CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
+    //Global_CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
+
+    preFix = "TG_Getup/";
+    Global_CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
+    Global_CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
+
+    preFix = "TG_BM_Counter/";
+    gMotionMgr.AddCounterMotions(preFix);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_02");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_03", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_01");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_03");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_01");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
+
+    preFix = "TG_BM_Beatdown/";
+    // Global_CreateMotion(preFix + "Beatdown_Start_01");
+    Global_CreateMotion(preFix + "Beatdown_HitReaction_01");
+    Global_CreateMotion(preFix + "Beatdown_HitReaction_02");
+    Global_CreateMotion(preFix + "Beatdown_HitReaction_03");
+    Global_CreateMotion(preFix + "Beatdown_HitReaction_04");
+    Global_CreateMotion(preFix + "Beatdown_HitReaction_05");
+    Global_CreateMotion(preFix + "Beatdown_HitReaction_06");
+
+    Global_CreateMotion(preFix + "Beatdown_Strike_End_01");
+    Global_CreateMotion(preFix + "Beatdown_Strike_End_02");
+    Global_CreateMotion(preFix + "Beatdown_Strike_End_03");
+    Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
+
+    preFix = "TG_Combat/";
+    Global_AddAnimation(preFix + "Stand_Idle_Additive_01");
+    Global_AddAnimation(preFix + "Stand_Idle_Additive_02");
+    Global_AddAnimation(preFix + "Stand_Idle_Additive_03");
+    Global_AddAnimation(preFix + "Stand_Idle_Additive_04");
+
+    preFix = "TG_HitReaction/";
+    Global_AddAnimation(preFix + "CapeHitReaction_Idle");
+    Global_AddAnimation(preFix + "CapeHitReaction_Idle_02");
+}
+
+void AddThugAnimationTriggers()
+{
+    String preFix = "TG_BM_Counter/";
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 30, 35);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 46, 56);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 38, 48);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 30, 46);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 38, 42);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_06", 32, 36);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_07", 56, 60);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_08", 50, 52);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_09", 36, 38);
+
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_01", 34, 35);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_02", 44, 48);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_03", 35, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_04", 36, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_05", 60, 66);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_06", -1, 44);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_07", 38, 43);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 54, 60);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 60, 68);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_10", -1, 56);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_13", 58, 68);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_14", 72, 78);
+
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_01", 35, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 48);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 30, 35);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_05", 40, 48);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_06", 65, 70);
+
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 50, 54);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 60, 54);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 72);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_04", -1, 43);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_05", 48, 52);
+
+    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 50, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_02", 40, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_03", 88, READY_TO_FIGHT);
+
+    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 50, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_03", 100, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_04", 70, READY_TO_FIGHT);
+
+    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 55, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 76, READY_TO_FIGHT);
+
+    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 50, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_01", 65, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 65, READY_TO_FIGHT);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_01", -1, 99);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_02", -1, 99);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_01", -1, 58);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_02", -1, 58);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_01", -1, 48);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_02", -1, 48);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_01", 80, 84);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_02", 80, 84);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_01", 26, 28);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_02", 19, 24);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_01", -1, 26);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_02", -1, 26);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_01", -1, 62);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_02", -1, 62);
+
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_01", 24, 30);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_02", 30, 36);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_03", 26, 34);
+
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_01", 25, 33);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_02", 25, 33);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_03", 25, 33);
+
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_01", 35, 41);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_02", 35, 45);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_03", 35, 45);
+
+    /*
+    preFix = "TG_BM_Beatdown/";
+    AddRagdollTrigger(preFix + "Beatdown_Strike_End_01", 24, 28);
+    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_01", 28, HEALTH, 0);
+    AddRagdollTrigger(preFix + "Beatdown_Strike_End_02", -1, 48);
+    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_02", 48, HEALTH, 0);
+    AddRagdollTrigger(preFix + "Beatdown_Strike_End_03", -1, 28);
+    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_03", 28, HEALTH, 0);
+    AddRagdollTrigger(preFix + "Beatdown_Strike_End_04", -1, 50);
+    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_04", 50, HEALTH, 0);
+    */
+
+    //preFix = "TG_HitReaction/";
+    //AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);
+    //AddRagdollTrigger(preFix + "Push_Reaction_From_Back", 6, 9);
+
+    preFix = "TG_Combat/";
+    int frame_fixup = 6;
+    // name counter-start counter-end attack-start attack-end attack-bone
+    AddComplexAttackTrigger(preFix + "Attack_Kick", 15 - frame_fixup, 24, 24, 27, "Bip01_L_Foot");
+    AddComplexAttackTrigger(preFix + "Attack_Kick_01", 12 - frame_fixup, 24, 24, 27, "Bip01_L_Foot");
+    AddComplexAttackTrigger(preFix + "Attack_Kick_02", 19 - frame_fixup, 24, 24, 27, "Bip01_L_Foot");
+    AddComplexAttackTrigger(preFix + "Attack_Punch", 15 - frame_fixup, 22, 22, 24, "Bip01_R_Hand");
+    AddComplexAttackTrigger(preFix + "Attack_Punch_01", 15 - frame_fixup, 23, 23, 24, "Bip01_R_Hand");
+    AddComplexAttackTrigger(preFix + "Attack_Punch_02", 15 - frame_fixup, 23, 23, 24, "Bip01_R_Hand");
+
+    AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 2, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 13, FOOT_STEP, R_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Step_Back", 15, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Back_Long", 9, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Back_Long", 19, FOOT_STEP, L_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Step_Forward", 12, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Forward_Long", 10, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Forward_Long", 22, FOOT_STEP, R_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Step_Left", 11, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Left_Long", 8, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Left_Long", 22, FOOT_STEP, R_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Step_Right", 11, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Right_Long", 15, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Step_Right_Long", 28, FOOT_STEP, L_FOOT);
+
+    AddStringAnimationTrigger(preFix + "135_Turn_Left", 8, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "135_Turn_Left", 20, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "135_Turn_Left", 31, FOOT_STEP, R_FOOT);
+
+    AddStringAnimationTrigger(preFix + "135_Turn_Right", 11, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "135_Turn_Right", 24, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "135_Turn_Right", 39, FOOT_STEP, R_FOOT);
+
+    preFix = "TG_Getup/";
+    AddAnimationTrigger(preFix + "GetUp_Front", 44, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "GetUp_Back", 68, READY_TO_FIGHT);
+}

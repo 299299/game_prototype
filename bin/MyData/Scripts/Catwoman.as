@@ -4,8 +4,6 @@
 //
 // ==============================================
 
-const String CATWOMAN_MOVEMENT_GROUP = "CW_Movement/";
-
 // -- non cost
 float CATWOMAN_TRANSITION_DIST = 0.0f;
 
@@ -14,9 +12,7 @@ class CatwomanStandState : PlayerStandState
     CatwomanStandState(Character@ c)
     {
         super(c);
-        animations.Push(GetAnimationName(CATWOMAN_MOVEMENT_GROUP + "Stand_Idle"));
-        animations.Push(GetAnimationName(CATWOMAN_MOVEMENT_GROUP + "Stand_Idle_01"));
-        animations.Push(GetAnimationName(CATWOMAN_MOVEMENT_GROUP + "Stand_Idle_02"));
+        animations.Push(GetAnimationName("CW_Movement/Stand_Idle"));
         flags = FLAGS_ATTACK;
     }
 };
@@ -26,9 +22,9 @@ class CatwomanTurnState : PlayerTurnState
     CatwomanTurnState(Character@ c)
     {
         super(c);
-        AddMotion(CATWOMAN_MOVEMENT_GROUP + "Turn_Right_90");
-        AddMotion(CATWOMAN_MOVEMENT_GROUP + "Turn_Right_180");
-        AddMotion(CATWOMAN_MOVEMENT_GROUP + "Turn_Left_90");
+        AddMotion("CW_Movement/Turn_Right_90");
+        AddMotion("CW_Movement/Turn_Right_180");
+        AddMotion("CW_Movement/Turn_Left_90");
     }
 };
 
@@ -37,7 +33,7 @@ class CatwomanMoveState : PlayerMoveState
     CatwomanMoveState(Character@ c)
     {
         super(c);
-        SetMotion(CATWOMAN_MOVEMENT_GROUP + "Walk_Forward");
+        SetMotion("CW_Movement/Walk_Forward");
     }
 };
 
@@ -46,7 +42,7 @@ class CatwomanEvadeState : PlayerEvadeState
     CatwomanEvadeState(Character@ c)
     {
         super(c);
-        String prefix = "CW_Movement/";
+        String prefix = "CW_Combat/";
         AddMotion(prefix + "Evade_Forward_01");
         AddMotion(prefix + "Evade_Right_01");
         AddMotion(prefix + "Evade_Back_01");
@@ -222,7 +218,7 @@ class CatwomanCounterState : PlayerCounterState
     {
         super(c);
         String preFix = "CW_TG_Counter/";
-        AddCounterMotions(preFix);
+        gMotionMgr.AddCounterMotions(preFix);
         AddMultiCounterMotions(preFix, true);
     }
 };
@@ -313,9 +309,10 @@ class Catwoman : Player
         stateMachine.AddState(CatwomanStandState(this));
         stateMachine.AddState(CatwomanTurnState(this));
         stateMachine.AddState(CatwomanMoveState(this));
+        stateMachine.AddState(CatwomanEvadeState(this));
+        return;
         stateMachine.AddState(CatwomanAttackState(this));
         stateMachine.AddState(CatwomanCounterState(this));
-        stateMachine.AddState(CatwomanEvadeState(this));
         stateMachine.AddState(CatwomanHitState(this));
         if (has_redirect)
             stateMachine.AddState(CatwomanRedirectState(this));
@@ -326,3 +323,27 @@ class Catwoman : Player
         stateMachine.AddState(AnimationTestState(this));
     }
 };
+
+void CreateCatwomanMotions()
+{
+    String preFix = "CW_Movement/";
+
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
+    Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
+
+    preFix = "CW_Combat/";
+    Global_CreateMotion(preFix + "Evade_Forward_01");
+    Global_CreateMotion(preFix + "Evade_Back_01");
+    Global_CreateMotion(preFix + "Evade_Left_01");
+    Global_CreateMotion(preFix + "Evade_Right_01");
+
+    preFix = "CW_Movement/";
+    Global_AddAnimation(preFix + "Stand_Idle");
+}
+
+void AddCatwomanAnimationTriggers()
+{
+
+}

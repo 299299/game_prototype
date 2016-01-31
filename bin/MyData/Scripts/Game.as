@@ -80,14 +80,41 @@ class LoadingState : GameState
 
     void CreateLoadingUI()
     {
-        CreateLogo();
+        Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/LogoLarge.png");
+        if (logoTexture !is null)
+        {
+            Sprite@ logoSprite = ui.root.CreateChild("Sprite", "logo");
+            logoSprite.texture = logoTexture;
+            int textureWidth = logoTexture.width;
+            int textureHeight = logoTexture.height;
+            logoSprite.SetScale(256.0f / textureWidth);
+            logoSprite.SetSize(textureWidth, textureHeight);
+            logoSprite.SetHotSpot(0, textureHeight);
+            logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
+            logoSprite.opacity = 0.75f;
+            logoSprite.priority = -100;
+            logoSprite.visible = false;
+        }
+
         Text@ text = ui.root.CreateChild("Text", "loading_text");
-        text.SetFont(cache.GetResource("Font", UI_FONT), 30);
-        text.horizontalAlignment = HA_CENTER;
-        text.verticalAlignment = VA_CENTER;
+        text.SetFont(cache.GetResource("Font", UI_FONT), 20);
+        text.SetAlignment(HA_LEFT, VA_BOTTOM);
         text.SetPosition(0, 0);
-        text.color = Color(0, 1, 0);
+        text.color = Color(1, 1, 1);
         text.textEffect = TE_STROKE;
+
+        Texture2D@ loadingTexture = cache.GetResource("Texture2D", "Textures/Loading.tga");
+        if (loadingTexture !is  null)
+        {
+            Sprite@ loadingSprite = ui.root.CreateChild("Sprite", "loading_bg");
+            loadingSprite.texture = loadingTexture;
+            int textureWidth = loadingTexture.width;
+            int textureHeight = loadingTexture.height;
+            loadingSprite.SetSize(textureWidth, textureHeight);
+            loadingSprite.SetPosition(graphics.width/2 - textureWidth/2, graphics.height/2 - textureHeight/2);
+            loadingSprite.priority = -100;
+        }
+
     }
 
     void Enter(State@ lastState)
@@ -102,10 +129,13 @@ class LoadingState : GameState
     void Exit(State@ nextState)
     {
         State::Exit(nextState);
-        //SetLogoVisible(false);
         Text@ text = ui.root.GetChild("loading_text");
         if (text !is null)
             text.Remove();
+
+        Sprite@ loadingSprite = ui.root.GetChild("loading_bg");
+        if (loadingSprite !is null)
+            loadingSprite.Remove();
     }
 
     void Update(float dt)

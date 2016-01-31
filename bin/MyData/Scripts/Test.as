@@ -31,7 +31,7 @@ Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "Camera";
-int playerType = 0;
+int playerType = 1;
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
@@ -44,7 +44,7 @@ String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
 
 int debugLevel = 0;
-int freeze_ai = 0;
+int freeze_ai = 1;
 int test_beat_index = 1;
 bool base_on_player = false;
 int test_counter_index = 0;
@@ -179,34 +179,6 @@ void CreateConsoleAndDebugHud()
     // Create debug HUD
     DebugHud@ debugHud = engine.CreateDebugHud();
     debugHud.defaultStyle = xmlFile;
-}
-
-void SetLogoVisible(bool enable)
-{
-    Sprite@ logoSprite = ui.root.GetChild("logo", true);
-    if (logoSprite !is null)
-        logoSprite.visible = enable;
-}
-
-void CreateLogo()
-{
-    // Get logo texture
-    Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/LogoLarge.png");
-    if (logoTexture is null)
-        return;
-    Sprite@ logoSprite = ui.root.CreateChild("Sprite", "logo");
-    logoSprite.texture = logoTexture;
-    int textureWidth = logoTexture.width;
-    int textureHeight = logoTexture.height;
-    logoSprite.SetScale(256.0f / textureWidth);
-    logoSprite.SetSize(textureWidth, textureHeight);
-    logoSprite.SetHotSpot(0, textureHeight);
-    logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
-    logoSprite.opacity = 0.75f;
-    logoSprite.priority = -100;
-
-    if (graphics.width < 300)
-        SetLogoVisible(false);
 }
 
 void CreateUI()
