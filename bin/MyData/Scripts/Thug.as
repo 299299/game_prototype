@@ -1112,6 +1112,8 @@ String GetTGCounterPrefix()
 
 void CreateThugMotions()
 {
+    AssignMotionRig("Models/thug.mdl");
+
     String preFix = "TG_Combat/";
     Global_CreateMotion(preFix + "Step_Forward");
     Global_CreateMotion(preFix + "Step_Right");

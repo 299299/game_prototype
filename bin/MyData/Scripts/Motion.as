@@ -442,7 +442,7 @@ class MotionManager
         AssetPreProcess();
         CreateBruceMotions();
         CreateThugMotions();
-        CreateCatwomanMotions();
+        // CreateCatwomanMotions();
     }
 
     void Stop()
@@ -520,14 +520,6 @@ class MotionManager
     {
         for (uint i=0; i<motions.length; ++i)
             motions[i].Process();
-    }
-
-    Motion@ CreateCustomMotion(Motion@ refMotion, const String&in name)
-    {
-        Motion@ motion = Motion(refMotion);
-        motion.SetName(name);
-        motions.Push(motion);
-        return motion;
     }
 
     void AddCounterMotions(const String&in counter_prefix)

@@ -304,6 +304,8 @@ class BruceTransitionState : PlayerTransitionState
 
 void CreateBruceMotions()
 {
+    AssignMotionRig("Models/bruce_w.mdl");
+
     String preFix = "BW_Movement/";
     // Locomotions
     //Global_CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, kMotion_R, 16);

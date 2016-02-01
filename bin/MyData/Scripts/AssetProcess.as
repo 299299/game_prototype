@@ -25,7 +25,6 @@ const String TITLE = "AssetProcess";
 const String TranslateBoneName = "Bip01_$AssimpFbx$_Translation";
 const String RotateBoneName = "Bip01_$AssimpFbx$_Rotation";
 const String ScaleBoneName = "Bip01_$AssimpFbx$_Scaling";
-const String rigName = "Models/bruce.mdl";
 
 const String HEAD = "Bip01_Head";
 const String L_HAND = "Bip01_L_Hand";
@@ -36,41 +35,85 @@ const String L_ARM = "Bip01_L_Forearm";
 const String R_ARM = "Bip01_R_Forearm";
 const String L_CALF = "Bip01_L_Calf";
 const String R_CALF = "Bip01_R_Calf";
-const float BONE_SCALE = 100.0f;
-
-Scene@  processScene;
-Node@   processNode;
-Node@   translateNode;
-Node@   rotateNode;
-Skeleton@ skeleton;
-
-Vector3 pelvisRightAxis = Vector3(1, 0, 0);
-Quaternion rotateBoneInitQ;
-
-Vector3 pelvisOrign;
 
 const float FRAME_PER_SEC = 30.0f;
 const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 const int   PROCESS_TIME_PER_FRAME = 60; // ms
+const float BONE_SCALE = 100.0f;
+const float BIG_HEAD_SCALE = 2.0f;
 
+Scene@  processScene;
+
+class MotionRig
+{
+    Node@   processNode;
+    Node@   translateNode;
+    Node@   rotateNode;
+    Skeleton@ skeleton;
+    Vector3 pelvisRightAxis = Vector3(1, 0, 0);
+    Quaternion rotateBoneInitQ;
+    Vector3 pelvisOrign;
+
+    MotionRig(const String& rigName)
+    {
+        if (bigHeadMode)
+        {
+            Vector3 v(BIG_HEAD_SCALE, BIG_HEAD_SCALE, BIG_HEAD_SCALE);
+            Model@ m = cache.GetResource("Model",  rigName);
+            Skeleton@ s = m.skeleton;
+            s.GetBone(HEAD).initialScale = v;
+            s.GetBone(L_HAND).initialScale = v;
+            s.GetBone(R_HAND).initialScale = v;
+            s.GetBone(L_FOOT).initialScale = v;
+            s.GetBone(R_FOOT).initialScale = v;
+        }
+
+        processNode = processScene.CreateChild("Character");
+        processNode.worldRotation = Quaternion(0, 180, 0);
+
+        AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
+        am.model = cache.GetResource("Model", rigName);
+
+        skeleton = am.skeleton;
+        Bone@ bone = skeleton.GetBone(RotateBoneName);
+        rotateBoneInitQ = bone.initialRotation;
+
+        pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
+        pelvisRightAxis.Normalize();
+
+        translateNode = processNode.GetChild(TranslateBoneName, true);
+        rotateNode = processNode.GetChild(RotateBoneName, true);
+        pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
+
+        Print(rigName + " pelvisRightAxis = " + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString());
+    }
+
+    ~MotionRig()
+    {
+        processNode.Remove();
+    }
+};
+
+MotionRig@ curRig;
 bool d_log = false;
 
-Vector3 GetProjectedAxis(Node@ node, const Vector3&in axis)
+Vector3 GetProjectedAxis(MotionRig@ rig, Node@ node, const Vector3&in axis)
 {
     Vector3 p = node.worldRotation * axis;
     p.Normalize();
-    Vector3 ret = processNode.worldRotation.Inverse() * p;
+    Vector3 ret = rig.processNode.worldRotation.Inverse() * p;
     ret.Normalize();
     ret.y = 0;
     return ret;
 }
 
-Quaternion GetRotationInXZPlane(Node@ rotateNode, const Quaternion&in startLocalRot, const Quaternion&in curLocalRot)
+Quaternion GetRotationInXZPlane(MotionRig@ rig, const Quaternion&in startLocalRot, const Quaternion&in curLocalRot)
 {
+    Node@ rotateNode = rig.rotateNode;
     rotateNode.rotation = startLocalRot;
-    Vector3 startAxis = GetProjectedAxis(rotateNode, pelvisRightAxis);
+    Vector3 startAxis = GetProjectedAxis(rig, rotateNode, rig.pelvisRightAxis);
     rotateNode.rotation = curLocalRot;
-    Vector3 curAxis = GetProjectedAxis(rotateNode, pelvisRightAxis);
+    Vector3 curAxis = GetProjectedAxis(rig, rotateNode, rig.pelvisRightAxis);
     return Quaternion(startAxis, curAxis);
 }
 
@@ -91,47 +134,12 @@ void DumpSkeletonNames(Node@ n)
 
 void AssetPreProcess()
 {
-    if (bigHeadMode)
-    {
-        const float bigHeadScale = 2.0f;
-        Vector3 v(bigHeadScale, bigHeadScale, bigHeadScale);
-
-        Model@ m1 = cache.GetResource("Model",  "Models/bruce.mdl");
-        Skeleton@ s1 = m1.skeleton;
-        s1.GetBone(HEAD).initialScale = v;
-        s1.GetBone(L_HAND).initialScale = v;
-        s1.GetBone(R_HAND).initialScale = v;
-        s1.GetBone(L_FOOT).initialScale = v;
-        s1.GetBone(R_FOOT).initialScale = v;
-
-        m1 = cache.GetResource("Model",  "Models/thug.mdl");
-        s1 = m1.skeleton;
-        s1.GetBone(HEAD).initialScale = v;
-        s1.GetBone(L_HAND).initialScale = v;
-        s1.GetBone(R_HAND).initialScale = v;
-        s1.GetBone(L_FOOT).initialScale = v;
-        s1.GetBone(R_FOOT).initialScale = v;
-    }
-
-
     processScene = Scene();
-    processNode = processScene.CreateChild("Character");
-    processNode.worldRotation = Quaternion(0, 180, 0);
+}
 
-    AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
-    am.model = cache.GetResource("Model", rigName);
-
-    skeleton = am.skeleton;
-    Bone@ bone = skeleton.GetBone(RotateBoneName);
-    rotateBoneInitQ = bone.initialRotation;
-
-    pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
-    pelvisRightAxis.Normalize();
-    Print("pelvisRightAxis = " + pelvisRightAxis.ToString());
-
-    translateNode = processNode.GetChild(TranslateBoneName, true);
-    rotateNode = processNode.GetChild(RotateBoneName, true);
-    pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
+void AssignMotionRig(const String& rigName)
+{
+    @curRig = MotionRig(rigName);
 }
 
 void RotateAnimation(const String&in animationFile, float rotateAngle)
@@ -148,6 +156,7 @@ void RotateAnimation(const String&in animationFile, float rotateAngle)
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion q(0, rotateAngle, 0);
+    Node@ rotateNode = curRig.rotateNode;
 
     if (rotateTrack !is null)
     {
@@ -211,6 +220,9 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
+    Node@ rotateNode = curRig.rotateNode;
+    Node@ translateNode = curRig.translateNode;
+    MotionRig@ rig = curRig;
 
     bool cutRotation = motionFlag & kMotion_Ext_Rotate_From_Start != 0;
     bool dump = motionFlag & kMotion_Ext_Debug_Dump != 0;
@@ -222,7 +234,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     // pre process key frames
     if (rotateTrack !is null && rotateAngle > 360)
     {
-        firstRotateFromRoot = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
+        firstRotateFromRoot = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(firstRotateFromRoot) > 75)
         {
             Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
@@ -235,7 +247,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     {
         translateNode.position = translateTrack.keyFrames[0].position;
         Vector3 t_ws1 = translateNode.worldPosition;
-        translateNode.position = pelvisOrign;
+        translateNode.position = rig.pelvisOrign;
         Vector3 t_ws2 = translateNode.worldPosition;
         Vector3 diff = t_ws1 - t_ws2;
         startFromOrigin.x = diff.x;
@@ -250,7 +262,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 
     if (translateTrack !is null)
     {
-        Vector3 position = translateTrack.keyFrames[0].position - pelvisOrign;
+        Vector3 position = translateTrack.keyFrames[0].position - rig.pelvisOrign;
         const float minDist = 0.5f;
         if (Abs(position.x) > minDist) {
             Print(animationFile + " Need reset x position");
@@ -276,11 +288,11 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         Vector3 oldWS = currentWS;
 
         if (translateFlag & kMotion_X != 0)
-            currentWS.x = pelvisOrign.x;
+            currentWS.x = rig.pelvisOrign.x;
         if (translateFlag & kMotion_Y != 0)
-            currentWS.y = pelvisOrign.y;
+            currentWS.y = rig.pelvisOrign.y;
         if (translateFlag & kMotion_Z != 0)
-            currentWS.z = pelvisOrign.z;
+            currentWS.z = rig.pelvisOrign.z;
 
         translateNode.worldPosition = currentWS;
         Vector3 currentLS = translateNode.position;
@@ -292,7 +304,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     {
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
         {
-            Quaternion q = GetRotationInXZPlane(rotateNode, rotateBoneInitQ, rotateTrack.keyFrames[i].rotation);
+            Quaternion q = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[i].rotation);
             if (d_log)
             {
                 if (i == 0 || i == rotateTrack.numKeyFrames - 1)
@@ -313,7 +325,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(rotateTrack.keyFrames[i]);
-            Quaternion q = GetRotationInXZPlane(rotateNode, lastRot, kf.rotation);
+            Quaternion q = GetRotationInXZPlane(rig, lastRot, kf.rotation);
             lastRot = kf.rotation;
             outKeys[i].w = rotateFromStart;
             rotateFromStart += q.eulerAngles.y;
@@ -402,39 +414,9 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         return flip ? 180 : 0;
 }
 
-Animation@ CreateAnimation(const String&in originAnimationName, const String&in name, int start_frame, int num_of_frames)
-{
-    Animation@ originAnimation = FindAnimation(originAnimationName);
-    if (originAnimation is null)
-        return null;
-    Animation@ anim = Animation();
-    anim.name = GetAnimationName(name);
-    anim.animationName = name;
-    anim.length = float(num_of_frames) * SEC_PER_FRAME;
-    for (uint i=0; i<skeleton.numBones; ++i)
-    {
-        AnimationTrack@ originTrack = originAnimation.tracks[skeleton.bones[i].name];
-        if (originTrack is null)
-            continue;
-        AnimationTrack@ track = anim.CreateTrack(skeleton.bones[i].name);
-        track.channelMask = originTrack.channelMask;
-        for (int j=start_frame; j<start_frame+num_of_frames; ++j)
-        {
-            AnimationKeyFrame kf(originTrack.keyFrames[j]);
-            kf.time = float(j-start_frame) * SEC_PER_FRAME;
-            track.AddKeyFrame(kf);
-        }
-    }
-    cache.AddManualResource(anim);
-    return anim;
-}
-
 void AssetPostProcess()
 {
-    @skeleton = null;
-    @rotateNode = null;
-    @translateNode = null;
-    @processNode = null;
+    @curRig = null;
     if (processScene !is null)
         processScene.Remove();
     @processScene = null;

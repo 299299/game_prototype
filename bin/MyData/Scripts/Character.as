@@ -1284,8 +1284,7 @@ class Character : GameObject
 
     bool IsInAir()
     {
-        float diff = hipsNode.worldPosition.y - sceneNode.worldPosition.y;
-        return diff - pelvisOrign.y > 1.0f;
+        return (hipsNode.worldPosition.y - sceneNode.worldPosition.y) > (2.8f + 0.5f);
     }
 
     // ===============================================================================================

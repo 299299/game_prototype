@@ -326,6 +326,8 @@ class Catwoman : Player
 
 void CreateCatwomanMotions()
 {
+    AssignMotionRig("Models/catwoman.mdl");
+
     String preFix = "CW_Movement/";
 
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);

@@ -31,7 +31,7 @@ Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "Camera";
-int playerType = 1;
+int playerType = 0;
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
