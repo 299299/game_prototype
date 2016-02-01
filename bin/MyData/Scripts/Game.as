@@ -80,7 +80,7 @@ class LoadingState : GameState
 
     void CreateLoadingUI()
     {
-        Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/LogoLarge.png");
+        Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/ulogo.jpg");
         if (logoTexture !is null)
         {
             Sprite@ logoSprite = ui.root.CreateChild("Sprite", "logo");
@@ -90,10 +90,10 @@ class LoadingState : GameState
             logoSprite.SetScale(256.0f / textureWidth);
             logoSprite.SetSize(textureWidth, textureHeight);
             logoSprite.SetHotSpot(0, textureHeight);
-            logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
+            logoSprite.SetAlignment(HA_RIGHT, VA_BOTTOM);
             logoSprite.opacity = 0.75f;
             logoSprite.priority = -100;
-            logoSprite.visible = false;
+            logoSprite.AddTag("TAG_LOADING");
         }
 
         Text@ text = ui.root.CreateChild("Text", "loading_text");
@@ -102,6 +102,7 @@ class LoadingState : GameState
         text.SetPosition(0, 0);
         text.color = Color(1, 1, 1);
         text.textEffect = TE_STROKE;
+        text.AddTag("TAG_LOADING");
 
         Texture2D@ loadingTexture = cache.GetResource("Texture2D", "Textures/Loading.tga");
         if (loadingTexture !is  null)
@@ -113,8 +114,8 @@ class LoadingState : GameState
             loadingSprite.SetSize(textureWidth, textureHeight);
             loadingSprite.SetPosition(graphics.width/2 - textureWidth/2, graphics.height/2 - textureHeight/2);
             loadingSprite.priority = -100;
+            loadingSprite.AddTag("TAG_LOADING");
         }
-
     }
 
     void Enter(State@ lastState)
@@ -129,13 +130,9 @@ class LoadingState : GameState
     void Exit(State@ nextState)
     {
         State::Exit(nextState);
-        Text@ text = ui.root.GetChild("loading_text");
-        if (text !is null)
-            text.Remove();
-
-        Sprite@ loadingSprite = ui.root.GetChild("loading_bg");
-        if (loadingSprite !is null)
-            loadingSprite.Remove();
+        Array<UIElement@>@ elements = ui.root.GetChildrenWithTag("TAG_LOADING");
+        for (uint i = 0; i < elements.length; ++i)
+            elements[i].Remove();
     }
 
     void Update(float dt)
