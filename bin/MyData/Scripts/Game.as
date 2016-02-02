@@ -55,16 +55,16 @@ class GameState : State
 
 enum LoadSubState
 {
-    LOADING_MOTIONS,
     LOADING_RESOURCES,
+    LOADING_MOTIONS,
     LOADING_FINISHED,
 };
 
 class LoadingState : GameState
 {
-    int                 state;
+    int                 state = -1;
     int                 numLoadedResources = 0;
-    Scene@              gameScene;
+    Scene@              preloadScene;
 
     LoadingState()
     {
@@ -75,7 +75,7 @@ class LoadingState : GameState
     ~LoadingState()
     {
         Print("~LoadingState()");
-        gameScene = null;
+        preloadScene = null;
     }
 
     void CreateLoadingUI()
@@ -123,8 +123,7 @@ class LoadingState : GameState
         State::Enter(lastState);
         if (!engine.headless)
             CreateLoadingUI();
-        state = LOADING_MOTIONS;
-        gMotionMgr.Start();
+        ChangeSubState(LOADING_RESOURCES);
     }
 
     void Exit(State@ nextState)
@@ -137,7 +136,11 @@ class LoadingState : GameState
 
     void Update(float dt)
     {
-        if (state == LOADING_MOTIONS)
+        if (state == LOADING_RESOURCES)
+        {
+
+        }
+        else if (state == LOADING_MOTIONS)
         {
             Text@ text = ui.root.GetChild("loading_text");
             if (text !is null)
@@ -149,7 +152,7 @@ class LoadingState : GameState
             if (gMotionMgr.Update(dt))
             {
                 gMotionMgr.Finish();
-                ChangeSubState(LOADING_RESOURCES);
+                ChangeSubState(LOADING_FINISHED);
                 if (text !is null)
                     text.text = "Loading Scene Resources";
             }
@@ -157,15 +160,11 @@ class LoadingState : GameState
             if (d_log)
                 Print("============================== Motion Loading end ==============================");
         }
-        else if (state == LOADING_RESOURCES)
-        {
-
-        }
         else if (state == LOADING_FINISHED)
         {
-            if (gameScene !is null)
-                gameScene.Remove();
-            gameScene = null;
+            if (preloadScene !is null)
+                preloadScene.Remove();
+            preloadScene = null;
             gGame.ChangeState("TestGameState");
         }
     }
@@ -180,9 +179,11 @@ class LoadingState : GameState
 
         if (newState == LOADING_RESOURCES)
         {
-            gameScene = Scene();
-            gameScene.LoadAsyncXML(cache.GetFile("Scenes/1.xml"), LOAD_RESOURCES_ONLY);
+            preloadScene = Scene();
+            preloadScene.LoadAsyncXML(cache.GetFile("Scenes/1.xml"), LOAD_RESOURCES_ONLY);
         }
+        else if (newState == LOADING_MOTIONS)
+            gMotionMgr.Start();
     }
 
     void OnSceneLoadFinished(Scene@ _scene)
@@ -190,7 +191,7 @@ class LoadingState : GameState
         if (state == LOADING_RESOURCES)
         {
             Print("Scene Loading Finished");
-            ChangeSubState(LOADING_FINISHED);
+            ChangeSubState(LOADING_MOTIONS);
         }
     }
 
@@ -204,7 +205,7 @@ class LoadingState : GameState
     void OnESC()
     {
         if (state == LOADING_RESOURCES)
-            gameScene.StopAsyncLoading();
+            preloadScene.StopAsyncLoading();
         engine.Exit();
     }
 };
