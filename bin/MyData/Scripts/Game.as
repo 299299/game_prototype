@@ -91,7 +91,7 @@ class LoadingState : GameState
             logoSprite.SetSize(textureWidth, textureHeight);
             logoSprite.SetHotSpot(0, textureHeight);
             logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
-            logoSprite.SetPosition(graphics.width - textureWidth, 0);
+            logoSprite.SetPosition(graphics.width - textureWidth/2, 0);
             logoSprite.opacity = 0.75f;
             logoSprite.priority = -100;
             logoSprite.AddTag("TAG_LOADING");
@@ -100,7 +100,7 @@ class LoadingState : GameState
         Text@ text = ui.root.CreateChild("Text", "loading_text");
         text.SetFont(cache.GetResource("Font", UI_FONT), 20);
         text.SetAlignment(HA_LEFT, VA_BOTTOM);
-        text.SetPosition(0, 0);
+        text.SetPosition(2, 0);
         text.color = Color(1, 1, 1);
         text.textEffect = TE_STROKE;
         text.AddTag("TAG_LOADING");
