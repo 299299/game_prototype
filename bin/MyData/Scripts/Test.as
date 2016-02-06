@@ -64,7 +64,7 @@ void Start()
         @gInput = PlayerInput();
 
     Print("Game Running Platform: " + GetPlatform());
-    lowend_platform = GetPlatform() != "Windows";
+    // lowend_platform = GetPlatform() != "Windows";
     // lowend_platform = true;
 
     Array<String>@ arguments = GetArguments();
@@ -413,6 +413,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     Scene@ scene_ = script.defaultScene;
     int key = eventData["Key"].GetInt();
     gGame.OnKeyDown(key);
+
+    // Print("HandleKeyDown=" + key);
 
     if (key == KEY_F1)
     {

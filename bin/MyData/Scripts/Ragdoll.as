@@ -210,7 +210,8 @@ class Ragdoll : ScriptObject
                     {
                         Vector3 pos = boneNodes[i].worldPosition;
                         float y_diff = Abs(pos.y - hitPosition.y);
-                        Print("Ragdoll -- " + boneNodes[i].name + " y_diff = " + y_diff);
+                        if (d_log)
+                            Print("Ragdoll -- " + boneNodes[i].name + " y_diff = " + y_diff);
                         if (y_diff < 1.0f)
                             rb.linearVelocity = velocityRequest;
                     }

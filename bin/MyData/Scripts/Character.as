@@ -836,7 +836,8 @@ class Character : GameObject
 
     void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
     {
-        Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+        if (d_log)
+            Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
         AnimationController@ ctrl = animCtrl;
         ctrl.StopLayer(layer, blendTime);
         ctrl.PlayExclusive(animName, layer, loop, blendTime);
@@ -1187,8 +1188,11 @@ class Character : GameObject
 
     void ChangeState(const String&in name)
     {
-        String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        Print(GetName() + " ChangeState from " + oldStateName + " to " + name);
+        if (d_log)
+        {
+            String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
+            Print(GetName() + " ChangeState from " + oldStateName + " to " + name);
+        }
         stateMachine.ChangeState(name);
         sceneNode.vars[STATE] = GetState().nameHash;
     }
@@ -1198,7 +1202,8 @@ class Character : GameObject
         String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
         stateMachine.ChangeState(nameHash);
         String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        Print(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
+        if (d_log)
+            Print(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
         sceneNode.vars[STATE] = GetState().nameHash;
     }
 

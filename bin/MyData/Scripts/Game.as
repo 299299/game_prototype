@@ -90,7 +90,8 @@ class LoadingState : GameState
             logoSprite.SetScale(256.0f / textureWidth);
             logoSprite.SetSize(textureWidth, textureHeight);
             logoSprite.SetHotSpot(0, textureHeight);
-            logoSprite.SetAlignment(HA_RIGHT, VA_BOTTOM);
+            logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
+            logoSprite.SetPosition(graphics.width - textureWidth, 0);
             logoSprite.opacity = 0.75f;
             logoSprite.priority = -100;
             logoSprite.AddTag("TAG_LOADING");

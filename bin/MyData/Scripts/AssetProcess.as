@@ -144,7 +144,8 @@ void AssignMotionRig(const String& rigName)
 
 void RotateAnimation(const String&in animationFile, float rotateAngle)
 {
-    Print("Rotating animation " + animationFile);
+    if (d_log)
+        Print("Rotating animation " + animationFile);
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
@@ -184,7 +185,8 @@ void RotateAnimation(const String&in animationFile, float rotateAngle)
 
 void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
 {
-    Print("Translating animation " + animationFile);
+    if (d_log)
+        Print("Translating animation " + animationFile);
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
@@ -207,8 +209,11 @@ void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
 
 float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, float rotateAngle, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
-    Print("---------------------------------------------------------------------------------------");
-    Print("Processing animation " + animationFile);
+    if (d_log)
+    {
+        Print("---------------------------------------------------------------------------------------");
+        Print("Processing animation " + animationFile);
+    }
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
@@ -265,7 +270,8 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         Vector3 position = translateTrack.keyFrames[0].position - rig.pelvisOrign;
         const float minDist = 0.5f;
         if (Abs(position.x) > minDist) {
-            Print(animationFile + " Need reset x position");
+            if (d_log)
+                Print(animationFile + " Need reset x position");
             translateFlag |= kMotion_X;
         }
         if (Abs(position.y) > 2.0f) {
@@ -273,7 +279,8 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
             // translateFlag |= kMotion_Y;
         }
         if (Abs(position.z) > minDist) {
-            Print(animationFile + " Need reset z position");
+            if (d_log)
+                Print(animationFile + " Need reset z position");
             translateFlag |= kMotion_Z;
         }
         if (d_log)
@@ -407,7 +414,9 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         }
     }
 
-    Print("---------------------------------------------------------------------------------------");
+    if (d_log)
+        Print("---------------------------------------------------------------------------------------");
+
     if (rotateAngle < 360)
         return rotateAngle;
     else
