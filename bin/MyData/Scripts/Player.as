@@ -339,17 +339,12 @@ class PlayerAttackState : CharacterState
         }
         else
         {
-            bestIndex = index_start + RandomInt(index_num);
+            int r_n = RandomInt(index_num);
+            bestIndex = index_start + r_n % index_num;
             if (lastAttackDirection == dir && bestIndex == lastAttackIndex)
             {
                 Print("Repeat Attack index index_num=" + index_num);
-                if (index_num > 1)
-                {
-                    bestIndex ++;
-                    int max_index = index_start + index_num - 1;
-                    if (bestIndex > max_index)
-                        bestIndex = 0;
-                }
+                bestIndex = index_start + (r_n + 1) % index_num;
             }
             lastAttackDirection = dir;
             lastAttackIndex = bestIndex;
@@ -1172,7 +1167,7 @@ class PlayerTransitionState : SingleMotionState
 
     void OnMotionFinished()
     {
-        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
         if (!nextStateName.empty)
             ownner.ChangeState(nextStateName);
         else
@@ -1241,7 +1236,7 @@ class Player : Character
 
     bool Counter()
     {
-        Print("Player::Counter");
+        // Print("Player::Counter");
         PlayerCounterState@ state = cast<PlayerCounterState>(stateMachine.FindState("CounterState"));
         if (state is null)
             return false;
@@ -1256,7 +1251,7 @@ class Player : Character
 
     bool Evade()
     {
-        Print("Player::Evade()");
+        // Print("Player::Evade()");
 
         Enemy@ redirectEnemy = null;
         if (has_redirect)
@@ -1273,9 +1268,7 @@ class Player : Character
         {
             // if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
             {
-                int index = RadialSelectAnimation(4);
-                Print("Evade Index = " + index);
-                sceneNode.vars[ANIMATION_INDEX] = index;
+                sceneNode.vars[ANIMATION_INDEX] = RadialSelectAnimation(4);
                 ChangeState("EvadeState");
             }
         }

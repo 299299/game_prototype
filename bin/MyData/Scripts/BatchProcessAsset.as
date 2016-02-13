@@ -97,5 +97,9 @@ void Start()
     ProcessAnimations();
     PostProcess();
     engine.Exit();
-    ErrorDialog("BATCH PROCESS", "Time cost = " + String(time.systemTime - startTime) + " ms");
+    uint timeSec = (time.systemTime - startTime) / 1000;
+    if (timeSec > 60)
+        ErrorDialog("BATCH PROCESS", "Time cost = " + String(float(timeSec)/60.0f) + " min");
+    else
+        ErrorDialog("BATCH PROCESS", "Time cost = " + String(timeSec) + " sec");
 }

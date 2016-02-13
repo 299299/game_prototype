@@ -119,7 +119,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraSpeed = 4.5f;
     float   cameraHeight = 3.0f;
     float   cameraDistance = 18.0f;
-    float   cameraDistSpeed = 200.0f;
+    float   cameraDistSpeed = 100.0f;
     float   cameraAutoDistance = 20.0f;
     float   targetFov = BASE_FOV;
     float   fovSpeed = 1.5f;
@@ -168,6 +168,7 @@ class ThirdPersonCameraController : CameraController
         UpdateView(pos, target_pos, dt * cameraSpeed);
 
         cameraDistance += float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
+        cameraDistance = Clamp(cameraDistance, 1.5f, 50.0f);
 
         float diff = targetFov - camera.fov;
         camera.fov += diff * dt * fovSpeed;

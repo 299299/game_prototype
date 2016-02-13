@@ -722,13 +722,27 @@ class ThugBeatDownHitState : MultiMotionState
     {
         super(c);
         SetName("BeatDownHitState");
-        String preFix = GetTGBeatdownPrefix();
-        AddMotion(preFix + "Beatdown_HitReaction_01");
-        AddMotion(preFix + "Beatdown_HitReaction_02");
-        AddMotion(preFix + "Beatdown_HitReaction_03");
-        AddMotion(preFix + "Beatdown_HitReaction_04");
-        AddMotion(preFix + "Beatdown_HitReaction_05");
-        AddMotion(preFix + "Beatdown_HitReaction_06");
+        if (playerType == 0)
+        {
+            String preFix = "TG_BM_Beatdown/";
+            AddMotion(preFix + "Beatdown_HitReaction_01");
+            AddMotion(preFix + "Beatdown_HitReaction_02");
+            AddMotion(preFix + "Beatdown_HitReaction_03");
+            AddMotion(preFix + "Beatdown_HitReaction_04");
+            AddMotion(preFix + "Beatdown_HitReaction_05");
+            AddMotion(preFix + "Beatdown_HitReaction_06");
+        }
+        else if (playerType == 1)
+        {
+            String preFix = "TG_CW_Beatdown/";
+            AddMotion(preFix + "Beatdown_01");
+            AddMotion(preFix + "Beatdown_02");
+            AddMotion(preFix + "Beatdown_03");
+            AddMotion(preFix + "Beatdown_04");
+            AddMotion(preFix + "Beatdown_05");
+            AddMotion(preFix + "Beatdown_06");
+        }
+
         flags = FLAGS_STUN | FLAGS_ATTACK;
     }
 
@@ -744,7 +758,7 @@ class ThugBeatDownHitState : MultiMotionState
 
     void OnMotionFinished()
     {
-        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
+        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
         ownner.ChangeState("StunState");
     }
 };
@@ -755,11 +769,22 @@ class ThugBeatDownEndState : MultiMotionState
     {
         super(c);
         SetName("BeatDownEndState");
-        String preFix = GetTGBeatdownPrefix();
-        AddMotion(preFix + "Beatdown_Strike_End_01");
-        AddMotion(preFix + "Beatdown_Strike_End_02");
-        AddMotion(preFix + "Beatdown_Strike_End_03");
-        AddMotion(preFix + "Beatdown_Strike_End_04");
+        if (playerType == 0)
+        {
+            String preFix = "TG_BM_Beatdown/";
+            AddMotion(preFix + "Beatdown_Strike_End_01");
+            AddMotion(preFix + "Beatdown_Strike_End_02");
+            AddMotion(preFix + "Beatdown_Strike_End_03");
+            AddMotion(preFix + "Beatdown_Strike_End_04");
+        }
+        else if (playerType == 1)
+        {
+            String preFix = "TG_CW_Beatdown/";
+            AddMotion(preFix + "Beatdown_End_01");
+            AddMotion(preFix + "Beatdown_End_02");
+            AddMotion(preFix + "Beatdown_End_03");
+        }
+
         flags = FLAGS_ATTACK;
     }
 
@@ -1090,16 +1115,6 @@ Vector3 GetRagdollForce()
     return Vector3(x, y, x);
 }
 
-String GetTGBeatdownPrefix()
-{
-    if (playerType == 0)
-        return "TG_BM_Beatdown/";
-    else if (playerType == 1)
-        return "TG_CW_Beatdown/";
-    else
-        return "";
-}
-
 String GetTGCounterPrefix()
 {
     if (playerType == 0)
@@ -1184,7 +1199,6 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
 
     preFix = "TG_BM_Beatdown/";
-    // Global_CreateMotion(preFix + "Beatdown_Start_01");
     Global_CreateMotion(preFix + "Beatdown_HitReaction_01");
     Global_CreateMotion(preFix + "Beatdown_HitReaction_02");
     Global_CreateMotion(preFix + "Beatdown_HitReaction_03");
@@ -1206,6 +1220,19 @@ void CreateThugMotions()
     preFix = "TG_HitReaction/";
     Global_AddAnimation(preFix + "CapeHitReaction_Idle");
     Global_AddAnimation(preFix + "CapeHitReaction_Idle_02");
+
+
+    preFix = "TG_CW_Beatdown/";
+    Global_CreateMotion(preFix + "Beatdown_01");
+    Global_CreateMotion(preFix + "Beatdown_02");
+    Global_CreateMotion(preFix + "Beatdown_03");
+    Global_CreateMotion(preFix + "Beatdown_04");
+    Global_CreateMotion(preFix + "Beatdown_05");
+    Global_CreateMotion(preFix + "Beatdown_06");
+
+    Global_CreateMotion(preFix + "Beatdown_End_01");
+    Global_CreateMotion(preFix + "Beatdown_End_02");
+    Global_CreateMotion(preFix + "Beatdown_End_03");
 }
 
 void AddThugAnimationTriggers()
@@ -1292,23 +1319,6 @@ void AddThugAnimationTriggers()
 
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_01", 35, 41);
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_02", 35, 45);
-    AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_03", 35, 45);
-
-    /*
-    preFix = "TG_BM_Beatdown/";
-    AddRagdollTrigger(preFix + "Beatdown_Strike_End_01", 24, 28);
-    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_01", 28, HEALTH, 0);
-    AddRagdollTrigger(preFix + "Beatdown_Strike_End_02", -1, 48);
-    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_02", 48, HEALTH, 0);
-    AddRagdollTrigger(preFix + "Beatdown_Strike_End_03", -1, 28);
-    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_03", 28, HEALTH, 0);
-    AddRagdollTrigger(preFix + "Beatdown_Strike_End_04", -1, 50);
-    AddIntAnimationTrigger(preFix + "Beatdown_Strike_End_04", 50, HEALTH, 0);
-    */
-
-    //preFix = "TG_HitReaction/";
-    //AddRagdollTrigger(preFix + "Push_Reaction", 6, 12);
-    //AddRagdollTrigger(preFix + "Push_Reaction_From_Back", 6, 9);
 
     preFix = "TG_Combat/";
     int frame_fixup = 6;
@@ -1351,3 +1361,5 @@ void AddThugAnimationTriggers()
     AddAnimationTrigger(preFix + "GetUp_Front", 44, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "GetUp_Back", 68, READY_TO_FIGHT);
 }
+
+

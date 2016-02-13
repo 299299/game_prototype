@@ -41,10 +41,10 @@ class GameObject : ScriptObject
 
     void Stop()
     {
-        if (node !is null)
-            Print(node.name + ".Stop()");
-        else
-            Print(GetName() + ".Stop()");
+        //if (node !is null)
+        //    Print(node.name + ".Stop()");
+        //else
+        //    Print(GetName() + ".Stop()");
     }
 
     void SetTimeScale(float scale)
@@ -169,7 +169,7 @@ class GameObject : ScriptObject
 
     void Remove()
     {
-        Print(node.name + ".Remove()");
+        // Print(node.name + ".Remove()");
         node.Remove();
     }
 

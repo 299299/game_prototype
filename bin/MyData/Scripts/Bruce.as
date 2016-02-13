@@ -327,105 +327,7 @@ void CreateBruceMotions()
     //Global_CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
     //Global_CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
 
-    // Attacks
-    preFix = "BM_Attack/";
-    //========================================================================
-    // FORWARD
-    //========================================================================
-    // weak forward
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Forward");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Forward_01");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Forward_02");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Forward_03");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Forward_04");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Forward_05");
-    // close forward
-    Global_CreateMotion(preFix + "Attack_Close_Forward_02");
-    Global_CreateMotion(preFix + "Attack_Close_Forward_03");
-    Global_CreateMotion(preFix + "Attack_Close_Forward_04");
-    Global_CreateMotion(preFix + "Attack_Close_Forward_05");
-    Global_CreateMotion(preFix + "Attack_Close_Forward_06");
-    Global_CreateMotion(preFix + "Attack_Close_Forward_07");
-    Global_CreateMotion(preFix + "Attack_Close_Forward_08");
-    Global_CreateMotion(preFix + "Attack_Close_Run_Forward");
-    // far forward
-    Global_CreateMotion(preFix + "Attack_Far_Forward");
-    Global_CreateMotion(preFix + "Attack_Far_Forward_01");
-    Global_CreateMotion(preFix + "Attack_Far_Forward_02");
-    Global_CreateMotion(preFix + "Attack_Far_Forward_03");
-    Global_CreateMotion(preFix + "Attack_Far_Forward_04");
-    Global_CreateMotion(preFix + "Attack_Run_Far_Forward");
-
-    //========================================================================
-    // RIGHT
-    //========================================================================
-    // weak right
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Right");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Right_01");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Right_02");
-    // close right
-    Global_CreateMotion(preFix + "Attack_Close_Right");
-    Global_CreateMotion(preFix + "Attack_Close_Right_01");
-    Global_CreateMotion(preFix + "Attack_Close_Right_03");
-    Global_CreateMotion(preFix + "Attack_Close_Right_04");
-    Global_CreateMotion(preFix + "Attack_Close_Right_05");
-    Global_CreateMotion(preFix + "Attack_Close_Right_06");
-    Global_CreateMotion(preFix + "Attack_Close_Right_07");
-    Global_CreateMotion(preFix + "Attack_Close_Right_08");
-    // far right
-    Global_CreateMotion(preFix + "Attack_Far_Right");
-    Global_CreateMotion(preFix + "Attack_Far_Right_01");
-    // Global_CreateMotion(preFix + "Attack_Far_Right_02");
-    Global_CreateMotion(preFix + "Attack_Far_Right_03");
-    Global_CreateMotion(preFix + "Attack_Far_Right_04");
-
-    //========================================================================
-    // BACK
-    //========================================================================
-    // weak back
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Back");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Back_01");
-    // close back
-    Global_CreateMotion(preFix + "Attack_Close_Back");
-    Global_CreateMotion(preFix + "Attack_Close_Back_01");
-    Global_CreateMotion(preFix + "Attack_Close_Back_02");
-    Global_CreateMotion(preFix + "Attack_Close_Back_03");
-    Global_CreateMotion(preFix + "Attack_Close_Back_04");
-    Global_CreateMotion(preFix + "Attack_Close_Back_05");
-    Global_CreateMotion(preFix + "Attack_Close_Back_06");
-    Global_CreateMotion(preFix + "Attack_Close_Back_07");
-    Global_CreateMotion(preFix + "Attack_Close_Back_08");
-    // far back
-    Global_CreateMotion(preFix + "Attack_Far_Back");
-    Global_CreateMotion(preFix + "Attack_Far_Back_01");
-    Global_CreateMotion(preFix + "Attack_Far_Back_02");
-    //Global_CreateMotion(preFix + "Attack_Far_Back_03");
-    Global_CreateMotion(preFix + "Attack_Far_Back_04");
-
-    //========================================================================
-    // LEFT
-    //========================================================================
-    // weak left
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Left");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Left_01");
-    Global_CreateMotion(preFix + "Attack_Close_Weak_Left_02");
-
-    // close left
-    Global_CreateMotion(preFix + "Attack_Close_Left");
-    Global_CreateMotion(preFix + "Attack_Close_Left_01");
-    Global_CreateMotion(preFix + "Attack_Close_Left_02");
-    Global_CreateMotion(preFix + "Attack_Close_Left_03");
-    Global_CreateMotion(preFix + "Attack_Close_Left_04");
-    Global_CreateMotion(preFix + "Attack_Close_Left_05");
-    Global_CreateMotion(preFix + "Attack_Close_Left_06");
-    Global_CreateMotion(preFix + "Attack_Close_Left_07");
-    Global_CreateMotion(preFix + "Attack_Close_Left_08");
-    // far left
-    Global_CreateMotion(preFix + "Attack_Far_Left");
-    Global_CreateMotion(preFix + "Attack_Far_Left_01");
-    Global_CreateMotion(preFix + "Attack_Far_Left_02");
-    Global_CreateMotion(preFix + "Attack_Far_Left_03");
-    Global_CreateMotion(preFix + "Attack_Far_Left_04");
+    Global_CreateMotion_InFolder("BM_Attack/");
 
     preFix = "BM_TG_Counter/";
     gMotionMgr.AddCounterMotions(preFix);
@@ -465,7 +367,7 @@ void CreateBruceMotions()
 
     preFix = "BM_Combat/";
     // Global_CreateMotion(preFix + "Attempt_Takedown", kMotion_XZR, kMotion_Z);
-    Global_CreateMotion(preFix + "Into_Takedown", kMotion_XZR, kMotion_XZR);
+    Global_CreateMotion(preFix + "Into_Takedown");
 
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Stand_Idle");

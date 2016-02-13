@@ -442,6 +442,11 @@ String GetAnimationName(const String&in name)
     return "Animations/" + name + "_Take 001.ani";
 }
 
+String FileNameToMotionName(const String&in name)
+{
+    return name.Substring(0, name.length - 13);
+}
+
 // clamps an angle to the rangle of [-2PI, 2PI]
 float AngleDiff( float diff )
 {

@@ -207,7 +207,7 @@ class SingleMotionState : CharacterState
 
     void OnMotionFinished()
     {
-        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
         ownner.CommonStateFinishedOnGroud();
     }
 };
@@ -271,7 +271,7 @@ class MultiMotionState : CharacterState
 
     void OnMotionFinished()
     {
-        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
+        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
         ownner.CommonStateFinishedOnGroud();
     }
 };

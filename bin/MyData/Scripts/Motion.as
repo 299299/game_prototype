@@ -591,3 +591,10 @@ void Global_AddAnimation(const String&in name)
 {
     gMotionMgr.AddAnimation(name);
 }
+
+void Global_CreateMotion_InFolder(const String&in folder)
+{
+    Array<String> attack_animations = fileSystem.ScanDir("MyData/Animations/" + folder, "*.ani", SCAN_FILES, false);
+    for (uint i=0; i<attack_animations.length; ++i)
+        Global_CreateMotion(folder + FileNameToMotionName(attack_animations[i]));
+}

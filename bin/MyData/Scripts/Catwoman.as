@@ -56,117 +56,72 @@ class CatwomanAttackState : PlayerAttackState
     {
         super(c);
 
-         //========================================================================
+        //========================================================================
+        // BACK
+        //========================================================================
+        AddAttackMotion(backAttacks, "Attack_Close_Weak_Back_01", 16, ATTACK_PUNCH, L_HAND);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_01", 19, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_02", 21, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_03", 13, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(backAttacks, "Attack_Close_Back_04", 12, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_01", 39, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_02", 31, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_03", 27, ATTACK_KICK, L_FOOT);
+
+        //========================================================================
         // FORWARD
         //========================================================================
-
-        // forward weak
-        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH, L_HAND);
-
-        // forward close
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_02", 14, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_03", 11, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_04", 19, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_05", 24, ATTACK_PUNCH, L_ARM);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_01", 11, ATTACK_PUNCH, L_HAND);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_02", 13, ATTACK_PUNCH, R_HAND);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_03", 12, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_01", 11, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_03", 12, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_04", 21, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_05", 12, ATTACK_KICK, L_FOOT);
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_06", 20, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_07", 15, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_08", 18, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Run_Forward", 12, ATTACK_PUNCH, R_HAND);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_07", 14, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_08", 15, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_09", 17, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Run_Close_Forward", 13, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_01", 41, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_02", 29, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_03", 42, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Run_Far_Forward", 29, ATTACK_KICK, L_FOOT);
 
-        // forward far
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward", 25, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_01", 17, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_02", 21, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_03", 22, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_04", 22, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Run_Far_Forward", 18, ATTACK_KICK, R_FOOT);
+        //========================================================================
+        // LEFT
+        //========================================================================
+        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_01", 10, ATTACK_PUNCH, R_HAND);
+        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH, L_HAND);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_01", 12, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_02", 20, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_03", 14, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_04", 20, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_05", 17, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 34, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 30, ATTACK_PUNCH, R_HAND);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 22, ATTACK_KICK, L_FOOT);
 
         //========================================================================
         // RIGHT
         //========================================================================
         // right weak
-        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right", 12, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH, R_HAND);
-
-        // right close
-        AddAttackMotion(rightAttacks, "Attack_Close_Right", 16, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_01", 18, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_03", 11, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_04", 19, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_05", 15, ATTACK_KICK, L_CALF);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_06", 20, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_07", 18, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_08", 18, ATTACK_KICK, L_FOOT);
-
-        // right far
-        AddAttackMotion(rightAttacks, "Attack_Far_Right", 25, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_01", 15, ATTACK_KICK, L_CALF);
-        // AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_03", 29, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_04", 22, ATTACK_KICK, R_FOOT);
-
-        //========================================================================
-        // BACK
-        //========================================================================
-        // back weak
-        AddAttackMotion(backAttacks, "Attack_Close_Weak_Back", 12, ATTACK_PUNCH, L_ARM);
-        AddAttackMotion(backAttacks, "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH, R_HAND);
-
-        AddAttackMotion(backAttacks, "Attack_Close_Back", 11, ATTACK_PUNCH, L_ARM);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_01", 16, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_02", 18, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_03", 21, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_04", 18, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_05", 14, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_06", 15, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_07", 14, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_08", 17, ATTACK_KICK, L_FOOT);
-
-        // back far
-        AddAttackMotion(backAttacks, "Attack_Far_Back", 14, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_01", 15, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_02", 22, ATTACK_PUNCH, R_ARM);
-        //AddAttackMotion(backAttacks, "Attack_Far_Back_03", 22, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_04", 36, ATTACK_KICK, R_FOOT);
-
-        //========================================================================
-        // LEFT
-        //========================================================================
-        // left weak
-        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left", 13, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH, L_HAND);
-
-        // left close
-        AddAttackMotion(leftAttacks, "Attack_Close_Left", 7, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_01", 18, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_02", 13, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_03", 21, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_04", 21, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_05", 15, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_06", 12, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_07", 15, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_08", 20, ATTACK_KICK, L_FOOT);
-
-        // left far
-        AddAttackMotion(leftAttacks, "Attack_Far_Left", 19, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 22, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 22, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 21, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Far_Left_04", 23, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_01", 14, ATTACK_PUNCH, L_HAND);
+        AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_02", 14, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_01", 15, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_02", 21, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_03", 15, ATTACK_KICK, L_CALF);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_04", 20, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(rightAttacks, "Attack_Close_Right_05", 18, ATTACK_PUNCH, R_ARM);
+        AddAttackMotion(rightAttacks, "Attack_Far_Right_01", 36, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 27, ATTACK_KICK, R_FOOT);
 
         forwardAttacks.Sort();
         leftAttacks.Sort();
         rightAttacks.Sort();
         backAttacks.Sort();
 
-        float min_dist = 2.0f;
+        float min_dist = 2.5f;
         for (uint i=0; i<forwardAttacks.length; ++i)
         {
             if (forwardAttacks[i].impactDist >= min_dist)
@@ -228,7 +183,7 @@ class CatwomanHitState : PlayerHitState
     CatwomanHitState(Character@ c)
     {
         super(c);
-        String hitPrefix = "CW_Combat_HitReaction/";
+        String hitPrefix = "CW_HitReaction/";
         AddMotion(hitPrefix + "HitReaction_Face_Right");
         AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
         AddMotion(hitPrefix + "HitReaction_Back");
@@ -255,10 +210,9 @@ class CatwomanBeatDownEndState : PlayerBeatDownEndState
     {
         super(c);
         String preFix = "CW_TG_Beatdown/";
-        AddMotion(preFix + "Beatdown_Strike_End_01");
-        AddMotion(preFix + "Beatdown_Strike_End_02");
-        AddMotion(preFix + "Beatdown_Strike_End_03");
-        AddMotion(preFix + "Beatdown_Strike_End_04");
+        AddMotion(preFix + "Beatdown_End_01");
+        AddMotion(preFix + "Beatdown_End_02");
+        AddMotion(preFix + "Beatdown_End_03");
     }
 };
 
@@ -268,12 +222,12 @@ class CatwomanBeatDownHitState : PlayerBeatDownHitState
     {
         super(c);
         String preFix = "CW_Attack/";
-        AddMotion(preFix + "Beatdown_Test_01");
-        AddMotion(preFix + "Beatdown_Test_02");
-        AddMotion(preFix + "Beatdown_Test_03");
-        AddMotion(preFix + "Beatdown_Test_04");
-        AddMotion(preFix + "Beatdown_Test_05");
-        AddMotion(preFix + "Beatdown_Test_06");
+        AddMotion(preFix + "Beatdown_01");
+        AddMotion(preFix + "Beatdown_02");
+        AddMotion(preFix + "Beatdown_03");
+        AddMotion(preFix + "Beatdown_04");
+        AddMotion(preFix + "Beatdown_05");
+        AddMotion(preFix + "Beatdown_06");
     }
 
     bool IsTransitionNeeded(float curDist)
@@ -332,11 +286,53 @@ void CreateCatwomanMotions()
     Global_CreateMotion(preFix + "Evade_Left_01");
     Global_CreateMotion(preFix + "Evade_Right_01");
 
+    Global_CreateMotion(preFix + "Into_Takedown");
+
+    Global_CreateMotion_InFolder("CW_Attack/");
+
+    preFix = "CW_TG_Beatdown/";
+    Global_CreateMotion(preFix + "Beatdown_End_01");
+    Global_CreateMotion(preFix + "Beatdown_End_02");
+    Global_CreateMotion(preFix + "Beatdown_End_03");
+
+    preFix = "CW_HitReaction/";
+    Global_CreateMotion(preFix + "HitReaction_Face_Right");
+    Global_CreateMotion(preFix + "Hit_Reaction_SideLeft");
+    Global_CreateMotion(preFix + "Hit_Reaction_SideRight");
+    Global_CreateMotion(preFix + "HitReaction_Back");
+
     preFix = "CW_Movement/";
     Global_AddAnimation(preFix + "Stand_Idle");
 }
 
 void AddCatwomanAnimationTriggers()
 {
+    String preFix = "CW_Movement/";
 
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 4, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 18, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 32, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 44, FOOT_STEP, L_FOOT);
+
+    preFix = "CW_Combat/";
+    AddAnimationTrigger(preFix + "Evade_Forward_01", 58, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Evade_Back_01", 32, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Evade_Left_01", 50, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
+
+    preFix = "CW_Attack/";
+    int beat_impact_frame = 4;
+    AddStringAnimationTrigger(preFix + "Beatdown_01", beat_impact_frame, IMPACT, L_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_02", beat_impact_frame, IMPACT, R_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_03", beat_impact_frame, IMPACT, R_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_04", beat_impact_frame, IMPACT, R_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_05", beat_impact_frame, IMPACT, L_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_06", beat_impact_frame, IMPACT, L_HAND);
+
+    preFix = "CW_TG_Beatdown/";
+    AddStringAnimationTrigger(preFix + "Beatdown_End_01", 22, IMPACT, HEAD);
+    AddStringAnimationTrigger(preFix + "Beatdown_End_02", 24, IMPACT, R_CALF);
+    AddStringAnimationTrigger(preFix + "Beatdown_End_03", 29, IMPACT, R_FOOT);
 }
+
+
