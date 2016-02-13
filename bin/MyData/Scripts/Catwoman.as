@@ -193,16 +193,7 @@ class CatwomanAttackState : PlayerAttackState
         }
 
         // if (d_log)
-        {
-            Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
-            DumpAttacks(forwardAttacks);
-            Print("\n right attacks(closeNum=" + rightCloseNum + "): \n");
-            DumpAttacks(rightAttacks);
-            Print("\n back attacks(closeNum=" + backCloseNum + "): \n");
-            DumpAttacks(backAttacks);
-            Print("\n left attacks(closeNum=" + leftCloseNum + "): \n");
-            DumpAttacks(leftAttacks);
-        }
+        Dump();
     }
 
     void AddAttackMotion(Array<AttackMotion@>@ attacks, const String&in name, int frame, int type, const String&in bName)
@@ -297,7 +288,8 @@ class CatwomanTransitionState : PlayerTransitionState
     {
         super(c);
         SetMotion("CW_Combat/Into_Takedown");
-        CATWOMAN_TRANSITION_DIST = motion.endDistance;
+        if (motion !is null)
+            CATWOMAN_TRANSITION_DIST = motion.endDistance;
         Print("Catwoman-Transition Dist=" + CATWOMAN_TRANSITION_DIST);
     }
 };
@@ -310,7 +302,6 @@ class Catwoman : Player
         stateMachine.AddState(CatwomanTurnState(this));
         stateMachine.AddState(CatwomanMoveState(this));
         stateMachine.AddState(CatwomanEvadeState(this));
-        return;
         stateMachine.AddState(CatwomanAttackState(this));
         stateMachine.AddState(CatwomanCounterState(this));
         stateMachine.AddState(CatwomanHitState(this));

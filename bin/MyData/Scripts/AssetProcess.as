@@ -242,7 +242,8 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         firstRotateFromRoot = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(firstRotateFromRoot) > 75)
         {
-            Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
+            if (d_log)
+                Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
             flip = true;
         }
         startFromOrigin.w = firstRotateFromRoot;

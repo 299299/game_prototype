@@ -209,8 +209,9 @@ class Motion
         Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
         endDistance = Vector3(diff.x, diff.y, diff.z).length;
         processed = true;
-        //if (d_log)
-        Print("Motion " + name + " endDistance="  + endDistance + " startFromOrigin=" + startFromOrigin.ToString()  + " timeCost=" + String(time.systemTime - startTime) + " ms");
+
+        if (d_log)
+            Print("Motion " + name + " endDistance="  + endDistance + " startFromOrigin=" + startFromOrigin.ToString()  + " timeCost=" + String(time.systemTime - startTime) + " ms");
     }
 
     void SetEndFrame(int frame)
@@ -380,6 +381,8 @@ class AttackMotion
     AttackMotion(const String&in name, int impactFrame, int _type, const String&in bName)
     {
         @motion = gMotionMgr.FindMotion(name);
+        if (motion is null)
+            return;
         impactTime = impactFrame * SEC_PER_FRAME;
         Vector4 k = motion.motionKeys[impactFrame];
         impactPosition = Vector3(k.x, k.y, k.z);
@@ -442,7 +445,7 @@ class MotionManager
         AssetPreProcess();
         CreateBruceMotions();
         CreateThugMotions();
-        // CreateCatwomanMotions();
+        CreateCatwomanMotions();
     }
 
     void Stop()

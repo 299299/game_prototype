@@ -193,16 +193,7 @@ class BruceAttackState : PlayerAttackState
         }
 
         // if (d_log)
-        {
-            Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
-            DumpAttacks(forwardAttacks);
-            Print("\n right attacks(closeNum=" + rightCloseNum + "): \n");
-            DumpAttacks(rightAttacks);
-            Print("\n back attacks(closeNum=" + backCloseNum + "): \n");
-            DumpAttacks(backAttacks);
-            Print("\n left attacks(closeNum=" + leftCloseNum + "): \n");
-            DumpAttacks(leftAttacks);
-        }
+        Dump();
     }
 
     void AddAttackMotion(Array<AttackMotion@>@ attacks, const String&in name, int frame, int type, const String&in bName)

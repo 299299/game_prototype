@@ -201,7 +201,23 @@ class PlayerAttackState : CharacterState
     void DumpAttacks(Array<AttackMotion@>@ attacks)
     {
         for (uint i=0; i<attacks.length; ++i)
-            Print(attacks[i].motion.animationName + " impactDist=" + String(attacks[i].impactDist));
+        {
+            Motion@ m = attacks[i].motion;
+            if (m !is null)
+                Print(m.animationName + " impactDist=" + String(attacks[i].impactDist));
+        }
+    }
+
+    void Dump()
+    {
+        Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
+        DumpAttacks(forwardAttacks);
+        Print("\n right attacks(closeNum=" + rightCloseNum + "): \n");
+        DumpAttacks(rightAttacks);
+        Print("\n back attacks(closeNum=" + backCloseNum + "): \n");
+        DumpAttacks(backAttacks);
+        Print("\n left attacks(closeNum=" + leftCloseNum + "): \n");
+        DumpAttacks(leftAttacks);
     }
 
     ~PlayerAttackState()
