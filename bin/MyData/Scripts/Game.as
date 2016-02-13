@@ -424,6 +424,7 @@ class TestGameState : GameState
                 renderpath.shaderParameters["AutoExposureAdaptRate"] = 1.0f;
             }
             renderpath.shaderParameters["BloomHDRMix"] = Variant(Vector2(0.8f, 0.75f));
+            renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
         }
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
         viewport.renderPath = renderpath;
