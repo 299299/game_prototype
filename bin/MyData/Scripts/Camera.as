@@ -200,7 +200,7 @@ class ThirdPersonCameraController : CameraController
         float step = w / 3;
         for (int i=0; i<4; ++i)
         {
-            debug.AddLine(camera.ScreenToWorldPoint(Vector3(gap, y, depth)), camera.ScreenToWorldPoint(Vector3(w + gap, y, depth)), c);
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(gap, y, depth)), camera.ScreenToWorldPoint(Vector3(w + gap, y, depth)), c, false);
             y += step;
         }
         // draw vertical lines
@@ -208,7 +208,7 @@ class ThirdPersonCameraController : CameraController
         step = h / 3;
         for (int i=0; i<4; ++i)
         {
-            debug.AddLine(camera.ScreenToWorldPoint(Vector3(x, gap, depth)), camera.ScreenToWorldPoint(Vector3(x, h + gap, depth)), c);
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(x, gap, depth)), camera.ScreenToWorldPoint(Vector3(x, h + gap, depth)), c, false);
             x += step;
         }
     }

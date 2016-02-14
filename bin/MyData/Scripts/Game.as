@@ -463,7 +463,7 @@ class TestGameState : GameState
         if (playerType == 0)
             playerNode = CreateCharacter("player", "bruce_w", "Bruce", playerPos, playerRot);
         else if (playerType == 1)
-            playerNode = CreateCharacter("player", "Catwoman", "Catwoman", playerPos, playerRot);
+            playerNode = CreateCharacter("player", "catwoman", "Catwoman", playerPos, playerRot);
 
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         playerId = playerNode.id;

@@ -95,7 +95,7 @@ class EnemyManager : ScriptObject
 
     Node@ CreateEnemy(const Vector3&in position, const Quaternion&in rotation, const String&in type, const String&in name = "")
     {
-        if (type == "Thug")
+        if (type == "thug")
             return CreateThug(name, position, rotation);
         return null;
     }
@@ -187,9 +187,9 @@ class EnemyManager : ScriptObject
     {
         String thugName = name;
         if (thugName == "")
-            thugName = "Thug_" + thugId;
+            thugName = "thug_" + thugId;
         thugId ++;
-        return CreateCharacter(thugName, "Thug", "Thug", position, rotation);
+        return CreateCharacter(thugName, "thug", "Thug", position, rotation);
     }
 
     void RemoveAll()
@@ -211,7 +211,7 @@ class EnemyManager : ScriptObject
     {
         for (uint i=0; i<enemyResetPositions.length; ++i)
         {
-            CreateEnemy(enemyResetPositions[i], enemyResetRotations[i], "Thug");
+            CreateEnemy(enemyResetPositions[i], enemyResetRotations[i], "thug");
         }
     }
 
