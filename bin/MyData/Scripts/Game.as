@@ -441,6 +441,8 @@ class TestGameState : GameState
         cam.fov = BASE_FOV;
         cameraId = cameraNode.id;
 
+        scene_.CreateScriptObject(scriptFile, "ProcSky");
+
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
         Node@ tmpPlayerNode = scene_.GetChild("player", true);

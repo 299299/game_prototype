@@ -10,6 +10,7 @@
 #include "Scripts/FadeOverlay.as"
 #include "Scripts/Menu.as"
 #include "Scripts/HeadIndicator.as"
+#include "Scripts/ProcSky.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
