@@ -782,7 +782,6 @@ class Character : GameObject
 
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-        SetHintText("", false);
     }
 
     void Start()
@@ -792,11 +791,6 @@ class Character : GameObject
         ObjectStart();
         Print(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
         Print("============================== end Object Start ==============================");
-    }
-
-    void DelayedStart()
-    {
-
     }
 
     void Stop()
@@ -1075,26 +1069,6 @@ class Character : GameObject
         VariantMap data;
         data[DATA] = anim_data;
         renderNode.SendEvent("AnimationTrigger", data);
-    }
-
-    void SetHintText(const String&in text, bool bSet)
-    {
-        Node@ hintNode = sceneNode.GetChild("HintNode", true);
-        if (hintNode is null)
-            return;
-        Text3D@ text3d = hintNode.GetComponent("Text3D");
-        if (text3d is null)
-            return;
-        if (debugLevel == 0)
-        {
-            text3d.text = text;
-            text3d.enabled = bSet;
-        }
-        else
-        {
-            text3d.text = bSet ? text : GetName();
-            text3d.enabled = true;
-        }
     }
 
     void OnAttackSuccess(Character@ object)

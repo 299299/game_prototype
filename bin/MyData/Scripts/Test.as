@@ -9,6 +9,7 @@
 #include "Scripts/Camera.as"
 #include "Scripts/FadeOverlay.as"
 #include "Scripts/Menu.as"
+#include "Scripts/HeadIndicator.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -382,7 +383,6 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
         return;
-    gGame.PostRenderUpdate();
 
     DebugRenderer@ debug = scene_.debugRenderer;
     if (drawDebug == 0)

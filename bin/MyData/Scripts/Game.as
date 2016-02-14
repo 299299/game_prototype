@@ -7,11 +7,6 @@
 
 class GameState : State
 {
-    void PostRenderUpdate()
-    {
-
-    }
-
     void OnCharacterKilled(Character@ killer, Character@ dead)
     {
 
@@ -645,12 +640,6 @@ class GameFSM : FSM
         if (b)
             @gameState = cast<GameState>(currentState);
         return b;
-    }
-
-    void PostRenderUpdate()
-    {
-        if (gameState !is null)
-            gameState.PostRenderUpdate();
     }
 
     void OnCharacterKilled(Character@ killer, Character@ dead)

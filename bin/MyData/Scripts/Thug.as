@@ -462,16 +462,15 @@ class ThugAttackState : CharacterState
         ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
         ownner.SetTimeScale(1.0f);
         attackCheckNode = null;
-        ShowHint(false);
+        ShowAttackIndicator(false);
         CharacterState::Exit(nextState);
     }
 
-    void ShowHint(bool bshow)
+    void ShowAttackIndicator(bool bshow)
     {
-        Print("===============================================================");
-        Print("Counter Start " + bshow);
-        Print("===============================================================");
-        ownner.SetHintText("!!!!!!!!!!", bshow);
+        HeadIndicator@ indicator = cast<HeadIndicator>(ownner.GetNode().GetScriptObject("HeadIndicator"));
+        if (indicator !is null)
+            indicator.ChangeState(bshow ? STATE_INDICATOR_ATTACK : STATE_INDICATOR_HIDE);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -486,7 +485,7 @@ class ThugAttackState : CharacterState
         else if (name == COUNTER_CHECK)
         {
             int value = eventData[VALUE].GetInt();
-            ShowHint(value == 1);
+            ShowAttackIndicator(value == 1);
             if (value == 1)
                 ownner.AddFlag(FLAGS_COUNTER);
             else
