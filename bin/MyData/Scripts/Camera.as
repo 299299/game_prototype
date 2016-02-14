@@ -185,6 +185,33 @@ class ThirdPersonCameraController : CameraController
     {
         targetFov = BASE_FOV;
     }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        float w = float(graphics.width);
+        float h = float(graphics.height);
+        float gap = 1.0f;
+        w -= gap * 2;
+        h -= gap * 2;
+        // draw horizontal lines
+        float depth = 10.0f;
+        Color c = GREEN;
+        float y = gap;
+        float step = w / 3;
+        for (int i=0; i<4; ++i)
+        {
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(gap, y, depth)), camera.ScreenToWorldPoint(Vector3(w + gap, y, depth)), c);
+            y += step;
+        }
+        // draw vertical lines
+        float x = gap;
+        step = h / 3;
+        for (int i=0; i<4; ++i)
+        {
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(x, gap, depth)), camera.ScreenToWorldPoint(Vector3(x, h + gap, depth)), c);
+            x += step;
+        }
+    }
 };
 
 class TransitionCameraController : CameraController
