@@ -53,6 +53,8 @@ const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
 const StringHash HEALTH("Health");
 const StringHash SOUND("Sound");
+const StringHash RANGE("Range");
+const StringHash TAG("Tag");
 
 Vector3 WORLD_HALF_SIZE(99999, 0, 99999);
 

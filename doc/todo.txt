@@ -1,7 +1,8 @@
 1. big-head mode -- fixed
 2. script reload crash -- fixed
 3. audio
-4. model replacement
+4. model replacement -- fixed
 5. camera issue
-6. camera shake or animation ?
-7. beat down
+6. camera shake
+7. camera animation -- fixed
+7. beat down -- fixed

@@ -314,6 +314,7 @@ void SubscribeToEvents()
     SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
     SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
     SubscribeToEvent("CameraEvent", "HandleCameraEvent");
+    SubscribeToEvent("SliderChanged", "HandleSliderChanged");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -436,6 +437,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (cam !is null)
             cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
     }
+    else if (key == KEY_F5)
+        ToggleDebugWindow();
     else if (key == 'R')
         scene_.updateEnabled = !scene_.updateEnabled;
     else if (key == 'T')
@@ -591,7 +594,6 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
     MoveDrag(float(x), float(y));
 }
 
-
 void HandleSceneLoadFinished(StringHash eventType, VariantMap& eventData)
 {
     Print("HandleSceneLoadFinished");
@@ -612,7 +614,6 @@ void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
 
 void HandleCameraEvent(StringHash eventType, VariantMap& eventData)
 {
-    // Print("HandleCameraEvent");
     gCameraMgr.OnCameraEvent(eventData);
 }
 
@@ -853,6 +854,122 @@ void TestAnimations_Group_4()
     thugAnims.Push("TG_BM_Counter/" + test + "_02");
     thugAnims.Push("TG_BM_Counter/" + test + "_03");
     TestAnimation_Group(playerAnim, thugAnims);
+}
+
+void ToggleDebugWindow()
+{
+    Window@ win = ui.root.GetChild("DebugWindow", true);
+    if (win !is null)
+    {
+        win.Remove();
+        return;
+    }
+
+    win = Window();
+    win.name = "DebugWindow";
+    win.SetStyleAuto();
+    win.movable = true;
+    win.resizable = true;
+    win.opacity = 0.8f;
+    win.SetLayout(LM_VERTICAL, 2, IntRect(2,2,2,2));
+    win.SetAlignment(HA_LEFT, VA_TOP);
+    ui.root.AddChild(win);
+
+    UIElement@ titleBar = UIElement();
+    titleBar.SetMinSize(0, 16);
+    titleBar.verticalAlignment = VA_TOP;
+    titleBar.layoutMode = LM_HORIZONTAL;
+    Text@ windowTitle = Text();
+    windowTitle.text = "Debug Parameters";
+    titleBar.AddChild(windowTitle);
+    win.AddChild(titleBar);
+    windowTitle.SetStyleAuto();
+
+    IntVector2 scrSize(graphics.width, graphics.height);
+    IntVector2 winSize(scrSize);
+    winSize.x *= 0.3f;
+    winSize.y *= 0.5f;
+    win.size = winSize;
+    win.SetPosition(0, (scrSize.y - winSize.y)/2);
+
+    CreateDebugSlider(win, "TonemapMaxWhite", 0, 0.0f, 5.0f, 1.8f);
+    CreateDebugSlider(win, "TonemapExposureBias", 1, 0.0f, 5.0f, 1.8f);
+    CreateDebugSlider(win, "BloomHDRMix_x", 2, 0.0f, 1.0f, 0.8f);
+    CreateDebugSlider(win, "BloomHDRMix_y", 3, 0.0f, 1.0f, 0.75);
+}
+
+void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float min, float max, float cur)
+{
+    UIElement@ textContainer = UIElement();
+    parent.AddChild(textContainer);
+    textContainer.layoutMode = LM_HORIZONTAL;
+    textContainer.SetStyleAuto();
+    textContainer.SetMaxSize(2147483647, 16);
+
+    Text@ text = Text();
+    textContainer.AddChild(text);
+    text.text = label;
+    text.SetStyleAuto();
+    text.SetAlignment(HA_LEFT, VA_TOP);
+    text.SetMaxSize(2147483647, 16);
+
+    Text@ valueText = Text();
+    textContainer.AddChild(valueText);
+    valueText.name = label + "_value";
+    valueText.text = String(cur);
+    valueText.SetStyleAuto();
+    valueText.SetAlignment(HA_RIGHT, VA_TOP);
+    valueText.SetMaxSize(2147483647, 16);
+
+    Slider@ slider = Slider();
+    parent.AddChild(slider);
+    slider.name = label;
+    slider.SetStyleAuto();
+    slider.SetAlignment(HA_LEFT, VA_TOP);
+    slider.range = max - min;
+    slider.value = cur - min;
+    slider.SetMaxSize(2147483647, 16);
+    slider.vars[RANGE] = Vector2(min, max);
+    slider.vars[TAG] = tag;
+}
+
+void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
+{
+    UIElement@ ui = eventData["Element"].GetPtr();
+    float value = eventData["Value"].GetFloat();
+    if (!ui.vars.Contains(TAG))
+        return;
+
+    Vector2 range = ui.GetVar(RANGE).GetVector2();
+    value += range.x;
+    int tag = ui.GetVar(TAG).GetInt();
+    Text@ valueText = ui.parent.GetChild(ui.name + "_value", true);
+    if (valueText !is null)
+        valueText.text = String(value);
+
+    RenderPath@ path = renderer.viewports[0].renderPath;
+
+    switch (tag)
+    {
+    case 0:
+    case 1:
+        path.shaderParameters[ui.name] = value;
+        break;
+    case 2:
+        {
+            Vector2 v = path.shaderParameters["BloomHDRMix"].GetVector2();
+            v.x = value;
+            path.shaderParameters["BloomHDRMix"] = Variant(v);
+        }
+        break;
+    case 3:
+        {
+            Vector2 v = path.shaderParameters["BloomHDRMix"].GetVector2();
+            v.y = value;
+            path.shaderParameters["BloomHDRMix"] = Variant(v);
+        }
+        break;
+    }
 }
 
 void ExecuteCommand()
