@@ -59,11 +59,8 @@ class ProcSky : ScriptObject
             cmd.sortMode = SORT_BACKTOFRONT;
             cmd.pass = "base";
             cmd.SetOutput(0, "DiffProcSky", CubeMapFace(i));
-            //cmd.textureNames[TU_DIFFUSE] = "";
             cmd.vertexShaderName = "ProcSky";
-            //cmd.vertexShaderDefines = "";
             cmd.pixelShaderName = "ProcSky";
-            //cmd.pixelShaderDefines = "";
             cmd.shaderParameters["Kr"] = Variant(Kr);
             cmd.shaderParameters["RayleighBrightness"] = rayleighBrightness;
             cmd.shaderParameters["MieBrightness"] = mieBrightness;
