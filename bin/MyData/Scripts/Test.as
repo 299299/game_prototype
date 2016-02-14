@@ -10,7 +10,6 @@
 #include "Scripts/FadeOverlay.as"
 #include "Scripts/Menu.as"
 #include "Scripts/HeadIndicator.as"
-#include "Scripts/ProcSky.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -26,7 +25,6 @@ bool bHdr = true;
 bool bigHeadMode = false;
 bool nobgm = true;
 bool has_redirect = false;
-bool tonemapping = true;
 int colorGradingIndex = 0;
 
 Node@ musicNode;
@@ -44,6 +42,7 @@ bool auto_target = false;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
+int UI_FONT_SIZE = 20;
 
 int debugLevel = 0;
 int freeze_ai = 1;
@@ -92,18 +91,13 @@ void Start()
                 lowend_platform = !lowend_platform;
             else if (argument == "hdr")
                 bHdr = !bHdr;
-            else if (argument == "tonemapping")
-                tonemapping = !tonemapping;
             else if (argument == "autotarget")
                 auto_target = !auto_target;
         }
     }
 
     if (lowend_platform)
-    {
         bHdr = false;
-        tonemapping = false;
-    }
 
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
@@ -893,10 +887,11 @@ void ToggleDebugWindow()
     win.size = winSize;
     win.SetPosition(0, (scrSize.y - winSize.y)/2);
 
-    CreateDebugSlider(win, "TonemapMaxWhite", 0, 0.0f, 5.0f, 1.8f);
-    CreateDebugSlider(win, "TonemapExposureBias", 1, 0.0f, 5.0f, 1.8f);
-    CreateDebugSlider(win, "BloomHDRMix_x", 2, 0.0f, 1.0f, 0.8f);
-    CreateDebugSlider(win, "BloomHDRMix_y", 3, 0.0f, 1.0f, 0.75);
+    RenderPath@ path = renderer.viewports[0].renderPath;
+    CreateDebugSlider(win, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
+    CreateDebugSlider(win, "TonemapExposureBias", 1, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
+    CreateDebugSlider(win, "BloomHDRMix_x", 2, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
+    CreateDebugSlider(win, "BloomHDRMix_y", 3, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
 }
 
 void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float min, float max, float cur)

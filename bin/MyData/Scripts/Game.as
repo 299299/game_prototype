@@ -93,7 +93,7 @@ class LoadingState : GameState
         }
 
         Text@ text = ui.root.CreateChild("Text", "loading_text");
-        text.SetFont(cache.GetResource("Font", UI_FONT), 20);
+        text.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
         text.SetAlignment(HA_LEFT, VA_BOTTOM);
         text.SetPosition(2, 0);
         text.color = Color(1, 1, 1);
@@ -233,7 +233,7 @@ class TestGameState : GameState
         SetName("TestGameState");
         Print("TestGameState()");
         @fade = FadeOverlay();
-        @pauseMenu = TextMenu(UI_FONT, 30);
+        @pauseMenu = TextMenu(UI_FONT, UI_FONT_SIZE);
         pauseMenu.texts.Push("RESUME");
         pauseMenu.texts.Push("EXIT");
         fade.Init();
@@ -266,14 +266,14 @@ class TestGameState : GameState
         if (height > 64)
             height = 64;
         Text@ messageText = ui.root.CreateChild("Text", "message");
-        messageText.SetFont(cache.GetResource("Font", UI_FONT), 14);
+        messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
         messageText.SetAlignment(HA_CENTER, VA_CENTER);
         messageText.SetPosition(0, -height * 2);
         messageText.color = Color(1, 0, 0);
         messageText.visible = false;
 
         Text@ statusText = ui.root.CreateChild("Text", "status");
-        statusText.SetFont(cache.GetResource("Font", UI_FONT), 14);
+        statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
         statusText.SetAlignment(HA_LEFT, VA_TOP);
         statusText.SetPosition(0, 0);
         statusText.color = Color(1, 1, 0);
@@ -409,16 +409,13 @@ class TestGameState : GameState
             renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
-            if (tonemapping)
-            {
-                renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));
-                renderpath.SetEnabled("TonemapReinhardEq3", false);
-                renderpath.SetEnabled("TonemapUncharted2", true);
-                renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
-                renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
-                renderpath.shaderParameters["AutoExposureAdaptRate"] = 1.0f;
-            }
-            renderpath.shaderParameters["BloomHDRMix"] = Variant(Vector2(0.8f, 0.75f));
+            renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));
+            renderpath.SetEnabled("TonemapReinhardEq3", false);
+            renderpath.SetEnabled("TonemapUncharted2", true);
+            renderpath.shaderParameters["TonemapMaxWhite"] = 1.8f;
+            renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
+            renderpath.shaderParameters["AutoExposureAdaptRate"] = 2.0f;
+            renderpath.shaderParameters["BloomHDRMix"] = Variant(Vector2(0.9f, 0.6f));
             renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
         }
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
@@ -440,8 +437,6 @@ class TestGameState : GameState
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
         cameraId = cameraNode.id;
-
-        scene_.CreateScriptObject(scriptFile, "ProcSky");
 
         // audio.listener = cameraNode.CreateComponent("SoundListener");
 
@@ -494,9 +489,7 @@ class TestGameState : GameState
         }
 
         for (uint i=0; i<nodes_to_remove.length; ++i)
-        {
             scene_.GetNode(nodes_to_remove[i]).Remove();
-        }
 
         em.CreateEnemies();
 
@@ -611,8 +604,8 @@ class TestGameState : GameState
 
     void postInit()
     {
-        if (bHdr && tonemapping && graphics !is null)
-            renderer.viewports[0].renderPath.shaderParameters["AutoExposureAdaptRate"] = 0.5f;
+        if (bHdr && graphics !is null)
+            renderer.viewports[0].renderPath.shaderParameters["AutoExposureAdaptRate"] = 0.6f;
     }
 };
 

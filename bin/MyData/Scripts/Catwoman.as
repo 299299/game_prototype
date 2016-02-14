@@ -96,8 +96,8 @@ class CatwomanAttackState : PlayerAttackState
         AddAttackMotion(leftAttacks, "Attack_Close_Left_01", 12, ATTACK_KICK, R_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Close_Left_02", 20, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Close_Left_03", 14, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_04", 20, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_05", 17, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_04", 12, ATTACK_KICK, R_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Close_Left_05", 15, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 34, ATTACK_KICK, R_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 30, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 22, ATTACK_KICK, L_FOOT);
@@ -183,7 +183,7 @@ class CatwomanHitState : PlayerHitState
     CatwomanHitState(Character@ c)
     {
         super(c);
-        String hitPrefix = "CW_HitReaction/";
+        String hitPrefix = "CW_Hit_Reaction/";
         AddMotion(hitPrefix + "HitReaction_Face_Right");
         AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
         AddMotion(hitPrefix + "HitReaction_Back");
@@ -295,7 +295,7 @@ void CreateCatwomanMotions()
     Global_CreateMotion(preFix + "Beatdown_End_02");
     Global_CreateMotion(preFix + "Beatdown_End_03");
 
-    preFix = "CW_HitReaction/";
+    preFix = "CW_Hit_Reaction/";
     Global_CreateMotion(preFix + "HitReaction_Face_Right");
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft");
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight");

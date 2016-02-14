@@ -117,19 +117,15 @@ class DebugFPSCameraController: CameraController
 class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 4.5f;
-    float   cameraHeight = 3.0f;
-    float   cameraDistance = 18.0f;
+    float   cameraDistance = 14.0f;
     float   cameraDistSpeed = 100.0f;
-    float   cameraAutoDistance = 20.0f;
     float   targetFov = BASE_FOV;
     float   fovSpeed = 1.5f;
+    Vector3 targetOffset = Vector3(2.0f, 3.0f, 0);
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
-        Vector3 v = cameraNode.worldPosition;
-        v.y += cameraHeight;
-        gCameraMgr.cameraTarget = v;
     }
 
     void Update(float dt)
@@ -147,12 +143,12 @@ class ThirdPersonCameraController : CameraController
             {
                 //target_pos += p.target.GetNode().worldPosition;
                 //target_pos /= 2.0f;
-                //cameraAutoDistance += cameraDistSpeed * dt;
                 //blockView = true;
             }
         }
 
-        target_pos.y += cameraHeight;
+        Vector3 offset = cameraNode.worldRotation * targetOffset;
+        target_pos += offset;
 
         Vector3 v = gInput.GetRightAxis();
         float pitch = v.y;
@@ -160,9 +156,6 @@ class ThirdPersonCameraController : CameraController
         pitch = Clamp(pitch, -10.0f, 60.0f);
 
         float dist = cameraDistance;
-        //if (blockView)
-        //    dist = cameraAutoDistance;
-
         Quaternion q(pitch, yaw, 0);
         Vector3 pos = q * Vector3(0, 0, -dist) + target_pos;
         UpdateView(pos, target_pos, dt * cameraSpeed);
@@ -190,25 +183,27 @@ class ThirdPersonCameraController : CameraController
     {
         float w = float(graphics.width);
         float h = float(graphics.height);
+        float w1 = w;
+        float h1 = h;
         float gap = 1.0f;
         w -= gap * 2;
         h -= gap * 2;
         // draw horizontal lines
-        float depth = 10.0f;
-        Color c = GREEN;
+        float depth = 25.0f;
+        Color c(0, 1, 0);
         float y = gap;
-        float step = w / 3;
+        float step = h/3;
         for (int i=0; i<4; ++i)
         {
-            debug.AddLine(camera.ScreenToWorldPoint(Vector3(gap, y, depth)), camera.ScreenToWorldPoint(Vector3(w + gap, y, depth)), c, false);
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(gap/w1, y/h1, depth)), camera.ScreenToWorldPoint(Vector3((w + gap)/w1, y/h1, depth)), c, false);
             y += step;
         }
         // draw vertical lines
         float x = gap;
-        step = h / 3;
+        step = w/3;
         for (int i=0; i<4; ++i)
         {
-            debug.AddLine(camera.ScreenToWorldPoint(Vector3(x, gap, depth)), camera.ScreenToWorldPoint(Vector3(x, h + gap, depth)), c, false);
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(x/w1, gap/h1, depth)), camera.ScreenToWorldPoint(Vector3(x/w1, (h + gap)/h1, depth)), c, false);
             x += step;
         }
     }
