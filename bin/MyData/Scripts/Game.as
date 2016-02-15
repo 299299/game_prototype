@@ -258,11 +258,6 @@ class TestGameState : GameState
             CreateViewPort();
             CreateUI();
         }
-
-        if (render_features & RF_DOF != 0)
-        {
-            GetCamera().node.CreateScriptObject(scriptFile, "SmoothFocus");
-        }
     }
 
     void CreateUI()
@@ -411,10 +406,7 @@ class TestGameState : GameState
         RenderPath@ renderpath = viewport.renderPath.Clone();
         if (render_features & RF_HDR != 0)
         {
-            if (render_features & RF_DOF != 0)
-                renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepthDOF.xml"));
-            else
-                renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
+            renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));

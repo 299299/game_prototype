@@ -10,7 +10,6 @@
 #include "Scripts/FadeOverlay.as"
 #include "Scripts/Menu.as"
 #include "Scripts/HeadIndicator.as"
-#include "Scripts/SmoothFocus.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -25,10 +24,8 @@ enum RenderFeature
     RF_NONE     = 0,
     RF_SHADOWS  = (1 << 0),
     RF_HDR      = (1 << 1),
-    RF_DOF      = (1 << 2),
 
-
-    RF_FULL     = RF_SHADOWS | RF_HDR | RF_DOF,
+    RF_FULL     = RF_SHADOWS | RF_HDR,
 };
 
 int drawDebug = 0;
@@ -101,8 +98,6 @@ void Start()
                 render_features = RF_NONE;
             else if (argument == "no_hdr")
                 render_features |= RF_HDR;
-            else if (argument == "no_dof")
-                render_features |= RF_DOF;
         }
     }
 
@@ -174,7 +169,7 @@ void CreateConsoleAndDebugHud()
     if (xmlFile is null)
         return;
 
-    // Create console
+    // Create consoleui
     Console@ console = engine.CreateConsole();
     console.defaultStyle = xmlFile;
     console.background.opacity = 0.8f;
@@ -186,6 +181,7 @@ void CreateConsoleAndDebugHud()
 
 void CreateUI()
 {
+    ui.root.defaultStyle = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
     // Create a Cursor UI element because we want to be able to hide and show it at will. When hidden, the mouse cursor will
     // control the camera, and when visible, it will point the raycast target
     //XMLFile@ style = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
@@ -864,23 +860,25 @@ void ToggleDebugWindow()
     if (win !is null)
     {
         win.Remove();
+        input.SetMouseVisible(false);
+        freezeInput = false;
         return;
     }
 
     win = Window();
     win.name = "DebugWindow";
-    win.SetStyleAuto();
     win.movable = true;
     win.resizable = true;
     win.opacity = 0.8f;
     win.SetLayout(LM_VERTICAL, 2, IntRect(2,2,2,2));
     win.SetAlignment(HA_LEFT, VA_TOP);
+    win.SetStyleAuto();
     ui.root.AddChild(win);
 
     UIElement@ titleBar = UIElement();
-    titleBar.SetMinSize(0, 16);
     titleBar.verticalAlignment = VA_TOP;
     titleBar.layoutMode = LM_HORIZONTAL;
+    // titleBar.SetMaxSize(2147483647, 16);
     Text@ windowTitle = Text();
     windowTitle.text = "Debug Parameters";
     titleBar.AddChild(windowTitle);
@@ -892,14 +890,19 @@ void ToggleDebugWindow()
     winSize.x = int(float(winSize.x) * 0.3f);
     winSize.y = int(float(winSize.y) * 0.5f);
     win.size = winSize;
-    win.SetPosition(0, (scrSize.y - winSize.y)/2);
+    win.SetPosition(0, (scrSize.y - winSize.y)/3);
+    input.SetMouseVisible(true);
+    freezeInput = true;
 
     RenderPath@ path = renderer.viewports[0].renderPath;
+    UIElement@ body = UIElement();
+    body.SetStyleAuto();
+    win.AddChild(body);
     CreateDebugSlider(win, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
     CreateDebugSlider(win, "TonemapExposureBias", 0, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
     CreateDebugSlider(win, "BloomHDRBlurRadius", 0, 0.0f, 10.0f, path.shaderParameters["BloomHDRBlurRadius"].GetFloat());
     CreateDebugSlider(win, "BloomHDRMix_x", 1, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
-    CreateDebugSlider(win, "BloomHDRMix_y", 2, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
+    CreateDebugSlider(win, "BloomHDRMix_y", 2, 0.0f, 5.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
 }
 
 void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float min, float max, float cur)
@@ -912,7 +915,7 @@ void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float 
 
     Text@ text = Text();
     textContainer.AddChild(text);
-    text.text = label;
+    text.text = label + ": ";
     text.SetStyleAuto();
     text.SetAlignment(HA_LEFT, VA_TOP);
     text.SetMaxSize(2147483647, 16);
