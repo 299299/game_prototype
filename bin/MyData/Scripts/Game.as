@@ -258,6 +258,11 @@ class TestGameState : GameState
             CreateViewPort();
             CreateUI();
         }
+
+        if (render_features & RF_DOF != 0)
+        {
+            GetCamera().node.CreateScriptObject(scriptFile, "SmoothFocus");
+        }
     }
 
     void CreateUI()
@@ -404,9 +409,12 @@ class TestGameState : GameState
         Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
         renderer.viewports[0] = viewport;
         RenderPath@ renderpath = viewport.renderPath.Clone();
-        if (bHdr)
+        if (render_features & RF_HDR != 0)
         {
-            renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
+            if (render_features & RF_DOF != 0)
+                renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepthDOF.xml"));
+            else
+                renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));
@@ -416,8 +424,8 @@ class TestGameState : GameState
             renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
             renderpath.shaderParameters["AutoExposureAdaptRate"] = 2.0f;
             renderpath.shaderParameters["BloomHDRMix"] = Variant(Vector2(0.9f, 0.6f));
-            renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
         }
+        renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
         viewport.renderPath = renderpath;
         SetColorGrading(colorGradingIndex);
@@ -483,7 +491,7 @@ class TestGameState : GameState
             else if (_node.name.StartsWith("light"))
             {
                 Light@ light = _node.GetComponent("Light");
-                if (lowend_platform)
+                if (render_features & RF_SHADOWS == 0)
                     light.castShadows = false;
             }
         }

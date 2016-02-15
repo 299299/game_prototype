@@ -10,6 +10,7 @@
 #include "Scripts/FadeOverlay.as"
 #include "Scripts/Menu.as"
 #include "Scripts/HeadIndicator.as"
+#include "Scripts/SmoothFocus.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -18,6 +19,17 @@
 #include "Scripts/Player.as"
 #include "Scripts/Bruce.as"
 #include "Scripts/Catwoman.as"
+
+enum RenderFeature
+{
+    RF_NONE     = 0,
+    RF_SHADOWS  = (1 << 0),
+    RF_HDR      = (1 << 1),
+    RF_DOF      = (1 << 2),
+
+
+    RF_FULL     = RF_SHADOWS | RF_HDR | RF_DOF,
+};
 
 int drawDebug = 0;
 bool autoCounter = false;
@@ -37,8 +49,7 @@ uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
 int test_enemy_num_override = 15;
-bool lowend_platform = false;
-bool auto_target = false;
+int render_features = RF_FULL;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
@@ -66,7 +77,6 @@ void Start()
 
     Print("Game Running Platform: " + GetPlatform());
     // lowend_platform = GetPlatform() != "Windows";
-    // lowend_platform = true;
 
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)
@@ -88,16 +98,13 @@ void Start()
                     playerType = 1;
             }
             else if (argument == "lowend")
-                lowend_platform = !lowend_platform;
-            else if (argument == "hdr")
-                bHdr = !bHdr;
-            else if (argument == "autotarget")
-                auto_target = !auto_target;
+                render_features = RF_NONE;
+            else if (argument == "no_hdr")
+                render_features |= RF_HDR;
+            else if (argument == "no_dof")
+                render_features |= RF_DOF;
         }
     }
-
-    if (lowend_platform)
-        bHdr = false;
 
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
@@ -882,8 +889,8 @@ void ToggleDebugWindow()
 
     IntVector2 scrSize(graphics.width, graphics.height);
     IntVector2 winSize(scrSize);
-    winSize.x *= 0.3f;
-    winSize.y *= 0.5f;
+    winSize.x = int(float(winSize.x) * 0.3f);
+    winSize.y = int(float(winSize.y) * 0.5f);
     win.size = winSize;
     win.SetPosition(0, (scrSize.y - winSize.y)/2);
 
