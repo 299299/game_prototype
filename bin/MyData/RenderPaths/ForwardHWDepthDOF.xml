@@ -3,9 +3,9 @@
     <rendertarget name="blurv" tag="DOF" sizedivisor="4 4" format="rgba" filter="true"/>
     <rendertarget name="depthBlur" tag="DOF" sizedivisor="1 1" format="r16" filter="true"/>
     <rendertarget name="framecopy" tag="DOF" sizedivisor="1 1" format="rgba" filter="true"/>
-    
+
     <rendertarget name="depth" sizedivisor="1 1" format="readabledepth"/>
-    
+
     <command type="clear" depth="1.0" output="depth" />
     <command type="scenepass" pass="shadow" output="depth" />
     <command type="clear" color="fog" depthstencil="depth" />
@@ -17,14 +17,13 @@
     </command>
     <command type="scenepass" pass="alpha" vertexlights="true" sort="backtofront" metadata="alpha" depthstencil="depth" />
     <command type="scenepass" pass="postalpha" sort="backtofront" depthstencil="depth" />
-    
-    <command type="quad" tag="DOF" vs="CopyFramebufferDof" ps="CopyFramebufferDof" blend="replace" output="depthBlur">        
-        <parameter name="SmoothFocusEnabled" value="false"/>
+
+    <command type="quad" tag="DOF" vs="CopyFramebufferDof" ps="CopyFramebufferDof" blend="replace" output="depthBlur">
+        <parameter name="SmoothFocusEnabled" value="true"/>
         <parameter name="SmoothFocus" value="0.1" />
         <parameter name="Focal" value="10" />
         <parameter name="FocalNear" value="15" />
         <parameter name="FocalFar" value="10" />
-        
         <texture unit="0" name="viewport" />
         <texture unit="1" name="depth" />
     </command>
@@ -56,8 +55,8 @@
         <texture unit="0" name="viewport"/>
         <texture unit="1" name="blurv"/>
         <texture unit="2" name="depthBlur"/>
-    </command>    
-    <command type="quad" tag="DOF" vs="CopyFramebuffer" ps="CopyFramebuffer" blend="replace" output="viewport">        
+    </command>
+    <command type="quad" tag="DOF" vs="CopyFramebuffer" ps="CopyFramebuffer" blend="replace" output="viewport">
         <texture unit="0" name="framecopy" />
     </command>
 </renderpath>
