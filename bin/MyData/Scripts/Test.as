@@ -896,9 +896,10 @@ void ToggleDebugWindow()
 
     RenderPath@ path = renderer.viewports[0].renderPath;
     CreateDebugSlider(win, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
-    CreateDebugSlider(win, "TonemapExposureBias", 1, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
-    CreateDebugSlider(win, "BloomHDRMix_x", 2, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
-    CreateDebugSlider(win, "BloomHDRMix_y", 3, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
+    CreateDebugSlider(win, "TonemapExposureBias", 0, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
+    CreateDebugSlider(win, "BloomHDRBlurRadius", 0, 0.0f, 10.0f, path.shaderParameters["BloomHDRBlurRadius"].GetFloat());
+    CreateDebugSlider(win, "BloomHDRMix_x", 1, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
+    CreateDebugSlider(win, "BloomHDRMix_y", 2, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
 }
 
 void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float min, float max, float cur)
@@ -955,17 +956,16 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
     switch (tag)
     {
     case 0:
-    case 1:
         path.shaderParameters[ui.name] = value;
         break;
-    case 2:
+    case 1:
         {
             Vector2 v = path.shaderParameters["BloomHDRMix"].GetVector2();
             v.x = value;
             path.shaderParameters["BloomHDRMix"] = Variant(v);
         }
         break;
-    case 3:
+    case 2:
         {
             Vector2 v = path.shaderParameters["BloomHDRMix"].GetVector2();
             v.y = value;
