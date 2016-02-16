@@ -1265,7 +1265,13 @@ class Character : GameObject
 
     bool IsInAir()
     {
-        return (hipsNode.worldPosition.y - sceneNode.worldPosition.y) > (2.8f + 0.5f);
+        //return (hipsNode.worldPosition.y - sceneNode.worldPosition.y) > (2.8f + 0.5f);
+        Vector3 lf_pos = renderNode.GetChild(L_FOOT, true).worldPosition;
+        Vector3 rf_pos = renderNode.GetChild(R_FOOT, true).worldPosition;
+        Vector3 myPos = sceneNode.worldPosition;
+        float lf_to_ground = (lf_pos.y - myPos.y);
+        float rf_to_graound = (rf_pos.y - myPos.y);
+        return lf_to_ground > 1.0f && rf_to_graound > 1.0f;
     }
 
     // ===============================================================================================

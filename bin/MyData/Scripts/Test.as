@@ -64,6 +64,8 @@ BaseInput@ gInput;
 
 void Start()
 {
+    @gMotionMgr = BM_Game_MotionManager();
+
     if (engine.headless)
     {
         @gInput = BotInput();
@@ -878,7 +880,7 @@ void ToggleDebugWindow()
     UIElement@ titleBar = UIElement();
     titleBar.verticalAlignment = VA_TOP;
     titleBar.layoutMode = LM_HORIZONTAL;
-    // titleBar.SetMaxSize(2147483647, 16);
+    titleBar.SetMinSize(0, 16);
     Text@ windowTitle = Text();
     windowTitle.text = "Debug Parameters";
     titleBar.AddChild(windowTitle);
@@ -890,19 +892,22 @@ void ToggleDebugWindow()
     winSize.x = int(float(winSize.x) * 0.3f);
     winSize.y = int(float(winSize.y) * 0.5f);
     win.size = winSize;
-    win.SetPosition(0, (scrSize.y - winSize.y)/3);
+    win.SetPosition(5, (scrSize.y - winSize.y)/3);
     input.SetMouseVisible(true);
     freezeInput = true;
 
     RenderPath@ path = renderer.viewports[0].renderPath;
-    UIElement@ body = UIElement();
-    body.SetStyleAuto();
-    win.AddChild(body);
-    CreateDebugSlider(win, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
-    CreateDebugSlider(win, "TonemapExposureBias", 0, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
-    CreateDebugSlider(win, "BloomHDRBlurRadius", 0, 0.0f, 10.0f, path.shaderParameters["BloomHDRBlurRadius"].GetFloat());
-    CreateDebugSlider(win, "BloomHDRMix_x", 1, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
-    CreateDebugSlider(win, "BloomHDRMix_y", 2, 0.0f, 5.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
+    DropDownList@ list = DropDownList();
+    win.AddChild(list);
+    list.resizePopup = true;
+    list.SetLayout(LM_HORIZONTAL, 2, IntRect(4, 1, 4, 1));
+    list.SetStyleAuto();
+
+    CreateDebugSlider(list, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
+    CreateDebugSlider(list, "TonemapExposureBias", 0, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
+    CreateDebugSlider(list, "BloomHDRBlurRadius", 0, 0.0f, 10.0f, path.shaderParameters["BloomHDRBlurRadius"].GetFloat());
+    CreateDebugSlider(list, "BloomHDRMix_x", 1, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
+    CreateDebugSlider(list, "BloomHDRMix_y", 2, 0.0f, 5.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
 }
 
 void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float min, float max, float cur)
@@ -1069,3 +1074,73 @@ void ExecuteCommand()
         }
     }
 }
+
+class BM_Game_MotionManager : MotionManager
+{
+    void AddMotions()
+    {
+        CreateBruceMotions();
+        CreateThugMotions();
+        CreateCatwomanMotions();
+    }
+
+    void AddTriggers()
+    {
+        AddThugAnimationTriggers();
+        AddBruceAnimationTriggers();
+        AddCatwomanAnimationTriggers();
+    }
+
+    void AddCounterMotions(const String&in counter_prefix)
+    {
+        CreateMotion(counter_prefix + "Counter_Arm_Back_01");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_03");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_05");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_06");
+
+        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_01");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_03");
+
+        CreateMotion(counter_prefix + "Counter_Arm_Front_01");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_03");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_04");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_05");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_06");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_07");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_08");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_09");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_10");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_13");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_14");
+
+        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_02");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_03");
+        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_04");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Back_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_02");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_03");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_04");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_05");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_03");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Front_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_02");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_03");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_04");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_05");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_06");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_07");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_08");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_09");
+
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01");
+        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02");
+    }
+};

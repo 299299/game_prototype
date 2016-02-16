@@ -330,7 +330,7 @@ void CreateBruceMotions()
     Global_CreateMotion_InFolder("BM_Attack/");
 
     preFix = "BM_TG_Counter/";
-    gMotionMgr.AddCounterMotions(preFix);
+    cast<BM_Game_MotionManager>(gMotionMgr).AddCounterMotions(preFix);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);

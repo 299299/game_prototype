@@ -12,30 +12,23 @@ class HeadIndicator : ScriptObject
     uint headNodeId;
     int state = -1;
 
-    HeadIndicator()
-    {
-
-    }
-
-    ~HeadIndicator()
-    {
-
-    }
+    Node@ indicatorNode;
 
     void DelayedStart()
     {
         headNodeId = node.GetChild(HEAD, true).id;
+        indicatorNode = node.CreateChild("HeadIndicator_Node");
     }
 
     void Stop()
     {
-
+        indicatorNode.Remove();
     }
 
     void Update(float dt)
     {
         Vector3 pos = node.scene.GetNode(headNodeId).worldPosition;
-
+        indicatorNode.worldPosition = pos + offset;
     }
 
     void ChangeState(int newState)

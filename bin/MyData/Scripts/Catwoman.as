@@ -164,7 +164,7 @@ class CatwomanCounterState : PlayerCounterState
     {
         super(c);
         String preFix = "CW_TG_Counter/";
-        gMotionMgr.AddCounterMotions(preFix);
+        cast<BM_Game_MotionManager>(gMotionMgr).AddCounterMotions(preFix);
         AddMultiCounterMotions(preFix, true);
     }
 };

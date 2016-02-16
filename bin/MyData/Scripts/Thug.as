@@ -1172,7 +1172,7 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
     preFix = "TG_BM_Counter/";
-    gMotionMgr.AddCounterMotions(preFix);
+    cast<BM_Game_MotionManager>(gMotionMgr).AddCounterMotions(preFix);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);

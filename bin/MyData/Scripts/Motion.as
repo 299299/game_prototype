@@ -443,9 +443,7 @@ class MotionManager
     {
         assetProcessTime = time.systemTime;
         AssetPreProcess();
-        CreateBruceMotions();
-        CreateThugMotions();
-        CreateCatwomanMotions();
+
     }
 
     void Stop()
@@ -465,10 +463,18 @@ class MotionManager
     void PostProcess()
     {
         uint t = time.systemTime;
-        AddThugAnimationTriggers();
-        AddBruceAnimationTriggers();
-        AddCatwomanAnimationTriggers();
+        AddTriggers();
         Print("MotionManager::PostProcess time-cost=" + (time.systemTime - t) + " ms");
+    }
+
+    void AddTriggers()
+    {
+
+    }
+
+    void AddMotions()
+    {
+
     }
 
     Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, bool loop = false, float rotateAngle = 361)
@@ -524,63 +530,10 @@ class MotionManager
         for (uint i=0; i<motions.length; ++i)
             motions[i].Process();
     }
-
-    void AddCounterMotions(const String&in counter_prefix)
-    {
-        CreateMotion(counter_prefix + "Counter_Arm_Back_01");
-        CreateMotion(counter_prefix + "Counter_Arm_Back_02");
-        CreateMotion(counter_prefix + "Counter_Arm_Back_03");
-        CreateMotion(counter_prefix + "Counter_Arm_Back_05");
-        CreateMotion(counter_prefix + "Counter_Arm_Back_06");
-
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_01");
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_02");
-        CreateMotion(counter_prefix + "Counter_Arm_Back_Weak_03");
-
-        CreateMotion(counter_prefix + "Counter_Arm_Front_01");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_02");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_03");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_04");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_05");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_06");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_07");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_08");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_09");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_10");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_13");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_14");
-
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_02");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_03");
-        CreateMotion(counter_prefix + "Counter_Arm_Front_Weak_04");
-
-        CreateMotion(counter_prefix + "Counter_Leg_Back_01");
-        CreateMotion(counter_prefix + "Counter_Leg_Back_02");
-        CreateMotion(counter_prefix + "Counter_Leg_Back_03");
-        CreateMotion(counter_prefix + "Counter_Leg_Back_04");
-        CreateMotion(counter_prefix + "Counter_Leg_Back_05");
-
-        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_01");
-        CreateMotion(counter_prefix + "Counter_Leg_Back_Weak_03");
-
-        CreateMotion(counter_prefix + "Counter_Leg_Front_01");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_02");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_03");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_04");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_05");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_06");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_07");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_08");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_09");
-
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_01");
-        CreateMotion(counter_prefix + "Counter_Leg_Front_Weak_02");
-    }
 };
 
 
-MotionManager@ gMotionMgr = MotionManager();
+MotionManager@ gMotionMgr;
 
 Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, bool loop = false, float rotateAngle = 361)
 {
