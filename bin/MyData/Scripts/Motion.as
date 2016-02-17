@@ -443,7 +443,7 @@ class MotionManager
     {
         assetProcessTime = time.systemTime;
         AssetPreProcess();
-
+        AddMotions();
     }
 
     void Stop()
