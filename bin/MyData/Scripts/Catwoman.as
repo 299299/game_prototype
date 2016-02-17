@@ -164,7 +164,7 @@ class CatwomanCounterState : PlayerCounterState
     {
         super(c);
         String preFix = "CW_TG_Counter/";
-        cast<BM_Game_MotionManager>(gMotionMgr).AddCounterMotions(preFix);
+        AddCounterMotions(preFix);
         AddMultiCounterMotions(preFix, true);
     }
 };
@@ -285,7 +285,6 @@ void CreateCatwomanMotions()
     Global_CreateMotion(preFix + "Evade_Back_01");
     Global_CreateMotion(preFix + "Evade_Left_01");
     Global_CreateMotion(preFix + "Evade_Right_01");
-
     Global_CreateMotion(preFix + "Into_Takedown");
 
     Global_CreateMotion_InFolder("CW_Attack/");
@@ -300,6 +299,14 @@ void CreateCatwomanMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft");
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight");
     Global_CreateMotion(preFix + "HitReaction_Back");
+
+    preFix = "CW_Death_Primers/";
+    Global_CreateMotion(preFix + "Death_Front");
+    Global_CreateMotion(preFix + "Death_Side_Left");
+    Global_CreateMotion(preFix + "Death_Back");
+    Global_CreateMotion(preFix + "Death_Side_Right");
+
+    Global_CreateMotion_InFolder("CW_TG_Counter");
 
     preFix = "CW_Movement/";
     Global_AddAnimation(preFix + "Stand_Idle");

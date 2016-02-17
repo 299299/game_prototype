@@ -348,7 +348,11 @@ class ThugCounterState : CharacterCounterState
     ThugCounterState(Character@ c)
     {
         super(c);
-        String preFix = GetTGCounterPrefix();
+        String preFix;
+        if (playerType == 0)
+            preFix = "TG_BM_Counter/";
+        else if (playerType == 1)
+            preFix = "TG_CW_Counter/";
         AddCounterMotions(preFix);
         AddMultiCounterMotions(preFix, false);
     }
@@ -1114,16 +1118,6 @@ Vector3 GetRagdollForce()
     return Vector3(x, y, x);
 }
 
-String GetTGCounterPrefix()
-{
-    if (playerType == 0)
-        return "TG_BM_Counter/";
-    else if (playerType == 1)
-        return "TG_CW_Counter/";
-    else
-        return "";
-}
-
 void CreateThugMotions()
 {
     AssignMotionRig("Models/thug.mdl");
@@ -1171,9 +1165,7 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
     Global_CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
-    preFix = "TG_BM_Counter/";
-    cast<BM_Game_MotionManager>(gMotionMgr).AddCounterMotions(preFix);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
+    /*Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
@@ -1182,7 +1174,7 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Double_Counter_2ThugsE_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsE_02");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsF_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsFg_02");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsG_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01");
@@ -1195,7 +1187,9 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Double_Counter_3ThugsB_03");
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_01");
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");*/
+    Global_CreateMotion_InFolder("TG_BM_Counter");
+    Global_CreateMotion_InFolder("TG_CW_Counter");
 
     preFix = "TG_BM_Beatdown/";
     Global_CreateMotion(preFix + "Beatdown_HitReaction_01");

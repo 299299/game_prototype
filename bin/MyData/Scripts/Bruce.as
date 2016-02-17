@@ -330,17 +330,7 @@ void CreateBruceMotions()
     Global_CreateMotion_InFolder("BM_Attack/");
 
     preFix = "BM_TG_Counter/";
-    cast<BM_Game_MotionManager>(gMotionMgr).AddCounterMotions(preFix);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsE");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsG");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsH");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion_InFolder("BM_TG_Counter");
 
     preFix = "BM_Death_Primers/";
     Global_CreateMotion(preFix + "Death_Front");
