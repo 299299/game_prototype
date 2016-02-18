@@ -53,7 +53,7 @@ const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 20;
 
 int debugLevel = 0;
-int freeze_ai = 1;
+int freeze_ai = 0;
 int test_beat_index = 1;
 bool base_on_player = false;
 int test_counter_index = 0;

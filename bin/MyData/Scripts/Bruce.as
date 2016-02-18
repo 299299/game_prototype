@@ -208,9 +208,40 @@ class BruceCounterState : PlayerCounterState
     BruceCounterState(Character@ c)
     {
         super(c);
-        String preFix = "BM_TG_Counter/";
-        AddCounterMotions(preFix);
-        AddMultiCounterMotions(preFix, true);
+        String preFix = "BW_TG_Counter/";
+        // Front Arm
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
+        for(int i=1; i<=10; ++i)
+            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_0" + i));
+        // Front Leg
+        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak"));
+        for(int i=1; i<=6; ++i)
+            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
+        // Back Arm
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_01"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_02"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_03"));
+        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_04"));
+        // Back Leg
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
+        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
+
+        /*
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA"));
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB"));
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsC"));
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD"));
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE"));
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
+        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH"));
+
+        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsA"));
+        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB"));
+        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC"));
+        */
     }
 };
 
@@ -324,13 +355,11 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "HitReaction_Face_Right"); // front punched
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
-    //Global_CreateMotion(preFix + "HitReaction_Stomach", kMotion_XZ); // be kicked ?
-    //Global_CreateMotion(preFix + "BM_Hit_Reaction", kMotion_XZ); // front heavy attacked
 
     Global_CreateMotion_InFolder("BM_Attack/");
 
     preFix = "BM_TG_Counter/";
-    Global_CreateMotion_InFolder("BM_TG_Counter");
+    Global_CreateMotion_InFolder("BM_TG_Counter/");
 
     preFix = "BM_Death_Primers/";
     Global_CreateMotion(preFix + "Death_Front");
