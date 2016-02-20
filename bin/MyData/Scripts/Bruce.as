@@ -42,7 +42,7 @@ class BruceEvadeState : PlayerEvadeState
     BruceEvadeState(Character@ c)
     {
         super(c);
-        String prefix = "BM_Movement/";
+        String prefix = "BM_Combat/";
         AddMotion(prefix + "Evade_Forward_01");
         AddMotion(prefix + "Evade_Right_01");
         AddMotion(prefix + "Evade_Back_01");
@@ -59,57 +59,31 @@ class BruceAttackState : PlayerAttackState
          //========================================================================
         // FORWARD
         //========================================================================
-
-        // forward weak
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward", 11, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_01", 12, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_05", 12, ATTACK_PUNCH, L_HAND);
-
-        // forward close
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_02", 14, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_03", 11, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_04", 19, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_05", 24, ATTACK_PUNCH, L_ARM);
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_06", 20, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_07", 15, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_08", 18, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(forwardAttacks, "Attack_Close_Run_Forward", 12, ATTACK_PUNCH, R_HAND);
-
-        // forward far
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward", 25, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_01", 17, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_02", 21, ATTACK_KICK, L_FOOT);
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward_03", 22, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward_04", 22, ATTACK_KICK, R_FOOT);
         AddAttackMotion(forwardAttacks, "Attack_Run_Far_Forward", 18, ATTACK_KICK, R_FOOT);
 
         //========================================================================
         // RIGHT
         //========================================================================
-        // right weak
         AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right", 12, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_01", 10, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(rightAttacks, "Attack_Close_Weak_Right_02", 15, ATTACK_PUNCH, R_HAND);
-
-        // right close
         AddAttackMotion(rightAttacks, "Attack_Close_Right", 16, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(rightAttacks, "Attack_Close_Right_01", 18, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_03", 11, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_04", 19, ATTACK_KICK, R_FOOT);
         AddAttackMotion(rightAttacks, "Attack_Close_Right_05", 15, ATTACK_KICK, L_CALF);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_06", 20, ATTACK_KICK, R_FOOT);
         AddAttackMotion(rightAttacks, "Attack_Close_Right_07", 18, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(rightAttacks, "Attack_Close_Right_08", 18, ATTACK_KICK, L_FOOT);
-
-        // right far
-        AddAttackMotion(rightAttacks, "Attack_Far_Right", 25, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_01", 15, ATTACK_KICK, L_CALF);
-        // AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_03", 29, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_04", 22, ATTACK_KICK, R_FOOT);
+        //AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH, R_HAND);
 
         //========================================================================
         // BACK
@@ -117,23 +91,15 @@ class BruceAttackState : PlayerAttackState
         // back weak
         AddAttackMotion(backAttacks, "Attack_Close_Weak_Back", 12, ATTACK_PUNCH, L_ARM);
         AddAttackMotion(backAttacks, "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH, R_HAND);
-
         AddAttackMotion(backAttacks, "Attack_Close_Back", 11, ATTACK_PUNCH, L_ARM);
         AddAttackMotion(backAttacks, "Attack_Close_Back_01", 16, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_02", 18, ATTACK_KICK, L_FOOT);
         AddAttackMotion(backAttacks, "Attack_Close_Back_03", 21, ATTACK_KICK, R_FOOT);
         AddAttackMotion(backAttacks, "Attack_Close_Back_04", 18, ATTACK_KICK, R_FOOT);
         AddAttackMotion(backAttacks, "Attack_Close_Back_05", 14, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(backAttacks, "Attack_Close_Back_06", 15, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(backAttacks, "Attack_Close_Back_07", 14, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(backAttacks, "Attack_Close_Back_08", 17, ATTACK_KICK, L_FOOT);
-
-        // back far
         AddAttackMotion(backAttacks, "Attack_Far_Back", 14, ATTACK_KICK, L_FOOT);
         AddAttackMotion(backAttacks, "Attack_Far_Back_01", 15, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_02", 22, ATTACK_PUNCH, R_ARM);
-        //AddAttackMotion(backAttacks, "Attack_Far_Back_03", 22, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_04", 36, ATTACK_KICK, R_FOOT);
 
         //========================================================================
         // LEFT
@@ -142,63 +108,20 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left", 13, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH, L_HAND);
-
-        // left close
         AddAttackMotion(leftAttacks, "Attack_Close_Left", 7, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_01", 18, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(leftAttacks, "Attack_Close_Left_02", 13, ATTACK_KICK, R_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_03", 21, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_04", 21, ATTACK_KICK, R_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Close_Left_05", 15, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Close_Left_06", 12, ATTACK_KICK, R_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Close_Left_07", 15, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Left_08", 20, ATTACK_KICK, L_FOOT);
-
-        // left far
-        AddAttackMotion(leftAttacks, "Attack_Far_Left", 19, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 22, ATTACK_KICK, R_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 22, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 21, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Far_Left_04", 23, ATTACK_KICK, R_FOOT);
 
-        forwardAttacks.Sort();
-        leftAttacks.Sort();
-        rightAttacks.Sort();
-        backAttacks.Sort();
-
-        float min_dist = 2.0f;
-        for (uint i=0; i<forwardAttacks.length; ++i)
-        {
-            if (forwardAttacks[i].impactDist >= min_dist)
-                break;
-            forwadCloseNum++;
-        }
-        for (uint i=0; i<rightAttacks.length; ++i)
-        {
-            if (rightAttacks[i].impactDist >= min_dist)
-                break;
-            rightCloseNum++;
-        }
-        for (uint i=0; i<backAttacks.length; ++i)
-        {
-            if (backAttacks[i].impactDist >= min_dist)
-                break;
-            backCloseNum++;
-        }
-        for (uint i=0; i<leftAttacks.length; ++i)
-        {
-            if (leftAttacks[i].impactDist >= min_dist)
-                break;
-            leftCloseNum++;
-        }
-
-        // if (d_log)
-        Dump();
+        PostInit();
     }
 
     void AddAttackMotion(Array<AttackMotion@>@ attacks, const String&in name, int frame, int type, const String&in bName)
     {
-        attacks.Push(AttackMotion("BM_Attack/" + name, frame, type, bName));
+        attacks.Push(AttackMotion("BW_Attack/" + name, frame, type, bName));
     }
 };
 
@@ -211,12 +134,13 @@ class BruceCounterState : PlayerCounterState
         String preFix = "BW_TG_Counter/";
         // Front Arm
         frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
-        for(int i=1; i<=10; ++i)
+        for(int i=1; i<=9; ++i)
             frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_0" + i));
+        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_10"));
         // Front Leg
         frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak"));
         for(int i=1; i<=6; ++i)
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
+            frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
         // Back Arm
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
         backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_01"));
@@ -325,13 +249,7 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
     Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
 
-    preFix = "BM_Movement/";
-    Global_CreateMotion(preFix + "Evade_Forward_01");
-    Global_CreateMotion(preFix + "Evade_Back_01");
-    Global_CreateMotion(preFix + "Evade_Left_01");
-    Global_CreateMotion(preFix + "Evade_Right_01");
-
-    Global_AddAnimation(preFix + "Stand_Idle");
+    Global_AddAnimation("BM_Movement/Stand_Idle");
 
     preFix = "BM_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Back"); // back attacked
@@ -339,7 +257,7 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
-    Global_CreateMotion_InFolder("BM_Attack/");
+    Global_CreateMotion_InFolder("BW_Attack/");
     Global_CreateMotion_InFolder("BW_TG_Counter/");
 
     preFix = "BM_Death_Primers/";
@@ -364,33 +282,31 @@ void CreateBruceMotions()
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");
+    Global_CreateMotion(preFix + "Evade_Forward_01");
+    Global_CreateMotion(preFix + "Evade_Back_01");
+    Global_CreateMotion(preFix + "Evade_Left_01");
+    Global_CreateMotion(preFix + "Evade_Right_01");
 }
 
 void AddBruceAnimationTriggers()
 {
-    String preFix = "BM_Movement/";
-
+    String preFix = "BM_Combat/";
     AddAnimationTrigger(preFix + "Evade_Forward_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Back_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
 
-    preFix = "BM_Combat_Movement/";
+    preFix = "BW_Movement/";
     AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
     AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
-
     AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, L_FOOT);
-
     AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, R_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Right_180", 20, FOOT_STEP, L_FOOT);
-
     AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
 
     preFix = "BM_Attack/";
-    AddAnimationTrigger(preFix + "CapeDistract_Close_Forward", 12, IMPACT);
-
     int beat_impact_frame = 4;
     AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT, L_HAND);
     AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT, R_HAND);
@@ -398,7 +314,6 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, IMPACT, R_HAND);
     AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, IMPACT, R_HAND);
     AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, IMPACT, R_HAND);
-
 
     // ===========================================================================
     //
@@ -411,7 +326,7 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
     AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
 
-    preFix = "BM_TG_Counter/";
+    preFix = "BW_TG_Counter/";
     AddStringAnimationTrigger(preFix + "Counter_Arm_Back_01", 9, COMBAT_SOUND, R_ARM);
     AddStringAnimationTrigger(preFix + "Counter_Arm_Back_01", 38, COMBAT_SOUND, R_ARM);
     AddAnimationTrigger(preFix + "Counter_Arm_Back_01", 40, READY_TO_FIGHT);
@@ -425,22 +340,13 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Counter_Arm_Back_03", 33, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(preFix + "Counter_Arm_Back_03", 35, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Back_05", 26, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_05", 28, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Back_06", 50, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_06", 52, READY_TO_FIGHT);
+    AddStringAnimationTrigger(preFix + "Counter_Arm_Back_04", 14, COMBAT_SOUND, R_HAND);
+    AddStringAnimationTrigger(preFix + "Counter_Arm_Back_04", 28, COMBAT_SOUND, R_CALF);
+    AddAnimationTrigger(preFix + "Counter_Arm_Back_04", 40, READY_TO_FIGHT);
 
     AddStringAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 11, COMBAT_SOUND, R_ARM);
     AddStringAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 25, COMBAT_SOUND, R_ARM);
     AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 27, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Back_Weak_02", 6, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Back_Weak_02", 16, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_02", 18, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Back_Weak_03", 26, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_03", 28, READY_TO_FIGHT);
 
     AddStringAnimationTrigger(preFix + "Counter_Arm_Front_01", 9, COMBAT_SOUND, R_HAND);
     AddStringAnimationTrigger(preFix + "Counter_Arm_Front_01", 17, COMBAT_SOUND, L_HAND);
@@ -488,27 +394,10 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Counter_Arm_Front_10", 23, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(preFix + "Counter_Arm_Front_10", 25, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_13", 21, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_13", 40, COMBAT_SOUND, L_FOOT);
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_13", 42, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_14", 10, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_14", 22, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_14", 50, COMBAT_SOUND, R_FOOT);
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_14", 52, READY_TO_FIGHT);
-
     AddStringAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 4, COMBAT_SOUND, L_ARM);
     AddStringAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 9, COMBAT_SOUND, R_HAND);
     AddStringAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 21, COMBAT_SOUND, L_HAND);
     AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 23, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_Weak_03", 4, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_Weak_03", 15, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_03", 17, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_Weak_04", 5, COMBAT_SOUND, L_ARM);
-    AddStringAnimationTrigger(preFix + "Counter_Arm_Front_Weak_04", 16, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_04", 18, READY_TO_FIGHT);
 
     AddStringAnimationTrigger(preFix + "Counter_Leg_Back_01", 9, COMBAT_SOUND, L_HAND);
     AddStringAnimationTrigger(preFix + "Counter_Leg_Back_01", 17, COMBAT_SOUND, L_FOOT);
@@ -520,26 +409,9 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Counter_Leg_Back_02", 46, COMBAT_SOUND, L_CALF);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 48, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_03", 11, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_03", 24, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_03", 47, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(preFix + "Counter_Leg_Back_02", 49, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_04", 9, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_04", 31, COMBAT_SOUND, L_FOOT);
-    AddAnimationTrigger(preFix + "Counter_Leg_Back_04", 33, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_05", 7, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_05", 29, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(preFix + "Counter_Leg_Back_05", 31, READY_TO_FIGHT);
-
     AddStringAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 7, COMBAT_SOUND, L_HAND);
     AddStringAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 30, COMBAT_SOUND, R_ARM);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 32, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 11, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 38, COMBAT_SOUND, L_ARM);
-    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 40, READY_TO_FIGHT);
 
     AddStringAnimationTrigger(preFix + "Counter_Leg_Front_01", 11, COMBAT_SOUND, L_FOOT);
     AddStringAnimationTrigger(preFix + "Counter_Leg_Front_01", 30, COMBAT_SOUND, L_FOOT);
@@ -567,30 +439,11 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Counter_Leg_Front_06", 18, COMBAT_SOUND, L_HAND);
     AddAnimationTrigger(preFix + "Counter_Leg_Front_06", 20, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_07", 8, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_07", 42, COMBAT_SOUND, R_FOOT);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_07", 44, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_08", 8, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_08", 21, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_08", 23, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_09", 6, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_09", 27, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_09", 29, READY_TO_FIGHT);
-
     AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 12, COMBAT_SOUND, L_FOOT);
     AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 18, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 20, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak_01", 3, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak_01", 21, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_01", 23, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 6, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 21, COMBAT_SOUND, L_ARM);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 23, READY_TO_FIGHT);
-
+    /*
     AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 12, IMPACT, L_HAND);
     AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 12, PARTICLE, R_HAND);
     AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 77, IMPACT, L_HAND);
@@ -643,6 +496,7 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, IMPACT, R_HAND);
     AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, PARTICLE, L_FOOT);
     AddAnimationTrigger(preFix + "Double_Counter_3ThugsC", 52, READY_TO_FIGHT);
+    */
 }
 
 class Bruce : Player

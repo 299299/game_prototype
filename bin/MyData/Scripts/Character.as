@@ -723,7 +723,7 @@ class Character : GameObject
         ragdollPoseAnim = cache.GetResource("Animation", name);
         if (ragdollPoseAnim is null)
         {
-            Print("Creating animation for ragdoll pose " + name);
+            // Print("Creating animation for ragdoll pose " + name);
             ragdollPoseAnim = Animation();
             ragdollPoseAnim.name = name;
             ragdollPoseAnim.animationName = name;
@@ -736,11 +736,11 @@ class Character : GameObject
 
     void Start()
     {
-        Print("============================== begin Object Start ==============================");
+        //Print("============================== begin Object Start ==============================");
         uint startTime = time.systemTime;
         ObjectStart();
         Print(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
-        Print("============================== end Object Start ==============================");
+        //Print("============================== end Object Start ==============================");
     }
 
     void Stop()
@@ -1169,7 +1169,7 @@ class Character : GameObject
         if (t is target)
             return;
         @target = t;
-        Print(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
+        // Print(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
     }
 
     void PlayRandomSound(int type)

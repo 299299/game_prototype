@@ -354,12 +354,13 @@ class ThugCounterState : CharacterCounterState
 
             // Front Arm
             frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
-            for(int i=1; i<=10; ++i)
+            for(int i=1; i<=9; ++i)
                 frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_0" + i));
+            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_10"));
             // Front Leg
             frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak"));
             for(int i=1; i<=6; ++i)
-                frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
+                frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
             // Back Arm
             backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
             backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_01"));
@@ -644,9 +645,6 @@ class ThugHitState : MultiMotionState
         AddMotion(preFix + "HitReaction_Left");
         AddMotion(preFix + "HitReaction_Back_NoTurn");
         AddMotion(preFix + "HitReaction_Back");
-
-        //AddMotion(preFix + "Push_Reaction");
-        //AddMotion(preFix + "Push_Reaction_From_Back");
     }
 
     void Update(float dt)
@@ -848,21 +846,16 @@ class ThugBeatDownEndState : MultiMotionState
 
 class ThugStunState : CharacterState
 {
-    Array<String> animations;
-
     ThugStunState(Character@ ownner)
     {
         super(ownner);
         SetName("StunState");
-        String preFix = "TG_HitReaction/";
-        animations.Push(GetAnimationName(preFix + "CapeHitReaction_Idle"));
-        animations.Push(GetAnimationName(preFix + "CapeHitReaction_Idle_02"));
         flags = FLAGS_STUN | FLAGS_ATTACK;
     }
 
     void Enter(State@ lastState)
     {
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
+        ownner.PlayAnimation("TG_HitReaction/CapeHitReaction_Idle", LAYER_MOVE, true, 0.2f);
         CharacterState::Enter(lastState);
     }
 
@@ -885,7 +878,7 @@ class ThugPushBackState : SingleMotionState
         super(ownner);
         SetName("PushBack");
         flags = FLAGS_ATTACK;
-        SetMotion("TG_HitReaction/CapeDistract_Close_Forward");
+        SetMotion("TG_HitReaction/HitReaction_Left");
     }
 };
 
@@ -898,10 +891,7 @@ class Thug : Enemy
     {
         Enemy::ObjectStart();
         stateMachine.AddState(ThugStandState(this));
-        uint t = time.systemTime;
         stateMachine.AddState(ThugCounterState(this));
-        Print("ThugCounterState time-cost=" + (time.systemTime - t) + " ms");
-
         stateMachine.AddState(ThugHitState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
@@ -915,7 +905,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugStunState(this));
         stateMachine.AddState(ThugPushBackState(this));
         stateMachine.AddState(AnimationTestState(this));
-
         ChangeState("StandState");
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
@@ -1190,15 +1179,12 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Attack_Punch_01");
     Global_CreateMotion(preFix + "Attack_Punch_02");
 
-
     preFix = "TG_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Left");
     Global_CreateMotion(preFix + "HitReaction_Right");
     Global_CreateMotion(preFix + "HitReaction_Back_NoTurn");
     Global_CreateMotion(preFix + "HitReaction_Back");
-    Global_CreateMotion(preFix + "CapeDistract_Close_Forward");
-    //Global_CreateMotion(preFix + "Push_Reaction", kMotion_XZ);
-    //Global_CreateMotion(preFix + "Push_Reaction_From_Back", kMotion_XZ);
+    Global_AddAnimation(preFix + "CapeHitReaction_Idle");
 
     preFix = "TG_Getup/";
     Global_CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
@@ -1227,7 +1213,7 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_01");
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");*/
-    Global_CreateMotion_InFolder("TG_BM_Counter/");
+    Global_CreateMotion_InFolder("TG_BW_Counter/");
     Global_CreateMotion_InFolder("TG_CW_Counter/");
 
     preFix = "TG_BM_Beatdown/";
@@ -1249,11 +1235,6 @@ void CreateThugMotions()
     Global_AddAnimation(preFix + "Stand_Idle_Additive_03");
     Global_AddAnimation(preFix + "Stand_Idle_Additive_04");
 
-    preFix = "TG_HitReaction/";
-    Global_AddAnimation(preFix + "CapeHitReaction_Idle");
-    Global_AddAnimation(preFix + "CapeHitReaction_Idle_02");
-
-
     preFix = "TG_CW_Beatdown/";
     Global_CreateMotion(preFix + "Beatdown_01");
     Global_CreateMotion(preFix + "Beatdown_02");
@@ -1269,16 +1250,14 @@ void CreateThugMotions()
 
 void AddThugAnimationTriggers()
 {
-    String preFix = "TG_BM_Counter/";
+    String preFix = "TG_BW_Counter/";
     AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 30, 35);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 46, 56);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 38, 48);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 30, 46);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 38, 42);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_06", 32, 36);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_07", 56, 60);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_08", 50, 52);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_09", 36, 38);
+    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 50, READY_TO_FIGHT);
 
     AddRagdollTrigger(preFix + "Counter_Arm_Front_01", 34, 35);
     AddRagdollTrigger(preFix + "Counter_Arm_Front_02", 44, 48);
@@ -1290,36 +1269,19 @@ void AddThugAnimationTriggers()
     AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 54, 60);
     AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 60, 68);
     AddRagdollTrigger(preFix + "Counter_Arm_Front_10", -1, 56);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_13", 58, 68);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_14", 72, 78);
+    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 50, READY_TO_FIGHT);
 
     AddRagdollTrigger(preFix + "Counter_Arm_Back_01", 35, 40);
     AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 48);
     AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 30, 35);
-    AddRagdollTrigger(preFix + "Counter_Arm_Back_05", 40, 48);
-    AddRagdollTrigger(preFix + "Counter_Arm_Back_06", 65, 70);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_04", 30, 35);
+    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 50, READY_TO_FIGHT);
 
     AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 50, 54);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 60, 54);
-    AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 72);
-    AddRagdollTrigger(preFix + "Counter_Leg_Back_04", -1, 43);
-    AddRagdollTrigger(preFix + "Counter_Leg_Back_05", 48, 52);
-
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 50, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_02", 40, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_03", 88, READY_TO_FIGHT);
-
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 50, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_03", 100, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_04", 70, READY_TO_FIGHT);
-
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 55, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 76, READY_TO_FIGHT);
 
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 50, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_01", 65, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak_02", 65, READY_TO_FIGHT);
-
+    /*
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_01", -1, 99);
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_02", -1, 99);
 
@@ -1351,6 +1313,7 @@ void AddThugAnimationTriggers()
 
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_01", 35, 41);
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_02", 35, 45);
+    */
 
     preFix = "TG_Combat/";
     int frame_fixup = 6;

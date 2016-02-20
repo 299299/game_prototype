@@ -116,39 +116,7 @@ class CatwomanAttackState : PlayerAttackState
         AddAttackMotion(rightAttacks, "Attack_Far_Right_01", 36, ATTACK_KICK, L_FOOT);
         AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 27, ATTACK_KICK, R_FOOT);
 
-        forwardAttacks.Sort();
-        leftAttacks.Sort();
-        rightAttacks.Sort();
-        backAttacks.Sort();
-
-        float min_dist = 2.5f;
-        for (uint i=0; i<forwardAttacks.length; ++i)
-        {
-            if (forwardAttacks[i].impactDist >= min_dist)
-                break;
-            forwadCloseNum++;
-        }
-        for (uint i=0; i<rightAttacks.length; ++i)
-        {
-            if (rightAttacks[i].impactDist >= min_dist)
-                break;
-            rightCloseNum++;
-        }
-        for (uint i=0; i<backAttacks.length; ++i)
-        {
-            if (backAttacks[i].impactDist >= min_dist)
-                break;
-            backCloseNum++;
-        }
-        for (uint i=0; i<leftAttacks.length; ++i)
-        {
-            if (leftAttacks[i].impactDist >= min_dist)
-                break;
-            leftCloseNum++;
-        }
-
-        // if (d_log)
-        Dump();
+        PostInit();
     }
 
     void AddAttackMotion(Array<AttackMotion@>@ attacks, const String&in name, int frame, int type, const String&in bName)

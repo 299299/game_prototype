@@ -19,6 +19,9 @@ const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.5f;
 const float PLAYER_NEAR_DIST = 6.0f;
 const float GOOD_COUNTER_DIST = 3.0f;
+const float ATTACK_DIST_PICK_RANGE = 6.0f;
+float MAX_ATTACK_DIST = 25.0f;
+float MAX_BEAT_DIST = 25.0f;
 
 class PlayerStandState : CharacterState
 {
@@ -193,6 +196,15 @@ class PlayerAttackState : CharacterState
         }
     }
 
+    float UpdateMaxDist(Array<AttackMotion@>@ attacks, float dist)
+    {
+        if (attacks.empty)
+            return dist;
+
+        float maxDist = attacks[attacks.length-1].motion.endDistance;
+        return (maxDist > dist) ? maxDist : dist;
+    }
+
     void Dump()
     {
         Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
@@ -296,8 +308,8 @@ class PlayerAttackState : CharacterState
         int index_start = -1;
         int index_num = 0;
 
-        float min_dist = Max(0.0f, toEnenmyDistance - 2.0f);
-        float max_dist = toEnenmyDistance + 2.0f;
+        float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_RANGE);
+        float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_RANGE;
         Print("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
         for (uint i=0; i<attacks.length; ++i)
@@ -502,6 +514,52 @@ class PlayerAttackState : CharacterState
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
         ownner.OnAttackSuccess(e);
+    }
+
+    void PostInit(float closeDist = 2.5f)
+    {
+        forwardAttacks.Sort();
+        leftAttacks.Sort();
+        rightAttacks.Sort();
+        backAttacks.Sort();
+
+        float dist = 0.0f;
+        dist = UpdateMaxDist(forwardAttacks, dist);
+        dist = UpdateMaxDist(leftAttacks, dist);
+        dist = UpdateMaxDist(rightAttacks, dist);
+        dist = UpdateMaxDist(backAttacks, dist);
+
+        Print(ownner.GetName() + " max attack dist = " + dist);
+        dist += 10.0f;
+        MAX_ATTACK_DIST = Min(MAX_ATTACK_DIST, dist);
+
+        for (uint i=0; i<forwardAttacks.length; ++i)
+        {
+            if (forwardAttacks[i].impactDist >= closeDist)
+                break;
+            forwadCloseNum++;
+        }
+        for (uint i=0; i<rightAttacks.length; ++i)
+        {
+            if (rightAttacks[i].impactDist >= closeDist)
+                break;
+            rightCloseNum++;
+        }
+        for (uint i=0; i<backAttacks.length; ++i)
+        {
+            if (backAttacks[i].impactDist >= closeDist)
+                break;
+            backCloseNum++;
+        }
+        for (uint i=0; i<leftAttacks.length; ++i)
+        {
+            if (leftAttacks[i].impactDist >= closeDist)
+                break;
+            leftCloseNum++;
+        }
+
+        // if (d_log)
+        Dump();
     }
 };
 
@@ -1620,7 +1678,7 @@ class Player : Character
     bool Attack()
     {
         Print("Do--Attack--->");
-        Enemy@ e = CommonPickEnemy(90, 25.0f, FLAGS_ATTACK, true, true);
+        Enemy@ e = CommonPickEnemy(90, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");
@@ -1632,7 +1690,7 @@ class Player : Character
     bool Distract()
     {
         Print("Do--Distract--->");
-        Enemy@ e = CommonPickEnemy(45, 25.0f, FLAGS_ATTACK | FLAGS_STUN, true, true);
+        Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)
             return false;
         SetTarget(e);

@@ -49,7 +49,7 @@ int render_features = RF_FULL;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
-int UI_FONT_SIZE = 20;
+int UI_FONT_SIZE = 40;
 
 int debugLevel = 0;
 int freeze_ai = 0;
@@ -99,6 +99,8 @@ void Start()
                 render_features = RF_NONE;
             else if (argument == "no_hdr")
                 render_features |= RF_HDR;
+            else if (argument == "freeze_ai")
+                freeze_ai = 1;
         }
     }
 

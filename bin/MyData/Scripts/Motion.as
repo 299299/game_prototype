@@ -405,7 +405,6 @@ class AttackMotion
 class MotionManager
 {
     Array<Motion@>          motions;
-    Array<String>           animations;
     uint                    assetProcessTime;
     int                     memoryUse;
     int                     processedMotions;
