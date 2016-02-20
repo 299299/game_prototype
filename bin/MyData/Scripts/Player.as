@@ -139,21 +139,6 @@ class PlayerEvadeState : MultiMotionState
     }
 };
 
-class PlayerRedirectState : SingleMotionState
-{
-    uint redirectEnemyId = M_MAX_UNSIGNED;
-    PlayerRedirectState(Character@ c)
-    {
-        super(c);
-        SetName("RedirectState");
-    }
-    void Exit(State@ nextState)
-    {
-        redirectEnemyId = M_MAX_UNSIGNED;
-        SingleMotionState::Exit(nextState);
-    }
-};
-
 enum AttackStateType
 {
     ATTACK_STATE_ALIGN,
@@ -1060,7 +1045,7 @@ class PlayerBeatDownHitState : MultiMotionState
         if (checkDist)
         {
             float curDist = ownner.GetTargetDistance();
-            Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
+            // Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
             needToTransition = IsTransitionNeeded(curDist - PLAYER_COLLISION_DIST);
         }
 
@@ -1099,7 +1084,7 @@ class PlayerBeatDownHitState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        Print("========================= BeatDownHitState Enter start ===========================");
+        //Print("========================= BeatDownHitState Enter start ===========================");
         attackPressed = false;
         needToTransition = false;
         if (lastState !is this)
@@ -1110,7 +1095,7 @@ class PlayerBeatDownHitState : MultiMotionState
         HitStart(lastState !is this, beatIndex, lastState.name != "TransitionState");
         CharacterState::Enter(lastState);
         // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
-        Print("========================= BeatDownHitState Enter end ===========================");
+        //Print("========================= BeatDownHitState Enter end ===========================");
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1118,7 +1103,7 @@ class PlayerBeatDownHitState : MultiMotionState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
-            Print("BeatDownHitState On Impact");
+            // Print("BeatDownHitState On Impact");
             combatReady = true;
             Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
             Vector3 position = ownner.GetNode().worldPosition;
@@ -1251,28 +1236,8 @@ class Player : Character
 
     bool Evade()
     {
-        // Print("Player::Evade()");
-
-        Enemy@ redirectEnemy = null;
-        if (has_redirect)
-            @redirectEnemy = PickRedirectEnemy();
-
-        if (redirectEnemy !is null)
-        {
-            PlayerRedirectState@ s = cast<PlayerRedirectState>(stateMachine.FindState("RedirectState"));
-            s.redirectEnemyId = redirectEnemy.GetNode().id;
-            ChangeState("RedirectState");
-            redirectEnemy.Redirect();
-        }
-        else
-        {
-            // if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-            {
-                sceneNode.vars[ANIMATION_INDEX] = RadialSelectAnimation(4);
-                ChangeState("EvadeState");
-            }
-        }
-
+        sceneNode.vars[ANIMATION_INDEX] = RadialSelectAnimation(4);
+        ChangeState("EvadeState");
         return true;
     }
 

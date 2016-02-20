@@ -33,7 +33,6 @@ bool autoCounter = false;
 bool bHdr = true;
 bool bigHeadMode = false;
 bool nobgm = true;
-bool has_redirect = false;
 int colorGradingIndex = 0;
 
 Node@ musicNode;

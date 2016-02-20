@@ -113,7 +113,7 @@ class ThugStandState : CharacterState
             {
                 ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
                 int index = state.GetStepMoveIndex();
-                Print(ownner.GetName() + " apply animation index for step move in thug stand state: " + index);
+                //Print(ownner.GetName() + " apply animation index for step move in thug stand state: " + index);
                 _node.vars[ANIMATION_INDEX] = index;
             }
             ownner.ChangeState(nextState);
@@ -124,7 +124,7 @@ class ThugStandState : CharacterState
             {
                 ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
                 int index = state.GetStepMoveIndex();
-                Print(ownner.GetName() + " apply animation index for keep with with player in stand state: " + index);
+                //Print(ownner.GetName() + " apply animation index for keep with with player in stand state: " + index);
                 _node.vars[ANIMATION_INDEX] = index;
                 ownner.ChangeState("StepMoveState");
                 return;
@@ -135,7 +135,7 @@ class ThugStandState : CharacterState
             {
                 int index = RandomInt(4);
                 _node.vars[ANIMATION_INDEX] = index;
-                Print(ownner.GetName() + " apply animation index for random move in stand state: " + index);
+                //Print(ownner.GetName() + " apply animation index for random move in stand state: " + index);
                 ownner.ChangeState("StepMoveState");
             }
         }
@@ -702,31 +702,6 @@ class ThugHitState : MultiMotionState
     }
 };
 
-class ThugRedirectState : MultiMotionState
-{
-    ThugRedirectState(Character@ c)
-    {
-        super(c);
-        SetName("RedirectState");
-        AddMotion(MOVEMENT_GROUP_THUG + "Redirect_push_back");
-        AddMotion(MOVEMENT_GROUP_THUG + "Redirect_Stumble_JK");
-    }
-
-    void Enter(State@ lastState)
-    {
-        selectIndex = PickIndex();
-        if (d_log)
-            Print(name + " pick " + motions[selectIndex].animationName);
-        motions[selectIndex].Start(ownner, 0.0f, 0.5f);
-    }
-
-    int PickIndex()
-    {
-        return RandomInt(2);
-    }
-};
-
-
 class ThugGetUpState : CharacterGetUpState
 {
     ThugGetUpState(Character@ c)
@@ -931,8 +906,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
         stateMachine.AddState(ThugRunState(this));
-        if (has_redirect)
-            stateMachine.AddState(ThugRedirectState(this));
         stateMachine.AddState(ThugAttackState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugGetUpState(this));
@@ -1137,7 +1110,7 @@ class Thug : Enemy
         int dir = -1;
         if (GetSperateDirection(dir) == 0)
             return false;
-        Print(GetName() + " CollisionAvoidance index=" + dir);
+        // Print(GetName() + " CollisionAvoidance index=" + dir);
         MultiMotionState@ state = cast<MultiMotionState>(FindState("StepMoveState"));
         Motion@ motion = state.motions[dir];
         Vector4 motionOut = motion.GetKey(motion.endTime);
@@ -1209,12 +1182,6 @@ void CreateThugMotions()
 
     Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
     Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
-
-    if (has_redirect)
-    {
-        Global_CreateMotion(preFix + "Redirect_push_back");
-        Global_CreateMotion(preFix + "Redirect_Stumble_JK");
-    }
 
     Global_CreateMotion(preFix + "Attack_Kick");
     Global_CreateMotion(preFix + "Attack_Kick_01");

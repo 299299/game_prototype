@@ -186,3 +186,71 @@ Animation@ CreateAnimation(const String&in originAnimationName, const String&in 
     cache.AddManualResource(anim);
     return anim;
 }
+
+bool Evade()
+{
+    // Print("Player::Evade()");
+
+    Enemy@ redirectEnemy = null;
+    if (has_redirect)
+        @redirectEnemy = PickRedirectEnemy();
+
+    if (redirectEnemy !is null)
+    {
+        PlayerRedirectState@ s = cast<PlayerRedirectState>(stateMachine.FindState("RedirectState"));
+        s.redirectEnemyId = redirectEnemy.GetNode().id;
+        ChangeState("RedirectState");
+        redirectEnemy.Redirect();
+    }
+    else
+    {
+        // if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        {
+
+        }
+    }
+
+    return true;
+}
+
+
+class ThugRedirectState : MultiMotionState
+{
+    ThugRedirectState(Character@ c)
+    {
+        super(c);
+        SetName("RedirectState");
+        AddMotion(MOVEMENT_GROUP_THUG + "Redirect_push_back");
+        AddMotion(MOVEMENT_GROUP_THUG + "Redirect_Stumble_JK");
+    }
+
+    void Enter(State@ lastState)
+    {
+        selectIndex = PickIndex();
+        if (d_log)
+            Print(name + " pick " + motions[selectIndex].animationName);
+        motions[selectIndex].Start(ownner, 0.0f, 0.5f);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(2);
+    }
+};
+
+
+class PlayerRedirectState : SingleMotionState
+{
+    uint redirectEnemyId = M_MAX_UNSIGNED;
+    PlayerRedirectState(Character@ c)
+    {
+        super(c);
+        SetName("RedirectState");
+    }
+    void Exit(State@ nextState)
+    {
+        redirectEnemyId = M_MAX_UNSIGNED;
+        SingleMotionState::Exit(nextState);
+    }
+};
+

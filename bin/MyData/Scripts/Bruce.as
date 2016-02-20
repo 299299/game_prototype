@@ -245,21 +245,12 @@ class BruceCounterState : PlayerCounterState
     }
 };
 
-class BruceRedirectState : PlayerRedirectState
-{
-    BruceRedirectState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Combat/Redirect");
-    }
-};
-
 class BruceHitState : PlayerHitState
 {
     BruceHitState(Character@ c)
     {
         super(c);
-        String hitPrefix = "BM_Combat_HitReaction/";
+        String hitPrefix = "BM_HitReaction/";
         AddMotion(hitPrefix + "HitReaction_Face_Right");
         AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
         AddMotion(hitPrefix + "HitReaction_Back");
@@ -329,37 +320,27 @@ void CreateBruceMotions()
     AssignMotionRig("Models/bruce_w.mdl");
 
     String preFix = "BW_Movement/";
-    // Locomotions
-    //Global_CreateMotion("BM_Combat_Movement/Turn_Right_90", kMotion_XZR, kMotion_R, 16);
-    //Global_CreateMotion("BM_Combat_Movement/Turn_Right_180", kMotion_XZR, kMotion_R, 28);
-    //Global_CreateMotion("BM_Combat_Movement/Turn_Left_90", kMotion_XZR, kMotion_R, 22);
-    //Global_CreateMotion("BM_Combat_Movement/Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
-
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
     Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
     Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
 
-    // Evades
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Evade_Forward_01");
     Global_CreateMotion(preFix + "Evade_Back_01");
     Global_CreateMotion(preFix + "Evade_Left_01");
     Global_CreateMotion(preFix + "Evade_Right_01");
 
-    if (has_redirect)
-        Global_CreateMotion("BM_Combat/Redirect");
+    Global_AddAnimation(preFix + "Stand_Idle");
 
-    preFix = "BM_Combat_HitReaction/";
+    preFix = "BM_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Back"); // back attacked
     Global_CreateMotion(preFix + "HitReaction_Face_Right"); // front punched
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
     Global_CreateMotion_InFolder("BM_Attack/");
-
-    preFix = "BM_TG_Counter/";
-    Global_CreateMotion_InFolder("BM_TG_Counter/");
+    Global_CreateMotion_InFolder("BW_TG_Counter/");
 
     preFix = "BM_Death_Primers/";
     Global_CreateMotion(preFix + "Death_Front");
@@ -368,9 +349,6 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Death_Side_Right");
 
     preFix = "BM_Attack/";
-    //Global_CreateMotion(preFix + "Beatdown_Strike_Start_01");
-    //Global_CreateMotion(preFix + "CapeDistract_Close_Forward");
-
     Global_CreateMotion(preFix + "Beatdown_Test_01");
     Global_CreateMotion(preFix + "Beatdown_Test_02");
     Global_CreateMotion(preFix + "Beatdown_Test_03");
@@ -385,11 +363,7 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
 
     preFix = "BM_Combat/";
-    // Global_CreateMotion(preFix + "Attempt_Takedown", kMotion_XZR, kMotion_Z);
     Global_CreateMotion(preFix + "Into_Takedown");
-
-    preFix = "BM_Movement/";
-    Global_AddAnimation(preFix + "Stand_Idle");
 }
 
 void AddBruceAnimationTriggers()
@@ -401,8 +375,41 @@ void AddBruceAnimationTriggers()
     AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
 
-    if (has_redirect)
-        AddAnimationTrigger("BM_Combat/Redirect", 58, READY_TO_FIGHT);
+    preFix = "BM_Combat_Movement/";
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, L_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Right_180", 20, FOOT_STEP, L_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
+
+    preFix = "BM_Attack/";
+    AddAnimationTrigger(preFix + "CapeDistract_Close_Forward", 12, IMPACT);
+
+    int beat_impact_frame = 4;
+    AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT, L_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT, R_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, IMPACT, L_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, IMPACT, R_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, IMPACT, R_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, IMPACT, R_HAND);
+
+
+    // ===========================================================================
+    //
+    //   COUNTER TRIGGERS
+    //
+    // ===========================================================================
+    preFix = "BM_TG_Beatdown/";
+    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);
+    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
+    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
 
     preFix = "BM_TG_Counter/";
     AddStringAnimationTrigger(preFix + "Counter_Arm_Back_01", 9, COMBAT_SOUND, R_ARM);
@@ -636,38 +643,6 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, IMPACT, R_HAND);
     AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, PARTICLE, L_FOOT);
     AddAnimationTrigger(preFix + "Double_Counter_3ThugsC", 52, READY_TO_FIGHT);
-
-    preFix = "BM_Combat_Movement/";
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
-
-    AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, L_FOOT);
-
-    AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_180", 20, FOOT_STEP, L_FOOT);
-
-    AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
-
-    preFix = "BM_Attack/";
-    AddAnimationTrigger(preFix + "CapeDistract_Close_Forward", 12, IMPACT);
-
-    int beat_impact_frame = 4;
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT, L_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, IMPACT, L_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, IMPACT, R_HAND);
-
-    //AddStringAnimationTrigger(preFix + "Beatdown_Strike_Start_01", 7, COMBAT_SOUND, L_HAND);
-
-    preFix = "BM_TG_Beatdown/";
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
 }
 
 class Bruce : Player
@@ -681,8 +656,6 @@ class Bruce : Player
         stateMachine.AddState(BruceCounterState(this));
         stateMachine.AddState(BruceEvadeState(this));
         stateMachine.AddState(BruceHitState(this));
-        if (has_redirect)
-            stateMachine.AddState(BruceRedirectState(this));
         stateMachine.AddState(BruceDeadState(this));
         stateMachine.AddState(BruceBeatDownHitState(this));
         stateMachine.AddState(BruceBeatDownEndState(this));

@@ -203,15 +203,6 @@ class CatwomanCounterState : PlayerCounterState
     }
 };
 
-class CatwomanRedirectState : PlayerRedirectState
-{
-    CatwomanRedirectState(Character@ c)
-    {
-        super(c);
-        SetMotion("CW_Combat/Redirect");
-    }
-};
-
 class CatwomanHitState : PlayerHitState
 {
     CatwomanHitState(Character@ c)
@@ -293,8 +284,6 @@ class Catwoman : Player
         stateMachine.AddState(CatwomanAttackState(this));
         stateMachine.AddState(CatwomanCounterState(this));
         stateMachine.AddState(CatwomanHitState(this));
-        if (has_redirect)
-            stateMachine.AddState(CatwomanRedirectState(this));
         stateMachine.AddState(CatwomanDeadState(this));
         stateMachine.AddState(CatwomanBeatDownHitState(this));
         stateMachine.AddState(CatwomanBeatDownEndState(this));
@@ -374,6 +363,12 @@ void AddCatwomanAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Beatdown_End_01", 22, IMPACT, HEAD);
     AddStringAnimationTrigger(preFix + "Beatdown_End_02", 24, IMPACT, R_CALF);
     AddStringAnimationTrigger(preFix + "Beatdown_End_03", 29, IMPACT, R_FOOT);
+
+    // ===========================================================================
+    //
+    //   COUNTER TRIGGERS
+    //
+    // ===========================================================================
 }
 
 
