@@ -308,7 +308,7 @@ class PlayerAttackState : CharacterState
         int index_start = -1;
         int index_num = 0;
 
-        float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_RANGE);
+        float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_RANGE/2.0f);
         float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_RANGE;
         Print("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
