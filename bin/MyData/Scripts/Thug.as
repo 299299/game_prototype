@@ -351,7 +351,6 @@ class ThugCounterState : CharacterCounterState
         if (playerType == 0)
         {
             String preFix = "TG_BW_Counter/";
-
             // Front Arm
             frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
             for(int i=1; i<=9; ++i)
@@ -363,10 +362,8 @@ class ThugCounterState : CharacterCounterState
                 frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
             // Back Arm
             backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
-            backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_01"));
-            backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_02"));
-            backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_03"));
-            backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_04"));
+            for(int i=1; i<=4; ++i)
+                frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_0" + i));
             // Back Leg
             backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
             backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
@@ -378,11 +375,8 @@ class ThugCounterState : CharacterCounterState
             // Front Arm
             frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_01"));
             frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_01"));
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_02"));
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_03"));
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_04"));
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_05"));
+            for(int i=1; i<=5; ++i)
+                frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_0" + i));
             // Front Leg
             frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak_01"));
             frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak_02"));
@@ -1314,6 +1308,36 @@ void AddThugAnimationTriggers()
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_01", 35, 41);
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_02", 35, 45);
     */
+
+    preFix = "TG_CW_Counter/";
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_01", 36, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 48);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 32, 35);
+    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 56, READY_TO_FIGHT);
+
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_01", -1, 34);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_02", 40, 46);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_03", 36, 41);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_04", 34, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_05", -1, 43);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_06", 38, 42);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_07", 22, 26);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 29, 32);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 38, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_10", 26, 32);
+    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 46, READY_TO_FIGHT);
+
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 46, 53);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 48, 62);
+    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 54, READY_TO_FIGHT);
+
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 30, 40);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 40, 50);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 18, 22);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 33, 35);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 56, 64);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_06", -1, 32);
+    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 52, READY_TO_FIGHT);
 
     preFix = "TG_Combat/";
     int frame_fixup = 6;
