@@ -509,7 +509,7 @@ class PlayerAttackState : CharacterState
             return;
 
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5.0f, 5.0f);
-        ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 0.5f, 0.4f);
+        ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 1.0f, 0.6f);
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
