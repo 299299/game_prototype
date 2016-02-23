@@ -1259,6 +1259,11 @@ class Player : Character
         AddStates();
         ChangeState("StandState");
         lightNodeId = GetScene().GetChild("light").id;
+
+        Node@ tailNode = sceneNode.CreateChild("TailNode");
+        ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
+        emitter.effect = cache.GetResource("ParticleEffect", "Particle/Tail.xml");
+        tailNode.enabled = false;
     }
 
     void AddStates()

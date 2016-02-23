@@ -131,43 +131,7 @@ class CatwomanCounterState : PlayerCounterState
     CatwomanCounterState(Character@ c)
     {
         super(c);
-        String preFix = "CW_TG_Counter/";
-
-        // Front Arm
-        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_01"));
-        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
-        for (int i=1; i<=5; ++i)
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_0" + i));
-        // Front Leg
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak_01"));
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak_02"));
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_01"));
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_03"));
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_04"));
-        // Back Arm
-        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
-        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_02"));
-        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_01"));
-        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_02"));
-        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_03"));
-        // Back Leg
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_02"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
-
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsC"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH"));
-
-        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsA"));
-        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB"));
-        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC"));
+        AddCW_Counter_Animations("CW_TG_Counter/", true);
     }
 };
 
@@ -177,7 +141,7 @@ class CatwomanHitState : PlayerHitState
     {
         super(c);
         String hitPrefix = "CW_Hit_Reaction/";
-        AddMotion(hitPrefix + "HitReaction_Face_Right");
+        AddMotion(hitPrefix + "HitReaction_Face_Left");
         AddMotion(hitPrefix + "Hit_Reaction_SideLeft");
         AddMotion(hitPrefix + "HitReaction_Back");
         AddMotion(hitPrefix + "Hit_Reaction_SideRight");
@@ -286,7 +250,7 @@ void CreateCatwomanMotions()
     Global_CreateMotion(preFix + "Beatdown_End_03");
 
     preFix = "CW_Hit_Reaction/";
-    Global_CreateMotion(preFix + "HitReaction_Face_Right");
+    Global_CreateMotion(preFix + "HitReaction_Face_Left");
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft");
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight");
     Global_CreateMotion(preFix + "HitReaction_Back");
@@ -331,6 +295,12 @@ void AddCatwomanAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Beatdown_End_01", 22, IMPACT, HEAD);
     AddStringAnimationTrigger(preFix + "Beatdown_End_02", 24, IMPACT, R_CALF);
     AddStringAnimationTrigger(preFix + "Beatdown_End_03", 29, IMPACT, R_FOOT);
+
+    preFix = "CW_Hit_Reaction/";
+    AddAnimationTrigger(preFix + "HitReaction_Face_Left", 80, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Hit_Reaction_SideLeft", 46, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Hit_Reaction_SideRight", 51, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "HitReaction_Back", 52, READY_TO_FIGHT);
 
     // ===========================================================================
     //
@@ -449,5 +419,6 @@ void AddCatwomanAnimationTriggers()
     AddStringAnimationTrigger(animName, 26, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(animName, 50, READY_TO_FIGHT);
 }
+
 
 

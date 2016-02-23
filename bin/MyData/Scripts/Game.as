@@ -268,7 +268,7 @@ class TestGameState : GameState
         Text@ messageText = ui.root.CreateChild("Text", "message");
         messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
         messageText.SetAlignment(HA_CENTER, VA_CENTER);
-        messageText.SetPosition(0, -height * 2);
+        messageText.SetPosition(0, -height * 2 + 100);
         messageText.color = Color(1, 0, 0);
         messageText.visible = false;
 
