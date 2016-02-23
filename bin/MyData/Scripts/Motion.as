@@ -402,6 +402,14 @@ class AttackMotion
     }
 };
 
+enum MotionLoadingState
+{
+    MOTION_LOADING_START = 0,
+    MOTION_LOADING_MOTIONS,
+    MOTION_LOADING_ANIMATIONS,
+    MOTION_LOADING_FINISHED
+};
+
 class MotionManager
 {
     Array<Motion@>          motions;
@@ -410,6 +418,7 @@ class MotionManager
     int                     memoryUse;
     int                     processedMotions;
     int                     processedAnimations;
+    int                     state = MOTION_LOADING_START;
 
     MotionManager()
     {
@@ -444,6 +453,7 @@ class MotionManager
         assetProcessTime = time.systemTime;
         AssetPreProcess();
         AddMotions();
+        state = MOTION_LOADING_MOTIONS;
     }
 
     void Stop()
@@ -497,32 +507,48 @@ class MotionManager
 
     bool Update(float dt)
     {
-        if (processedMotions >= int(motions.length) && processedAnimations >= int(animations.length))
+        if (state == MOTION_LOADING_FINISHED)
             return true;
 
-        uint t = time.systemTime;
-        int len = int(motions.length);
-        for (int i=processedMotions; i<len; ++i)
+        if (state == MOTION_LOADING_MOTIONS)
         {
-            motions[i].Process();
-            ++processedMotions;
-            int time_diff = int(time.systemTime - t);
-            if (time_diff >= PROCESS_TIME_PER_FRAME)
-                break;
-        }
+            uint t = time.systemTime;
+            int len = int(motions.length);
+            for (int i=processedMotions; i<len; ++i)
+            {
+                motions[i].Process();
+                ++processedMotions;
+                int time_diff = int(time.systemTime - t);
+                if (time_diff >= PROCESS_TIME_PER_FRAME)
+                    break;
+            }
 
-        len = int(animations.length);
-        for (int i=processedAnimations; i<len; ++i)
+            Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions);
+            if (processedMotions >= len)
+                state = MOTION_LOADING_ANIMATIONS;
+        }
+        else if (state == MOTION_LOADING_ANIMATIONS)
         {
-            cache.GetResource("Animation", GetAnimationName(animations[i]));
-            ++processedAnimations;
-            int time_diff = int(time.systemTime - t);
-            if (time_diff >= PROCESS_TIME_PER_FRAME)
-                break;
-        }
+            int len = int(animations.length);
+            uint t = time.systemTime;
+            for (int i=processedAnimations; i<len; ++i)
+            {
+                cache.GetResource("Animation", GetAnimationName(animations[i]));
+                ++processedAnimations;
+                int time_diff = int(time.systemTime - t);
+                if (time_diff >= PROCESS_TIME_PER_FRAME)
+                    break;
+            }
 
-        Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions + " processedAnimations=" + processedAnimations);
-        return processedMotions >= int(motions.length) && processedAnimations >= int(animations.length);
+            Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedAnimations=" + processedAnimations);
+
+            if (processedAnimations >= len)
+            {
+                state = MOTION_LOADING_FINISHED;
+                return true;
+            }
+        }
+        return false;
     }
 
     void ProcessAll()

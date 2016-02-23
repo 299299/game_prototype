@@ -558,8 +558,8 @@ class PlayerAttackState : CharacterState
             leftCloseNum++;
         }
 
-        // if (d_log)
-        Dump();
+        if (d_log)
+            Dump();
     }
 };
 

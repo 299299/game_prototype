@@ -214,13 +214,13 @@ class ThugStepMoveState : MultiMotionState
         {
             index = ownner.RadialSelectAnimation(4);
             index = (index + 2) % 4;
-            Print("ThugStepMoveState->GetStepMoveIndex() Keep Dist Within Player =->" + index);
+            // Print("ThugStepMoveState->GetStepMoveIndex() Keep Dist Within Player =->" + index);
         }
         else
         {
             if (dist > motions[4].endDistance + 2.0f)
                 index += 4;
-            Print("ThugStepMoveState->GetStepMoveIndex()=->" + index + " dist=" + dist);
+            // Print("ThugStepMoveState->GetStepMoveIndex()=->" + index + " dist=" + dist);
         }
         return index;
     }
@@ -330,7 +330,7 @@ class ThugTurnState : MultiMotionState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         endTime = motions[index].endTime;
         turnSpeed = diff / endTime;
-        Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
+        // Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
         ownner.ClearAvoidance();
         MultiMotionState::Enter(lastState);
     }
@@ -779,7 +779,7 @@ class ThugStunState : CharacterState
 
     void Enter(State@ lastState)
     {
-        ownner.PlayAnimation("TG_HitReaction/CapeHitReaction_Idle", LAYER_MOVE, true, 0.2f);
+        ownner.PlayAnimation(GetAnimationName("TG_HitReaction/CapeHitReaction_Idle"), LAYER_MOVE, true, 0.2f);
         CharacterState::Enter(lastState);
     }
 
@@ -1049,7 +1049,7 @@ class Thug : Enemy
             return false;
         int index = RadialSelectAnimation(4);
         index = (index + 2) % 4;
-        Print(GetName() + " KeepDistanceWithPlayer index=" + index + " max_dist=" + max_dist);
+        // Print(GetName() + " KeepDistanceWithPlayer index=" + index + " max_dist=" + max_dist);
         sceneNode.vars[ANIMATION_INDEX] = index;
         ChangeState("StepMoveState");
         return true;

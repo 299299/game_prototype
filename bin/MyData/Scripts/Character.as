@@ -1377,5 +1377,6 @@ Node@ CreateCharacter(const String&in name, const String&in objectName, const St
     p_node.name = name;
     p_node.CreateScriptObject(scriptFile, scriptClass);
     p_node.CreateScriptObject(scriptFile, "Ragdoll");
+    p_node.CreateScriptObject(scriptFile, "HeadIndicator");
     return p_node;
 }
