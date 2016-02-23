@@ -1258,18 +1258,6 @@ class Player : Character
         Character::ObjectStart();
         AddStates();
         ChangeState("StandState");
-
-        Node@ _node = sceneNode.CreateChild("TailNode");
-        TailGenerator@ tail = _node.CreateComponent("TailGenerator");
-        tail.material = cache.GetResource("Material", "Materials/Tail.xml");
-        tail.width = 0.5f;
-        tail.tailNum = 200;
-        tail.SetArcValue(0.1f, 10.0f);
-        tail.SetStartColor(Color(0.9f,0.5f,0.2f,1), Color(1.0f,1.0f,1.0f,5.0f));
-        tail.SetEndColor(Color(1.0f,0.2f,1.0f,1), Color(1.0f,1.0f,1.0f,5.0f));
-        // t.endNodeName = "Bip01";
-        _node.enabled = false;
-        //attackDamage = 100;
         lightNodeId = GetScene().GetChild("light").id;
     }
 
