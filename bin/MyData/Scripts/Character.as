@@ -44,6 +44,7 @@ const StringHash BONE("Bone");
 const StringHash NODE("Node");
 const StringHash RADIUS("Radius");
 const StringHash COMBAT_SOUND("CombatSound");
+const StringHash COMBAT_SOUND_LARGE("CombatSoundLarge");
 const StringHash COMBAT_PARTICLE("CombatParticle");
 const StringHash PARTICLE("Particle");
 const StringHash DURATION("Duration");
@@ -84,7 +85,9 @@ class CharacterState : State
         if (name == RAGDOLL_START)
             ownner.ChangeState("RagdollState");
         else if (name == COMBAT_SOUND)
-            OnCombatSound(eventData[VALUE].GetString());
+            OnCombatSound(eventData[VALUE].GetString(), false);
+        else if (name == COMBAT_SOUND_LARGE)
+            OnCombatSound(eventData[VALUE].GetString(), true);
         else if (name == PARTICLE)
             OnCombatParticle(eventData[VALUE].GetString(), eventData[PARTICLE].GetString());
         else if (name == FOOT_STEP)
@@ -114,11 +117,9 @@ class CharacterState : State
         ownner.SpawnParticleEffect(pos, "Particle/SnowExplosionFade.xml", 2, 2.5f);
     }
 
-    void OnCombatSound(const String& boneName)
+    void OnCombatSound(const String& boneName, bool large)
     {
-        int comb_type = GetAttackType(boneName);
-        int i = RandomInt(num_of_sounds) + 1;
-        ownner.PlaySound("Sfx/impact_" + i + ".ogg");
+        ownner.PlayRandomSound(large ? 1 : 0);
 
         Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
         if (boneNode !is null)
