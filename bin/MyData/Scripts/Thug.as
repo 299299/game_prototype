@@ -349,9 +349,9 @@ class ThugCounterState : CharacterCounterState
     {
         super(c);
         if (playerType == 0)
-            AddBW_Counter_Animations("TG_BW_Counter/", false);
+            AddBW_Counter_Animations("TG_BW_Counter/", "TG_BM_Counter/",false);
         else if (playerType == 1)
-            AddCW_Counter_Animations("TG_CW_Counter/", false);
+            AddCW_Counter_Animations("TG_CW_Counter/", "TG_CW_Counter/",false);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1114,7 +1114,9 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
     Global_CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
-    /*Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
+    Global_CreateMotion_InFolder("TG_BW_Counter/");
+    preFix = "TG_BM_Counter/";
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
@@ -1123,22 +1125,58 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Double_Counter_2ThugsE_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsE_02");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsF_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsFg_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_02");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsG_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsH_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_02");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_03", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_3ThugsB_01");
     Global_CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_3ThugsB_03");
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_01");
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");*/
-    Global_CreateMotion_InFolder("TG_BW_Counter/");
-    Global_CreateMotion_InFolder("TG_CW_Counter/");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
+
+    preFix = "TG_CW_Counter/";
+    for (int i=1; i<=3; ++i)
+        Global_CreateMotion(preFix + "Counter_Arm_Back_0" + i);
+    Global_CreateMotion(preFix + "Counter_Arm_Back_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Arm_Back_Weak_02");
+    for (int i=1; i<=5; ++i)
+        Global_CreateMotion(preFix + "Counter_Arm_Front_0" + i);
+    Global_CreateMotion(preFix + "Counter_Arm_Front_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Arm_Front_Weak_02");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_02");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_Weak_02");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_03");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_04");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_Weak_02");
+
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_02");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_02");
+
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_01");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_03");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_01");
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
 
     preFix = "TG_BM_Beatdown/";
     Global_CreateMotion(preFix + "Beatdown_HitReaction_01");
@@ -1205,6 +1243,36 @@ void AddThugAnimationTriggers()
     AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 60, 54);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 55, READY_TO_FIGHT);
 
+    preFix = "TG_BM_Counter/";
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_01", -1, 99);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_02", -1, 99);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_01", -1, 58);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_02", -1, 58);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_01", -1, 48);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_02", -1, 48);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_01", 80, 84);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_02", 80, 84);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_01", 26, 28);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_02", 19, 24);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_01", -1, 26);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_02", -1, 26);
+
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_01", -1, 62);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_02", -1, 62);
+
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_01", 25, 33);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_02", 25, 33);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_03", 25, 33);
+
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_01", 35, 41);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_02", 35, 45);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_03", 35, 45);
+
     preFix = "TG_CW_Counter/";
     AddRagdollTrigger(preFix + "Counter_Arm_Back_01", -1, 66);
     AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 85);
@@ -1237,9 +1305,6 @@ void AddThugAnimationTriggers()
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_01", 32, 35);
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_02", 32, 35);
 
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsC_01", 25, 30);
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsC_02", 30, 35);
-
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_01", -1, 55);
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_02", 40, 48);
 
@@ -1254,10 +1319,6 @@ void AddThugAnimationTriggers()
 
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_01", 29, 33);
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_02", 24, 33);
-
-    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_01", 41, 46);
-    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_02", 35, 39);
-    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_03", 34, 38);
 
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_01", 24, 31);
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_02", 35, 42);

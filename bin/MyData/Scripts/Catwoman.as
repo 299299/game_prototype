@@ -131,7 +131,7 @@ class CatwomanCounterState : PlayerCounterState
     CatwomanCounterState(Character@ c)
     {
         super(c);
-        AddCW_Counter_Animations("CW_TG_Counter/", true);
+        AddCW_Counter_Animations("CW_TG_Counter/", "CW_TG_Counter/",true);
     }
 };
 
@@ -263,7 +263,35 @@ void CreateCatwomanMotions()
 
     //Global_CreateMotion_InFolder("CW_TG_Counter/");
     preFix = "CW_TG_Counter/";
-    Global_CreateMotion(preFix + "Death_Front");
+    for (int i=1; i<=3; ++i)
+        Global_CreateMotion(preFix + "Counter_Arm_Back_0" + i);
+    Global_CreateMotion(preFix + "Counter_Arm_Back_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Arm_Back_Weak_02");
+    for (int i=1; i<=5; ++i)
+        Global_CreateMotion(preFix + "Counter_Arm_Front_0" + i);
+    Global_CreateMotion(preFix + "Counter_Arm_Front_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Arm_Front_Weak_02");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_02");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Back_Weak_02");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_03");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_04");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_Weak_01");
+    Global_CreateMotion(preFix + "Counter_Leg_Front_Weak_02");
+
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsA");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsB");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsC");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsE");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsF", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsG");
+    Global_CreateMotion(preFix + "Double_Counter_2ThugsH", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
 
     preFix = "CW_Movement/";
     Global_AddAnimation(preFix + "Stand_Idle");

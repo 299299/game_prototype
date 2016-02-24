@@ -858,17 +858,8 @@ class PlayerCounterState : CharacterCounterState
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         StringHash name = eventData[NAME].GetStringHash();
-        if (name == IMPACT)
-        {
-            Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
-            Vector3 position = ownner.GetNode().worldPosition;
-            if (boneNode !is null)
-                position = boneNode.worldPosition;
-            ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 5, 5.0f);
-            ownner.PlayRandomSound(counterEnemies.length > 1 ? 1 : 0);
+        if (name == READY_TO_FIGHT)
             ownner.OnCounterSuccess();
-            return;
-        }
         CharacterState::OnAnimationTrigger(animState, eventData);
     }
 

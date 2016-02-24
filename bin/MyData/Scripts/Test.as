@@ -716,6 +716,11 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
         return;
 
     Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
+    if (m_player is null)
+        return;
+
+    Print("TestAnimation_Group " + playerAnim);
+
     for (uint i=0; i<thugAnims.length; ++i)
     {
         Motion@ m = gMotionMgr.FindMotion(thugAnims[i]);
@@ -725,10 +730,10 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
         e.TestAnimation(thugAnims[i]);
     }
     player.TestAnimation(playerAnim);
-    // player.SetSceneTimeScale(0.0f);
+    player.SetSceneTimeScale(0.0f);
 }
 
-void TestAnimation_Group_s(const String&in playerAnim, String thugAnim, bool baseOnPlayer = false)
+void TestAnimation_Group_s(const String&in playerAnim, const String& thugAnim, bool baseOnPlayer = false)
 {
     Player@ player = GetPlayer();
     EnemyManager@ em = GetEnemyMgr();
@@ -753,7 +758,6 @@ void TestAnimation_Group_s(const String&in playerAnim, String thugAnim, bool bas
 
     e.TestAnimation(thugAnim);
     player.TestAnimation(playerAnim);
-    // player.SetSceneTimeScale(0.0f);
 }
 
 void TestAnimations_Group_Beat()
@@ -811,7 +815,7 @@ void TestAnimations_Group_2()
 
     e.TestAnimation(m2.name);
     player.TestAnimation(m1.name);
-    // player.SetSceneTimeScale(0.0f);
+    player.SetSceneTimeScale(0.0f);
 }
 
 void TestAnimations_Group_3()
@@ -820,25 +824,33 @@ void TestAnimations_Group_3()
     {
         "Double_Counter_2ThugsA",
         "Double_Counter_2ThugsB",
+        "Double_Counter_2ThugsC",
         "Double_Counter_2ThugsD",
         "Double_Counter_2ThugsE",
         "Double_Counter_2ThugsF",
         "Double_Counter_2ThugsG",
         "Double_Counter_2ThugsH"
     };
+    String preFix = "BM";
+    if (playerType == 1)
+        preFix = "CW";
     String test = tests[test_double_counter_index];
     test_double_counter_index ++;
     if (test_double_counter_index >= int(tests.length))
         test_double_counter_index = 0;
-    String playerAnim = "BM_TG_Counter/" + test;
+    String playerAnim = preFix + "_TG_Counter/" + test;
     Array<String> thugAnims;
-    thugAnims.Push("TG_BM_Counter/" + test + "_01");
-    thugAnims.Push("TG_BM_Counter/" + test + "_02");
+    String thugAnim = "TG_" + preFix + "_Counter/" + test;
+    thugAnims.Push(thugAnim + "_01");
+    thugAnims.Push(thugAnim + "_02");
     TestAnimation_Group(playerAnim, thugAnims);
 }
 
 void TestAnimations_Group_4()
 {
+    String preFix = "BM";
+    if (playerType == 1)
+        preFix = "CW";
     Array<String> tests =
     {
         "Double_Counter_3ThugsA",
@@ -849,11 +861,12 @@ void TestAnimations_Group_4()
     test_triple_counter_index ++;
     if (test_triple_counter_index >= int(tests.length))
         test_triple_counter_index = 0;
-    String playerAnim = "BM_TG_Counter/" + test;
+    String playerAnim = preFix + "_TG_Counter/" + test;
     Array<String> thugAnims;
-    thugAnims.Push("TG_BM_Counter/" + test + "_01");
-    thugAnims.Push("TG_BM_Counter/" + test + "_02");
-    thugAnims.Push("TG_BM_Counter/" + test + "_03");
+    String thugAnim = "TG_" + preFix + "_Counter/" + test;
+    thugAnims.Push(thugAnim + "_01");
+    thugAnims.Push(thugAnim + "_02");
+    thugAnims.Push(thugAnim + "_03");
     TestAnimation_Group(playerAnim, thugAnims);
 }
 
