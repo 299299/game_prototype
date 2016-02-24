@@ -386,6 +386,7 @@ void AddCatwomanAnimationTriggers()
     AddAnimationTrigger(animName, 80, READY_TO_FIGHT);
 
     animName = preFix + "Counter_Leg_Back_Weak_01";
+    AddStringAnimationTrigger(animName, 17, COMBAT_SOUND, R_HAND);
     AddStringAnimationTrigger(animName, 35, COMBAT_SOUND, HEAD);
     AddAnimationTrigger(animName, 45, READY_TO_FIGHT);
 
@@ -418,6 +419,68 @@ void AddCatwomanAnimationTriggers()
     AddStringAnimationTrigger(animName, 8, COMBAT_SOUND, L_HAND);
     AddStringAnimationTrigger(animName, 26, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(animName, 50, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsA";
+    AddStringAnimationTrigger(animName, 5, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, R_FOOT);
+    AddStringAnimationTrigger(animName, 40, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 60, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsB";
+    AddStringAnimationTrigger(animName, 4, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 31, COMBAT_SOUND, R_FOOT);
+    AddAnimationTrigger(animName, 50, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsC";
+    AddStringAnimationTrigger(animName, 22, COMBAT_SOUND, R_CALF);
+    AddStringAnimationTrigger(animName, 28, COMBAT_SOUND, R_FOOT);
+    AddAnimationTrigger(animName, 45, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsD";
+    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, R_CALF);
+    AddStringAnimationTrigger(animName, 20, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 26, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 75, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsE";
+    AddStringAnimationTrigger(animName, 23, COMBAT_SOUND, R_FOOT);
+    AddAnimationTrigger(animName, 35, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsF";
+    AddStringAnimationTrigger(animName, 8, COMBAT_SOUND, HEAD);
+    AddStringAnimationTrigger(animName, 27, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 56, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 90, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsG";
+    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 16, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 21, COMBAT_SOUND, L_CALF);
+    AddAnimationTrigger(animName, 32, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_2ThugsH";
+    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 28, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 45, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_3ThugsA";
+    AddStringAnimationTrigger(animName, 8, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 14, COMBAT_SOUND, R_FOOT);
+    AddStringAnimationTrigger(animName, 29, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 34, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 52, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_3ThugsB";
+    AddStringAnimationTrigger(animName, 10, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 25, COMBAT_SOUND, R_FOOT);
+    AddStringAnimationTrigger(animName, 38, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 56, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_3ThugsC";
+    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 35, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 48, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 66, READY_TO_FIGHT);
 }
 
 
