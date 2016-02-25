@@ -897,6 +897,27 @@ class Thug : Enemy
         health = Max(0, health);
         SetHealth(health);
 
+        int r = RandomInt(4);
+        // if (r > 1)
+        {
+            Node@ floorNode = GetScene().GetChild("floor", true);
+            if (floorNode !is null)
+            {
+                DecalSet@ decal = floorNode.GetComponent("DecalSet");
+                if (decal is null)
+                {
+                    decal = floorNode.CreateComponent("DecalSet");
+                    //decal.material = cache.GetResource("Material", "Materials/Blood_Splat.xml");
+                    decal.material = cache.GetResource("Material", "Materials/UrhoDecalAlpha.xml");
+                }
+                Print("Creating decal");
+                float size = Random(2.5f, 0.5f);
+                float timeToLive = 0.0f;
+                Vector3 pos = sceneNode.worldPosition + Vector3(0, 0, 0);
+                decal.AddDecal(floorNode.GetComponent("StaticModel"), pos, Quaternion(90, 0, 0), size, 1.0f, 1.0f, Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), timeToLive);
+            }
+        }
+
         Node@ attackNode = attacker.GetNode();
 
         Vector3 v = direction * -1;

@@ -187,10 +187,12 @@ void CreateUI()
     ui.root.defaultStyle = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
     // Create a Cursor UI element because we want to be able to hide and show it at will. When hidden, the mouse cursor will
     // control the camera, and when visible, it will point the raycast target
-    //XMLFile@ style = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
-    //Cursor@ cursor = Cursor();
-    //cursor.SetStyleAuto(style);
-    //ui.cursor = cursor;
+    XMLFile@ style = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
+    Cursor@ cursor = Cursor();
+    cursor.SetStyleAuto(style);
+    ui.cursor = cursor;
+    cursor.visible = false;
+
     // Set starting position of the cursor at the rendering window center
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
     //input.SetMouseVisible(true);
@@ -378,6 +380,9 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             Print("==========================Auto Counter End==========================");
         }
     }
+
+    if (ui.cursor.visible && input.mouseButtonPress[MOUSEB_LEFT])
+        PaintDecal();
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
@@ -459,9 +464,15 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         CameraController@ cc = gCameraMgr.currentController;
         if (cc.nameHash == StringHash("Debug"))
+        {
+            ui.cursor.visible = false;
             gCameraMgr.SetCameraController("ThirdPerson");
+        }
         else
+        {
+            ui.cursor.visible = true;
             gCameraMgr.SetCameraController("Debug");
+        }
     }
     else if (key == KEY_5)
     {
@@ -1089,6 +1100,52 @@ void ExecuteCommand()
     }
 }
 
+void PaintDecal()
+{
+    Vector3 hitPos;
+    Drawable@ hitDrawable;
+
+    if (Raycast(250.0f, hitPos, hitDrawable))
+    {
+        // Check if target scene node already has a DecalSet component. If not, create now
+        Node@ targetNode = hitDrawable.node;
+        DecalSet@ decal = targetNode.GetComponent("DecalSet");
+        if (decal is null)
+        {
+            decal = targetNode.CreateComponent("DecalSet");
+            decal.material = cache.GetResource("Material", "Materials/UrhoDecalAlpha.xml");
+        }
+        // Add a square decal to the decal set using the geometry of the drawable that was hit, orient it to face the camera,
+        // use full texture UV's (0,0) to (1,1). Note that if we create several decals to a large object (such as the ground
+        // plane) over a large area using just one DecalSet component, the decals will all be culled as one unit. If that is
+        // undesirable, it may be necessary to create more than one DecalSet based on the distance
+        decal.AddDecal(hitDrawable, hitPos, GetCamera().node.rotation, 0.5f, 1.0f, 1.0f, Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f));
+    }
+}
+
+bool Raycast(float maxDistance, Vector3& hitPos, Drawable@& hitDrawable)
+{
+    hitDrawable = null;
+
+    IntVector2 pos = ui.cursorPosition;
+    if (!ui.cursor.visible || ui.GetElementAt(pos, true) !is null)
+        return false;
+
+    Camera@ camera = GetCamera();
+    Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
+    // Pick only geometry objects, not eg. zones or lights, only get the first (closest) hit
+    // Note the convenience accessor to scene's Octree component
+    RayQueryResult result = camera.node.scene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY);
+    if (result.drawable !is null)
+    {
+        hitPos = result.position;
+        hitDrawable = result.drawable;
+        return true;
+    }
+
+    return false;
+}
+
 class BM_Game_MotionManager : MotionManager
 {
     void AddMotions()
@@ -1104,5 +1161,4 @@ class BM_Game_MotionManager : MotionManager
         AddBruceAnimationTriggers();
         AddCatwomanAnimationTriggers();
     }
-
 };

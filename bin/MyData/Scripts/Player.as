@@ -1309,6 +1309,8 @@ class Player : Character
 
         health -= damage;
         health = Max(0, health);
+        combo = 0;
+
         SetHealth(health);
 
         int index = RadialSelectAnimation(attacker.GetNode(), 4);
