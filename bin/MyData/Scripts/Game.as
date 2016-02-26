@@ -65,33 +65,29 @@ class LoadingState : GameState
     LoadingState()
     {
         SetName("LoadingState");
-        Print("LoadingState()");
-    }
-
-    ~LoadingState()
-    {
-        Print("~LoadingState()");
-        preloadScene = null;
     }
 
     void CreateLoadingUI()
     {
+        float alphaDuration = 1.0f;
+        ValueAnimation@ alphaAnimation = ValueAnimation();
+        alphaAnimation.SetKeyFrame(0.0f, Variant(0.0f));
+        alphaAnimation.SetKeyFrame(alphaDuration, Variant(1.0f));
+        alphaAnimation.SetKeyFrame(alphaDuration * 2, Variant(0.0f));
+
         Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/ulogo.jpg");
-        if (logoTexture !is null)
-        {
-            Sprite@ logoSprite = ui.root.CreateChild("Sprite", "logo");
-            logoSprite.texture = logoTexture;
-            int textureWidth = logoTexture.width;
-            int textureHeight = logoTexture.height;
-            logoSprite.SetScale(256.0f / textureWidth);
-            logoSprite.SetSize(textureWidth, textureHeight);
-            logoSprite.SetHotSpot(0, textureHeight);
-            logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
-            logoSprite.SetPosition(graphics.width - textureWidth/2, 0);
-            logoSprite.opacity = 0.75f;
-            logoSprite.priority = -100;
-            logoSprite.AddTag("TAG_LOADING");
-        }
+        Sprite@ logoSprite = ui.root.CreateChild("Sprite", "logo");
+        logoSprite.texture = logoTexture;
+        int textureWidth = logoTexture.width;
+        int textureHeight = logoTexture.height;
+        logoSprite.SetScale(256.0f / textureWidth);
+        logoSprite.SetSize(textureWidth, textureHeight);
+        logoSprite.SetHotSpot(0, textureHeight);
+        logoSprite.SetAlignment(HA_LEFT, VA_BOTTOM);
+        logoSprite.SetPosition(graphics.width - textureWidth/2, 0);
+        logoSprite.opacity = 0.75f;
+        logoSprite.priority = -100;
+        logoSprite.AddTag("TAG_LOADING");
 
         Text@ text = ui.root.CreateChild("Text", "loading_text");
         text.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
@@ -102,17 +98,16 @@ class LoadingState : GameState
         text.AddTag("TAG_LOADING");
 
         Texture2D@ loadingTexture = cache.GetResource("Texture2D", "Textures/Loading.tga");
-        if (loadingTexture !is  null)
-        {
-            Sprite@ loadingSprite = ui.root.CreateChild("Sprite", "loading_bg");
-            loadingSprite.texture = loadingTexture;
-            int textureWidth = loadingTexture.width;
-            int textureHeight = loadingTexture.height;
-            loadingSprite.SetSize(textureWidth, textureHeight);
-            loadingSprite.SetPosition(graphics.width/2 - textureWidth/2, graphics.height/2 - textureHeight/2);
-            loadingSprite.priority = -100;
-            loadingSprite.AddTag("TAG_LOADING");
-        }
+        Sprite@ loadingSprite = ui.root.CreateChild("Sprite", "loading_bg");
+        loadingSprite.texture = loadingTexture;
+        textureWidth = loadingTexture.width;
+        textureHeight = loadingTexture.height;
+        loadingSprite.SetSize(textureWidth, textureHeight);
+        loadingSprite.SetPosition(graphics.width/2 - textureWidth/2, graphics.height/2 - textureHeight/2);
+        loadingSprite.priority = -100;
+        loadingSprite.opacity = 0.0f;
+        loadingSprite.AddTag("TAG_LOADING");
+        loadingSprite.SetAttributeAnimation("Opacity", alphaAnimation);
     }
 
     void Enter(State@ lastState)
@@ -220,45 +215,52 @@ enum GameSubState
 class TestGameState : GameState
 {
     Scene@              gameScene;
-
-    FadeOverlay@        fade;
     TextMenu@           pauseMenu;
+    BorderImage@        fullscreenUI;
+
     int                 state = -1;
     int                 lastState = -1;
     int                 maxKilled = 5;
+
+    float               fadeTime = 3.0f;
 
     bool                postInited = false;
 
     TestGameState()
     {
         SetName("TestGameState");
-        Print("TestGameState()");
-        @fade = FadeOverlay();
         @pauseMenu = TextMenu(UI_FONT, UI_FONT_SIZE);
+        fullscreenUI = BorderImage("FullScreenImage");
+        fullscreenUI.visible = false;
+        fullscreenUI.priority = -9999;
+        fullscreenUI.opacity = 1.0f;
+        fullscreenUI.texture = cache.GetResource("Texture2D", "Data/Textures/Fade.png");
+        fullscreenUI.SetFullImageRect();
+        if (!engine.headless)
+            fullscreenUI.SetFixedSize(graphics.width, graphics.height);
+        ui.root.AddChild(fullscreenUI);
         pauseMenu.texts.Push("RESUME");
         pauseMenu.texts.Push("EXIT");
-        fade.Init();
     }
 
     ~TestGameState()
     {
-        @fade = null;
         @pauseMenu = null;
         gameScene = null;
-        Print("~TestGameState()");
+        fullscreenUI.Remove();
     }
 
     void Enter(State@ lastState)
     {
         state = -1;
         State::Enter(lastState);
-        ChangeSubState(GAME_FADING);
         CreateScene();
         if (engine.headless)
             return;
         CreateViewPort();
         CreateUI();
         PostCreate();
+        ChangeSubState(GAME_FADING);
     }
 
     void PostCreate()
@@ -341,10 +343,14 @@ class TestGameState : GameState
 
     void Update(float dt)
     {
-        if (state == GAME_FADING)
+        if (state == GAME_FADING || state == GAME_RESTARTING)
         {
-            if (fade.Update(dt))
+            float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
+            if (t + 0.01f >= fadeTime)
+            {
+                fullscreenUI.visible = false;
                 ChangeSubState(GAME_RUNNING);
+            }
         }
         else if (state == GAME_FAIL || state == GAME_WIN)
         {
@@ -353,11 +359,6 @@ class TestGameState : GameState
                 ChangeSubState(GAME_RESTARTING);
                 ShowMessage("", false);
             }
-        }
-        else if (state == GAME_RESTARTING)
-        {
-            if (fade.Update(dt))
-                ChangeSubState(GAME_RUNNING);
         }
         else if (state == GAME_PAUSE)
         {
@@ -391,6 +392,8 @@ class TestGameState : GameState
         if (oldState == GAME_PAUSE)
             script.defaultScene.updateEnabled = true;
 
+        fullscreenUI.SetAttributeAnimationSpeed("Opacity", newState == GAME_PAUSE ? 0.0f : 1.0f);
+
         pauseMenu.Remove();
 
         Player@ player = GetPlayer();
@@ -412,8 +415,13 @@ class TestGameState : GameState
         {
             if (oldState != GAME_PAUSE)
             {
-                fade.Show(1.0f);
-                fade.StartFadeIn(2.0f);
+                float fadeDuration = 3.0f;
+                ValueAnimation@ alphaAnimation = ValueAnimation();
+                alphaAnimation.SetKeyFrame(0.0f, Variant(1.0f));
+                alphaAnimation.SetKeyFrame(fadeDuration, Variant(0.0f));
+                fadeTime = fadeDuration;
+                fullscreenUI.visible = true;
+                fullscreenUI.SetAttributeAnimation("Opacity", alphaAnimation, WM_ONCE);
             }
 
             freezeInput = true;

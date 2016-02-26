@@ -85,6 +85,9 @@ class ThugStandState : CharacterState
 
     void OnThinkTimeOut()
     {
+        if (ownner.target.HasFlag(FLAGS_INVINCIBLE))
+            return;
+
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;

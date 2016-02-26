@@ -7,7 +7,6 @@
 #include "Scripts/FSM.as"
 #include "Scripts/Ragdoll.as"
 #include "Scripts/Camera.as"
-#include "Scripts/FadeOverlay.as"
 #include "Scripts/Menu.as"
 #include "Scripts/HeadIndicator.as"
 // ------------------------------------------------
@@ -635,8 +634,8 @@ void SetColorGrading(int index)
     if (index < 0)
         index = len - 1;
     colorGradingIndex = index;
-    ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "Textures/LUT/" + colorGradingTextures[index] + ".xml", TU_VOLUMEMAP);
     LUT = colorGradingTextures[index];
+    ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "Textures/LUT/" + LUT + ".xml", TU_VOLUMEMAP);
 }
 
 void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
