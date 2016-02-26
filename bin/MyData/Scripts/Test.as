@@ -59,6 +59,8 @@ int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 
+bool reflection = true;
+
 BaseInput@ gInput;
 
 void Start()
@@ -827,6 +829,8 @@ void TestAnimations_Group_2()
     e.TestAnimation(m2.name);
     player.TestAnimation(m1.name);
     player.SetSceneTimeScale(0.0f);
+
+    Print("TestAnimations_Group_2 -> " + m1.name);
 }
 
 void TestAnimations_Group_3()

@@ -293,6 +293,8 @@ class AnimationTestState : CharacterState
 
     void Enter(State@ lastState)
     {
+        SendAnimationTriger(ownner.renderNode, RAGDOLL_STOP);
+
         @testMotion = gMotionMgr.FindMotion(animationName);
         if (testMotion !is null)
         {
@@ -351,23 +353,6 @@ class AnimationTestState : CharacterState
     bool CanReEntered()
     {
         return true;
-    }
-
-    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
-    {
-        StringHash name = eventData[NAME].GetStringHash();
-        if (name == RAGDOLL_START)
-            return;
-        else if (name == IMPACT)
-        {
-            Node@ _node = ownner.GetNode();
-            Node@ boneNode = _node.GetChild(eventData[VALUE].GetString(), true);
-            if (boneNode !is null)
-                ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
-            ownner.PlayRandomSound(1);
-            return;
-        }
-        CharacterState::OnAnimationTrigger(animState, eventData);
     }
 };
 
@@ -824,16 +809,6 @@ class Character : GameObject
 
     bool                    motion_translateEnabled = true;
     bool                    motion_rotateEnabled = true;
-
-    Character()
-    {
-        Print("Character()");
-    }
-
-    ~Character()
-    {
-        Print("~Character()");
-    }
 
     void ObjectStart()
     {

@@ -898,7 +898,7 @@ class Thug : Enemy
         SetHealth(health);
 
         int r = RandomInt(4);
-        if (r > 1)
+        // if (r > 1)
         {
             Node@ floorNode = GetScene().GetChild("floor", true);
             if (floorNode !is null)
@@ -908,10 +908,12 @@ class Thug : Enemy
                 {
                     decal = floorNode.CreateComponent("DecalSet");
                     decal.material = cache.GetResource("Material", "Materials/Blood_Splat.xml");
+                    decal.castShadows = false;
+                    decal.viewMask = 0x7fffffff;
                     //decal.material = cache.GetResource("Material", "Materials/UrhoDecalAlpha.xml");
                 }
                 Print("Creating decal");
-                float size = Random(2.5f, 0.5f);
+                float size = Random(1.5f, 3.5f);
                 float timeToLive = 5.0f;
                 Vector3 pos = sceneNode.worldPosition + Vector3(0, 0, 0);
                 decal.AddDecal(floorNode.GetComponent("StaticModel"), pos, Quaternion(90, Random(360), 0), size, 1.0f, 1.0f, Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), timeToLive);
@@ -1239,54 +1241,54 @@ void CreateThugMotions()
 void AddThugAnimationTriggers()
 {
     String preFix = "TG_BW_Counter/";
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 30, 35);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 46, 56);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 38, 48);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 30, 46);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 38, 42);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_06", 32, 36);
-    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 50, READY_TO_FIGHT);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 25, 39);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 25, 54);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 15, 23);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 32, 35);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 55, 65);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_06", -1, 32);
+    AddAnimationTrigger(preFix + "Counter_Leg_Front_Weak", 52, READY_TO_FIGHT);
 
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_01", 34, 35);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_02", 44, 48);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_03", 35, 40);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_04", 36, 40);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_05", 60, 66);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_06", -1, 44);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_07", 38, 43);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 54, 60);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 60, 68);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_10", -1, 56);
-    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 50, READY_TO_FIGHT);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_01", -1, 34);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_02", 38, 45);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_03", 34, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_04", 33, 39);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_05", -1, 43);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_06", 40, 42);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_07", 20, 25);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_08", 29, 32);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 35, 40);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_10", 20, 32);
+    AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 45, READY_TO_FIGHT);
 
     AddRagdollTrigger(preFix + "Counter_Arm_Back_01", 35, 40);
-    AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 48);
-    AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 30, 35);
-    AddRagdollTrigger(preFix + "Counter_Arm_Back_04", 30, 35);
-    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 50, READY_TO_FIGHT);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_02", -1, 46);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_03", 32, 34);
+    AddRagdollTrigger(preFix + "Counter_Arm_Back_04", 30, 40);
+    AddAnimationTrigger(preFix + "Counter_Arm_Back_Weak_01", 54, READY_TO_FIGHT);
 
-    AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 50, 54);
-    AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 60, 54);
-    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 55, READY_TO_FIGHT);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 45, 54);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 50, 60);
+    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 52, READY_TO_FIGHT);
 
     preFix = "TG_BM_Counter/";
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_01", -1, 99);
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsA_02", -1, 99);
 
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_01", -1, 58);
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_02", -1, 58);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_01", -1, 62);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsB_02", -1, 50);
 
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_01", -1, 48);
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_02", -1, 48);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_01", 30, 44);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsD_02", 30, 44);
 
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_01", 80, 84);
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_02", 80, 84);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_01", 38, 46);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsE_02", 38, 42);
 
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_01", 26, 28);
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_02", 19, 24);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_01", 25, 30);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsF_02", 18, 25);
 
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_01", -1, 26);
-    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_02", -1, 26);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_01", 22, 28);
+    AddRagdollTrigger(preFix + "Double_Counter_2ThugsG_02", 22, 28);
 
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_01", -1, 62);
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_02", -1, 62);

@@ -183,7 +183,7 @@ class Ragdoll : ScriptObject
             SetAnimationEnabled(false);
             SetPhysicsEnabled(true);
 
-            if (timeInState > 0.05f)
+            if (timeInState > 0.033f)
             {
                 for (uint i=0; i<RAGDOLL_BONE_NUM; ++i)
                 {
@@ -194,6 +194,7 @@ class Ragdoll : ScriptObject
                         float scale = rootNode.vars[TIME_SCALE].GetFloat();
                         velocity /= timeInState;
                         velocity *= scale;
+                        velocity *= 1.5f;
                         // Print(boneNodes[i].name + " velocity=" + velocity.ToString());
                         // if (i == BONE_PELVIS || i == BONE_SPINE)
                         rb.linearVelocity = velocity;
@@ -321,7 +322,7 @@ class Ragdoll : ScriptObject
 
     void CreateRagdoll()
     {
-        uint t = time.systemTime;
+        // uint t = time.systemTime;
 
         // Create RigidBody & CollisionShape components to bones
         Quaternion identityQ(0, 0, 0);
@@ -380,7 +381,7 @@ class Ragdoll : ScriptObject
         CreateRagdollConstraint(boneNodes[BONE_R_FOREARM], boneNodes[BONE_R_UPPERARM], CONSTRAINT_HINGE, Vector3(0.0f, 0.0f, -1.0f),
             Vector3(0.0f, 0.0f, -1.0f), Vector2(90.0f, 0.0f), Vector2(0.0f, 0.0f));
 
-        Print("CreateRagdoll time-cost=" + (time.systemTime - t) + " ms");
+        // Print("CreateRagdoll time-cost=" + (time.systemTime - t) + " ms");
     }
 
     void CreateRagdollBone(RagdollBoneType boneType, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation)
@@ -502,12 +503,7 @@ class Ragdoll : ScriptObject
 
     void OnAnimationTrigger(VariantMap& data)
     {
-        if (rootNode.vars[STATE].GetStringHash() == ANIMTEST_STATE)
-            return;
-
         StringHash name = data[NAME].GetStringHash();
-        int value = data[VALUE].GetInt();
-
         int new_state = RAGDOLL_NONE;
         if (name == RAGDOLL_PERPARE)
             new_state = RAGDOLL_STATIC;
@@ -534,13 +530,13 @@ class Ragdoll : ScriptObject
 
         // determine back or frong get up
         Vector3 pelvis_up = oldRot * Vector3(0, 1, 0);
-        Print("pelvis_up=" + pelvis_up.ToString());
+        //Print("pelvis_up=" + pelvis_up.ToString());
 
         getUpIndex = 0;
         if (pelvis_up.y < 0)
             getUpIndex = 1;
 
-        Print("getUpIndex = " + getUpIndex);
+        //Print("getUpIndex = " + getUpIndex);
         rootNode.vars[ANIMATION_INDEX] = getUpIndex;
 
         Vector3 head_pos = boneNodes[BONE_HEAD].worldPosition;
