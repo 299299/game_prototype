@@ -36,7 +36,6 @@ const StringHash RAGDOLL_ROOT("Ragdoll_Root");
 const StringHash VELOCITY("Velocity");
 const StringHash POSITION("Position");
 
-bool test_ragdoll = false;
 bool blend_to_anim = false;
 int ragdoll_method = 2;
 

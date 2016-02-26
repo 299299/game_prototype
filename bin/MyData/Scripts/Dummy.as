@@ -254,3 +254,41 @@ class PlayerRedirectState : SingleMotionState
     }
 };
 
+if (key == 'E')
+{
+    Player@ player = GetPlayer();
+    if (player is null)
+        return;
+
+    Node@ renderNode = player.GetNode().children[0];
+    SendAnimationTriger(renderNode, RAGDOLL_STOP);
+
+    AnimationController@ ctl = renderNode.GetComponent("AnimationController");
+    Animation@ anim = Animation();
+    String name = "Test_Pose";
+    anim.name = name;
+    anim.animationName = name;
+    FillAnimationWithCurrentPose(anim, renderNode);
+    cache.AddManualResource(anim);
+
+    AnimatedModel@ model = renderNode.GetComponent("AnimatedModel");
+    AnimationState@ state = model.AddAnimationState(anim);
+    state.weight = 1.0f;
+    ctl.PlayExclusive(anim.name, LAYER_MOVE, false, 0.0f);
+
+    int ragdoll_direction = player.GetNode().vars[ANIMATION_INDEX].GetInt();
+    String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
+    PlayAnimation(ctl, GetAnimationName(name1), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
+}
+else if (key == 'F')
+{
+    Player@ player = GetPlayer();
+    if (player is null)
+        return;
+    Node@ renderNode = player.GetNode().children[0];
+    AnimationController@ ctl = renderNode.GetComponent("AnimationController");
+    int ragdoll_direction = player.GetNode().vars[ANIMATION_INDEX].GetInt();
+    String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
+    ctl.SetSpeed(GetAnimationName(name1), 1.0);
+}
+

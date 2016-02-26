@@ -4,6 +4,7 @@
 //
 // ==============================================
 
+bool reflection = true;
 
 class GameState : State
 {

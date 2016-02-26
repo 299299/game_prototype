@@ -10,29 +10,7 @@
 
 bool  freezeInput = false;
 
-interface BaseInput
-{
-    void Update(float);
-    bool HasLeftStickBeenStationary(float value);
-    bool IsLeftStickStationary();
-    bool IsLeftStickInDeadZone();
-    bool IsRightStickInDeadZone();
-    bool IsAttackPressed();
-    bool IsEvadePressed();
-    bool IsDistractPressed();
-    bool IsCounterPressed();
-    bool IsEnterPressed();
-    int  GetDirectionPressed();
-    String GetDebugText();
-    Vector3 GetLeftAxis();
-    Vector3 GetRightAxis();
-    int GetLeftAxisHoldingFrames();
-    float GetLeftAxisAngle();
-    float GetLeftAxisHoldingTime();
-};
-
-
-class PlayerInput : BaseInput
+class GameInput
 {
     float m_leftStickX;
     float m_leftStickY;
@@ -57,7 +35,7 @@ class PlayerInput : BaseInput
 
     int   m_leftStickHoldFrames = 0;
 
-    PlayerInput()
+    GameInput()
     {
         JoystickState@ js = GetJoystick();
         if (js !is null)
@@ -313,117 +291,6 @@ class PlayerInput : BaseInput
             ret += "joystick axis--> 0=" + joystick.axisPosition[0] + " 1=" + joystick.axisPosition[1] + " 2=" + joystick.axisPosition[2] + " 3=" + joystick.axisPosition[3] + "\n";
         }
 
-        return ret;
-    }
-};
-
-
-class BotInput : BaseInput
-{
-    float thinkTimer = 0.0f;
-    float thinkTime = 0.2f;
-
-    void Update(float dt)
-    {
-        if (freezeInput)
-            return;
-
-
-        thinkTimer += dt;
-        if (thinkTimer >= thinkTime)
-        {
-            OnThinkTimeOut();
-            thinkTimer -= thinkTime;
-        }
-    }
-
-    void OnThinkTimeOut()
-    {
-        Player@ player = GetPlayer();
-        EnemyManager@ em = GetEnemyMgr();
-
-        if (player is null or em is null)
-            return;
-    }
-
-    bool HasLeftStickBeenStationary(float value)
-    {
-        return false;
-    }
-
-    bool IsLeftStickStationary()
-    {
-        return false;
-    }
-
-    bool IsLeftStickInDeadZone()
-    {
-        return false;
-    }
-
-    bool IsRightStickInDeadZone()
-    {
-        return false;
-    }
-
-    bool IsAttackPressed()
-    {
-        return false;
-    }
-
-    bool IsEvadePressed()
-    {
-        return false;
-    }
-
-    bool IsDistractPressed()
-    {
-        return false;
-    }
-
-    bool IsCounterPressed()
-    {
-        return false;
-    }
-
-    bool IsEnterPressed()
-    {
-        return false;
-    }
-
-    int  GetDirectionPressed()
-    {
-        return 0;
-    }
-
-    Vector3 GetLeftAxis()
-    {
-        return Vector3(0,0,0);
-    }
-
-    Vector3 GetRightAxis()
-    {
-        return Vector3(0,0,0);
-    }
-
-    int GetLeftAxisHoldingFrames()
-    {
-        return 0;
-    }
-
-    float GetLeftAxisAngle()
-    {
-        return 0.0f;
-    }
-
-    float GetLeftAxisHoldingTime()
-    {
-        return 0.0f;
-    }
-
-    String GetDebugText()
-    {
-        String ret = "BotInput --";
         return ret;
     }
 };

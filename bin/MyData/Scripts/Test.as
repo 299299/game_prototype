@@ -29,7 +29,6 @@ enum RenderFeature
 };
 
 int drawDebug = 0;
-bool autoCounter = false;
 bool bHdr = true;
 bool bigHeadMode = false;
 bool nobgm = true;
@@ -59,22 +58,10 @@ int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 
-bool reflection = true;
-
-BaseInput@ gInput;
+GameInput @gInput = GameInput();
 
 void Start()
 {
-    @gMotionMgr = BM_Game_MotionManager();
-
-    if (engine.headless)
-    {
-        @gInput = BotInput();
-        freeze_ai = 1;
-    }
-    else
-        @gInput = PlayerInput();
-
     Print("Game Running Platform: " + GetPlatform());
     // lowend_platform = GetPlatform() != "Windows";
 
@@ -85,7 +72,7 @@ void Start()
         if (argument[0] == '-')
         {
             argument = argument.Substring(1);
-            if (argument == "nobgm")
+            if (argument == "bgm")
                 nobgm = !nobgm;
             else if (argument == "bighead")
                 bigHeadMode = !bigHeadMode;
@@ -99,20 +86,21 @@ void Start()
             }
             else if (argument == "lowend")
                 render_features = RF_NONE;
-            else if (argument == "no_hdr")
-                render_features |= RF_HDR;
             else if (argument == "freeze_ai")
                 freeze_ai = 1;
+            else if (argument == "reflection")
+                reflection = !reflection;
         }
     }
 
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
-    if (renderer !is null)
-        renderer.hdrRendering = bHdr;
+    if (renderer !is null && (render_features & RF_HDR != 0))
+        renderer.hdrRendering = true;
 
     SetRandomSeed(time.systemTime);
+    @gMotionMgr = BM_Game_MotionManager();
 
     if (!engine.headless)
     {
@@ -122,10 +110,10 @@ void Start()
         InitAudio();
     }
 
+    SubscribeToEvents();
+
     gGame.Start();
     gGame.ChangeState("LoadingState");
-
-    SubscribeToEvents();
 }
 
 void Stop()
@@ -364,27 +352,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (text !is null)
             text.text = debugText;
     }
-
-    if (autoCounter)
-    {
-        EnemyManager@ em = GetEnemyMgr();
-        if (em is null)
-            return;
-
-        int num = em.GetNumOfEnemyHasFlag(FLAGS_COUNTER);
-        // Print("autoCounter flags -- attack num = " + num);
-        if (num == 2)
-        {
-            Print("==========================Auto Counter Start==========================");
-            Player@ player = GetPlayer();
-            if (player !is null)
-                player.Counter();
-            Print("==========================Auto Counter End==========================");
-        }
-    }
-
-    if (ui.cursor.visible && input.mouseButtonPress[MOUSEB_LEFT])
-        PaintDecal();
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
@@ -412,9 +379,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
             em.DebugDraw(debug);
     }
     if (drawDebug > 2)
-    {
         scene_.physicsWorld.DrawDebugGeometry(false);
-    }
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)
@@ -422,8 +387,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     Scene@ scene_ = script.defaultScene;
     int key = eventData["Key"].GetInt();
     gGame.OnKeyDown(key);
-
-    // Print("HandleKeyDown=" + key);
 
     if (key == KEY_F1)
     {
@@ -502,75 +465,31 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         TestAnimations_Group_4();
     else if (key == 'H')
         TestAnimations_Group_Beat();
-
-    if (test_ragdoll)
+    else if (key == 'E')
     {
-        if (key == 'E')
-        {
-            Player@ player = GetPlayer();
-            if (player is null)
-                return;
-
-            Node@ renderNode = player.GetNode().children[0];
-            SendAnimationTriger(renderNode, RAGDOLL_STOP);
-
-            AnimationController@ ctl = renderNode.GetComponent("AnimationController");
-            Animation@ anim = Animation();
-            String name = "Test_Pose";
-            anim.name = name;
-            anim.animationName = name;
-            FillAnimationWithCurrentPose(anim, renderNode);
-            cache.AddManualResource(anim);
-
-            AnimatedModel@ model = renderNode.GetComponent("AnimatedModel");
-            AnimationState@ state = model.AddAnimationState(anim);
-            state.weight = 1.0f;
-            ctl.PlayExclusive(anim.name, LAYER_MOVE, false, 0.0f);
-
-            int ragdoll_direction = player.GetNode().vars[ANIMATION_INDEX].GetInt();
-            String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
-            PlayAnimation(ctl, GetAnimationName(name1), LAYER_MOVE, false, 0.25f, 0.0, 0.0);
-        }
-        else if (key == 'F')
-        {
-            Player@ player = GetPlayer();
-            if (player is null)
-                return;
-            Node@ renderNode = player.GetNode().children[0];
-            AnimationController@ ctl = renderNode.GetComponent("AnimationController");
-            int ragdoll_direction = player.GetNode().vars[ANIMATION_INDEX].GetInt();
-            String name1 = ragdoll_direction == 0 ? "TG_Getup/GetUp_Back" : "TG_Getup/GetUp_Front";
-            ctl.SetSpeed(GetAnimationName(name1), 1.0);
-        }
+        //String testName = "TG_Getup/GetUp_Back";
+        //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
+        //String testName = "TG_HitReaction/Push_Reaction";
+        //String testName = "BM_TG_Beatdown/Beatdown_Strike_End_01";
+        //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
+        //String testName = "BM_Attack/Attack_Far_Back_04";
+        //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
+        String testName = "BM_Attack/Attack_Far_Back_03";
+        Player@ player = GetPlayer();
+        if (player !is null)
+            player.TestAnimation(testName);
     }
-    else
+    else if (key == 'F')
     {
-        if (key == 'E')
-        {
-            //String testName = "TG_Getup/GetUp_Back";
-            //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
-            //String testName = "TG_HitReaction/Push_Reaction";
-            //String testName = "BM_TG_Beatdown/Beatdown_Strike_End_01";
-            //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
-            //String testName = "BM_Attack/Attack_Far_Back_04";
-            //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
-            String testName = "BM_Attack/Attack_Far_Back_03";
-            Player@ player = GetPlayer();
-            if (player !is null)
-                player.TestAnimation(testName);
-        }
-        else if (key == 'F')
-        {
-            scene_.timeScale = 1.0f;
-            // SetWorldTimeScale(scene_, 1);
-        }
-        else if (key == 'O')
-        {
-            Node@ n = scene_.GetChild("thug2");
-            n.vars[ANIMATION_INDEX] = RandomInt(4);
-            Thug@ thug = cast<Thug>(n.scriptObject);
-            thug.ChangeState("HitState");
-        }
+        scene_.timeScale = 1.0f;
+        // SetWorldTimeScale(scene_, 1);
+    }
+    else if (key == 'O')
+    {
+        Node@ n = scene_.GetChild("thug2");
+        n.vars[ANIMATION_INDEX] = RandomInt(4);
+        Thug@ thug = cast<Thug>(n.scriptObject);
+        thug.ChangeState("HitState");
     }
 }
 
@@ -1081,11 +1000,6 @@ void ExecuteCommand()
         em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
         em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
     }
-    else if (command == "autocounter")
-    {
-        autoCounter = !autoCounter;
-        Print("Set autoCounter=" + autoCounter);
-    }
     else if (command == "distract")
     {
         Player@ player = GetPlayer();
@@ -1102,52 +1016,6 @@ void ExecuteCommand()
                 c.ChangeState("DeadState");
         }
     }
-}
-
-void PaintDecal()
-{
-    Vector3 hitPos;
-    Drawable@ hitDrawable;
-
-    if (Raycast(250.0f, hitPos, hitDrawable))
-    {
-        // Check if target scene node already has a DecalSet component. If not, create now
-        Node@ targetNode = hitDrawable.node;
-        DecalSet@ decal = targetNode.GetComponent("DecalSet");
-        if (decal is null)
-        {
-            decal = targetNode.CreateComponent("DecalSet");
-            decal.material = cache.GetResource("Material", "Materials/UrhoDecalAlpha.xml");
-        }
-        // Add a square decal to the decal set using the geometry of the drawable that was hit, orient it to face the camera,
-        // use full texture UV's (0,0) to (1,1). Note that if we create several decals to a large object (such as the ground
-        // plane) over a large area using just one DecalSet component, the decals will all be culled as one unit. If that is
-        // undesirable, it may be necessary to create more than one DecalSet based on the distance
-        decal.AddDecal(hitDrawable, hitPos, GetCamera().node.rotation, 0.5f, 1.0f, 1.0f, Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f));
-    }
-}
-
-bool Raycast(float maxDistance, Vector3& hitPos, Drawable@& hitDrawable)
-{
-    hitDrawable = null;
-
-    IntVector2 pos = ui.cursorPosition;
-    if (!ui.cursor.visible || ui.GetElementAt(pos, true) !is null)
-        return false;
-
-    Camera@ camera = GetCamera();
-    Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
-    // Pick only geometry objects, not eg. zones or lights, only get the first (closest) hit
-    // Note the convenience accessor to scene's Octree component
-    RayQueryResult result = camera.node.scene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, maxDistance, DRAWABLE_GEOMETRY);
-    if (result.drawable !is null)
-    {
-        hitPos = result.position;
-        hitDrawable = result.drawable;
-        return true;
-    }
-
-    return false;
 }
 
 class BM_Game_MotionManager : MotionManager
