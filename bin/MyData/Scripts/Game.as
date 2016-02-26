@@ -346,7 +346,8 @@ class TestGameState : GameState
         if (state == GAME_FADING || state == GAME_RESTARTING)
         {
             float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
-            if (t + 0.01f >= fadeTime)
+            // Print("t=" + t);
+            if (t + 0.05f >= fadeTime)
             {
                 fullscreenUI.visible = false;
                 ChangeSubState(GAME_RUNNING);
@@ -415,7 +416,7 @@ class TestGameState : GameState
         {
             if (oldState != GAME_PAUSE)
             {
-                float fadeDuration = 3.0f;
+                float fadeDuration = 5.0f;
                 ValueAnimation@ alphaAnimation = ValueAnimation();
                 alphaAnimation.SetKeyFrame(0.0f, Variant(1.0f));
                 alphaAnimation.SetKeyFrame(fadeDuration, Variant(0.0f));

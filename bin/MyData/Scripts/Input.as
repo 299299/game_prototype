@@ -44,9 +44,6 @@ class GameInput
 
     void Update(float dt)
     {
-        if (freezeInput)
-            return;
-
         m_lastLeftStickX = m_leftStickX;
         m_lastLeftStickY = m_leftStickY;
 

@@ -978,7 +978,6 @@ class PlayerBeatDownEndState : MultiMotionState
             {
                 Vector3 dir = ownner.GetNode().worldPosition - target.GetNode().worldPosition;
                 dir.y = 0;
-                dir.Normalize();
                 target.OnDamage(ownner, position, dir, 9999, false);
                 ownner.OnAttackSuccess(target);
             }
