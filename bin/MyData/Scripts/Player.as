@@ -976,7 +976,7 @@ class PlayerBeatDownEndState : MultiMotionState
             Character@ target = ownner.target;
             if (target !is null)
             {
-                Vector3 dir = ownner.GetNode().worldPosition - target.GetNode().worldPosition;
+                Vector3 dir = ownner.motion_startPosition - target.GetNode().worldPosition;
                 dir.y = 0;
                 target.OnDamage(ownner, position, dir, 9999, false);
                 ownner.OnAttackSuccess(target);
@@ -1336,7 +1336,7 @@ class Player : Character
         }
 
         combo ++;
-        Print("OnAttackSuccess combo add to " + combo);
+        // Print("OnAttackSuccess combo add to " + combo);
 
         if (target.health == 0)
         {

@@ -219,10 +219,12 @@ class TestGameState : GameState
     BorderImage@        fullscreenUI;
 
     int                 state = -1;
-    int                 lastState = -1;
+    int                 pauseState = -1;
     int                 maxKilled = 5;
 
-    float               fadeTime = 3.0f;
+    float               fadeTime;
+    float               fadeInDuration = 2.0f;
+    float               restartDuration = 5.0f;
 
     bool                postInited = false;
 
@@ -343,39 +345,69 @@ class TestGameState : GameState
 
     void Update(float dt)
     {
-        if (state == GAME_FADING || state == GAME_RESTARTING)
+        switch (state)
         {
-            float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
-            // Print("t=" + t);
-            if (t + 0.05f >= fadeTime)
+        case GAME_FADING:
             {
-                fullscreenUI.visible = false;
-                ChangeSubState(GAME_RUNNING);
-            }
-        }
-        else if (state == GAME_FAIL || state == GAME_WIN)
-        {
-            if (gInput.IsAttackPressed())
-            {
-                ChangeSubState(GAME_RESTARTING);
-                ShowMessage("", false);
-            }
-        }
-        else if (state == GAME_PAUSE)
-        {
-            int selection = pauseMenu.Update(dt);
-            if (selection == 0)
-                ChangeSubState(lastState);
-            else if (selection == 1)
-                engine.Exit();
-        }
-        else if (state == GAME_RUNNING) {
-            if (!postInited) {
-                if (timeInState > 2.0f) {
-                    postInit();
-                    postInited = true;
+                float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
+                if (t + 0.05f >= fadeTime)
+                {
+                    fullscreenUI.visible = false;
+                    ChangeSubState(GAME_RUNNING);
                 }
             }
+            break;
+
+        case GAME_RESTARTING:
+            {
+                EnemyManager@ em = GetEnemyMgr();
+                if (fullscreenUI.opacity > 0.95f && em.enemyList.empty)
+                {
+                    gInput.m_rightAxis = Vector2(0, 30);
+                    em.CreateEnemies();
+                }
+
+                float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
+                if (t + 0.05f >= fadeTime)
+                {
+                    fullscreenUI.visible = false;
+                    ChangeSubState(GAME_RUNNING);
+                }
+            }
+            break;
+
+        case GAME_FAIL:
+        case GAME_WIN:
+            {
+                if (gInput.IsAttackPressed())
+                {
+                    ChangeSubState(GAME_RESTARTING);
+                    ShowMessage("", false);
+                }
+
+            }
+            break;
+
+        case GAME_PAUSE:
+            {
+                int selection = pauseMenu.Update(dt);
+                if (selection == 0)
+                    ChangeSubState(pauseState);
+                else if (selection == 1)
+                    engine.Exit();
+            }
+            break;
+
+        case GAME_RUNNING:
+            {
+                if (!postInited) {
+                    if (timeInState > 2.0f) {
+                        postInit();
+                        postInited = true;
+                    }
+                }
+            }
+            break;
         }
         GameState::Update(dt);
     }
@@ -390,74 +422,97 @@ class TestGameState : GameState
         state = newState;
         timeInState = 0.0f;
 
-        if (oldState == GAME_PAUSE)
-            script.defaultScene.updateEnabled = true;
-
+        script.defaultScene.updateEnabled = !(newState == GAME_PAUSE);
         fullscreenUI.SetAttributeAnimationSpeed("Opacity", newState == GAME_PAUSE ? 0.0f : 1.0f);
 
-        pauseMenu.Remove();
+        if (newState == GAME_PAUSE)
+            pauseMenu.Add();
+        else
+            pauseMenu.Remove();
 
         Player@ player = GetPlayer();
+        EnemyManager@ em = GetEnemyMgr();
 
-        if (newState == GAME_RUNNING)
+        switch (newState)
         {
-            if (player !is null)
-                player.RemoveFlag(FLAGS_INVINCIBLE);
-
-            freezeInput = false;
-            script.defaultScene.updateEnabled = true;
-
-            VariantMap data;
-            data[NAME] = CHANGE_STATE;
-            data[VALUE] = StringHash("ThirdPerson");
-            SendEvent("CameraEvent", data);
-        }
-        else if (newState == GAME_FADING || newState == GAME_RESTARTING)
-        {
-            if (oldState != GAME_PAUSE)
+        case GAME_RUNNING:
             {
-                float fadeDuration = 5.0f;
-                ValueAnimation@ alphaAnimation = ValueAnimation();
-                alphaAnimation.SetKeyFrame(0.0f, Variant(1.0f));
-                alphaAnimation.SetKeyFrame(fadeDuration, Variant(0.0f));
-                fadeTime = fadeDuration;
-                fullscreenUI.visible = true;
-                fullscreenUI.SetAttributeAnimation("Opacity", alphaAnimation, WM_ONCE);
+                if (player !is null)
+                    player.RemoveFlag(FLAGS_INVINCIBLE);
+
+                freezeInput = false;
+                VariantMap data;
+                data[NAME] = CHANGE_STATE;
+                data[VALUE] = StringHash("ThirdPerson");
+                SendEvent("CameraEvent", data);
             }
+            break;
 
-            freezeInput = true;
-            if (newState == GAME_RESTARTING)
+        case GAME_FADING:
             {
-                EnemyManager@ em = GetEnemyMgr();
-                if (em !is null)
+                if (oldState != GAME_PAUSE)
                 {
-                    em.RemoveAll();
-                    em.CreateEnemies();
+                    ValueAnimation@ alphaAnimation = ValueAnimation();
+                    alphaAnimation.SetKeyFrame(0.0f, Variant(1.0f));
+                    alphaAnimation.SetKeyFrame(fadeInDuration, Variant(0.0f));
+                    fadeTime = fadeInDuration;
+                    fullscreenUI.visible = true;
+                    fullscreenUI.SetAttributeAnimation("Opacity", alphaAnimation, WM_ONCE);
                 }
 
+                freezeInput = true;
                 if (player !is null)
-                    player.Reset();
+                    player.AddFlag(FLAGS_INVINCIBLE);
             }
+            break;
 
-            if (player !is null)
-                player.AddFlag(FLAGS_INVINCIBLE);
-        }
-        else if (newState == GAME_PAUSE)
-        {
-            script.defaultScene.updateEnabled = false;
-            pauseMenu.Add();
-        }
-        else if (newState == GAME_WIN)
-        {
-            ShowMessage("You Win! Press Stride to restart!", true);
-            if (player !is null)
-                player.SetTarget(null);
-        }
-        else if (newState == GAME_FAIL)
-        {
-            ShowMessage("You Died! Press Stride to restart!", true);
-            if (player !is null)
-                player.SetTarget(null);
+        case GAME_RESTARTING:
+            {
+                if (oldState != GAME_PAUSE)
+                {
+                    ValueAnimation@ alphaAnimation = ValueAnimation();
+                    alphaAnimation.SetKeyFrame(0.0f, Variant(0.0f));
+                    alphaAnimation.SetKeyFrame(restartDuration/2, Variant(1.0f));
+                    alphaAnimation.SetKeyFrame(restartDuration, Variant(0.0f));
+                    fadeTime = restartDuration;
+                    fullscreenUI.opacity = 0.0f;
+                    fullscreenUI.visible = true;
+                    fullscreenUI.SetAttributeAnimation("Opacity", alphaAnimation, WM_ONCE);
+                }
+
+                freezeInput = true;
+                if (em !is null)
+                    em.RemoveAll();
+
+                if (player !is null)
+                {
+                    player.Reset();
+                    player.AddFlag(FLAGS_INVINCIBLE);
+                }
+            }
+            break;
+
+        case GAME_PAUSE:
+            {
+                // ....
+            }
+            break;
+
+        case GAME_WIN:
+            {
+                ShowMessage("You Win! Press Stride to restart!", true);
+                if (player !is null)
+                    player.SetTarget(null);
+            }
+            break;
+
+        case GAME_FAIL:
+            {
+                ShowMessage("You Died! Press Stride to restart!", true);
+                if (player !is null)
+                    player.SetTarget(null);
+            }
+            break;
         }
     }
 
@@ -502,8 +557,6 @@ class TestGameState : GameState
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
         cameraId = cameraNode.id;
-
-        // audio.listener = cameraNode.CreateComponent("SoundListener");
 
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;
@@ -619,11 +672,11 @@ class TestGameState : GameState
         {
             int oldState = state;
             if (oldState == GAME_PAUSE)
-                ChangeSubState(lastState);
+                ChangeSubState(pauseState);
             else
             {
                 ChangeSubState(GAME_PAUSE);
-                lastState = oldState;
+                pauseState = oldState;
             }
             return;
         }
@@ -664,7 +717,7 @@ class TestGameState : GameState
 
     String GetDebugText()
     {
-        return  " name=" + name + " timeInState=" + timeInState + " state=" + state + " lastState=" + lastState + "\n";
+        return  " name=" + name + " timeInState=" + timeInState + " state=" + state + " pauseState=" + pauseState + "\n";
     }
 
     void postInit()

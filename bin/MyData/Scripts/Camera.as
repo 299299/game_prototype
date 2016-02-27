@@ -64,6 +64,11 @@ class CameraController
         cameraNode.LookAt(target);
         gCameraMgr.cameraTarget = target;
     }
+
+    String GetDebugText()
+    {
+        return "camera fov=" + camera.fov + " position=" + cameraNode.worldPosition.ToString() + "\n";
+    }
 };
 
 
@@ -121,7 +126,9 @@ class ThirdPersonCameraController : CameraController
     float   cameraDistSpeed = 100.0f;
     float   targetFov = BASE_FOV;
     float   fovSpeed = 1.5f;
-    Vector3 targetOffset = Vector3(2.0f, 3.0f, 0);
+    Vector3 targetOffset = Vector3(2.5f, 3.0f, 0);
+
+    bool    isScrolling = false;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -160,8 +167,15 @@ class ThirdPersonCameraController : CameraController
         Vector3 pos = q * Vector3(0, 0, -dist) + target_pos;
         UpdateView(pos, target_pos, dt * cameraSpeed);
 
-        cameraDistance += float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
-        cameraDistance = Clamp(cameraDistance, 1.5f, 50.0f);
+        if (input.mouseMoveWheel != 0)
+        {
+            uint t = time.systemTime;
+            uint t_diff = t - gInput.lastMiddlePressedTime;
+            Print("lastMiddlePressedTime diff = " + t_diff);
+            if (t_diff > 500)
+                cameraDistance +=  float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
+        }
+        cameraDistance = Clamp(cameraDistance, 9.0f, 50.0f);
 
         float diff = targetFov - camera.fov;
         camera.fov += diff * dt * fovSpeed;
@@ -206,6 +220,11 @@ class ThirdPersonCameraController : CameraController
             debug.AddLine(camera.ScreenToWorldPoint(Vector3(x/w1, gap/h1, depth)), camera.ScreenToWorldPoint(Vector3(x/w1, (h + gap)/h1, depth)), c, false);
             x += step;
         }
+    }
+
+    String GetDebugText()
+    {
+        return "camera fov=" + camera.fov + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + " targetFov=" + targetFov + "\n";
     }
 };
 
@@ -555,6 +574,11 @@ class CameraManager
         Print("camAnim=" + camAnim);
 
         OnCameraEvent(eventData);
+    }
+
+    String GetDebugText()
+    {
+        return (currentController !is null) ? currentController.GetDebugText() : "";
     }
 };
 

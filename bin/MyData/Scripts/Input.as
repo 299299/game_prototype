@@ -27,13 +27,15 @@ class GameInput
 
     float m_smooth = 0.9f;
 
-    Vector2  m_rigtAxis = Vector2(0, 30);
+    Vector2  m_rightAxis = Vector2(0, 30);
 
     float mouseSensitivity = 0.125f;
     float joySensitivity = 0.5;
     float joyLookDeadZone = 0.05;
 
     int   m_leftStickHoldFrames = 0;
+
+    uint lastMiddlePressedTime = 0;
 
     GameInput()
     {
@@ -74,6 +76,9 @@ class GameInput
             m_leftStickHoldTime = 0;
             m_leftStickHoldFrames = 0;
         }
+
+        if (input.mouseButtonPress[MOUSEB_MIDDLE])
+            lastMiddlePressedTime = time.systemTime;
 
         // Print("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
     }
@@ -138,7 +143,7 @@ class GameInput
             {
                 float lookX = joystick.axisPosition[2];
                 float lookY = joystick.axisPosition[3];
-                Vector2 rightAxis = m_rigtAxis;
+                Vector2 rightAxis = m_rightAxis;
 
                 if (lookX < -joyLookDeadZone)
                     rightAxis.x -= joySensitivity * lookX * lookX;
@@ -148,15 +153,15 @@ class GameInput
                     rightAxis.y -= joySensitivity * lookY * lookY;
                 if (lookY > joyLookDeadZone)
                     rightAxis.y += joySensitivity * lookY * lookY;
-                m_rigtAxis = rightAxis;
+                m_rightAxis = rightAxis;
             }
         }
         else
         {
-            m_rigtAxis.x += mouseSensitivity * input.mouseMoveX;
-            m_rigtAxis.y += mouseSensitivity * input.mouseMoveY;
+            m_rightAxis.x += mouseSensitivity * input.mouseMoveX;
+            m_rightAxis.y += mouseSensitivity * input.mouseMoveY;
         }
-        return m_rigtAxis;
+        return m_rightAxis;
     }
 
     JoystickState@ GetJoystick()

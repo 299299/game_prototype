@@ -37,12 +37,12 @@ Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "Camera";
-int playerType = 1;
+int playerType = 0;
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 15;
+int test_enemy_num_override = 1;
 int render_features = RF_FULL;
 
 String LUT = "";
@@ -189,7 +189,7 @@ void CreateUI()
     text.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
-    text.SetPosition(0, 20);
+    text.SetPosition(5, 50);
     text.color = Color(0, 0, 1);
     text.priority = -99999;
     // text.textEffect = TE_SHADOW;
@@ -330,7 +330,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         debugText += gGame.GetDebugText();
         debugText += seperator;
         debugText += "current LUT: " + LUT + "\n";
-        debugText += "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
+        debugText += gCameraMgr.GetDebugText();
         debugText += gInput.GetDebugText();
         debugText += seperator;
         Player@ player = GetPlayer();

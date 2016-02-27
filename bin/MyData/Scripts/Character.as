@@ -856,9 +856,9 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
-        if (ragdollPoseAnim !is null)
-            cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
-        ragdollPoseAnim = null;
+        //if (ragdollPoseAnim !is null)
+        //    cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
+        //ragdollPoseAnim = null;
     }
 
     void Remove()
