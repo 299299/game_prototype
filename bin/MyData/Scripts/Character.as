@@ -66,6 +66,7 @@ class CharacterState : State
 {
     Character@                  ownner;
     int                         flags;
+    float                       animSpeed = 1.0f;
     bool                        combatReady = false;
     bool                        firstUpdate = true;
 
@@ -191,7 +192,7 @@ class SingleMotionState : CharacterState
 
     void Enter(State@ lastState)
     {
-        motion.Start(ownner);
+        motion.Start(ownner, 0.0f, 0.1f, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -245,7 +246,7 @@ class MultiMotionState : CharacterState
 
         if (d_log)
             Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
-        motions[selectIndex].Start(ownner);
+        motions[selectIndex].Start(ownner, 0.0f, 0.1f, animSpeed);
         CharacterState::Enter(lastState);
     }
 

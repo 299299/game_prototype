@@ -468,10 +468,10 @@ class TestGameState : GameState
         RenderPath@ renderpath = viewport.renderPath.Clone();
         if (render_features & RF_HDR != 0)
         {
-            if (reflection)
-                renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
-            else
-                renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardDepth.xml"));
+            // if (reflection)
+            //    renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
+            // else
+            renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardDepth.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/Tonemap.xml"));

@@ -42,6 +42,7 @@ class CatwomanEvadeState : PlayerEvadeState
     CatwomanEvadeState(Character@ c)
     {
         super(c);
+        animSpeed = 1.5f;
         String prefix = "CW_Combat/";
         AddMotion(prefix + "Evade_Forward_01");
         AddMotion(prefix + "Evade_Right_01");
