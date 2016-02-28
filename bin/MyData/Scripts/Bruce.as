@@ -28,12 +28,39 @@ class BruceTurnState : PlayerTurnState
     }
 };
 
-class BruceMoveState : PlayerMoveState
+class BruceWalkState : PlayerWalkState
 {
-    BruceMoveState(Character@ c)
+    BruceWalkState(Character@ c)
     {
         super(c);
         SetMotion("BW_Movement/Walk_Forward");
+    }
+};
+
+class BruceRunState : PlayerRunState
+{
+    BruceRunState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Run_Forward");
+    }
+};
+
+class BruceRunToStandState : PlayerRunToStandState
+{
+    BruceRunToStandState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Run_Right_Passing_To_Stand");
+    }
+};
+
+class BruceRunTurn180State : PlayerRunTurn180State
+{
+    BruceRunTurn180State(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Run_Right_Passing_To_Run_Right_180");
     }
 };
 
@@ -205,19 +232,9 @@ class BruceTransitionState : PlayerTransitionState
     }
 };
 
-void CreateBruceMotions()
+void CreateBruceCombatMotions()
 {
-    AssignMotionRig("Models/bruce_w.mdl");
-
-    String preFix = "BW_Movement/";
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
-    Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
-
-    Global_AddAnimation("BM_Movement/Stand_Idle");
-
-    preFix = "BM_HitReaction/";
+    String preFix = "BM_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Back"); // back attacked
     Global_CreateMotion(preFix + "HitReaction_Face_Right"); // front punched
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
@@ -256,6 +273,23 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Beatdown_Strike_End_02");
     Global_CreateMotion(preFix + "Beatdown_Strike_End_03");
     Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
+}
+
+void CreateBruceMotions()
+{
+    AssignMotionRig("Models/bruce_w.mdl");
+
+    String preFix = "BW_Movement/";
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
+    Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
+
+    preFix = "BM_Movement/";
+    Global_CreateMotion(preFix + "Run_Forward", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Stand");
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180");
+    Global_AddAnimation(preFix + "Stand_Idle");
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");
@@ -263,27 +297,14 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Evade_Back_01");
     Global_CreateMotion(preFix + "Evade_Left_01");
     Global_CreateMotion(preFix + "Evade_Right_01");
+
+    if (game_type == 0)
+        CreateBruceCombatMotions();
 }
 
-void AddBruceAnimationTriggers()
+void AddBruceCombatAnimationTriggers()
 {
-    String preFix = "BM_Combat/";
-    AddAnimationTrigger(preFix + "Evade_Forward_01", 48, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Evade_Back_01", 48, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
-
-    preFix = "BW_Movement/";
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_180", 20, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
-
-    preFix = "BM_Attack/";
+    String preFix = "BM_Attack/";
     int beat_impact_frame = 4;
     AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT, L_HAND);
     AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT, R_HAND);
@@ -496,21 +517,50 @@ void AddBruceAnimationTriggers()
     AddAnimationTrigger(preFix + "Double_Counter_3ThugsC", 52, READY_TO_FIGHT);
 }
 
+void AddBruceAnimationTriggers()
+{
+    String preFix = "BM_Combat/";
+    AddAnimationTrigger(preFix + "Evade_Forward_01", 48, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Evade_Back_01", 48, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
+
+    preFix = "BW_Movement/";
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Right_180", 20, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
+
+    if (game_type == 0)
+        AddBruceCombatAnimationTriggers();
+}
+
 class Bruce : Player
 {
     void AddStates()
     {
         stateMachine.AddState(BruceStandState(this));
         stateMachine.AddState(BruceTurnState(this));
-        stateMachine.AddState(BruceMoveState(this));
-        stateMachine.AddState(BruceAttackState(this));
-        stateMachine.AddState(BruceCounterState(this));
+        stateMachine.AddState(BruceWalkState(this));
+        stateMachine.AddState(BruceRunState(this));
+        stateMachine.AddState(BruceRunToStandState(this));
+        stateMachine.AddState(BruceRunTurn180State(this));
         stateMachine.AddState(BruceEvadeState(this));
-        stateMachine.AddState(BruceHitState(this));
-        stateMachine.AddState(BruceDeadState(this));
-        stateMachine.AddState(BruceBeatDownHitState(this));
-        stateMachine.AddState(BruceBeatDownEndState(this));
-        stateMachine.AddState(BruceTransitionState(this));
         stateMachine.AddState(AnimationTestState(this));
+
+        if (game_type == 0)
+        {
+            stateMachine.AddState(BruceAttackState(this));
+            stateMachine.AddState(BruceCounterState(this));
+            stateMachine.AddState(BruceHitState(this));
+            stateMachine.AddState(BruceDeadState(this));
+            stateMachine.AddState(BruceBeatDownHitState(this));
+            stateMachine.AddState(BruceBeatDownEndState(this));
+            stateMachine.AddState(BruceTransitionState(this));
+        }
     }
 };

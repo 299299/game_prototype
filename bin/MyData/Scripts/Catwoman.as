@@ -28,12 +28,39 @@ class CatwomanTurnState : PlayerTurnState
     }
 };
 
-class CatwomanMoveState : PlayerMoveState
+class CatwomanWalkState : PlayerWalkState
 {
-    CatwomanMoveState(Character@ c)
+    CatwomanWalkState(Character@ c)
     {
         super(c);
         SetMotion("CW_Movement/Walk_Forward");
+    }
+};
+
+class CatwomanRunState : PlayerRunState
+{
+    CatwomanRunState(Character@ c)
+    {
+        super(c);
+        SetMotion("CW_Movement/Run_Forward");
+    }
+};
+
+class CatwomanRunToStandState : PlayerRunToStandState
+{
+    CatwomanRunToStandState(Character@ c)
+    {
+        super(c);
+        SetMotion("CW_Movement/Run_Right_Passing_To_Stand");
+    }
+};
+
+class CatwomanRunTurn180State : PlayerRunTurn180State
+{
+    CatwomanRunTurn180State(Character@ c)
+    {
+        super(c);
+        SetMotion("CW_Movement/Run_Right_Passing_To_Run_Right_180");
     }
 };
 
@@ -212,40 +239,31 @@ class Catwoman : Player
     {
         stateMachine.AddState(CatwomanStandState(this));
         stateMachine.AddState(CatwomanTurnState(this));
-        stateMachine.AddState(CatwomanMoveState(this));
+        stateMachine.AddState(CatwomanWalkState(this));
+        stateMachine.AddState(CatwomanRunState(this));
+        stateMachine.AddState(CatwomanRunToStandState(this));
+        stateMachine.AddState(CatwomanRunTurn180State(this));
         stateMachine.AddState(CatwomanEvadeState(this));
-        stateMachine.AddState(CatwomanAttackState(this));
-        stateMachine.AddState(CatwomanCounterState(this));
-        stateMachine.AddState(CatwomanHitState(this));
-        stateMachine.AddState(CatwomanDeadState(this));
-        stateMachine.AddState(CatwomanBeatDownHitState(this));
-        stateMachine.AddState(CatwomanBeatDownEndState(this));
-        stateMachine.AddState(CatwomanTransitionState(this));
         stateMachine.AddState(AnimationTestState(this));
+
+        if (game_type == 0)
+        {
+            stateMachine.AddState(CatwomanAttackState(this));
+            stateMachine.AddState(CatwomanCounterState(this));
+            stateMachine.AddState(CatwomanHitState(this));
+            stateMachine.AddState(CatwomanDeadState(this));
+            stateMachine.AddState(CatwomanBeatDownHitState(this));
+            stateMachine.AddState(CatwomanBeatDownEndState(this));
+            stateMachine.AddState(CatwomanTransitionState(this));
+        }
     }
 };
 
-void CreateCatwomanMotions()
+void CreateCatwomanCombatMotions()
 {
-    AssignMotionRig("Models/catwoman.mdl");
-
-    String preFix = "CW_Movement/";
-
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
-    Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
-
-    preFix = "CW_Combat/";
-    Global_CreateMotion(preFix + "Evade_Forward_01");
-    Global_CreateMotion(preFix + "Evade_Back_01");
-    Global_CreateMotion(preFix + "Evade_Left_01");
-    Global_CreateMotion(preFix + "Evade_Right_01");
-    Global_CreateMotion(preFix + "Into_Takedown");
-
     Global_CreateMotion_InFolder("CW_Attack/");
 
-    preFix = "CW_TG_Beatdown/";
+    String preFix = "CW_TG_Beatdown/";
     Global_CreateMotion(preFix + "Beatdown_End_01");
     Global_CreateMotion(preFix + "Beatdown_End_02");
     Global_CreateMotion(preFix + "Beatdown_End_03");
@@ -262,7 +280,6 @@ void CreateCatwomanMotions()
     Global_CreateMotion(preFix + "Death_Back");
     Global_CreateMotion(preFix + "Death_Side_Right");
 
-    //Global_CreateMotion_InFolder("CW_TG_Counter/");
     preFix = "CW_TG_Counter/";
     for (int i=1; i<=3; ++i)
         Global_CreateMotion(preFix + "Counter_Arm_Back_0" + i);
@@ -293,21 +310,39 @@ void CreateCatwomanMotions()
     Global_CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
     Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
+}
+
+void CreateCatwomanMotions()
+{
+    AssignMotionRig("Models/catwoman.mdl");
+
+    String preFix = "CW_Movement/";
+
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
+    Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Run_Forward", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Stand");
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180");
+
+    preFix = "CW_Combat/";
+    Global_CreateMotion(preFix + "Evade_Forward_01");
+    Global_CreateMotion(preFix + "Evade_Back_01");
+    Global_CreateMotion(preFix + "Evade_Left_01");
+    Global_CreateMotion(preFix + "Evade_Right_01");
+    Global_CreateMotion(preFix + "Into_Takedown");
 
     preFix = "CW_Movement/";
     Global_AddAnimation(preFix + "Stand_Idle");
+
+    if (game_type == 0)
+        CreateCatwomanCombatMotions();
 }
 
-void AddCatwomanAnimationTriggers()
+void AddCatwomanCombatAnimationTriggers()
 {
-    String preFix = "CW_Movement/";
-
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 4, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 18, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 32, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 44, FOOT_STEP, L_FOOT);
-
-    preFix = "CW_Combat/";
+    String preFix = "CW_Combat/";
     AddAnimationTrigger(preFix + "Evade_Forward_01", 58, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Back_01", 32, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Left_01", 50, READY_TO_FIGHT);
@@ -512,6 +547,24 @@ void AddCatwomanAnimationTriggers()
     AddStringAnimationTrigger(animName, 35, COMBAT_SOUND, L_FOOT);
     AddStringAnimationTrigger(animName, 48, COMBAT_SOUND_LARGE, L_FOOT);
     AddAnimationTrigger(animName, 66, READY_TO_FIGHT);
+}
+
+void AddCatwomanAnimationTriggers()
+{
+    String preFix = "CW_Movement/";
+
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 4, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 18, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 32, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk_Forward", 44, FOOT_STEP, L_FOOT);
+
+    AddStringAnimationTrigger(preFix + "Run_Forward", 5, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Run_Forward", 13, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger(preFix + "Run_Forward", 22, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Run_Forward", 29, FOOT_STEP, L_FOOT);
+
+    if (game_type == 0)
+        AddCatwomanCombatAnimationTriggers();
 }
 
 

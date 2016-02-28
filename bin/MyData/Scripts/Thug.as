@@ -818,20 +818,25 @@ class Thug : Enemy
     {
         Enemy::ObjectStart();
         stateMachine.AddState(ThugStandState(this));
-        stateMachine.AddState(ThugCounterState(this));
-        stateMachine.AddState(ThugHitState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
         stateMachine.AddState(ThugRunState(this));
-        stateMachine.AddState(ThugAttackState(this));
         stateMachine.AddState(CharacterRagdollState(this));
-        stateMachine.AddState(ThugGetUpState(this));
-        stateMachine.AddState(ThugDeadState(this));
-        stateMachine.AddState(ThugBeatDownHitState(this));
-        stateMachine.AddState(ThugBeatDownEndState(this));
-        stateMachine.AddState(ThugStunState(this));
         stateMachine.AddState(ThugPushBackState(this));
         stateMachine.AddState(AnimationTestState(this));
+
+        if (game_type == 0)
+        {
+            stateMachine.AddState(ThugCounterState(this));
+            stateMachine.AddState(ThugHitState(this));
+            stateMachine.AddState(ThugAttackState(this));
+            stateMachine.AddState(ThugGetUpState(this));
+            stateMachine.AddState(ThugDeadState(this));
+            stateMachine.AddState(ThugBeatDownHitState(this));
+            stateMachine.AddState(ThugBeatDownEndState(this));
+            stateMachine.AddState(ThugStunState(this));
+        }
+
         ChangeState("StandState");
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
@@ -1102,25 +1107,9 @@ Vector3 GetRagdollForce()
     return Vector3(x, y, x);
 }
 
-void CreateThugMotions()
+void CreateThugCombatMotions()
 {
-    AssignMotionRig("Models/thug.mdl");
-
     String preFix = "TG_Combat/";
-    Global_CreateMotion(preFix + "Step_Forward");
-    Global_CreateMotion(preFix + "Step_Right");
-    Global_CreateMotion(preFix + "Step_Back");
-    Global_CreateMotion(preFix + "Step_Left");
-    Global_CreateMotion(preFix + "Step_Forward_Long");
-    Global_CreateMotion(preFix + "Step_Right_Long");
-    Global_CreateMotion(preFix + "Step_Back_Long");
-    Global_CreateMotion(preFix + "Step_Left_Long");
-
-    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
-    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
-
-    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
-    Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
 
     Global_CreateMotion(preFix + "Attack_Kick");
     Global_CreateMotion(preFix + "Attack_Kick_01");
@@ -1241,7 +1230,31 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Beatdown_End_03");
 }
 
-void AddThugAnimationTriggers()
+void CreateThugMotions()
+{
+    AssignMotionRig("Models/thug.mdl");
+
+    String preFix = "TG_Combat/";
+    Global_CreateMotion(preFix + "Step_Forward");
+    Global_CreateMotion(preFix + "Step_Right");
+    Global_CreateMotion(preFix + "Step_Back");
+    Global_CreateMotion(preFix + "Step_Left");
+    Global_CreateMotion(preFix + "Step_Forward_Long");
+    Global_CreateMotion(preFix + "Step_Right_Long");
+    Global_CreateMotion(preFix + "Step_Back_Long");
+    Global_CreateMotion(preFix + "Step_Left_Long");
+
+    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
+
+    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
+    Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
+
+    if (game_type == 0)
+        CreateThugCombatMotions();
+}
+
+void AddThugCombatAnimationTriggers()
 {
     String preFix = "TG_BW_Counter/";
     AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 25, 39);
@@ -1376,6 +1389,15 @@ void AddThugAnimationTriggers()
     AddComplexAttackTrigger(preFix + "Attack_Punch_01", 15 - frame_fixup, 23, 23, 24, "Bip01_R_Hand");
     AddComplexAttackTrigger(preFix + "Attack_Punch_02", 15 - frame_fixup, 23, 23, 24, "Bip01_R_Hand");
 
+    preFix = "TG_Getup/";
+    AddAnimationTrigger(preFix + "GetUp_Front", 44, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "GetUp_Back", 68, READY_TO_FIGHT);
+}
+
+void AddThugAnimationTriggers()
+{
+    String preFix = "TG_Combat/";
+
     AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 2, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "Run_Forward_Combat", 13, FOOT_STEP, R_FOOT);
 
@@ -1403,9 +1425,9 @@ void AddThugAnimationTriggers()
     AddStringAnimationTrigger(preFix + "135_Turn_Right", 24, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "135_Turn_Right", 39, FOOT_STEP, R_FOOT);
 
-    preFix = "TG_Getup/";
-    AddAnimationTrigger(preFix + "GetUp_Front", 44, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "GetUp_Back", 68, READY_TO_FIGHT);
+    if (game_type == 0)
+        AddThugCombatAnimationTriggers();
+
 }
 
 

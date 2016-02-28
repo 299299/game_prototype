@@ -51,7 +51,7 @@ class PlayerStandState : CharacterState
             Print("Stand->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
 
             if (index == 0)
-                ownner.ChangeState("MoveState");
+                ownner.ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
             else
                 ownner.ChangeState("TurnState");
         }
@@ -93,14 +93,15 @@ class PlayerTurnState : MultiMotionState
     }
 };
 
-class PlayerMoveState : SingleMotionState
+class PlayerWalkState : SingleMotionState
 {
     float turnSpeed = 5.0f;
+    int runHoldingFrames = 0;
 
-    PlayerMoveState(Character@ c)
+    PlayerWalkState(Character@ c)
     {
         super(c);
-        SetName("MoveState");
+        SetName("WalkState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
     }
 
@@ -122,6 +123,19 @@ class PlayerMoveState : SingleMotionState
             ownner.ChangeState("StandState");
             return;
         }
+
+        if (gInput.IsRunHolding())
+            runHoldingFrames ++;
+        else
+            runHoldingFrames = 0;
+
+        if (runHoldingFrames > 4)
+        {
+            ownner.ChangeState("RunState");
+            return;
+        }
+
+
         CharacterState::Update(dt);
     }
 
@@ -130,6 +144,80 @@ class PlayerMoveState : SingleMotionState
         SingleMotionState::Enter(lastState);
         ownner.SetTarget(null);
         combatReady = true;
+    }
+};
+
+class PlayerRunState : SingleMotionState
+{
+    float turnSpeed = 7.5f;
+    int walkHoldingFrames = 0;
+
+    PlayerRunState(Character@ c)
+    {
+        super(c);
+        SetName("RunState");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+
+    void Update(float dt)
+    {
+        float characterDifference = ownner.ComputeAngleDiff();
+        Node@ _node = ownner.GetNode();
+        _node.Yaw(characterDifference * turnSpeed * dt);
+        motion.Move(ownner, dt);
+        // if the difference is large, then turn 180 degrees
+        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
+        {
+            ownner.ChangeState("RunTurn180State");
+            return;
+        }
+
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
+        {
+            // ownner.ChangeState("StandState");
+            ownner.ChangeState("RunToStandState");
+            return;
+        }
+
+        if (!gInput.IsRunHolding())
+            walkHoldingFrames ++;
+        else
+            walkHoldingFrames = 0;
+
+        if (walkHoldingFrames > 4)
+        {
+            ownner.ChangeState("WalkState");
+            return;
+        }
+
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        ownner.SetTarget(null);
+        combatReady = true;
+    }
+};
+
+class PlayerRunToStandState : SingleMotionState
+{
+    PlayerRunToStandState(Character@ c)
+    {
+        super(c);
+        SetName("RunToStandState");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+};
+
+class PlayerRunTurn180State : SingleMotionState
+{
+    PlayerRunTurn180State(Character@ c)
+    {
+        super(c);
+        SetName("RunTurn180State");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
     }
 };
 
@@ -1262,6 +1350,9 @@ class Player : Character
 
     bool Counter()
     {
+        if (game_type != 0)
+            return false;
+
         // Print("Player::Counter");
         PlayerCounterState@ state = cast<PlayerCounterState>(stateMachine.FindState("CounterState"));
         if (state is null)
@@ -1284,13 +1375,23 @@ class Player : Character
 
     void CommonStateFinishedOnGroud()
     {
-        if (health > 0)
+        if (health <= 0)
+            return;
+
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
-            if (gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-                ChangeState("StandState");
+            int index = RadialSelectAnimation(4);
+            sceneNode.vars[ANIMATION_INDEX] = index -1;
+
+            Print("Stand->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+
+            if (index == 0)
+                ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
             else
-                ChangeState("MoveState");
+                ChangeState("TurnState");
         }
+        else
+            ChangeState("StandState");
     }
 
     float GetTargetAngle()
@@ -1662,6 +1763,9 @@ class Player : Character
 
     bool Attack()
     {
+        if (game_type != 0)
+            return false;
+
         Print("Do--Attack--->");
         Enemy@ e = CommonPickEnemy(90, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
         SetTarget(e);
@@ -1674,6 +1778,9 @@ class Player : Character
 
     bool Distract()
     {
+        if (game_type != 0)
+            return false;
+
         Print("Do--Distract--->");
         Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)

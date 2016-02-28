@@ -1223,7 +1223,10 @@ class Character : GameObject
             Print(GetName() + " ChangeState from " + oldStateName + " to " + name);
         }
         stateMachine.ChangeState(name);
-        sceneNode.vars[STATE] = GetState().nameHash;
+        State@ s = GetState();
+        if (s is null)
+            return;
+        sceneNode.vars[STATE] = s.nameHash;
     }
 
     void ChangeState(const StringHash&in nameHash)

@@ -172,7 +172,7 @@ class LoadingState : GameState
         if (newState == LOADING_RESOURCES)
         {
             preloadScene = Scene();
-            preloadScene.LoadAsyncXML(cache.GetFile("Scenes/1.xml"), LOAD_RESOURCES_ONLY);
+            preloadScene.LoadAsyncXML(cache.GetFile("Scenes/animation.xml"), LOAD_RESOURCES_ONLY);
         }
         else if (newState == LOADING_MOTIONS)
             gMotionMgr.Start();
@@ -548,7 +548,10 @@ class TestGameState : GameState
         uint t = time.systemTime;
         Scene@ scene_ = Scene();
         script.defaultScene = scene_;
-        scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
+        String scnFile = "Scenes/1.xml";
+        if (game_type == 1)
+            scnFile = "Scenes/2.xml";
+        scene_.LoadXML(cache.GetFile(scnFile));
         Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
         EnemyManager@ em = cast<EnemyManager>(scene_.CreateScriptObject(scriptFile, "EnemyManager"));
@@ -589,6 +592,8 @@ class TestGameState : GameState
             {
                 nodes_to_remove.Push(_node.id);
                 if (test_enemy_num_override > 0 && enemyNum >= test_enemy_num_override)
+                    continue;
+                if (game_type != 0)
                     continue;
                 Vector3 v = _node.worldPosition;
                 v.y = 0;

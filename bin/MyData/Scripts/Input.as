@@ -280,6 +280,11 @@ class GameInput
         return -1;
     }
 
+    bool IsRunHolding()
+    {
+        return input.keyDown[KEY_LSHIFT];
+    }
+
     String GetDebugText()
     {
         String ret =   "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +

@@ -56,6 +56,7 @@ bool base_on_player = false;
 int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
+int game_type = 1;
 
 GameInput @gInput = GameInput();
 
@@ -85,10 +86,18 @@ void Start()
             }
             else if (argument == "lowend")
                 render_features = RF_NONE;
-            else if (argument == "freeze_ai")
+            else if (argument == "freezeai")
                 freeze_ai = 1;
             else if (argument == "reflection")
                 reflection = !reflection;
+            else if (argument == "game")
+            {
+                String type = arguments[i+1];
+                if (type == "combat")
+                    game_type = 0;
+                else if (type == "climb")
+                    game_type = 1;
+            }
         }
     }
 
