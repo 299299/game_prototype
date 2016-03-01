@@ -1215,28 +1215,30 @@ class Character : GameObject
         return state.nameHash == nameHash;
     }
 
-    void ChangeState(const String&in name)
+    bool ChangeState(const String&in name)
     {
         if (d_log)
         {
             String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
             Print(GetName() + " ChangeState from " + oldStateName + " to " + name);
         }
-        stateMachine.ChangeState(name);
+        bool ret = stateMachine.ChangeState(name);
         State@ s = GetState();
         if (s is null)
-            return;
+            return ret;
         sceneNode.vars[STATE] = s.nameHash;
+        return ret;
     }
 
-    void ChangeState(const StringHash&in nameHash)
+    bool ChangeState(const StringHash&in nameHash)
     {
         String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        stateMachine.ChangeState(nameHash);
+        bool ret = stateMachine.ChangeState(nameHash);
         String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
         if (d_log)
             Print(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
         sceneNode.vars[STATE] = GetState().nameHash;
+        return ret;
     }
 
     State@ FindState(const String&in name)

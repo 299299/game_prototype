@@ -1382,13 +1382,10 @@ class Player : Character
         {
             int index = RadialSelectAnimation(4);
             sceneNode.vars[ANIMATION_INDEX] = index -1;
-
             Print("Stand->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
-
-            if (index == 0)
-                ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
-            else
-                ChangeState("TurnState");
+            if (index != 0 && ChangeState("TurnState"))
+                return;
+            ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
         }
         else
             ChangeState("StandState");
