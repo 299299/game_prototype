@@ -799,6 +799,8 @@ class Character : GameObject
     float                   attackRadius = 0.15f;
     int                     attackDamage = 10;
 
+    Mover@                  mover;
+
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -813,7 +815,10 @@ class Character : GameObject
 
     void ObjectStart()
     {
-        @sceneNode = node;
+        sceneNode = node;
+        @mover = Mover();
+        mover.sceneNode = sceneNode;
+
         renderNode = sceneNode.GetChild("RenderNode", false);
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
@@ -856,6 +861,7 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
+        @mover = null;
         //if (ragdollPoseAnim !is null)
         //    cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
         //ragdollPoseAnim = null;
@@ -913,7 +919,7 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        sceneNode.worldPosition = FilterPosition(position);
+        mover.MoveTo(position, dt);
     }
 
     bool Attack()
@@ -989,6 +995,8 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 0.5f, false);
+        mover.DebugDraw(debug);
+
         //DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1,0.5,0), 2.0f);
 
         //debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
