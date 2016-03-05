@@ -1342,6 +1342,9 @@ class Player : Character
         ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
         emitter.effect = cache.GetResource("ParticleEffect", "Particle/Tail.xml");
         tailNode.enabled = false;
+
+        if (game_type == 1)
+            mover.type = 1;
     }
 
     void AddStates()
@@ -1738,7 +1741,8 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), PLAYER_NEAR_DIST, YELLOW, 32, false);
+        //debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), PLAYER_NEAR_DIST, YELLOW, 32, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
     }
 
     bool ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
