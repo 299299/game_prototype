@@ -171,7 +171,7 @@ class ThirdPersonCameraController : CameraController
         {
             uint t = time.systemTime;
             uint t_diff = t - gInput.lastMiddlePressedTime;
-            Print("lastMiddlePressedTime diff = " + t_diff);
+            // Print("lastMiddlePressedTime diff = " + t_diff);
             if (t_diff > 500)
                 cameraDistance +=  float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
         }

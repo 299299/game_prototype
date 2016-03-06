@@ -30,6 +30,7 @@ class Mover
         {
             Vector3 oldPos = sceneNode.worldPosition;
             Vector3 vel = (v - oldPos) / dt;
+            vel.y = 0;
             Vector3 next_pos_one_sec = oldPos + vel;
             Vector3 hitPoint;
             float hitDis;
@@ -41,8 +42,11 @@ class Mover
             rayV1_Start = startV1;
             rayV1_End = bHit ? hitPoint : endV1;
             if (bHit && (hitDis <= (COLLISION_RADIUS + skinWidth)))
+            {
+                sceneNode.worldPosition = Vector3(oldPos.x, position.y, oldPos.z);
                 return;
-            sceneNode.worldPosition = v;
+            }
+            sceneNode.worldPosition = Vector3(v.x, position.y, v.z);
         }
     }
 
