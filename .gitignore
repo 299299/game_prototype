@@ -97,5 +97,6 @@ Thumbs.db
 *.asc
 /bin/Release/
 /bin/Release.zip
+/bin/Editor
 
 

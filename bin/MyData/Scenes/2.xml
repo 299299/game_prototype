@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="60" />
 	<attribute name="Next Replicated Component ID" value="103" />
-	<attribute name="Next Local Node ID" value="16780677" />
-	<attribute name="Next Local Component ID" value="16778251" />
+	<attribute name="Next Local Node ID" value="16780679" />
+	<attribute name="Next Local Component ID" value="16778264" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -99,5 +99,26 @@
 			<attribute name="Physics Position" value="0.463057 2.21012 -3.49528" />
 		</component>
 		<component type="CollisionShape" id="102" />
+		<node id="16780678">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.332364 0.461918 -0.511744" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Variables" />
+			<component type="Text3D" id="16778263">
+				<attribute name="Font" value="Font;Fonts/GAEN.ttf" />
+				<attribute name="Text" value="I AM A BOX" />
+				<attribute name="Text Alignment" value="Center" />
+				<attribute name="Width" value="70" />
+				<attribute name="Color" value="1 0 0 1" />
+				<attribute name="Top Left Color" value="1 0 0 1" />
+				<attribute name="Top Right Color" value="1 0 0 1" />
+				<attribute name="Bottom Left Color" value="1 0 0 1" />
+				<attribute name="Bottom Right Color" value="1 0 0 1" />
+				<attribute name="Text Effect" value="Stroke" />
+			</component>
+		</node>
 	</node>
 </scene>
