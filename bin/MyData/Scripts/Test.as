@@ -375,7 +375,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 
     if (drawDebug > 0)
     {
-        gCameraMgr.DebugDraw(debug);
+        // gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
         Player@ player = GetPlayer();
         if (player !is null)
