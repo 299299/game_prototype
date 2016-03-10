@@ -38,6 +38,8 @@ class PlayerStandState : CharacterState
     {
         ownner.SetTarget(null);
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
+        ownner.mover.Clear();
+
         CharacterState::Enter(lastState);
     }
 

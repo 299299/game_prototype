@@ -816,8 +816,8 @@ class Character : GameObject
     void ObjectStart()
     {
         sceneNode = node;
-        @mover = Mover();
-        mover.sceneNode = sceneNode;
+        @mover = Mover(sceneNode);
+        mover.Start(game_type);
 
         renderNode = sceneNode.GetChild("RenderNode", false);
         animCtrl = renderNode.GetComponent("AnimationController");

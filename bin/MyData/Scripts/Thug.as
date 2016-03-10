@@ -44,6 +44,8 @@ class ThugStandState : CharacterState
     void Enter(State@ lastState)
     {
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
+        ownner.mover.Clear();
+
         float min_think_time = MIN_THINK_TIME;
         float max_think_time = MAX_THINK_TIME;
         if (firstEnter)
