@@ -799,7 +799,7 @@ class Character : GameObject
     float                   attackRadius = 0.15f;
     int                     attackDamage = 10;
 
-    Mover@                  mover;
+    RigidBody@              body;
 
     // ==============================================
     //   DYNAMIC VALUES For Motion
@@ -816,9 +816,6 @@ class Character : GameObject
     void ObjectStart()
     {
         sceneNode = node;
-        @mover = Mover(sceneNode);
-        mover.Start(game_type);
-
         renderNode = sceneNode.GetChild("RenderNode", false);
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
@@ -839,6 +836,14 @@ class Character : GameObject
             ragdollPoseAnim.animationName = name;
             cache.AddManualResource(ragdollPoseAnim);
         }
+
+        body = sceneNode.CreateComponent("RigidBody");
+        body.collisionLayer = COLLISION_LAYER_CHARACTER;
+        body.mass = 1.0f;
+        body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
+        body.collisionEventMode = COLLISION_ALWAYS;
+        CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
+        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
 
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
@@ -861,7 +866,6 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
-        @mover = null;
         //if (ragdollPoseAnim !is null)
         //    cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
         //ragdollPoseAnim = null;
@@ -919,7 +923,12 @@ class Character : GameObject
 
     void MoveTo(const Vector3&in position, float dt)
     {
-        mover.MoveTo(position, dt);
+
+    }
+
+    void SetVelocity(const Vector3&in vel)
+    {
+        body.linearVelocity = vel;
     }
 
     bool Attack()
@@ -995,7 +1004,6 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 0.5f, false);
-        mover.DebugDraw(debug);
 
         //DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1,0.5,0), 2.0f);
 

@@ -38,7 +38,7 @@ class PlayerStandState : CharacterState
     {
         ownner.SetTarget(null);
         ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
-        ownner.mover.Clear();
+        ownner.SetVelocity(Vector3(0,0,0));
 
         CharacterState::Enter(lastState);
     }
@@ -1344,9 +1344,6 @@ class Player : Character
         ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
         emitter.effect = cache.GetResource("ParticleEffect", "Particle/Tail.xml");
         tailNode.enabled = false;
-
-        if (game_type == 1)
-            mover.type = 1;
     }
 
     void AddStates()
