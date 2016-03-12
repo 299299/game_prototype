@@ -57,6 +57,7 @@ int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 int game_type = 1;
+int collision_type = 0;
 
 GameInput @gInput = GameInput();
 
@@ -100,6 +101,9 @@ void Start()
             }
         }
     }
+
+    if (game_type == 1)
+        collision_type = 1;
 
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;

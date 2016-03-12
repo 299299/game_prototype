@@ -448,9 +448,15 @@ class CharacterCounterState : CharacterState
         {
             Node@ _node = ownner.GetNode();
             _node.Yaw(yawPerSec * dt);
-            ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
+            ownner.SetVelocity(movePerSec);
+            if (collision_type == 0)
+                ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
+
             if (timeInState >= alignTime)
+            {
+                ownner.SetVelocity(Vector3(0,0,0));
                 OnAlignTimeOut();
+            }
         }
         else if (state == COUNTER_ANIMATING)
         {
@@ -717,7 +723,7 @@ class CharacterRagdollState : CharacterState
     void Enter(State@ lastState)
     {
         CharacterState::Enter(lastState);
-        ownner.SetNodeEnabled("Collision", false);
+        ownner.SetPhysics(false);
     }
 };
 
@@ -809,6 +815,7 @@ class Character : GameObject
 
     float                   motion_deltaRotation;
     Vector3                 motion_deltaPosition;
+    Vector3                 motion_velocity;
 
     bool                    motion_translateEnabled = true;
     bool                    motion_rotateEnabled = true;
@@ -837,13 +844,18 @@ class Character : GameObject
             cache.AddManualResource(ragdollPoseAnim);
         }
 
-        body = sceneNode.CreateComponent("RigidBody");
-        body.collisionLayer = COLLISION_LAYER_CHARACTER;
-        body.mass = 1.0f;
-        body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
-        body.collisionEventMode = COLLISION_ALWAYS;
-        CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
+        if (collision_type == 1)
+        {
+            body = sceneNode.CreateComponent("RigidBody");
+            body.collisionLayer = COLLISION_LAYER_CHARACTER;
+            body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_PROP;
+            body.mass = 1.0f;
+            body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
+            body.collisionEventMode = COLLISION_ALWAYS;
+            CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
+            shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
+        }
+
 
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
@@ -866,9 +878,6 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
-        //if (ragdollPoseAnim !is null)
-        //    cache.ReleaseResource("Animation", ragdollPoseAnim.name, true);
-        //ragdollPoseAnim = null;
     }
 
     void Remove()
@@ -921,14 +930,15 @@ class Character : GameObject
         return debugText;
     }
 
-    void MoveTo(const Vector3&in position, float dt)
-    {
-
-    }
-
     void SetVelocity(const Vector3&in vel)
     {
-        body.linearVelocity = vel;
+        if (body !is null)
+            body.linearVelocity = vel;
+    }
+
+    void MoveTo(const Vector3& position, float dt)
+    {
+        sceneNode.worldPosition = FilterPosition(position);
     }
 
     bool Attack()
@@ -1296,6 +1306,13 @@ class Character : GameObject
             return;
         @target = t;
         // Print(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
+    }
+
+    void SetPhysics(bool b)
+    {
+        if (body !is null)
+            body.enabled = b;
+        SetNodeEnabled("Collision", b);
     }
 
     void PlayRandomSound(int type)

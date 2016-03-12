@@ -653,7 +653,7 @@ class ThugGetUpState : CharacterGetUpState
     void Enter(State@ lastState)
     {
         CharacterGetUpState::Enter(lastState);
-        ownner.SetNodeEnabled("Collision", true);
+        ownner.SetPhysics(true);
     }
 
     void Exit(State@ nextState)
@@ -846,8 +846,8 @@ class Thug : Enemy
         shape.SetCapsule(KEEP_DIST*2, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
         RigidBody@ body = collisionNode.CreateComponent("RigidBody");
         body.mass = 10;
-        body.collisionLayer = COLLISION_LAYER_CHARACTER;
-        body.collisionMask = COLLISION_LAYER_CHARACTER;
+        body.collisionLayer = COLLISION_LAYER_AI;
+        body.collisionMask = COLLISION_LAYER_AI;
         body.kinematic = true;
         body.trigger = true;
         body.collisionEventMode = COLLISION_ALWAYS;

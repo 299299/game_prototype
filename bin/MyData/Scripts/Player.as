@@ -330,6 +330,8 @@ class PlayerAttackState : CharacterState
             tailNode.worldPosition = attackNode.worldPosition;
         }
 
+        ownner.motion_velocity = (state == ATTACK_STATE_ALIGN) ? movePerSec : Vector3(0, 0, 0);
+
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
         {
@@ -1134,11 +1136,16 @@ class PlayerBeatDownHitState : MultiMotionState
 
         if (state == 0)
         {
-            ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
+            if (collision_type == 0)
+                ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
+            else
+                ownner.SetVelocity(movePerSec);
 
             if (timeInState >= alignTime)
             {
                 Print("PlayerBeatDownHitState::Update align time-out");
+                ownner.GetNode().worldPosition = targetPosition;
+                ownner.SetVelocity(Vector3(0, 0, 0));
                 state = 1;
                 HitStart(false, beatIndex, false);
                 timeInState = 0.0f;

@@ -263,7 +263,6 @@ class Motion
             return k1;
         Vector4 k2 = motionKeys[next_i];
         float a = t*FRAME_PER_SEC - float(i);
-        // float a =  (t - float(i)*SEC_PER_FRAME)/SEC_PER_FRAME;
         return k1.Lerp(k2, a);
     }
 
@@ -294,6 +293,7 @@ class Motion
         object.motion_startRotation = object.GetNode().worldRotation.eulerAngles.y;
         object.motion_deltaRotation = 0;
         object.motion_deltaPosition = Vector3(0, 0, 0);
+        object.motion_velocity = Vector3(0, 0, 0);
         object.motion_translateEnabled = true;
         object.motion_rotateEnabled = true;
         // Print("motion " + animationName + " start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
@@ -317,9 +317,21 @@ class Motion
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 tLocal = tLocal * ctrl.GetWeight(animationName);
-                Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_deltaPosition;
-                object.MoveTo(tWorld, dt);
+
+                if (collision_type == 0)
+                {
+                    Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_deltaPosition;
+                    object.MoveTo(tWorld, dt);
+                }
+                else
+                {
+                    Vector3 tWorld = _node.worldRotation * tLocal;
+                    object.SetVelocity(tWorld/dt + object.motion_velocity);
+                }
+
             }
+            else
+                object.SetVelocity(Vector3(0, 0, 0));
         }
         else
         {
@@ -329,12 +341,28 @@ class Motion
 
             if (object.motion_translateEnabled)
             {
-                Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
-                //Print("tWorld=" + tWorld.ToString() + " cur-pos=" + object.GetNode().worldPosition.ToString() + " localTime=" + localTime);
-                object.MoveTo(tWorld, dt);
+                if (collision_type == 0)
+                {
+                    Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+                    object.MoveTo(tWorld, dt);
+                }
+                else
+                {
+                    Vector3 tWorld1 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
+                    motionOut = GetKey(localTime + dt);
+                    Vector3 tWorld2 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
+                    Vector3 vel = (tWorld2 - tWorld1) / dt;
+                    object.SetVelocity(vel + object.motion_velocity);
+                }
             }
+            else
+                object.SetVelocity(Vector3(0, 0, 0));
         }
-        return localTime >= endTime;
+
+        bool bFinished =  localTime >= endTime;
+        if (bFinished)
+            object.SetVelocity(Vector3(0, 0, 0));
+        return bFinished;
     }
 
     void DebugDraw(DebugRenderer@ debug, Character@ object)
