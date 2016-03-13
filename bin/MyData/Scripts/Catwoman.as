@@ -317,7 +317,6 @@ void CreateCatwomanMotions()
     AssignMotionRig("Models/catwoman.mdl");
 
     String preFix = "CW_Movement/";
-
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
     Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);

@@ -23,55 +23,6 @@ const float ATTACK_DIST_PICK_RANGE = 6.0f;
 float MAX_ATTACK_DIST = 25.0f;
 float MAX_BEAT_DIST = 25.0f;
 
-class PlayerStandState : CharacterState
-{
-    Array<String>   animations;
-
-    PlayerStandState(Character@ c)
-    {
-        super(c);
-        SetName("StandState");
-        flags = FLAGS_ATTACK;
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.SetTarget(null);
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
-        ownner.SetVelocity(Vector3(0,0,0));
-
-        CharacterState::Enter(lastState);
-    }
-
-    void Update(float dt)
-    {
-        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-        {
-            int index = ownner.RadialSelectAnimation(4);
-            ownner.GetNode().vars[ANIMATION_INDEX] = index -1;
-
-            Print("Stand->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
-
-            if (index == 0)
-                ownner.ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
-            else
-                ownner.ChangeState("TurnState");
-        }
-
-        ownner.ActionCheck(true, true, true, true);
-        CharacterState::Update(dt);
-    }
-};
-
-class PlayerEvadeState : MultiMotionState
-{
-    PlayerEvadeState(Character@ c)
-    {
-        super(c);
-        SetName("EvadeState");
-    }
-};
-
 class Player : Character
 {
     int             combo;

@@ -336,3 +336,28 @@ class BruceSlideIdleState : PlayerSlideIdleState
     }
 };
 
+class PlayerCrouchToStandState : SingleMotionState
+{
+    PlayerCrouchToStandState(Character@ c)
+    {
+        super(c);
+        SetName("CrouchToStandState");
+        flags = FLAGS_ATTACK;
+    }
+};
+
+class PlayerStandToCrouchState : SingleMotionState
+{
+    PlayerStandToCrouchState(Character@ c)
+    {
+        super(c);
+        SetName("StandToCrouchState");
+        flags = FLAGS_ATTACK;
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("CrouchState");
+    }
+};
+

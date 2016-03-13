@@ -171,6 +171,49 @@ class CharacterState : State
     }
 };
 
+class SingleAnimationState : CharacterState
+{
+    String animation;
+    bool looped = false;
+    float stateTime = -1;
+
+    SingleAnimationState(Character@ c)
+    {
+        super(c);
+    }
+
+    void Update(float dt)
+    {
+        if (looped)
+        {
+            if (stateTime > 0 && timeInState > stateTime)
+                OnMotionFinished();
+        }
+        else
+        {
+            if (ownner.animCtrl.IsAtEnd(animation))
+                OnMotionFinished();
+        }
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f);
+        CharacterState::Enter(lastState);
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.CommonStateFinishedOnGroud();
+    }
+
+    void SetMotion(const String&in name)
+    {
+        animation = GetAnimationName(name);
+    }
+};
+
 
 class SingleMotionState : CharacterState
 {

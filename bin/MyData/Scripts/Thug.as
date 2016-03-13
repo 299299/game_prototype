@@ -773,30 +773,16 @@ class ThugBeatDownEndState : MultiMotionState
 };
 
 
-class ThugStunState : CharacterState
+class ThugStunState : SingleAnimationState
 {
     ThugStunState(Character@ ownner)
     {
         super(ownner);
         SetName("StunState");
         flags = FLAGS_STUN | FLAGS_ATTACK;
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.PlayAnimation(GetAnimationName("TG_HitReaction/CapeHitReaction_Idle"), LAYER_MOVE, true, 0.2f);
-        CharacterState::Enter(lastState);
-    }
-
-    void Update(float dt)
-    {
-        if (timeInState > 5.0f)
-        {
-            ownner.CommonStateFinishedOnGroud();
-            return;
-        }
-
-        CharacterState::Update(dt);
+        SetMotion("TG_HitReaction/CapeHitReaction_Idle");
+        looped = true;
+        stateTime = 5.0f;
     }
 };
 

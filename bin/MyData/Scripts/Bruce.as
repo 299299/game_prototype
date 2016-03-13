@@ -252,6 +252,15 @@ class BruceSlideOutState : PlayerSlideOutState
     }
 };
 
+class BruceCrouchState : PlayerCrouchState
+{
+    BruceCrouchState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Crouch_Idle");
+    }
+};
+
 class Bruce : Player
 {
     void AddStates()
@@ -279,6 +288,7 @@ class Bruce : Player
         {
             stateMachine.AddState(BruceSlideInState(this));
             stateMachine.AddState(BruceSlideOutState(this));
+            stateMachine.AddState(BruceCrouchState(this));
         }
     }
 };
@@ -357,6 +367,14 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
         Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
         Global_CreateMotion(preFix + "Slide_Floor_Stop");
+
+        preFix = "BM_Movement/";
+        Global_AddAnimation(preFix + "Crouch_Idle");
+
+        preFix = "BM_Crouch_Turns/";
+        Global_CreateMotion(preFix + "Turn_Right_90");
+        Global_CreateMotion(preFix + "Turn_Right_180");
+        Global_CreateMotion(preFix + "Turn_Left_90");
     }
 }
 

@@ -256,13 +256,22 @@ class GameInput
             return input.mouseButtonPress[MOUSEB_MIDDLE];
     }
 
-    bool IsSlidePressed()
+    bool IsCrouchPressed()
     {
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
             return joystick.buttonPress[1];
         else
             return input.keyPress[KEY_LCTRL];
+    }
+
+    bool IsCrouchDown()
+    {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+            return joystick.buttonDown[1];
+        else
+            return input.keyDown[KEY_LCTRL];
     }
 
     int GetDirectionPressed()
