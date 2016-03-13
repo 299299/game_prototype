@@ -105,7 +105,10 @@ void Start()
     }
 
     if (game_type == 1)
+    {
         collision_type = 1;
+        reflection = false;
+    }
 
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
@@ -501,9 +504,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == 'O')
     {
         Node@ n = scene_.GetChild("thug2");
-        n.vars[ANIMATION_INDEX] = RandomInt(4);
-        Thug@ thug = cast<Thug>(n.scriptObject);
-        thug.ChangeState("HitState");
+        if (n !is null)
+        {
+            n.vars[ANIMATION_INDEX] = RandomInt(4);
+            Thug@ thug = cast<Thug>(n.scriptObject);
+            thug.ChangeState("HitState");
+        }
     }
     else if (key == KEY_9)
     {
@@ -647,7 +653,8 @@ void SetColorGrading(int index)
         "TritonePurple",
         "Underwater",
         "War",
-        "Warm"
+        "Warm",
+        "LUTIdentity"
     };
     int len = int(colorGradingTextures.length);
     if (index >= len)
@@ -840,20 +847,15 @@ void ToggleDebugWindow()
     win.movable = true;
     win.resizable = true;
     win.opacity = 0.8f;
-    win.SetLayout(LM_VERTICAL, 2, IntRect(2,2,2,2));
+    win.SetLayout(LM_VERTICAL, 2, IntRect(2,4,2,4));
     win.SetAlignment(HA_LEFT, VA_TOP);
     win.SetStyleAuto();
     ui.root.AddChild(win);
 
-    UIElement@ titleBar = UIElement();
-    titleBar.verticalAlignment = VA_TOP;
-    titleBar.layoutMode = LM_HORIZONTAL;
-    titleBar.SetMinSize(0, 16);
     Text@ windowTitle = Text();
     windowTitle.text = "Debug Parameters";
-    titleBar.AddChild(windowTitle);
-    win.AddChild(titleBar);
     windowTitle.SetStyleAuto();
+    win.AddChild(windowTitle);
 
     IntVector2 scrSize(graphics.width, graphics.height);
     IntVector2 winSize(scrSize);
@@ -865,17 +867,12 @@ void ToggleDebugWindow()
     freezeInput = true;
 
     RenderPath@ path = renderer.viewports[0].renderPath;
-    DropDownList@ list = DropDownList();
-    win.AddChild(list);
-    list.resizePopup = true;
-    list.SetLayout(LM_HORIZONTAL, 2, IntRect(4, 1, 4, 1));
-    list.SetStyleAuto();
-
-    CreateDebugSlider(list, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
-    CreateDebugSlider(list, "TonemapExposureBias", 0, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
-    CreateDebugSlider(list, "BloomHDRBlurRadius", 0, 0.0f, 10.0f, path.shaderParameters["BloomHDRBlurRadius"].GetFloat());
-    CreateDebugSlider(list, "BloomHDRMix_x", 1, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
-    CreateDebugSlider(list, "BloomHDRMix_y", 2, 0.0f, 5.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
+    UIElement@ parent = win;
+    CreateDebugSlider(parent, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
+    CreateDebugSlider(parent, "TonemapExposureBias", 0, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
+    //CreateDebugSlider(parent, "BloomHDRBlurRadius", 0, 0.0f, 10.0f, path.shaderParameters["BloomHDRBlurRadius"].GetFloat());
+    CreateDebugSlider(parent, "BloomHDRMix_x", 1, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
+    CreateDebugSlider(parent, "BloomHDRMix_y", 2, 0.0f, 5.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
 }
 
 void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float min, float max, float cur)
@@ -884,33 +881,27 @@ void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float 
     parent.AddChild(textContainer);
     textContainer.layoutMode = LM_HORIZONTAL;
     textContainer.SetStyleAuto();
-    textContainer.SetMaxSize(2147483647, 16);
 
     Text@ text = Text();
     textContainer.AddChild(text);
     text.text = label + ": ";
     text.SetStyleAuto();
-    text.SetAlignment(HA_LEFT, VA_TOP);
-    text.SetMaxSize(2147483647, 16);
 
     Text@ valueText = Text();
     textContainer.AddChild(valueText);
     valueText.name = label + "_value";
     valueText.text = String(cur);
     valueText.SetStyleAuto();
-    valueText.SetAlignment(HA_RIGHT, VA_TOP);
-    valueText.SetMaxSize(2147483647, 16);
 
     Slider@ slider = Slider();
-    parent.AddChild(slider);
     slider.name = label;
     slider.SetStyleAuto();
-    slider.SetAlignment(HA_LEFT, VA_TOP);
     slider.range = max - min;
     slider.value = cur - min;
-    slider.SetMaxSize(2147483647, 16);
+    slider.SetMinSize(2, 16);
     slider.vars[RANGE] = Vector2(min, max);
     slider.vars[TAG] = tag;
+    parent.AddChild(slider);
 }
 
 void HandleSliderChanged(StringHash eventType, VariantMap& eventData)

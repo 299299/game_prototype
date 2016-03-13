@@ -568,7 +568,8 @@ class TestGameState : GameState
         {
             playerPos = tmpPlayerNode.worldPosition;
             playerRot = tmpPlayerNode.worldRotation;
-            playerPos.y = 0;
+            if (collision_type == 0)
+                playerPos.y = 0;
             tmpPlayerNode.Remove();
         }
 

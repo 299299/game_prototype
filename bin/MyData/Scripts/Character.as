@@ -57,7 +57,7 @@ const StringHash SOUND("Sound");
 const StringHash RANGE("Range");
 const StringHash TAG("Tag");
 
-Vector3 WORLD_HALF_SIZE(99999, 0, 99999);
+Vector3 WORLD_HALF_SIZE(1000, 0, 1000);
 
 int num_of_sounds = 37;
 int num_of_big_sounds = 6;
@@ -806,6 +806,7 @@ class Character : GameObject
     int                     attackDamage = 10;
 
     RigidBody@              body;
+    bool                    applyGravity = true;
 
     // ==============================================
     //   DYNAMIC VALUES For Motion
@@ -852,6 +853,7 @@ class Character : GameObject
             body.mass = 1.0f;
             body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
             body.collisionEventMode = COLLISION_ALWAYS;
+            body.gravityOverride = Vector3(0, -20, 0);
             CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
             shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
         }
@@ -932,7 +934,9 @@ class Character : GameObject
     void SetVelocity(const Vector3&in vel)
     {
         if (body !is null)
-            body.linearVelocity = vel;
+        {
+            body.linearVelocity = applyGravity ? vel + Vector3(0, -9.8f, 0) : vel;
+        }
     }
 
     Vector3 GetVelocity()
