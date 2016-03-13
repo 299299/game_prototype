@@ -9,6 +9,7 @@ const float COLLISION_RADIUS = 1.5f;
 const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
+const float CHARACTER_CROUCH_HEIGHT = 3.0f;
 
 const int MAX_NUM_OF_ATTACK = 3;
 const int MAX_NUM_OF_MOVING = 3;

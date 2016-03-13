@@ -277,7 +277,7 @@ class PlayerSlideInState : SingleMotionState
     {
         SingleMotionState::Enter(lastState);
         if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT/2);
+            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
     }
 
     void Exit(State@ nextState)
@@ -323,7 +323,7 @@ class PlayerCrouchState : SingleAnimationState
         ownner.SetTarget(null);
         ownner.SetVelocity(Vector3(0,0,0));
         if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT/2);
+            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
         SingleAnimationState::Enter(lastState);
     }
 
@@ -371,7 +371,7 @@ class PlayerCrouchTurnState : PlayerTurnState
     {
         PlayerTurnState::Enter(lastState);
         if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT/2);
+            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
     }
 
     void Exit(State@ nextState)
@@ -429,7 +429,7 @@ class PlayerCrouchMoveState : SingleMotionState
         ownner.SetTarget(null);
         combatReady = true;
         if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT/2);
+            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
     }
 
     void Exit(State@ nextState)
