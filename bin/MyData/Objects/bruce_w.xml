@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="16778163">
 			<attribute name="Model" value="Model;Models/bruce_w.mdl" />
-			<attribute name="Material" value="Material;Materials/Bruce_Leg.xml;Materials/Bruce_Torso.xml;Materials/Bruce_Torso.xml;Materials/Bruce_Torso.xml;Materials/Bruce_Leg.xml;Materials/Bruce_Leg.xml;Materials/Bruce_Head.xml;Materials/BruceWayne_OZ_Eyes_MIC.xml;Materials/Bruce_Hair.xml" />
+			<attribute name="Material" value="Material;Materials/Bruce_Leg.xml;Materials/Bruce_Torso.xml;Materials/Bruce_Torso.xml;Materials/Bruce_Torso.xml;Materials/Bruce_Leg.xml;Materials/Bruce_Leg.xml;Materials/Bruce_Head.xml;Materials/Bruce_Eyes.xml;Materials/Bruce_Hair.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />
