@@ -81,17 +81,33 @@ class Player : Character
         if (health <= 0)
             return;
 
+        bool bCrouch = gInput.IsCrouchDown();
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
             int index = RadialSelectAnimation(4);
             sceneNode.vars[ANIMATION_INDEX] = index -1;
-            Print("Stand->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
-            if (index != 0 && ChangeState("TurnState"))
-                return;
-            ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
+            Print("CommonStateFinishedOnGroud crouch=" + bCrouch + "To->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+            if (index != 0)
+            {
+                if (bCrouch)
+                {
+                    if (ChangeState("CrouchTurnState"))
+                        return;
+                }
+                else
+                {
+                    if (ChangeState("TurnState"))
+                        return;
+                }
+            }
+
+            if (bCrouch)
+                ChangeState("CrouchState");
+            else
+                ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
         }
         else
-            ChangeState("StandState");
+            ChangeState(bCrouch ? "CrouchState" : "StandState");
     }
 
     float GetTargetAngle()

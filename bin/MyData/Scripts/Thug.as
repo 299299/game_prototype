@@ -43,7 +43,7 @@ class ThugStandState : CharacterState
 
     void Enter(State@ lastState)
     {
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
+        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f, 0.0f, animSpeed);
         ownner.SetVelocity(Vector3(0,0,0));
 
         float min_think_time = MIN_THINK_TIME;

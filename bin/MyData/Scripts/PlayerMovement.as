@@ -13,7 +13,7 @@ class PlayerStandState : CharacterState
     void Enter(State@ lastState)
     {
         ownner.SetTarget(null);
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f);
+        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f, 0.0f, animSpeed);
         ownner.SetVelocity(Vector3(0,0,0));
 
         CharacterState::Enter(lastState);
@@ -114,6 +114,11 @@ class PlayerWalkState : SingleMotionState
             ownner.ChangeState("StandState");
             return;
         }
+        if (gInput.IsCrouchDown())
+        {
+            ownner.ChangeState("CrouchMoveState");
+            return;
+        }
 
         if (gInput.IsRunHolding())
             runHoldingFrames ++;
@@ -163,13 +168,11 @@ class PlayerRunState : SingleMotionState
             ownner.ChangeState("RunTurn180State");
             return;
         }
-
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
         {
             ownner.ChangeState("RunToStandState");
             return;
         }
-
         if (gInput.IsCrouchDown())
         {
             ownner.ChangeState("SlideInState");
@@ -331,6 +334,13 @@ class PlayerCrouchState : SingleAnimationState
         looped = true;
     }
 
+    void Enter(State@ lastState)
+    {
+        ownner.SetTarget(null);
+        ownner.SetVelocity(Vector3(0,0,0));
+        SingleAnimationState::Enter(lastState);
+    }
+
     void Update(float dt)
     {
         if (!gInput.IsCrouchDown())
@@ -339,7 +349,67 @@ class PlayerCrouchState : SingleAnimationState
             return;
         }
 
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        {
+            int index = ownner.RadialSelectAnimation(4);
+            ownner.GetNode().vars[ANIMATION_INDEX] = index -1;
+
+            Print("Crouch->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+
+            if (index == 0)
+                ownner.ChangeState("CrouchMoveState");
+            else
+                ownner.ChangeState("CrouchTurnState");
+        }
+
         SingleAnimationState::Update(dt);
     }
 };
 
+
+class PlayerCrouchMoveState : SingleMotionState
+{
+    float turnSpeed = 2.0f;
+    PlayerCrouchMoveState(Character@ c)
+    {
+        super(c);
+        SetName("CrouchMoveState");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+
+    void Update(float dt)
+    {
+        float characterDifference = ownner.ComputeAngleDiff();
+        Node@ _node = ownner.GetNode();
+        _node.Yaw(characterDifference * turnSpeed * dt);
+        motion.Move(ownner, dt);
+        // if the difference is large, then turn 180 degrees
+        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
+        {
+            _node.vars[ANIMATION_INDEX] = 1;
+            ownner.ChangeState("CrouchTurnState");
+            return;
+        }
+
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
+        {
+            ownner.ChangeState("CrouchState");
+            return;
+        }
+
+        if (!gInput.IsCrouchDown())
+        {
+            ownner.ChangeState("WalkState");
+            return;
+        }
+
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        ownner.SetTarget(null);
+        combatReady = true;
+    }
+};

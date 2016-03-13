@@ -309,7 +309,9 @@ class Motion
         AnimationController@ ctrl = object.animCtrl;
         Node@ _node = object.GetNode();
         float localTime = ctrl.GetTime(animationName);
+        float speed = ctrl.GetSpeed(animationName);
 
+        dt *= speed;
         if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
@@ -331,7 +333,7 @@ class Motion
                 else
                 {
                     Vector3 tWorld = _node.worldRotation * tLocal;
-                    object.SetVelocity(tWorld/dt + object.motion_velocity);
+                    object.SetVelocity(tWorld / dt * speed + object.motion_velocity);
                 }
 
             }
@@ -357,7 +359,7 @@ class Motion
                     motionOut = GetKey(localTime + dt);
                     Vector3 tWorld2 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
                     Vector3 vel = (tWorld2 - tWorld1) / dt;
-                    object.SetVelocity(vel + object.motion_velocity);
+                    object.SetVelocity(vel * speed + object.motion_velocity);
                 }
             }
             else

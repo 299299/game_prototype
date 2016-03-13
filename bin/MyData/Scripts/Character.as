@@ -199,7 +199,7 @@ class SingleAnimationState : CharacterState
 
     void Enter(State@ lastState)
     {
-        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f);
+        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 0.0f, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -342,13 +342,13 @@ class AnimationTestState : CharacterState
         @testMotion = gMotionMgr.FindMotion(animationName);
         if (testMotion !is null)
         {
-            testMotion.Start(ownner, 0.0f, 0.0f);
+            testMotion.Start(ownner, 0.0f, 0.0f, animSpeed);
             if (ownner.side == 1)
                 gCameraMgr.CheckCameraAnimation(testMotion.name);
         }
         else
         {
-            ownner.PlayAnimation(animationName, LAYER_MOVE, false, 0.0f);
+            ownner.PlayAnimation(animationName, LAYER_MOVE, false, 0.0f, animSpeed);
             if (ownner.side == 1)
                 gCameraMgr.CheckCameraAnimation(animationName);
         }

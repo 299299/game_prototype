@@ -261,6 +261,29 @@ class BruceCrouchState : PlayerCrouchState
     }
 };
 
+class BruceCrouchTurnState : PlayerTurnState
+{
+    BruceCrouchTurnState(Character@ c)
+    {
+        super(c);
+        SetName("CrouchTurnState");
+        AddMotion("BM_Crouch_Turns/Turn_Right_90");
+        AddMotion("BM_Crouch_Turns/Turn_Right_180");
+        AddMotion("BM_Crouch_Turns/Turn_Left_90");
+    }
+};
+
+class BruceCrouchMoveState : PlayerCrouchMoveState
+{
+    BruceCrouchMoveState(Character@ c)
+    {
+        super(c);
+        SetName("CrouchMoveState");
+        SetMotion("BM_Movement/Cover_Run");
+        animSpeed = 0.5f;
+    }
+};
+
 class Bruce : Player
 {
     void AddStates()
@@ -289,6 +312,8 @@ class Bruce : Player
             stateMachine.AddState(BruceSlideInState(this));
             stateMachine.AddState(BruceSlideOutState(this));
             stateMachine.AddState(BruceCrouchState(this));
+            stateMachine.AddState(BruceCrouchTurnState(this));
+            stateMachine.AddState(BruceCrouchMoveState(this));
         }
     }
 };
@@ -370,11 +395,13 @@ void CreateBruceMotions()
 
         preFix = "BM_Movement/";
         Global_AddAnimation(preFix + "Crouch_Idle");
+        // Global_CreateMotion(preFix + "Crouch_Walk_Slow", kMotion_XZR, kMotion_Z, -1, true);
+        Global_CreateMotion(preFix + "Cover_Run", kMotion_XZR, kMotion_Z, -1, true);
 
         preFix = "BM_Crouch_Turns/";
-        Global_CreateMotion(preFix + "Turn_Right_90");
-        Global_CreateMotion(preFix + "Turn_Right_180");
-        Global_CreateMotion(preFix + "Turn_Left_90");
+        Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);
+        Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
+        Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
     }
 }
 
