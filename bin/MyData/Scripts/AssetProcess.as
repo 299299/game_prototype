@@ -21,6 +21,8 @@ enum RootMotionFlag
     kMotion_ZR  = kMotion_Z | kMotion_R,
 };
 
+bool d_log = false;
+
 const String TITLE = "AssetProcess";
 const String TranslateBoneName = "Bip01_$AssimpFbx$_Translation";
 const String RotateBoneName = "Bip01_$AssimpFbx$_Rotation";
@@ -95,7 +97,6 @@ class MotionRig
 };
 
 MotionRig@ curRig;
-bool d_log = false;
 
 Vector3 GetProjectedAxis(MotionRig@ rig, Node@ node, const Vector3&in axis)
 {

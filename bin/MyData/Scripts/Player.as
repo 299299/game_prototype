@@ -74,23 +74,26 @@ class PlayerEvadeState : MultiMotionState
 
 class Player : Character
 {
-    int         combo;
-    int         killed;
-    uint        lastAttackId = M_MAX_UNSIGNED;
-    uint        lightNodeId = M_MAX_UNSIGNED;
+    int             combo;
+    int             killed;
+    uint            lastAttackId = M_MAX_UNSIGNED;
+
+    PhysicsSensor@ sensor;
 
     void ObjectStart()
     {
-        side = 1;
         Character::ObjectStart();
-        AddStates();
-        ChangeState("StandState");
-        lightNodeId = GetScene().GetChild("light").id;
+
+        side = 1;
+        @sensor = PhysicsSensor(sceneNode);
 
         Node@ tailNode = sceneNode.CreateChild("TailNode");
         ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
         emitter.effect = cache.GetResource("ParticleEffect", "Particle/Tail.xml");
         tailNode.enabled = false;
+
+        AddStates();
+        ChangeState("StandState");
     }
 
     void AddStates()
@@ -484,12 +487,6 @@ class Player : Character
         SendEvent("CameraEvent", data);
     }
 
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        Character::DebugDraw(debug);
-        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
-    }
-
     bool ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
     {
         if (bAttack && gInput.IsAttackPressed())
@@ -565,19 +562,45 @@ class Player : Character
         Character::SetTarget(t);
     }
 
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        Character::DebugDraw(debug);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
+        sensor.DebugDraw(debug);
+
+        //DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1,0.5,0), 2.0f);
+        //debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
+        //debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, YELLOW, false);
+        //DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, BLUE, COLLISION_RADIUS);
+        /*
+        Node@ handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
+        Node@ handNode_R = renderNode.GetChild("Bip01_R_Hand", true);
+        Node@ footNode_L = renderNode.GetChild("Bip01_L_Foot", true);
+        Node@ footNode_R = renderNode.GetChild("Bip01_R_Foot", true);
+        float radius = attackRadius;
+        Sphere sp;
+        sp.Define(handNode_L.worldPosition, radius);
+        debug.AddSphere(sp, Color(0, 1, 0));
+        sp.Define(handNode_R.worldPosition, radius);
+        debug.AddSphere(sp, Color(0, 1, 0));
+        sp.Define(footNode_L.worldPosition, radius);
+        debug.AddSphere(sp, Color(0, 1, 0));
+        sp.Define(footNode_R.worldPosition, radius);
+        debug.AddSphere(sp, Color(0, 1, 0));
+        */
+    }
+
     void Update(float dt)
     {
-        if (game_type == 0)
-        {
-            Node@ lightNode = GetScene().GetNode(lightNodeId);
-            if (lightNode !is null)
-            {
-                Vector3 v = sceneNode.worldPosition;
-                float h = lightNode.worldPosition.y;
-                lightNode.worldPosition = Vector3(v.x, h, v.z);
-            }
-        }
-
+        sensor.Update(dt);
         Character::Update(dt);
+    }
+
+    void SetVelocity(const Vector3&in vel)
+    {
+        if (!sensor.grounded)
+            Character::SetVelocity(vel + Vector3(0, -9.8f, 0));
+        else
+            Character::SetVelocity(vel);
     }
 };
