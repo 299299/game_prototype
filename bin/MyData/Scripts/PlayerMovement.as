@@ -119,7 +119,7 @@ class PlayerRunState : SingleMotionState
 
         if (gInput.IsSlidePressed())
         {
-            ownner.ChangeState("PlayerSlideInState");
+            ownner.ChangeState("SlideInState");
             return;
         }
 
@@ -168,21 +168,83 @@ class PlayerRunTurn180State : SingleMotionState
 
 class PlayerSlideInState : SingleMotionState
 {
+    int state = 0;
+    float slideTimer = 1.0f;
+    Vector3 idleVelocity = Vector3(0, 0, 10);
+
     PlayerSlideInState(Character@ c)
     {
         super(c);
         SetName("SlideInState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
     }
-};
 
-class PlayerSlideIdleState : SingleMotionState
-{
-    PlayerSlideIdleState(Character@ c)
+    void OnMotionFinished()
     {
-        super(c);
-        SetName("SlideIdleState");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        state = 1;
+        timeInState = 0.0f;
+    }
+
+    void Update(float dt)
+    {
+        if (state == 0)
+        {
+            SingleMotionState::Update(dt);
+        }
+        else if (state == 1)
+        {
+            if (timeInState >= slideTimer)
+            {
+                int index = 0;
+                if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary() && gInput.IsRunHolding())
+                {
+                    index = 1;
+                }
+                ownner.GetNode().vars[ANIMATION_INDEX] = index;
+                ownner.ChangeState("SlideOutState");
+                return;
+            }
+            if (collision_type == 0)
+            {
+                Vector3 oldPos = ownner.GetNode().worldPosition;
+                oldPos += (ownner.GetNode().worldRotation * idleVelocity * dt);
+                ownner.MoveTo(oldPos, dt);
+            }
+            else
+                ownner.SetVelocity(ownner.GetNode().worldRotation * idleVelocity);
+
+            CharacterState::Update(dt);
+        }
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        if (collision_type == 1)
+        {
+            CollisionShape@ shape = ownner.GetNode().GetComponent("CollisionShape");
+            if (shape !is null)
+            {
+                float height = CHARACTER_HEIGHT/2;
+                shape.size = Vector3(COLLISION_RADIUS * 2, height, 0);
+                shape.SetTransform(Vector3(0.0f, height/2, 0.0f), Quaternion());
+            }
+        }
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        if (collision_type == 1)
+        {
+            CollisionShape@ shape = ownner.GetNode().GetComponent("CollisionShape");
+            if (shape !is null)
+            {
+                float height = CHARACTER_HEIGHT;
+                shape.size = Vector3(COLLISION_RADIUS * 2, height, 0);
+                shape.SetTransform(Vector3(0.0f, height/2, 0.0f), Quaternion());
+            }
+        }
     }
 };
 
@@ -193,5 +255,15 @@ class PlayerSlideOutState : MultiMotionState
         super(c);
         SetName("SlideOutState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+
+    void OnMotionFinished()
+    {
+        if (selectIndex == 1)
+        {
+            ownner.ChangeState("RunState");
+            return;
+        }
+        MultiMotionState::OnMotionFinished();
     }
 };

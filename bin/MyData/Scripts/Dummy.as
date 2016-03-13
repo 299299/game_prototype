@@ -292,3 +292,47 @@ else if (key == 'F')
     ctl.SetSpeed(GetAnimationName(name1), 1.0);
 }
 
+class PlayerSlideIdleState : CharacterState
+{
+    String animation;
+    float slideTimer = 2.0f;
+
+    PlayerSlideIdleState(Character@ c)
+    {
+        super(c);
+        SetName("SlideIdleState");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetTarget(null);
+        ownner.PlayAnimation(animation, LAYER_MOVE, true, 0.0f);
+        ownner.SetVelocity(Vector3(0,0,0));
+
+        CharacterState::Enter(lastState);
+    }
+};
+
+class BruceSlideIdleState : PlayerSlideIdleState
+{
+    BruceSlideIdleState(Character@ c)
+    {
+        super(c);
+        animation = GetAnimationName("BM_Climb/Slide_Floor_Idle");
+
+        Animation@ anim = cache.GetResource("Animation", animation);
+        AnimationTrack@ track = anim.CreateTrack(TranslateBoneName);
+        AnimationTrack@ track1 = anim.tracks["Bip01_L_Foot"];
+        uint n = track1.numKeyFrames;
+        track.channelMask = CHANNEL_POSITION;
+        for (uint i=0; i<track1.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf;
+            kf.time = track1.keyFrames[i].time;
+            kf.position = Vector3(0, 0.385f, 0);
+            track.AddKeyFrame(kf);
+        }
+    }
+};
+

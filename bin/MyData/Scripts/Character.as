@@ -856,7 +856,6 @@ class Character : GameObject
             shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
         }
 
-
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
@@ -934,6 +933,11 @@ class Character : GameObject
     {
         if (body !is null)
             body.linearVelocity = vel;
+    }
+
+    Vector3 GetVelocity()
+    {
+        return body !is null ? body.linearVelocity : Vector3(0, 0, 0);
     }
 
     void MoveTo(const Vector3& position, float dt)

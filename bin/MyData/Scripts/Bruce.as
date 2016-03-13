@@ -241,15 +241,6 @@ class BruceSlideInState : PlayerSlideInState
     }
 };
 
-class BruceSlideIdleState : PlayerSlideIdleState
-{
-    BruceSlideIdleState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Climb/Slide_Floor_Idle");
-    }
-};
-
 class BruceSlideOutState : PlayerSlideOutState
 {
     BruceSlideOutState(Character@ c)
@@ -258,6 +249,37 @@ class BruceSlideOutState : PlayerSlideOutState
         String preFix = "BM_Climb/";
         AddMotion(preFix + "Slide_Floor_Stop");
         AddMotion(preFix + "Slide_Floor_Out");
+    }
+};
+
+class Bruce : Player
+{
+    void AddStates()
+    {
+        stateMachine.AddState(BruceStandState(this));
+        stateMachine.AddState(BruceTurnState(this));
+        stateMachine.AddState(BruceWalkState(this));
+        stateMachine.AddState(BruceRunState(this));
+        stateMachine.AddState(BruceRunToStandState(this));
+        stateMachine.AddState(BruceRunTurn180State(this));
+        stateMachine.AddState(BruceEvadeState(this));
+        stateMachine.AddState(AnimationTestState(this));
+
+        if (game_type == 0)
+        {
+            stateMachine.AddState(BruceAttackState(this));
+            stateMachine.AddState(BruceCounterState(this));
+            stateMachine.AddState(BruceHitState(this));
+            stateMachine.AddState(BruceDeadState(this));
+            stateMachine.AddState(BruceBeatDownHitState(this));
+            stateMachine.AddState(BruceBeatDownEndState(this));
+            stateMachine.AddState(BruceTransitionState(this));
+        }
+        else if (game_type == 1)
+        {
+            stateMachine.AddState(BruceSlideInState(this));
+            stateMachine.AddState(BruceSlideOutState(this));
+        }
     }
 };
 
@@ -332,9 +354,8 @@ void CreateBruceMotions()
     else if (game_type == 1)
     {
         preFix = "BM_Climb/";
-        Global_CreateMotion(preFix + "Slide_Floor_Idle");
-        Global_CreateMotion(preFix + "Slide_Floor_In");
-        Global_CreateMotion(preFix + "Slide_Floor_Out");
+        Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
+        Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
         Global_CreateMotion(preFix + "Slide_Floor_Stop");
     }
 }
@@ -576,34 +597,3 @@ void AddBruceAnimationTriggers()
         AddBruceCombatAnimationTriggers();
 }
 
-class Bruce : Player
-{
-    void AddStates()
-    {
-        stateMachine.AddState(BruceStandState(this));
-        stateMachine.AddState(BruceTurnState(this));
-        stateMachine.AddState(BruceWalkState(this));
-        stateMachine.AddState(BruceRunState(this));
-        stateMachine.AddState(BruceRunToStandState(this));
-        stateMachine.AddState(BruceRunTurn180State(this));
-        stateMachine.AddState(BruceEvadeState(this));
-        stateMachine.AddState(AnimationTestState(this));
-
-        if (game_type == 0)
-        {
-            stateMachine.AddState(BruceAttackState(this));
-            stateMachine.AddState(BruceCounterState(this));
-            stateMachine.AddState(BruceHitState(this));
-            stateMachine.AddState(BruceDeadState(this));
-            stateMachine.AddState(BruceBeatDownHitState(this));
-            stateMachine.AddState(BruceBeatDownEndState(this));
-            stateMachine.AddState(BruceTransitionState(this));
-        }
-        else if (game_type == 1)
-        {
-            stateMachine.AddState(BruceSlideInState(this));
-            stateMachine.AddState(BruceSlideIdleState(this));
-            stateMachine.AddState(BruceSlideOutState(this));
-        }
-    }
-};

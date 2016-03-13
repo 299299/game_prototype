@@ -111,7 +111,10 @@ class FSM
         State@ newState = FindState(nameHash);
 
         if (newState is null)
+        {
+            Print("new-state not found " + nameHash.ToString());
             return false;
+        }
 
         if (currentState is newState) {
             // Print("same state !!!");

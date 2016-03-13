@@ -505,6 +505,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         Thug@ thug = cast<Thug>(n.scriptObject);
         thug.ChangeState("HitState");
     }
+    else if (key == KEY_9)
+    {
+        Player@ player = GetPlayer();
+        if (player !is null)
+            player.ChangeState("SlideInState");
+    }
 }
 
 void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
