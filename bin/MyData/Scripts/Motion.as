@@ -205,9 +205,14 @@ class Motion
         rotateAngle = ProcessAnimation(animationName, motionFlag, allowMotion, rotateAngle, motionKeys, startFromOrigin);
 
         SetEndFrame(endFrame);
-        Vector4 v = motionKeys[0];
-        Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
-        endDistance = Vector3(diff.x, diff.y, diff.z).length;
+
+        if (!motionKeys.empty)
+        {
+            Vector4 v = motionKeys[0];
+            Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
+            endDistance = Vector3(diff.x, diff.y, diff.z).length;
+        }
+
         processed = true;
 
         if (d_log)
