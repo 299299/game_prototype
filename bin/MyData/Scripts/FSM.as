@@ -109,6 +109,10 @@ class FSM
     bool ChangeState(const StringHash&in nameHash)
     {
         State@ newState = FindState(nameHash);
+
+        if (newState is null)
+            return false;
+
         if (currentState is newState) {
             // Print("same state !!!");
             if (!currentState.CanReEntered())

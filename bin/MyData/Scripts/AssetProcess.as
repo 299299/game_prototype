@@ -223,6 +223,12 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     }
 
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    if (translateTrack is null)
+    {
+        Print(animationFile + " translation track not found!!!");
+        return 0;
+    }
+
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
     Node@ rotateNode = curRig.rotateNode;

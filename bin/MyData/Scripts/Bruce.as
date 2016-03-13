@@ -232,6 +232,35 @@ class BruceTransitionState : PlayerTransitionState
     }
 };
 
+class BruceSlideInState : PlayerSlideInState
+{
+    BruceSlideInState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Climb/Slide_Floor_In");
+    }
+};
+
+class BruceSlideIdleState : PlayerSlideIdleState
+{
+    BruceSlideIdleState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Climb/Slide_Floor_Idle");
+    }
+};
+
+class BruceSlideOutState : PlayerSlideOutState
+{
+    BruceSlideOutState(Character@ c)
+    {
+        super(c);
+        String preFix = "BM_Climb/";
+        AddMotion(preFix + "Slide_Floor_Stop");
+        AddMotion(preFix + "Slide_Floor_Out");
+    }
+};
+
 void CreateBruceCombatMotions()
 {
     String preFix = "BM_HitReaction/";
@@ -300,6 +329,14 @@ void CreateBruceMotions()
 
     if (game_type == 0)
         CreateBruceCombatMotions();
+    else if (game_type == 1)
+    {
+        preFix = "BM_Climb/";
+        Global_CreateMotion(preFix + "Slide_Floor_Idle");
+        Global_CreateMotion(preFix + "Slide_Floor_In");
+        Global_CreateMotion(preFix + "Slide_Floor_Out");
+        Global_CreateMotion(preFix + "Slide_Floor_Stop");
+    }
 }
 
 void AddBruceCombatAnimationTriggers()
@@ -561,6 +598,12 @@ class Bruce : Player
             stateMachine.AddState(BruceBeatDownHitState(this));
             stateMachine.AddState(BruceBeatDownEndState(this));
             stateMachine.AddState(BruceTransitionState(this));
+        }
+        else if (game_type == 1)
+        {
+            stateMachine.AddState(BruceSlideInState(this));
+            stateMachine.AddState(BruceSlideIdleState(this));
+            stateMachine.AddState(BruceSlideOutState(this));
         }
     }
 };

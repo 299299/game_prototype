@@ -17,6 +17,8 @@
 #include "Scripts/Player.as"
 #include "Scripts/Bruce.as"
 #include "Scripts/Catwoman.as"
+#include "Scripts/PlayerCombat.as"
+#include "Scripts/PlayerMovement.as"
 
 enum RenderFeature
 {
