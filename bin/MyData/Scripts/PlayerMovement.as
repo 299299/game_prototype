@@ -277,30 +277,14 @@ class PlayerSlideInState : SingleMotionState
     {
         SingleMotionState::Enter(lastState);
         if (collision_type == 1)
-        {
-            CollisionShape@ shape = ownner.GetNode().GetComponent("CollisionShape");
-            if (shape !is null)
-            {
-                float height = CHARACTER_HEIGHT/2;
-                shape.size = Vector3(COLLISION_RADIUS * 2, height, 0);
-                shape.SetTransform(Vector3(0.0f, height/2, 0.0f), Quaternion());
-            }
-        }
+            ownner.SetHeight(CHARACTER_HEIGHT/2);
     }
 
     void Exit(State@ nextState)
     {
         SingleMotionState::Exit(nextState);
         if (collision_type == 1)
-        {
-            CollisionShape@ shape = ownner.GetNode().GetComponent("CollisionShape");
-            if (shape !is null)
-            {
-                float height = CHARACTER_HEIGHT;
-                shape.size = Vector3(COLLISION_RADIUS * 2, height, 0);
-                shape.SetTransform(Vector3(0.0f, height/2, 0.0f), Quaternion());
-            }
-        }
+            ownner.SetHeight(CHARACTER_HEIGHT);
     }
 };
 
@@ -338,7 +322,16 @@ class PlayerCrouchState : SingleAnimationState
     {
         ownner.SetTarget(null);
         ownner.SetVelocity(Vector3(0,0,0));
+        if (collision_type == 1)
+            ownner.SetHeight(CHARACTER_HEIGHT/2);
         SingleAnimationState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleAnimationState::Exit(nextState);
+        if (collision_type == 1)
+            ownner.SetHeight(CHARACTER_HEIGHT);
     }
 
     void Update(float dt)
@@ -365,6 +358,30 @@ class PlayerCrouchState : SingleAnimationState
         SingleAnimationState::Update(dt);
     }
 };
+
+class PlayerCrouchTurnState : PlayerTurnState
+{
+    PlayerCrouchTurnState(Character@ c)
+    {
+        super(c);
+        SetName("CrouchTurnState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        PlayerTurnState::Enter(lastState);
+        if (collision_type == 1)
+            ownner.SetHeight(CHARACTER_HEIGHT/2);
+    }
+
+    void Exit(State@ nextState)
+    {
+        PlayerTurnState::Exit(nextState);
+        if (collision_type == 1)
+            ownner.SetHeight(CHARACTER_HEIGHT);
+    }
+};
+
 
 
 class PlayerCrouchMoveState : SingleMotionState
@@ -411,5 +428,14 @@ class PlayerCrouchMoveState : SingleMotionState
         SingleMotionState::Enter(lastState);
         ownner.SetTarget(null);
         combatReady = true;
+        if (collision_type == 1)
+            ownner.SetHeight(CHARACTER_HEIGHT/2);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        if (collision_type == 1)
+            ownner.SetHeight(CHARACTER_HEIGHT);
     }
 };

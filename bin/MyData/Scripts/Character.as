@@ -1393,6 +1393,16 @@ class Character : GameObject
         return lf_to_ground > 1.0f && rf_to_graound > 1.0f;
     }
 
+    void SetHeight(float height)
+    {
+        CollisionShape@ shape = sceneNode.GetComponent("CollisionShape");
+        if (shape !is null)
+        {
+            shape.size = Vector3(COLLISION_RADIUS * 2, height, 0);
+            shape.SetTransform(Vector3(0.0f, height/2, 0.0f), Quaternion());
+        }
+    }
+
     // ===============================================================================================
     //  EVENT HANDLERS
     // ===============================================================================================

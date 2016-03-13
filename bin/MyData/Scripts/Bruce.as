@@ -261,12 +261,11 @@ class BruceCrouchState : PlayerCrouchState
     }
 };
 
-class BruceCrouchTurnState : PlayerTurnState
+class BruceCrouchTurnState : PlayerCrouchTurnState
 {
     BruceCrouchTurnState(Character@ c)
     {
         super(c);
-        SetName("CrouchTurnState");
         AddMotion("BM_Crouch_Turns/Turn_Right_90");
         AddMotion("BM_Crouch_Turns/Turn_Right_180");
         AddMotion("BM_Crouch_Turns/Turn_Left_90");
