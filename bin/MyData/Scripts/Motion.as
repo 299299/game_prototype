@@ -327,6 +327,7 @@ class Motion
 
                 if (collision_type == 0)
                 {
+                    object.motion_deltaPosition += object.motion_velocity * dt;
                     Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_deltaPosition;
                     object.MoveTo(tWorld, dt);
                 }
@@ -350,6 +351,7 @@ class Motion
             {
                 if (collision_type == 0)
                 {
+                    object.motion_deltaPosition += object.motion_velocity * dt;
                     Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
                     object.MoveTo(tWorld, dt);
                 }
@@ -384,7 +386,7 @@ class Motion
             Vector4 tFinnal = GetKey(endTime);
             Vector3 tMotionEnd = Quaternion(0, object.motion_startRotation, 0) * Vector3(tFinnal.x, tFinnal.y, tFinnal.z);
             debug.AddLine(tMotionEnd + object.motion_startPosition,  object.motion_startPosition, Color(0.5f, 0.5f, 0.7f), false);
-            DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, GREEN, 2.0);
+            DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, RED, 2.0);
         }
     }
 

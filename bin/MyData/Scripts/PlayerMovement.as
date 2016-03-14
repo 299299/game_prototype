@@ -168,6 +168,7 @@ class PlayerRunState : SingleMotionState
             ownner.ChangeState("RunTurn180State");
             return;
         }
+
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
         {
             ownner.ChangeState("RunToStandState");
@@ -195,9 +196,13 @@ class PlayerRunState : SingleMotionState
 
     void Enter(State@ lastState)
     {
-        SingleMotionState::Enter(lastState);
+        float blendSpeed = 0.2f;
+        if (lastState.name == "RunTurn180State")
+            blendSpeed = 0.0f;
+        motion.Start(ownner, 0.0f, 0.2f, animSpeed);
         ownner.SetTarget(null);
         combatReady = true;
+        CharacterState::Enter(lastState);
     }
 };
 
@@ -213,11 +218,67 @@ class PlayerRunToStandState : SingleMotionState
 
 class PlayerRunTurn180State : SingleMotionState
 {
+    Vector3   targetPos;
+    float     targetAngle;
+    float     yawPerSec;
+    int       state;
+    float     adjustTime = 0.78f;
+
     PlayerRunTurn180State(Character@ c)
     {
         super(c);
         SetName("RunTurn180State");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        targetAngle = AngleDiff(ownner.GetTargetAngle());
+        Vector4 tFinnal = motion.GetKey(motion.endTime);
+        Vector4 t1 = motion.GetKey(0.78f);
+        float dist = Abs(t1.z - tFinnal.z);
+        targetPos = ownner.GetNode().worldPosition + Quaternion(0, targetAngle, 0) * Vector3(0, 0, dist);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+    }
+
+    void Update(float dt)
+    {
+        if (state == 0)
+        {
+            if (timeInState >= 0.75f)
+            {
+                state = 1;
+                ownner.motion_rotateEnabled = false;
+                ownner.motion_translateEnabled = false;
+
+                float timeLeft = motion.endTime - timeInState;
+                Vector3 diff = targetPos - ownner.GetNode().worldPosition;
+                diff.y = 0;
+                ownner.SetVelocity(diff / timeLeft);
+
+                float a = ownner.GetCharacterAngle();
+                float a_diff = AngleDiff(targetAngle - a);
+                yawPerSec = a_diff / timeLeft;
+            }
+        }
+        else if (state == 1)
+        {
+            ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
+        }
+
+        SingleMotionState::Update(dt);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        SingleMotionState::DebugDraw(debug);
+        DebugDrawDirection(debug, ownner.GetNode(), targetAngle, Color(0.75f, 0.5f, 0.45f), 2.0f);
+        debug.AddCross(targetPos, 0.5f, YELLOW, false);
     }
 };
 

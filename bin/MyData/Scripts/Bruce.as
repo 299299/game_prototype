@@ -373,7 +373,7 @@ void CreateBruceMotions()
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Run_Forward", kMotion_XZR, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Run_Right_Passing_To_Stand");
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180");
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR);
     Global_AddAnimation(preFix + "Stand_Idle");
 
     preFix = "BM_Combat/";

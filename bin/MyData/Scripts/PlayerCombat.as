@@ -102,7 +102,6 @@ class PlayerAttackState : CharacterState
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
         {
-            ownner.motion_deltaPosition += movePerSec * dt;
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);

@@ -236,7 +236,7 @@ class SingleMotionState : CharacterState
 
     void Enter(State@ lastState)
     {
-        motion.Start(ownner, 0.0f, 0.1f, animSpeed);
+        motion.Start(ownner, 0.0f, 0.2f, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -290,7 +290,7 @@ class MultiMotionState : CharacterState
 
         if (d_log)
             Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
-        motions[selectIndex].Start(ownner, 0.0f, 0.1f, animSpeed);
+        motions[selectIndex].Start(ownner, 0.0f, 0.2f, animSpeed);
         CharacterState::Enter(lastState);
     }
 
