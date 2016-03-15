@@ -369,8 +369,8 @@ class Motion
         }
 
         bool bFinished =  localTime >= endTime;
-        if (bFinished)
-            object.SetVelocity(Vector3(0, 0, 0));
+        //if (bFinished)
+        //    object.SetVelocity(Vector3(0, 0, 0));
         return bFinished;
     }
 

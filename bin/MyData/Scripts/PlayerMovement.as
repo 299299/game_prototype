@@ -159,9 +159,6 @@ class PlayerRunState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff();
-        Node@ _node = ownner.GetNode();
-        _node.Yaw(characterDifference * turnSpeed * dt);
-        motion.Move(ownner, dt);
         // if the difference is large, then turn 180 degrees
         if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
@@ -191,6 +188,10 @@ class PlayerRunState : SingleMotionState
             return;
         }
 
+        Node@ _node = ownner.GetNode();
+        _node.Yaw(characterDifference * turnSpeed * dt);
+        motion.Move(ownner, dt);
+
         CharacterState::Update(dt);
     }
 
@@ -198,8 +199,8 @@ class PlayerRunState : SingleMotionState
     {
         float blendSpeed = 0.2f;
         if (lastState.name == "RunTurn180State")
-            blendSpeed = 0.0f;
-        motion.Start(ownner, 0.0f, 0.2f, animSpeed);
+            blendSpeed = 0.01f;
+        motion.Start(ownner, 0.0f, blendSpeed, animSpeed);
         ownner.SetTarget(null);
         combatReady = true;
         CharacterState::Enter(lastState);
@@ -222,7 +223,6 @@ class PlayerRunTurn180State : SingleMotionState
     float     targetAngle;
     float     yawPerSec;
     int       state;
-    float     adjustTime = 0.78f;
 
     PlayerRunTurn180State(Character@ c)
     {
@@ -239,38 +239,16 @@ class PlayerRunTurn180State : SingleMotionState
         Vector4 t1 = motion.GetKey(0.78f);
         float dist = Abs(t1.z - tFinnal.z);
         targetPos = ownner.GetNode().worldPosition + Quaternion(0, targetAngle, 0) * Vector3(0, 0, dist);
-    }
+        float rotation = AngleDiff(ownner.motion_startRotation + tFinnal.w);
+        yawPerSec = AngleDiff(targetAngle - rotation) / motion.endTime;
 
-    void Exit(State@ nextState)
-    {
-        SingleMotionState::Exit(nextState);
+        Vector3 v = Quaternion(0, ownner.motion_startRotation, 0) * Vector3(tFinnal.x, tFinnal.y, tFinnal.z) + ownner.motion_startPosition;
+        ownner.motion_velocity = (targetPos - v) / motion.endTime;
     }
 
     void Update(float dt)
     {
-        if (state == 0)
-        {
-            if (timeInState >= 0.75f)
-            {
-                state = 1;
-                ownner.motion_rotateEnabled = false;
-                ownner.motion_translateEnabled = false;
-
-                float timeLeft = motion.endTime - timeInState;
-                Vector3 diff = targetPos - ownner.GetNode().worldPosition;
-                diff.y = 0;
-                ownner.SetVelocity(diff / timeLeft);
-
-                float a = ownner.GetCharacterAngle();
-                float a_diff = AngleDiff(targetAngle - a);
-                yawPerSec = a_diff / timeLeft;
-            }
-        }
-        else if (state == 1)
-        {
-            ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
-        }
-
+        ownner.motion_deltaRotation += yawPerSec * dt;
         SingleMotionState::Update(dt);
     }
 
