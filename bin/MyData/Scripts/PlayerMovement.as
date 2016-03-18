@@ -509,9 +509,30 @@ class PlayerFallState : SingleAnimationState
         Player@ p = cast<Player@>(ownner);
         if (p.sensor.grounded)
         {
-            ownner.CommonStateFinishedOnGroud();
+            ownner.ChangeState("LandState");
             return;
         }
         SingleAnimationState::Update(dt);
+    }
+
+    void OnMotionFinished()
+    {
+
+    }
+};
+
+class PlayerLandState : SingleAnimationState
+{
+    PlayerLandState(Character@ c)
+    {
+        super(c);
+        SetName("LandState");
+        flags = FLAGS_ATTACK;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetVelocity(Vector3(0, 0, 0));
+        SingleAnimationState::Enter(lastState);
     }
 };

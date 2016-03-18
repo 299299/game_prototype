@@ -288,9 +288,18 @@ class BruceFallState : PlayerFallState
     {
         super(c);
         SetMotion("BM_Movement/Fall");
-        animSpeed = 0.5f;
     }
 };
+
+class BruceLandState : PlayerLandState
+{
+    BruceLandState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Land");
+    }
+};
+
 
 class Bruce : Player
 {
@@ -323,6 +332,7 @@ class Bruce : Player
             stateMachine.AddState(BruceCrouchTurnState(this));
             stateMachine.AddState(BruceCrouchMoveState(this));
             stateMachine.AddState(BruceFallState(this));
+            stateMachine.AddState(BruceLandState(this));
         }
     }
 };
@@ -386,6 +396,7 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 28);
     Global_AddAnimation(preFix + "Stand_Idle");
     Global_AddAnimation(preFix + "Fall");
+    Global_AddAnimation(preFix + "Land");
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");

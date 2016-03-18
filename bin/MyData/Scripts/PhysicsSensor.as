@@ -1,7 +1,7 @@
 
 class PhysicsSensor
 {
-    bool        grounded = false;
+    bool        grounded = true;
     Node@       sceneNode;
     Node@       sensorNode;
 
