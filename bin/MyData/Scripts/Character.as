@@ -1415,6 +1415,10 @@ class Character : GameObject
             cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }
 
+    bool CheckFalling()
+    {
+        return false;
+    }
 };
 
 int DirectionMapToIndex(float directionDifference, int numDirections)

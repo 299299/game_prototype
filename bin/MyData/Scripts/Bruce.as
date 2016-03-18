@@ -277,8 +277,17 @@ class BruceCrouchMoveState : PlayerCrouchMoveState
     BruceCrouchMoveState(Character@ c)
     {
         super(c);
-        SetName("CrouchMoveState");
         SetMotion("BM_Movement/Cover_Run");
+        animSpeed = 0.5f;
+    }
+};
+
+class BruceFallState : PlayerFallState
+{
+    BruceFallState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Fall");
         animSpeed = 0.5f;
     }
 };
@@ -313,6 +322,7 @@ class Bruce : Player
             stateMachine.AddState(BruceCrouchState(this));
             stateMachine.AddState(BruceCrouchTurnState(this));
             stateMachine.AddState(BruceCrouchMoveState(this));
+            stateMachine.AddState(BruceFallState(this));
         }
     }
 };
@@ -375,6 +385,7 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Run_Right_Passing_To_Stand");
     Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 28);
     Global_AddAnimation(preFix + "Stand_Idle");
+    Global_AddAnimation(preFix + "Fall");
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");

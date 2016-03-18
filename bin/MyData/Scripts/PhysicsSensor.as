@@ -3,37 +3,70 @@ class PhysicsSensor
 {
     bool        grounded = false;
     Node@       sceneNode;
+    Node@       sensorNode;
 
-    Vector3     gV1, gV2;
+    CollisionShape@  shape;
+
+    Vector3     start, end;
+
+    float       inAirHeight = 0.0f;
+    int         inAirFrames = 0;
+
+    float       halfHeight = CHARACTER_HEIGHT / 2;
 
     PhysicsSensor(Node@ n)
     {
         sceneNode = n;
+        sensorNode = sceneNode.CreateChild("SensorNode");
+        shape = sensorNode.CreateComponent("CollisionShape");
+        shape.SetCapsule(COLLISION_RADIUS, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
+    }
+
+    ~PhysicsSensor()
+    {
+        shape.Remove();
     }
 
     void Update(float dt)
     {
-        gV1 = sceneNode.worldPosition;
-        gV2 = gV1;
-        gV1.y += CHARACTER_HEIGHT / 2;
-        float addlen = 0.5f;
-        gV2.y -= addlen;
+        start = sceneNode.worldPosition;
+        end = start;
+        start.y += halfHeight;
+        float addlen = 30.0f;
+        end.y -= addlen;
 
-        Ray ray;
-        ray.origin = gV1;
-        ray.direction = (gV2 - gV1).Normalized();
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.ConvexCast(shape, start, Quaternion(), end, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT/2 + addlen, COLLISION_LAYER_LANDSCAPE);
-        grounded = result.body !is null;
+        if (result.body !is null)
+        {
+            end = result.position;
+
+            float h = start.y - end.y;
+            if (h > halfHeight + 0.5f)
+                grounded = false;
+            else
+                grounded = true;
+            inAirHeight = h;
+        }
+        else
+        {
+            grounded = false;
+            inAirHeight = addlen + 1;
+        }
 
         if (grounded)
         {
-            gV2 = result.position;
+            inAirFrames = 0;
+            inAirHeight = 0.0f;
+        }
+        else
+        {
+            inAirFrames ++;
         }
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddLine(gV1, gV2, grounded ? GREEN : RED, false);
+        debug.AddLine(start, end, grounded ? GREEN : RED, false);
     }
 };

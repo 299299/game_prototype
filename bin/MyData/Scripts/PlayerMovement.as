@@ -32,7 +32,12 @@ class PlayerStandState : CharacterState
                 ownner.ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
             else
                 ownner.ChangeState("TurnState");
+
+            return;
         }
+
+        if (ownner.CheckFalling())
+            return;
 
         ownner.ActionCheck(true, true, true, true);
 
@@ -131,6 +136,8 @@ class PlayerWalkState : SingleMotionState
             return;
         }
 
+        if (ownner.CheckFalling())
+            return;
 
         CharacterState::Update(dt);
     }
@@ -187,6 +194,9 @@ class PlayerRunState : SingleMotionState
             ownner.ChangeState("WalkState");
             return;
         }
+
+        if (ownner.CheckFalling())
+            return;
 
         Node@ _node = ownner.GetNode();
         _node.Yaw(characterDifference * turnSpeed * dt);
@@ -380,6 +390,8 @@ class PlayerCrouchState : SingleAnimationState
             ownner.ChangeState("StandState");
             return;
         }
+        if (ownner.CheckFalling())
+            return;
 
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
@@ -459,6 +471,9 @@ class PlayerCrouchMoveState : SingleMotionState
             return;
         }
 
+        if (ownner.CheckFalling())
+            return;
+
         CharacterState::Update(dt);
     }
 
@@ -476,5 +491,27 @@ class PlayerCrouchMoveState : SingleMotionState
         SingleMotionState::Exit(nextState);
         if (collision_type == 1)
             ownner.SetHeight(CHARACTER_HEIGHT);
+    }
+};
+
+
+class PlayerFallState : SingleAnimationState
+{
+    PlayerFallState(Character@ c)
+    {
+        super(c);
+        SetName("FallState");
+        flags = FLAGS_ATTACK;
+    }
+
+    void Update(float dt)
+    {
+        Player@ p = cast<Player@>(ownner);
+        if (p.sensor.grounded)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+        SingleAnimationState::Update(dt);
     }
 };

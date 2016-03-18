@@ -81,6 +81,9 @@ class Player : Character
         if (health <= 0)
             return;
 
+        if (CheckFalling())
+            return;
+
         bool bCrouch = gInput.IsCrouchDown();
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
@@ -439,7 +442,8 @@ class Player : Character
     String GetDebugText()
     {
         return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
-              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + " tAngle=" + GetTargetAngle() + "\n";
+              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + " tAngle=" + GetTargetAngle() +
+              " grounded=" + sensor.grounded + " inAirHeight=" + sensor.inAirHeight + "\n";
     }
 
     void Reset()
@@ -569,5 +573,15 @@ class Player : Character
             Character::SetVelocity(vel + Vector3(0, -9.8f, 0));
         else
             Character::SetVelocity(vel);
+    }
+
+    bool CheckFalling()
+    {
+        if (!sensor.grounded && sensor.inAirHeight > 1.5f)
+        {
+            ChangeState("FallState");
+            return true;
+        }
+        return false;
     }
 };
