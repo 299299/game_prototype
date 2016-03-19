@@ -536,29 +536,9 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
+        debug.AddNode(hipsNode, 0.5f, false);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
         sensor.DebugDraw(debug);
-
-        //DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1,0.5,0), 2.0f);
-        //debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
-        //debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, YELLOW, false);
-        //DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, BLUE, COLLISION_RADIUS);
-        /*
-        Node@ handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
-        Node@ handNode_R = renderNode.GetChild("Bip01_R_Hand", true);
-        Node@ footNode_L = renderNode.GetChild("Bip01_L_Foot", true);
-        Node@ footNode_R = renderNode.GetChild("Bip01_R_Foot", true);
-        float radius = attackRadius;
-        Sphere sp;
-        sp.Define(handNode_L.worldPosition, radius);
-        debug.AddSphere(sp, Color(0, 1, 0));
-        sp.Define(handNode_R.worldPosition, radius);
-        debug.AddSphere(sp, Color(0, 1, 0));
-        sp.Define(footNode_L.worldPosition, radius);
-        debug.AddSphere(sp, Color(0, 1, 0));
-        sp.Define(footNode_R.worldPosition, radius);
-        debug.AddSphere(sp, Color(0, 1, 0));
-        */
     }
 
     void Update(float dt)
@@ -583,5 +563,20 @@ class Player : Character
             return true;
         }
         return false;
+    }
+
+    bool CheckDocking()
+    {
+        if (game_type == 0)
+            return false;
+
+        Line@ l = gLineWorld.GetNearestLine(hipsNode.worldPosition, 6);
+        if (l !is null)
+        {
+            AssignDockLine(l);
+            return false;
+        }
+        else
+            return false;
     }
 };

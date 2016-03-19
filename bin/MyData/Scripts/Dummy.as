@@ -361,3 +361,25 @@ class PlayerStandToCrouchState : SingleMotionState
     }
 };
 
+
+//DebugDrawDirection(debug, sceneNode, GetTargetAngle(), Color(1,0.5,0), 2.0f);
+//debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
+//debug.AddLine(hipsNode.worldPosition, sceneNode.worldPosition, YELLOW, false);
+//DebugDrawDirection(debug, sceneNode, sceneNode.worldRotation, BLUE, COLLISION_RADIUS);
+/*
+Node@ handNode_L = renderNode.GetChild("Bip01_L_Hand", true);
+Node@ handNode_R = renderNode.GetChild("Bip01_R_Hand", true);
+Node@ footNode_L = renderNode.GetChild("Bip01_L_Foot", true);
+Node@ footNode_R = renderNode.GetChild("Bip01_R_Foot", true);
+float radius = attackRadius;
+Sphere sp;
+sp.Define(handNode_L.worldPosition, radius);
+debug.AddSphere(sp, Color(0, 1, 0));
+sp.Define(handNode_R.worldPosition, radius);
+debug.AddSphere(sp, Color(0, 1, 0));
+sp.Define(footNode_L.worldPosition, radius);
+debug.AddSphere(sp, Color(0, 1, 0));
+sp.Define(footNode_R.worldPosition, radius);
+debug.AddSphere(sp, Color(0, 1, 0));
+*/
+

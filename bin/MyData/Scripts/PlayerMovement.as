@@ -39,6 +39,9 @@ class PlayerStandState : CharacterState
         if (ownner.CheckFalling())
             return;
 
+        if (ownner.CheckDocking())
+            return;
+
         if (ownner.ActionCheck(true, true, true, true))
             return;
 
@@ -139,7 +142,8 @@ class PlayerWalkState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-
+        if (ownner.CheckDocking())
+            return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
 
@@ -201,7 +205,8 @@ class PlayerRunState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-
+        if (ownner.CheckDocking())
+            return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
 

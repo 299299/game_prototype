@@ -64,7 +64,8 @@ int test_triple_counter_index = 0;
 int game_type = 1;
 int collision_type = 0;
 
-GameInput @gInput = GameInput();
+GameInput@ gInput = GameInput();
+LineWorld@ gLineWorld = LineWorld();
 
 void Start()
 {
@@ -391,6 +392,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
         Player@ player = GetPlayer();
         if (player !is null)
             player.DebugDraw(debug);
+        gLineWorld.DebugDraw(debug);
     }
     if (drawDebug > 1)
     {
@@ -399,7 +401,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
             em.DebugDraw(debug);
     }
     if (drawDebug > 2)
-        scene_.physicsWorld.DrawDebugGeometry(false);
+        scene_.physicsWorld.DrawDebugGeometry(true);
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)

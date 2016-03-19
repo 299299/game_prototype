@@ -864,6 +864,8 @@ class Character : GameObject
     bool                    motion_translateEnabled = true;
     bool                    motion_rotateEnabled = true;
 
+    Line@                   dockLine;
+
     void ObjectStart()
     {
         sceneNode = node;
@@ -960,7 +962,7 @@ class Character : GameObject
     String GetDebugText()
     {
         String debugText = stateMachine.GetDebugText();
-        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " hips-pos:" + hipsNode.worldPosition.ToString() + " health:" + health + "\n";
+        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " health:" + health + "\n";
         if (animModel.numAnimationStates > 0)
         {
             debugText += "Debug-Animations:\n";
@@ -977,9 +979,7 @@ class Character : GameObject
     void SetVelocity(const Vector3&in vel)
     {
         if (body !is null)
-        {
             body.linearVelocity = vel;
-        }
     }
 
     Vector3 GetVelocity()
@@ -1036,7 +1036,6 @@ class Character : GameObject
     void SetHealth(int h)
     {
         health = h;
-        // sceneNode.vars[HEALTH] = h;
     }
 
     bool CanBeAttacked()
@@ -1065,6 +1064,9 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 0.5f, false);
+
+        if (dockLine !is null)
+            debug.AddLine(dockLine.start, dockLine.end, RED, false);
     }
 
     void TestAnimation(const String&in animationName)
@@ -1418,6 +1420,16 @@ class Character : GameObject
     bool CheckFalling()
     {
         return false;
+    }
+
+    bool CheckDocking()
+    {
+        return false;
+    }
+
+    void AssignDockLine(Line@ l)
+    {
+        @dockLine = l;
     }
 };
 

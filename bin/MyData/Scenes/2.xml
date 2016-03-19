@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="61" />
-	<attribute name="Next Replicated Component ID" value="106" />
-	<attribute name="Next Local Node ID" value="16780684" />
-	<attribute name="Next Local Component ID" value="16778313" />
+	<attribute name="Next Replicated Node ID" value="66" />
+	<attribute name="Next Replicated Component ID" value="111" />
+	<attribute name="Next Local Node ID" value="16780686" />
+	<attribute name="Next Local Component ID" value="16778325" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -140,7 +140,7 @@
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="" />
 			<attribute name="Tags" />
-			<attribute name="Position" value="-0.238449 0.489329 -0.511744" />
+			<attribute name="Position" value="-0.259366 0.489329 -0.511744" />
 			<attribute name="Rotation" value="1 0 0 0" />
 			<attribute name="Scale" value="0.436115 0.349267 1" />
 			<attribute name="Variables" />
@@ -156,6 +156,56 @@
 				<attribute name="Bottom Left Color" value="1 0 0 1" />
 				<attribute name="Bottom Right Color" value="1 0 0 1" />
 				<attribute name="Text Effect" value="Stroke" />
+			</component>
+		</node>
+	</node>
+	<node id="61">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Cover" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-27.4873 1.14133 -12.304" />
+		<attribute name="Rotation" value="0.999999 0.00150597 0 0" />
+		<attribute name="Scale" value="11.768 2.49718 0.083642" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="106">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+		</component>
+		<component type="CollisionShape" id="109" />
+		<component type="RigidBody" id="110">
+			<attribute name="Physics Rotation" value="0.999999 0.00150597 0 0" />
+			<attribute name="Physics Position" value="-27.4873 1.14133 -12.304" />
+		</component>
+		<node id="62">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="start" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.499576 0.5 -0.0122223" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Variables" />
+		</node>
+		<node id="64">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="end" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="0.498365 0.5 -0.0163727" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Variables" />
+		</node>
+		<node id="65">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="text" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.330883 0.460065 -1.95433" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="0.312885 1 1" />
+			<attribute name="Variables" />
+			<component type="Text3D" id="108">
+				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
+				<attribute name="Text" value="I AM A COVER" />
+				<attribute name="Width" value="184" />
 			</component>
 		</node>
 	</node>
