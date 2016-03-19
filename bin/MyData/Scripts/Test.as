@@ -11,6 +11,7 @@
 #include "Scripts/HeadIndicator.as"
 #include "Scripts/Follow.as"
 #include "Scripts/PhysicsSensor.as"
+#include "Scripts/Line.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"

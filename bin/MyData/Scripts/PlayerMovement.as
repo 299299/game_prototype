@@ -39,7 +39,8 @@ class PlayerStandState : CharacterState
         if (ownner.CheckFalling())
             return;
 
-        ownner.ActionCheck(true, true, true, true);
+        if (ownner.ActionCheck(true, true, true, true))
+            return;
 
         if (gInput.IsCrouchDown())
             ownner.ChangeState("CrouchState");
@@ -139,6 +140,9 @@ class PlayerWalkState : SingleMotionState
         if (ownner.CheckFalling())
             return;
 
+        if (ownner.ActionCheck(true, true, true, true))
+            return;
+
         CharacterState::Update(dt);
     }
 
@@ -196,6 +200,9 @@ class PlayerRunState : SingleMotionState
         }
 
         if (ownner.CheckFalling())
+            return;
+
+        if (ownner.ActionCheck(true, true, true, true))
             return;
 
         Node@ _node = ownner.GetNode();
@@ -517,7 +524,6 @@ class PlayerFallState : SingleAnimationState
 
     void OnMotionFinished()
     {
-
     }
 };
 

@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="61" />
 	<attribute name="Next Replicated Component ID" value="106" />
-	<attribute name="Next Local Node ID" value="16780682" />
-	<attribute name="Next Local Component ID" value="16778289" />
+	<attribute name="Next Local Node ID" value="16780684" />
+	<attribute name="Next Local Component ID" value="16778313" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -103,13 +103,14 @@
 			<attribute name="Tags" />
 			<attribute name="Position" value="-0.332364 0.461918 -0.511744" />
 			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Scale" value="0.546925 1 1" />
 			<attribute name="Variables" />
 			<component type="Text3D" id="16778263">
-				<attribute name="Font" value="Font;Fonts/GAEN.ttf" />
+				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
+				<attribute name="Font Size" value="5" />
 				<attribute name="Text" value="I AM A BOX" />
 				<attribute name="Text Alignment" value="Center" />
-				<attribute name="Width" value="70" />
+				<attribute name="Width" value="148" />
 				<attribute name="Color" value="1 0 0 1" />
 				<attribute name="Top Left Color" value="1 0 0 1" />
 				<attribute name="Top Right Color" value="1 0 0 1" />
@@ -139,15 +140,16 @@
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="" />
 			<attribute name="Tags" />
-			<attribute name="Position" value="-0.332364 0.461918 -0.511744" />
+			<attribute name="Position" value="-0.238449 0.489329 -0.511744" />
 			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Scale" value="0.436115 0.349267 1" />
 			<attribute name="Variables" />
 			<component type="Text3D" id="16778276">
-				<attribute name="Font" value="Font;Fonts/GAEN.ttf" />
+				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
+				<attribute name="Font Size" value="5" />
 				<attribute name="Text" value="I AM A BOX" />
 				<attribute name="Text Alignment" value="Center" />
-				<attribute name="Width" value="70" />
+				<attribute name="Width" value="148" />
 				<attribute name="Color" value="1 0 0 1" />
 				<attribute name="Top Left Color" value="1 0 0 1" />
 				<attribute name="Top Right Color" value="1 0 0 1" />
