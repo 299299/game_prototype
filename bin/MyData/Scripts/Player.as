@@ -558,7 +558,7 @@ class Player : Character
 
     bool CheckFalling()
     {
-        if (!sensor.grounded && sensor.inAirHeight > 1.5f && applyGravity)
+        if (!sensor.grounded && sensor.inAirHeight > 1.5f && sensor.inAirFrames > 2 && applyGravity)
         {
             ChangeState("FallState");
             return true;

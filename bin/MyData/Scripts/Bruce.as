@@ -309,6 +309,23 @@ class BruceCoverState : PlayerCoverState
     }
 };
 
+class BruceCoverRunState : PlayerCoverRunState
+{
+    BruceCoverRunState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Cover_Run");
+    }
+};
+
+class BruceCoverTransitionState : PlayerCoverTransitionState
+{
+    BruceCoverTransitionState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Cover_Transition");
+    }
+};
 
 class Bruce : Player
 {
@@ -343,6 +360,8 @@ class Bruce : Player
             stateMachine.AddState(BruceFallState(this));
             stateMachine.AddState(BruceLandState(this));
             stateMachine.AddState(BruceCoverState(this));
+            stateMachine.AddState(BruceCoverRunState(this));
+            stateMachine.AddState(BruceCoverTransitionState(this));
         }
     }
 };
@@ -407,6 +426,7 @@ void CreateBruceMotions()
     Global_AddAnimation(preFix + "Stand_Idle");
     Global_AddAnimation(preFix + "Fall");
     Global_AddAnimation(preFix + "Land");
+    Global_CreateMotion(preFix + "Cover_Transition", kMotion_XZR, kMotion_R);
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");

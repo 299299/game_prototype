@@ -45,7 +45,7 @@ class PlayerStandState : CharacterState
         if (ownner.ActionCheck(true, true, true, true))
             return;
 
-        if (gInput.IsCrouchDown())
+        if (timeInState > 0.25f && gInput.IsCrouchDown())
             ownner.ChangeState("CrouchState");
 
         CharacterState::Update(dt);
@@ -83,11 +83,11 @@ class PlayerTurnState : MultiMotionState
         ownner.SetTarget(null);
         MultiMotionState::Enter(lastState);
         Motion@ motion = motions[selectIndex];
-        Vector4 endKey = motion.GetKey(motion.endTime);
-        float motionTargetAngle = ownner.motion_startRotation + endKey.w;
+        float alignTime = motion.endTime;
+        float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
         float targetAngle = ownner.GetTargetAngle();
         float diff = AngleDiff(targetAngle - motionTargetAngle);
-        turnSpeed = diff / motion.endTime;
+        turnSpeed = diff / alignTime;
         combatReady = true;
         Print("motionTargetAngle=" + String(motionTargetAngle) + " targetAngle=" + String(targetAngle) + " diff=" + String(diff) + " turnSpeed=" + String(turnSpeed));
     }
@@ -257,15 +257,15 @@ class PlayerRunTurn180State : SingleMotionState
     {
         SingleMotionState::Enter(lastState);
         targetAngle = AngleDiff(ownner.GetTargetAngle());
-        Vector4 tFinnal = motion.GetKey(motion.endTime);
+        float alignTime = motion.endTime;
+        Vector4 tFinnal = motion.GetKey(alignTime);
         Vector4 t1 = motion.GetKey(0.78f);
         float dist = Abs(t1.z - tFinnal.z);
         targetPos = ownner.GetNode().worldPosition + Quaternion(0, targetAngle, 0) * Vector3(0, 0, dist);
-        float rotation = AngleDiff(ownner.motion_startRotation + tFinnal.w);
-        yawPerSec = AngleDiff(targetAngle - rotation) / motion.endTime;
-
-        Vector3 v = Quaternion(0, ownner.motion_startRotation, 0) * Vector3(tFinnal.x, tFinnal.y, tFinnal.z) + ownner.motion_startPosition;
-        ownner.motion_velocity = (targetPos - v) / motion.endTime;
+        float rotation = motion.GetFutureRotation(ownner, alignTime);
+        yawPerSec = AngleDiff(targetAngle - rotation) / alignTime;
+        Vector3 v = motion.GetFuturePosition(ownner, alignTime);
+        ownner.motion_velocity = (targetPos - v) / alignTime;
     }
 
     void Update(float dt)
@@ -397,7 +397,7 @@ class PlayerCrouchState : SingleAnimationState
 
     void Update(float dt)
     {
-        if (!gInput.IsCrouchDown())
+        if (timeInState > 0.25f && !gInput.IsCrouchDown())
         {
             ownner.ChangeState("StandState");
             return;
@@ -552,10 +552,10 @@ class PlayerCoverState : SingleAnimationState
 {
     Line@  dockLine;
     int    state;
-    float  alignTime = 0.5f;
+    float  alignTime = 0.3f;
     float  yawPerSec;
     float  startYaw;
-
+    float  dockDirection;
     Vector3 dockPosition;
 
     PlayerCoverState(Character@ c)
@@ -569,26 +569,47 @@ class PlayerCoverState : SingleAnimationState
     void Enter(State@ lastState)
     {
         ownner.SetVelocity(Vector3(0, 0, 0));
-        dockPosition = dockLine.Project(ownner.hipsNode.worldPosition);
+
+        Vector3 proj = dockLine.Project(ownner.hipsNode.worldPosition);
+        dockPosition = proj;
         dockPosition.y = ownner.GetNode().worldPosition.y;
 
         Vector3 diff = dockPosition - ownner.GetNode().worldPosition;
         ownner.SetVelocity(diff / alignTime);
+        startYaw = AngleDiff(ownner.GetNode().worldRotation.eulerAngles.y);
 
-        startYaw = ownner.GetNode().worldRotation.eulerAngles.y;
+        if (lastState.name != "CoverTransitionState")
+        {
+            alignTime = 0.4f;
+
+            float to_start = (proj - dockLine.ray.origin).lengthSquared;
+            float to_end = (proj - dockLine.end).lengthSquared;
+
+            Vector3 dir;
+            if (to_start < to_end)
+                dir = dockLine.ray.origin - dockLine.end;
+            else
+                dir = dockLine.end - dockLine.ray.origin;
+
+            dockDirection = Atan2(dir.x, dir.z);
+        }
+        else
+        {
+            alignTime = 0.1f;
+            dockDirection += 180;
+            dockDirection = AngleDiff(dockDirection);
+        }
+
+        yawPerSec = AngleDiff(dockDirection - startYaw) / alignTime;
+        state = 0;
 
         SingleAnimationState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        @dockLine = null;
-        SingleAnimationState::Exit(nextState);
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(dockPosition, 0.5f, RED, false);
+        DebugDrawDirection(debug, dockPosition, dockDirection, YELLOW, 2.0f);
     }
 
     void Update(float dt)
@@ -606,9 +627,73 @@ class PlayerCoverState : SingleAnimationState
         }
         else if (state == 1)
         {
-
+            if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+            {
+                // Print("CoverIdle->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+                float characterDifference = ownner.ComputeAngleDiff();
+                // if the difference is large, then turn 180 degrees
+                if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
+                {
+                    ownner.ChangeState("CoverTransitionState");
+                    return;
+                }
+                else
+                {
+                    ownner.ChangeState("CoverRunState");
+                    return;
+                }
+            }
         }
         SingleAnimationState::Update(dt);
+    }
+};
+
+
+class PlayerCoverRunState : SingleMotionState
+{
+    PlayerCoverRunState(Character@ c)
+    {
+        super(c);
+        SetName("CoverRunState");
+        flags = FLAGS_MOVING;
+    }
+
+    void Update(float dt)
+    {
+        SingleMotionState::Update(dt);
+    }
+};
+
+class PlayerCoverTransitionState : SingleMotionState
+{
+    float yawPerSec;
+
+    PlayerCoverTransitionState(Character@ c)
+    {
+        super(c);
+        SetName("CoverTransitionState");
+    }
+
+    void Update(float dt)
+    {
+        ownner.motion_deltaRotation += yawPerSec * dt;
+        SingleMotionState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+
+        float curAngle = ownner.GetNode().worldRotation.eulerAngles.y;
+        float targetAngle = AngleDiff(curAngle + 180);
+        float alignTime = motion.endTime;
+        float motionAngle = motion.GetFutureRotation(ownner, alignTime);
+        yawPerSec = AngleDiff(targetAngle - motionAngle) / alignTime;
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("CoverState");
     }
 };
 

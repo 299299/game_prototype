@@ -92,13 +92,13 @@ void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, const Quaternion&in r
 {
     Vector3 dir = rotation * Vector3(0, 0, 1);
     float angle = Atan2(dir.x, dir.z);
-    DebugDrawDirection(debug, _node, angle, color, radius, yAdjust);
-}
-
-void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
-{
     Vector3 start = _node.worldPosition;
     start.y += yAdjust;
+    DebugDrawDirection(debug, start, angle, color, radius, yAdjust);
+}
+
+void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
+{
     Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
     debug.AddLine(start, end, color, false);
 }
@@ -283,7 +283,10 @@ class Motion
 
     float GetFutureRotation(Character@ object, float t)
     {
-        return AngleDiff(object.GetNode().worldRotation.eulerAngles.y + GetKey(t).w);
+        if (looped)
+            return AngleDiff(object.GetNode().worldRotation.eulerAngles.y + GetKey(t).w);
+        else
+            return AngleDiff(object.motion_startRotation + GetKey(t).w);
     }
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
