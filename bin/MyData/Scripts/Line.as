@@ -11,9 +11,16 @@ enum LineType
 
 class Line
 {
-    Vector3         start;
+    Ray             ray;
     Vector3         end;
+    float           length;
+    float           lengthSquared;
     int             type;
+
+    Vector3 Project(const Vector3& charPos)
+    {
+        return ray.Project(charPos);
+    }
 };
 
 
@@ -36,9 +43,9 @@ class LineWorld
         for (uint i=0; i<lines.length; ++i)
         {
             Line@ l = lines[i];
-            debug.AddCross(l.start, 0.25f, RED, false);
+            debug.AddCross(l.ray.origin, 0.25f, RED, false);
             debug.AddCross(l.end, 0.25f, BLUE, false);
-            debug.AddLine(l.start, l.end, debugColors[l.type], false);
+            debug.AddLine(l.ray.origin, l.end, debugColors[l.type], false);
         }
     }
 
@@ -55,9 +62,13 @@ class LineWorld
             if (_node.name.StartsWith("Cover"))
             {
                 Line@ l = Line();
-                l.start = _node.GetChild("start", false).worldPosition;
+                l.ray.origin = _node.GetChild("start", false).worldPosition;
                 l.end = _node.GetChild("end", false).worldPosition;
                 l.type = LINE_COVER;
+                Vector3 dir = l.end - l.ray.origin;
+                l.ray.direction = dir.Normalized();
+                l.length = dir.length;
+                l.lengthSquared = dir.lengthSquared;
                 AddLine(l);
             }
         }
@@ -70,8 +81,14 @@ class LineWorld
         for (uint i=0; i<lines.length; ++i)
         {
             Line@ l = lines[i];
-            float dist = DistToLine(charPos, l.start, l.end);
-            // Print("DistToLine " + i + " = " + dist);
+            Vector3 project = l.ray.Project(charPos);
+            float l_to_start = (charPos - l.ray.origin).lengthSquared;
+            float l_to_end = (charPos - l.end).lengthSquared;
+            if (l_to_start > l.lengthSquared || l_to_end > l.lengthSquared)
+                continue;
+
+            float dist = (charPos - project).length;
+            // Print("dist = " + dist);
             if (dist < minDist)
             {
                 minDist = dist;
@@ -79,31 +96,5 @@ class LineWorld
             }
         }
         return ret;
-    }
-
-    //-- get the minimum distance from a point to a line
-    float DistToLine(const Vector3& point, const Vector3& start, const Vector3& end)
-    {
-        Vector3 lineVector = end - start;
-        Vector3 lineToPoint = point - start;
-
-        //-- project the point onto the line
-        float t = lineToPoint.DotProduct(lineVector);
-
-        // -- clamp at the minimum boundary
-        if (t < 0)
-            return lineToPoint.length;
-
-        // -- normalize scale and clamp at max boundary
-        t /= lineVector.lengthSquared;
-        if (t > 1)
-            t = 1;
-
-        //-- get the minimum vector from the line to the point
-        lineToPoint = start + lineVector * t;
-        lineVector = point - lineToPoint;
-
-        // -- return the length of the minimum vector
-        return lineVector.length;
     }
 };

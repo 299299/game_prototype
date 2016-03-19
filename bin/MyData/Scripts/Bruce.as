@@ -300,6 +300,15 @@ class BruceLandState : PlayerLandState
     }
 };
 
+class BruceCoverState : PlayerCoverState
+{
+    BruceCoverState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Movement/Cover_Idle");
+    }
+};
+
 
 class Bruce : Player
 {
@@ -333,6 +342,7 @@ class Bruce : Player
             stateMachine.AddState(BruceCrouchMoveState(this));
             stateMachine.AddState(BruceFallState(this));
             stateMachine.AddState(BruceLandState(this));
+            stateMachine.AddState(BruceCoverState(this));
         }
     }
 };
@@ -418,6 +428,7 @@ void CreateBruceMotions()
         Global_AddAnimation(preFix + "Crouch_Idle");
         // Global_CreateMotion(preFix + "Crouch_Walk_Slow", kMotion_XZR, kMotion_Z, -1, true);
         Global_CreateMotion(preFix + "Cover_Run", kMotion_XZR, kMotion_Z, -1, true);
+        Global_AddAnimation(preFix + "Cover_Idle");
 
         preFix = "BM_Crouch_Turns/";
         Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);

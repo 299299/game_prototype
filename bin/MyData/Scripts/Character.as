@@ -177,6 +177,7 @@ class SingleAnimationState : CharacterState
     String animation;
     bool looped = false;
     float stateTime = -1;
+    float blendTime = 0.2f;
 
     SingleAnimationState(Character@ c)
     {
@@ -200,7 +201,7 @@ class SingleAnimationState : CharacterState
 
     void Enter(State@ lastState)
     {
-        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 0.0f, animSpeed);
+        ownner.PlayAnimation(animation, LAYER_MOVE, looped, blendTime, 0.0f, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -864,8 +865,6 @@ class Character : GameObject
     bool                    motion_translateEnabled = true;
     bool                    motion_rotateEnabled = true;
 
-    Line@                   dockLine;
-
     void ObjectStart()
     {
         sceneNode = node;
@@ -1064,9 +1063,6 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 0.5f, false);
-
-        if (dockLine !is null)
-            debug.AddLine(dockLine.start, dockLine.end, RED, false);
     }
 
     void TestAnimation(const String&in animationName)
@@ -1425,11 +1421,6 @@ class Character : GameObject
     bool CheckDocking()
     {
         return false;
-    }
-
-    void AssignDockLine(Line@ l)
-    {
-        @dockLine = l;
     }
 };
 

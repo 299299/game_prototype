@@ -547,3 +547,68 @@ class PlayerLandState : SingleAnimationState
         SingleAnimationState::Enter(lastState);
     }
 };
+
+class PlayerCoverState : SingleAnimationState
+{
+    Line@  dockLine;
+    int    state;
+    float  alignTime = 0.5f;
+    float  yawPerSec;
+    float  startYaw;
+
+    Vector3 dockPosition;
+
+    PlayerCoverState(Character@ c)
+    {
+        super(c);
+        SetName("CoverState");
+        looped = true;
+        blendTime = alignTime;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetVelocity(Vector3(0, 0, 0));
+        dockPosition = dockLine.Project(ownner.hipsNode.worldPosition);
+        dockPosition.y = ownner.GetNode().worldPosition.y;
+
+        Vector3 diff = dockPosition - ownner.GetNode().worldPosition;
+        ownner.SetVelocity(diff / alignTime);
+
+        startYaw = ownner.GetNode().worldRotation.eulerAngles.y;
+
+        SingleAnimationState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        @dockLine = null;
+        SingleAnimationState::Exit(nextState);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(dockPosition, 0.5f, RED, false);
+    }
+
+    void Update(float dt)
+    {
+        if (state == 0)
+        {
+            if (timeInState >= alignTime)
+            {
+                state = 1;
+                ownner.SetVelocity(Vector3(0, 0, 0));
+            }
+
+            startYaw += yawPerSec * dt;
+            ownner.GetNode().worldRotation = Quaternion(0, startYaw, 0);
+        }
+        else if (state == 1)
+        {
+
+        }
+        SingleAnimationState::Update(dt);
+    }
+};
+

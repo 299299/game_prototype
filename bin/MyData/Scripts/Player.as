@@ -28,6 +28,7 @@ class Player : Character
     int             combo;
     int             killed;
     uint            lastAttackId = M_MAX_UNSIGNED;
+    bool            applyGravity = true;
 
     PhysicsSensor@ sensor;
 
@@ -549,7 +550,7 @@ class Player : Character
 
     void SetVelocity(const Vector3&in vel)
     {
-        if (!sensor.grounded)
+        if (!sensor.grounded && applyGravity)
             Character::SetVelocity(vel + Vector3(0, -9.8f, 0));
         else
             Character::SetVelocity(vel);
@@ -557,7 +558,7 @@ class Player : Character
 
     bool CheckFalling()
     {
-        if (!sensor.grounded && sensor.inAirHeight > 1.5f)
+        if (!sensor.grounded && sensor.inAirHeight > 1.5f && applyGravity)
         {
             ChangeState("FallState");
             return true;
@@ -570,10 +571,16 @@ class Player : Character
         if (game_type == 0)
             return false;
 
-        Line@ l = gLineWorld.GetNearestLine(hipsNode.worldPosition, 6);
+        Line@ l = gLineWorld.GetNearestLine(hipsNode.worldPosition, 4);
         if (l !is null)
         {
-            AssignDockLine(l);
+            if (l.type == LINE_COVER)
+            {
+                PlayerCoverState@ s = cast<PlayerCoverState>(FindState("CoverState"));
+                @s.dockLine = l;
+                ChangeState("CoverState");
+                return true;
+            }
             return false;
         }
         else
