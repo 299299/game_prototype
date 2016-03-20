@@ -609,6 +609,8 @@ class TestGameState : GameState
                 Light@ light = _node.GetComponent("Light");
                 if (render_features & RF_SHADOWS == 0)
                     light.castShadows = false;
+                light.shadowBias = BiasParameters(0.00025f, 0.5f);
+                light.shadowCascade = CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f);
             }
         }
 

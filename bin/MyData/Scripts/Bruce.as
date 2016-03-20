@@ -315,6 +315,7 @@ class BruceCoverRunState : PlayerCoverRunState
     {
         super(c);
         SetMotion("BM_Movement/Cover_Run");
+        animSpeed = 0.5f;
     }
 };
 
@@ -454,6 +455,9 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);
         Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
         Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
+
+        preFix = "BM_Railing/";
+        Global_CreateMotion_InFolder(preFix);
     }
 }
 

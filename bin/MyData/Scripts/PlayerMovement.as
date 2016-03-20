@@ -486,6 +486,9 @@ class PlayerCrouchMoveState : SingleMotionState
         if (ownner.CheckFalling())
             return;
 
+        if (ownner.CheckDocking())
+            return;
+
         CharacterState::Update(dt);
     }
 
@@ -494,15 +497,13 @@ class PlayerCrouchMoveState : SingleMotionState
         SingleMotionState::Enter(lastState);
         ownner.SetTarget(null);
         combatReady = true;
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
+        ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
     }
 
     void Exit(State@ nextState)
     {
         SingleMotionState::Exit(nextState);
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT);
+        ownner.SetHeight(CHARACTER_HEIGHT);
     }
 };
 
@@ -550,13 +551,13 @@ class PlayerLandState : SingleAnimationState
 
 class PlayerCoverState : SingleAnimationState
 {
-    Line@  dockLine;
     int    state;
     float  alignTime = 0.3f;
     float  yawPerSec;
     float  startYaw;
     float  dockDirection;
     Vector3 dockPosition;
+    float  yawAdjustSpeed = 15.0f;
 
     PlayerCoverState(Character@ c)
     {
@@ -570,36 +571,48 @@ class PlayerCoverState : SingleAnimationState
     {
         ownner.SetVelocity(Vector3(0, 0, 0));
 
-        Vector3 proj = dockLine.Project(ownner.hipsNode.worldPosition);
+        Line@ l = ownner.dockLine;
+        Vector3 proj = l.Project(ownner.hipsNode.worldPosition);
         dockPosition = proj;
-        dockPosition.y = ownner.GetNode().worldPosition.y;
 
-        Vector3 diff = dockPosition - ownner.GetNode().worldPosition;
-        ownner.SetVelocity(diff / alignTime);
-        startYaw = AngleDiff(ownner.GetNode().worldRotation.eulerAngles.y);
-
-        if (lastState.name != "CoverTransitionState")
+        if (!lastState.name.StartsWith("Cover"))
         {
             alignTime = 0.4f;
 
-            float to_start = (proj - dockLine.ray.origin).lengthSquared;
-            float to_end = (proj - dockLine.end).lengthSquared;
+            float to_start = (proj - l.ray.origin).lengthSquared;
+            float to_end = (proj - l.end).lengthSquared;
+            float min_dist_sqr = COLLISION_RADIUS * COLLISION_RADIUS;
+            int head = l.GetHead(ownner.GetNode().worldRotation);
 
             Vector3 dir;
-            if (to_start < to_end)
-                dir = dockLine.ray.origin - dockLine.end;
+            if (head == 1)
+            {
+                dir = l.ray.origin - l.end;
+                if (to_start < min_dist_sqr)
+                    dockPosition = l.ray.origin - dir.Normalized() * COLLISION_RADIUS;
+                else if (to_end < min_dist_sqr)
+                    dockPosition = l.end + dir.Normalized() * COLLISION_RADIUS;
+            }
             else
-                dir = dockLine.end - dockLine.ray.origin;
-
+            {
+                dir = l.end - l.ray.origin;
+                if (to_start < min_dist_sqr)
+                    dockPosition = l.ray.origin + dir.Normalized() * COLLISION_RADIUS;
+                else if (to_end < min_dist_sqr)
+                   dockPosition = l.end - dir.Normalized() * COLLISION_RADIUS;
+            }
             dockDirection = Atan2(dir.x, dir.z);
         }
         else
         {
             alignTime = 0.1f;
-            dockDirection += 180;
-            dockDirection = AngleDiff(dockDirection);
+            dockDirection = l.GetHeadDirection(ownner.GetNode().worldRotation);
         }
 
+        dockPosition.y = ownner.GetNode().worldPosition.y;
+        Vector3 diff = dockPosition - ownner.GetNode().worldPosition;
+        ownner.SetVelocity(diff / alignTime);
+        startYaw = AngleDiff(ownner.GetNode().worldRotation.eulerAngles.y);
         yawPerSec = AngleDiff(dockDirection - startYaw) / alignTime;
         state = 0;
 
@@ -629,20 +642,34 @@ class PlayerCoverState : SingleAnimationState
         {
             if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
             {
-                // Print("CoverIdle->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
                 float characterDifference = ownner.ComputeAngleDiff();
                 // if the difference is large, then turn 180 degrees
-                if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
+                Print("CoverIdle->Move|Turn characterDifference=" + characterDifference);
+                float absAgnle = Abs(characterDifference);
+                if ( (absAgnle > 135) && gInput.IsLeftStickStationary() )
                 {
                     ownner.ChangeState("CoverTransitionState");
                     return;
                 }
                 else
                 {
+                    float diff_to_90 = 0;
+                    if (absAgnle > 0)
+                        diff_to_90 = absAgnle - 90;
+                    else if (absAgnle < 0)
+                        diff_to_90 = absAgnle + 90;
+                    if (Abs(diff_to_90) < 10)
+                    {
+                        // todo ....
+                    }
                     ownner.ChangeState("CoverRunState");
                     return;
                 }
             }
+
+            float curAngle = ownner.GetCharacterAngle();
+            float diff = AngleDiff(dockDirection - curAngle);
+            ownner.GetNode().Yaw(diff * yawAdjustSpeed * dt);
         }
         SingleAnimationState::Update(dt);
     }
@@ -651,6 +678,8 @@ class PlayerCoverState : SingleAnimationState
 
 class PlayerCoverRunState : SingleMotionState
 {
+    Vector3 dockPosition;
+
     PlayerCoverRunState(Character@ c)
     {
         super(c);
@@ -660,7 +689,27 @@ class PlayerCoverRunState : SingleMotionState
 
     void Update(float dt)
     {
+        Vector3 proj = ownner.dockLine.Project(ownner.hipsNode.worldPosition);
+        dockPosition = proj;
+        dockPosition.y = ownner.GetNode().worldPosition.y;
+
+        if (!ownner.dockLine.IsProjectPositionInLine(proj))
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
+        {
+            ownner.ChangeState("CoverState");
+            return;
+        }
+
         SingleMotionState::Update(dt);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(dockPosition, 0.5f, RED, false);
     }
 };
 

@@ -852,6 +852,8 @@ class Character : GameObject
 
     RigidBody@              body;
 
+    Line@                   dockLine;
+
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -923,6 +925,7 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
+        @dockLine = null;
     }
 
     void Remove()
@@ -1421,6 +1424,11 @@ class Character : GameObject
     bool CheckDocking()
     {
         return false;
+    }
+
+    void AssignDockLine(Line@ l)
+    {
+        @dockLine = l;
     }
 };
 

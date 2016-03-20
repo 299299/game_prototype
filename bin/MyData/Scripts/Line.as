@@ -16,10 +16,41 @@ class Line
     float           length;
     float           lengthSquared;
     int             type;
+    float           angle;
 
     Vector3 Project(const Vector3& charPos)
     {
         return ray.Project(charPos);
+    }
+
+    bool IsProjectPositionInLine(const Vector3& proj)
+    {
+        float l_to_start = (proj - ray.origin).lengthSquared;
+        float l_to_end = (proj - end).lengthSquared;
+        if (l_to_start > lengthSquared || l_to_end > lengthSquared)
+            return false;
+        return true;
+    }
+
+    int GetHead(const Quaternion& rot)
+    {
+        float yaw = rot.eulerAngles.y;
+        float diff = AngleDiff(angle - AngleDiff(yaw));
+        // Print("yaw=" + yaw + " angle=" + angle + " diff=" + diff);
+        if (Abs(diff) > 90)
+            return 1;
+        return 0;
+    }
+
+    float GetHeadDirection(const Quaternion& rot)
+    {
+        int head = GetHead(rot);
+        Vector3 dir;
+        if (head == 1)
+            dir = ray.origin - end;
+        else
+            dir = end - ray.origin;
+        return Atan2(dir.x, dir.z);
     }
 };
 
@@ -69,6 +100,7 @@ class LineWorld
                 l.ray.direction = dir.Normalized();
                 l.length = dir.length;
                 l.lengthSquared = dir.lengthSquared;
+                l.angle = Atan2(dir.x, dir.z);
                 AddLine(l);
             }
         }
@@ -82,9 +114,7 @@ class LineWorld
         {
             Line@ l = lines[i];
             Vector3 project = l.ray.Project(charPos);
-            float l_to_start = (charPos - l.ray.origin).lengthSquared;
-            float l_to_end = (charPos - l.end).lengthSquared;
-            if (l_to_start > l.lengthSquared || l_to_end > l.lengthSquared)
+            if (!l.IsProjectPositionInLine(project))
                 continue;
 
             float dist = (charPos - project).length;

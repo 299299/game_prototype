@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="66" />
-	<attribute name="Next Replicated Component ID" value="111" />
-	<attribute name="Next Local Node ID" value="16780687" />
-	<attribute name="Next Local Component ID" value="16778337" />
+	<attribute name="Next Replicated Node ID" value="70" />
+	<attribute name="Next Replicated Component ID" value="115" />
+	<attribute name="Next Local Node ID" value="16780688" />
+	<attribute name="Next Local Component ID" value="16778349" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -24,7 +24,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="3">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;Materials/Floor_Tile2.xml" />
+			<attribute name="Material" value="Material;" />
 		</component>
 		<component type="CollisionShape" id="20" />
 		<component type="RigidBody" id="22">
@@ -55,24 +55,24 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="light" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="0 19.3735 -3.48146" />
-		<attribute name="Rotation" value="0.707107 0.707107 0 0" />
+		<attribute name="Position" value="0 17.1219 -15.5771" />
+		<attribute name="Rotation" value="0.96987 0.243627 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="Light" id="49">
-			<attribute name="Light Type" value="Spot" />
+			<attribute name="Light Type" value="Directional" />
 			<attribute name="Brightness Multiplier" value="1.5" />
 			<attribute name="Range" value="60" />
 			<attribute name="Spot FOV" value="90" />
 			<attribute name="Cast Shadows" value="true" />
-			<attribute name="CSM Splits" value="1000.11 0 0 0" />
+			<attribute name="CSM Splits" value="0 10 50 100" />
 		</component>
 	</node>
 	<node id="44">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="player" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="6.05792 7.86933 -12.4085" />
+		<attribute name="Position" value="6.05792 7.86933 -25.0022" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="3 5 3" />
 		<attribute name="Variables" />
@@ -81,100 +81,23 @@
 			<attribute name="Material" value="Material;Materials/Blue.xml" />
 		</component>
 	</node>
-	<node id="59">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="Box" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="0.463057 7.2012 -3.49528" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="7.72471 4.56505 8.31304" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="100">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;Materials/Floor_Tile.xml" />
-		</component>
-		<component type="RigidBody" id="101">
-			<attribute name="Physics Position" value="0.463057 7.2012 -3.49528" />
-		</component>
-		<component type="CollisionShape" id="102" />
-		<node id="16780678">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.332364 0.461918 -0.511744" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="0.546925 1 1" />
-			<attribute name="Variables" />
-			<component type="Text3D" id="16778263">
-				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
-				<attribute name="Font Size" value="5" />
-				<attribute name="Text" value="I AM A BOX" />
-				<attribute name="Text Alignment" value="Center" />
-				<attribute name="Width" value="148" />
-				<attribute name="Color" value="1 0 0 1" />
-				<attribute name="Top Left Color" value="1 0 0 1" />
-				<attribute name="Top Right Color" value="1 0 0 1" />
-				<attribute name="Bottom Left Color" value="1 0 0 1" />
-				<attribute name="Bottom Right Color" value="1 0 0 1" />
-				<attribute name="Text Effect" value="Stroke" />
-			</component>
-		</node>
-	</node>
-	<node id="60">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="Box" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="0.463057 -7.21532 -3.49528" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="25 25 25" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="103">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;Materials/Floor_Tile3.xml" />
-		</component>
-		<component type="RigidBody" id="104">
-			<attribute name="Physics Position" value="0.463057 -7.21532 -3.49528" />
-		</component>
-		<component type="CollisionShape" id="105" />
-		<node id="16780680">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.259366 0.489329 -0.511744" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="0.436115 0.349267 1" />
-			<attribute name="Variables" />
-			<component type="Text3D" id="16778276">
-				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
-				<attribute name="Font Size" value="5" />
-				<attribute name="Text" value="I AM A BOX" />
-				<attribute name="Text Alignment" value="Center" />
-				<attribute name="Width" value="148" />
-				<attribute name="Color" value="1 0 0 1" />
-				<attribute name="Top Left Color" value="1 0 0 1" />
-				<attribute name="Top Right Color" value="1 0 0 1" />
-				<attribute name="Bottom Left Color" value="1 0 0 1" />
-				<attribute name="Bottom Right Color" value="1 0 0 1" />
-				<attribute name="Text Effect" value="Stroke" />
-			</component>
-		</node>
-	</node>
 	<node id="61">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="Cover" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-27.4873 1.14133 -12.304" />
+		<attribute name="Position" value="-6.35789 1.46001 -12.304" />
 		<attribute name="Rotation" value="0.923979 0.00139149 -0.382442 0.000575947" />
-		<attribute name="Scale" value="11.768 2.49718 0.083642" />
+		<attribute name="Scale" value="11.768 3 0.083642" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="106">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
 			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="109" />
 		<component type="RigidBody" id="110">
 			<attribute name="Physics Rotation" value="0.923978 0.00139148 -0.382442 0.000575947" />
-			<attribute name="Physics Position" value="-27.4873 1.14133 -12.304" />
+			<attribute name="Physics Position" value="-6.35789 1.46001 -12.304" />
 		</component>
 		<node id="62">
 			<attribute name="Is Enabled" value="true" />
@@ -206,6 +129,67 @@
 				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
 				<attribute name="Text" value="I AM A COVER" />
 				<attribute name="Width" value="184" />
+				<attribute name="Color" value="0 1 0 1" />
+				<attribute name="Top Left Color" value="0 1 0 1" />
+				<attribute name="Top Right Color" value="0 1 0 1" />
+				<attribute name="Bottom Left Color" value="0 1 0 1" />
+				<attribute name="Bottom Right Color" value="0 1 0 1" />
+			</component>
+		</node>
+	</node>
+	<node id="66">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Cover" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="7.30236 1.50918 -6.46054" />
+		<attribute name="Rotation" value="0.999985 0.00150595 -0.00549396 8.27251e-06" />
+		<attribute name="Scale" value="11.768 3 0.083642" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="111">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="112" />
+		<component type="RigidBody" id="113">
+			<attribute name="Physics Rotation" value="0.999984 0.00150595 -0.00549395 8.2725e-06" />
+			<attribute name="Physics Position" value="7.30236 1.50918 -6.46054" />
+		</component>
+		<node id="67">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="start" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.499576 0.5 -0.0122223" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Variables" />
+		</node>
+		<node id="68">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="end" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="0.498365 0.5 -0.0163727" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Variables" />
+		</node>
+		<node id="69">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="text" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.330883 0.460065 -1.95433" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="0.312885 1 1" />
+			<attribute name="Variables" />
+			<component type="Text3D" id="114">
+				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
+				<attribute name="Text" value="I AM A COVER" />
+				<attribute name="Width" value="184" />
+				<attribute name="Color" value="0 1 0 1" />
+				<attribute name="Top Left Color" value="0 1 0 1" />
+				<attribute name="Top Right Color" value="0 1 0 1" />
+				<attribute name="Bottom Left Color" value="0 1 0 1" />
+				<attribute name="Bottom Right Color" value="0 1 0 1" />
 			</component>
 		</node>
 	</node>

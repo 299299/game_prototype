@@ -576,8 +576,7 @@ class Player : Character
         {
             if (l.type == LINE_COVER)
             {
-                PlayerCoverState@ s = cast<PlayerCoverState>(FindState("CoverState"));
-                @s.dockLine = l;
+                AssignDockLine(l);
                 ChangeState("CoverState");
                 return true;
             }
