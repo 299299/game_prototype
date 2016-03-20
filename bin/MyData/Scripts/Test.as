@@ -496,7 +496,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
         //String testName = "BM_Attack/Attack_Far_Back_04";
         //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
-        String testName = "BM_Attack/Attack_Far_Back_03";
+        //String testName = "BM_Attack/Attack_Far_Back_03";
+        String testName = "BM_Climb/Stand_Climb_Over_128";
         Player@ player = GetPlayer();
         if (player !is null)
             player.TestAnimation(testName);

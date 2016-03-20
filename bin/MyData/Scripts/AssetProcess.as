@@ -282,9 +282,10 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
                 Print(animationFile + " Need reset x position");
             translateFlag |= kMotion_X;
         }
-        if (Abs(position.y) > 2.0f) {
-            // Print("Need reset y position");
-            // translateFlag |= kMotion_Y;
+        if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Y != 0)) {
+            if (d_log)
+                Print(animationFile + " Need reset y position");
+            translateFlag |= kMotion_Y;
         }
         if (Abs(position.z) > minDist) {
             if (d_log)

@@ -902,7 +902,7 @@ class PlayerBeatDownHitState : MultiMotionState
 
         if (state == 0)
         {
-            if (collision_type == 0)
+            if (ownner.physicsType == 0)
                 ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
             else
                 ownner.SetVelocity(movePerSec);

@@ -328,6 +328,16 @@ class BruceCoverTransitionState : PlayerCoverTransitionState
     }
 };
 
+class BruceClimbOverState : PlayerClimbOverState
+{
+    BruceClimbOverState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Stand_Climb_Over_128");
+        AddMotion("BM_Climb/Run_Climb_Over_128");
+    }
+};
+
 class Bruce : Player
 {
     void AddStates()
@@ -363,6 +373,7 @@ class Bruce : Player
             stateMachine.AddState(BruceCoverState(this));
             stateMachine.AddState(BruceCoverRunState(this));
             stateMachine.AddState(BruceCoverTransitionState(this));
+            stateMachine.AddState(BruceClimbOverState(this));
         }
     }
 };
@@ -444,6 +455,8 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
         Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
         Global_CreateMotion(preFix + "Slide_Floor_Stop");
+        Global_CreateMotion(preFix + "Run_Climb_Over_128");
+        Global_CreateMotion(preFix + "Stand_Climb_Over_128");
 
         preFix = "BM_Movement/";
         Global_AddAnimation(preFix + "Crouch_Idle");
@@ -456,8 +469,8 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
         Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
 
-        preFix = "BM_Railing/";
-        Global_CreateMotion_InFolder(preFix);
+        //preFix = "BM_Railing/";
+        //Global_CreateMotion_InFolder(preFix);
     }
 }
 

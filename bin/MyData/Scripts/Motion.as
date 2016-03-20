@@ -328,7 +328,7 @@ class Motion
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 tLocal = tLocal * ctrl.GetWeight(animationName);
 
-                if (collision_type == 0)
+                if (object.physicsType == 0)
                 {
                     object.motion_deltaPosition += object.motion_velocity * dt;
                     Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_deltaPosition;
@@ -352,7 +352,7 @@ class Motion
 
             if (object.motion_translateEnabled)
             {
-                if (collision_type == 0)
+                if (object.physicsType == 0)
                 {
                     object.motion_deltaPosition += object.motion_velocity * dt;
                     Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;

@@ -2,10 +2,9 @@
 
 enum LineType
 {
-    LINE_CLIMB_EDGE,
-    LINE_RAILING,
-    LINE_WALK_EDGE,
     LINE_COVER,
+    LINE_CLIMB_OVER,
+    LINE_RAILING,
     LINE_TYPE_NUM
 };
 
@@ -17,6 +16,7 @@ class Line
     float           lengthSquared;
     int             type;
     float           angle;
+    int             flag;
 
     Vector3 Project(const Vector3& charPos)
     {
@@ -63,10 +63,9 @@ class LineWorld
     LineWorld()
     {
         debugColors.Resize(LINE_TYPE_NUM);
-        debugColors[LINE_CLIMB_EDGE] = Color(0.15f, 0.25f, 3.0f);
+        debugColors[LINE_CLIMB_OVER] = GREEN;
         debugColors[LINE_RAILING] = BLUE;
         debugColors[LINE_COVER] = YELLOW;
-        debugColors[LINE_WALK_EDGE] = GREEN;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -96,6 +95,32 @@ class LineWorld
                 l.ray.origin = _node.GetChild("start", false).worldPosition;
                 l.end = _node.GetChild("end", false).worldPosition;
                 l.type = LINE_COVER;
+                Vector3 dir = l.end - l.ray.origin;
+                l.ray.direction = dir.Normalized();
+                l.length = dir.length;
+                l.lengthSquared = dir.lengthSquared;
+                l.angle = Atan2(dir.x, dir.z);
+                AddLine(l);
+            }
+            else if (_node.name.StartsWith("Railing"))
+            {
+                Line@ l = Line();
+                l.ray.origin = _node.GetChild("start", false).worldPosition;
+                l.end = _node.GetChild("end", false).worldPosition;
+                l.type = LINE_RAILING;
+                Vector3 dir = l.end - l.ray.origin;
+                l.ray.direction = dir.Normalized();
+                l.length = dir.length;
+                l.lengthSquared = dir.lengthSquared;
+                l.angle = Atan2(dir.x, dir.z);
+                AddLine(l);
+            }
+            else if (_node.name.StartsWith("ClimbOver"))
+            {
+                Line@ l = Line();
+                l.ray.origin = _node.GetChild("start", false).worldPosition;
+                l.end = _node.GetChild("end", false).worldPosition;
+                l.type = LINE_CLIMB_OVER;
                 Vector3 dir = l.end - l.ray.origin;
                 l.ray.direction = dir.Normalized();
                 l.length = dir.length;

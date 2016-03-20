@@ -494,7 +494,7 @@ class CharacterCounterState : CharacterState
             Node@ _node = ownner.GetNode();
             _node.Yaw(yawPerSec * dt);
             ownner.SetVelocity(movePerSec);
-            if (collision_type == 0)
+            if (ownner.physicsType == 0)
                 ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
 
             if (timeInState >= alignTime)
@@ -854,6 +854,8 @@ class Character : GameObject
 
     Line@                   dockLine;
 
+    int                     physicsType;
+
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -902,6 +904,7 @@ class Character : GameObject
             body.gravityOverride = Vector3(0, -20, 0);
             CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
             shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
+            physicsType = 1;
         }
 
         SetHealth(INITIAL_HEALTH);
@@ -1405,17 +1408,6 @@ class Character : GameObject
         }
     }
 
-    // ===============================================================================================
-    //  EVENT HANDLERS
-    // ===============================================================================================
-    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
-    {
-        AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
-        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
-        if (cs !is null)
-            cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
-    }
-
     bool CheckFalling()
     {
         return false;
@@ -1429,6 +1421,30 @@ class Character : GameObject
     void AssignDockLine(Line@ l)
     {
         @dockLine = l;
+    }
+
+    void SetPhysicsType(int type)
+    {
+        if (physicsType == type)
+            return;
+        physicsType = type;
+        if (body !is null)
+        {
+            body.enabled = (physicsType == 1);
+            body.position = sceneNode.worldPosition;
+        }
+    }
+
+
+    // ===============================================================================================
+    //  EVENT HANDLERS
+    // ===============================================================================================
+    void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
+    {
+        AnimationState@ state = animModel.animationStates[eventData[NAME].GetString()];
+        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
+        if (cs !is null)
+            cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
     }
 };
 

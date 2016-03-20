@@ -321,7 +321,7 @@ class PlayerSlideInState : SingleMotionState
                 ownner.ChangeState("SlideOutState");
                 return;
             }
-            if (collision_type == 0)
+            if (ownner.physicsType == 0)
             {
                 Vector3 oldPos = ownner.GetNode().worldPosition;
                 oldPos += (ownner.GetNode().worldRotation * idleVelocity * dt);
@@ -337,15 +337,13 @@ class PlayerSlideInState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
+        ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
     }
 
     void Exit(State@ nextState)
     {
         SingleMotionState::Exit(nextState);
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT);
+        ownner.SetHeight(CHARACTER_HEIGHT);
     }
 };
 
@@ -383,16 +381,14 @@ class PlayerCrouchState : SingleAnimationState
     {
         ownner.SetTarget(null);
         ownner.SetVelocity(Vector3(0,0,0));
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
+        ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
         SingleAnimationState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
         SingleAnimationState::Exit(nextState);
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT);
+        ownner.SetHeight(CHARACTER_HEIGHT);
     }
 
     void Update(float dt)
@@ -433,15 +429,13 @@ class PlayerCrouchTurnState : PlayerTurnState
     void Enter(State@ lastState)
     {
         PlayerTurnState::Enter(lastState);
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
+        ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
     }
 
     void Exit(State@ nextState)
     {
         PlayerTurnState::Exit(nextState);
-        if (collision_type == 1)
-            ownner.SetHeight(CHARACTER_HEIGHT);
+        ownner.SetHeight(CHARACTER_HEIGHT);
     }
 };
 
@@ -746,3 +740,32 @@ class PlayerCoverTransitionState : SingleMotionState
     }
 };
 
+class PlayerClimbOverState : MultiMotionState
+{
+    PlayerClimbOverState(Character@ c)
+    {
+        super(c);
+        SetName("ClimbOverState");
+    }
+
+    void OnMotionFinished()
+    {
+        MultiMotionState::OnMotionFinished();
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.GetNode().vars[ANIMATION_INDEX] = 0;
+        ownner.SetPhysicsType(0);
+        ownner.SetVelocity(Vector3(0, 0, 0));
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        Print("ClimbOverState Exit");
+        ownner.SetPhysicsType(1);
+        ownner.SetVelocity(Vector3(0, 0, 0));
+        MultiMotionState::Exit(nextState);
+    }
+};
