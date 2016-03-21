@@ -637,27 +637,19 @@ class PlayerCoverState : SingleAnimationState
             if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
             {
                 float characterDifference = ownner.ComputeAngleDiff();
-                // if the difference is large, then turn 180 degrees
-                Print("CoverIdle->Move|Turn characterDifference=" + characterDifference);
-                float absAgnle = Abs(characterDifference);
-                if ( (absAgnle > 135) && gInput.IsLeftStickStationary() )
+                if ( (Abs(characterDifference) > 135) && gInput.IsLeftStickStationary() )
                 {
                     ownner.ChangeState("CoverTransitionState");
                     return;
                 }
                 else
                 {
-                    float diff_to_90 = 0;
-                    if (absAgnle > 0)
-                        diff_to_90 = absAgnle - 90;
-                    else if (absAgnle < 0)
-                        diff_to_90 = absAgnle + 90;
-                    Print("Abs(diff_to_90)="+Abs(diff_to_90));
-                    if (Abs(diff_to_90) < 10)
+                    float faceDiff = ownner.dockLine.GetProjFacingDiff(ownner.GetNode().worldPosition, ownner.GetTargetAngle());
+                    Print("CoverState faceDiff=" + faceDiff);
+                    if (faceDiff > 145)
                         ownner.ChangeState("WalkState");
-                    else
+                    else if (faceDiff > 45)
                         ownner.ChangeState("CoverRunState");
-                    return;
                 }
             }
 
@@ -696,6 +688,19 @@ class PlayerCoverRunState : SingleMotionState
         {
             ownner.ChangeState("CoverState");
             return;
+        }
+
+        float characterDifference = ownner.ComputeAngleDiff();
+        if ( (Abs(characterDifference) > 135) && gInput.IsLeftStickStationary() )
+        {
+            ownner.ChangeState("CoverTransitionState");
+            return;
+        }
+        else
+        {
+            float faceDiff = ownner.dockLine.GetProjFacingDiff(ownner.GetNode().worldPosition, ownner.GetTargetAngle());
+            if (faceDiff > 145)
+                ownner.ChangeState("WalkState");
         }
 
         SingleMotionState::Update(dt);
@@ -761,9 +766,31 @@ class PlayerClimbOverState : MultiMotionState
 
     void Exit(State@ nextState)
     {
-        Print("ClimbOverState Exit");
         ownner.SetPhysicsType(1);
         ownner.SetVelocity(Vector3(0, 0, 0));
+        MultiMotionState::Exit(nextState);
+    }
+};
+
+class PlayerClimbUpState : MultiMotionState
+{
+    PlayerClimbUpState(Character@ c)
+    {
+        super(c);
+        SetName("ClimbUpState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        int index = 0;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        ownner.SetGravity(Vector3(0, 0, 0));
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.SetGravity(Vector3(0, -20, 0));
         MultiMotionState::Exit(nextState);
     }
 };

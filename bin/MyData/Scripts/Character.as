@@ -901,10 +901,10 @@ class Character : GameObject
             body.mass = 1.0f;
             body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
             body.collisionEventMode = COLLISION_ALWAYS;
-            body.gravityOverride = Vector3(0, -20, 0);
             CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
             shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
             physicsType = 1;
+            SetGravity(Vector3(0, -20, 0));
         }
 
         SetHealth(INITIAL_HEALTH);
@@ -1435,6 +1435,11 @@ class Character : GameObject
         }
     }
 
+    void SetGravity(const Vector3& gravity)
+    {
+        if (body !is null)
+            body.gravityOverride = gravity;
+    }
 
     // ===============================================================================================
     //  EVENT HANDLERS

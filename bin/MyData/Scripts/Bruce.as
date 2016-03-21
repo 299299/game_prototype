@@ -338,6 +338,16 @@ class BruceClimbOverState : PlayerClimbOverState
     }
 };
 
+class BruceClimbUpState : PlayerClimbUpState
+{
+    BruceClimbUpState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Stand_Climb_Over_128");
+        AddMotion("BM_Climb/Run_Climb_Over_128");
+    }
+};
+
 class Bruce : Player
 {
     void AddStates()

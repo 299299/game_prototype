@@ -576,8 +576,9 @@ class Player : Character
         {
             Vector3 charPos = sceneNode.worldPosition;
             float charAngle = GetCharacterAngle();
-
-            if (!l.IsObjectFacingLine(charPos, charAngle))
+            float facingDiff = l.GetProjFacingDiff(charPos, charAngle);
+            // Print("CheckDocking facingDiff=" + facingDiff);
+            if (facingDiff > 90)
                 return false;
 
             if (l.type == LINE_COVER)
