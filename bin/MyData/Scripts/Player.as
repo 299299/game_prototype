@@ -566,15 +566,20 @@ class Player : Character
         return false;
     }
 
-    bool CheckDocking()
+    bool CheckDocking(float distance)
     {
         if (game_type == 0)
             return false;
 
-        Line@ l = gLineWorld.GetNearestLine(hipsNode.worldPosition, 2);
+        Line@ l = gLineWorld.GetNearestLine(hipsNode.worldPosition, distance);
         if (l !is null)
         {
             Vector3 charPos = sceneNode.worldPosition;
+            float charAngle = GetCharacterAngle();
+
+            if (!l.IsObjectFacingLine(charPos, charAngle))
+                return false;
+
             if (l.type == LINE_COVER)
             {
                 AssignDockLine(l);
@@ -583,17 +588,6 @@ class Player : Character
             }
             else if (l.type == LINE_CLIMB_OVER)
             {
-                // 128 -> 3.25
-                Vector3 proj = l.Project(charPos);
-                proj.y = charPos.y;
-                float charAngle = GetCharacterAngle();
-                Vector3 dir = proj - charPos;
-                float projDir = Atan2(dir.x, dir.z);
-                float aDiff = AngleDiff(projDir - charAngle);
-                if (Abs(aDiff) > 45)
-                    return false;
-
-                Print("CheckDocking projDir=" + projDir + " charAngle=" + charAngle + " charPos=" + charPos.ToString());
                 AssignDockLine(l);
                 ChangeState("ClimbOverState");
                 return true;

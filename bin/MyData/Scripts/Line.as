@@ -52,6 +52,20 @@ class Line
             dir = end - ray.origin;
         return Atan2(dir.x, dir.z);
     }
+
+    bool IsObjectFacingLine(const Vector3& pos, float angle, float maxDiff = 45)
+    {
+        Vector3 proj = Project(pos);
+        proj.y = pos.y;
+        Vector3 dir = proj - pos;
+        float projDir = Atan2(dir.x, dir.z);
+        float aDiff = AngleDiff(projDir - angle);
+        // 128 -> 3.25
+        // Print("CheckDocking projDir=" + projDir + " angle=" + angle + " charPos=" + pos.ToString());
+        if (Abs(aDiff) > maxDiff)
+            return false;
+        return true;
+    }
 };
 
 

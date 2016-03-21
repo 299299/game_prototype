@@ -39,7 +39,7 @@ class PlayerStandState : CharacterState
         if (ownner.CheckFalling())
             return;
 
-        if (ownner.CheckDocking())
+        if (ownner.CheckDocking(2))
             return;
 
         if (ownner.ActionCheck(true, true, true, true))
@@ -142,7 +142,7 @@ class PlayerWalkState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking())
+        if (ownner.CheckDocking(2))
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -205,7 +205,7 @@ class PlayerRunState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking())
+        if (ownner.CheckDocking(4))
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -480,7 +480,7 @@ class PlayerCrouchMoveState : SingleMotionState
         if (ownner.CheckFalling())
             return;
 
-        if (ownner.CheckDocking())
+        if (ownner.CheckDocking(2))
             return;
 
         CharacterState::Update(dt);
@@ -652,11 +652,11 @@ class PlayerCoverState : SingleAnimationState
                         diff_to_90 = absAgnle - 90;
                     else if (absAgnle < 0)
                         diff_to_90 = absAgnle + 90;
+                    Print("Abs(diff_to_90)="+Abs(diff_to_90));
                     if (Abs(diff_to_90) < 10)
-                    {
-                        // todo ....
-                    }
-                    ownner.ChangeState("CoverRunState");
+                        ownner.ChangeState("WalkState");
+                    else
+                        ownner.ChangeState("CoverRunState");
                     return;
                 }
             }
@@ -748,14 +748,12 @@ class PlayerClimbOverState : MultiMotionState
         SetName("ClimbOverState");
     }
 
-    void OnMotionFinished()
-    {
-        MultiMotionState::OnMotionFinished();
-    }
-
     void Enter(State@ lastState)
     {
-        ownner.GetNode().vars[ANIMATION_INDEX] = 0;
+        int index = 0;
+        if (lastState.nameHash == RUN_STATE)
+            index = 1;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.SetPhysicsType(0);
         ownner.SetVelocity(Vector3(0, 0, 0));
         MultiMotionState::Enter(lastState);
