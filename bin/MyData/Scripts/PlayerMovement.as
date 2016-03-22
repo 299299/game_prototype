@@ -39,7 +39,7 @@ class PlayerStandState : CharacterState
         if (ownner.CheckFalling())
             return;
 
-        if (ownner.CheckDocking(2))
+        if (ownner.CheckDocking(2.5))
             return;
 
         if (ownner.ActionCheck(true, true, true, true))
@@ -142,7 +142,7 @@ class PlayerWalkState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking(2))
+        if (ownner.CheckDocking(2.5f))
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -480,7 +480,7 @@ class PlayerCrouchMoveState : SingleMotionState
         if (ownner.CheckFalling())
             return;
 
-        if (ownner.CheckDocking(2))
+        if (ownner.CheckDocking(2.5f))
             return;
 
         CharacterState::Update(dt);
@@ -566,7 +566,7 @@ class PlayerCoverState : SingleAnimationState
         ownner.SetVelocity(Vector3(0, 0, 0));
 
         Line@ l = ownner.dockLine;
-        Vector3 proj = l.Project(ownner.hipsNode.worldPosition);
+        Vector3 proj = l.Project(ownner.GetNode().worldPosition);
         dockPosition = proj;
 
         if (!lastState.name.StartsWith("Cover"))
@@ -675,7 +675,7 @@ class PlayerCoverRunState : SingleMotionState
 
     void Update(float dt)
     {
-        Vector3 proj = ownner.dockLine.Project(ownner.hipsNode.worldPosition);
+        Vector3 proj = ownner.dockLine.Project(ownner.GetNode().worldPosition);
         dockPosition = proj;
         dockPosition.y = ownner.GetNode().worldPosition.y;
 
@@ -747,6 +747,11 @@ class PlayerCoverTransitionState : SingleMotionState
 
 class PlayerClimbOverState : MultiMotionState
 {
+    float alignTime = 0.1f;
+    float rotatePerSec;
+    float targetAngle;
+    int state = 0;
+
     PlayerClimbOverState(Character@ c)
     {
         super(c);
@@ -761,7 +766,18 @@ class PlayerClimbOverState : MultiMotionState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.SetPhysicsType(0);
         ownner.SetVelocity(Vector3(0, 0, 0));
-        MultiMotionState::Enter(lastState);
+
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 proj = ownner.dockLine.Project(myPos);
+        proj.y = myPos.y;
+        Vector3 dir = proj - myPos;
+        targetAngle = Atan2(dir.x, dir.z);
+        float angle = ownner.GetCharacterAngle();
+        float angleDiff = AngleDiff(targetAngle - angle);
+        rotatePerSec = angleDiff / alignTime;
+        state = 0;
+
+        CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
@@ -769,6 +785,30 @@ class PlayerClimbOverState : MultiMotionState
         ownner.SetPhysicsType(1);
         ownner.SetVelocity(Vector3(0, 0, 0));
         MultiMotionState::Exit(nextState);
+    }
+
+    void Update(float dt)
+    {
+        if (state == 0)
+        {
+            ownner.GetNode().Yaw(rotatePerSec * dt);
+            if (timeInState >= alignTime)
+            {
+                state = 1;
+                Start();
+            }
+
+            CharacterState::Update(dt);
+        }
+        else if (state == 1)
+        {
+            MultiMotionState::Update(dt);
+        }
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetAngle, RED, 4.0f);
     }
 };
 
@@ -784,13 +824,13 @@ class PlayerClimbUpState : MultiMotionState
     {
         int index = 0;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        ownner.SetGravity(Vector3(0, 0, 0));
+        ownner.SetPhysicsType(0);
         MultiMotionState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
-        ownner.SetGravity(Vector3(0, -20, 0));
+        ownner.SetPhysicsType(1);
         MultiMotionState::Exit(nextState);
     }
 };

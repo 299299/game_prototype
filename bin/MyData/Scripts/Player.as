@@ -537,7 +537,6 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        debug.AddNode(hipsNode, 0.5f, false);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
         sensor.DebugDraw(debug);
     }
@@ -571,14 +570,14 @@ class Player : Character
         if (game_type == 0)
             return false;
 
-        Line@ l = gLineWorld.GetNearestLine(hipsNode.worldPosition, distance);
+        Line@ l = gLineWorld.GetNearestLine(sceneNode.worldPosition, distance);
         if (l !is null)
         {
             Vector3 charPos = sceneNode.worldPosition;
             float charAngle = GetCharacterAngle();
             float facingDiff = l.GetProjFacingDiff(charPos, charAngle);
             // Print("CheckDocking facingDiff=" + facingDiff);
-            if (facingDiff > 90)
+            if (facingDiff > 45)
                 return false;
 
             if (l.type == LINE_COVER)

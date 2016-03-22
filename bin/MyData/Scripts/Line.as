@@ -1,9 +1,16 @@
-
+//
+//
+//  128 --> 3.25
+//  256 --> 6.5
+//  384 --> 9.75
+//
+//
 
 enum LineType
 {
     LINE_COVER,
     LINE_CLIMB_OVER,
+    LINE_CLIMB_UP,
     LINE_RAILING,
     LINE_TYPE_NUM
 };
@@ -17,6 +24,7 @@ class Line
     int             type;
     float           angle;
     int             flag;
+    float           maxHeight;
 
     Vector3 Project(const Vector3& charPos)
     {
@@ -69,6 +77,7 @@ class LineWorld
 {
     Array<Line@>            lines;
     Array<Color>            debugColors;
+    Array<Line@>            cacheLines;
 
     LineWorld()
     {
@@ -76,6 +85,7 @@ class LineWorld
         debugColors[LINE_CLIMB_OVER] = GREEN;
         debugColors[LINE_RAILING] = BLUE;
         debugColors[LINE_COVER] = YELLOW;
+        debugColors[LINE_CLIMB_UP] = Color(0.25f, 0.5f, 0.75f);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -110,6 +120,7 @@ class LineWorld
                 l.length = dir.length;
                 l.lengthSquared = dir.lengthSquared;
                 l.angle = Atan2(dir.x, dir.z);
+                l.maxHeight = 7.0f;
                 AddLine(l);
             }
             else if (_node.name.StartsWith("Railing"))
@@ -123,6 +134,7 @@ class LineWorld
                 l.length = dir.length;
                 l.lengthSquared = dir.lengthSquared;
                 l.angle = Atan2(dir.x, dir.z);
+                l.maxHeight = 12.0f;
                 AddLine(l);
             }
             else if (_node.name.StartsWith("ClimbOver"))
@@ -136,6 +148,21 @@ class LineWorld
                 l.length = dir.length;
                 l.lengthSquared = dir.lengthSquared;
                 l.angle = Atan2(dir.x, dir.z);
+                l.maxHeight = 12.0f;
+                AddLine(l);
+            }
+            else if (_node.name.StartsWith("ClimbUp"))
+            {
+                Line@ l = Line();
+                l.ray.origin = _node.GetChild("start", false).worldPosition;
+                l.end = _node.GetChild("end", false).worldPosition;
+                l.type = LINE_CLIMB_UP;
+                Vector3 dir = l.end - l.ray.origin;
+                l.ray.direction = dir.Normalized();
+                l.length = dir.length;
+                l.lengthSquared = dir.lengthSquared;
+                l.angle = Atan2(dir.x, dir.z);
+                l.maxHeight = 12.0f;
                 AddLine(l);
             }
         }
@@ -152,6 +179,11 @@ class LineWorld
             if (!l.IsProjectPositionInLine(project))
                 continue;
 
+            float yDiff = Abs(charPos.y - project.y);
+            if (yDiff > l.maxHeight)
+                continue;
+
+            project.y = charPos.y;
             float dist = (charPos - project).length;
             // Print("dist = " + dist);
             if (dist < minDist)
@@ -161,5 +193,27 @@ class LineWorld
             }
         }
         return ret;
+    }
+
+    void CollectLines(const Vector3& charPos, float maxDistance)
+    {
+        cacheLines.Clear();
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ l = lines[i];
+            Vector3 project = l.ray.Project(charPos);
+            if (!l.IsProjectPositionInLine(project))
+                continue;
+
+            float yDiff = Abs(charPos.y - project.y);
+            if (yDiff > l.maxHeight)
+                continue;
+
+            project.y = charPos.y;
+            float dist = (charPos - project).length;
+            // Print("dist = " + dist);
+            if (dist < maxDistance)
+                cacheLines.Push(l);
+        }
     }
 };

@@ -282,6 +282,12 @@ class MultiMotionState : CharacterState
 
     void Enter(State@ lastState)
     {
+        Start();
+        CharacterState::Enter(lastState);
+    }
+
+    void Start()
+    {
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
@@ -292,7 +298,6 @@ class MultiMotionState : CharacterState
         if (d_log)
             Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner, 0.0f, 0.2f, animSpeed);
-        CharacterState::Enter(lastState);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1389,7 +1394,6 @@ class Character : GameObject
 
     bool IsInAir()
     {
-        //return (hipsNode.worldPosition.y - sceneNode.worldPosition.y) > (2.8f + 0.5f);
         Vector3 lf_pos = renderNode.GetChild(L_FOOT, true).worldPosition;
         Vector3 rf_pos = renderNode.GetChild(R_FOOT, true).worldPosition;
         Vector3 myPos = sceneNode.worldPosition;
