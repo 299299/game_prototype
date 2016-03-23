@@ -383,3 +383,16 @@ sp.Define(footNode_R.worldPosition, radius);
 debug.AddSphere(sp, Color(0, 1, 0));
 */
 
+String GetAnimationDebugText(Node@ n)
+{
+    AnimatedModel@ model = n.GetComponent("AnimatedModel");
+    if (model is null)
+        return "";
+    String debugText = "Debug-Animations:\n";
+    for (uint i=0; i<model.numAnimationStates ; ++i)
+    {
+        AnimationState@ state = model.GetAnimationState(i);
+        debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
+    }
+    return debugText;
+}

@@ -801,9 +801,7 @@ class PlayerClimbOverState : MultiMotionState
             CharacterState::Update(dt);
         }
         else if (state == 1)
-        {
             MultiMotionState::Update(dt);
-        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
