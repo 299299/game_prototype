@@ -87,7 +87,7 @@ class DebugFPSCameraController: CameraController
     void Update(float dt)
     {
         if (ui.focusElement !is null)
-        return;
+            return;
 
         const float MOVE_SPEED = 20.0f;
         const float MOUSE_SENSITIVITY = 0.1f;
