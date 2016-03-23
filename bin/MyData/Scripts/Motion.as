@@ -601,7 +601,7 @@ class MotionManager
 
 MotionManager@ gMotionMgr;
 
-Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, bool loop = false, float rotateAngle = 361)
+Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_ALL, int endFrame = -1, bool loop = false, float rotateAngle = 361)
 {
     return gMotionMgr.CreateMotion(name, motionFlag, allowMotion, endFrame, loop, rotateAngle);
 }

@@ -70,6 +70,22 @@ class Line
         float aDiff = AngleDiff(projDir - angle);
         return Abs(aDiff);
     }
+
+    int TestPosition(const Vector3& pos)
+    {
+        float yDiff = end.y - pos.y;
+        if (Abs(yDiff) > maxHeight)
+            return 0;
+
+        if (type == LINE_CLIMB_OVER || type == LINE_CLIMB_UP)
+        {
+            float h_diff = end.y - pos.y;
+            if (h_diff < 3.0f)
+                return 0;
+            return 1;
+        }
+        return 1;
+    }
 };
 
 
@@ -175,12 +191,11 @@ class LineWorld
         for (uint i=0; i<lines.length; ++i)
         {
             Line@ l = lines[i];
-            Vector3 project = l.ray.Project(charPos);
-            if (!l.IsProjectPositionInLine(project))
+            if (l.TestPosition(charPos) == 0)
                 continue;
 
-            float yDiff = Abs(charPos.y - project.y);
-            if (yDiff > l.maxHeight)
+            Vector3 project = l.ray.Project(charPos);
+            if (!l.IsProjectPositionInLine(project))
                 continue;
 
             project.y = charPos.y;
@@ -201,14 +216,11 @@ class LineWorld
         for (uint i=0; i<lines.length; ++i)
         {
             Line@ l = lines[i];
+            if (l.TestPosition(charPos) == 0)
+                continue;
             Vector3 project = l.ray.Project(charPos);
             if (!l.IsProjectPositionInLine(project))
                 continue;
-
-            float yDiff = Abs(charPos.y - project.y);
-            if (yDiff > l.maxHeight)
-                continue;
-
             project.y = charPos.y;
             float dist = (charPos - project).length;
             // Print("dist = " + dist);

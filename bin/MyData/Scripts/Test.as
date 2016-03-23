@@ -497,7 +497,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = "BM_Attack/Attack_Far_Back_04";
         //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
         //String testName = "BM_Attack/Attack_Far_Back_03";
-        String testName = "BM_Climb/Stand_Climb_Over_128";
+        String testName = "BM_Climb/Stand_Climb_Up_128";
         Player@ player = GetPlayer();
         if (player !is null)
             player.TestAnimation(testName);
@@ -517,11 +517,11 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             thug.ChangeState("HitState");
         }
     }
-    else if (key == KEY_9)
+    else if (key == 'I')
     {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.ChangeState("SlideInState");
+        Player@ p = GetPlayer();
+        if (p !is null)
+            p.SetPhysicsType(1 - p.physicsType);
     }
 }
 

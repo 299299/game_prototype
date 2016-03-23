@@ -546,7 +546,7 @@ class PlayerLandState : SingleAnimationState
 class PlayerCoverState : SingleAnimationState
 {
     int    state;
-    float  alignTime = 0.3f;
+    float  alignTime = 0.25f;
     float  yawPerSec;
     float  startYaw;
     float  dockDirection;
@@ -745,25 +745,20 @@ class PlayerCoverTransitionState : SingleMotionState
     }
 };
 
-class PlayerClimbOverState : MultiMotionState
+class PlayerClimbAlignState : MultiMotionState
 {
     float alignTime = 0.1f;
     float rotatePerSec;
     float targetAngle;
     int state = 0;
 
-    PlayerClimbOverState(Character@ c)
+    PlayerClimbAlignState(Character@ c)
     {
         super(c);
-        SetName("ClimbOverState");
     }
 
     void Enter(State@ lastState)
     {
-        int index = 0;
-        if (lastState.nameHash == RUN_STATE)
-            index = 1;
-        ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.SetPhysicsType(0);
         ownner.SetVelocity(Vector3(0, 0, 0));
 
@@ -812,7 +807,25 @@ class PlayerClimbOverState : MultiMotionState
     }
 };
 
-class PlayerClimbUpState : MultiMotionState
+class PlayerClimbOverState : PlayerClimbAlignState
+{
+    PlayerClimbOverState(Character@ c)
+    {
+        super(c);
+        SetName("ClimbOverState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        int index = 0;
+        if (lastState.nameHash == RUN_STATE)
+            index = 1;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        PlayerClimbAlignState::Enter(lastState);
+    }
+};
+
+class PlayerClimbUpState : PlayerClimbAlignState
 {
     PlayerClimbUpState(Character@ c)
     {
@@ -823,14 +836,9 @@ class PlayerClimbUpState : MultiMotionState
     void Enter(State@ lastState)
     {
         int index = 0;
+        if (lastState.nameHash == RUN_STATE)
+            index = 1;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        ownner.SetPhysicsType(0);
-        MultiMotionState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        ownner.SetPhysicsType(1);
-        MultiMotionState::Exit(nextState);
+        PlayerClimbAlignState::Enter(lastState);
     }
 };

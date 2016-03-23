@@ -343,8 +343,8 @@ class BruceClimbUpState : PlayerClimbUpState
     BruceClimbUpState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Climb/Stand_Climb_Over_128");
-        AddMotion("BM_Climb/Run_Climb_Over_128");
+        AddMotion("BM_Climb/Stand_Climb_Up_128");
+        AddMotion("BM_Climb/Run_Climb_Up_128");
     }
 };
 
@@ -384,6 +384,7 @@ class Bruce : Player
             stateMachine.AddState(BruceCoverRunState(this));
             stateMachine.AddState(BruceCoverTransitionState(this));
             stateMachine.AddState(BruceClimbOverState(this));
+            stateMachine.AddState(BruceClimbUpState(this));
         }
     }
 };
@@ -467,6 +468,8 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Slide_Floor_Stop");
         Global_CreateMotion(preFix + "Run_Climb_Over_128");
         Global_CreateMotion(preFix + "Stand_Climb_Over_128");
+        Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_ALL);
+        Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_ALL);
 
         preFix = "BM_Movement/";
         Global_AddAnimation(preFix + "Crouch_Idle");

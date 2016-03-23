@@ -19,6 +19,7 @@ enum RootMotionFlag
     kMotion_XZ  = kMotion_X | kMotion_Z,
     kMotion_XR  = kMotion_X | kMotion_R,
     kMotion_ZR  = kMotion_Z | kMotion_R,
+    kMotion_ALL = kMotion_XZR | kMotion_Y,
 };
 
 bool d_log = false;
