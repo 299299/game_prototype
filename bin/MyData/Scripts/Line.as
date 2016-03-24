@@ -88,6 +88,26 @@ class Line
     }
 };
 
+float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector3&out p4)
+{
+    CollisionShape@ shape = n.GetComponent("CollisionShape");
+    if (shape is null)
+        return -1;
+
+    Vector3 halfSize = shape.size/2;
+    Vector3 offset = shape.position;
+
+    p1 = Vector3(halfSize.x, halfSize.y, halfSize.z);
+    p2 = Vector3(halfSize.x, halfSize.y, -halfSize.z);
+    p3 = Vector3(-halfSize.x, halfSize.y, -halfSize.z);
+    p4 = Vector3(-halfSize.x, halfSize.y, halfSize.z);
+    p1 = n.LocalToWorld(p1 + offset);
+    p2 = n.LocalToWorld(p2 + offset);
+    p3 = n.LocalToWorld(p3 + offset);
+    p4 = n.LocalToWorld(p4 + offset);
+
+    return halfSize.y * 2 * n.worldScale.y;
+}
 
 class LineWorld
 {
@@ -120,66 +140,72 @@ class LineWorld
         lines.Push(l);
     }
 
+    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, float h)
+    {
+        Vector3 dir = end - start;
+        float lenSQR = dir.lengthSquared;
+        if (lenSQR < 0.5f*0.5f)
+            return null;
+        Line@ l = Line();
+        l.ray.origin = start;
+        l.end = end;
+        l.type = type;
+        l.ray.direction = dir.Normalized();
+        l.length = dir.length;
+        l.lengthSquared = lenSQR;
+        l.angle = Atan2(dir.x, dir.z);
+        l.maxHeight = h;
+        AddLine(l);
+        return l;
+    }
+
     void Process(Scene@ scene)
     {
+        Vector3 p1, p2, p3, p4;
+        float h = 0;
+
         for (uint i=0; i<scene.numChildren; ++i)
         {
             Node@ _node = scene.children[i];
             if (_node.name.StartsWith("Cover"))
             {
-                Line@ l = Line();
-                l.ray.origin = _node.GetChild("start", false).worldPosition;
-                l.end = _node.GetChild("end", false).worldPosition;
-                l.type = LINE_COVER;
-                Vector3 dir = l.end - l.ray.origin;
-                l.ray.direction = dir.Normalized();
-                l.length = dir.length;
-                l.lengthSquared = dir.lengthSquared;
-                l.angle = Atan2(dir.x, dir.z);
-                l.maxHeight = 7.0f;
-                AddLine(l);
+                h = GetCorners(_node, p1, p2, p3, p4);
+                if (h <= 0)
+                    continue;
+                CreateLine(LINE_COVER, p1, p2, h + 3.0f);
+                CreateLine(LINE_COVER, p2, p3, h + 3.0f);
+                CreateLine(LINE_COVER, p3, p4, h + 3.0f);
+                CreateLine(LINE_COVER, p4, p1, h + 3.0f);
             }
             else if (_node.name.StartsWith("Railing"))
             {
-                Line@ l = Line();
-                l.ray.origin = _node.GetChild("start", false).worldPosition;
-                l.end = _node.GetChild("end", false).worldPosition;
-                l.type = LINE_RAILING;
-                Vector3 dir = l.end - l.ray.origin;
-                l.ray.direction = dir.Normalized();
-                l.length = dir.length;
-                l.lengthSquared = dir.lengthSquared;
-                l.angle = Atan2(dir.x, dir.z);
-                l.maxHeight = 12.0f;
-                AddLine(l);
+                h = GetCorners(_node, p1, p2, p3, p4);
+                if (h <= 0)
+                    continue;
+                CreateLine(LINE_RAILING, p1, p2, h + 3.0f);
+                CreateLine(LINE_RAILING, p2, p3, h + 3.0f);
+                CreateLine(LINE_RAILING, p3, p4, h + 3.0f);
+                CreateLine(LINE_RAILING, p4, p1, h + 3.0f);
             }
             else if (_node.name.StartsWith("ClimbOver"))
             {
-                Line@ l = Line();
-                l.ray.origin = _node.GetChild("start", false).worldPosition;
-                l.end = _node.GetChild("end", false).worldPosition;
-                l.type = LINE_CLIMB_OVER;
-                Vector3 dir = l.end - l.ray.origin;
-                l.ray.direction = dir.Normalized();
-                l.length = dir.length;
-                l.lengthSquared = dir.lengthSquared;
-                l.angle = Atan2(dir.x, dir.z);
-                l.maxHeight = 12.0f;
-                AddLine(l);
+                h = GetCorners(_node, p1, p2, p3, p4);
+                if (h <= 0)
+                    continue;
+                CreateLine(LINE_CLIMB_OVER, p1, p2, h + 3.0f);
+                CreateLine(LINE_CLIMB_OVER, p2, p3, h + 3.0f);
+                CreateLine(LINE_CLIMB_OVER, p3, p4, h + 3.0f);
+                CreateLine(LINE_CLIMB_OVER, p4, p1, h + 3.0f);
             }
             else if (_node.name.StartsWith("ClimbUp"))
             {
-                Line@ l = Line();
-                l.ray.origin = _node.GetChild("start", false).worldPosition;
-                l.end = _node.GetChild("end", false).worldPosition;
-                l.type = LINE_CLIMB_UP;
-                Vector3 dir = l.end - l.ray.origin;
-                l.ray.direction = dir.Normalized();
-                l.length = dir.length;
-                l.lengthSquared = dir.lengthSquared;
-                l.angle = Atan2(dir.x, dir.z);
-                l.maxHeight = 12.0f;
-                AddLine(l);
+                h = GetCorners(_node, p1, p2, p3, p4);
+                if (h <= 0)
+                    continue;
+                CreateLine(LINE_CLIMB_UP, p1, p2, h + 3.0f);
+                CreateLine(LINE_CLIMB_UP, p2, p3, h + 3.0f);
+                CreateLine(LINE_CLIMB_UP, p3, p4, h + 3.0f);
+                CreateLine(LINE_CLIMB_UP, p4, p1, h + 3.0f);
             }
         }
     }

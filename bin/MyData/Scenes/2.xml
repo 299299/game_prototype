@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="78" />
 	<attribute name="Next Replicated Component ID" value="123" />
-	<attribute name="Next Local Node ID" value="16780692" />
-	<attribute name="Next Local Component ID" value="16778397" />
+	<attribute name="Next Local Node ID" value="16780693" />
+	<attribute name="Next Local Component ID" value="16778409" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -195,7 +195,7 @@
 	</node>
 	<node id="70">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbOver" />
+		<attribute name="Name" value="ClimbUp" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="33.5152 0 -18.2942" />
 		<attribute name="Rotation" value="1 4.48876e-18 -1.18793e-35 0" />
@@ -251,7 +251,7 @@
 	</node>
 	<node id="74">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Name" value="ClimbOver" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="20.314 0 -12.5036" />
 		<attribute name="Rotation" value="0.90318 0.00136017 0.42926 -0.000646456" />
