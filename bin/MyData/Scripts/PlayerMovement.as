@@ -756,7 +756,9 @@ class PlayerClimbAlignState : MultiMotionState
     float rotatePerSec;
     float targetAngle;
     int state = 0;
-    bool adjustHeight = false;
+
+    float heightAdjustTime = 0.0f;
+    float yAdjust = 0.0f;
 
     PlayerClimbAlignState(Character@ c)
     {
@@ -792,15 +794,15 @@ class PlayerClimbAlignState : MultiMotionState
     {
         Start();
 
-        if (adjustHeight)
+        if (heightAdjustTime > 0)
         {
             Motion@ motion = motions[selectIndex];
-            float targetHeight = ownner.dockLine.end.y + 0.2f;
-            float alignTime = motion.endTime;
-            Vector4 motionOut = motion.GetKey(alignTime);
-            float motionHeight = motion.GetFuturePosition(ownner, alignTime).y;
+            float targetHeight = ownner.dockLine.end.y + yAdjust;
+            float t = motion.endTime;
+            Vector4 motionOut = motion.GetKey(t);
+            float motionHeight = motion.GetFuturePosition(ownner, t).y;
             Print(name + " targetHeight=" + targetHeight + " motionHeight=" + motionHeight);
-            ownner.motion_velocity = Vector3(0, (targetHeight - motionHeight) / motion.endTime, 0);
+            ownner.motion_velocity = Vector3(0, (targetHeight - motionHeight) / heightAdjustTime, 0);
         }
     }
 
@@ -812,13 +814,18 @@ class PlayerClimbAlignState : MultiMotionState
             if (timeInState >= alignTime)
             {
                 state = 1;
+                timeInState = 0;
                 StartMotion();
             }
 
             CharacterState::Update(dt);
         }
         else if (state == 1)
+        {
+            if (timeInState > heightAdjustTime)
+                ownner.motion_velocity = Vector3(0, 0, 0);
             MultiMotionState::Update(dt);
+        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -847,11 +854,12 @@ class PlayerClimbOverState : PlayerClimbAlignState
 
 class PlayerClimbUpState : PlayerClimbAlignState
 {
+    Array<float> heightAdjustTimes;
+
     PlayerClimbUpState(Character@ c)
     {
         super(c);
         SetName("ClimbUpState");
-        adjustHeight = true;
     }
 
     void Enter(State@ lastState)
@@ -875,6 +883,9 @@ class PlayerClimbUpState : PlayerClimbAlignState
                 index = startIndex + i;
             }
         }
+
+        heightAdjustTime = heightAdjustTimes[selectIndex];
+        yAdjust = (index == 0) ? 0.2f : 0.0f;
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         PlayerClimbAlignState::Enter(lastState);

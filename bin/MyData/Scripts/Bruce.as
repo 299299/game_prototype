@@ -349,6 +349,14 @@ class BruceClimbUpState : PlayerClimbUpState
         AddMotion("BM_Climb/Run_Climb_Up_128");
         AddMotion("BM_Climb/Run_Climb_Up_256");
         AddMotion("BM_Climb/Run_Climb_Up_384");
+
+        heightAdjustTimes.Push(0.333f);
+        heightAdjustTimes.Push(1.0f);
+        heightAdjustTimes.Push(1.17f);
+
+        heightAdjustTimes.Push(0.333f);
+        heightAdjustTimes.Push(1.0f);
+        heightAdjustTimes.Push(1.17f);
     }
 };
 

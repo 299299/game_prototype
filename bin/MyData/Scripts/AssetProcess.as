@@ -366,7 +366,6 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     if (motionFlag != 0 && translateTrack !is null)
     {
         Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
-
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);

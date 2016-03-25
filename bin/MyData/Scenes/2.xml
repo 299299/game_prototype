@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="78" />
-	<attribute name="Next Replicated Component ID" value="123" />
-	<attribute name="Next Local Node ID" value="16780693" />
-	<attribute name="Next Local Component ID" value="16778409" />
+	<attribute name="Next Replicated Node ID" value="82" />
+	<attribute name="Next Replicated Component ID" value="131" />
+	<attribute name="Next Local Node ID" value="16780694" />
+	<attribute name="Next Local Component ID" value="16778421" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -99,24 +99,6 @@
 			<attribute name="Physics Rotation" value="0.923978 0.00139148 -0.382442 0.000575947" />
 			<attribute name="Physics Position" value="-6.35789 1.46001 -12.304" />
 		</component>
-		<node id="62">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="start" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.499576 0.5 -0.0122223" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
-		<node id="64">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="end" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="0.498365 0.5 -0.0163727" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
 		<node id="65">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="text" />
@@ -155,24 +137,6 @@
 			<attribute name="Physics Rotation" value="0.999984 0.00150595 -0.00549395 8.2725e-06" />
 			<attribute name="Physics Position" value="7.30236 1.50918 -6.46054" />
 		</component>
-		<node id="67">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="start" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.499576 0.5 -0.0122223" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
-		<node id="68">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="end" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="0.498365 0.5 -0.0163727" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
 		<node id="69">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="text" />
@@ -211,24 +175,6 @@
 			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
 			<attribute name="Physics Position" value="33.5152 0 -18.2942" />
 		</component>
-		<node id="71">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="start" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-1.43925 0.501065 2.07037" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
-		<node id="72">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="end" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.805875 0.499146 0.249451" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
 		<node id="73">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="text" />
@@ -267,24 +213,6 @@
 			<attribute name="Physics Rotation" value="0.90318 0.00136017 0.42926 -0.000646456" />
 			<attribute name="Physics Position" value="20.314 0 -12.5036" />
 		</component>
-		<node id="75">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="start" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="0.938956 0.500286 5.06464" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
-		<node id="76">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="end" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="1.56917 0.505085 114.192" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-		</node>
 		<node id="77">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="text" />
@@ -302,6 +230,82 @@
 				<attribute name="Top Right Color" value="0 1 0 1" />
 				<attribute name="Bottom Left Color" value="0 1 0 1" />
 				<attribute name="Bottom Right Color" value="0 1 0 1" />
+			</component>
+		</node>
+	</node>
+	<node id="78">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="2.98101 5.74646 -39.7036" />
+		<attribute name="Rotation" value="0.999985 0.00150595 -0.00549396 8.27251e-06" />
+		<attribute name="Scale" value="11.768 10 11" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="123">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="124" />
+		<component type="RigidBody" id="125">
+			<attribute name="Physics Rotation" value="0.999984 0.00150595 -0.00549395 8.2725e-06" />
+			<attribute name="Physics Position" value="2.98101 5.74646 -39.7036" />
+		</component>
+		<node id="79">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="text" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.316434 0.475602 -0.547479" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="0.312885 1 1" />
+			<attribute name="Variables" />
+			<component type="Text3D" id="126">
+				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
+				<attribute name="Text" value="ClimbUp" />
+				<attribute name="Width" value="113" />
+				<attribute name="Color" value="1 1 0 1" />
+				<attribute name="Top Left Color" value="1 1 0 1" />
+				<attribute name="Top Right Color" value="1 1 0 1" />
+				<attribute name="Bottom Left Color" value="1 1 0 1" />
+				<attribute name="Bottom Right Color" value="1 1 0 1" />
+			</component>
+		</node>
+	</node>
+	<node id="80">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="7.30236 1.50918 -40.1688" />
+		<attribute name="Rotation" value="0.999985 0.00150595 -0.00549396 8.27251e-06" />
+		<attribute name="Scale" value="11.768 10 11" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="127">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="128" />
+		<component type="RigidBody" id="129">
+			<attribute name="Physics Rotation" value="0.999984 0.00150595 -0.00549395 8.2725e-06" />
+			<attribute name="Physics Position" value="7.30236 1.50918 -40.1688" />
+		</component>
+		<node id="81">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="text" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.316434 0.475602 -0.547479" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="0.312885 1 1" />
+			<attribute name="Variables" />
+			<component type="Text3D" id="130">
+				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
+				<attribute name="Text" value="ClimbUp" />
+				<attribute name="Width" value="113" />
+				<attribute name="Color" value="1 1 0 1" />
+				<attribute name="Top Left Color" value="1 1 0 1" />
+				<attribute name="Top Right Color" value="1 1 0 1" />
+				<attribute name="Bottom Left Color" value="1 1 0 1" />
+				<attribute name="Bottom Right Color" value="1 1 0 1" />
 			</component>
 		</node>
 	</node>
