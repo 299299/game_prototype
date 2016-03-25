@@ -649,7 +649,7 @@ class PlayerCoverState : SingleAnimationState
                 }
                 else
                 {
-                    float faceDiff = ownner.dockLine.GetProjFacingDiff(ownner.GetNode().worldPosition, ownner.GetTargetAngle());
+                    float faceDiff = ownner.dockLine.GetProjectFacingDir(ownner.GetNode().worldPosition, ownner.GetTargetAngle());
                     Print("CoverState faceDiff=" + faceDiff);
                     if (faceDiff > 145)
                         ownner.ChangeState("WalkState");
@@ -703,7 +703,7 @@ class PlayerCoverRunState : SingleMotionState
         }
         else
         {
-            float faceDiff = ownner.dockLine.GetProjFacingDiff(ownner.GetNode().worldPosition, ownner.GetTargetAngle());
+            float faceDiff = ownner.dockLine.GetProjectFacingDir(ownner.GetNode().worldPosition, ownner.GetTargetAngle());
             if (faceDiff > 145)
                 ownner.ChangeState("WalkState");
         }
@@ -867,7 +867,7 @@ class PlayerClimbUpState : PlayerClimbAlignState
         for (int i=0; i<3; ++i)
         {
             Motion@ motion = motions[startIndex + i];
-            float motionHeight = y + motion.GetKey(motion.endTime).y;
+            float motionHeight = curHeight + motion.GetKey(motion.endTime).y;
             float curHeightDiff = lineHeight - motionHeight;
             if (curHeightDiff < minHeightDiff)
             {

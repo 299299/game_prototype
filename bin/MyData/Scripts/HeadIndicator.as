@@ -39,7 +39,12 @@ class HeadIndicator : ScriptObject
 
     void Update(float dt)
     {
-        Vector3 pos = node.scene.GetNode(headNodeId).worldPosition + offset;
+        if (engine.headless)
+            return;
+        Node@ headNode = node.scene.GetNode(headNodeId);
+        if (headNode is null)
+            return;
+        Vector3 pos = headNode.worldPosition + offset;
         Vector2 pos_2d = GetCamera().WorldToScreenPoint(pos);
         sprite.position = Vector2(pos_2d.x * graphics.width, pos_2d.y * graphics.height);
     }

@@ -75,8 +75,8 @@ class Line
                 return 0;
         }
 
-        project = l.ray.Project(charPos);
-        if (!l.IsProjectPositionInLine(project))
+        project = ray.Project(pos);
+        if (!IsProjectPositionInLine(project))
             return 0;
 
         project.y = pos.y;
@@ -92,9 +92,19 @@ class Line
 
     void DebugDraw(DebugRenderer@ debug, const Color&in color)
     {
-        debug.AddCross(l.ray.origin, 0.25f, RED, false);
-        debug.AddCross(l.end, 0.25f, BLUE, false);
-        debug.AddLine(l.ray.origin, l.end, color, false);
+        debug.AddCross(ray.origin, 0.25f, RED, false);
+        debug.AddCross(end, 0.25f, BLUE, false);
+        debug.AddLine(ray.origin, end, color, false);
+    }
+
+    float GetProjectFacingDir(const Vector3& pos, float angle)
+    {
+        Vector3 proj = Project(pos);
+        proj.y = pos.y;
+        Vector3 dir = proj - pos;
+        float projDir = Atan2(dir.x, dir.z);
+        float aDiff = AngleDiff(projDir - angle);
+        return Abs(aDiff);
     }
 };
 
@@ -167,13 +177,13 @@ class LineWorld
         return l;
     }
 
-    void CreateLine(Node@ node, int type)
+    void CreateLine(int type, Node@ n)
     {
         Vector3 p1, p2, p3, p4;
         float adjustH = 2.0f;
-        float h = GetCorners(_node, p1, p2, p3, p4);
+        float h = GetCorners(n, p1, p2, p3, p4);
         if (h <= 0)
-            continue;
+            return;
         CreateLine(LINE_COVER, p1, p2, h + adjustH);
         CreateLine(LINE_COVER, p2, p3, h + adjustH);
         CreateLine(LINE_COVER, p3, p4, h + adjustH);
@@ -236,6 +246,7 @@ class LineWorld
         {
             float dist = 999;
             Line@ l = lines[i];
+            Vector3 project;
             if (l.Test(pos, angle, project, dist) == 0)
                 continue;
             if (dist < maxDistance)
