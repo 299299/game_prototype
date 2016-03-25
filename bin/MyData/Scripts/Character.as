@@ -955,6 +955,9 @@ class Character : GameObject
                 Print("SetSpeed " + state.animation.name + " scale " + scale);
             animCtrl.SetSpeed(state.animation.name, scale);
         }
+        if (body !is null)
+            body.linearVelocity = body.linearVelocity * scale;
+
         sceneNode.vars[TIME_SCALE] = scale;
     }
 
