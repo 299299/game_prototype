@@ -1420,7 +1420,7 @@ class Character : GameObject
         return false;
     }
 
-    bool CheckDocking(float dist = 6)
+    bool CheckDocking(float dist = 2)
     {
         return false;
     }

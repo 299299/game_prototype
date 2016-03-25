@@ -83,7 +83,7 @@ class Line
         Vector3 dir = project - pos;
         float projDir = Atan2(dir.x, dir.z);
         float aDiff = AngleDiff(projDir - angle);
-        if (aDiff > maxFacingDiff)
+        if (Abs(aDiff) > maxFacingDiff)
             return 0;
 
         outDistance = dir.length;
@@ -184,10 +184,10 @@ class LineWorld
         float h = GetCorners(n, p1, p2, p3, p4);
         if (h <= 0)
             return;
-        CreateLine(LINE_COVER, p1, p2, h + adjustH);
-        CreateLine(LINE_COVER, p2, p3, h + adjustH);
-        CreateLine(LINE_COVER, p3, p4, h + adjustH);
-        CreateLine(LINE_COVER, p4, p1, h + adjustH);
+        CreateLine(type, p1, p2, h + adjustH);
+        CreateLine(type, p2, p3, h + adjustH);
+        CreateLine(type, p3, p4, h + adjustH);
+        CreateLine(type, p4, p1, h + adjustH);
     }
 
     void Process(Scene@ scene)
@@ -221,7 +221,6 @@ class LineWorld
     Line@ GetNearestLine(const Vector3& pos, float angle, float maxDistance)
     {
         Line@ ret = null;
-        float minDist = maxDistance;
         Vector3 project;
 
         for (uint i=0; i<lines.length; ++i)
@@ -230,9 +229,9 @@ class LineWorld
             Line@ l = lines[i];
             if (l.Test(pos, angle, project, dist) == 0)
                 continue;
-            if (dist < minDist)
+            if (dist < maxDistance)
             {
-                minDist = dist;
+                maxDistance = dist;
                 @ret = l;
             }
         }

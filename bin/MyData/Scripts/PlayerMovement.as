@@ -205,7 +205,7 @@ class PlayerRunState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking())
+        if (ownner.CheckDocking(4))
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -868,7 +868,7 @@ class PlayerClimbUpState : PlayerClimbAlignState
         {
             Motion@ motion = motions[startIndex + i];
             float motionHeight = curHeight + motion.GetKey(motion.endTime).y;
-            float curHeightDiff = lineHeight - motionHeight;
+            float curHeightDiff = Abs(lineHeight - motionHeight);
             if (curHeightDiff < minHeightDiff)
             {
                 minHeightDiff = curHeightDiff;
