@@ -39,7 +39,7 @@ class PlayerStandState : CharacterState
         if (ownner.CheckFalling())
             return;
 
-        if (ownner.CheckDocking(2.5))
+        if (ownner.CheckDocking())
             return;
 
         if (ownner.ActionCheck(true, true, true, true))
@@ -142,7 +142,7 @@ class PlayerWalkState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking(2.5f))
+        if (ownner.CheckDocking())
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -205,7 +205,7 @@ class PlayerRunState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking(4))
+        if (ownner.CheckDocking())
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -480,7 +480,7 @@ class PlayerCrouchMoveState : SingleMotionState
         if (ownner.CheckFalling())
             return;
 
-        if (ownner.CheckDocking(2.5f))
+        if (ownner.CheckDocking())
             return;
 
         CharacterState::Update(dt);
@@ -611,6 +611,11 @@ class PlayerCoverState : SingleAnimationState
         state = 0;
 
         SingleAnimationState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleAnimationState::Exit(nextState);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -851,9 +856,26 @@ class PlayerClimbUpState : PlayerClimbAlignState
 
     void Enter(State@ lastState)
     {
-        int index = 0;
+        int index = 0, startIndex = 0;
         if (lastState.nameHash == RUN_STATE)
-            index = 1;
+            startIndex = 3;
+
+        float curHeight = ownner.GetNode().worldPosition.y;
+        float lineHeight = ownner.dockLine.end.y;
+
+        float minHeightDiff = 9999;
+        for (int i=0; i<3; ++i)
+        {
+            Motion@ motion = motions[startIndex + i];
+            float motionHeight = y + motion.GetKey(motion.endTime).y;
+            float curHeightDiff = lineHeight - motionHeight;
+            if (curHeightDiff < minHeightDiff)
+            {
+                minHeightDiff = curHeightDiff;
+                index = startIndex + i;
+            }
+        }
+
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         PlayerClimbAlignState::Enter(lastState);
     }

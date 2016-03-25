@@ -565,21 +565,17 @@ class Player : Character
         return false;
     }
 
-    bool CheckDocking(float distance)
+    bool CheckDocking(float distance = 6)
     {
         if (game_type == 0)
             return false;
 
-        Line@ l = gLineWorld.GetNearestLine(sceneNode.worldPosition, distance);
+        Vector3 charPos = sceneNode.worldPosition;
+        float charAngle = GetCharacterAngle();
+        Line@ l = gLineWorld.GetNearestLine(charPos, charAngle, distance);
+
         if (l !is null)
         {
-            Vector3 charPos = sceneNode.worldPosition;
-            float charAngle = GetCharacterAngle();
-            float facingDiff = l.GetProjFacingDiff(charPos, charAngle);
-            // Print("CheckDocking facingDiff=" + facingDiff);
-            if (facingDiff > 45)
-                return false;
-
             if (l.type == LINE_COVER)
             {
                 AssignDockLine(l);

@@ -344,7 +344,11 @@ class BruceClimbUpState : PlayerClimbUpState
     {
         super(c);
         AddMotion("BM_Climb/Stand_Climb_Up_128");
+        AddMotion("BM_Climb/Stand_Climb_Up_256");
+        AddMotion("BM_Climb/Stand_Climb_Up_384");
         AddMotion("BM_Climb/Run_Climb_Up_128");
+        AddMotion("BM_Climb/Run_Climb_Up_256");
+        AddMotion("BM_Climb/Run_Climb_Up_384");
     }
 };
 
@@ -470,6 +474,10 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Stand_Climb_Over_128");
         Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_ALL);
         Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_ALL);
+        Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_ALL);
+        Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_ALL);
+        Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_ALL);
+        Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_ALL);
 
         preFix = "BM_Movement/";
         Global_AddAnimation(preFix + "Crouch_Idle");

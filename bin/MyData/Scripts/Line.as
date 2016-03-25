@@ -25,6 +25,7 @@ class Line
     float           angle;
     int             flag;
     float           maxHeight;
+    float           maxFacingDiff = 45;
 
     Vector3 Project(const Vector3& charPos)
     {
@@ -61,17 +62,7 @@ class Line
         return Atan2(dir.x, dir.z);
     }
 
-    float GetProjFacingDiff(const Vector3& pos, float angle)
-    {
-        Vector3 proj = Project(pos);
-        proj.y = pos.y;
-        Vector3 dir = proj - pos;
-        float projDir = Atan2(dir.x, dir.z);
-        float aDiff = AngleDiff(projDir - angle);
-        return Abs(aDiff);
-    }
-
-    int TestPosition(const Vector3& pos)
+    int Test(const Vector3& pos, float angle, Vector3& out project, float&out outDistance)
     {
         float yDiff = end.y - pos.y;
         if (Abs(yDiff) > maxHeight)
@@ -80,11 +71,30 @@ class Line
         if (type == LINE_CLIMB_OVER || type == LINE_CLIMB_UP)
         {
             float h_diff = end.y - pos.y;
-            if (h_diff < 3.0f)
+            if (h_diff < 1.0f)
                 return 0;
-            return 1;
         }
+
+        project = l.ray.Project(charPos);
+        if (!l.IsProjectPositionInLine(project))
+            return 0;
+
+        project.y = pos.y;
+        Vector3 dir = project - pos;
+        float projDir = Atan2(dir.x, dir.z);
+        float aDiff = AngleDiff(projDir - angle);
+        if (aDiff > maxFacingDiff)
+            return 0;
+
+        outDistance = dir.length;
         return 1;
+    }
+
+    void DebugDraw(DebugRenderer@ debug, const Color&in color)
+    {
+        debug.AddCross(l.ray.origin, 0.25f, RED, false);
+        debug.AddCross(l.end, 0.25f, BLUE, false);
+        debug.AddLine(l.ray.origin, l.end, color, false);
     }
 };
 
@@ -129,9 +139,7 @@ class LineWorld
         for (uint i=0; i<lines.length; ++i)
         {
             Line@ l = lines[i];
-            debug.AddCross(l.ray.origin, 0.25f, RED, false);
-            debug.AddCross(l.end, 0.25f, BLUE, false);
-            debug.AddLine(l.ray.origin, l.end, debugColors[l.type], false);
+            l.DebugDraw(debug, debugColors[l.type]);
         }
     }
 
@@ -159,74 +167,59 @@ class LineWorld
         return l;
     }
 
+    void CreateLine(Node@ node, int type)
+    {
+        Vector3 p1, p2, p3, p4;
+        float adjustH = 2.0f;
+        float h = GetCorners(_node, p1, p2, p3, p4);
+        if (h <= 0)
+            continue;
+        CreateLine(LINE_COVER, p1, p2, h + adjustH);
+        CreateLine(LINE_COVER, p2, p3, h + adjustH);
+        CreateLine(LINE_COVER, p3, p4, h + adjustH);
+        CreateLine(LINE_COVER, p4, p1, h + adjustH);
+    }
+
     void Process(Scene@ scene)
     {
         Vector3 p1, p2, p3, p4;
         float h = 0;
+        float adjustH = 2.0f;
 
         for (uint i=0; i<scene.numChildren; ++i)
         {
             Node@ _node = scene.children[i];
             if (_node.name.StartsWith("Cover"))
             {
-                h = GetCorners(_node, p1, p2, p3, p4);
-                if (h <= 0)
-                    continue;
-                CreateLine(LINE_COVER, p1, p2, h + 3.0f);
-                CreateLine(LINE_COVER, p2, p3, h + 3.0f);
-                CreateLine(LINE_COVER, p3, p4, h + 3.0f);
-                CreateLine(LINE_COVER, p4, p1, h + 3.0f);
+                CreateLine(LINE_COVER, _node);
             }
             else if (_node.name.StartsWith("Railing"))
             {
-                h = GetCorners(_node, p1, p2, p3, p4);
-                if (h <= 0)
-                    continue;
-                CreateLine(LINE_RAILING, p1, p2, h + 3.0f);
-                CreateLine(LINE_RAILING, p2, p3, h + 3.0f);
-                CreateLine(LINE_RAILING, p3, p4, h + 3.0f);
-                CreateLine(LINE_RAILING, p4, p1, h + 3.0f);
+                CreateLine(LINE_RAILING, _node);
             }
             else if (_node.name.StartsWith("ClimbOver"))
             {
-                h = GetCorners(_node, p1, p2, p3, p4);
-                if (h <= 0)
-                    continue;
-                CreateLine(LINE_CLIMB_OVER, p1, p2, h + 3.0f);
-                CreateLine(LINE_CLIMB_OVER, p2, p3, h + 3.0f);
-                CreateLine(LINE_CLIMB_OVER, p3, p4, h + 3.0f);
-                CreateLine(LINE_CLIMB_OVER, p4, p1, h + 3.0f);
+                CreateLine(LINE_CLIMB_OVER, _node);
             }
             else if (_node.name.StartsWith("ClimbUp"))
             {
-                h = GetCorners(_node, p1, p2, p3, p4);
-                if (h <= 0)
-                    continue;
-                CreateLine(LINE_CLIMB_UP, p1, p2, h + 3.0f);
-                CreateLine(LINE_CLIMB_UP, p2, p3, h + 3.0f);
-                CreateLine(LINE_CLIMB_UP, p3, p4, h + 3.0f);
-                CreateLine(LINE_CLIMB_UP, p4, p1, h + 3.0f);
+                CreateLine(LINE_CLIMB_UP, _node);
             }
         }
     }
 
-    Line@ GetNearestLine(const Vector3& charPos, float maxDistance)
+    Line@ GetNearestLine(const Vector3& pos, float angle, float maxDistance)
     {
         Line@ ret = null;
         float minDist = maxDistance;
+        Vector3 project;
+
         for (uint i=0; i<lines.length; ++i)
         {
+            float dist = 999;
             Line@ l = lines[i];
-            if (l.TestPosition(charPos) == 0)
+            if (l.Test(pos, angle, project, dist) == 0)
                 continue;
-
-            Vector3 project = l.ray.Project(charPos);
-            if (!l.IsProjectPositionInLine(project))
-                continue;
-
-            project.y = charPos.y;
-            float dist = (charPos - project).length;
-            // Print("dist = " + dist);
             if (dist < minDist)
             {
                 minDist = dist;
@@ -236,20 +229,15 @@ class LineWorld
         return ret;
     }
 
-    void CollectLines(const Vector3& charPos, float maxDistance)
+    void CollectLines(const Vector3& pos, float angle, float maxDistance)
     {
         cacheLines.Clear();
         for (uint i=0; i<lines.length; ++i)
         {
+            float dist = 999;
             Line@ l = lines[i];
-            if (l.TestPosition(charPos) == 0)
+            if (l.Test(pos, angle, project, dist) == 0)
                 continue;
-            Vector3 project = l.ray.Project(charPos);
-            if (!l.IsProjectPositionInLine(project))
-                continue;
-            project.y = charPos.y;
-            float dist = (charPos - project).length;
-            // Print("dist = " + dist);
             if (dist < maxDistance)
                 cacheLines.Push(l);
         }
