@@ -66,8 +66,9 @@ class State
 
 class FSM
 {
-    Array<State@>   states;
-    State@          currentState;
+    Array<State@>           states;
+    State@                  currentState;
+    StringHash              queueState;
 
     FSM()
     {
@@ -152,10 +153,21 @@ class FSM
         return ChangeState(StringHash(name));
     }
 
+    void ChangeStateQueue(const StringHash&in name)
+    {
+        queueState = name;
+    }
+
     void Update(float dt)
     {
         if (currentState !is null)
             currentState.Update(dt);
+
+        if (queueState != 0)
+        {
+            ChangeState(queueState);
+            queueState = 0;
+        }
     }
 
     void FixedUpdate(float dt)

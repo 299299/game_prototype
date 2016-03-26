@@ -29,6 +29,7 @@ const StringHash STAND_STATE("StandState");
 const StringHash BEATHIT_STATE("BeatDownHitState");
 const StringHash DEAD_STATE("DeadState");
 const StringHash ANIMTEST_STATE("AnimationTestState");
+const StringHash ALIGN_STATE("AlignState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
@@ -430,7 +431,7 @@ class CharacterCounterState : CharacterState
     int                 type;
     int                 index;
 
-    float               alignTime = 0.3f;
+    float               alignTime = 0.2f;
     Vector3             movePerSec;
     float               yawPerSec;
     Vector3             targetPosition;
@@ -828,6 +829,80 @@ class CharacterGetUpState : MultiMotionState
         }
 
         CharacterState::Update(dt);
+    }
+};
+
+class CharacterAlignState : CharacterState
+{
+    StringHash  nextStateName;
+    String      alignAnimation;
+    Vector3     targetPosition;
+    float       targetRotation;
+    Vector3     movePerSec;
+    float       rotatePerSec;
+    float       alignTime = 0.2f;
+    int         wantPhysicsType;
+    int         lastPhysicsType;
+
+    CharacterAlignState(Character@ c)
+    {
+        super(c);
+        SetName("AlignState");
+    }
+
+    void Start(StringHash nextState, const Vector3&in tPos, float tRot, float duration, int physicsType = 0, const String&in anim = "")
+    {
+        nextStateName = nextState;
+        targetPosition = tPos;
+        targetRotation = tRot;
+        alignTime = duration;
+        alignAnimation = anim;
+        wantPhysicsType = physicsType;
+        lastPhysicsType = ownner.physicsType;
+        ownner.SetPhysicsType(physicsType);
+
+        Vector3 curPos = ownner.GetNode().worldPosition;
+        float curAngle = ownner.GetCharacterAngle();
+        movePerSec = (tPos - curPos) / duration;
+        rotatePerSec = AngleDiff(tRot - curAngle) / duration;
+
+        if (anim != "")
+            ownner.PlayAnimation(anim, LAYER_MOVE, true);
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetPhysicsType(wantPhysicsType);
+        CharacterState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.SetPhysicsType(lastPhysicsType);
+        CharacterState::Exit(nextState);
+    }
+
+    void Update(float dt)
+    {
+        if (ownner.physicsType == 0)
+            ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
+        else
+            ownner.SetVelocity(movePerSec);
+        ownner.GetNode().Yaw(rotatePerSec * dt);
+
+        CharacterState::Update(dt);
+
+        if (timeInState >= alignTime)
+        {
+            Print("On_Align_Finished!!!");
+            ownner.ChangeState(nextStateName);
+        }
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, RED, 2.0f);
+        debug.AddCross(targetPosition, 0.5f, YELLOW, false);
     }
 };
 
@@ -1308,9 +1383,19 @@ class Character : GameObject
         return ret;
     }
 
+    void ChangeStateQueue(const StringHash&in nameHash)
+    {
+        stateMachine.ChangeStateQueue(nameHash);
+    }
+
     State@ FindState(const String&in name)
     {
         return stateMachine.FindState(name);
+    }
+
+    State@ FindState(const StringHash&in nameHash)
+    {
+        return stateMachine.FindState(nameHash);
     }
 
     void FixedUpdate(float timeStep)

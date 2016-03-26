@@ -811,6 +811,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugRunState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugPushBackState(this));
+        stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
 
         if (game_type == 0)

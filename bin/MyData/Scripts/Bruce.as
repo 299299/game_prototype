@@ -371,6 +371,7 @@ class Bruce : Player
         stateMachine.AddState(BruceRunToStandState(this));
         stateMachine.AddState(BruceRunTurn180State(this));
         stateMachine.AddState(BruceEvadeState(this));
+        stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
 
         if (game_type == 0)

@@ -852,15 +852,10 @@ class PlayerBeatDownHitState : MultiMotionState
     int maxBeatNum = 15;
     int minBeatNum = 7;
     int beatTotal = 0;
+    bool attackPressed = false;
 
-    float alignTime = 0.1f;
-    Vector3 movePerSec;
     Vector3 targetPosition;
     float targetRotation;
-
-    int state = 0;
-    bool needToTransition = false;
-    bool attackPressed = false;
 
     PlayerBeatDownHitState(Character@ c)
     {
@@ -889,83 +884,59 @@ class PlayerBeatDownHitState : MultiMotionState
             return;
         }
 
-        if (needToTransition)
+        if (gInput.IsAttackPressed())
+            attackPressed = true;
+
+        if (combatReady && attackPressed)
         {
-            ownner.ChangeState("TransitionState");
-            PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.GetState());
-            if (s !is null)
-            {
-                s.nextStateName = name;
-                return;
-            }
+            ++ beatIndex;
+            ++ beatNum;
+            beatIndex = beatIndex % motions.length;
+            ownner.ChangeState("BeatDownHitState");
+            return;
         }
 
-        if (state == 0)
+        if (gInput.IsCounterPressed())
         {
-            if (ownner.physicsType == 0)
-                ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
-            else
-                ownner.SetVelocity(movePerSec);
-
-            if (timeInState >= alignTime)
-            {
-                Print("PlayerBeatDownHitState::Update align time-out");
-                ownner.GetNode().worldPosition = targetPosition;
-                ownner.SetVelocity(Vector3(0, 0, 0));
-                state = 1;
-                HitStart(false, beatIndex, false);
-                timeInState = 0.0f;
-            }
+            ownner.Counter();
+            return;
         }
-        else if (state == 1)
-        {
-            if (gInput.IsAttackPressed())
-                attackPressed = true;
 
-            if (combatReady && attackPressed)
-            {
-                ++ beatIndex;
-                ++ beatNum;
-                beatIndex = beatIndex % motions.length;
-                ownner.ChangeState("BeatDownHitState");
-                return;
-            }
-
-            if (gInput.IsCounterPressed())
-            {
-                ownner.Counter();
-                return;
-            }
-
-            if (motions[selectIndex].Move(ownner, dt)) {
-                Print("Beat Animation finished");
-                OnMotionFinished();
-                return;
-            }
+        if (motions[selectIndex].Move(ownner, dt)) {
+            Print("Beat Animation finished");
+            OnMotionFinished();
+            return;
         }
 
         CharacterState::Update(dt);
     }
 
-    void HitStart(bool bFirst, int i, bool checkDist)
+    void Enter(State@ lastState)
     {
-        Character@ target = ownner.target;
-        if (target is null)
-            return;
-
-        if (checkDist)
+        float curDist = ownner.GetTargetDistance();
+        if (IsTransitionNeeded(curDist - PLAYER_COLLISION_DIST))
         {
-            float curDist = ownner.GetTargetDistance();
-            // Print("HitStart bFirst=" + bFirst + " i=" + i + " current-dist=" + curDist);
-            needToTransition = IsTransitionNeeded(curDist - PLAYER_COLLISION_DIST);
+            ownner.ChangeStateQueue(StringHash("TransitionState"));
+            PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.FindState(StringHash("TransitionState")));
+            s.nextStateName = this.name;
+            return;
         }
 
+        attackPressed = false;
+        if (lastState !is this)
+        {
+            beatNum = 0;
+            beatTotal = RandomInt(minBeatNum, maxBeatNum);
+        }
+        int index = beatIndex;
+
+        Character@ target = ownner.target;
         MultiMotionState@ s = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
-        Motion@ m1 = motions[i];
-        Motion@ m2 = s.motions[i];
+        Motion@ m1 = motions[index];
+        Motion@ m2 = s.motions[index];
 
         Vector3 myPos = ownner.GetNode().worldPosition;
-        if (bFirst)
+        if (lastState !is this && lastState.nameHash != ALIGN_STATE)
         {
             Vector3 dir = myPos - target.GetNode().worldPosition;
             float e_targetRotation = Atan2(dir.x, dir.z);
@@ -975,38 +946,23 @@ class PlayerBeatDownHitState : MultiMotionState
         Vector4 t = GetTargetTransform(target.GetNode(), m1, m2);
         targetRotation = t.w;
         targetPosition = Vector3(t.x, myPos.y, t.z);
-        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-
-        if (bFirst)
+        if (lastState !is this && lastState.nameHash != ALIGN_STATE)
         {
-            state = 0;
-            movePerSec = (targetPosition - myPos)/alignTime;
+            CharacterAlignState@ s = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
+            s.Start(this.nameHash, targetPosition, targetRotation, 0.1f);
+            ownner.ChangeStateQueue(ALIGN_STATE);
         }
         else
         {
-            state = 1;
+            ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
             ownner.GetNode().worldPosition = targetPosition;
-            target.GetNode().vars[ANIMATION_INDEX] = i;
-            motions[i].Start(ownner);
-            selectIndex = i;
+            target.GetNode().vars[ANIMATION_INDEX] = index;
+            motions[index].Start(ownner);
+            selectIndex = index;
             target.ChangeState("BeatDownHitState");
         }
-    }
 
-    void Enter(State@ lastState)
-    {
-        //Print("========================= BeatDownHitState Enter start ===========================");
-        attackPressed = false;
-        needToTransition = false;
-        if (lastState !is this)
-        {
-            beatNum = 0;
-            beatTotal = RandomInt(minBeatNum, maxBeatNum);
-        }
-        HitStart(lastState !is this, beatIndex, lastState.name != "TransitionState");
         CharacterState::Enter(lastState);
-        // Print("Beat Total = " + beatTotal + " Num = " + beatNum + " FROM " + lastState.name);
-        //Print("========================= BeatDownHitState Enter end ===========================");
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
