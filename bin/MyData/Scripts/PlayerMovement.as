@@ -205,7 +205,7 @@ class PlayerRunState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking(4))
+        if (ownner.CheckDocking())
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -752,8 +752,9 @@ class PlayerCoverTransitionState : SingleMotionState
 
 class PlayerClimbAlignState : MultiMotionState
 {
-    float heightAdjustTime = 0.0f;
-    float yAdjust = 0.0f;
+    Array<Vector3>  targetOffsets;
+    float           heightAdjustTime = 0.0f;
+    float           yAdjust = 0.0f;
 
     PlayerClimbAlignState(Character@ c)
     {
@@ -781,14 +782,19 @@ class PlayerClimbAlignState : MultiMotionState
         }
         else
         {
+            selectIndex = PickIndex();
             Vector3 myPos = ownner.GetNode().worldPosition;
             Vector3 proj = ownner.dockLine.Project(myPos);
             proj.y = myPos.y;
             Vector3 dir = proj - myPos;
             float targetAngle = Atan2(dir.x, dir.z);
-
             CharacterAlignState@ s = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-            s.Start(this.nameHash, myPos, targetAngle,  0.1f, 0);
+
+            String alignAnim = "";
+            // walk
+            if (selectIndex == 0)
+                alignAnim = ownner.walkAlignAnimation;
+            s.Start(this.nameHash, proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex], targetAngle,  0.2f, 0, alignAnim);
 
             ownner.ChangeStateQueue(ALIGN_STATE);
         }

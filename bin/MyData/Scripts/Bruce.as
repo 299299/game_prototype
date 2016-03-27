@@ -335,6 +335,8 @@ class BruceClimbOverState : PlayerClimbOverState
         super(c);
         AddMotion("BM_Climb/Stand_Climb_Over_128");
         AddMotion("BM_Climb/Run_Climb_Over_128");
+        targetOffsets.Push(Vector3(0, 0, -1.6475f));
+        targetOffsets.Push(Vector3(0, 0, -2.0f));
     }
 };
 
@@ -357,11 +359,21 @@ class BruceClimbUpState : PlayerClimbUpState
         heightAdjustTimes.Push(0.333f);
         heightAdjustTimes.Push(1.0f);
         heightAdjustTimes.Push(1.17f);
+
+        targetOffsets.Push(Vector3(0, 0, -2.75));
+        targetOffsets.Push(Vector3(0, 0, -1.43629));
+        targetOffsets.Push(Vector3(0, 0, -1.2));
     }
 };
 
 class Bruce : Player
 {
+    Bruce()
+    {
+        super();
+        walkAlignAnimation = GetAnimationName("BW_Movement/Walk_Forward");
+    }
+
     void AddStates()
     {
         stateMachine.AddState(BruceStandState(this));

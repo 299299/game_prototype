@@ -867,7 +867,10 @@ class CharacterAlignState : CharacterState
         rotatePerSec = AngleDiff(tRot - curAngle) / duration;
 
         if (anim != "")
+        {
+            Print("align-animation : " + anim);
             ownner.PlayAnimation(anim, LAYER_MOVE, true);
+        }
     }
 
     void Enter(State@ lastState)
@@ -935,6 +938,9 @@ class Character : GameObject
     Line@                   dockLine;
 
     int                     physicsType;
+
+    String                  lastAnimation;
+    String                  walkAlignAnimation;
 
     // ==============================================
     //   DYNAMIC VALUES For Motion
@@ -1040,6 +1046,11 @@ class Character : GameObject
     {
         if (d_log)
             Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+
+        if (layer == LAYER_MOVE && lastAnimation == animName && loop)
+            return;
+
+        lastAnimation = animName;
         AnimationController@ ctrl = animCtrl;
         ctrl.StopLayer(layer, blendTime);
         ctrl.PlayExclusive(animName, layer, loop, blendTime);
@@ -1505,7 +1516,7 @@ class Character : GameObject
         return false;
     }
 
-    bool CheckDocking(float dist = 2)
+    bool CheckDocking(float dist = 4)
     {
         return false;
     }

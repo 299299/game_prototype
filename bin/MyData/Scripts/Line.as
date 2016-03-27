@@ -36,7 +36,9 @@ class Line
     {
         float l_to_start = (proj - ray.origin).lengthSquared;
         float l_to_end = (proj - end).lengthSquared;
-        if (l_to_start > lengthSquared || l_to_end > lengthSquared)
+        float bound = 1.0f;
+        float bound_sqr = (length + bound)*(length+bound)
+        if (l_to_start > bound_sqr || l_to_end > bound_sqr)
             return false;
         return true;
     }

@@ -565,7 +565,7 @@ class Player : Character
         return false;
     }
 
-    bool CheckDocking(float distance = 2)
+    bool CheckDocking(float distance = 4)
     {
         if (game_type == 0)
             return false;
