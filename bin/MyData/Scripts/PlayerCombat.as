@@ -948,8 +948,8 @@ class PlayerBeatDownHitState : MultiMotionState
         targetPosition = Vector3(t.x, myPos.y, t.z);
         if (lastState !is this && lastState.nameHash != ALIGN_STATE)
         {
-            CharacterAlignState@ s = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-            s.Start(this.nameHash, targetPosition, targetRotation, 0.1f);
+            CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
+            state.Start(this.nameHash, targetPosition, targetRotation, 0.1f);
             ownner.ChangeStateQueue(ALIGN_STATE);
         }
         else

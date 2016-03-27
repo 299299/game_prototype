@@ -131,6 +131,35 @@ float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector
     return halfSize.y * 2 * n.worldScale.y;
 }
 
+float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2)
+{
+    CollisionShape@ shape = n.GetComponent("CollisionShape");
+    if (shape is null)
+        return -1;
+
+    Vector3 halfSize = shape.size/2;
+    Vector3 offset = shape.position;
+
+    float x = halfSize.x * n.worldScale.x;
+    float z = halfSize.z * n.worldScale.z;
+
+    if (x > z)
+    {
+        p1 = Vector3(halfSize.x, halfSize.y, 0);
+        p2 = Vector3(-halfSize.x, halfSize.y, 0);
+    }
+    else
+    {
+        p1 = Vector3(0, halfSize.y, halfSize.z);
+        p2 = Vector3(0, halfSize.y, -halfSize.z);
+    }
+
+    p1 = n.LocalToWorld(p1 + offset);
+    p2 = n.LocalToWorld(p2 + offset);
+
+    return halfSize.y * 2 * n.worldScale.y;
+}
+
 class LineWorld
 {
     Array<Line@>            lines;
@@ -181,15 +210,26 @@ class LineWorld
 
     void CreateLine(int type, Node@ n)
     {
-        Vector3 p1, p2, p3, p4;
         float adjustH = 2.0f;
-        float h = GetCorners(n, p1, p2, p3, p4);
-        if (h <= 0)
-            return;
-        CreateLine(type, p1, p2, h + adjustH);
-        CreateLine(type, p2, p3, h + adjustH);
-        CreateLine(type, p3, p4, h + adjustH);
-        CreateLine(type, p4, p1, h + adjustH);
+        if (type == LINE_CLIMB_UP)
+        {
+            Vector3 p1, p2, p3, p4;
+            float h = GetCorners(n, p1, p2, p3, p4);
+            if (h <= 0)
+                return;
+            CreateLine(type, p1, p2, h + adjustH);
+            CreateLine(type, p2, p3, h + adjustH);
+            CreateLine(type, p3, p4, h + adjustH);
+            CreateLine(type, p4, p1, h + adjustH);
+        }
+        else
+        {
+            Vector3 p1, p2;
+            float h = GetCorners(n, p1, p2);
+            if (h <= 0)
+                return;
+            CreateLine(type, p1, p2, h + adjustH);
+        }
     }
 
     void Process(Scene@ scene)

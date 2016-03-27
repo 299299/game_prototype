@@ -753,7 +753,7 @@ class PlayerCoverTransitionState : SingleMotionState
 class PlayerClimbAlignState : MultiMotionState
 {
     Array<Vector3>  targetOffsets;
-    float           heightAdjustTime = 0.0f;
+    bool            adjustTargetMotion;
     float           yAdjust = 0.0f;
     float           alignTime = 0.1f;
 
@@ -770,7 +770,7 @@ class PlayerClimbAlignState : MultiMotionState
             ownner.SetVelocity(Vector3(0, 0, 0));
             MultiMotionState::Enter(lastState);
 
-            if (heightAdjustTime > 0)
+            if (adjustTargetMotion)
             {
                 Motion@ motion = motions[selectIndex];
                 float targetHeight = ownner.dockLine.end.y + yAdjust;
@@ -778,7 +778,7 @@ class PlayerClimbAlignState : MultiMotionState
                 Vector4 motionOut = motion.GetKey(t);
                 float motionHeight = motion.GetFuturePosition(ownner, t).y;
                 Print(name + " targetHeight=" + targetHeight + " motionHeight=" + motionHeight);
-                ownner.motion_velocity = Vector3(0, (targetHeight - motionHeight) / heightAdjustTime, 0);
+                ownner.motion_velocity = Vector3(0, (targetHeight - motionHeight) / t, 0);
             }
         }
         else
@@ -819,13 +819,6 @@ class PlayerClimbAlignState : MultiMotionState
         ownner.SetVelocity(Vector3(0, 0, 0));
         MultiMotionState::Exit(nextState);
     }
-
-    void Update(float dt)
-    {
-        if (timeInState > heightAdjustTime)
-            ownner.motion_velocity = Vector3(0, 0, 0);
-        MultiMotionState::Update(dt);
-    }
 };
 
 class PlayerClimbOverState : PlayerClimbAlignState
@@ -838,23 +831,26 @@ class PlayerClimbOverState : PlayerClimbAlignState
 
     void Enter(State@ lastState)
     {
-        int index = 0;
-        if (lastState.nameHash == RUN_STATE)
-            index = 1;
-        alignTime = (index == 0) ? 0.2f : 0.1f;
-        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        if (lastState.nameHash != ALIGN_STATE)
+        {
+            int index = 0;
+            if (lastState.nameHash == RUN_STATE)
+                index = 1;
+            alignTime = 0.2f; // (index == 0) ? 0.2f : 0.1f;
+            Print("ClimbOverState--index=" + index);
+            ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        }
         PlayerClimbAlignState::Enter(lastState);
     }
 };
 
 class PlayerClimbUpState : PlayerClimbAlignState
 {
-    Array<float> heightAdjustTimes;
-
     PlayerClimbUpState(Character@ c)
     {
         super(c);
         SetName("ClimbUpState");
+        adjustTargetMotion = true;
     }
 
     void Enter(State@ lastState)
@@ -882,10 +878,50 @@ class PlayerClimbUpState : PlayerClimbAlignState
                     index = startIndex + i;
                 }
             }
+            yAdjust = (index == 0) ? 0.3f : 0.0f;
 
-            heightAdjustTime = heightAdjustTimes[selectIndex];
-            yAdjust = (index == 0) ? 0.25f : 0.0f;
+            ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        }
+        PlayerClimbAlignState::Enter(lastState);
+    }
+};
 
+
+class PlayerRailUpState : PlayerClimbAlignState
+{
+    PlayerRailUpState(Character@ c)
+    {
+        super(c);
+        SetName("ClimbUpState");
+        adjustTargetMotion = true;
+    }
+
+    void Enter(State@ lastState)
+    {
+        if (lastState.nameHash != ALIGN_STATE)
+        {
+            int index = 0, startIndex = 0;
+            if (lastState.nameHash == RUN_STATE)
+                startIndex = 3;
+
+            alignTime = (lastState.nameHash != RUN_STATE) ? 0.2f : 0.1f;
+
+            float curHeight = ownner.GetNode().worldPosition.y;
+            float lineHeight = ownner.dockLine.end.y;
+
+            float minHeightDiff = 9999;
+            for (int i=0; i<3; ++i)
+            {
+                Motion@ motion = motions[startIndex + i];
+                float motionHeight = curHeight + motion.GetKey(motion.endTime).y;
+                float curHeightDiff = Abs(lineHeight - motionHeight);
+                if (curHeightDiff < minHeightDiff)
+                {
+                    minHeightDiff = curHeightDiff;
+                    index = startIndex + i;
+                }
+            }
+            yAdjust = (index == 0) ? 0.3f : 0.0f;
             ownner.GetNode().vars[ANIMATION_INDEX] = index;
         }
         PlayerClimbAlignState::Enter(lastState);

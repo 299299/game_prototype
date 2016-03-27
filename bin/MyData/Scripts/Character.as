@@ -333,59 +333,90 @@ class MultiMotionState : CharacterState
 
 class AnimationTestState : CharacterState
 {
-    Motion@ testMotion;
-    String  animationName;
+    Array<Motion@>  testMotions;
+    Array<String>   testAnimations;
+    int             lastPhysicsType;
+    int             currentIndex;
 
     AnimationTestState(Character@ c)
     {
         super(c);
         SetName("AnimationTestState");
-        @testMotion = null;
     }
 
     void Enter(State@ lastState)
     {
         SendAnimationTriger(ownner.renderNode, RAGDOLL_STOP);
 
-        @testMotion = gMotionMgr.FindMotion(animationName);
-        if (testMotion !is null)
-        {
-            testMotion.Start(ownner, 0.0f, 0.0f, animSpeed);
-            if (ownner.side == 1)
-                gCameraMgr.CheckCameraAnimation(testMotion.name);
-        }
-        else
-        {
-            ownner.PlayAnimation(animationName, LAYER_MOVE, false, 0.0f, animSpeed);
-            if (ownner.side == 1)
-                gCameraMgr.CheckCameraAnimation(animationName);
-        }
+        currentIndex = 0;
+        lastPhysicsType = ownner.physicsType;
+        ownner.SetPhysicsType(0);
+
+        Start();
+
         CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
-        @testMotion = null;
+        ownner.SetPhysicsType(lastPhysicsType);
+        testMotions.Clear();
         CharacterState::Exit(nextState);
+    }
+
+    void Process(Array<String> animations)
+    {
+        testAnimations.Clear();
+        testMotions.Clear();
+        for (uint i=0; i<animations.length; ++i)
+        {
+            testAnimations.Push(GetAnimationName(animations[i]));
+            testMotions.Push(gMotionMgr.FindMotion(animations[i]));
+        }
+    }
+
+    void Start()
+    {
+        Motion@ motion = testMotions[currentIndex];
+        float blendTime = (currentIndex == 0) ? 0.0f : 0.2f;
+        if (motion !is null)
+        {
+            motion.Start(ownner, 0.0f, blendTime, animSpeed);
+            if (ownner.side == 1)
+                gCameraMgr.CheckCameraAnimation(motion.name);
+        }
+        else
+        {
+            ownner.PlayAnimation(testAnimations[currentIndex], LAYER_MOVE, false, blendTime, animSpeed);
+            if (ownner.side == 1)
+                gCameraMgr.CheckCameraAnimation(testAnimations[currentIndex]);
+        }
     }
 
     void Update(float dt)
     {
         bool finished = false;
-        if (testMotion !is null)
+        Motion@ motion = testMotions[currentIndex];
+        if (motion !is null)
         {
-             finished = testMotion.Move(ownner, dt);
-
-            if (testMotion.looped && timeInState > 2.0f)
+            finished = motion.Move(ownner, dt);
+            if (motion.looped && timeInState > 2.0f)
                 finished = true;
         }
         else
-            finished = ownner.animCtrl.IsAtEnd(animationName);
+            finished = ownner.animCtrl.IsAtEnd(testAnimations[currentIndex]);
 
         if (finished) {
-            Print("AnimationTestState finished!");
-            ownner.CommonStateFinishedOnGroud();
-            return;
+            Print("AnimationTestState finished, currentIndex=" + currentIndex);
+            currentIndex ++;
+            if (currentIndex >= testAnimations.length)
+            {
+                if (testAnimations.length > 1)
+                    ownner.SetSceneTimeScale(0);
+                ownner.CommonStateFinishedOnGroud();
+            }
+            else
+                Start();
         }
 
         CharacterState::Update(dt);
@@ -393,13 +424,16 @@ class AnimationTestState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        if (testMotion !is null)
-            testMotion.DebugDraw(debug, ownner);
+        if (currentIndex >= testAnimations.length)
+            return;
+        Motion@ motion = testMotions[currentIndex];
+        if (motion !is null)
+            motion.DebugDraw(debug, ownner);
     }
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) + " animation=" + animationName + "\n";
+        return " name=" + name + " timeInState=" + String(timeInState) + " animation=" + testAnimations[currentIndex] + "\n";
     }
 
     bool CanReEntered()
@@ -1166,14 +1200,21 @@ class Character : GameObject
         debug.AddNode(sceneNode, 0.5f, false);
     }
 
-    void TestAnimation(const String&in animationName)
+    void TestAnimation(const Array<String>&in animations)
     {
         AnimationTestState@ state = cast<AnimationTestState>(stateMachine.FindState("AnimationTestState"));
         if (state is null)
             return;
-        state.animationName = animationName;
+        state.Process(animations);
         ChangeState("AnimationTestState");
     }
+
+    void TestAnimation(const String&in animation)
+    {
+        Array<String> animations = { animation };
+        TestAnimation(animations);
+    }
+
 
     float GetTargetAngle()
     {

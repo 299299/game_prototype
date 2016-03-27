@@ -489,6 +489,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         TestAnimations_Group_Beat();
     else if (key == 'E')
     {
+        Array<String> testAnimations;
         //String testName = "TG_Getup/GetUp_Back";
         //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
         //String testName = "TG_HitReaction/Push_Reaction";
@@ -497,10 +498,15 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = "BM_Attack/Attack_Far_Back_04";
         //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
         //String testName = "BM_Attack/Attack_Far_Back_03";
-        String testName = "BM_Climb/Stand_Climb_Up_128";
+        //String testName = "BM_Climb/Stand_Climb_Up_128";
+        //String testName = GetAnimationName("BM_Railing/Railing_Idle");
+        //String testName = "BM_Railing/Railing_Climb_Up";
+        String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
+        testAnimations.Push(testName);
+        testAnimations.Push("BM_Climb/Hang_Climb_Up_Rail");
         if (player !is null)
-            player.TestAnimation(testName);
+            player.TestAnimation(testAnimations);
     }
     else if (key == 'F')
     {
@@ -685,6 +691,8 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
         return;
 
     Print("TestAnimation_Group " + playerAnim);
+
+    Array<String> testAnims;
 
     for (uint i=0; i<thugAnims.length; ++i)
     {

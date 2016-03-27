@@ -336,7 +336,7 @@ class BruceClimbOverState : PlayerClimbOverState
         AddMotion("BM_Climb/Stand_Climb_Over_128");
         AddMotion("BM_Climb/Run_Climb_Over_128");
         targetOffsets.Push(Vector3(0, 0, -1.9));
-        targetOffsets.Push(Vector3(0, 0, -2.0));
+        targetOffsets.Push(Vector3(0, 0, -4.0));
     }
 };
 
@@ -351,14 +351,6 @@ class BruceClimbUpState : PlayerClimbUpState
         AddMotion("BM_Climb/Run_Climb_Up_128");
         AddMotion("BM_Climb/Run_Climb_Up_256");
         AddMotion("BM_Climb/Run_Climb_Up_384");
-
-        heightAdjustTimes.Push(0.333f);
-        heightAdjustTimes.Push(1.0f);
-        heightAdjustTimes.Push(1.17f);
-
-        heightAdjustTimes.Push(0.333f);
-        heightAdjustTimes.Push(1.0f);
-        heightAdjustTimes.Push(1.17f);
 
         targetOffsets.Push(Vector3(0, 0, -2.75));
         targetOffsets.Push(Vector3(0, 0, -1.43629));
@@ -504,6 +496,14 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_ALL);
         Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_ALL);
 
+        Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_ALL);
+        Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_ALL);
+        Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_ALL);
+        Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_ALL);
+
+        Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_ALL);
+        Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_ALL);
+
         preFix = "BM_Movement/";
         Global_AddAnimation(preFix + "Crouch_Idle");
         // Global_CreateMotion(preFix + "Crouch_Walk_Slow", kMotion_XZR, kMotion_Z, -1, true);
@@ -515,8 +515,13 @@ void CreateBruceMotions()
         Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
         Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
 
-        //preFix = "BM_Railing/";
-        //Global_CreateMotion_InFolder(preFix);
+        preFix = "BM_Railing/";
+        Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_ALL);
+        Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_ALL);
+        Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_ALL);
+
+        Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_ALL);
+        Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_ALL);
     }
 }
 
