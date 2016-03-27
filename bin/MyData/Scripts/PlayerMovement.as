@@ -205,7 +205,7 @@ class PlayerRunState : SingleMotionState
 
         if (ownner.CheckFalling())
             return;
-        if (ownner.CheckDocking())
+        if (ownner.CheckDocking(6))
             return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
@@ -755,6 +755,7 @@ class PlayerClimbAlignState : MultiMotionState
     Array<Vector3>  targetOffsets;
     float           heightAdjustTime = 0.0f;
     float           yAdjust = 0.0f;
+    float           alignTime = 0.1f;
 
     PlayerClimbAlignState(Character@ c)
     {
@@ -788,13 +789,25 @@ class PlayerClimbAlignState : MultiMotionState
             proj.y = myPos.y;
             Vector3 dir = proj - myPos;
             float targetAngle = Atan2(dir.x, dir.z);
-            CharacterAlignState@ s = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
+            Vector3 targetPos = proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex];
 
+            // Run-Case
+            if (selectIndex >= 3)
+            {
+                float len_diff = (targetPos - myPos).length;
+                Print("state:" + this.name + " selectIndex=" + selectIndex + " len_diff=" + len_diff);
+                if (len_diff > 3)
+                    selectIndex -= 3;
+                targetPos = proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex];
+                ownner.GetNode().vars[ANIMATION_INDEX] = selectIndex;
+            }
+
+            CharacterAlignState@ s = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
             String alignAnim = "";
             // walk
             if (selectIndex == 0)
                 alignAnim = ownner.walkAlignAnimation;
-            s.Start(this.nameHash, proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex], targetAngle,  0.2f, 0, alignAnim);
+            s.Start(this.nameHash, targetPos,  targetAngle, alignTime, 0, alignAnim);
 
             ownner.ChangeStateQueue(ALIGN_STATE);
         }
@@ -828,6 +841,7 @@ class PlayerClimbOverState : PlayerClimbAlignState
         int index = 0;
         if (lastState.nameHash == RUN_STATE)
             index = 1;
+        alignTime = (index == 0) ? 0.2f : 0.1f;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         PlayerClimbAlignState::Enter(lastState);
     }
@@ -851,6 +865,8 @@ class PlayerClimbUpState : PlayerClimbAlignState
             if (lastState.nameHash == RUN_STATE)
                 startIndex = 3;
 
+            alignTime = (lastState.nameHash != RUN_STATE) ? 0.2f : 0.1f;
+
             float curHeight = ownner.GetNode().worldPosition.y;
             float lineHeight = ownner.dockLine.end.y;
 
@@ -868,7 +884,7 @@ class PlayerClimbUpState : PlayerClimbAlignState
             }
 
             heightAdjustTime = heightAdjustTimes[selectIndex];
-            yAdjust = (index == 0) ? 0.2f : 0.0f;
+            yAdjust = (index == 0) ? 0.25f : 0.0f;
 
             ownner.GetNode().vars[ANIMATION_INDEX] = index;
         }

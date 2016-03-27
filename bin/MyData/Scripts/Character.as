@@ -852,6 +852,7 @@ class CharacterAlignState : CharacterState
 
     void Start(StringHash nextState, const Vector3&in tPos, float tRot, float duration, int physicsType = 0, const String&in anim = "")
     {
+        Print("CharacterAlign--start duration=" + duration);
         nextStateName = nextState;
         targetPosition = tPos;
         targetRotation = tRot;
