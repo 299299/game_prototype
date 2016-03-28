@@ -927,20 +927,22 @@ class CharacterAlignState : CharacterState
         else
             ownner.SetVelocity(movePerSec);
         ownner.GetNode().Yaw(rotatePerSec * dt);
-
         CharacterState::Update(dt);
-
         if (timeInState >= alignTime)
-        {
-            Print("On_Align_Finished!!!");
-            ownner.ChangeState(nextStateName);
-        }
+            OnAlignTimeOut();
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
         DebugDrawDirection(debug, ownner.GetNode(), targetRotation, RED, 2.0f);
         debug.AddCross(targetPosition, 0.5f, YELLOW, false);
+    }
+
+    void OnAlignTimeOut()
+    {
+        Print(ownner.GetName() + " On_Align_Finished-- at: " + time.systemTime);
+        ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
+        ownner.ChangeState(nextStateName);
     }
 };
 

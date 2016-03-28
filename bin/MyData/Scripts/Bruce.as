@@ -362,6 +362,37 @@ class BruceClimbUpState : PlayerClimbUpState
     }
 };
 
+class BruceRailUpState : PlayerRailUpState
+{
+    BruceRailUpState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Railing/Railing_Climb_Up");
+        AddMotion("BM_Railing/Stand_Climb_Onto_256_Railing");
+        AddMotion("BM_Railing/Stand_Climb_Onto_512_Railing");
+
+        AddMotion("BM_Railing/Run_Climb_Onto_256_Railing");
+        AddMotion("BM_Railing/Run_Climb_Onto_512_Railing");
+
+        targetOffsets.Push(Vector3(0, 0, -2.75));
+        targetOffsets.Push(Vector3(0, 0, -1.43629));
+        targetOffsets.Push(Vector3(0, 0, -1.75));
+
+        targetOffsets.Push(Vector3(0, 0, -6.0));
+        targetOffsets.Push(Vector3(0, 0, -6.4));
+        targetOffsets.Push(Vector3(0, 0, -6.452));
+    }
+};
+
+class BruceRailIdleState : PlayerRailIdleState
+{
+    BruceRailIdleState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Railing/Railing_Idle");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -406,6 +437,8 @@ class Bruce : Player
             stateMachine.AddState(BruceCoverTransitionState(this));
             stateMachine.AddState(BruceClimbOverState(this));
             stateMachine.AddState(BruceClimbUpState(this));
+            stateMachine.AddState(BruceRailUpState(this));
+            stateMachine.AddState(BruceRailIdleState(this));
         }
     }
 };

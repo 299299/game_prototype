@@ -439,8 +439,6 @@ class PlayerCrouchTurnState : PlayerTurnState
     }
 };
 
-
-
 class PlayerCrouchMoveState : SingleMotionState
 {
     float turnSpeed = 2.0f;
@@ -921,9 +919,65 @@ class PlayerRailUpState : PlayerClimbAlignState
                     index = startIndex + i;
                 }
             }
-            yAdjust = (index == 0) ? 0.3f : 0.0f;
+
             ownner.GetNode().vars[ANIMATION_INDEX] = index;
         }
         PlayerClimbAlignState::Enter(lastState);
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("RailIdleState");
+    }
+};
+
+
+class PlayerRailIdleState : SingleAnimationState
+{
+    PlayerRailIdleState(Character@ c)
+    {
+        super(c);
+        SetName("RailIdleState");
+        looped = true;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetTarget(null);
+        ownner.SetVelocity(Vector3(0,0,0));
+        ownner.SetPhysicsType(0);
+        SingleAnimationState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.SetPhysicsType(1);
+        SingleAnimationState::Exit(nextState);
+    }
+
+    void Update(float dt)
+    {
+        SingleAnimationState::Update(dt);
+    }
+};
+
+class PlayerRailTurnState : PlayerTurnState
+{
+    PlayerRailTurnState(Character@ c)
+    {
+        super(c);
+        SetName("RailTurnState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        PlayerTurnState::Enter(lastState);
+        ownner.SetPhysicsType(0);
+    }
+
+    void Exit(State@ nextState)
+    {
+        PlayerTurnState::Exit(nextState);
+        ownner.SetPhysicsType(1);
     }
 };
