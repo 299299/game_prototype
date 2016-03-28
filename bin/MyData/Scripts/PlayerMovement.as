@@ -762,9 +762,9 @@ class PlayerClimbAlignState : MultiMotionState
 
     void Enter(State@ lastState)
     {
+        ownner.SetPhysicsType(0);
         if (lastState.nameHash == ALIGN_STATE)
         {
-            ownner.SetPhysicsType(0);
             ownner.SetVelocity(Vector3(0, 0, 0));
             MultiMotionState::Enter(lastState);
 
@@ -890,7 +890,7 @@ class PlayerRailUpState : PlayerClimbAlignState
     PlayerRailUpState(Character@ c)
     {
         super(c);
-        SetName("ClimbUpState");
+        SetName("RailUpState");
         adjustTargetMotion = true;
     }
 

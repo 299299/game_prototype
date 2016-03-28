@@ -492,22 +492,22 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Stop");
-    Global_CreateMotion(preFix + "Run_Climb_Over_128");
-    Global_CreateMotion(preFix + "Stand_Climb_Over_128");
-    Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_ALL);
-    Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_ALL);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_ALL);
-    Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_ALL);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_ALL);
-    Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_ALL);
+    Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_XZ);
+    Global_CreateMotion(preFix + "Stand_Climb_Over_128", kMotion_XZ);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_XYZ);
 
-    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_ALL);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_ALL);
-    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_ALL);
-    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_ALL);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_XYZ);
 
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_ALL);
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_ALL);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_XYZ);
 
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Crouch_Idle");
@@ -521,12 +521,21 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
 
     preFix = "BM_Railing/";
-    Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_ALL);
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_ALL);
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_ALL);
+    Motion@ m = Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_XYZ);
+    // m.translateOffset = true;
+    float yAdjust = -1.854f;
+    m.offset = Vector3(0, yAdjust, 0);
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_XYZ);
+    m.translateOffset = true;
+    m.offset = Vector3(0, yAdjust, 0);
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_XYZ);
+    m.translateOffset = true;
+    m.offset = Vector3(0, yAdjust, 0);
 
-    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_ALL);
-    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_ALL);
+    Global_AddAnimation(preFix + "Railing_Idle");
+
+    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_XYZ);
+    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_XYZ);
 }
 
 void CreateBruceMotions()

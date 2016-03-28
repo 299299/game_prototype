@@ -337,6 +337,7 @@ class AnimationTestState : CharacterState
     Array<String>   testAnimations;
     int             lastPhysicsType;
     int             currentIndex;
+    bool            allFinished;
 
     AnimationTestState(Character@ c)
     {
@@ -351,6 +352,7 @@ class AnimationTestState : CharacterState
         currentIndex = 0;
         lastPhysicsType = ownner.physicsType;
         ownner.SetPhysicsType(0);
+        allFinished = false;
 
         Start();
 
@@ -370,7 +372,7 @@ class AnimationTestState : CharacterState
         testMotions.Clear();
         for (uint i=0; i<animations.length; ++i)
         {
-            testAnimations.Push(GetAnimationName(animations[i]));
+            testAnimations.Push(animations[i]);
             testMotions.Push(gMotionMgr.FindMotion(animations[i]));
         }
     }
@@ -378,7 +380,7 @@ class AnimationTestState : CharacterState
     void Start()
     {
         Motion@ motion = testMotions[currentIndex];
-        float blendTime = (currentIndex == 0) ? 0.0f : 0.2f;
+        float blendTime = (currentIndex == 0) ? 0.2f : 0.2f;
         if (motion !is null)
         {
             motion.Start(ownner, 0.0f, blendTime, animSpeed);
@@ -395,6 +397,13 @@ class AnimationTestState : CharacterState
 
     void Update(float dt)
     {
+        if (allFinished)
+        {
+            if (input.keyDown[KEY_RETURN])
+                ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
         bool finished = false;
         Motion@ motion = testMotions[currentIndex];
         if (motion !is null)
@@ -411,9 +420,8 @@ class AnimationTestState : CharacterState
             currentIndex ++;
             if (currentIndex >= testAnimations.length)
             {
-                if (testAnimations.length > 1)
-                    ownner.SetSceneTimeScale(0);
-                ownner.CommonStateFinishedOnGroud();
+                //ownner.CommonStateFinishedOnGroud();
+                allFinished = true;
             }
             else
                 Start();
@@ -433,6 +441,8 @@ class AnimationTestState : CharacterState
 
     String GetDebugText()
     {
+        if (currentIndex >= testAnimations.length)
+            return "";
         return " name=" + name + " timeInState=" + String(timeInState) + " animation=" + testAnimations[currentIndex] + "\n";
     }
 
@@ -856,7 +866,6 @@ class CharacterGetUpState : MultiMotionState
         {
             if (motion.Move(ownner, dt))
             {
-                // ownner.GetNode().scene.timeScale = 0.0f;
                 ownner.CommonStateFinishedOnGroud();
                 return;
             }

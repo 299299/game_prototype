@@ -437,7 +437,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == 'T')
     {
         if (scene_.timeScale >= 0.999f)
-            scene_.timeScale = 0.25f;
+            scene_.timeScale = 0.1f;
         else
             scene_.timeScale = 1.0f;
     }
@@ -500,11 +500,11 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = "BM_Attack/Attack_Far_Back_03";
         //String testName = "BM_Climb/Stand_Climb_Up_128";
         //String testName = GetAnimationName("BM_Railing/Railing_Idle");
-        //String testName = "BM_Railing/Railing_Climb_Up";
-        String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
+        String testName = GetAnimationName("BM_Railing/Railing_Climb_Up");
+        //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
-        testAnimations.Push("BM_Climb/Hang_Climb_Up_Rail");
+        // testAnimations.Push(GetAnimationName("BM_Railing/Railing_Run_Forward_Idle"));
         if (player !is null)
             player.TestAnimation(testAnimations);
     }
@@ -1057,5 +1057,6 @@ class BM_Game_MotionManager : MotionManager
         AddThugAnimationTriggers();
         AddBruceAnimationTriggers();
         AddCatwomanAnimationTriggers();
+        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle"), Vector3(0, -3.25f, 0));
     }
 };

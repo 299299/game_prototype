@@ -161,6 +161,9 @@ class Motion
 
     bool                    processed = false;
 
+    Vector3                 offset;
+    bool                    translateOffset = false;
+
     Motion()
     {
     }
@@ -177,6 +180,8 @@ class Motion
         endFrame = other.endFrame;
         motionFlag = other.motionFlag;
         allowMotion = other.allowMotion;
+        offset = other.offset;
+        translateOffset = other.translateOffset;
     }
 
     void SetName(const String&in _name)
@@ -202,7 +207,15 @@ class Motion
             return;
 
         gMotionMgr.memoryUse += this.animation.memoryUse;
+
+        if (translateOffset)
+            TranslateAnimation(animationName, offset);
         rotateAngle = ProcessAnimation(animationName, motionFlag, allowMotion, rotateAngle, motionKeys, startFromOrigin);
+        if (translateOffset)
+        {
+            for (uint i=0; i<motionKeys.length; ++i)
+                motionKeys[i] -= Vector4(offset.x, offset.y, offset.z, 0);
+        }
 
         SetEndFrame(endFrame);
 

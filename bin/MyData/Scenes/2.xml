@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="84" />
-	<attribute name="Next Replicated Component ID" value="135" />
-	<attribute name="Next Local Node ID" value="16780695" />
-	<attribute name="Next Local Component ID" value="16778433" />
+	<attribute name="Next Replicated Node ID" value="87" />
+	<attribute name="Next Replicated Component ID" value="142" />
+	<attribute name="Next Local Node ID" value="16780696" />
+	<attribute name="Next Local Component ID" value="16778445" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -159,11 +159,11 @@
 	</node>
 	<node id="70">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Name" value="BOX" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="33.5152 0 -18.2942" />
+		<attribute name="Position" value="13.5043 0 -18.5873" />
 		<attribute name="Rotation" value="1 4.48876e-18 -1.18793e-35 0" />
-		<attribute name="Scale" value="11.768 6.5 5" />
+		<attribute name="Scale" value="5 13 5" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="115">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
@@ -173,27 +173,8 @@
 		<component type="CollisionShape" id="116" />
 		<component type="RigidBody" id="117">
 			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
-			<attribute name="Physics Position" value="33.5152 0 -18.2942" />
+			<attribute name="Physics Position" value="13.5043 0 -18.5873" />
 		</component>
-		<node id="73">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="text" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.235451 0.460065 -0.546649" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="0.312885 1 1" />
-			<attribute name="Variables" />
-			<component type="Text3D" id="118">
-				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
-				<attribute name="Text" value="Climb Up" />
-				<attribute name="Width" value="122" />
-				<attribute name="Color" value="1 1 0 1" />
-				<attribute name="Top Left Color" value="1 1 0 1" />
-				<attribute name="Top Right Color" value="1 1 0 1" />
-				<attribute name="Bottom Left Color" value="1 1 0 1" />
-				<attribute name="Bottom Right Color" value="1 1 0 1" />
-			</component>
-		</node>
 	</node>
 	<node id="74">
 		<attribute name="Is Enabled" value="true" />
@@ -346,5 +327,62 @@
 				<attribute name="Bottom Right Color" value="0 1 0 1" />
 			</component>
 		</node>
+	</node>
+	<node id="84">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="33.5152 0 -18.2942" />
+		<attribute name="Rotation" value="1 4.48876e-18 -1.18793e-35 0" />
+		<attribute name="Scale" value="11.768 6.5 5" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="135">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="136" />
+		<component type="RigidBody" id="137">
+			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
+			<attribute name="Physics Position" value="33.5152 0 -18.2942" />
+		</component>
+		<node id="85">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="text" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="-0.235451 0.460065 -0.546649" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="0.312885 1 1" />
+			<attribute name="Variables" />
+			<component type="Text3D" id="138">
+				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
+				<attribute name="Text" value="Climb Up" />
+				<attribute name="Width" value="122" />
+				<attribute name="Color" value="1 1 0 1" />
+				<attribute name="Top Left Color" value="1 1 0 1" />
+				<attribute name="Top Right Color" value="1 1 0 1" />
+				<attribute name="Bottom Left Color" value="1 1 0 1" />
+				<attribute name="Bottom Right Color" value="1 1 0 1" />
+			</component>
+		</node>
+	</node>
+	<node id="86">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="BOX" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="6.92859 0 -18.5873" />
+		<attribute name="Rotation" value="1 4.48876e-18 -1.18793e-35 0" />
+		<attribute name="Scale" value="5 6.5 5" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="139">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="140" />
+		<component type="RigidBody" id="141">
+			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
+			<attribute name="Physics Position" value="6.92859 0 -18.5873" />
+		</component>
 	</node>
 </scene>

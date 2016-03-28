@@ -14,15 +14,17 @@ enum RootMotionFlag
 
     kMotion_Ext_Rotate_From_Start = (1 << 4),
     kMotion_Ext_Debug_Dump = (1 << 5),
+    kMotion_Ext_Adjust_Y = (1 << 6),
 
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_XZ  = kMotion_X | kMotion_Z,
     kMotion_XR  = kMotion_X | kMotion_R,
     kMotion_ZR  = kMotion_Z | kMotion_R,
+    kMotion_XYZ = kMotion_XZ | kMotion_Y,
     kMotion_ALL = kMotion_XZR | kMotion_Y,
 };
 
-bool d_log = false;
+bool d_log = true;
 
 const String TITLE = "AssetProcess";
 const String TranslateBoneName = "Bip01_$AssimpFbx$_Translation";
@@ -283,7 +285,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
                 Print(animationFile + " Need reset x position");
             translateFlag |= kMotion_X;
         }
-        if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Y != 0)) {
+        if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Ext_Adjust_Y != 0)) {
             if (d_log)
                 Print(animationFile + " Need reset y position");
             translateFlag |= kMotion_Y;
