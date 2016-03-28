@@ -453,6 +453,49 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
 }
 
+void CreateBruceClimbAnimations()
+{
+    String preFix = "BM_Climb/";
+    Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
+    Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
+    Global_CreateMotion(preFix + "Slide_Floor_Stop");
+    Global_CreateMotion(preFix + "Run_Climb_Over_128");
+    Global_CreateMotion(preFix + "Stand_Climb_Over_128");
+    Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_ALL);
+    Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_ALL);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_ALL);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_ALL);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_ALL);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_ALL);
+
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_ALL);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_ALL);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_ALL);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_ALL);
+
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_ALL);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_ALL);
+
+    preFix = "BM_Movement/";
+    Global_AddAnimation(preFix + "Crouch_Idle");
+    // Global_CreateMotion(preFix + "Crouch_Walk_Slow", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Cover_Run", kMotion_XZR, kMotion_Z, -1, true);
+    Global_AddAnimation(preFix + "Cover_Idle");
+
+    preFix = "BM_Crouch_Turns/";
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
+
+    preFix = "BM_Railing/";
+    Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_ALL);
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_ALL);
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_ALL);
+
+    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_ALL);
+    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_ALL);
+}
+
 void CreateBruceMotions()
 {
     AssignMotionRig("Models/bruce_w.mdl");
@@ -482,47 +525,7 @@ void CreateBruceMotions()
     if (game_type == 0)
         CreateBruceCombatMotions();
     else if (game_type == 1)
-    {
-        preFix = "BM_Climb/";
-        Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
-        Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
-        Global_CreateMotion(preFix + "Slide_Floor_Stop");
-        Global_CreateMotion(preFix + "Run_Climb_Over_128");
-        Global_CreateMotion(preFix + "Stand_Climb_Over_128");
-        Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_ALL);
-        Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_ALL);
-        Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_ALL);
-        Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_ALL);
-        Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_ALL);
-        Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_ALL);
-
-        Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_ALL);
-        Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_ALL);
-        Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_ALL);
-        Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_ALL);
-
-        Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_ALL);
-        Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_ALL);
-
-        preFix = "BM_Movement/";
-        Global_AddAnimation(preFix + "Crouch_Idle");
-        // Global_CreateMotion(preFix + "Crouch_Walk_Slow", kMotion_XZR, kMotion_Z, -1, true);
-        Global_CreateMotion(preFix + "Cover_Run", kMotion_XZR, kMotion_Z, -1, true);
-        Global_AddAnimation(preFix + "Cover_Idle");
-
-        preFix = "BM_Crouch_Turns/";
-        Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);
-        Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
-        Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
-
-        preFix = "BM_Railing/";
-        Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_ALL);
-        Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_ALL);
-        Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_ALL);
-
-        Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_ALL);
-        Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_ALL);
-    }
+        CreateBruceClimbAnimations();
 }
 
 void AddBruceCombatAnimationTriggers()
