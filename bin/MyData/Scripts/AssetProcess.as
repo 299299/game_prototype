@@ -15,6 +15,7 @@ enum RootMotionFlag
     kMotion_Ext_Rotate_From_Start = (1 << 4),
     kMotion_Ext_Debug_Dump = (1 << 5),
     kMotion_Ext_Adjust_Y = (1 << 6),
+    kMotion_Ext_Foot_Based_Height = (1 << 7),
 
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_XZ  = kMotion_X | kMotion_Z,
@@ -26,7 +27,7 @@ enum RootMotionFlag
     kMotion_ALL = kMotion_XZR | kMotion_Y,
 };
 
-bool d_log = true;
+bool d_log = false;
 
 const String TITLE = "AssetProcess";
 const String TranslateBoneName = "Bip01_$AssimpFbx$_Translation";
@@ -48,6 +49,8 @@ const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 const int   PROCESS_TIME_PER_FRAME = 60; // ms
 const float BONE_SCALE = 100.0f;
 const float BIG_HEAD_SCALE = 2.0f;
+
+float foot_to_ground_height = 0.0f;
 
 Scene@  processScene;
 
@@ -80,6 +83,7 @@ class MotionRig
 
         AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
         am.model = cache.GetResource("Model", rigName);
+        // processNode.CreateComponent("AnimationController");
 
         skeleton = am.skeleton;
         Bone@ bone = skeleton.GetBone(RotateBoneName);
@@ -92,7 +96,9 @@ class MotionRig
         rotateNode = processNode.GetChild(RotateBoneName, true);
         pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 
-        Print(rigName + " pelvisRightAxis = " + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString());
+        foot_to_ground_height = processNode.GetChild(L_FOOT, true).worldPosition.y;
+
+        Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString() + " foot_to_ground_height=" + foot_to_ground_height);
     }
 
     ~MotionRig()
@@ -213,6 +219,41 @@ void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
     }
 }
 
+void CollectBoneWorldPositions(const String&in rigName, const String&in animationFile, const String& boneName, Array<Vector3>@ outPositions)
+{
+    Model@ model = cache.GetResource("Model",  rigName);
+    Animation@ anim = cache.GetResource("Animation", animationFile);
+    if (anim is null) {
+        ErrorDialog(TITLE, animationFile + " not found!");
+        engine.Exit();
+        return;
+    }
+
+    AnimationTrack@ track = anim.tracks[boneName];
+    if (track is null)
+        return;
+
+    Node@ _node = processScene.CreateChild("_Animation_Node");
+    AnimatedModel@ am = _node.CreateComponent("AnimatedModel");
+    am.model = model;
+    AnimationState@ state = am.AddAnimationState(anim);
+    state.weight = 1.0f;
+    state.looped = true;
+
+    outPositions.Resize(track.numKeyFrames);
+    Print("start bone position=" + _node.GetChild(boneName, true).worldPosition.ToString());
+
+    for (uint i=0; i<track.numKeyFrames; ++i)
+    {
+        state.time = track.keyFrames[i].time;
+        state.Apply();
+        outPositions[i] = _node.GetChild(boneName, true).worldPosition;
+        Print("out-position=" + outPositions[i].ToString());
+    }
+
+    _node.Remove();
+}
+
 float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, float rotateAngle, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
     if (d_log)
@@ -245,6 +286,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     bool dump = motionFlag & kMotion_Ext_Debug_Dump != 0;
     float firstRotateFromRoot = 0;
     bool flip = false;
+    bool footBased = motionFlag & kMotion_Ext_Foot_Based_Height != 0;
     int translateFlag = 0;
 
     // ==============================================================
@@ -287,7 +329,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
                 Print(animationFile + " Need reset x position");
             translateFlag |= kMotion_X;
         }
-        if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Ext_Adjust_Y != 0)) {
+        if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Ext_Adjust_Y != 0) && !footBased) {
             if (d_log)
                 Print(animationFile + " Need reset y position");
             translateFlag |= kMotion_Y;

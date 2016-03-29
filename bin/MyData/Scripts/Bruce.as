@@ -536,6 +536,9 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_YZ);
     Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_YZ);
+
+    Array<Vector3> outPos;
+    CollectBoneWorldPositions("Models/bruce_w.mdl", GetAnimationName(preFix + "Railing_Climb_Up"), L_FOOT, outPos);
 }
 
 void CreateBruceMotions()

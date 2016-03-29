@@ -432,7 +432,7 @@ class AnimationTestState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        if (currentIndex >= testAnimations.length)
+        if (currentIndex >= int(testAnimations.length))
             return;
         Motion@ motion = testMotions[currentIndex];
         if (motion !is null)
@@ -441,7 +441,7 @@ class AnimationTestState : CharacterState
 
     String GetDebugText()
     {
-        if (currentIndex >= testAnimations.length)
+        if (currentIndex >= int(testAnimations.length))
             return "";
         return " name=" + name + " timeInState=" + String(timeInState) + " animation=" + testAnimations[currentIndex] + "\n";
     }
