@@ -29,24 +29,6 @@ class GameObject : ScriptObject
     int     side = 0;
     float   timeScale = 1.0f;
 
-    GameObject()
-    {
-
-    }
-
-    void Start()
-    {
-
-    }
-
-    void Stop()
-    {
-        //if (node !is null)
-        //    Print(node.name + ".Stop()");
-        //else
-        //    Print(GetName() + ".Stop()");
-    }
-
     void SetTimeScale(float scale)
     {
         timeScale = scale;

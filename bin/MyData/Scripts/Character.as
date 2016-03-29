@@ -1209,6 +1209,7 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 0.5f, false);
+        debug.AddNode(hipsNode, 0.5f, false);
     }
 
     void TestAnimation(const Array<String>&in animations)
