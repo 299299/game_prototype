@@ -369,14 +369,14 @@ class BruceRailUpState : PlayerRailUpState
         super(c);
         AddMotion("BM_Railing/Railing_Climb_Up");
         AddMotion("BM_Railing/Stand_Climb_Onto_256_Railing");
-        AddMotion("BM_Railing/Stand_Climb_Onto_512_Railing");
+        AddMotion("BM_Railing/Stand_Climb_Onto_384_Railing");
 
         AddMotion("BM_Railing/Run_Climb_Onto_256_Railing");
-        AddMotion("BM_Railing/Run_Climb_Onto_512_Railing");
+        AddMotion("BM_Railing/Run_Climb_Onto_384_Railing");
 
-        targetOffsets.Push(Vector3(0, 0, -2.75));
-        targetOffsets.Push(Vector3(0, 0, -1.43629));
-        targetOffsets.Push(Vector3(0, 0, -1.75));
+        targetOffsets.Push(Vector3(0, 0, -1.5));
+        targetOffsets.Push(Vector3(0, 0, -1.5));
+        targetOffsets.Push(Vector3(0, 0, -1.5));
 
         targetOffsets.Push(Vector3(0, 0, -6.0));
         targetOffsets.Push(Vector3(0, 0, -6.4));
@@ -521,16 +521,9 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
 
     preFix = "BM_Railing/";
-    Motion@ m = Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_YZ);
-    // m.translateOffset = true;
-    float yAdjust = -1.854f;
-    m.offset = Vector3(0, yAdjust, 0);
-    @m = Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_YZ);
-    m.translateOffset = true;
-    m.offset = Vector3(0, yAdjust, 0);
-    @m = Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_YZ);
-    m.translateOffset = true;
-    m.offset = Vector3(0, yAdjust, 0);
+    Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 
     Global_AddAnimation(preFix + "Railing_Idle");
 

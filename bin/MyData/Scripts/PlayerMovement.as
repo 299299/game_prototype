@@ -751,7 +751,7 @@ class PlayerCoverTransitionState : SingleMotionState
 class PlayerClimbAlignState : MultiMotionState
 {
     Array<Vector3>  targetOffsets;
-    bool            adjustTargetMotion;
+    int             targetMotionFlag = 0;
     float           yAdjust = 0.0f;
     float           alignTime = 0.1f;
 
@@ -768,15 +768,24 @@ class PlayerClimbAlignState : MultiMotionState
             ownner.SetVelocity(Vector3(0, 0, 0));
             MultiMotionState::Enter(lastState);
 
-            if (adjustTargetMotion)
+            if (targetMotionFlag != 0)
             {
                 Motion@ motion = motions[selectIndex];
-                float targetHeight = ownner.dockLine.end.y + yAdjust;
+                Vector3 targetPos = ownner.dockLine.Project(ownner.GetNode().worldPosition);
+                targetPos.y += yAdjust;
                 float t = motion.endTime;
-                Vector4 motionOut = motion.GetKey(t);
-                float motionHeight = motion.GetFuturePosition(ownner, t).y;
-                Print(name + " targetHeight=" + targetHeight + " motionHeight=" + motionHeight);
-                ownner.motion_velocity = Vector3(0, (targetHeight - motionHeight) / t, 0);
+                Vector3 motionPos = motion.GetFuturePosition(ownner, t);
+                Vector3 diff = targetPos - motionPos;
+                diff /= t;
+                Print(name + " targetPos=" + targetPos.ToString() + " motionPos=" + motionPos.ToString());
+                Vector3 v(0, 0, 0);
+                if (targetMotionFlag & kMotion_X != 0)
+                    v.x = diff.x;
+                if (targetMotionFlag & kMotion_Y != 0)
+                    v.y = diff.y;
+                if (targetMotionFlag & kMotion_Z != 0)
+                    v.z = diff.z;
+                ownner.motion_velocity = v;
             }
         }
         else
@@ -848,7 +857,7 @@ class PlayerClimbUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("ClimbUpState");
-        adjustTargetMotion = true;
+        targetMotionFlag = kMotion_Y;
     }
 
     void Enter(State@ lastState)
@@ -891,7 +900,7 @@ class PlayerRailUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("RailUpState");
-        adjustTargetMotion = true;
+        targetMotionFlag = kMotion_YZ;
     }
 
     void Enter(State@ lastState)

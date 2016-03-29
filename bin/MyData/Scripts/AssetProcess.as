@@ -50,8 +50,6 @@ const int   PROCESS_TIME_PER_FRAME = 60; // ms
 const float BONE_SCALE = 100.0f;
 const float BIG_HEAD_SCALE = 2.0f;
 
-float foot_to_ground_height = 0.0f;
-
 Scene@  processScene;
 
 class MotionRig
@@ -63,9 +61,12 @@ class MotionRig
     Vector3 pelvisRightAxis = Vector3(1, 0, 0);
     Quaternion rotateBoneInitQ;
     Vector3 pelvisOrign;
+    String  rig;
+    float foot_to_ground_height = 0.0f;
 
     MotionRig(const String& rigName)
     {
+        rig = rigName;
         if (bigHeadMode)
         {
             Vector3 v(BIG_HEAD_SCALE, BIG_HEAD_SCALE, BIG_HEAD_SCALE);
@@ -238,17 +239,18 @@ void CollectBoneWorldPositions(const String&in rigName, const String&in animatio
     am.model = model;
     AnimationState@ state = am.AddAnimationState(anim);
     state.weight = 1.0f;
-    state.looped = true;
+    state.looped = false;
 
     outPositions.Resize(track.numKeyFrames);
-    Print("start bone position=" + _node.GetChild(boneName, true).worldPosition.ToString());
+    Node@ boneNode = _node.GetChild(boneName, true);
 
     for (uint i=0; i<track.numKeyFrames; ++i)
     {
         state.time = track.keyFrames[i].time;
         state.Apply();
-        outPositions[i] = _node.GetChild(boneName, true).worldPosition;
-        Print("out-position=" + outPositions[i].ToString());
+        _node.MarkDirty();
+        outPositions[i] = boneNode.worldPosition;
+        // Print("out-position=" + outPositions[i].ToString());
     }
 
     _node.Remove();
@@ -425,7 +427,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
                 outKeys[i].x = translation.x;
                 t2_ws.x  = t1_ws.x;
             }
-            if (motionFlag & kMotion_Y != 0)
+            if (motionFlag & kMotion_Y != 0 && !footBased)
             {
                 outKeys[i].y = translation.y;
                 t2_ws.y = t1_ws.y;
@@ -441,6 +443,22 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
             // Print("local position from " + kf.position.ToString() + " to " + local_pos.ToString());
             kf.position = local_pos;
             translateTrack.keyFrames[i] = kf;
+        }
+    }
+
+    if (footBased && translateTrack !is null)
+    {
+        Array<Vector3> footPositions;
+        CollectBoneWorldPositions(curRig.rig, animationFile, L_FOOT, footPositions);
+        for (uint i=0; i<translateTrack.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf(translateTrack.keyFrames[i]);
+            float ground_y = footPositions[i].y - curRig.foot_to_ground_height;
+            float diff = kf.position.y - ground_y;
+            // Print("ground_y=" + ground_y + " hips_y=" + kf.position.y);
+            kf.position.y -= ground_y;
+            translateTrack.keyFrames[i] = kf;
+            outKeys[i].y = ground_y;
         }
     }
 

@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="87" />
 	<attribute name="Next Replicated Component ID" value="142" />
-	<attribute name="Next Local Node ID" value="16780696" />
-	<attribute name="Next Local Component ID" value="16778445" />
+	<attribute name="Next Local Node ID" value="16780698" />
+	<attribute name="Next Local Component ID" value="16778469" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -28,6 +28,7 @@
 		</component>
 		<component type="CollisionShape" id="20" />
 		<component type="RigidBody" id="22">
+			<attribute name="Physics Rotation" value="1 0 0 0" />
 			<attribute name="Physics Position" value="0 -0.5 0" />
 			<attribute name="Gravity Override" value="-0.19 0 0" />
 		</component>
@@ -125,7 +126,7 @@
 		<attribute name="Tags" />
 		<attribute name="Position" value="-15.1231 1.50918 -23.705" />
 		<attribute name="Rotation" value="0.826081 0.00124405 0.563552 -0.000848695" />
-		<attribute name="Scale" value="20 3 0.083642" />
+		<attribute name="Scale" value="20 3 0.5" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="111">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
@@ -159,11 +160,11 @@
 	</node>
 	<node id="70">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX" />
+		<attribute name="Name" value="Railing" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="13.5043 0 -18.5873" />
-		<attribute name="Rotation" value="1 4.48876e-18 -1.18793e-35 0" />
-		<attribute name="Scale" value="5 13 5" />
+		<attribute name="Position" value="15.4249 0 -18.5873" />
+		<attribute name="Rotation" value="1 4.48876e-18 0 -0" />
+		<attribute name="Scale" value="5 13 0.5" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="115">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
@@ -173,7 +174,7 @@
 		<component type="CollisionShape" id="116" />
 		<component type="RigidBody" id="117">
 			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
-			<attribute name="Physics Position" value="13.5043 0 -18.5873" />
+			<attribute name="Physics Position" value="15.4249 0 -18.5873" />
 		</component>
 	</node>
 	<node id="74">
@@ -368,11 +369,11 @@
 	</node>
 	<node id="86">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX" />
+		<attribute name="Name" value="Railing" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="6.92859 0 -18.5873" />
-		<attribute name="Rotation" value="1 4.48876e-18 -1.18793e-35 0" />
-		<attribute name="Scale" value="5 6.5 5" />
+		<attribute name="Rotation" value="1 4.48876e-18 0 -0" />
+		<attribute name="Scale" value="5 19.5 0.5" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="139">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
