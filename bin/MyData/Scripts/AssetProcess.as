@@ -97,7 +97,7 @@ class MotionRig
         rotateNode = processNode.GetChild(RotateBoneName, true);
         pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 
-        foot_to_ground_height = processNode.GetChild(L_FOOT, true).worldPosition.y;
+        foot_to_ground_height = processNode.GetChild(R_FOOT, true).worldPosition.y;
 
         Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString() + " foot_to_ground_height=" + foot_to_ground_height);
     }
@@ -466,7 +466,9 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     if (footBased)
     {
         Array<Vector3> footPositions;
-        CollectBoneWorldPositions(curRig.rig, animationFile, L_FOOT, footPositions);
+        CollectBoneWorldPositions(curRig.rig, animationFile, R_FOOT, footPositions);
+        Array<float> ground_heights;
+        ground_heights.Resize(footPositions.length);
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);
@@ -475,8 +477,10 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
             // Print("ground_y=" + ground_y + " hips_y=" + kf.position.y);
             kf.position.y -= ground_y;
             translateTrack.keyFrames[i] = kf;
-            outKeys[i].y = ground_y;
+            ground_heights[i] = ground_y;
         }
+        for (uint i=0; i<ground_heights.length; ++i)
+            outKeys[i].y = ground_heights[i] - ground_heights[0];
     }
 
     for (uint i=0; i<outKeys.length; ++i)

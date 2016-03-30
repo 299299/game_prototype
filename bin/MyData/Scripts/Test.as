@@ -500,7 +500,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = "BM_Attack/Attack_Far_Back_03";
         //String testName = "BM_Climb/Stand_Climb_Up_128";
         //String testName = GetAnimationName("BM_Railing/Railing_Idle");
-        String testName = ("BM_Railing/Railing_Climb_Up");
+        String testName = ("BM_Railing/Railing_Climb_Down_Forward");
         //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);

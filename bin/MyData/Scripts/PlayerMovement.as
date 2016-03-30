@@ -924,7 +924,7 @@ class PlayerRailUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("RailUpState");
-        targetMotionFlag = kMotion_YZ;
+        targetMotionFlag = kMotion_XYZ;
     }
 
     void Enter(State@ lastState)
@@ -1108,17 +1108,16 @@ class PlayerRailFwdIdleState : SingleAnimationState
                 ownner.ChangeState("RailRunForwardState");
                 return;
             }
+            else if (index == 2)
+            {
+                ownner.ChangeState("RailRunTurn180State");
+                return;
+            }
             else if (index == 1)
             {
                 turnAngle = 90;
                 animIndex = 0;
                 nextState = StringHash("RailIdleState");
-            }
-            else if (index == 2)
-            {
-                turnAngle = 180;
-                animIndex = 0;
-                nextState = StringHash("RailFwdIdleState");
             }
             else if (index == 3)
             {
@@ -1193,6 +1192,13 @@ class PlayerRailRunForwardState : SingleMotionState
             ownner.ChangeState("RailFwdIdleState");
             return;
         }
+        float characterDifference = ownner.ComputeAngleDiff();
+        // if the difference is large, then turn 180 degrees
+        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
+        {
+            ownner.ChangeState("RailRunTurn180State");
+            return;
+        }
 
         Vector3 facePoint;
         if (ownner.dockLine.GetHead(ownner.GetNode().worldRotation) == 0)
@@ -1215,6 +1221,7 @@ class PlayerRailRunForwardState : SingleMotionState
 
 class PlayerRailTurn180State : SingleMotionState
 {
+    Vector3 targetPosition;
     float targetRotation;
     float turnSpeed;
 
@@ -1232,6 +1239,11 @@ class PlayerRailTurn180State : SingleMotionState
         SingleMotionState::Enter(lastState);
         float alignTime = motion.endTime;
         float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
+        Vector3 motionPos = motion.GetFuturePosition(ownner, alignTime);
+        targetPosition = ownner.dockLine.Project(motionPos);
+        motionPos.y = targetPosition.y;
+        ownner.motion_velocity = (targetPosition - motionPos) / alignTime;
+
         float diff = AngleDiff(targetRotation - motionTargetAngle);
         turnSpeed = diff / alignTime;
         combatReady = true;
@@ -1253,6 +1265,7 @@ class PlayerRailTurn180State : SingleMotionState
 
     void OnMotionFinished()
     {
+        ownner.GetNode().worldPosition = targetPosition;
         ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
         ownner.ChangeState("RailRunForwardState");
     }
@@ -1260,5 +1273,6 @@ class PlayerRailTurn180State : SingleMotionState
     void DebugDraw(DebugRenderer@ debug)
     {
         DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW, 2.0f);
+        debug.AddCross(targetPosition, 0.5f, RED, false);
     }
 };

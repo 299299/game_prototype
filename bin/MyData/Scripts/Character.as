@@ -361,8 +361,9 @@ class AnimationTestState : CharacterState
 
     void Exit(State@ nextState)
     {
+        if (nextState !is this)
+            testMotions.Clear();
         ownner.SetPhysicsType(lastPhysicsType);
-        testMotions.Clear();
         CharacterState::Exit(nextState);
     }
 
@@ -370,10 +371,12 @@ class AnimationTestState : CharacterState
     {
         testAnimations.Clear();
         testMotions.Clear();
+        testAnimations.Resize(animations.length);
+        testMotions.Resize(animations.length);
         for (uint i=0; i<animations.length; ++i)
         {
-            testAnimations.Push(animations[i]);
-            testMotions.Push(gMotionMgr.FindMotion(animations[i]));
+            testAnimations[i] = animations[i];
+            @testMotions[i] = gMotionMgr.FindMotion(animations[i]);
         }
     }
 
@@ -389,7 +392,7 @@ class AnimationTestState : CharacterState
         }
         else
         {
-            ownner.PlayAnimation(testAnimations[currentIndex], LAYER_MOVE, false, blendTime, animSpeed);
+            ownner.PlayAnimation(testAnimations[currentIndex], LAYER_MOVE, false, blendTime, 0.0f, animSpeed);
             if (ownner.side == 1)
                 gCameraMgr.CheckCameraAnimation(testAnimations[currentIndex]);
         }
@@ -432,7 +435,7 @@ class AnimationTestState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        if (currentIndex >= int(testAnimations.length))
+        if (currentIndex >= int(testMotions.length))
             return;
         Motion@ motion = testMotions[currentIndex];
         if (motion !is null)

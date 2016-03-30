@@ -378,7 +378,7 @@ class BruceRailUpState : PlayerRailUpState
         targetOffsets.Push(Vector3(0, 0, -1.5));
         targetOffsets.Push(Vector3(0, 0, -1.5));
 
-        targetOffsets.Push(Vector3(0, 0, -6.0));
+        targetOffsets.Push(Vector3(0, 0, -1.5));
         targetOffsets.Push(Vector3(0, 0, -6.4));
         targetOffsets.Push(Vector3(0, 0, -6.452));
     }
@@ -581,7 +581,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 
-    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ);
+    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ);
 
     Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_XZR, kMotion_R);
