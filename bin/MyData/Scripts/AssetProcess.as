@@ -256,6 +256,66 @@ void CollectBoneWorldPositions(const String&in rigName, const String&in animatio
     _node.Remove();
 }
 
+void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motionFlag)
+{
+    Animation@ anim = cache.GetResource("Animation", animationFile);
+    if (anim is null) {
+        ErrorDialog(TITLE, animationFile + " not found!");
+        engine.Exit();
+        return;
+    }
+
+    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    if (translateTrack is null)
+    {
+        Print(animationFile + " translation track not found!!!");
+        return;
+    }
+
+    Node@ translateNode = curRig.translateNode;
+
+    int translateFlag = 0;
+    Vector3 position = translateTrack.keyFrames[0].position - rig.pelvisOrign;
+    const float minDist = 0.5f;
+    if (Abs(position.x) > minDist) {
+        if (d_log)
+            Print(animationFile + " Need reset x position");
+        translateFlag |= kMotion_X;
+    }
+    if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Ext_Adjust_Y != 0)) {
+        if (d_log)
+            Print(animationFile + " Need reset y position");
+        translateFlag |= kMotion_Y;
+    }
+    if (Abs(position.z) > minDist) {
+        if (d_log)
+            Print(animationFile + " Need reset z position");
+        translateFlag |= kMotion_Z;
+    }
+    if (d_log)
+        Print("t-diff-position=" + position.ToString());
+
+    if (translateFlag == 0)
+        return;
+
+    Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
+    translateNode.position = firstKeyPos;
+    Vector3 currentWS = translateNode.worldPosition;
+    Vector3 oldWS = currentWS;
+
+    if (translateFlag & kMotion_X != 0)
+        currentWS.x = rig.pelvisOrign.x;
+    if (translateFlag & kMotion_Y != 0)
+        currentWS.y = rig.pelvisOrign.y;
+    if (translateFlag & kMotion_Z != 0)
+        currentWS.z = rig.pelvisOrign.z;
+
+    translateNode.worldPosition = currentWS;
+    Vector3 currentLS = translateNode.position;
+    Vector3 originDiffLS = currentLS - firstKeyPos;
+    TranslateAnimation(animationFile, originDiffLS);
+}
+
 float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, float rotateAngle, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
     if (d_log)
@@ -305,65 +365,22 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         startFromOrigin.w = firstRotateFromRoot;
     }
 
-    if (translateTrack !is null)
-    {
-        translateNode.position = translateTrack.keyFrames[0].position;
-        Vector3 t_ws1 = translateNode.worldPosition;
-        translateNode.position = rig.pelvisOrign;
-        Vector3 t_ws2 = translateNode.worldPosition;
-        Vector3 diff = t_ws1 - t_ws2;
-        startFromOrigin.x = diff.x;
-        startFromOrigin.y = diff.y;
-        startFromOrigin.z = diff.z;
-    }
+    // get start offset
+    translateNode.position = translateTrack.keyFrames[0].position;
+    Vector3 t_ws1 = translateNode.worldPosition;
+    translateNode.position = rig.pelvisOrign;
+    Vector3 t_ws2 = translateNode.worldPosition;
+    Vector3 diff = t_ws1 - t_ws2;
+    startFromOrigin.x = diff.x;
+    startFromOrigin.y = diff.y;
+    startFromOrigin.z = diff.z;
 
     if (rotateAngle < 360)
         RotateAnimation(animationFile, rotateAngle);
     else if (flip)
         RotateAnimation(animationFile, 180);
 
-    if (translateTrack !is null)
-    {
-        Vector3 position = translateTrack.keyFrames[0].position - rig.pelvisOrign;
-        const float minDist = 0.5f;
-        if (Abs(position.x) > minDist) {
-            if (d_log)
-                Print(animationFile + " Need reset x position");
-            translateFlag |= kMotion_X;
-        }
-        if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Ext_Adjust_Y != 0) && !footBased) {
-            if (d_log)
-                Print(animationFile + " Need reset y position");
-            translateFlag |= kMotion_Y;
-        }
-        if (Abs(position.z) > minDist) {
-            if (d_log)
-                Print(animationFile + " Need reset z position");
-            translateFlag |= kMotion_Z;
-        }
-        if (d_log)
-            Print("t-diff-position=" + position.ToString());
-    }
-
-    if (translateFlag != 0 && translateTrack !is null)
-    {
-        Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
-        translateNode.position = firstKeyPos;
-        Vector3 currentWS = translateNode.worldPosition;
-        Vector3 oldWS = currentWS;
-
-        if (translateFlag & kMotion_X != 0)
-            currentWS.x = rig.pelvisOrign.x;
-        if (translateFlag & kMotion_Y != 0)
-            currentWS.y = rig.pelvisOrign.y;
-        if (translateFlag & kMotion_Z != 0)
-            currentWS.z = rig.pelvisOrign.z;
-
-        translateNode.worldPosition = currentWS;
-        Vector3 currentLS = translateNode.position;
-        Vector3 originDiffLS = currentLS - firstKeyPos;
-        TranslateAnimation(animationFile, originDiffLS);
-    }
+    FixAnimationOrigin(rig, animationFile, motionFlag);
 
     if (rotateTrack !is null)
     {
@@ -411,7 +428,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 
     bool rotateMotion = motionFlag & kMotion_R != 0;
     motionFlag &= (~kMotion_R);
-    if (motionFlag != 0 && translateTrack !is null)
+    if (motionFlag != 0)
     {
         Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
@@ -446,7 +463,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         }
     }
 
-    if (footBased && translateTrack !is null)
+    if (footBased)
     {
         Array<Vector3> footPositions;
         CollectBoneWorldPositions(curRig.rig, animationFile, L_FOOT, footPositions);

@@ -211,7 +211,7 @@ void CreateUI()
     text.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
-    text.SetPosition(5, 50);
+    text.SetPosition(5, game_type == 0 ? 50 : 0);
     text.color = Color(0, 0, 1);
     text.priority = -99999;
     // text.textEffect = TE_SHADOW;

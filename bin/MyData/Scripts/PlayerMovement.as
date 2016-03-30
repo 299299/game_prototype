@@ -1152,6 +1152,7 @@ class PlayerRailDownState : MultiMotionState
         int animIndex = 1;
         if (ownner.dockIndex == 0)
             animIndex = 0;
+        Print("RailDownState -- dockIndex=" + ownner.dockIndex);
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
         ownner.SetPhysicsType(0);
         MultiMotionState::Enter(lastState);
@@ -1192,6 +1193,22 @@ class PlayerRailRunForwardState : SingleMotionState
             ownner.ChangeState("RailFwdIdleState");
             return;
         }
+
+        Vector3 facePoint;
+        if (ownner.dockLine.GetHead(ownner.GetNode().worldRotation) == 0)
+            facePoint = ownner.dockLine.end;
+        else
+            facePoint = ownner.dockLine.ray.origin;
+
+        float dist_sqr = (ownner.GetNode().worldPosition - facePoint).lengthSquared;
+        float max_dist = 1.0f;
+
+        if (dist_sqr < max_dist * max_dist)
+        {
+            ownner.ChangeState("RailDownState");
+            return;
+        }
+
         SingleMotionState::Update(dt);
     }
 };

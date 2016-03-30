@@ -370,7 +370,7 @@ class BruceRailUpState : PlayerRailUpState
         AddMotion("BM_Railing/Railing_Climb_Up");
         AddMotion("BM_Railing/Stand_Climb_Onto_256_Railing");
         AddMotion("BM_Railing/Stand_Climb_Onto_384_Railing");
-
+        AddMotion("BM_Railing/Railing_Climb_Up");
         AddMotion("BM_Railing/Run_Climb_Onto_256_Railing");
         AddMotion("BM_Railing/Run_Climb_Onto_384_Railing");
 
@@ -584,10 +584,11 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ);
     Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ);
 
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_R);
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_R);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_XZR, kMotion_R);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_XZR, kMotion_R);
     Global_CreateMotion(preFix + "Stand_To_Walk_Right_180");
     Global_CreateMotion(preFix + "Railing_Run_Forward", kMotion_Z, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Railing_Run_Forward_Idle", 0);
 
     Global_AddAnimation(preFix + "Railing_Idle");
     Global_AddAnimation(preFix + "Railing_Run_Forward_Idle");

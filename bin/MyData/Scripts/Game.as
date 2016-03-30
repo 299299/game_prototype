@@ -319,23 +319,26 @@ class TestGameState : GameState
 
     void CreateUI()
     {
-        int height = graphics.height / 22;
-        if (height > 64)
-            height = 64;
-        Text@ messageText = ui.root.CreateChild("Text", "message");
-        messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-        messageText.SetAlignment(HA_CENTER, VA_CENTER);
-        messageText.SetPosition(0, -height * 2 + 100);
-        messageText.color = Color(1, 0, 0);
-        messageText.visible = false;
+        if (game_type == 0)
+        {
+            int height = graphics.height / 22;
+            if (height > 64)
+                height = 64;
+            Text@ messageText = ui.root.CreateChild("Text", "message");
+            messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+            messageText.SetAlignment(HA_CENTER, VA_CENTER);
+            messageText.SetPosition(0, -height * 2 + 100);
+            messageText.color = Color(1, 0, 0);
+            messageText.visible = false;
 
-        Text@ statusText = ui.root.CreateChild("Text", "status");
-        statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-        statusText.SetAlignment(HA_LEFT, VA_TOP);
-        statusText.SetPosition(0, 0);
-        statusText.color = Color(1, 1, 0);
-        statusText.visible = true;
-        OnPlayerStatusUpdate(GetPlayer());
+            Text@ statusText = ui.root.CreateChild("Text", "status");
+            statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+            statusText.SetAlignment(HA_LEFT, VA_TOP);
+            statusText.SetPosition(0, 0);
+            statusText.color = Color(1, 1, 0);
+            statusText.visible = true;
+            OnPlayerStatusUpdate(GetPlayer());
+        }
     }
 
     void Exit(State@ nextState)
