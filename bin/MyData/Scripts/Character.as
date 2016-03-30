@@ -418,7 +418,7 @@ class AnimationTestState : CharacterState
         if (finished) {
             Print("AnimationTestState finished, currentIndex=" + currentIndex);
             currentIndex ++;
-            if (currentIndex >= testAnimations.length)
+            if (currentIndex >= int(testAnimations.length))
             {
                 //ownner.CommonStateFinishedOnGroud();
                 allFinished = true;
@@ -982,7 +982,6 @@ class Character : GameObject
     RigidBody@              body;
 
     Line@                   dockLine;
-    float                   dockTurnAngle;
     int                     dockIndex;
 
     int                     physicsType;

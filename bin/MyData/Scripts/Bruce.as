@@ -413,6 +413,34 @@ class BruceRailDownState : PlayerRailDownState
     }
 };
 
+class BruceRailFwdIdleState : PlayerRailFwdIdleState
+{
+    BruceRailFwdIdleState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Railing/Railing_Run_Forward_Idle");
+    }
+};
+
+
+class BruceRailRunForwardState : PlayerRailRunForwardState
+{
+    BruceRailRunForwardState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Railing/Railing_Run_Forward");
+    }
+};
+
+class BruceRailRunTurn180State : PlayerRailTurn180State
+{
+    BruceRailRunTurn180State(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Railing/Stand_To_Walk_Right_180");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -457,10 +485,14 @@ class Bruce : Player
             stateMachine.AddState(BruceCoverTransitionState(this));
             stateMachine.AddState(BruceClimbOverState(this));
             stateMachine.AddState(BruceClimbUpState(this));
+            // rail states
             stateMachine.AddState(BruceRailUpState(this));
             stateMachine.AddState(BruceRailIdleState(this));
             stateMachine.AddState(BruceRailTurnState(this));
             stateMachine.AddState(BruceRailDownState(this));
+            stateMachine.AddState(BruceRailFwdIdleState(this));
+            stateMachine.AddState(BruceRailRunForwardState(this));
+            stateMachine.AddState(BruceRailRunTurn180State(this));
         }
     }
 };
@@ -549,11 +581,13 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 
-    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ);
+    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ);
 
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_R, kMotion_R);
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_R, kMotion_R);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_R);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_R);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180");
+    Global_CreateMotion(preFix + "Railing_Run_Forward", kMotion_Z, kMotion_Z, -1, true);
 
     Global_AddAnimation(preFix + "Railing_Idle");
     Global_AddAnimation(preFix + "Railing_Run_Forward_Idle");

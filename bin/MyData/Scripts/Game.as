@@ -689,6 +689,11 @@ class TestGameState : GameState
     {
         if (key == KEY_ESC)
         {
+            if (game_type == 1)
+            {
+                engine.Exit();
+                return;
+            }
             int oldState = state;
             if (oldState == GAME_PAUSE)
                 ChangeSubState(pauseState);

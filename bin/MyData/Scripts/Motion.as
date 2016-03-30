@@ -342,6 +342,8 @@ class Motion
             }
             else
                 object.SetVelocity(Vector3(0, 0, 0));
+
+            return false;
         }
         else
         {
@@ -368,12 +370,12 @@ class Motion
             }
             else
                 object.SetVelocity(Vector3(0, 0, 0));
-        }
 
-        bool bFinished =  localTime >= endTime;
-        //if (bFinished)
-        //    object.SetVelocity(Vector3(0, 0, 0));
-        return bFinished;
+            bool bFinished =  localTime >= endTime;
+            //if (bFinished)
+            //    object.SetVelocity(Vector3(0, 0, 0));
+            return bFinished;
+        }
     }
 
     void DebugDraw(DebugRenderer@ debug, Character@ object)

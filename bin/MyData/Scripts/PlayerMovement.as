@@ -992,30 +992,42 @@ class PlayerRailIdleState : SingleAnimationState
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
             int index = ownner.RadialSelectAnimation(4);
-            Print("RailIdleState Idle->Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+            Print(this.name + " Idle->Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+
+            PlayerRailTurnState@ s = cast<PlayerRailTurnState>(ownner.FindState("RailTurnState"));
+            float turnAngle = 0;
+            int animIndex = 0;
+            StringHash nextState;
 
             if (index == 0)
             {
                 ownner.ChangeState("RailDownState");
+                return;
             }
             else if (index == 1)
             {
-                ownner.dockTurnAngle = 90;
-                ownner.GetNode().vars[ANIMATION_INDEX] = 0;
-                ownner.ChangeState("RailTurnState");
+                turnAngle = 90;
+                animIndex = 0;
+                nextState = StringHash("RailFwdIdleState");
             }
             else if (index == 2)
             {
-                ownner.dockTurnAngle = 180;
-                ownner.GetNode().vars[ANIMATION_INDEX] = 0;
-                ownner.ChangeState("RailTurnState");
+                turnAngle = 180;
+                animIndex = 0;
+                nextState = StringHash("RailIdleState");
             }
             else if (index == 3)
             {
-                ownner.dockTurnAngle = -90;
-                ownner.GetNode().vars[ANIMATION_INDEX] = 1;
-                ownner.ChangeState("RailTurnState");
+                turnAngle = -90;
+                animIndex = 1;
+                nextState = StringHash("RailFwdIdleState");
             }
+
+            s.turnAngle = turnAngle;
+            s.nextStateName = nextState;
+            ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+            ownner.ChangeState("RailTurnState");
+
             return;
         }
 
@@ -1025,6 +1037,9 @@ class PlayerRailIdleState : SingleAnimationState
 
 class PlayerRailTurnState : PlayerTurnState
 {
+    float       turnAngle;
+    StringHash  nextStateName;
+
     PlayerRailTurnState(Character@ c)
     {
         super(c);
@@ -1045,13 +1060,13 @@ class PlayerRailTurnState : PlayerTurnState
 
     void CaculateTargetRotation()
     {
-        targetRotation = ownner.GetCharacterAngle() + ownner.dockTurnAngle;
+        targetRotation = AngleDiff(ownner.GetCharacterAngle() + turnAngle);
     }
 
     void OnMotionFinished()
     {
         ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-        ownner.ChangeState("RailIdleState");
+        ownner.ChangeState(nextStateName);
     }
 };
 
@@ -1061,6 +1076,66 @@ class PlayerRailFwdIdleState : SingleAnimationState
     {
         super(c);
         SetName("RailFwdIdleState");
+        looped = true;
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleAnimationState::Enter(lastState);
+        ownner.SetPhysicsType(0);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleAnimationState::Exit(nextState);
+        ownner.SetPhysicsType(1);
+    }
+
+    void Update(float dt)
+    {
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        {
+            int index = ownner.RadialSelectAnimation(4);
+            Print(this.name + " Idle->Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+
+            PlayerRailTurnState@ s = cast<PlayerRailTurnState>(ownner.FindState("RailTurnState"));
+            float turnAngle = 0;
+            int animIndex = 0;
+            StringHash nextState;
+
+            if (index == 0)
+            {
+                ownner.ChangeState("RailRunForwardState");
+                return;
+            }
+            else if (index == 1)
+            {
+                turnAngle = 90;
+                animIndex = 0;
+                nextState = StringHash("RailIdleState");
+            }
+            else if (index == 2)
+            {
+                turnAngle = 180;
+                animIndex = 0;
+                nextState = StringHash("RailFwdIdleState");
+            }
+            else if (index == 3)
+            {
+                turnAngle = -90;
+                animIndex = 1;
+                nextState = StringHash("RailIdleState");
+            }
+
+            s.turnAngle = turnAngle;
+            s.nextStateName = nextState;
+            ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+            ownner.ChangeState("RailTurnState");
+
+            return;
+        }
+
+        SingleAnimationState::Update(dt);
     }
 };
 
@@ -1072,4 +1147,101 @@ class PlayerRailDownState : MultiMotionState
         SetName("RailDownState");
     }
 
+    void Enter(State@ lastState)
+    {
+        int animIndex = 1;
+        if (ownner.dockIndex == 0)
+            animIndex = 0;
+        ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+        ownner.SetPhysicsType(0);
+        MultiMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.SetPhysicsType(1);
+        MultiMotionState::Exit(nextState);
+    }
+};
+
+class PlayerRailRunForwardState : SingleMotionState
+{
+    PlayerRailRunForwardState(Character@ c)
+    {
+        super(c);
+        SetName("RailRunForwardState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        Print("Enter RailRunForwardState");
+        SingleMotionState::Enter(lastState);
+        ownner.SetPhysicsType(0);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        ownner.SetPhysicsType(1);
+    }
+
+    void Update(float dt)
+    {
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
+        {
+            ownner.ChangeState("RailFwdIdleState");
+            return;
+        }
+        SingleMotionState::Update(dt);
+    }
+};
+
+class PlayerRailTurn180State : SingleMotionState
+{
+    float targetRotation;
+    float turnSpeed;
+
+    PlayerRailTurn180State(Character@ c)
+    {
+        super(c);
+        SetName("RailRunTurn180State");
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        ownner.SetPhysicsType(0);
+        targetRotation = AngleDiff(ownner.GetCharacterAngle() + 180);
+        SingleMotionState::Enter(lastState);
+        float alignTime = motion.endTime;
+        float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
+        float diff = AngleDiff(targetRotation - motionTargetAngle);
+        turnSpeed = diff / alignTime;
+        combatReady = true;
+        Print(this.name + " motionTargetAngle=" + String(motionTargetAngle) + " targetRotation=" + targetRotation + " diff=" + diff + " turnSpeed=" + turnSpeed);
+        SingleMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        ownner.SetPhysicsType(1);
+    }
+
+    void Update(float dt)
+    {
+        ownner.motion_deltaRotation += turnSpeed * dt;
+        SingleMotionState::Update(dt);
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        ownner.ChangeState("RailRunForwardState");
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW, 2.0f);
+    }
 };
