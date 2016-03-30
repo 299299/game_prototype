@@ -59,11 +59,18 @@ class PlayerEvadeState : MultiMotionState
         super(c);
         SetName("EvadeState");
     }
+
+    void Enter(State@ lastState)
+    {
+        ownner.GetNode().vars[ANIMATION_INDEX] = ownner.RadialSelectAnimation(4);
+        MultiMotionState::Enter(lastState);
+    }
 };
 
 class PlayerTurnState : MultiMotionState
 {
-    float turnSpeed;
+    float       turnSpeed;
+    float       targetRotation;
 
     PlayerTurnState(Character@ c)
     {
@@ -80,16 +87,32 @@ class PlayerTurnState : MultiMotionState
 
     void Enter(State@ lastState)
     {
+        CaculateTargetRotation();
         ownner.SetTarget(null);
         MultiMotionState::Enter(lastState);
         Motion@ motion = motions[selectIndex];
         float alignTime = motion.endTime;
         float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
-        float targetAngle = ownner.GetTargetAngle();
-        float diff = AngleDiff(targetAngle - motionTargetAngle);
+        float diff = AngleDiff(targetRotation - motionTargetAngle);
         turnSpeed = diff / alignTime;
         combatReady = true;
-        Print("motionTargetAngle=" + String(motionTargetAngle) + " targetAngle=" + String(targetAngle) + " diff=" + String(diff) + " turnSpeed=" + String(turnSpeed));
+        Print(this.name + " motionTargetAngle=" + String(motionTargetAngle) + " targetRotation=" + targetRotation + " diff=" + diff + " turnSpeed=" + turnSpeed);
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        MultiMotionState::OnMotionFinished();
+    }
+
+    void CaculateTargetRotation()
+    {
+        targetRotation = ownner.GetTargetAngle();
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW, 2.0f);
     }
 };
 
@@ -888,6 +911,7 @@ class PlayerClimbUpState : PlayerClimbAlignState
             yAdjust = (index == 0) ? 0.3f : 0.0f;
 
             ownner.GetNode().vars[ANIMATION_INDEX] = index;
+            ownner.dockIndex = index - startIndex;
         }
         PlayerClimbAlignState::Enter(lastState);
     }
@@ -930,6 +954,7 @@ class PlayerRailUpState : PlayerClimbAlignState
             }
 
             ownner.GetNode().vars[ANIMATION_INDEX] = index;
+            ownner.dockIndex = index - startIndex;
         }
         PlayerClimbAlignState::Enter(lastState);
     }
@@ -939,7 +964,6 @@ class PlayerRailUpState : PlayerClimbAlignState
         ownner.ChangeState("RailIdleState");
     }
 };
-
 
 class PlayerRailIdleState : SingleAnimationState
 {
@@ -952,7 +976,6 @@ class PlayerRailIdleState : SingleAnimationState
 
     void Enter(State@ lastState)
     {
-        ownner.SetTarget(null);
         ownner.SetVelocity(Vector3(0,0,0));
         ownner.SetPhysicsType(0);
         SingleAnimationState::Enter(lastState);
@@ -966,6 +989,36 @@ class PlayerRailIdleState : SingleAnimationState
 
     void Update(float dt)
     {
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        {
+            int index = ownner.RadialSelectAnimation(4);
+            Print("RailIdleState Idle->Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+
+            if (index == 0)
+            {
+                ownner.ChangeState("RailDownState");
+            }
+            else if (index == 1)
+            {
+                ownner.dockTurnAngle = 90;
+                ownner.GetNode().vars[ANIMATION_INDEX] = 0;
+                ownner.ChangeState("RailTurnState");
+            }
+            else if (index == 2)
+            {
+                ownner.dockTurnAngle = 180;
+                ownner.GetNode().vars[ANIMATION_INDEX] = 0;
+                ownner.ChangeState("RailTurnState");
+            }
+            else if (index == 3)
+            {
+                ownner.dockTurnAngle = -90;
+                ownner.GetNode().vars[ANIMATION_INDEX] = 1;
+                ownner.ChangeState("RailTurnState");
+            }
+            return;
+        }
+
         SingleAnimationState::Update(dt);
     }
 };
@@ -989,4 +1042,34 @@ class PlayerRailTurnState : PlayerTurnState
         PlayerTurnState::Exit(nextState);
         ownner.SetPhysicsType(1);
     }
+
+    void CaculateTargetRotation()
+    {
+        targetRotation = ownner.GetCharacterAngle() + ownner.dockTurnAngle;
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+        ownner.ChangeState("RailIdleState");
+    }
+};
+
+class PlayerRailFwdIdleState : SingleAnimationState
+{
+    PlayerRailFwdIdleState(Character@ c)
+    {
+        super(c);
+        SetName("RailFwdIdleState");
+    }
+};
+
+class PlayerRailDownState : MultiMotionState
+{
+    PlayerRailDownState(Character@ c)
+    {
+        super(c);
+        SetName("RailDownState");
+    }
+
 };

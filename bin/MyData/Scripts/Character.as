@@ -982,6 +982,8 @@ class Character : GameObject
     RigidBody@              body;
 
     Line@                   dockLine;
+    float                   dockTurnAngle;
+    int                     dockIndex;
 
     int                     physicsType;
 

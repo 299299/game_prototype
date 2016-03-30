@@ -72,7 +72,6 @@ class Player : Character
 
     bool Evade()
     {
-        sceneNode.vars[ANIMATION_INDEX] = RadialSelectAnimation(4);
         ChangeState("EvadeState");
         return true;
     }

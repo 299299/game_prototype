@@ -393,6 +393,26 @@ class BruceRailIdleState : PlayerRailIdleState
     }
 };
 
+class BruceRailTurnState : PlayerRailTurnState
+{
+    BruceRailTurnState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Railing/Railing_Idle_Turn_180_Right");
+        AddMotion("BM_Railing/Railing_Idle_Turn_180_Left");
+    }
+};
+
+class BruceRailDownState : PlayerRailDownState
+{
+    BruceRailDownState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Railing/Railing_Climb_Down_Forward");
+        AddMotion("BM_Railing/Railing_Jump_To_Fall");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -439,6 +459,8 @@ class Bruce : Player
             stateMachine.AddState(BruceClimbUpState(this));
             stateMachine.AddState(BruceRailUpState(this));
             stateMachine.AddState(BruceRailIdleState(this));
+            stateMachine.AddState(BruceRailTurnState(this));
+            stateMachine.AddState(BruceRailDownState(this));
         }
     }
 };
@@ -512,26 +534,29 @@ void CreateBruceClimbAnimations()
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Crouch_Idle");
     // Global_CreateMotion(preFix + "Crouch_Walk_Slow", kMotion_XZR, kMotion_Z, -1, true);
-    Global_CreateMotion(preFix + "Cover_Run", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);
     Global_AddAnimation(preFix + "Cover_Idle");
 
     preFix = "BM_Crouch_Turns/";
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 12);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 20);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 12);
 
     preFix = "BM_Railing/";
     Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+
+    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_R, kMotion_R);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_R, kMotion_R);
 
     Global_AddAnimation(preFix + "Railing_Idle");
-
-    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_YZ);
-
-    Array<Vector3> outPos;
-    CollectBoneWorldPositions("Models/bruce_w.mdl", GetAnimationName(preFix + "Railing_Climb_Up"), L_FOOT, outPos);
+    Global_AddAnimation(preFix + "Railing_Run_Forward_Idle");
 }
 
 void CreateBruceMotions()
@@ -539,19 +564,19 @@ void CreateBruceMotions()
     AssignMotionRig("Models/bruce_w.mdl");
 
     String preFix = "BW_Movement/";
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_R, 16);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_R, 25);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_R, 14);
-    Global_CreateMotion(preFix + "Walk_Forward", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 25);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 14);
+    Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
 
     preFix = "BM_Movement/";
-    Global_CreateMotion(preFix + "Run_Forward", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Run_Right_Passing_To_Stand");
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 28);
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_ZR, kMotion_ZR, 28);
     Global_AddAnimation(preFix + "Stand_Idle");
     Global_AddAnimation(preFix + "Fall");
     Global_AddAnimation(preFix + "Land");
-    Global_CreateMotion(preFix + "Cover_Transition", kMotion_XZR, kMotion_R);
+    Global_CreateMotion(preFix + "Cover_Transition", kMotion_R, kMotion_R);
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");

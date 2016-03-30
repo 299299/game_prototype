@@ -335,7 +335,6 @@ class ThugTurnState : MultiMotionState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         endTime = motions[index].endTime;
         turnSpeed = diff / endTime;
-        // Print("ThugTurnState diff=" + diff + " turnSpeed=" + turnSpeed + " time=" + motions[selectIndex].endTime);
         ownner.ClearAvoidance();
         MultiMotionState::Enter(lastState);
     }
@@ -343,7 +342,7 @@ class ThugTurnState : MultiMotionState
     void FixedUpdate(float dt)
     {
         ownner.CheckAvoidance(dt);
-        CharacterState::FixedUpdate(dt);
+        MultiMotionState::FixedUpdate(dt);
     }
 };
 
@@ -1233,11 +1232,11 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Step_Back_Long");
     Global_CreateMotion(preFix + "Step_Left_Long");
 
-    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
-    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_R, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_R, kMotion_R, 32);
 
-    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
-    Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_XZR, -1, true);
+    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
 
     if (game_type == 0)
         CreateThugCombatMotions();
