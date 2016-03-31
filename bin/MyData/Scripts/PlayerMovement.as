@@ -800,7 +800,7 @@ class PlayerClimbAlignState : MultiMotionState
                 Vector3 motionPos = motion.GetFuturePosition(ownner, t);
                 Vector3 diff = targetPos - motionPos;
                 diff /= t;
-                Print(name + " targetPos=" + targetPos.ToString() + " motionPos=" + motionPos.ToString());
+                Print(this.name + " animation:" + motion.name + " targetPos=" + targetPos.ToString() + " motionPos=" + motionPos.ToString());
                 Vector3 v(0, 0, 0);
                 if (targetMotionFlag & kMotion_X != 0)
                     v.x = diff.x;

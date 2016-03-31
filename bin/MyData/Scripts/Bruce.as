@@ -354,7 +354,7 @@ class BruceClimbUpState : PlayerClimbUpState
 
         targetOffsets.Push(Vector3(0, 0, -2.75));
         targetOffsets.Push(Vector3(0, 0, -1.43629));
-        targetOffsets.Push(Vector3(0, 0, -1.75));
+        targetOffsets.Push(Vector3(0, 0, -1.8));
 
         targetOffsets.Push(Vector3(0, 0, -6.0));
         targetOffsets.Push(Vector3(0, 0, -6.4));
