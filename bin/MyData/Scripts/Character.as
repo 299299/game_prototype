@@ -229,7 +229,7 @@ class SingleMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motion.Move(ownner, dt)) {
+        if (motion.Move(ownner, dt) == 1) {
             OnMotionFinished();
             return;
         }
@@ -274,10 +274,14 @@ class MultiMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(ownner, dt)) {
+        int ret = motions[selectIndex].Move(ownner, dt);
+        if (ret == 1)
+        {
             OnMotionFinished();
             return;
         }
+        else if (ret == 2)
+            OnMotionAlignTimeOut();
         CharacterState::Update(dt);
     }
 
@@ -328,6 +332,11 @@ class MultiMotionState : CharacterState
     {
         // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
         ownner.CommonStateFinishedOnGroud();
+    }
+
+    void OnMotionAlignTimeOut()
+    {
+
     }
 };
 
@@ -411,7 +420,14 @@ class AnimationTestState : CharacterState
         Motion@ motion = testMotions[currentIndex];
         if (motion !is null)
         {
-            finished = motion.Move(ownner, dt);
+            if (!motion.dockAlignBoneName.empty)
+            {
+                float t = ownner.animCtrl.GetTime(motion.animationName);
+                if (t < motion.dockAlignTime && (t + dt) > motion.dockAlignTime)
+                    ownner.SetSceneTimeScale(0.0f);
+            }
+
+            finished = motion.Move(ownner, dt) == 1;
             if (motion.looped && timeInState > 2.0f)
                 finished = true;
         }
@@ -558,7 +574,7 @@ class CharacterCounterState : CharacterState
         }
         else if (state == COUNTER_ANIMATING)
         {
-             if (currentMotion.Move(ownner, dt))
+             if (currentMotion.Move(ownner, dt) == 1)
              {
                 ownner.CommonStateFinishedOnGroud();
                 return;
@@ -867,7 +883,7 @@ class CharacterGetUpState : MultiMotionState
         }
         else
         {
-            if (motion.Move(ownner, dt))
+            if (motion.Move(ownner, dt) == 1)
             {
                 ownner.CommonStateFinishedOnGroud();
                 return;

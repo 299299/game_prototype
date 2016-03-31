@@ -185,7 +185,7 @@ class ThugStepMoveState : MultiMotionState
 
     void Update(float dt)
     {
-        if (motions[selectIndex].Move(ownner, dt))
+        if (motions[selectIndex].Move(ownner, dt) == 1)
         {
             float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
             bool attack = false;
@@ -426,9 +426,7 @@ class ThugAttackState : CharacterState
         if (doAttackCheck)
             AttackCollisionCheck();
 
-        // TODO ....
-        bool finished = motion.Move(ownner, dt);
-        if (finished)
+        if (motion.Move(ownner, dt) == 1)
         {
             ownner.CommonStateFinishedOnGroud();
             return;

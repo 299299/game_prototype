@@ -128,7 +128,7 @@ class PlayerAttackState : CharacterState
 
         ownner.CheckTargetDistance(ownner.target, PLAYER_COLLISION_DIST);
 
-        bool finished = motion.Move(ownner, dt);
+        bool finished = motion.Move(ownner, dt) == 1;
         if (finished) {
             Print("Player::Attack finish attack movemont in sub state = " + state);
             ownner.CommonStateFinishedOnGroud();
@@ -757,7 +757,7 @@ class PlayerDeadState : MultiMotionState
     {
         if (state == 0)
         {
-            if (motions[selectIndex].Move(ownner, dt))
+            if (motions[selectIndex].Move(ownner, dt) == 1)
             {
                 state = 1;
                 gGame.OnCharacterKilled(null, ownner);
@@ -902,13 +902,7 @@ class PlayerBeatDownHitState : MultiMotionState
             return;
         }
 
-        if (motions[selectIndex].Move(ownner, dt)) {
-            Print("Beat Animation finished");
-            OnMotionFinished();
-            return;
-        }
-
-        CharacterState::Update(dt);
+        MultiMotionState::Update(dt);
     }
 
     void Enter(State@ lastState)

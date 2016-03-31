@@ -498,12 +498,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = "BM_Attack/Attack_Far_Back_04";
         //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
         //String testName = "BM_Attack/Attack_Far_Back_03";
-        //String testName = "BM_Climb/Stand_Climb_Up_128";
-        //String testName = GetAnimationName("BM_Railing/Railing_Idle");
-        String testName = ("BM_Railing/Railing_Climb_Down_Forward");
         //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
+        //String testName = GetAnimationName("BM_Railing/Railing_Idle");
+        //String testName = ("BM_Railing/Railing_Climb_Down_Forward");
+        //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
+        String testName = "BM_Climb/Stand_Climb_Over_128";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
+        testAnimations.Push("BM_Climb/Hang_Climb_Up_Run");
         // testAnimations.Push(GetAnimationName("BM_Railing/Railing_Run_Forward_Idle"));
         if (player !is null)
             player.TestAnimation(testAnimations);

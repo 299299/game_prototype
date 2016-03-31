@@ -546,10 +546,22 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Stop");
-    Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z);
-    Global_CreateMotion(preFix + "Stand_Climb_Over_128", kMotion_Z);
+    Motion@ m = Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z);
+    m.dockAlignTime = 0.5f;
+    m.dockAlignBoneName = L_HAND;
+    m.dockAlignOffset = Vector3(0, -0.1, 0);
+
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Over_128", kMotion_Z);
+    m.dockAlignTime = 0.5f;
+    m.dockAlignBoneName = L_HAND;
+    m.dockAlignOffset = Vector3(0, -0.1, 0);
+
     Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_YZ);
+    @m = Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_YZ);
+    m.dockAlignTime = 0.35f;
+    m.dockAlignBoneName = L_FOOT;
+    m.dockAlignOffset = Vector3(0, -0.1, 0.2);
+
     Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_YZ);
     Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_YZ);
     Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_YZ);
@@ -561,7 +573,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ);
 
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_YZ);
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_YZ);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Crouch_Idle");
@@ -582,7 +594,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 
     Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ);
+    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 
     Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_XZR, kMotion_R);
     Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_XZR, kMotion_R);

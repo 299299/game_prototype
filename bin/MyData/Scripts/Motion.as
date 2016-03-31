@@ -161,6 +161,10 @@ class Motion
 
     bool                    processed = false;
 
+    float                   dockAlignTime;
+    Vector3                 dockAlignOffset;
+    String                  dockAlignBoneName;
+
     Motion()
     {
     }
@@ -204,6 +208,13 @@ class Motion
         gMotionMgr.memoryUse += this.animation.memoryUse;
         rotateAngle = ProcessAnimation(animationName, motionFlag, allowMotion, rotateAngle, motionKeys, startFromOrigin);
         SetEndFrame(endFrame);
+
+        if (!dockAlignBoneName.empty)
+        {
+            Vector3 v = GetBoneWorldPosition(curRig, animationName, dockAlignBoneName, dockAlignTime);
+            Print(this.name + " bone world-pos=" + v.ToString() + " at time:" + dockAlignTime);
+            dockAlignOffset += v;
+        }
 
         if (!motionKeys.empty)
         {
@@ -294,6 +305,15 @@ class Motion
         InnerStart(object);
     }
 
+    Vector3 GetDockAlignPosition(Character@ object, float targetRotation)
+    {
+        Node@ _node = object.GetNode();
+        Vector4 motionOut = GetKey(dockAlignTime);
+        Vector3 motionPos = _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
+        Vector3 offsetPos = Quaternion(0, targetRotation, 0) * dockAlignOffset;
+        return motionPos + offsetPos;
+    }
+
     void InnerStart(Character@ object)
     {
         object.motion_startPosition = object.GetNode().worldPosition;
@@ -306,7 +326,7 @@ class Motion
         // Print("motion " + animationName + " start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
     }
 
-    bool Move(Character@ object, float dt)
+    int Move(Character@ object, float dt)
     {
         AnimationController@ ctrl = object.animCtrl;
         Node@ _node = object.GetNode();
@@ -343,7 +363,7 @@ class Motion
             else
                 object.SetVelocity(Vector3(0, 0, 0));
 
-            return false;
+            return 0;
         }
         else
         {
@@ -372,9 +392,14 @@ class Motion
                 object.SetVelocity(Vector3(0, 0, 0));
 
             bool bFinished =  localTime >= endTime;
+            if (!dockAlignBoneName.empty)
+            {
+                if (localTime < dockAlignTime && (localTime + dt) > dockAlignTime)
+                    return 2;
+            }
             //if (bFinished)
             //    object.SetVelocity(Vector3(0, 0, 0));
-            return bFinished;
+            return bFinished ? 1 : 0;
         }
     }
 
@@ -392,6 +417,13 @@ class Motion
             debug.AddLine(tMotionEnd + object.motion_startPosition,  object.motion_startPosition, Color(0.5f, 0.5f, 0.7f), false);
             DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, RED, 2.0);
         }
+
+        //if (!dockAlignBoneName.empty)
+        //{
+        //    Vector3 v = _node.LocalToWorld(dockAlignOffset);
+        //    debug.AddLine(_node.worldPosition, v, BLUE, false);
+        //    debug.AddCross(v, 0.5f, GREEN, false);
+        //}
     }
 
     Vector3 GetStartPos()

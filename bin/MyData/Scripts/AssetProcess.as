@@ -64,6 +64,8 @@ class MotionRig
     String  rig;
     float foot_to_ground_height = 0.0f;
 
+    Node@   alignNode;
+
     MotionRig(const String& rigName)
     {
         rig = rigName;
@@ -79,7 +81,7 @@ class MotionRig
             s.GetBone(R_FOOT).initialScale = v;
         }
 
-        processNode = processScene.CreateChild("Character");
+        processNode = processScene.CreateChild(rig + "_Character");
         processNode.worldRotation = Quaternion(0, 180, 0);
 
         AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
@@ -99,12 +101,18 @@ class MotionRig
 
         foot_to_ground_height = processNode.GetChild(R_FOOT, true).worldPosition.y;
 
+        alignNode = processScene.CreateChild(rig + "_Align");
+        alignNode.worldRotation = Quaternion(0, 180, 0);
+        AnimatedModel@ am2 = alignNode.CreateComponent("AnimatedModel");
+        am2.model = am.model;
+
         Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString() + " foot_to_ground_height=" + foot_to_ground_height);
     }
 
     ~MotionRig()
     {
         processNode.Remove();
+        alignNode.Remove();
     }
 };
 
@@ -220,9 +228,8 @@ void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
     }
 }
 
-void CollectBoneWorldPositions(const String&in rigName, const String&in animationFile, const String& boneName, Array<Vector3>@ outPositions)
+void CollectBoneWorldPositions(MotionRig@ rig, const String&in animationFile, const String& boneName, Array<Vector3>@ outPositions)
 {
-    Model@ model = cache.GetResource("Model",  rigName);
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
         ErrorDialog(TITLE, animationFile + " not found!");
@@ -234,26 +241,43 @@ void CollectBoneWorldPositions(const String&in rigName, const String&in animatio
     if (track is null)
         return;
 
-    Node@ _node = processScene.CreateChild("_Animation_Node");
-    AnimatedModel@ am = _node.CreateComponent("AnimatedModel");
-    am.model = model;
+    AnimatedModel@ am = rig.alignNode.GetComponent("AnimatedModel");
+    am.RemoveAllAnimationStates();
     AnimationState@ state = am.AddAnimationState(anim);
     state.weight = 1.0f;
     state.looped = false;
 
     outPositions.Resize(track.numKeyFrames);
-    Node@ boneNode = _node.GetChild(boneName, true);
+    Node@ boneNode = rig.alignNode.GetChild(boneName, true);
 
     for (uint i=0; i<track.numKeyFrames; ++i)
     {
         state.time = track.keyFrames[i].time;
         state.Apply();
-        _node.MarkDirty();
+        rig.alignNode.MarkDirty();
         outPositions[i] = boneNode.worldPosition;
         // Print("out-position=" + outPositions[i].ToString());
     }
+}
 
-    _node.Remove();
+Vector3 GetBoneWorldPosition(MotionRig@ rig, const String&in animationFile, const String& boneName, float t)
+{
+    Animation@ anim = cache.GetResource("Animation", animationFile);
+    if (anim is null) {
+        ErrorDialog(TITLE, animationFile + " not found!");
+        engine.Exit();
+        return Vector3();
+    }
+
+    AnimatedModel@ am = rig.alignNode.GetComponent("AnimatedModel");
+    am.RemoveAllAnimationStates();
+    AnimationState@ state = am.AddAnimationState(anim);
+    state.weight = 1.0f;
+    state.looped = false;
+    state.time = t;
+    state.Apply();
+    rig.alignNode.MarkDirty();
+    return  rig.alignNode.GetChild(boneName, true).worldPosition;
 }
 
 void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motionFlag)
@@ -466,15 +490,13 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     if (footBased)
     {
         Array<Vector3> footPositions;
-        CollectBoneWorldPositions(curRig.rig, animationFile, R_FOOT, footPositions);
+        CollectBoneWorldPositions(curRig, animationFile, R_FOOT, footPositions);
         Array<float> ground_heights;
         ground_heights.Resize(footPositions.length);
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);
             float ground_y = footPositions[i].y - curRig.foot_to_ground_height;
-            float diff = kf.position.y - ground_y;
-            // Print("ground_y=" + ground_y + " hips_y=" + kf.position.y);
             kf.position.y -= ground_y;
             translateTrack.keyFrames[i] = kf;
             ground_heights[i] = ground_y;

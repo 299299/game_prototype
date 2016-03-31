@@ -778,17 +778,55 @@ class PlayerClimbAlignState : MultiMotionState
     float           yAdjust = 0.0f;
     float           alignTime = 0.1f;
 
+    float           turnSpeed;
+    Vector3         alignPosition;
+    Vector3         targetPosition;
+
     PlayerClimbAlignState(Character@ c)
     {
         super(c);
     }
 
+    void Update(float dt)
+    {
+        ownner.motion_deltaRotation += turnSpeed*dt;
+        MultiMotionState::Update(dt);
+    }
+
+    void OnMotionAlignTimeOut()
+    {
+        turnSpeed = 0;
+        ownner.motion_velocity = Vector3(0, 0, 0);
+        // ownner.SetSceneTimeScale(0);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(alignPosition, 0.5f, RED, false);
+        debug.AddCross(targetPosition, 0.5f, BLUE, false);
+    }
+
     void Enter(State@ lastState)
     {
         ownner.SetPhysicsType(0);
-        if (lastState.nameHash == ALIGN_STATE)
+        MultiMotionState::Enter(lastState);
+
+        Motion@ m = motions[selectIndex];
+        Vector3 v = ownner.GetNode().worldPosition;
+        targetPosition = ownner.dockLine.Project(v);
+        Vector3 dir = targetPosition - v;
+        float targetRotation = Atan2(dir.x, dir.z);
+        float t = m.dockAlignTime;
+        turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
+        alignPosition = m.GetDockAlignPosition(ownner, targetRotation);
+
+        v = ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
+        targetPosition = ownner.dockLine.Project(v);
+        Vector3 diff = targetPosition - alignPosition;
+        ownner.motion_velocity = diff / t;
+
+        /*if (lastState.nameHash == ALIGN_STATE)
         {
-            ownner.SetVelocity(Vector3(0, 0, 0));
             MultiMotionState::Enter(lastState);
 
             if (targetMotionFlag != 0)
@@ -840,7 +878,7 @@ class PlayerClimbAlignState : MultiMotionState
             s.Start(this.nameHash, targetPos,  targetAngle, alignTime, 0, alignAnim);
 
             ownner.ChangeStateQueue(ALIGN_STATE);
-        }
+        }*/
     }
 
     void Exit(State@ nextState)
