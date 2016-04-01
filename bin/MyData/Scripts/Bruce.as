@@ -441,6 +441,37 @@ class BruceRailRunTurn180State : PlayerRailTurn180State
     }
 };
 
+class BruceHangUpState : PlayerRailUpState
+{
+    BruceHangUpState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Stand_Climb_Up_128_Hang");
+        AddMotion("BM_Climb/Stand_Climb_Up_256_Hang");
+        AddMotion("BM_Climb/Stand_Climb_Up_384_Hang");
+        AddMotion("BM_Climb/Run_Climb_Up_128_Hang");
+        AddMotion("BM_Climb/Run_Climb_Up_256_Hang");
+        AddMotion("BM_Climb/Run_Climb_Up_384_Hang");
+
+        targetOffsets.Push(Vector3(0, 0, -1.5));
+        targetOffsets.Push(Vector3(0, 0, -1.5));
+        targetOffsets.Push(Vector3(0, 0, -1.5));
+
+        targetOffsets.Push(Vector3(0, 0, -1.5));
+        targetOffsets.Push(Vector3(0, 0, -6.4));
+        targetOffsets.Push(Vector3(0, 0, -6.452));
+    }
+};
+
+class BruceHangIdleState : PlayerHangIdleState
+{
+    BruceHangIdleState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Climb/Hang_Idle");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -493,6 +524,8 @@ class Bruce : Player
             stateMachine.AddState(BruceRailFwdIdleState(this));
             stateMachine.AddState(BruceRailRunForwardState(this));
             stateMachine.AddState(BruceRailRunTurn180State(this));
+            stateMachine.AddState(BruceHangUpState(this));
+            stateMachine.AddState(BruceHangIdleState(this));
         }
     }
 };
@@ -574,6 +607,16 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_YZ);
     Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+
+    Global_CreateMotion(preFix + "Stand_Climb_Up_128_Hang", kMotion_YZ);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_YZ);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_YZ);
+
+    Global_CreateMotion(preFix + "Run_Climb_Up_128_Hang", kMotion_YZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ);
+
+    Global_AddAnimation(preFix + "Hang_Idle");
 
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Crouch_Idle");

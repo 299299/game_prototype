@@ -801,7 +801,30 @@ class PlayerClimbAlignState : MultiMotionState
         {
             turnSpeed = 0;
             ownner.motion_velocity = Vector3(0, 0, 0);
+
+            if (targetMotionFlag != 0)
+            {
+                Vector3 targetPos = PickDockOutTarget();
+                Motion@ m = motions[selectIndex];
+                float t = m.endTime;
+                Vector4 motionOut = m.GetKey(t);
+                Vector3 tWorld = Quaternion(0, ownner.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + ownner.motion_startPosition + ownner.motion_deltaPosition;
+                Vector3 diff = tWorld - targetPos;
+                Vector3 v(0, 0, 0);
+                if (targetMotionFlag & kMotion_X != 0)
+                    v.x = diff.x;
+                if (targetMotionFlag & kMotion_Y != 0)
+                    v.y = diff.y;
+                if (targetMotionFlag & kMotion_Z != 0)
+                    v.z = diff.z;
+                ownner.motion_velocity = diff / t;
+            }
         }
+    }
+
+    Vector3 PickDockOutTarget()
+    {
+        return ownner.dockLine.Project(ownner.GetNode().worldPosition);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1322,5 +1345,86 @@ class PlayerRailTurn180State : SingleMotionState
     {
         DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW, 2.0f);
         debug.AddCross(targetPosition, 0.5f, RED, false);
+    }
+};
+
+class PlayerHangUpState : PlayerClimbAlignState
+{
+    PlayerHangUpState(Character@ c)
+    {
+        super(c);
+        SetName("HangUpState");
+        targetMotionFlag = kMotion_XYZ;
+    }
+
+    void Enter(State@ lastState)
+    {
+        if (lastState.nameHash != ALIGN_STATE)
+        {
+            int index = 0, startIndex = 0;
+            if (lastState.nameHash == RUN_STATE)
+                startIndex = 3;
+
+            alignTime = (lastState.nameHash != RUN_STATE) ? 0.2f : 0.1f;
+
+            float curHeight = ownner.GetNode().worldPosition.y;
+            float lineHeight = ownner.dockLine.end.y;
+
+            float minHeightDiff = 9999;
+            for (int i=0; i<3; ++i)
+            {
+                Motion@ motion = motions[startIndex + i];
+                float motionHeight = curHeight + motion.GetKey(motion.endTime).y;
+                float curHeightDiff = Abs(lineHeight - motionHeight);
+                if (curHeightDiff < minHeightDiff)
+                {
+                    minHeightDiff = curHeightDiff;
+                    index = startIndex + i;
+                }
+            }
+
+            ownner.GetNode().vars[ANIMATION_INDEX] = index;
+            ownner.dockIndex = index - startIndex;
+        }
+        PlayerClimbAlignState::Enter(lastState);
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("HangIdleState");
+    }
+};
+
+class PlayerHangIdleState : SingleAnimationState
+{
+    PlayerHangIdleState(Character@ c)
+    {
+        super(c);
+        SetName("HangIdleState");
+        looped = true;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetVelocity(Vector3(0,0,0));
+        ownner.SetPhysicsType(0);
+        SingleAnimationState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.SetPhysicsType(1);
+        SingleAnimationState::Exit(nextState);
+    }
+
+    void Update(float dt)
+    {
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        {
+            // TODO
+            return;
+        }
+
+        SingleAnimationState::Update(dt);
     }
 };

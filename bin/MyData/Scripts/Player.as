@@ -599,6 +599,12 @@ class Player : Character
                 ChangeState("RailUpState");
                 return true;
             }
+            else if (l.type == LINE_CLIMB_HANG)
+            {
+                AssignDockLine(l);
+                ChangeState("HangUpState");
+                return true;
+            }
             return false;
         }
         else
