@@ -782,6 +782,8 @@ class PlayerClimbAlignState : MultiMotionState
     Vector3         alignPosition;
     Vector3         targetPosition;
 
+    int             dockBlendingMethod = 0;
+
     PlayerClimbAlignState(Character@ c)
     {
         super(c);
@@ -795,9 +797,11 @@ class PlayerClimbAlignState : MultiMotionState
 
     void OnMotionAlignTimeOut()
     {
-        turnSpeed = 0;
-        ownner.motion_velocity = Vector3(0, 0, 0);
-        // ownner.SetSceneTimeScale(0);
+        if (dockBlendingMethod == 1)
+        {
+            turnSpeed = 0;
+            ownner.motion_velocity = Vector3(0, 0, 0);
+        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -809,76 +813,81 @@ class PlayerClimbAlignState : MultiMotionState
     void Enter(State@ lastState)
     {
         ownner.SetPhysicsType(0);
-        MultiMotionState::Enter(lastState);
 
-        Motion@ m = motions[selectIndex];
-        Vector3 v = ownner.GetNode().worldPosition;
-        targetPosition = ownner.dockLine.Project(v);
-        Vector3 dir = targetPosition - v;
-        float targetRotation = Atan2(dir.x, dir.z);
-        float t = m.dockAlignTime;
-        turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
-        alignPosition = m.GetDockAlignPosition(ownner, targetRotation);
-
-        v = ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
-        targetPosition = ownner.dockLine.Project(v);
-        Vector3 diff = targetPosition - alignPosition;
-        ownner.motion_velocity = diff / t;
-
-        /*if (lastState.nameHash == ALIGN_STATE)
+        if (dockBlendingMethod == 1)
         {
             MultiMotionState::Enter(lastState);
+            Motion@ m = motions[selectIndex];
+            Vector3 v = ownner.GetNode().worldPosition;
+            targetPosition = ownner.dockLine.Project(v);
+            Vector3 dir = targetPosition - v;
+            float targetRotation = Atan2(dir.x, dir.z);
+            float t = m.dockAlignTime;
+            turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
+            alignPosition = m.GetDockAlignPosition(ownner, targetRotation);
 
-            if (targetMotionFlag != 0)
-            {
-                Motion@ motion = motions[selectIndex];
-                Vector3 targetPos = ownner.dockLine.Project(ownner.GetNode().worldPosition);
-                targetPos.y += yAdjust;
-                float t = motion.endTime;
-                Vector3 motionPos = motion.GetFuturePosition(ownner, t);
-                Vector3 diff = targetPos - motionPos;
-                diff /= t;
-                Print(this.name + " animation:" + motion.name + " targetPos=" + targetPos.ToString() + " motionPos=" + motionPos.ToString());
-                Vector3 v(0, 0, 0);
-                if (targetMotionFlag & kMotion_X != 0)
-                    v.x = diff.x;
-                if (targetMotionFlag & kMotion_Y != 0)
-                    v.y = diff.y;
-                if (targetMotionFlag & kMotion_Z != 0)
-                    v.z = diff.z;
-                ownner.motion_velocity = v;
-            }
+            v = ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
+            targetPosition = ownner.dockLine.Project(v);
+            Vector3 diff = targetPosition - alignPosition;
+            ownner.motion_velocity = diff / t;
         }
         else
         {
-            selectIndex = PickIndex();
-            Vector3 myPos = ownner.GetNode().worldPosition;
-            Vector3 proj = ownner.dockLine.Project(myPos);
-            proj.y = myPos.y;
-            Vector3 dir = proj - myPos;
-            float targetAngle = Atan2(dir.x, dir.z);
-            Vector3 targetPos = proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex];
-
-            // Run-Case
-            if (selectIndex >= 3)
+            if (lastState.nameHash == ALIGN_STATE)
             {
-                float len_diff = (targetPos - myPos).length;
-                Print("state:" + this.name + " selectIndex=" + selectIndex + " len_diff=" + len_diff);
-                if (len_diff > 3)
-                    selectIndex -= 3;
-                targetPos = proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex];
-                ownner.GetNode().vars[ANIMATION_INDEX] = selectIndex;
+                MultiMotionState::Enter(lastState);
+
+                if (targetMotionFlag != 0)
+                {
+                    Motion@ motion = motions[selectIndex];
+                    Vector3 targetPos = ownner.dockLine.Project(ownner.GetNode().worldPosition);
+                    targetPos.y += yAdjust;
+                    float t = motion.endTime;
+                    Vector3 motionPos = motion.GetFuturePosition(ownner, t);
+                    Vector3 diff = targetPos - motionPos;
+                    diff /= t;
+                    Print(this.name + " animation:" + motion.name + " targetPos=" + targetPos.ToString() + " motionPos=" + motionPos.ToString());
+                    Vector3 v(0, 0, 0);
+                    if (targetMotionFlag & kMotion_X != 0)
+                        v.x = diff.x;
+                    if (targetMotionFlag & kMotion_Y != 0)
+                        v.y = diff.y;
+                    if (targetMotionFlag & kMotion_Z != 0)
+                        v.z = diff.z;
+                    ownner.motion_velocity = v;
+                }
             }
+            else
+            {
+                selectIndex = PickIndex();
+                Vector3 myPos = ownner.GetNode().worldPosition;
+                Vector3 proj = ownner.dockLine.Project(myPos);
+                proj.y = myPos.y;
+                Vector3 dir = proj - myPos;
+                float targetAngle = Atan2(dir.x, dir.z);
+                Vector3 targetPos = proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex];
 
-            CharacterAlignState@ s = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-            String alignAnim = "";
-            // walk
-            if (selectIndex == 0)
-                alignAnim = ownner.walkAlignAnimation;
-            s.Start(this.nameHash, targetPos,  targetAngle, alignTime, 0, alignAnim);
+                // Run-Case
+                if (selectIndex >= 3)
+                {
+                    float len_diff = (targetPos - myPos).length;
+                    Print("state:" + this.name + " selectIndex=" + selectIndex + " len_diff=" + len_diff);
+                    if (len_diff > 3)
+                        selectIndex -= 3;
+                    targetPos = proj + Quaternion(0, targetAngle, 0) * targetOffsets[selectIndex];
+                    ownner.GetNode().vars[ANIMATION_INDEX] = selectIndex;
+                }
 
-            ownner.ChangeStateQueue(ALIGN_STATE);
-        }*/
+                CharacterAlignState@ s = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
+                String alignAnim = "";
+                // walk
+                if (selectIndex == 0)
+                    alignAnim = ownner.walkAlignAnimation;
+                s.Start(this.nameHash, targetPos,  targetAngle, alignTime, 0, alignAnim);
+
+                ownner.ChangeStateQueue(ALIGN_STATE);
+            }
+        }
     }
 
     void Exit(State@ nextState)
@@ -895,6 +904,7 @@ class PlayerClimbOverState : PlayerClimbAlignState
     {
         super(c);
         SetName("ClimbOverState");
+        dockBlendingMethod = 1;
     }
 
     void Enter(State@ lastState)
