@@ -418,12 +418,13 @@ class Motion
             DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, RED, 2.0);
         }
 
-        //if (!dockAlignBoneName.empty)
-        //{
-        //    Vector3 v = _node.LocalToWorld(dockAlignOffset);
-        //    debug.AddLine(_node.worldPosition, v, BLUE, false);
-        //    debug.AddCross(v, 0.5f, GREEN, false);
-        //}
+        if (!dockAlignBoneName.empty)
+        {
+            //Vector3 v = _node.LocalToWorld(dockAlignOffset);
+            //debug.AddLine(_node.worldPosition, v, BLUE, false);
+            //debug.AddCross(v, 0.5f, GREEN, false);
+            debug.AddCross(_node.GetChild(dockAlignBoneName, true).worldPosition, 0.5f, GREEN, false);
+        }
     }
 
     Vector3 GetStartPos()

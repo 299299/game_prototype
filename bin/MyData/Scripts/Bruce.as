@@ -589,7 +589,11 @@ void CreateBruceClimbAnimations()
     m.dockAlignBoneName = L_HAND;
     m.dockAlignOffset = Vector3(0, -0.1, 0);
 
-    Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_YZ);
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_YZ);
+    m.dockAlignTime = 0.27f;
+    m.dockAlignBoneName = L_FOOT;
+    m.dockAlignOffset = Vector3(0, -0.3, 0.0f);
+
     @m = Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_YZ);
     m.dockAlignTime = 0.35f;
     m.dockAlignBoneName = L_FOOT;
