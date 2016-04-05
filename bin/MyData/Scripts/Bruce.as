@@ -579,62 +579,47 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Stop");
+
+    // Climb Over
     Motion@ m = Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z);
-    m.dockAlignTime = 0.5f;
-    m.dockAlignBoneName = L_HAND;
-    m.dockAlignOffset = Vector3(0, -0.1, 0);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
+    m.SetEndFrame(37);
 
     @m = Global_CreateMotion(preFix + "Stand_Climb_Over_128", kMotion_Z);
-    m.dockAlignTime = 0.5f;
-    m.dockAlignBoneName = L_HAND;
-    m.dockAlignOffset = Vector3(0, -0.1, 0);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
 
+    // Climb Up
     @m = Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_YZ);
-    m.dockAlignTime = 0.27f;
-    m.dockAlignBoneName = L_FOOT;
-    m.dockAlignOffset = Vector3(0, -0.3, 0.0f);
+    m.SetDockAlign(L_FOOT, 0.27f, Vector3(0, -0.3, 0));
 
     @m = Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_YZ);
-    m.dockAlignTime = 0.35f;
-    m.dockAlignBoneName = L_FOOT;
-    m.dockAlignOffset = Vector3(0, -0.1, 0.2);
+    m.SetDockAlign(L_FOOT, 0.35f, Vector3(0, -0.1, 0));
+    m.SetEndFrame(20);
 
     @m = Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_YZ);
-    m.dockAlignTime = 0.27f;
-    m.dockAlignBoneName = L_FOOT;
-    m.dockAlignOffset = Vector3(0, -0.3, 0.0f);
+    m.SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.3));
 
     @m = Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_YZ);
-    m.dockAlignTime = 0.35f;
-    m.dockAlignBoneName = L_FOOT;
-    m.dockAlignOffset = Vector3(0, -0.1, 0.2);
+    m.SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.2));
 
     @m = Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_YZ);
-    m.dockAlignTime = 0.27f;
-    m.dockAlignBoneName = L_FOOT;
-    m.dockAlignOffset = Vector3(0, -0.3, 0.0f);
+    m.SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.1));
 
     @m = Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_YZ);
-    m.dockAlignTime = 0.35f;
-    m.dockAlignBoneName = L_FOOT;
-    m.dockAlignOffset = Vector3(0, -0.1, 0.2);
+    m.SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.1));
 
-    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_YZ);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ);
+    // Climb Hang
+    Global_CreateMotion(preFix + "Stand_Climb_Up_128_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_YZ);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-
-    Global_CreateMotion(preFix + "Stand_Climb_Up_128_Hang", kMotion_YZ);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_YZ);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_YZ);
-
-    Global_CreateMotion(preFix + "Run_Climb_Up_128_Hang", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ);
-
     Global_AddAnimation(preFix + "Hang_Idle");
 
     preFix = "BM_Movement/";

@@ -229,6 +229,13 @@ class Motion
             Print("Motion " + name + " endDistance="  + endDistance + " startFromOrigin=" + startFromOrigin.ToString()  + " timeCost=" + String(time.systemTime - startTime) + " ms");
     }
 
+    void SetDockAlign(const String&in boneName, float alignTime, const Vector3&in offset)
+    {
+        dockAlignBoneName = boneName;
+        dockAlignOffset = offset;
+        dockAlignTime = alignTime;
+    }
+
     void SetEndFrame(int frame)
     {
         endFrame = frame;
@@ -376,14 +383,14 @@ class Motion
                 if (object.physicsType == 0)
                 {
                     object.motion_deltaPosition += object.motion_velocity * dt;
-                    Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+                    Vector3 tWorld = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
                     object.MoveTo(tWorld, dt);
                 }
                 else
                 {
-                    Vector3 tWorld1 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
+                    Vector3 tWorld1 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
                     motionOut = GetKey(localTime + dt);
-                    Vector3 tWorld2 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
+                    Vector3 tWorld2 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
                     Vector3 vel = (tWorld2 - tWorld1) / dt;
                     object.SetVelocity(vel * speed + object.motion_velocity);
                 }
@@ -423,7 +430,8 @@ class Motion
             //Vector3 v = _node.LocalToWorld(dockAlignOffset);
             //debug.AddLine(_node.worldPosition, v, BLUE, false);
             //debug.AddCross(v, 0.5f, GREEN, false);
-            debug.AddCross(_node.GetChild(dockAlignBoneName, true).worldPosition, 0.5f, GREEN, false);
+            debug.AddCross(_node.GetChild(dockAlignBoneName, true).worldPosition, 0.25f, GREEN, false);
+            //debug.AddNode(_node.GetChild(dockAlignBoneName, true), 0.25f, false);
         }
     }
 

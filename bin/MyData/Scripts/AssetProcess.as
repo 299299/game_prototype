@@ -62,7 +62,8 @@ class MotionRig
     Quaternion rotateBoneInitQ;
     Vector3 pelvisOrign;
     String  rig;
-    float foot_to_ground_height = 0.0f;
+    float left_foot_to_ground_height = 0.0f;
+    float right_foot_to_ground_height = 0.0f;
 
     Node@   alignNode;
 
@@ -99,14 +100,15 @@ class MotionRig
         rotateNode = processNode.GetChild(RotateBoneName, true);
         pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 
-        foot_to_ground_height = processNode.GetChild(R_FOOT, true).worldPosition.y;
+        left_foot_to_ground_height = processNode.GetChild(L_FOOT, true).worldPosition.y;
+        right_foot_to_ground_height = processNode.GetChild(R_FOOT, true).worldPosition.y;
 
         alignNode = processScene.CreateChild(rig + "_Align");
         alignNode.worldRotation = Quaternion(0, 180, 0);
         AnimatedModel@ am2 = alignNode.CreateComponent("AnimatedModel");
         am2.model = am.model;
 
-        Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString() + " foot_to_ground_height=" + foot_to_ground_height);
+        Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString());
     }
 
     ~MotionRig()
@@ -490,13 +492,13 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     if (footBased)
     {
         Array<Vector3> footPositions;
-        CollectBoneWorldPositions(curRig, animationFile, R_FOOT, footPositions);
+        CollectBoneWorldPositions(curRig, animationFile, L_FOOT, footPositions);
         Array<float> ground_heights;
         ground_heights.Resize(footPositions.length);
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);
-            float ground_y = footPositions[i].y - curRig.foot_to_ground_height;
+            float ground_y = footPositions[i].y - curRig.left_foot_to_ground_height;
             kf.position.y -= ground_y;
             translateTrack.keyFrames[i] = kf;
             ground_heights[i] = ground_y;
