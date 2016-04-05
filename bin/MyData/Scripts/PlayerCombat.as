@@ -442,6 +442,18 @@ class PlayerCounterState : CharacterCounterState
             ownner.CommonStateFinishedOnGroud(); // Something Error Happened
             return;
         }
+        if (state == COUNTER_WAITING)
+        {
+            uint n =0;
+            for (uint i=0; i<counterEnemies.length; ++i)
+            {
+                if (counterEnemies[i].GetState().nameHash == this.nameHash)
+                    n ++;
+            }
+
+            if (n == counterEnemies.length)
+                StartAnimating();
+        }
         CharacterCounterState::Update(dt);
     }
 
@@ -532,157 +544,164 @@ class PlayerCounterState : CharacterCounterState
     void Enter(State@ lastState)
     {
         Print("############# PlayerCounterState::Enter ##################");
-
         uint t = time.systemTime;
 
-        CharacterCounterState::Enter(lastState);
-
-        Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
-        type = counterEnemies.length;
-
-        // POST_PROCESS
-        for (int i=0; i<type; ++i)
+        if (lastState.nameHash == ALIGN_STATE)
         {
-            Enemy@ e = counterEnemies[i];
-            e.ChangeState("CounterState");
-            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-            s.index = -1;
-            s.type = type;
-            s.ChangeSubState(COUNTER_ALIGNING);
+            StartAnimating();
         }
-
-        if (counterEnemies.length == 3)
+        else
         {
-            for (uint i=0; i<tripleCounterMotions.length; ++i)
-            {
-                if (TestTrippleCounterMotions(i) == 3)
-                    break;
-            }
+            Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
+            type = counterEnemies.length;
 
-            for (uint i=0; i<counterEnemies.length; ++i)
+            // POST_PROCESS
+            for (int i=0; i<type; ++i)
             {
                 Enemy@ e = counterEnemies[i];
+                e.ChangeState("CounterState");
                 CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-                if (s.index < 0)
+                s.index = -1;
+                s.type = type;
+                s.ChangeSubState(COUNTER_NONE);
+            }
+
+            if (counterEnemies.length == 3)
+            {
+                for (uint i=0; i<tripleCounterMotions.length; ++i)
                 {
-                    e.CommonStateFinishedOnGroud();
-                    counterEnemies.Erase(i);
+                    if (TestTrippleCounterMotions(i) == 3)
+                        break;
                 }
+
+                for (uint i=0; i<counterEnemies.length; ++i)
+                {
+                    Enemy@ e = counterEnemies[i];
+                    CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+                    if (s.index < 0)
+                    {
+                        e.CommonStateFinishedOnGroud();
+                        counterEnemies.Erase(i);
+                    }
+                }
+
+                ChangeSubState(COUNTER_WAITING);
             }
 
-            ChangeSubState(COUNTER_WAITING);
-        }
-
-        if (counterEnemies.length == 2)
-        {
-            for (uint i=0; i<doubleCounterMotions.length; ++i)
+            if (counterEnemies.length == 2)
             {
-                if (TestDoubleCounterMotions(i) == 2)
-                    break;
+                for (uint i=0; i<doubleCounterMotions.length; ++i)
+                {
+                    if (TestDoubleCounterMotions(i) == 2)
+                        break;
+                }
+
+                for (uint i=0; i<counterEnemies.length; ++i)
+                {
+                    Enemy@ e = counterEnemies[i];
+                    CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+                    if (s.index < 0)
+                    {
+                        e.CommonStateFinishedOnGroud();
+                        counterEnemies.Erase(i);
+                    }
+                }
+
+                ChangeSubState(COUNTER_WAITING);
             }
 
-            for (uint i=0; i<counterEnemies.length; ++i)
+            if (counterEnemies.length == 1)
             {
-                Enemy@ e = counterEnemies[i];
+                Node@ myNode = ownner.GetNode();
+                Vector3 myPos = myNode.worldPosition;
+
+                Enemy@ e = counterEnemies[0];
+                Node@ eNode = e.GetNode();
+                float dAngle = ownner.ComputeAngleDiff(eNode);
+                bool isBack = false;
+                if (Abs(dAngle) > 90)
+                    isBack = true;
+
+                e.ChangeState("CounterState");
+
+                int attackType = eNode.vars[ATTACK_TYPE].GetInt();
                 CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-                if (s.index < 0)
+                Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
+                Array<Motion@>@ eCounterMotions = s.GetCounterMotions(attackType, isBack);
+
+                intCache.Clear();
+                float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
+                float bestDistSQR = 999999;
+                int bestIndex = -1;
+
+                for (uint i=0; i<counterMotions.length; ++i)
                 {
-                    e.CommonStateFinishedOnGroud();
-                    counterEnemies.Erase(i);
+                    Motion@ alignMotion = counterMotions[i];
+                    Motion@ baseMotion = eCounterMotions[i];
+                    Vector4 v4 = GetTargetTransform(eNode, alignMotion, baseMotion);
+                    Vector3 v3 = Vector3(v4.x, myPos.y, v4.z);
+                    float distSQR = (v3 - myPos).lengthSquared;
+                    if (distSQR < bestDistSQR)
+                    {
+                        bestDistSQR = distSQR;
+                        bestIndex = int(i);
+                    }
+                    if (distSQR > maxDistSQR)
+                        continue;
+                    intCache.Push(i);
                 }
-            }
 
-            ChangeSubState(COUNTER_WAITING);
-        }
-
-        if (counterEnemies.length == 1)
-        {
-            Node@ myNode = ownner.GetNode();
-            Vector3 myPos = myNode.worldPosition;
-
-            Enemy@ e = counterEnemies[0];
-            Node@ eNode = e.GetNode();
-            float dAngle = ownner.ComputeAngleDiff(eNode);
-            bool isBack = false;
-            if (Abs(dAngle) > 90)
-                isBack = true;
-
-            e.ChangeState("CounterState");
-
-            int attackType = eNode.vars[ATTACK_TYPE].GetInt();
-            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-            Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
-            Array<Motion@>@ eCounterMotions = s.GetCounterMotions(attackType, isBack);
-
-            intCache.Clear();
-            float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
-            float bestDistSQR = 999999;
-            int bestIndex = -1;
-
-            for (uint i=0; i<counterMotions.length; ++i)
-            {
-                Motion@ alignMotion = counterMotions[i];
-                Motion@ baseMotion = eCounterMotions[i];
-                Vector4 v4 = GetTargetTransform(eNode, alignMotion, baseMotion);
-                Vector3 v3 = Vector3(v4.x, myPos.y, v4.z);
-                float distSQR = (v3 - myPos).lengthSquared;
-                if (distSQR < bestDistSQR)
+                Print("CounterState - intCache.length=" + intCache.length);
+                int cur_direction = GetCounterDirection(attackType, isBack);
+                int idx;
+                if (intCache.empty)
                 {
-                    bestDistSQR = distSQR;
-                    bestIndex = int(i);
+                    idx = bestIndex;
                 }
-                if (distSQR > maxDistSQR)
-                    continue;
-                intCache.Push(i);
-            }
+                else
+                {
+                    int k = RandomInt(intCache.length);
+                    idx = intCache[k];
+                    if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
+                    {
+                        k = (k + 1) % intCache.length;
+                        idx = intCache[k];
+                    }
+                }
 
-            Print("CounterState - intCache.length=" + intCache.length);
-            int cur_direction = GetCounterDirection(attackType, isBack);
-            int idx;
-            if (intCache.empty)
-            {
-                idx = bestIndex;
+                lastCounterDirection = cur_direction;
+                lastCounterIndex = idx;
+
+                @currentMotion = counterMotions[idx];
+                @s.currentMotion = eCounterMotions[idx];
+                Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName);
+
+                s.ChangeSubState(COUNTER_WAITING);
+
+                Vector4 vt = GetTargetTransform(eNode, currentMotion, s.currentMotion);
+                SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
+                StartAligning();
             }
             else
             {
-                int k = RandomInt(intCache.length);
-                idx = intCache[k];
-                if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
+                for (uint i=0; i<counterEnemies.length; ++i)
                 {
-                    k = (k + 1) % intCache.length;
-                    idx = intCache[k];
+                    CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
+                    s.StartAligning();
                 }
             }
-
-            lastCounterDirection = cur_direction;
-            lastCounterIndex = idx;
-
-            @currentMotion = counterMotions[idx];
-            @s.currentMotion = eCounterMotions[idx];
-            Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName);
-
-            s.ChangeSubState(COUNTER_WAITING);
-            ChangeSubState(COUNTER_ALIGNING);
-
-            Vector4 vt = GetTargetTransform(eNode, currentMotion, s.currentMotion);
-            SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
         }
 
         Print("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
+        CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
         Print("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
-        if (nextState !is this)
+        if (nextState !is this && nextState.nameHash != ALIGN_STATE)
             counterEnemies.Clear();
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        debug.AddCross(targetPosition, 1.0f, RED, false);
-        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW);
     }
 
     void StartAnimating()
@@ -693,18 +712,6 @@ class PlayerCounterState : CharacterCounterState
             CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
             s.StartCounterMotion();
         }
-    }
-
-    void OnAlignTimeOut()
-    {
-        CharacterCounterState::OnAlignTimeOut();
-        StartAnimating();
-    }
-
-    void OnWaitingTimeOut()
-    {
-        CharacterCounterState::OnWaitingTimeOut();
-        StartAnimating();
     }
 
     void StartCounterMotion()

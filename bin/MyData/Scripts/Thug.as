@@ -837,6 +837,8 @@ class Thug : Enemy
         body.collisionEventMode = COLLISION_ALWAYS;
 
         attackDamage = 20;
+
+        walkAlignAnimation = GetAnimationName("Thug_Combat/Walk_Forward");
     }
 
     void DebugDraw(DebugRenderer@ debug)

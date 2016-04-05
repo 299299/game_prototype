@@ -538,6 +538,7 @@ class Player : Character
         Character::DebugDraw(debug);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
         sensor.DebugDraw(debug);
+        debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
     }
 
     void Update(float dt)

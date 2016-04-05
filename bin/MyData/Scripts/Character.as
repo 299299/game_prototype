@@ -474,7 +474,6 @@ class AnimationTestState : CharacterState
 enum CounterSubState
 {
     COUNTER_NONE,
-    COUNTER_ALIGNING,
     COUNTER_WAITING,
     COUNTER_ANIMATING,
 };
@@ -558,21 +557,7 @@ class CharacterCounterState : CharacterState
 
     void Update(float dt)
     {
-        if (state == COUNTER_ALIGNING)
-        {
-            Node@ _node = ownner.GetNode();
-            _node.Yaw(yawPerSec * dt);
-            ownner.SetVelocity(movePerSec);
-            if (ownner.physicsType == 0)
-                ownner.MoveTo(_node.worldPosition + movePerSec * dt, dt);
-
-            if (timeInState >= alignTime)
-            {
-                ownner.SetVelocity(Vector3(0,0,0));
-                OnAlignTimeOut();
-            }
-        }
-        else if (state == COUNTER_ANIMATING)
+        if (state == COUNTER_ANIMATING)
         {
              if (currentMotion.Move(ownner, dt) == 1)
              {
@@ -580,25 +565,7 @@ class CharacterCounterState : CharacterState
                 return;
              }
         }
-        else if (state == COUNTER_WAITING)
-        {
-            if (timeInState >= alignTime)
-                OnWaitingTimeOut();
-        }
         CharacterState::Update(dt);
-    }
-
-    void OnAlignTimeOut()
-    {
-        Print(ownner.GetName() + " OnAlignTimeOut-- at: " + time.systemTime);
-        ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
-        //StartCounterMotion();
-    }
-
-    void OnWaitingTimeOut()
-    {
-        Print(ownner.GetName() + " OnWaitingTimeOut-- at: " + time.systemTime);
-        // StartCounterMotion();
     }
 
     void ChangeSubState(int newState)
@@ -795,13 +762,24 @@ class CharacterCounterState : CharacterState
         targetPosition = pos;
         targetPosition.y = pos1.y;
         targetRotation = rot;
-        movePerSec = (targetPosition - pos1) / alignTime;
-        yawPerSec = AngleDiff(rot - ownner.GetNode().worldRotation.eulerAngles.y) / alignTime;
+    }
+
+    void StartAligning()
+    {
+        CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
+        state.Start(this.nameHash, targetPosition, targetRotation, alignTime, 0, ownner.walkAlignAnimation);
+        ownner.ChangeStateQueue(ALIGN_STATE);
     }
 
     String GetDebugText()
     {
         return "current motion=" + currentMotion.animationName;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(targetPosition, 1.0f, RED, false);
+        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW);
     }
 };
 
@@ -983,8 +961,6 @@ class Character : GameObject
     Node@                   sceneNode;
     Node@                   renderNode;
 
-    Node@                   hipsNode;
-
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
 
@@ -1027,8 +1003,6 @@ class Character : GameObject
         renderNode = sceneNode.GetChild("RenderNode", false);
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
-
-        hipsNode = renderNode.GetChild("Bip01_Pelvis", true);
 
         startPosition = sceneNode.worldPosition;
         startRotation = sceneNode.worldRotation;
@@ -1229,7 +1203,6 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 0.5f, false);
-        debug.AddNode(hipsNode, 0.5f, false);
     }
 
     void TestAnimation(const Array<String>&in animations)
