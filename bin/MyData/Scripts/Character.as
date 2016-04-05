@@ -507,15 +507,19 @@ class CharacterCounterState : CharacterState
 
     void Enter(State@ lastState)
     {
-        state = COUNTER_NONE;
+        if (lastState.nameHash != ALIGN_STATE)
+            state = COUNTER_NONE;
         CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
         CharacterState::Exit(nextState);
-        @currentMotion = null;
-        state = COUNTER_NONE;
+        if (nextState.nameHash != ALIGN_STATE)
+        {
+            @currentMotion = null;
+            state = COUNTER_NONE;
+        }
     }
 
     void StartCounterMotion()

@@ -838,7 +838,7 @@ class Thug : Enemy
 
         attackDamage = 20;
 
-        walkAlignAnimation = GetAnimationName("Thug_Combat/Walk_Forward");
+        walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Step_Forward");
     }
 
     void DebugDraw(DebugRenderer@ debug)
