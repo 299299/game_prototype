@@ -809,9 +809,9 @@ class PlayerClimbAlignState : MultiMotionState
                 Vector4 motionOut = m.GetKey(m.endTime);
                 Vector3 tWorld = Quaternion(0, ownner.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + ownner.motion_startPosition + ownner.motion_deltaPosition;
                 Vector3 diff = targetPos - tWorld;
+                diff /= t;
                 motionPositon = tWorld;
                 targetPosition = targetPos;
-                diff /= t;
                 Vector3 v(0, 0, 0);
                 if (targetMotionFlag & kMotion_X != 0)
                     v.x = diff.x;
@@ -823,14 +823,14 @@ class PlayerClimbAlignState : MultiMotionState
                 Print(this.name + " OnMotionAlignTimeOut --> " + v.ToString());
             }
 
-            //ownner.SetSceneTimeScale(0.0);
+            ownner.SetSceneTimeScale(0.0);
         }
     }
 
     void OnMotionFinished()
     {
         MultiMotionState::OnMotionFinished();
-        //ownner.SetSceneTimeScale(0.0);
+        ownner.SetSceneTimeScale(0.0);
     }
 
     int PickTargetMotionByHeight(State@ lastState)

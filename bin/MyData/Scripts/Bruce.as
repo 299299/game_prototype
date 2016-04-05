@@ -599,10 +599,25 @@ void CreateBruceClimbAnimations()
     m.dockAlignBoneName = L_FOOT;
     m.dockAlignOffset = Vector3(0, -0.1, 0.2);
 
-    Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_YZ);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_YZ);
-    Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_YZ);
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Up_256", kMotion_YZ);
+    m.dockAlignTime = 0.27f;
+    m.dockAlignBoneName = L_FOOT;
+    m.dockAlignOffset = Vector3(0, -0.3, 0.0f);
+
+    @m = Global_CreateMotion(preFix + "Run_Climb_Up_256", kMotion_YZ);
+    m.dockAlignTime = 0.35f;
+    m.dockAlignBoneName = L_FOOT;
+    m.dockAlignOffset = Vector3(0, -0.1, 0.2);
+
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_YZ);
+    m.dockAlignTime = 0.27f;
+    m.dockAlignBoneName = L_FOOT;
+    m.dockAlignOffset = Vector3(0, -0.3, 0.0f);
+
+    @m = Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_YZ);
+    m.dockAlignTime = 0.35f;
+    m.dockAlignBoneName = L_FOOT;
+    m.dockAlignOffset = Vector3(0, -0.1, 0.2);
 
     Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_YZ);
     Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_YZ);
