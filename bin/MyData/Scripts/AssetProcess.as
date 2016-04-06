@@ -87,7 +87,6 @@ class MotionRig
 
         AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
         am.model = cache.GetResource("Model", rigName);
-        // processNode.CreateComponent("AnimationController");
 
         skeleton = am.skeleton;
         Bone@ bone = skeleton.GetBone(RotateBoneName);
@@ -491,14 +490,20 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 
     if (footBased)
     {
-        Array<Vector3> footPositions;
-        CollectBoneWorldPositions(curRig, animationFile, L_FOOT, footPositions);
+        Array<Vector3> leftFootPositions;
+        Array<Vector3> rightFootPositions;
+        CollectBoneWorldPositions(curRig, animationFile, L_FOOT, leftFootPositions);
+        CollectBoneWorldPositions(curRig, animationFile, R_FOOT, rightFootPositions);
         Array<float> ground_heights;
-        ground_heights.Resize(footPositions.length);
+        ground_heights.Resize(leftFootPositions.length);
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);
-            float ground_y = footPositions[i].y - curRig.left_foot_to_ground_height;
+            float ground_y = 0;
+            if (rightFootPositions[i].y < leftFootPositions[i].y)
+                ground_y = rightFootPositions[i].y - curRig.right_foot_to_ground_height;
+            else
+                ground_y = leftFootPositions[i].y - curRig.left_foot_to_ground_height;
             kf.position.y -= ground_y;
             translateTrack.keyFrames[i] = kf;
             ground_heights[i] = ground_y;

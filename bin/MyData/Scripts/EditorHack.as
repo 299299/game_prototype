@@ -27,6 +27,19 @@ float GetDistance(const Vector3&in start, const Vector3&in end, const Vector3&in
     return (pt - proj).length;
 }
 
+AnimationState@ GetEditingAnimationState()
+{
+    Node@ _node = editorScene.GetChild("bruce_w", true);
+    if (_node is null)
+        return null;
+    AnimatedModel@ model = _node.GetComponent("AnimatedModel");
+    if (model is null)
+        return null;
+    if (model.numAnimationStates == 0)
+        return null;
+    return model.GetAnimationState(0);
+}
+
 void UpdateEditorHack(float dt)
 {
     if (input.keyPress[KEY_1])
@@ -40,7 +53,7 @@ void UpdateEditorHack(float dt)
     }
     else if (input.keyPress[KEY_2])
     {
-        AnimationState@ animState = testAnimState.Get();
+        AnimationState@ animState = GetEditingAnimationState();
         if (animState !is null)
         {
             animState.AddTime(-1.0f/30.0f);
@@ -49,7 +62,7 @@ void UpdateEditorHack(float dt)
     }
     else if (input.keyPress[KEY_3])
     {
-        AnimationState@ animState = testAnimState.Get();
+        AnimationState@ animState = GetEditingAnimationState();
         if (animState !is null)
         {
             animState.AddTime(1.0f/30.0f);

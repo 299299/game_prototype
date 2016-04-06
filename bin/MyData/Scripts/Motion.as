@@ -563,12 +563,10 @@ class MotionManager
 
     void AddTriggers()
     {
-
     }
 
     void AddMotions()
     {
-
     }
 
     Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, bool loop = false, float rotateAngle = 361)
