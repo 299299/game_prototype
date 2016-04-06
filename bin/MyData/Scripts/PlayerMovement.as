@@ -828,14 +828,14 @@ class PlayerClimbAlignState : MultiMotionState
         }
     }
 
-    int PickTargetMotionByHeight(State@ lastState)
+    int PickTargetMotionByHeight(State@ lastState, int numOfStandAnimations = 3)
     {
         if (lastState.nameHash == ALIGN_STATE)
             return 0;
 
         int index = 0, startIndex = 0;
         if (lastState.nameHash == RUN_STATE)
-            startIndex = 3;
+            startIndex = numOfStandAnimations;
 
         alignTime = (lastState.nameHash != RUN_STATE) ? 0.2f : 0.1f;
 
@@ -843,7 +843,7 @@ class PlayerClimbAlignState : MultiMotionState
         float lineHeight = ownner.dockLine.end.y;
 
         float minHeightDiff = 9999;
-        for (int i=0; i<3; ++i)
+        for (int i=0; i<numOfStandAnimations; ++i)
         {
             Motion@ motion = motions[startIndex + i];
             float motionHeight = curHeight + motion.GetKey(motion.endTime).y;
@@ -857,7 +857,6 @@ class PlayerClimbAlignState : MultiMotionState
         }
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        ownner.dockIndex = index - startIndex;
         return index;
     }
 
@@ -965,6 +964,8 @@ class PlayerClimbAlignState : MultiMotionState
 
 class PlayerClimbOverState : PlayerClimbAlignState
 {
+    Vector3 groundPos;
+
     PlayerClimbOverState(Character@ c)
     {
         super(c);
@@ -974,16 +975,40 @@ class PlayerClimbOverState : PlayerClimbAlignState
 
     void Enter(State@ lastState)
     {
-        if (lastState.nameHash != ALIGN_STATE)
+        targetMotionFlag = 0;
+        int index = PickTargetMotionByHeight(lastState);
+        if (index == 0 || index == 3)
         {
-            int index = 0;
-            if (lastState.nameHash == RUN_STATE)
-                index = 1;
-            alignTime = 0.2f; // (index == 0) ? 0.2f : 0.1f;
-            Print("ClimbOverState--index=" + index);
-            ownner.GetNode().vars[ANIMATION_INDEX] = index;
+            Vector3 myPos = ownner.GetNode().worldPosition;
+            Motion@ m = motions[index];
+            Vector4 motionOut = m.GetKey(m.endTime);
+            Vector3 proj = ownner.dockLine.Project(myPos);
+            Vector3 dir = proj - myPos;
+            float targetRotation = Atan2(dir.x, dir.z);
+            Vector3 futurePos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
+            Player@ p = cast<Player>(ownner);
+            groundPos = p.sensor.GetGround(futurePos);
+            float height = groundPos.y - myPos.y;
+            if (height < 1.5f)
+            {
+                if (index == 0)
+                    index = 6;
+                else
+                    index = 7;
+                targetMotionFlag = kMotion_Y;
+            }
         }
         PlayerClimbAlignState::Enter(lastState);
+    }
+
+    Vector3 PickDockOutTarget()
+    {
+        return groundPos;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(groundPos, 0.5f, BLUE, false);
     }
 };
 
@@ -993,7 +1018,7 @@ class PlayerClimbUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("ClimbUpState");
-        //targetMotionFlag = kMotion_Y;
+        targetMotionFlag = kMotion_Y;
         dockBlendingMethod = 1;
     }
 
@@ -1201,6 +1226,8 @@ class PlayerRailFwdIdleState : SingleAnimationState
 
 class PlayerRailDownState : MultiMotionState
 {
+    Vector3 groundPos;
+
     PlayerRailDownState(Character@ c)
     {
         super(c);
@@ -1209,19 +1236,37 @@ class PlayerRailDownState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        int animIndex = 1;
-        if (ownner.dockIndex == 0)
-            animIndex = 0;
-        Print("RailDownState -- dockIndex=" + ownner.dockIndex);
+        int animIndex = 0;
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 1.0f) + myPos;
+        Player@ p = cast<Player>(ownner);
+        groundPos = p.sensor.GetGround(futurePos);
+        float height = groundPos.y - myPos.y;
+        if (height > 4.5f)
+            animIndex = 1;
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
         ownner.SetPhysicsType(0);
         MultiMotionState::Enter(lastState);
+
+        if (animIndex == 0)
+        {
+            Motion@ m = motions[selectIndex];
+            float t = m.endTime;
+            Vector3 v = m.GetFuturePosition(ownner, t);
+            float y_diff = groundPos.y - v.y;
+            ownner.motion_velocity = Vector3(0, y_diff/t, 0);
+        }
     }
 
     void Exit(State@ nextState)
     {
         ownner.SetPhysicsType(1);
         MultiMotionState::Exit(nextState);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(groundPos, 0.5f, BLUE, false);
     }
 };
 
@@ -1297,7 +1342,6 @@ class PlayerRailTurn180State : SingleMotionState
         SingleMotionState::Enter(lastState);
         ownner.SetPhysicsType(0);
         targetRotation = AngleDiff(ownner.GetCharacterAngle() + 180);
-        SingleMotionState::Enter(lastState);
         float alignTime = motion.endTime;
         float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
         Vector3 motionPos = motion.GetFuturePosition(ownner, alignTime);
@@ -1349,7 +1393,7 @@ class PlayerHangUpState : PlayerClimbAlignState
 
     void Enter(State@ lastState)
     {
-        PickTargetMotionByHeight(lastState);
+        PickTargetMotionByHeight(lastState, 2);
         PlayerClimbAlignState::Enter(lastState);
     }
 

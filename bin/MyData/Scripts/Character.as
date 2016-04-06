@@ -981,7 +981,6 @@ class Character : GameObject
     RigidBody@              body;
 
     Line@                   dockLine;
-    int                     dockIndex;
 
     int                     physicsType;
 

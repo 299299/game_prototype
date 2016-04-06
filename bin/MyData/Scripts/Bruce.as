@@ -333,6 +333,13 @@ class BruceClimbOverState : PlayerClimbOverState
     BruceClimbOverState(Character@ c)
     {
         super(c);
+        AddMotion("BM_Climb/Stand_Climb_Over_128_Fall");
+        AddMotion("BM_Climb/Stand_Climb_Over_256_Fall");
+        AddMotion("BM_Climb/Stand_Climb_Over_384_Fall");
+        AddMotion("BM_Climb/Run_Climb_Over_128_Fall");
+        AddMotion("BM_Climb/Run_Climb_Over_256_Fall");
+        AddMotion("BM_Climb/Run_Climb_Over_384_Fall");
+
         AddMotion("BM_Climb/Stand_Climb_Over_128");
         AddMotion("BM_Climb/Run_Climb_Over_128");
         targetOffsets.Push(Vector3(0, 0, -1.9));
@@ -446,10 +453,8 @@ class BruceHangUpState : PlayerRailUpState
     BruceHangUpState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Climb/Stand_Climb_Up_128_Hang");
         AddMotion("BM_Climb/Stand_Climb_Up_256_Hang");
         AddMotion("BM_Climb/Stand_Climb_Up_384_Hang");
-        AddMotion("BM_Climb/Run_Climb_Up_128_Hang");
         AddMotion("BM_Climb/Run_Climb_Up_256_Hang");
         AddMotion("BM_Climb/Run_Climb_Up_384_Hang");
 
@@ -585,7 +590,28 @@ void CreateBruceClimbAnimations()
     m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
     m.SetEndFrame(37);
 
+    Global_CreateMotion(preFix + "Run_Climb_Over_128_Fall", kMotion_Z);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
+    m.SetEndFrame(37);
+
+    Global_CreateMotion(preFix + "Run_Climb_Over_256_Fall", kMotion_Z);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
+    m.SetEndFrame(37);
+
+    Global_CreateMotion(preFix + "Run_Climb_Over_384_Fall", kMotion_Z);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
+    m.SetEndFrame(37);
+
     @m = Global_CreateMotion(preFix + "Stand_Climb_Over_128", kMotion_Z);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
+
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Over_128_Fall", kMotion_Z);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
+
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Over_256_Fall", kMotion_Z);
+    m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
+
+    @m = Global_CreateMotion(preFix + "Stand_Climb_Over_384_Fall", kMotion_Z);
     m.SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
 
     // Climb Up
@@ -609,12 +635,8 @@ void CreateBruceClimbAnimations()
     m.SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.1));
 
     // Climb Hang
-    Global_CreateMotion(preFix + "Stand_Climb_Up_128_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-
-    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
 

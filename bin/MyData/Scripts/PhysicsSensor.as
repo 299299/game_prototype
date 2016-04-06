@@ -69,4 +69,14 @@ class PhysicsSensor
     {
         debug.AddLine(start, end, grounded ? GREEN : RED, false);
     }
+
+    Vector3 GetGround(const Vector3&in pos)
+    {
+        Vector3 start = pos;
+        start.y += 0.5f;
+        Vector3 end = pos;
+        end.y -= 50.0f;
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.ConvexCast(shape, start, Quaternion(), end, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        return (result.body !is null) ? result.position : end;
+    }
 };
