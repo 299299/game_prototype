@@ -316,8 +316,9 @@ class Motion
     {
         Node@ _node = object.GetNode();
         Vector4 motionOut = GetKey(dockAlignTime);
-        Vector3 motionPos = _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
-        Vector3 offsetPos = Quaternion(0, targetRotation, 0) * dockAlignOffset;
+        Quaternion q(0, targetRotation, 0);
+        Vector3 motionPos = q * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
+        Vector3 offsetPos = q * dockAlignOffset;
         return motionPos + offsetPos;
     }
 
@@ -388,9 +389,9 @@ class Motion
                 }
                 else
                 {
-                    Vector3 tWorld1 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
+                    Vector3 tWorld1 = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
                     motionOut = GetKey(localTime + dt);
-                    Vector3 tWorld2 = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
+                    Vector3 tWorld2 = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
                     Vector3 vel = (tWorld2 - tWorld1) / dt;
                     object.SetVelocity(vel * speed + object.motion_velocity);
                 }
@@ -413,6 +414,7 @@ class Motion
     void DebugDraw(DebugRenderer@ debug, Character@ object)
     {
         Node@ _node = object.GetNode();
+        /*
         if (looped) {
             Vector4 tFinnal = GetKey(endTime);
             Vector3 tLocal(tFinnal.x, tFinnal.y, tFinnal.z);
@@ -420,10 +422,11 @@ class Motion
         }
         else {
             Vector4 tFinnal = GetKey(endTime);
-            Vector3 tMotionEnd = Quaternion(0, object.motion_startRotation, 0) * Vector3(tFinnal.x, tFinnal.y, tFinnal.z);
+            Vector3 tMotionEnd = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(tFinnal.x, tFinnal.y, tFinnal.z);
             debug.AddLine(tMotionEnd + object.motion_startPosition,  object.motion_startPosition, Color(0.5f, 0.5f, 0.7f), false);
-            DebugDrawDirection(debug, _node, object.motion_startRotation + tFinnal.w, RED, 2.0);
+            DebugDrawDirection(debug, _node, object.motion_startRotation + object.motion_deltaRotation + tFinnal.w, RED, 2.0);
         }
+        */
 
         if (!dockAlignBoneName.empty)
         {

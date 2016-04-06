@@ -20,6 +20,7 @@ class Line
 {
     Ray             ray;
     Vector3         end;
+    Vector3         invDir;
     float           length;
     float           lengthSquared;
     int             type;
@@ -33,15 +34,33 @@ class Line
         return ray.Project(charPos);
     }
 
-    bool IsProjectPositionInLine(const Vector3& proj)
+    bool IsProjectPositionInLine(const Vector3& proj, float bound = 1.0f)
     {
-        float l_to_start = (proj - ray.origin).lengthSquared;
-        float l_to_end = (proj - end).lengthSquared;
-        float bound = 1.0f;
-        float bound_sqr = (length - bound)*(length - bound);
-        if (l_to_start > bound_sqr || l_to_end > bound_sqr)
+        float l_to_start = (proj - ray.origin).length;
+        float l_to_end = (proj - end).length;
+        // check if project is in line
+        if (l_to_start > length || l_to_end > length)
             return false;
-        return true;
+        // check if project is in bound
+        return l_to_start >= bound && l_to_end >= bound;
+    }
+
+    Vector3 FixProjectPosition(const Vector3& proj, float bound = 1.0f)
+    {
+        float l_to_start = (proj - ray.origin).length;
+        float l_to_end = (proj - end).length;
+        bool bFix = false;
+        if (l_to_start > length || l_to_end > length)
+            bFix = true;
+        if (l_to_start < bound || l_to_end < bound)
+            bFix = true;
+        if (!bFix)
+            return proj;
+        Print("FixProjectPosition");
+        if (l_to_start > l_to_end)
+            return end + invDir * bound;
+        else
+            return ray.origin + ray.direction * bound;
     }
 
     int GetHead(const Quaternion& rot)
@@ -202,6 +221,7 @@ class LineWorld
         l.end = end;
         l.type = type;
         l.ray.direction = dir.Normalized();
+        l.invDir = (start - end).Normalized();
         l.length = dir.length;
         l.lengthSquared = lenSQR;
         l.angle = Atan2(dir.x, dir.z);

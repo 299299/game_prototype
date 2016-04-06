@@ -876,6 +876,7 @@ class PlayerClimbAlignState : MultiMotionState
     void Enter(State@ lastState)
     {
         ownner.SetPhysicsType(0);
+        // ownner.SetSceneTimeScale(0);
 
         if (dockBlendingMethod == 1)
         {
@@ -891,7 +892,10 @@ class PlayerClimbAlignState : MultiMotionState
 
             v = ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
             targetPosition = ownner.dockLine.Project(v);
+            targetPosition = ownner.dockLine.FixProjectPosition(targetPosition, 0.1f);
+
             ownner.motion_velocity = (targetPosition - motionPositon) / t;
+            Print(this.name + " animation:" + m.name + " vel=" + ownner.motion_velocity.ToString());
         }
         else
         {
