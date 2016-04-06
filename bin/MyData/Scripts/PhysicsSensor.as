@@ -6,6 +6,7 @@ class PhysicsSensor
     Node@       sensorNode;
 
     CollisionShape@  shape;
+    CollisionShape@  groundTestShape;
 
     Vector3     start, end;
 
@@ -20,6 +21,8 @@ class PhysicsSensor
         sensorNode = sceneNode.CreateChild("SensorNode");
         shape = sensorNode.CreateComponent("CollisionShape");
         shape.SetCapsule(COLLISION_RADIUS, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
+        groundTestShape = sensorNode.CreateComponent("CollisionShape");
+        groundTestShape.SetCapsule(0.25f, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
     }
 
     ~PhysicsSensor()
@@ -73,10 +76,10 @@ class PhysicsSensor
     Vector3 GetGround(const Vector3&in pos)
     {
         Vector3 start = pos;
-        start.y += 0.5f;
+        start.y += 1.0f;
         Vector3 end = pos;
         end.y -= 50.0f;
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.ConvexCast(shape, start, Quaternion(), end, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.ConvexCast(groundTestShape, start, Quaternion(), end, Quaternion(), COLLISION_LAYER_LANDSCAPE);
         return (result.body !is null) ? result.position : end;
     }
 };

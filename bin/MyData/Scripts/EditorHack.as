@@ -34,7 +34,11 @@ AnimationState@ GetEditingAnimationState()
         return null;
     AnimatedModel@ model = _node.GetComponent("AnimatedModel");
     if (model is null)
-        return null;
+    {
+        model = _node.children[0].GetComponent("AnimatedModel");
+        if (model is null)
+            return null;
+    }
     if (model.numAnimationStates == 0)
         return null;
     return model.GetAnimationState(0);

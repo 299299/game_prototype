@@ -808,9 +808,8 @@ class PlayerClimbAlignState : MultiMotionState
                 Motion@ m = motions[selectIndex];
                 float t = m.endTime - m.dockAlignTime;
                 Vector4 motionOut = m.GetKey(m.endTime);
-                Vector3 tWorld = Quaternion(0, ownner.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + ownner.motion_startPosition + ownner.motion_deltaPosition;
-                Vector3 diff = targetPos - tWorld;
-                diff /= t;
+                Vector3 tWorld = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + ownner.motion_startPosition + ownner.motion_deltaPosition;
+                Vector3 diff = (targetPos - tWorld) / t;
                 motionPositon = tWorld;
                 targetPosition = targetPos;
                 Vector3 v(0, 0, 0);
@@ -886,6 +885,7 @@ class PlayerClimbAlignState : MultiMotionState
             Vector3 dir = targetPosition - v;
             targetRotation = Atan2(dir.x, dir.z);
             float t = m.dockAlignTime;
+            Print("FUCK + " + m.name);
             turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
             motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
 
@@ -985,7 +985,8 @@ class PlayerClimbOverState : PlayerClimbAlignState
             Vector3 proj = ownner.dockLine.Project(myPos);
             Vector3 dir = proj - myPos;
             float targetRotation = Atan2(dir.x, dir.z);
-            Vector3 futurePos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
+            Vector3 futurePos = Quaternion(0, targetRotation, 0) * Vector3(0, 0, 1.0f) + proj;
+            futurePos.y = myPos.y;
             Player@ p = cast<Player>(ownner);
             groundPos = p.sensor.GetGround(futurePos);
             float height = groundPos.y - myPos.y;
@@ -996,8 +997,11 @@ class PlayerClimbOverState : PlayerClimbAlignState
                 else
                     index = 7;
                 targetMotionFlag = kMotion_Y;
+                ownner.GetNode().vars[ANIMATION_INDEX] = index;
             }
         }
+        // Print(this.name + " index = " + index);
+
         PlayerClimbAlignState::Enter(lastState);
     }
 
@@ -1008,7 +1012,16 @@ class PlayerClimbOverState : PlayerClimbAlignState
 
     void DebugDraw(DebugRenderer@ debug)
     {
+        PlayerClimbAlignState::DebugDraw(debug);
         debug.AddCross(groundPos, 0.5f, BLUE, false);
+    }
+
+    void OnMotionFinished()
+    {
+        if (selectIndex == 6 || selectIndex == 7)
+            PlayerClimbAlignState::OnMotionFinished();
+        else
+            ownner.ChangeState("FallState");
     }
 };
 
@@ -1037,6 +1050,7 @@ class PlayerRailUpState : PlayerClimbAlignState
         super(c);
         SetName("RailUpState");
         targetMotionFlag = kMotion_XYZ;
+        dockBlendingMethod = 1;
     }
 
     void Enter(State@ lastState)
@@ -1241,9 +1255,11 @@ class PlayerRailDownState : MultiMotionState
         Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 1.0f) + myPos;
         Player@ p = cast<Player>(ownner);
         groundPos = p.sensor.GetGround(futurePos);
-        float height = groundPos.y - myPos.y;
+        float height = myPos.y - groundPos.y;
         if (height > 4.5f)
             animIndex = 1;
+
+        Print(this.name + " height-diff=" + height);
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
         ownner.SetPhysicsType(0);
         MultiMotionState::Enter(lastState);
@@ -1262,6 +1278,14 @@ class PlayerRailDownState : MultiMotionState
     {
         ownner.SetPhysicsType(1);
         MultiMotionState::Exit(nextState);
+    }
+
+    void OnMotionFinished()
+    {
+        if (selectIndex == 0)
+            MultiMotionState::OnMotionFinished();
+        else
+            ownner.ChangeState("FallState");
     }
 
     void DebugDraw(DebugRenderer@ debug)
