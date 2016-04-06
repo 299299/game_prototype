@@ -233,7 +233,7 @@ class LineWorld
     void CreateLine(int type, Node@ n)
     {
         float adjustH = 2.0f;
-        if (type == LINE_CLIMB_UP)
+        if (type == LINE_CLIMB_UP || type == LINE_CLIMB_HANG)
         {
             Vector3 p1, p2, p3, p4;
             float h = GetCorners(n, p1, p2, p3, p4);
@@ -256,10 +256,6 @@ class LineWorld
 
     void Process(Scene@ scene)
     {
-        Vector3 p1, p2, p3, p4;
-        float h = 0;
-        float adjustH = 2.0f;
-
         for (uint i=0; i<scene.numChildren; ++i)
         {
             Node@ _node = scene.children[i];

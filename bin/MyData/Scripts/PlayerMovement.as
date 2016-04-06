@@ -823,7 +823,7 @@ class PlayerClimbAlignState : MultiMotionState
                 Print(this.name + " animation:" + m.name + " OnMotionAlignTimeOut vel=" + v.ToString());
             }
 
-            ownner.SetSceneTimeScale(0.0);
+            //ownner.SetSceneTimeScale(0.0);
         }
     }
 
@@ -1252,7 +1252,10 @@ class PlayerRailDownState : MultiMotionState
     {
         int animIndex = 0;
         Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 1.0f) + myPos;
+        float dist = 1.0f;
+        if (lastState.name == "RailRunForwardState")
+            dist = 2.0f;
+        Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, dist) + myPos;
         Player@ p = cast<Player>(ownner);
         groundPos = p.sensor.GetGround(futurePos);
         float height = myPos.y - groundPos.y;
@@ -1412,7 +1415,7 @@ class PlayerHangUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("HangUpState");
-        targetMotionFlag = kMotion_XYZ;
+        targetMotionFlag = kMotion_Y;
     }
 
     void Enter(State@ lastState)

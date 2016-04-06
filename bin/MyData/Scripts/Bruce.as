@@ -449,7 +449,7 @@ class BruceRailRunTurn180State : PlayerRailTurn180State
     }
 };
 
-class BruceHangUpState : PlayerRailUpState
+class BruceHangUpState : PlayerHangUpState
 {
     BruceHangUpState(Character@ c)
     {
@@ -520,6 +520,7 @@ class Bruce : Player
             stateMachine.AddState(BruceCoverState(this));
             stateMachine.AddState(BruceCoverRunState(this));
             stateMachine.AddState(BruceCoverTransitionState(this));
+            // climb
             stateMachine.AddState(BruceClimbOverState(this));
             stateMachine.AddState(BruceClimbUpState(this));
             // rail states
@@ -530,6 +531,7 @@ class Bruce : Player
             stateMachine.AddState(BruceRailFwdIdleState(this));
             stateMachine.AddState(BruceRailRunForwardState(this));
             stateMachine.AddState(BruceRailRunTurn180State(this));
+            // hang
             stateMachine.AddState(BruceHangUpState(this));
             stateMachine.AddState(BruceHangIdleState(this));
         }
@@ -658,7 +660,6 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Railing_Run_Forward_Idle", 0);
 
     Global_AddAnimation(preFix + "Railing_Idle");
-    Global_AddAnimation(preFix + "Railing_Run_Forward_Idle");
 }
 
 void CreateBruceMotions()
