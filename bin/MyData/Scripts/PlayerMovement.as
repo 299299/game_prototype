@@ -788,6 +788,7 @@ class PlayerClimbAlignState : MultiMotionState
     PlayerClimbAlignState(Character@ c)
     {
         super(c);
+        physicsType = 0;
     }
 
     void Update(float dt)
@@ -874,7 +875,6 @@ class PlayerClimbAlignState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        ownner.SetPhysicsType(0);
         // ownner.SetSceneTimeScale(0);
 
         if (dockBlendingMethod == 1)
@@ -957,7 +957,6 @@ class PlayerClimbAlignState : MultiMotionState
 
     void Exit(State@ nextState)
     {
-        ownner.SetPhysicsType(1);
         ownner.SetVelocity(Vector3(0, 0, 0));
         MultiMotionState::Exit(nextState);
     }
@@ -1072,19 +1071,13 @@ class PlayerRailIdleState : SingleAnimationState
         super(c);
         SetName("RailIdleState");
         looped = true;
+        physicsType = 0;
     }
 
     void Enter(State@ lastState)
     {
         ownner.SetVelocity(Vector3(0,0,0));
-        ownner.SetPhysicsType(0);
         SingleAnimationState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        ownner.SetPhysicsType(1);
-        SingleAnimationState::Exit(nextState);
     }
 
     void Update(float dt)
@@ -1144,18 +1137,7 @@ class PlayerRailTurnState : PlayerTurnState
     {
         super(c);
         SetName("RailTurnState");
-    }
-
-    void Enter(State@ lastState)
-    {
-        PlayerTurnState::Enter(lastState);
-        ownner.SetPhysicsType(0);
-    }
-
-    void Exit(State@ nextState)
-    {
-        PlayerTurnState::Exit(nextState);
-        ownner.SetPhysicsType(1);
+        physicsType = 0;
     }
 
     void CaculateTargetRotation()
@@ -1177,18 +1159,7 @@ class PlayerRailFwdIdleState : SingleAnimationState
         super(c);
         SetName("RailFwdIdleState");
         looped = true;
-    }
-
-    void Enter(State@ lastState)
-    {
-        SingleAnimationState::Enter(lastState);
-        ownner.SetPhysicsType(0);
-    }
-
-    void Exit(State@ nextState)
-    {
-        SingleAnimationState::Exit(nextState);
-        ownner.SetPhysicsType(1);
+        physicsType = 0;
     }
 
     void Update(float dt)
@@ -1246,6 +1217,7 @@ class PlayerRailDownState : MultiMotionState
     {
         super(c);
         SetName("RailDownState");
+        physicsType = 0;
     }
 
     void Enter(State@ lastState)
@@ -1261,7 +1233,6 @@ class PlayerRailDownState : MultiMotionState
 
         Print(this.name + " height-diff=" + height);
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
-        ownner.SetPhysicsType(0);
         MultiMotionState::Enter(lastState);
 
         if (animIndex == 0)
@@ -1272,12 +1243,6 @@ class PlayerRailDownState : MultiMotionState
             float y_diff = groundPos.y - v.y;
             ownner.motion_velocity = Vector3(0, y_diff/t, 0);
         }
-    }
-
-    void Exit(State@ nextState)
-    {
-        ownner.SetPhysicsType(1);
-        MultiMotionState::Exit(nextState);
     }
 
     void OnMotionFinished()
@@ -1300,19 +1265,7 @@ class PlayerRailRunForwardState : SingleMotionState
     {
         super(c);
         SetName("RailRunForwardState");
-    }
-
-    void Enter(State@ lastState)
-    {
-        Print("Enter RailRunForwardState");
-        SingleMotionState::Enter(lastState);
-        ownner.SetPhysicsType(0);
-    }
-
-    void Exit(State@ nextState)
-    {
-        SingleMotionState::Exit(nextState);
-        ownner.SetPhysicsType(1);
+        physicsType = 0;
     }
 
     void Update(float dt)
@@ -1364,7 +1317,6 @@ class PlayerRailTurn180State : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        ownner.SetPhysicsType(0);
         targetRotation = AngleDiff(ownner.GetCharacterAngle() + 180);
         float alignTime = motion.endTime;
         float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
@@ -1378,12 +1330,6 @@ class PlayerRailTurn180State : SingleMotionState
         combatReady = true;
         Print(this.name + " motionTargetAngle=" + String(motionTargetAngle) + " targetRotation=" + targetRotation + " diff=" + diff + " turnSpeed=" + turnSpeed);
         SingleMotionState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        SingleMotionState::Exit(nextState);
-        ownner.SetPhysicsType(1);
     }
 
     void Update(float dt)
@@ -1435,38 +1381,33 @@ class PlayerHangIdleState : SingleAnimationState
         super(c);
         SetName("HangIdleState");
         looped = true;
+        physicsType = 0;
     }
 
     void Enter(State@ lastState)
     {
         ownner.SetVelocity(Vector3(0,0,0));
-        ownner.SetPhysicsType(0);
         ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, 0.0f);
         CharacterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        ownner.SetPhysicsType(1);
-        SingleAnimationState::Exit(nextState);
     }
 
     void Update(float dt)
     {
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
-            int index = ownner.RadialSelectAnimation(4);
+            int index = ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
             Print(this.name + " Idle->Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
 
             if (index == 0)
             {
                 ownner.ChangeState("HangOverState");
             }
-            else
+            else if (index == 2)
             {
-
+                ownner.ChangeState("FallState");
             }
-
+            else
+                ownner.ChangeState("HangMoveState");
             return;
         }
 
@@ -1480,15 +1421,22 @@ class PlayerHangOverState : MultiMotionState
     {
         super(ownner);
         SetName("HangOverState");
+        physicsType = 0;
     }
 };
 
-class PlayerHangLeftState : MultiMotionState
+class PlayerHangMoveState : MultiMotionState
 {
-    PlayerHangLeftState(Character@ ownner)
+    PlayerHangMoveState(Character@ ownner)
     {
         super(ownner);
-        SetName("HangLeftState");
+        SetName("HangMoveState");
+        physicsType = 0;
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("HangIdleState");
     }
 };
 
@@ -1498,5 +1446,6 @@ class PlayerHangRightState : MultiMotionState
     {
         super(ownner);
         SetName("HangLeftState");
+        physicsType = 0;
     }
 };

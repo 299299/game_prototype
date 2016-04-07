@@ -72,6 +72,9 @@ class CharacterState : State
     bool                        combatReady = false;
     bool                        firstUpdate = true;
 
+    int                         lastPhysicsType = 0;
+    int                         physicsType = -1;
+
     CharacterState(Character@ c)
     {
         @ownner = c;
@@ -149,6 +152,12 @@ class CharacterState : State
         State::Enter(lastState);
         combatReady = false;
         firstUpdate = true;
+
+        if (physicsType >= 0)
+        {
+            lastPhysicsType = ownner.physicsType;
+            ownner.SetPhysicsType(physicsType);
+        }
     }
 
     void Exit(State@ nextState)
@@ -156,6 +165,8 @@ class CharacterState : State
         if (flags >= 0)
             ownner.RemoveFlag(flags);
         State::Exit(nextState);
+        if (physicsType >= 0)
+            ownner.SetPhysicsType(lastPhysicsType);
     }
 
     void Update(float dt)
@@ -344,7 +355,6 @@ class AnimationTestState : CharacterState
 {
     Array<Motion@>  testMotions;
     Array<String>   testAnimations;
-    int             lastPhysicsType;
     int             currentIndex;
     bool            allFinished;
 
@@ -352,19 +362,15 @@ class AnimationTestState : CharacterState
     {
         super(c);
         SetName("AnimationTestState");
+        physicsType = 0;
     }
 
     void Enter(State@ lastState)
     {
         SendAnimationTriger(ownner.renderNode, RAGDOLL_STOP);
-
         currentIndex = 0;
-        lastPhysicsType = ownner.physicsType;
-        ownner.SetPhysicsType(0);
         allFinished = false;
-
         Start();
-
         CharacterState::Enter(lastState);
     }
 
@@ -372,7 +378,6 @@ class AnimationTestState : CharacterState
     {
         if (nextState !is this)
             testMotions.Clear();
-        ownner.SetPhysicsType(lastPhysicsType);
         CharacterState::Exit(nextState);
     }
 
@@ -885,8 +890,6 @@ class CharacterAlignState : CharacterState
     Vector3     movePerSec;
     float       rotatePerSec;
     float       alignTime = 0.2f;
-    int         wantPhysicsType;
-    int         lastPhysicsType;
 
     CharacterAlignState(Character@ c)
     {
@@ -902,8 +905,6 @@ class CharacterAlignState : CharacterState
         targetRotation = tRot;
         alignTime = duration;
         alignAnimation = anim;
-        wantPhysicsType = physicsType;
-        lastPhysicsType = ownner.physicsType;
         ownner.SetPhysicsType(physicsType);
 
         Vector3 curPos = ownner.GetNode().worldPosition;
@@ -916,18 +917,6 @@ class CharacterAlignState : CharacterState
             Print("align-animation : " + anim);
             ownner.PlayAnimation(anim, LAYER_MOVE, true);
         }
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.SetPhysicsType(wantPhysicsType);
-        CharacterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        ownner.SetPhysicsType(lastPhysicsType);
-        CharacterState::Exit(nextState);
     }
 
     void Update(float dt)

@@ -483,7 +483,16 @@ class BruceHangOverState : PlayerHangOverState
     BruceHangOverState(Character@ c)
     {
         super(c);
-        // AddMotion("BM_Climb/Stand_Climb_Up_256_Hang");
+        AddMotion("BM_Climb/Hang_Jump_Over_Fall");
+    }
+};
+
+class BruceHangMoveState : PlayerHangMoveState
+{
+    BruceHangMoveState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Hang_Left");
     }
 };
 
@@ -544,6 +553,7 @@ class Bruce : Player
             stateMachine.AddState(BruceHangUpState(this));
             stateMachine.AddState(BruceHangIdleState(this));
             stateMachine.AddState(BruceHangOverState(this));
+            stateMachine.AddState(BruceHangMoveState(this));
         }
     }
 };
@@ -627,7 +637,10 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags);
     Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags);
-    // Global_AddAnimation(preFix + "Hang_Idle");
+    Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", climb_foot_flags);
+
+    Global_CreateMotion(preFix + "Hang_Left",  kMotion_X);
+
 
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Crouch_Idle");
