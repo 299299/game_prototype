@@ -1,22 +1,18 @@
 
 float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector3&out p4)
 {
-    CollisionShape@ shape = n.GetComponent("CollisionShape");
-    if (shape is null)
+    StaticModel@ model = n.GetComponent("StaticModel");
+    if (model is null)
         return -1;
-
-    Vector3 halfSize = shape.size/2;
-    Vector3 offset = shape.position;
-
+    Vector3 halfSize = model.boundingBox.halfSize;
     p1 = Vector3(halfSize.x, halfSize.y, halfSize.z);
     p2 = Vector3(halfSize.x, halfSize.y, -halfSize.z);
     p3 = Vector3(-halfSize.x, halfSize.y, -halfSize.z);
     p4 = Vector3(-halfSize.x, halfSize.y, halfSize.z);
-    p1 = n.LocalToWorld(p1 + offset);
-    p2 = n.LocalToWorld(p2 + offset);
-    p3 = n.LocalToWorld(p3 + offset);
-    p4 = n.LocalToWorld(p4 + offset);
-
+    p1 = n.LocalToWorld(p1);
+    p2 = n.LocalToWorld(p2);
+    p3 = n.LocalToWorld(p3);
+    p4 = n.LocalToWorld(p4);
     return halfSize.y * 2 * n.worldScale.y;
 }
 
@@ -75,18 +71,33 @@ void UpdateEditorHack(float dt)
     }
     else if (input.keyPress[KEY_4])
     {
-        if (editNodes.length < 2)
+        if (editNodes.length < 1)
             return;
 
         Node@ boneNode = editNodes[0];
-        Node@ boxNode = editNodes[1];
-        if (!boneNode.name.StartsWith("Bip"))
+        Node@ boxNode = null;
+        float minDistSQR = 9999999;
+
+        Array<Node@> nodes = editorScene.GetChildrenWithComponent("StaticModel");
+        for (uint i=0; i<nodes.length; ++i)
         {
-            boneNode = editNodes[1];
-            boxNode = editNodes[0];
+            Node@ _n = nodes[i];
+            if (!_n.name.StartsWith("BOX"))
+                continue;
+            float distSQR = (_n.worldPosition - boneNode.worldPosition).lengthSquared;
+            if (distSQR < minDistSQR)
+            {
+                boxNode = _n;
+                minDistSQR = distSQR;
+            }
         }
+
+        if (boxNode is null)
+            return;
+
         Vector3 p1, p2, p3, p4;
         float h = GetCorners(boxNode, p1, p2, p3, p4);
+        Print("GetCorners --h=" + h);
         if (h <= 0)
             return;
         Array<float> distances;
@@ -97,7 +108,7 @@ void UpdateEditorHack(float dt)
         distances.Push(GetDistance(p4, p1, pos));
 
         float minDistance = 999999;
-        uint minIndex = -1;
+        uint minIndex = 999;
         for (uint i=0; i<distances.length; ++i)
         {
             if (distances[i] < minDistance)

@@ -1412,8 +1412,8 @@ class PlayerHangUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("HangUpState");
-        targetMotionFlag = kMotion_Y;
         climbBaseHeight = 3.0f;
+        dockBlendingMethod = 1;
     }
 
     void Enter(State@ lastState)
@@ -1441,7 +1441,7 @@ class PlayerHangIdleState : SingleAnimationState
     {
         ownner.SetVelocity(Vector3(0,0,0));
         ownner.SetPhysicsType(0);
-        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.5f, 1.0f, 0.0f);
+        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, 0.0f);
         CharacterState::Enter(lastState);
     }
 
