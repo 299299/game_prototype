@@ -474,7 +474,7 @@ class BruceHangIdleState : PlayerHangIdleState
     BruceHangIdleState(Character@ c)
     {
         super(c);
-        SetMotion("BM_Climb/Hang_Idle");
+        SetMotion("BM_Climb/Stand_Climb_Up_256_Hang");
     }
 };
 
@@ -611,8 +611,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Stand_Climb_Over_384_Fall", kMotion_Z).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
 
     // Climb Up
-    @m = Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_YZ);
-    m.SetDockAlign(L_FOOT, 0.27f, Vector3(0, -0.3, 0));
+    Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_YZ).SetDockAlign(L_FOOT, 0.27f, Vector3(0, -0.3, 0));
 
     @m = Global_CreateMotion(preFix + "Run_Climb_Up_128", kMotion_YZ);
     m.SetDockAlign(L_FOOT, 0.35f, Vector3(0, -0.1, 0));
@@ -623,15 +622,16 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Stand_Climb_Up_384", kMotion_YZ).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Run_Climb_Up_384", kMotion_YZ).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.1));
 
+    int climb_foot_flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
     // Climb Hang
-    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", climb_foot_flags);
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", climb_foot_flags);
+    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", climb_foot_flags);
+    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", climb_foot_flags);
 
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_AddAnimation(preFix + "Hang_Idle");
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags);
+    // Global_AddAnimation(preFix + "Hang_Idle");
 
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Crouch_Idle");
@@ -644,14 +644,14 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 12);
 
     preFix = "BM_Railing/";
-    Global_CreateMotion(preFix + "Railing_Climb_Up", kMotion_YZ | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.3, 0.25));
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.6f, Vector3(0, 0, 0.25));
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.25));
-    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.3));
-    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", kMotion_YZ | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.8f, Vector3(0, -0.05, 0.4));
+    Global_CreateMotion(preFix + "Railing_Climb_Up", climb_foot_flags).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.3, 0.25));
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", climb_foot_flags).SetDockAlign(L_HAND, 0.6f, Vector3(0, 0, 0.25));
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", climb_foot_flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.25));
+    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", climb_foot_flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.3));
+    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", climb_foot_flags).SetDockAlign(R_HAND, 0.8f, Vector3(0, -0.05, 0.4));
 
-    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", kMotion_YZ | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", climb_foot_flags);
+    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", climb_foot_flags);
 
     Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_XZR, kMotion_R);
     Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_XZR, kMotion_R);

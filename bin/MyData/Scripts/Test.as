@@ -114,6 +114,9 @@ void Start()
         reflection = false;
     }
 
+    if (!engine.headless && graphics.width < 640)
+        render_features = RF_NONE;
+
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
