@@ -1460,7 +1460,7 @@ class PlayerHangIdleState : SingleAnimationState
 
             if (index == 0)
             {
-
+                ownner.ChangeState("HangOverState");
             }
             else
             {
@@ -1471,5 +1471,32 @@ class PlayerHangIdleState : SingleAnimationState
         }
 
         SingleAnimationState::Update(dt);
+    }
+};
+
+class PlayerHangOverState : MultiMotionState
+{
+    PlayerHangOverState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("HangOverState");
+    }
+};
+
+class PlayerHangLeftState : MultiMotionState
+{
+    PlayerHangLeftState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("HangLeftState");
+    }
+};
+
+class PlayerHangRightState : MultiMotionState
+{
+    PlayerHangRightState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("HangLeftState");
     }
 };

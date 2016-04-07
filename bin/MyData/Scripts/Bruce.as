@@ -478,6 +478,15 @@ class BruceHangIdleState : PlayerHangIdleState
     }
 };
 
+class BruceHangOverState : PlayerHangOverState
+{
+    BruceHangOverState(Character@ c)
+    {
+        super(c);
+        // AddMotion("BM_Climb/Stand_Climb_Up_256_Hang");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -534,6 +543,7 @@ class Bruce : Player
             // hang
             stateMachine.AddState(BruceHangUpState(this));
             stateMachine.AddState(BruceHangIdleState(this));
+            stateMachine.AddState(BruceHangOverState(this));
         }
     }
 };
