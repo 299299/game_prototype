@@ -496,6 +496,28 @@ class BruceHangMoveState : PlayerHangMoveState
     }
 };
 
+class BruceHangMoveStartState : PlayerHangMoveStartState
+{
+    BruceHangMoveStartState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Hang_Left_Start");
+        AddMotion("BM_Climb/Hang_Right_Start");
+    }
+};
+
+
+class BruceHangMoveEndState : PlayerHangMoveEndState
+{
+    BruceHangMoveEndState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Hang_Left_End");
+        AddMotion("BM_Climb/Hang_Right_End");
+    }
+};
+
+
 class Bruce : Player
 {
     Bruce()
@@ -554,6 +576,8 @@ class Bruce : Player
             stateMachine.AddState(BruceHangIdleState(this));
             stateMachine.AddState(BruceHangOverState(this));
             stateMachine.AddState(BruceHangMoveState(this));
+            stateMachine.AddState(BruceHangMoveStartState(this));
+            stateMachine.AddState(BruceHangMoveEndState(this));
         }
     }
 };
@@ -641,10 +665,14 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Hang_Left",  kMotion_X);
     Global_CreateMotion(preFix + "Hang_Right",  kMotion_X);
+    Global_AddAnimation(preFix + "Hang_Left_Start");
+    Global_AddAnimation(preFix + "Hang_Left_End");
+    Global_AddAnimation(preFix + "Hang_Right_Start");
+    Global_AddAnimation(preFix + "Hang_Right_End");
 
     preFix = "BM_Movement/";
-    Global_AddAnimation(preFix + "Crouch_Idle");
     Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);
+    Global_AddAnimation(preFix + "Crouch_Idle");
     Global_AddAnimation(preFix + "Cover_Idle");
 
     preFix = "BM_Crouch_Turns/";

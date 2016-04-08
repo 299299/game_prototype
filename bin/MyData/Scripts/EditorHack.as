@@ -44,11 +44,17 @@ void UpdateEditorHack(float dt)
 {
     if (input.keyPress[KEY_1])
     {
+        if (editNodes.empty)
+            return;
+
         // print current information
+        Node@ _lastNode = editNodes[editNodes.length - 1];
         for (uint i = 0; i < editNodes.length; ++i)
         {
             Node@ _n = editNodes[i];
             Print(_n.name + " world-pos=" + _n.worldPosition.ToString() + " world-rot=" + _n.worldRotation.eulerAngles.ToString());
+            Print("distance from " + _lastNode.name + " to " + _n.name " = " + (_n.worldPosition-_lastNode.worldPosition).length);
+            _lastNode = _n;
         }
     }
     else if (input.keyPress[KEY_2])
@@ -71,7 +77,7 @@ void UpdateEditorHack(float dt)
     }
     else if (input.keyPress[KEY_4])
     {
-        if (editNodes.length < 1)
+        if (editNodes.empty)
             return;
 
         Node@ boneNode = editNodes[0];

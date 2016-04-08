@@ -1378,6 +1378,8 @@ class PlayerHangUpState : PlayerClimbAlignState
 
 class PlayerHangIdleState : SingleAnimationState
 {
+    Vector3 futureProj;
+
     PlayerHangIdleState(Character@ c)
     {
         super(c);
@@ -1409,11 +1411,32 @@ class PlayerHangIdleState : SingleAnimationState
                 ownner.ChangeState("FallState");
             }
             else
-                ownner.ChangeState("HangMoveState");
-            return;
+                StartHangMove(index == 3);
         }
 
         SingleAnimationState::Update(dt);
+    }
+
+    void StartHangMove(bool left)
+    {
+        int index = left ? 0 : 1;
+        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
+        Motion@ m = s.motions[index];
+        Vector4 motionOut = m.GetKey(m.endTime);
+        Node@ n = ownner.GetNode();
+        Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + n.worldPosition;
+        futureProj = ownner.dockLine.Project(futurePos);
+
+        if (!ownner.dockLine.IsProjectPositionInLine(futureProj, 0.5f))
+            return;
+
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        ownner.ChangeState(s.nameHash);
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(futureProj, 0.5f, RED, false);
     }
 };
 
@@ -1440,25 +1463,9 @@ class PlayerHangMoveState : MultiMotionState
     {
         ownner.ChangeState("HangIdleState");
     }
-
-    void Enter(State@ lastState)
-    {
-        int index = ownner.RadialSelectAnimation(4);
-        int animIndex = 0;
-        if (index == 2)
-        {
-
-        }
-        else if (index == 3)
-        {
-
-        }
-        ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
-        MultiMotionState::Enter(lastState);
-    }
 };
 
-class PlayerHangMoveStartState : CharacterState
+class PlayerHangMoveStartState : MultiAnimationState
 {
     PlayerHangMoveStartState(Character@ c)
     {
@@ -1467,21 +1474,11 @@ class PlayerHangMoveStartState : CharacterState
     }
 };
 
-class PlayerHangMoveEndState : CharacterState
+class PlayerHangMoveEndState : MultiAnimationState
 {
     PlayerHangMoveEndState(Character@ c)
     {
         super(c);
         SetName("HangMoveEndState");
-    }
-};
-
-class PlayerHangRightState : MultiMotionState
-{
-    PlayerHangRightState(Character@ ownner)
-    {
-        super(ownner);
-        SetName("HangLeftState");
-        physicsType = 0;
     }
 };
