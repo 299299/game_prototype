@@ -518,6 +518,55 @@ class BruceHangMoveEndState : PlayerHangMoveEndState
 };
 
 
+class BruceDangleIdleState : PlayerDangleIdleState
+{
+    BruceDangleIdleState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Climb/Dangle_Idle");
+    }
+};
+
+class BruceDangleOverState : PlayerDangleOverState
+{
+    BruceDangleOverState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Hang_Jump_Over_Fall");
+    }
+};
+
+class BruceDangleMoveState : PlayerDangleMoveState
+{
+    BruceDangleMoveState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Dangle_Left");
+        AddMotion("BM_Climb/Dangle_Right");
+    }
+};
+
+class BruceDangleMoveStartState : PlayerDangleMoveStartState
+{
+    BruceDangleMoveStartState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Dangle_Left_Start");
+        AddMotion("BM_Climb/Dangle_Right_Start");
+    }
+};
+
+
+class BruceDangleMoveEndState : PlayerDangleMoveEndState
+{
+    BruceDangleMoveEndState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Dangle_Left_End");
+        AddMotion("BM_Climb/Dangle_Right_End");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -669,6 +718,14 @@ void CreateBruceClimbAnimations()
     Global_AddAnimation(preFix + "Hang_Left_End");
     Global_AddAnimation(preFix + "Hang_Right_Start");
     Global_AddAnimation(preFix + "Hang_Right_End");
+
+    // Dangle
+    Global_CreateMotion(preFix + "Dangle_Left",  kMotion_X);
+    Global_CreateMotion(preFix + "Dangle_Right",  kMotion_X);
+    Global_AddAnimation(preFix + "Dangle_Left_Start");
+    Global_AddAnimation(preFix + "Dangle_Left_End");
+    Global_AddAnimation(preFix + "Dangle_Right_Start");
+    Global_AddAnimation(preFix + "Dangle_Right_End");
 
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);

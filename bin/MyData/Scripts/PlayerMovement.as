@@ -1386,12 +1386,13 @@ class PlayerHangIdleState : SingleAnimationState
         SetName("HangIdleState");
         looped = true;
         physicsType = 0;
+        animSpeed = 0.0f;
     }
 
     void Enter(State@ lastState)
     {
         ownner.SetVelocity(Vector3(0,0,0));
-        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, 0.0f);
+        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -1480,5 +1481,57 @@ class PlayerHangMoveEndState : MultiAnimationState
     {
         super(c);
         SetName("HangMoveEndState");
+    }
+};
+
+
+class PlayerDangleIdleState : PlayerHangIdleState
+{
+    PlayerDangleIdleState(Character@ c)
+    {
+        super(c);
+        SetName("DangleIdleState");
+        animSpeed = 1.0f;
+    }
+};
+
+class PlayerDangleOverState : PlayerHangOverState
+{
+    PlayerDangleOverState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("DangleOverState");
+    }
+};
+
+class PlayerDangleMoveState : PlayerHangMoveState
+{
+    PlayerDangleMoveState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("DangleMoveState");
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("DangleIdleState");
+    }
+};
+
+class PlayerDangleMoveStartState : PlayerHangMoveStartState
+{
+    PlayerDangleMoveStartState(Character@ c)
+    {
+        super(c);
+        SetName("DangleMoveStartState");
+    }
+};
+
+class PlayerDangleMoveEndState : PlayerHangMoveEndState
+{
+    PlayerDangleMoveEndState(Character@ c)
+    {
+        super(c);
+        SetName("DangleMoveEndState");
     }
 };
