@@ -21,9 +21,8 @@ float STEP_MAX_DIST = 0.0f;
 float STEP_MIN_DIST = 0.0f;
 float KEEP_DIST_WITH_PLAYER = -0.25f;
 
-class ThugStandState : CharacterState
+class ThugStandState : MultiAnimationState
 {
-    Array<String>   animations;
     float           thinkTime;
 
     float           attackRange;
@@ -34,16 +33,16 @@ class ThugStandState : CharacterState
     {
         super(c);
         SetName("StandState");
-        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_01"));
-        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_02"));
-        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_03"));
-        animations.Push(GetAnimationName(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_04"));
+        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_01");
+        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_02");
+        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_03");
+        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_04");
         flags = FLAGS_REDIRECTED | FLAGS_ATTACK;
+        looped = true;
     }
 
     void Enter(State@ lastState)
     {
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f, 0.0f, animSpeed);
         ownner.SetVelocity(Vector3(0,0,0));
 
         float min_think_time = MIN_THINK_TIME;
@@ -59,7 +58,7 @@ class ThugStandState : CharacterState
             Print(ownner.GetName() + " thinkTime=" + thinkTime);
         ownner.ClearAvoidance();
         attackRange = Random(0.0f, MAX_ATTACK_RANGE);
-        CharacterState::Enter(lastState);
+        MultiAnimationState::Enter(lastState);
     }
 
     void Update(float dt)
@@ -82,7 +81,7 @@ class ThugStandState : CharacterState
             thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
         }
 
-        CharacterState::Update(dt);
+        MultiAnimationState::Update(dt);
     }
 
     void OnThinkTimeOut()
@@ -151,7 +150,12 @@ class ThugStandState : CharacterState
     void FixedUpdate(float dt)
     {
         ownner.CheckAvoidance(dt);
-        CharacterState::FixedUpdate(dt);
+        MultiAnimationState::FixedUpdate(dt);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(animations.length);
     }
 };
 

@@ -12,8 +12,7 @@ class CatwomanStandState : PlayerStandState
     CatwomanStandState(Character@ c)
     {
         super(c);
-        animations.Push(GetAnimationName("CW_Movement/Stand_Idle"));
-        flags = FLAGS_ATTACK;
+        AddMotion("CW_Movement/Stand_Idle");
     }
 };
 

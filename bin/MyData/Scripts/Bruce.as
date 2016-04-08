@@ -12,8 +12,7 @@ class BruceStandState : PlayerStandState
     BruceStandState(Character@ c)
     {
         super(c);
-        animations.Push(GetAnimationName("BM_Movement/Stand_Idle"));
-        flags = FLAGS_ATTACK;
+        AddMotion("BM_Movement/Stand_Idle");
     }
 };
 
@@ -493,6 +492,7 @@ class BruceHangMoveState : PlayerHangMoveState
     {
         super(c);
         AddMotion("BM_Climb/Hang_Left");
+        AddMotion("BM_Climb/Hang_Right");
     }
 };
 
@@ -640,7 +640,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", climb_foot_flags);
 
     Global_CreateMotion(preFix + "Hang_Left",  kMotion_X);
-
+    Global_CreateMotion(preFix + "Hang_Right",  kMotion_X);
 
     preFix = "BM_Movement/";
     Global_AddAnimation(preFix + "Crouch_Idle");

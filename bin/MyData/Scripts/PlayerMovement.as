@@ -1,22 +1,19 @@
 
-class PlayerStandState : CharacterState
+class PlayerStandState : MultiAnimationState
 {
-    Array<String>   animations;
-
     PlayerStandState(Character@ c)
     {
         super(c);
         SetName("StandState");
         flags = FLAGS_ATTACK;
+        looped = true;
     }
 
     void Enter(State@ lastState)
     {
         ownner.SetTarget(null);
-        ownner.PlayAnimation(animations[RandomInt(animations.length)], LAYER_MOVE, true, 0.2f, 0.0f, animSpeed);
         ownner.SetVelocity(Vector3(0,0,0));
-
-        CharacterState::Enter(lastState);
+        MultiAnimationState::Enter(lastState);
     }
 
     void Update(float dt)
@@ -48,7 +45,12 @@ class PlayerStandState : CharacterState
         if (timeInState > 0.25f && gInput.IsCrouchDown())
             ownner.ChangeState("CrouchState");
 
-        CharacterState::Update(dt);
+        MultiAnimationState::Update(dt);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(animations.length);
     }
 };
 
@@ -1437,6 +1439,40 @@ class PlayerHangMoveState : MultiMotionState
     void OnMotionFinished()
     {
         ownner.ChangeState("HangIdleState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        int index = ownner.RadialSelectAnimation(4);
+        int animIndex = 0;
+        if (index == 2)
+        {
+
+        }
+        else if (index == 3)
+        {
+
+        }
+        ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+        MultiMotionState::Enter(lastState);
+    }
+};
+
+class PlayerHangMoveStartState : CharacterState
+{
+    PlayerHangMoveStartState(Character@ c)
+    {
+        super(c);
+        SetName("HangMoveStartState");
+    }
+};
+
+class PlayerHangMoveEndState : CharacterState
+{
+    PlayerHangMoveEndState(Character@ c)
+    {
+        super(c);
+        SetName("HangMoveEndState");
     }
 };
 

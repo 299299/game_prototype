@@ -273,6 +273,57 @@ class SingleMotionState : CharacterState
     }
 };
 
+class MultiAnimationState : CharacterState
+{
+    Array<String> animations;
+    bool looped = false;
+    float stateTime = -1;
+    float blendTime = 0.2f;
+    int selectIndex;
+
+    MultiAnimationState(Character@ c)
+    {
+        super(c);
+    }
+
+    void Update(float dt)
+    {
+        if (looped)
+        {
+            if (stateTime > 0 && timeInState > stateTime)
+                OnMotionFinished();
+        }
+        else
+        {
+            if (ownner.animCtrl.IsAtEnd(animations[selectIndex]))
+                OnMotionFinished();
+        }
+        CharacterState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        selectIndex = PickIndex();
+        ownner.PlayAnimation(animations[selectIndex], LAYER_MOVE, looped, blendTime, 0.0f, animSpeed);
+        CharacterState::Enter(lastState);
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.CommonStateFinishedOnGroud();
+    }
+
+    void AddMotion(const String&in name)
+    {
+        animations.Push(GetAnimationName(name));
+    }
+
+    int PickIndex()
+    {
+        return ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
+    }
+};
+
 class MultiMotionState : CharacterState
 {
     Array<Motion@> motions;
