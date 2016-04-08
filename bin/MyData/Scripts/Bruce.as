@@ -567,6 +567,17 @@ class BruceDangleMoveEndState : PlayerDangleMoveEndState
     }
 };
 
+class BruceClimbDownState : PlayerClimbDownState
+{
+    BruceClimbDownState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Walk_Climb_Down_128");
+        AddMotion("BM_Climb/Run_Climb_Down_128");
+        AddMotion("BM_Climb/Crouch_Down_128");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -612,6 +623,7 @@ class Bruce : Player
             // climb
             stateMachine.AddState(BruceClimbOverState(this));
             stateMachine.AddState(BruceClimbUpState(this));
+            stateMachine.AddState(BruceClimbDownState(this));
             // rail states
             stateMachine.AddState(BruceRailUpState(this));
             stateMachine.AddState(BruceRailIdleState(this));
@@ -680,6 +692,11 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
     Global_CreateMotion(preFix + "Slide_Floor_Stop");
+
+    // Climb Down
+    Global_CreateMotion(preFix + "Crouch_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y);
+    Global_CreateMotion(preFix + "Walk_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y);
+    Global_CreateMotion(preFix + "Run_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y);
 
     // Climb Over
     Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z, kMotion_ALL, 37).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));

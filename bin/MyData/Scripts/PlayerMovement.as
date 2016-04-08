@@ -801,7 +801,7 @@ class PlayerClimbAlignState : MultiMotionState
 
     void OnMotionAlignTimeOut()
     {
-        if (dockBlendingMethod == 1)
+        if (dockBlendingMethod > 0)
         {
             turnSpeed = 0;
             ownner.motion_velocity = Vector3(0, 0, 0);
@@ -888,7 +888,6 @@ class PlayerClimbAlignState : MultiMotionState
             Vector3 dir = targetPosition - v;
             targetRotation = Atan2(dir.x, dir.z);
             float t = m.dockAlignTime;
-            Print("FUCK + " + m.name);
             turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
             motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
 
@@ -898,6 +897,10 @@ class PlayerClimbAlignState : MultiMotionState
 
             ownner.motion_velocity = (targetPosition - motionPositon) / t;
             Print(this.name + " animation:" + m.name + " vel=" + ownner.motion_velocity.ToString());
+        }
+        else if (dockBlendingMethod == 2)
+        {
+            MultiMotionState::Enter(lastState);
         }
         else
         {
@@ -1533,5 +1536,44 @@ class PlayerDangleMoveEndState : PlayerHangMoveEndState
     {
         super(c);
         SetName("DangleMoveEndState");
+    }
+};
+
+class PlayerClimbDownState : PlayerClimbAlignState
+{
+    Vector3 groundPos;
+
+    PlayerClimbDownState(Character@ c)
+    {
+        super(c);
+        SetName("ClimbDownState");
+        dockBlendingMethod = 2;
+        targetMotionFlag = kMotion_Y;
+    }
+
+    Vector3 PickDockOutTarget()
+    {
+        return groundPos;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        PlayerClimbAlignState::DebugDraw(debug);
+        debug.AddCross(groundPos, 0.5f, BLUE, false);
+    }
+
+    void Enter(State@ lastState)
+    {
+        int animIndex = 0;
+        if (lastState.name == "RunState")
+            animIndex = 1;
+        else if (lastState.name == "CrouchMoveState")
+            animIndex = 2;
+        ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+        PlayerClimbAlignState::Enter(lastState);
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
+        Player@ p = cast<Player>(ownner);
+        groundPos = p.sensor.GetGround(futurePos);
     }
 };

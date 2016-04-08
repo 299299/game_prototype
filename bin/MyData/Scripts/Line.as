@@ -91,12 +91,14 @@ class Line
         if (Abs(yDiff) > maxHeight)
             return 0;
 
+        /*
         if (type == LINE_CLIMB_OVER || type == LINE_CLIMB_UP)
         {
             float h_diff = end.y - pos.y;
             if (h_diff < 1.0f)
                 return 0;
         }
+        */
 
         project = ray.Project(pos);
         if (!IsProjectPositionInLine(project))

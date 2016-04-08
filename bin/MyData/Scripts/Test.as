@@ -505,10 +505,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = GetAnimationName("BM_Railing/Railing_Idle");
         //String testName = ("BM_Railing/Railing_Climb_Down_Forward");
         //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
-        String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
+        String testName = "BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
-        testAnimations.Push("BM_Climb/Hang_Climb_Up_Run");
+        //testAnimations.Push("BM_Climb/Hang_Climb_Up_Run");
         // testAnimations.Push(GetAnimationName("BM_Railing/Railing_Run_Forward_Idle"));
         if (player !is null)
             player.TestAnimation(testAnimations);
@@ -1068,8 +1068,8 @@ class BM_Game_MotionManager : MotionManager
             TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Left"), Vector3(0, -3.25f, 0));
             TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Right"), Vector3(0, -3.25f, 0));
 
-            TranslateAnimation(GetAnimationName("BM_Climb/Hang_Left"), Vector3(0, 0.27f, 0));
-            TranslateAnimation(GetAnimationName("BM_Climb/Hang_Right"), Vector3(0, 0.27f, 0));
+            TranslateAnimation(GetAnimationName("BM_Climb/Hang_Left"), Vector3(0, 0.4f, 0));
+            TranslateAnimation(GetAnimationName("BM_Climb/Hang_Right"), Vector3(0, 0.4f, 0));
         }
     }
 };

@@ -590,9 +590,28 @@ class Player : Character
             }
             else if (l.type == LINE_CLIMB_UP)
             {
-                AssignDockLine(l);
-                ChangeState("ClimbUpState");
-                return true;
+                Vector3 proj = l.Project(charPos);
+                float h_diff = proj.y - charPos.y;
+                if (h_diff <= 0.01f)
+                {
+                    float distSQR = (proj- charPos).lengthSquared;
+                    // Print("distSQR = " + distSQR);
+                    if (distSQR < COLLISION_RADIUS*COLLISION_RADIUS)
+                    {
+                        AssignDockLine(l);
+                        ChangeState("ClimbDownState");
+                        return true;
+                    }
+                    return false;
+                }
+                else
+                {
+                    if (h_diff < 1.0f)
+                        return false;
+                    AssignDockLine(l);
+                    ChangeState("ClimbUpState");
+                    return true;
+                }
             }
             else if (l.type == LINE_RAILING)
             {
