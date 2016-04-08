@@ -848,10 +848,10 @@ class PlayerClimbAlignState : MultiMotionState
 
         for (int i=0; i<numOfStandAnimations; ++i)
         {
-            Motion@ motion = motions[startIndex + i];
-            float motionHeight = curHeight + motion.GetKey(motion.endTime).y + climbBaseHeight;
+            Motion@ m = motions[startIndex + i];
+            float motionHeight = curHeight + m.maxHeight + climbBaseHeight;
             float curHeightDiff = Abs(lineHeight - motionHeight);
-            Print(this.name + " "  + motion.name + " heightDiff=" + curHeightDiff);
+            Print(this.name + " "  + m.name + " maxHeight=" + m.maxHeight + " heightDiff=" + curHeightDiff);
             if (curHeightDiff < minHeightDiff)
             {
                 minHeightDiff = curHeightDiff;

@@ -157,8 +157,9 @@ class Motion
     int                     motionFlag;
     int                     allowMotion;
 
-    float                   rotateAngle = 361;
+    float                   maxHeight;
 
+    float                   rotateAngle = 361;
     bool                    processed = false;
 
     float                   dockAlignTime;
@@ -221,6 +222,13 @@ class Motion
             Vector4 v = motionKeys[0];
             Vector4 diff = motionKeys[endFrame - 1] - motionKeys[0];
             endDistance = Vector3(diff.x, diff.y, diff.z).length;
+        }
+
+        maxHeight = -9999;
+        for (uint i=0; i<motionKeys.length; ++i)
+        {
+            if (motionKeys[i].y > maxHeight)
+                maxHeight = motionKeys[i].y;
         }
 
         processed = true;
