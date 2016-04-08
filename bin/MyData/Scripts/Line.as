@@ -13,6 +13,7 @@ enum LineType
     LINE_CLIMB_UP,
     LINE_RAILING,
     LINE_CLIMB_HANG,
+    LINE_DANGLE,
     LINE_TYPE_NUM
 };
 
@@ -194,6 +195,7 @@ class LineWorld
         debugColors[LINE_COVER] = YELLOW;
         debugColors[LINE_CLIMB_UP] = Color(0.25f, 0.5f, 0.75f);
         debugColors[LINE_CLIMB_HANG] = Color(0.65f, 0.25f, 0.25f);
+        debugColors[LINE_DANGLE] = Color(0.35f, 0.75f, 0.25f);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -278,6 +280,10 @@ class LineWorld
             else if (_node.name.StartsWith("ClimbHang"))
             {
                 CreateLine(LINE_CLIMB_HANG, _node);
+            }
+            else if (_node.name.StartsWith("Dangle"))
+            {
+                CreateLine(LINE_DANGLE, _node);
             }
         }
     }

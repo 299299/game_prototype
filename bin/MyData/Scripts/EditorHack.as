@@ -18,6 +18,9 @@ float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector
 
 float GetDistance(const Vector3&in start, const Vector3&in end, const Vector3&in pt)
 {
+    float lineDistance = (start - end).length;
+    if (lineDistance < 1.0f)
+        return 9999;
     Ray ray(start, (end-start).Normalized());
     Vector3 proj = ray.Project(pt);
     return (pt - proj).length;
@@ -53,7 +56,7 @@ void UpdateEditorHack(float dt)
         {
             Node@ _n = editNodes[i];
             Print(_n.name + " world-pos=" + _n.worldPosition.ToString() + " world-rot=" + _n.worldRotation.eulerAngles.ToString());
-            Print("distance from " + _lastNode.name + " to " + _n.name " = " + (_n.worldPosition-_lastNode.worldPosition).length);
+            Print("distance from " + _lastNode.name + " to " + _n.name + " = " + (_n.worldPosition - _lastNode.worldPosition).length);
             _lastNode = _n;
         }
     }
