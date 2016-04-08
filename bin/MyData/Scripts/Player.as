@@ -596,7 +596,7 @@ class Player : Character
                 {
                     float distSQR = (proj- charPos).lengthSquared;
                     // Print("distSQR = " + distSQR);
-                    if (distSQR < COLLISION_RADIUS*COLLISION_RADIUS)
+                    if (distSQR < 1.0f*1.0f)
                     {
                         AssignDockLine(l);
                         ChangeState("ClimbDownState");

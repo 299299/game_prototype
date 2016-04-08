@@ -575,6 +575,7 @@ class BruceClimbDownState : PlayerClimbDownState
         AddMotion("BM_Climb/Walk_Climb_Down_128");
         AddMotion("BM_Climb/Run_Climb_Down_128");
         AddMotion("BM_Climb/Crouch_Down_128");
+        animSpeed = 1.25f;
     }
 };
 
@@ -694,9 +695,9 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Slide_Floor_Stop");
 
     // Climb Down
-    Global_CreateMotion(preFix + "Crouch_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y);
-    Global_CreateMotion(preFix + "Walk_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y);
-    Global_CreateMotion(preFix + "Run_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y);
+    Global_CreateMotion(preFix + "Crouch_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y, kMotion_ALL, 20);
+    Global_CreateMotion(preFix + "Walk_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y, kMotion_ALL, 35);
+    Global_CreateMotion(preFix + "Run_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y, kMotion_ALL, 16);
 
     // Climb Over
     Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z, kMotion_ALL, 37).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
@@ -750,9 +751,9 @@ void CreateBruceClimbAnimations()
     Global_AddAnimation(preFix + "Cover_Idle");
 
     preFix = "BM_Crouch_Turns/";
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 12);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 20);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 12);
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
 
     preFix = "BM_Railing/";
     Global_CreateMotion(preFix + "Railing_Climb_Up", climb_foot_flags).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.3, 0.25));
