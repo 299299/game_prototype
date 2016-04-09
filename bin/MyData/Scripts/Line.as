@@ -30,12 +30,14 @@ class Line
     float           maxHeight;
     float           maxFacingDiff = 45;
 
+    uint            nodeId;
+
     Vector3 Project(const Vector3& charPos)
     {
         return ray.Project(charPos);
     }
 
-    bool IsProjectPositionInLine(const Vector3& proj, float bound = 1.0f)
+    bool IsProjectPositionInLine(const Vector3& proj, float bound = 0.5f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -46,7 +48,7 @@ class Line
         return l_to_start >= bound && l_to_end >= bound;
     }
 
-    Vector3 FixProjectPosition(const Vector3& proj, float bound = 1.0f)
+    Vector3 FixProjectPosition(const Vector3& proj, float bound = 0.5f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -85,6 +87,14 @@ class Line
         return Atan2(dir.x, dir.z);
     }
 
+    int GetTowardHead(float towardAngle)
+    {
+        float angleDiff = Abs(angle - towardAngle);
+        if (angleDiff > 90)
+            return 0;
+        return 1;
+    }
+
     int Test(const Vector3& pos, float angle, Vector3& out project, float&out outDistance)
     {
         float yDiff = end.y - pos.y;
@@ -99,6 +109,13 @@ class Line
                 return 0;
         }
         */
+
+        if (type == LINE_CLIMB_OVER || type == LINE_CLIMB_HANG)
+        {
+            float h_diff = end.y - pos.y;
+            if (h_diff < 1.5f)
+                return 0;
+        }
 
         project = ray.Project(pos);
         if (!IsProjectPositionInLine(project))
@@ -117,8 +134,12 @@ class Line
 
     void DebugDraw(DebugRenderer@ debug, const Color&in color)
     {
-        debug.AddCross(ray.origin, 0.25f, RED, false);
-        debug.AddCross(end, 0.25f, BLUE, false);
+        //debug.AddCross(ray.origin, 0.25f, RED, false);
+        //debug.AddCross(end, 0.25f, BLUE, false);
+
+        debug.AddSphere(Sphere(ray.origin, 0.15f), YELLOW, false);
+        debug.AddSphere(Sphere(end, 0.15f), YELLOW, false);
+
         debug.AddLine(ray.origin, end, color, false);
     }
 
@@ -130,6 +151,18 @@ class Line
         float projDir = Atan2(dir.x, dir.z);
         float aDiff = AngleDiff(projDir - angle);
         return Abs(aDiff);
+    }
+
+    Vector3 GetNearPoint(const Vector3& pos)
+    {
+        float start_sqr = (pos - ray.origin).lengthSquared;
+        float end_sqr = (pos - end).lengthSquared;
+        return (start_sqr < end_sqr) ? ray.origin : end;
+    }
+
+    Vector3 GetCenter()
+    {
+        return ray.direction * length / 2 + ray.origin;
     }
 };
 
@@ -214,7 +247,7 @@ class LineWorld
         lines.Push(l);
     }
 
-    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, float h)
+    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, float h, uint nodeId)
     {
         Vector3 dir = end - start;
         float lenSQR = dir.lengthSquared;
@@ -230,6 +263,7 @@ class LineWorld
         l.lengthSquared = lenSQR;
         l.angle = Atan2(dir.x, dir.z);
         l.maxHeight = h;
+        l.nodeId = nodeId;
         AddLine(l);
         return l;
     }
@@ -243,10 +277,10 @@ class LineWorld
             float h = GetCorners(n, p1, p2, p3, p4);
             if (h <= 0)
                 return;
-            CreateLine(type, p1, p2, h + adjustH);
-            CreateLine(type, p2, p3, h + adjustH);
-            CreateLine(type, p3, p4, h + adjustH);
-            CreateLine(type, p4, p1, h + adjustH);
+            CreateLine(type, p1, p2, h + adjustH, n.id);
+            CreateLine(type, p2, p3, h + adjustH, n.id);
+            CreateLine(type, p3, p4, h + adjustH, n.id);
+            CreateLine(type, p4, p1, h + adjustH, n.id);
         }
         else
         {
@@ -254,7 +288,7 @@ class LineWorld
             float h = GetCorners(n, p1, p2);
             if (h <= 0)
                 return;
-            CreateLine(type, p1, p2, h + adjustH);
+            CreateLine(type, p1, p2, h + adjustH, n.id);
         }
     }
 
@@ -323,5 +357,41 @@ class LineWorld
             if (dist < maxDistance)
                 cacheLines.Push(l);
         }
+    }
+
+    Line@ GetNearestCrossLine(Line@ l, const Vector3& linePt, float distError = 1.0f)
+    {
+        float minDistSQR = distError * distError;
+        float distSQRError = 0.5f * 0.5f;
+        Line@ ret = null;
+
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ line = lines[i];
+            if (l is line)
+                continue;
+
+            float start_sqr = (line.ray.origin - linePt).lengthSquared;
+            float end_sqr = (line.end - linePt).lengthSquared;
+            if (start_sqr > distSQRError && end_sqr > distSQRError)
+                continue;
+
+            float angle_diff = Abs(AngleDiff(l.angle - line.angle));
+            float diff_90 = Abs(angle_diff - 90);
+
+            // Print("in-angle=" + l.angle + " out-angle=" + line.angle + " angle_diff=" + angle_diff);
+
+            if (diff_90 > 15)
+                continue;
+
+            float diff_sqr = Min(start_sqr, end_sqr);
+            if (diff_sqr < minDistSQR)
+            {
+                @ret = line;
+                minDistSQR = diff_sqr;
+            }
+        }
+
+        return ret;
     }
 };

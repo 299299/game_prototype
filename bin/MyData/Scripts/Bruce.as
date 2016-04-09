@@ -482,7 +482,7 @@ class BruceHangOverState : PlayerHangOverState
     BruceHangOverState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Climb/Hang_Jump_Over_Fall");
+        AddMotion("BM_Climb/Hang_Climb_Up_Run");
     }
 };
 
@@ -492,7 +492,11 @@ class BruceHangMoveState : PlayerHangMoveState
     {
         super(c);
         AddMotion("BM_Climb/Hang_Left");
+        AddMotion("BM_Climb/Hang_Left_Convex");
+        AddMotion("BM_Climb/Hang_Left_Concave");
         AddMotion("BM_Climb/Hang_Right");
+        AddMotion("BM_Climb/Hang_Right_Convex");
+        AddMotion("BM_Climb/Hang_Right_Concave");
     }
 };
 
@@ -736,6 +740,12 @@ void CreateBruceClimbAnimations()
     Global_AddAnimation(preFix + "Hang_Left_End");
     Global_AddAnimation(preFix + "Hang_Right_Start");
     Global_AddAnimation(preFix + "Hang_Right_End");
+
+    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0.26, 0.34));
+    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR);
+    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR);
+    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR);
+
 
     // Dangle
     Global_CreateMotion(preFix + "Dangle_Left",  kMotion_X);

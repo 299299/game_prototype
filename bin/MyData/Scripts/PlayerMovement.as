@@ -787,6 +787,8 @@ class PlayerClimbAlignState : MultiMotionState
     float           targetRotation;
     float           climbBaseHeight = 0;
 
+    float           targetRotationAdd = 0;
+
     PlayerClimbAlignState(Character@ c)
     {
         super(c);
@@ -886,7 +888,7 @@ class PlayerClimbAlignState : MultiMotionState
             Vector3 v = ownner.GetNode().worldPosition;
             targetPosition = ownner.dockLine.Project(v);
             Vector3 dir = targetPosition - v;
-            targetRotation = Atan2(dir.x, dir.z);
+            targetRotation = AngleDiff(Atan2(dir.x, dir.z) + targetRotationAdd);
             float t = m.dockAlignTime;
             turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
             motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
@@ -1382,6 +1384,7 @@ class PlayerHangUpState : PlayerClimbAlignState
 class PlayerHangIdleState : SingleAnimationState
 {
     Vector3 futureProj;
+    Vector3 otherProj;
 
     PlayerHangIdleState(Character@ c)
     {
@@ -1423,16 +1426,44 @@ class PlayerHangIdleState : SingleAnimationState
 
     void StartHangMove(bool left)
     {
-        int index = left ? 0 : 1;
+        int index = left ? 0 : 3;
         PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
         Motion@ m = s.motions[index];
         Vector4 motionOut = m.GetKey(m.endTime);
         Node@ n = ownner.GetNode();
-        Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + n.worldPosition;
+        Vector3 myPos = n.worldPosition;
+        Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
         futureProj = ownner.dockLine.Project(futurePos);
+        Line@ oldLine = ownner.dockLine;
 
-        if (!ownner.dockLine.IsProjectPositionInLine(futureProj, 0.5f))
-            return;
+        if (!oldLine.IsProjectPositionInLine(futureProj, 0.5f))
+        {
+            Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+            towardDir = n.worldRotation * towardDir;
+            int towardHead = oldLine.GetTowardHead(Atan2(towardDir.x, towardDir.z));
+            Vector3 linePt = (towardHead == 0) ? oldLine.ray.origin : oldLine.end;
+            Line@ l = gLineWorld.GetNearestCrossLine(oldLine, linePt);
+            if (l is null)
+                return;
+
+            otherProj = l.Project(myPos);
+            int convexIndex = 1;
+            s.targetRotationAdd = 180;
+            if (l.IsProjectPositionInLine(otherProj, 0.0f))
+            {
+                convexIndex = 2;
+                s.targetRotationAdd = 0;
+            }
+            index += convexIndex;
+            ownner.AssignDockLine(l);
+            s.dockBlendingMethod = 1;
+
+            ownner.SetSceneTimeScale(0);
+        }
+        else
+        {
+            s.dockBlendingMethod = 2;
+        }
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.ChangeState(s.nameHash);
@@ -1441,6 +1472,7 @@ class PlayerHangIdleState : SingleAnimationState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(futureProj, 0.5f, RED, false);
+        debug.AddCross(otherProj, 0.5f, GREEN, false);
     }
 };
 
@@ -1454,13 +1486,13 @@ class PlayerHangOverState : MultiMotionState
     }
 };
 
-class PlayerHangMoveState : MultiMotionState
+class PlayerHangMoveState : PlayerClimbAlignState
 {
     PlayerHangMoveState(Character@ ownner)
     {
         super(ownner);
         SetName("HangMoveState");
-        physicsType = 0;
+        dockBlendingMethod = 1;
     }
 
     void OnMotionFinished()
