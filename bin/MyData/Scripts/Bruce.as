@@ -743,7 +743,7 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0.26, 0.34));
     Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR);
-    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR);
+    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.26, 0.34));
     Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR);
 
 

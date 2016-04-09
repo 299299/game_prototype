@@ -776,18 +776,17 @@ class PlayerCoverTransitionState : SingleMotionState
 class PlayerClimbAlignState : MultiMotionState
 {
     Array<Vector3>  targetOffsets;
-    int             targetMotionFlag = 0;
+    int             motionFlagAfterAlign;
+    int             motionFlagBeforeAlign = kMotion_ALL;
     float           alignTime = 0.1f;
 
     float           turnSpeed;
     Vector3         motionPositon;
     Vector3         targetPosition;
 
-    int             dockBlendingMethod = 0;
+    int             dockBlendingMethod;
     float           targetRotation;
-    float           climbBaseHeight = 0;
-
-    float           targetRotationAdd = 0;
+    float           climbBaseHeight;
 
     PlayerClimbAlignState(Character@ c)
     {
@@ -808,7 +807,7 @@ class PlayerClimbAlignState : MultiMotionState
             turnSpeed = 0;
             ownner.motion_velocity = Vector3(0, 0, 0);
 
-            if (targetMotionFlag != 0)
+            if (motionFlagAfterAlign != 0)
             {
                 Vector3 targetPos = PickDockOutTarget();
                 Motion@ m = motions[selectIndex];
@@ -819,11 +818,11 @@ class PlayerClimbAlignState : MultiMotionState
                 motionPositon = tWorld;
                 targetPosition = targetPos;
                 Vector3 v(0, 0, 0);
-                if (targetMotionFlag & kMotion_X != 0)
+                if (motionFlagAfterAlign & kMotion_X != 0)
                     v.x = diff.x;
-                if (targetMotionFlag & kMotion_Y != 0)
+                if (motionFlagAfterAlign & kMotion_Y != 0)
                     v.y = diff.y;
-                if (targetMotionFlag & kMotion_Z != 0)
+                if (motionFlagAfterAlign & kMotion_Z != 0)
                     v.z = diff.z;
                 ownner.motion_velocity = v;
                 Print(this.name + " animation:" + m.name + " OnMotionAlignTimeOut vel=" + v.ToString());
@@ -874,6 +873,7 @@ class PlayerClimbAlignState : MultiMotionState
     {
         debug.AddCross(motionPositon, 0.5f, RED, false);
         debug.AddCross(targetPosition, 0.5f, BLUE, false);
+        DebugDrawDirection(debug, targetPosition, targetRotation, BLUE, 2.0f);
         MultiMotionState::DebugDraw(debug);
     }
 
@@ -887,17 +887,33 @@ class PlayerClimbAlignState : MultiMotionState
             Motion@ m = motions[selectIndex];
             Vector3 v = ownner.GetNode().worldPosition;
             targetPosition = ownner.dockLine.Project(v);
-            Vector3 dir = targetPosition - v;
-            targetRotation = AngleDiff(Atan2(dir.x, dir.z) + targetRotationAdd);
-            float t = m.dockAlignTime;
-            turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
-            motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
+            float curAngle = ownner.GetCharacterAngle();
+            if (motionFlagBeforeAlign & kMotion_R == 0)
+                targetRotation = curAngle;
+            else
+            {
+                Vector3 dir = targetPosition - v;
+                targetRotation = Atan2(dir.x, dir.z);
+            }
 
+            float t = m.dockAlignTime;
+            turnSpeed = AngleDiff(targetRotation - curAngle) / t;
+            motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
             v = ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
             targetPosition = ownner.dockLine.Project(v);
             targetPosition = ownner.dockLine.FixProjectPosition(targetPosition, 0.1f);
 
-            ownner.motion_velocity = (targetPosition - motionPositon) / t;
+            Vector3 vel = (targetPosition - motionPositon) / t;
+            Vector3 filterV = Vector3(0, 0, 0);
+
+            if (motionFlagBeforeAlign & kMotion_X != 0)
+                filterV.x = vel.x;
+            if (motionFlagBeforeAlign & kMotion_Y != 0)
+                filterV.y = vel.y;
+            if (motionFlagBeforeAlign & kMotion_Z != 0)
+                filterV.z = vel.z;
+
+            ownner.motion_velocity = filterV;
             Print(this.name + " animation:" + m.name + " vel=" + ownner.motion_velocity.ToString());
         }
         else if (dockBlendingMethod == 2)
@@ -910,7 +926,7 @@ class PlayerClimbAlignState : MultiMotionState
             {
                 MultiMotionState::Enter(lastState);
 
-                if (targetMotionFlag != 0)
+                if (motionFlagAfterAlign != 0)
                 {
                     Motion@ motion = motions[selectIndex];
                     Vector3 targetPos = ownner.dockLine.Project(ownner.GetNode().worldPosition);
@@ -919,11 +935,11 @@ class PlayerClimbAlignState : MultiMotionState
                     Vector3 diff = targetPos - motionPos;
                     diff /= t;
                     Vector3 v(0, 0, 0);
-                    if (targetMotionFlag & kMotion_X != 0)
+                    if (motionFlagAfterAlign & kMotion_X != 0)
                         v.x = diff.x;
-                    if (targetMotionFlag & kMotion_Y != 0)
+                    if (motionFlagAfterAlign & kMotion_Y != 0)
                         v.y = diff.y;
-                    if (targetMotionFlag & kMotion_Z != 0)
+                    if (motionFlagAfterAlign & kMotion_Z != 0)
                         v.z = diff.z;
                     ownner.motion_velocity = v;
                     Print(this.name + " animation:" + motion.name + " after align vel=" + v.ToString());
@@ -982,7 +998,7 @@ class PlayerClimbOverState : PlayerClimbAlignState
 
     void Enter(State@ lastState)
     {
-        targetMotionFlag = 0;
+        motionFlagAfterAlign = 0;
         int index = PickTargetMotionByHeight(lastState);
         if (index == 0 || index == 3)
         {
@@ -1003,7 +1019,7 @@ class PlayerClimbOverState : PlayerClimbAlignState
                     index = 6;
                 else
                     index = 7;
-                targetMotionFlag = kMotion_Y;
+                motionFlagAfterAlign = kMotion_Y;
                 ownner.GetNode().vars[ANIMATION_INDEX] = index;
             }
         }
@@ -1037,7 +1053,7 @@ class PlayerClimbUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("ClimbUpState");
-        targetMotionFlag = kMotion_Y;
+        motionFlagAfterAlign = kMotion_Y;
         dockBlendingMethod = 1;
     }
 
@@ -1055,7 +1071,7 @@ class PlayerRailUpState : PlayerClimbAlignState
     {
         super(c);
         SetName("RailUpState");
-        targetMotionFlag = kMotion_XYZ;
+        motionFlagAfterAlign = kMotion_XYZ;
         dockBlendingMethod = 1;
     }
 
@@ -1448,12 +1464,8 @@ class PlayerHangIdleState : SingleAnimationState
 
             otherProj = l.Project(myPos);
             int convexIndex = 1;
-            s.targetRotationAdd = 180;
             if (l.IsProjectPositionInLine(otherProj, 0.0f))
-            {
                 convexIndex = 2;
-                s.targetRotationAdd = 0;
-            }
             index += convexIndex;
             ownner.AssignDockLine(l);
             s.dockBlendingMethod = 1;
@@ -1467,6 +1479,8 @@ class PlayerHangIdleState : SingleAnimationState
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.ChangeState(s.nameHash);
+
+        s.turnSpeed = 0;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1493,6 +1507,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
         super(ownner);
         SetName("HangMoveState");
         dockBlendingMethod = 1;
+        motionFlagBeforeAlign = kMotion_XZ;
     }
 
     void OnMotionFinished()
@@ -1580,7 +1595,7 @@ class PlayerClimbDownState : PlayerClimbAlignState
         super(c);
         SetName("ClimbDownState");
         dockBlendingMethod = 2;
-        targetMotionFlag = kMotion_Y;
+        motionFlagAfterAlign = kMotion_Y;
     }
 
     Vector3 PickDockOutTarget()

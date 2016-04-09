@@ -37,7 +37,7 @@ class Line
         return ray.Project(charPos);
     }
 
-    bool IsProjectPositionInLine(const Vector3& proj, float bound = 0.5f)
+    bool IsProjectPositionInLine(const Vector3& proj, float bound = 1.0f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -48,7 +48,7 @@ class Line
         return l_to_start >= bound && l_to_end >= bound;
     }
 
-    Vector3 FixProjectPosition(const Vector3& proj, float bound = 0.5f)
+    Vector3 FixProjectPosition(const Vector3& proj, float bound = 1.0f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -381,7 +381,7 @@ class LineWorld
 
             // Print("in-angle=" + l.angle + " out-angle=" + line.angle + " angle_diff=" + angle_diff);
 
-            if (diff_90 > 15)
+            if (diff_90 > 5)
                 continue;
 
             float diff_sqr = Min(start_sqr, end_sqr);
