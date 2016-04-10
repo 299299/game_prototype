@@ -23,7 +23,7 @@ class PlayerStandState : MultiAnimationState
             int index = ownner.RadialSelectAnimation(4);
             ownner.GetNode().vars[ANIMATION_INDEX] = index -1;
 
-            Print("Stand->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+            Print("Stand->Move|Turn index=" + index + " hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
 
             if (index == 0)
                 ownner.ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
@@ -89,8 +89,8 @@ class PlayerTurnState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        CaculateTargetRotation();
         ownner.SetTarget(null);
+        CaculateTargetRotation();
         MultiMotionState::Enter(lastState);
         Motion@ motion = motions[selectIndex];
         float alignTime = motion.endTime;
@@ -139,6 +139,7 @@ class PlayerWalkState : SingleMotionState
         // if the difference is large, then turn 180 degrees
         if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
+            Print(this.name + " turn 180!!");
             _node.vars[ANIMATION_INDEX] = 1;
             ownner.ChangeState("TurnState");
             return;
@@ -1419,9 +1420,8 @@ class PlayerHangIdleState : SingleAnimationState
     {
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
-            int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
-            Print(this.name + " input index=" + index);
-
+            int index = ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
+            // Print(this.name + " input index=" + index);
             if (index == 0)
             {
                 ownner.ChangeState("HangOverState");

@@ -579,7 +579,7 @@ class BruceClimbDownState : PlayerClimbDownState
         AddMotion("BM_Climb/Walk_Climb_Down_128");
         AddMotion("BM_Climb/Run_Climb_Down_128");
         AddMotion("BM_Climb/Crouch_Down_128");
-        animSpeed = 1.25f;
+        animSpeed = 1.5f;
     }
 };
 

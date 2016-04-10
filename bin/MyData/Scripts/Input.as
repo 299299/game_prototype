@@ -30,18 +30,24 @@ class GameInput
     Vector2  m_rightAxis = Vector2(0, 30);
 
     float mouseSensitivity = 0.125f;
-    float joySensitivity = 0.5;
+    float joySensitivity = 0.75;
     float joyLookDeadZone = 0.05;
 
     int   m_leftStickHoldFrames = 0;
 
-    uint lastMiddlePressedTime = 0;
+    uint  lastMiddlePressedTime = 0;
+
+    bool  flipRightStick = false;
 
     GameInput()
     {
         JoystickState@ js = GetJoystick();
         if (js !is null)
-            Print("joystick " + js.name);
+        {
+            Print("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
+            if (js.numHats == 1)
+                flipRightStick = true;
+        }
     }
 
     void Update(float dt)
@@ -121,6 +127,11 @@ class GameInput
             {
                 ret.x = joystick.axisPosition[0];
                 ret.y = -joystick.axisPosition[1];
+
+                if (Abs(ret.x) < 0.01)
+                    ret.x = 0.0f;
+                if (Abs(ret.y) < 0.01)
+                    ret.y = 0.0f;
             }
         }
         else
@@ -146,6 +157,12 @@ class GameInput
             {
                 float lookX = joystick.axisPosition[2];
                 float lookY = joystick.axisPosition[3];
+                if (flipRightStick)
+                {
+                    lookX = joystick.axisPosition[3];
+                    lookY = joystick.axisPosition[2];
+                }
+
                 Vector2 rightAxis = m_rightAxis;
 
                 if (lookX < -joyLookDeadZone)
@@ -303,6 +320,9 @@ class GameInput
 
     bool IsRunHolding()
     {
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+            return joystick.buttonDown[4];
         return input.keyDown[KEY_LSHIFT];
     }
 
