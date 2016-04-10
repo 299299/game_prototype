@@ -176,8 +176,8 @@ void RotateAnimation(const String&in animationFile, float rotateAngle)
         return;
     }
 
-    AnimationTrack@ translateTrack = anim.GetTrack(TranslateBoneName);
-    AnimationTrack@ rotateTrack = anim.GetTrack(RotateBoneName);
+    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion q(0, rotateAngle, 0);
     Node@ rotateNode = curRig.rotateNode;
 
@@ -217,7 +217,7 @@ void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
         return;
     }
 
-    AnimationTrack@ translateTrack = anim.GetTrack(TranslateBoneName);
+    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     if (translateTrack !is null)
     {
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
@@ -238,7 +238,7 @@ void CollectBoneWorldPositions(MotionRig@ rig, const String&in animationFile, co
         return;
     }
 
-    AnimationTrack@ track = anim.GetTrack(boneName);
+    AnimationTrack@ track = anim.tracks[boneName];
     if (track is null)
         return;
 
@@ -290,7 +290,7 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
         return;
     }
 
-    AnimationTrack@ translateTrack = anim.GetTrack(TranslateBoneName);
+    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     if (translateTrack is null)
     {
         Print(animationFile + " translation track not found!!!");
@@ -356,14 +356,14 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         return 0;
     }
 
-    AnimationTrack@ translateTrack = anim.GetTrack(TranslateBoneName);
+    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     if (translateTrack is null)
     {
         Print(animationFile + " translation track not found!!!");
         return 0;
     }
 
-    AnimationTrack@ rotateTrack = anim.GetTrack(RotateBoneName);
+    AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
     Node@ rotateNode = curRig.rotateNode;
     Node@ translateNode = curRig.translateNode;

@@ -298,7 +298,7 @@ class Ragdoll : ScriptObject
 
             for (uint i=0; i<boneNodes.length; ++i)
             {
-                AnimationTrack@ track = anim.GetTrack(boneNodes[i].name);
+                AnimationTrack@ track = anim.tracks[boneNodes[i].name];
                 if (track is null)
                     continue;
 
