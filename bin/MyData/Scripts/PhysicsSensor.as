@@ -35,7 +35,7 @@ class PhysicsSensor
         float addlen = 30.0f;
         end.y -= addlen;
 
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.ConvexCast(shape, start, Quaternion(), end, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.ConvexCast(shape, start, Quaternion(), end, Quaternion(), COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_PROP);
 
         if (result.body !is null)
         {
