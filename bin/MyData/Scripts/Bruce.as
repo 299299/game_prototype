@@ -741,10 +741,10 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Right_Start", 0);
     Global_CreateMotion(preFix + "Hang_Right_End", 0);
 
-    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0.26, 0.5));
-    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0.26, 0.5));
-    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.26, 0.5));
-    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0.26, 0.5));
+    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
 
 
     // Dangle

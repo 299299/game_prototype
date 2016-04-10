@@ -390,7 +390,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="14.2828 0 0.866496" />
+		<attribute name="Position" value="14.2828 -0.200026 0.866496" />
 		<attribute name="Rotation" value="1 4.48876e-18 0 -0" />
 		<attribute name="Scale" value="0.5 13 5" />
 		<attribute name="Variables" />
@@ -402,7 +402,7 @@
 		<component type="CollisionShape" id="143" />
 		<component type="RigidBody" id="144">
 			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
-			<attribute name="Physics Position" value="14.2828 0 0.866496" />
+			<attribute name="Physics Position" value="14.2828 -0.200026 0.866496" />
 		</component>
 	</node>
 	<node id="88">

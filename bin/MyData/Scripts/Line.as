@@ -251,7 +251,7 @@ class LineWorld
     {
         Vector3 dir = end - start;
         float lenSQR = dir.lengthSquared;
-        float maxError = 1.5f;
+        float maxError = 2.0f;
         if (lenSQR < maxError*maxError)
             return null;
         Line@ l = Line();

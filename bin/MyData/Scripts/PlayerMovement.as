@@ -1401,6 +1401,7 @@ class PlayerHangIdleState : SingleAnimationState
 {
     Vector3 futureProj;
     Vector3 otherProj;
+    bool drawDebug = false;
 
     PlayerHangIdleState(Character@ c)
     {
@@ -1415,6 +1416,8 @@ class PlayerHangIdleState : SingleAnimationState
     {
         ownner.SetVelocity(Vector3(0,0,0));
         ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, animSpeed);
+        otherProj = futureProj = Vector3(0,0,0);
+        drawDebug = false;
         CharacterState::Enter(lastState);
     }
 
@@ -1451,6 +1454,7 @@ class PlayerHangIdleState : SingleAnimationState
         Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
         futureProj = ownner.dockLine.Project(futurePos);
         Line@ oldLine = ownner.dockLine;
+        drawDebug = true;
 
         if (!oldLine.IsProjectPositionInLine(futureProj, 0.5f))
         {
@@ -1476,8 +1480,9 @@ class PlayerHangIdleState : SingleAnimationState
             ownner.AssignDockLine(l);
             s.dockBlendingMethod = 1;
             s.linePt = linePt;
+            @s.oldLine = oldLine;
 
-            // ownner.SetSceneTimeScale(0);
+            ownner.SetSceneTimeScale(0);
         }
         else
         {
@@ -1492,6 +1497,8 @@ class PlayerHangIdleState : SingleAnimationState
 
     void DebugDraw(DebugRenderer@ debug)
     {
+        if (!drawDebug)
+            return;
         debug.AddCross(futureProj, 0.5f, RED, false);
         debug.AddCross(otherProj, 0.5f, GREEN, false);
     }
@@ -1510,6 +1517,7 @@ class PlayerHangOverState : MultiMotionState
 class PlayerHangMoveState : PlayerClimbAlignState
 {
     Vector3 linePt;
+    Line@ oldLine;
 
     PlayerHangMoveState(Character@ ownner)
     {
@@ -1522,6 +1530,23 @@ class PlayerHangMoveState : PlayerClimbAlignState
     void OnMotionFinished()
     {
         ownner.ChangeState("HangIdleState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        PlayerClimbAlignState::Enter(lastState);
+        if (oldLine !is null)
+        {
+            float y_diff = ownner.dockLine.end.y - oldLine.end.y;
+            Print(this.name + " dock line y diff=" + y_diff);
+            ownner.motion_velocity.y = y_diff / motions[selectIndex].dockAlignTime;
+        }
+    }
+
+    void Exit(State@ nextState)
+    {
+        @oldLine = null;
+        PlayerClimbAlignState::Exit(nextState);
     }
 
     void DebugDraw(DebugRenderer@ debug)
