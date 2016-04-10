@@ -736,15 +736,15 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Hang_Left",  kMotion_X);
     Global_CreateMotion(preFix + "Hang_Right",  kMotion_X);
-    Global_AddAnimation(preFix + "Hang_Left_Start");
-    Global_AddAnimation(preFix + "Hang_Left_End");
-    Global_AddAnimation(preFix + "Hang_Right_Start");
-    Global_AddAnimation(preFix + "Hang_Right_End");
+    Global_CreateMotion(preFix + "Hang_Left_Start", 0);
+    Global_CreateMotion(preFix + "Hang_Left_End", 0);
+    Global_CreateMotion(preFix + "Hang_Right_Start", 0);
+    Global_CreateMotion(preFix + "Hang_Right_End", 0);
 
-    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0.26, 0.34));
-    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR);
-    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.26, 0.34));
-    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR);
+    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0.26, 0.5));
+    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0.26, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.26, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0.26, 0.5));
 
 
     // Dangle
@@ -1051,5 +1051,26 @@ void AddBruceAnimationTriggers()
 
     if (game_type == 0)
         AddBruceCombatAnimationTriggers();
+    else if (game_type == 1)
+    {
+        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle"), Vector3(0, -3.25f, 0));
+        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Left"), Vector3(0, -3.25f, 0));
+        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Right"), Vector3(0, -3.25f, 0));
+
+        String prefix = "BM_Climb/";
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Left"), Vector3(0, 0.4f, 0));
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Right"), Vector3(0, 0.4f, 0));
+
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_Start"), Vector3(0, 0.4f, 0));
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_End"), Vector3(0, 0.4f, 0));
+
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_Start"), Vector3(0, 0.4f, 0));
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_End"), Vector3(0, 0.4f, 0));
+
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_Convex"), Vector3(0, 0.4f, 0));
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_Convex"), Vector3(0, 0.4f, 0));
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_Concave"), Vector3(0, 0.4f, 0));
+        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_Concave"), Vector3(0, 0.4f, 0));
+    }
 }
 

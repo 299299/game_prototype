@@ -89,7 +89,7 @@ class Line
 
     int GetTowardHead(float towardAngle)
     {
-        float angleDiff = Abs(angle - towardAngle);
+        float angleDiff = Abs(AngleDiff(angle - towardAngle));
         if (angleDiff > 90)
             return 0;
         return 1;
@@ -225,11 +225,11 @@ class LineWorld
     LineWorld()
     {
         debugColors.Resize(LINE_TYPE_NUM);
-        debugColors[LINE_CLIMB_OVER] = GREEN;
-        debugColors[LINE_RAILING] = BLUE;
-        debugColors[LINE_COVER] = YELLOW;
+        debugColors[LINE_CLIMB_OVER] = Color(0.4f, 0.75f, 0.3f);
+        debugColors[LINE_RAILING] = Color(0.25f, 0.25f, 0.75f);
+        debugColors[LINE_COVER] = Color(0.75f, 0.15f, 0.15f);
         debugColors[LINE_CLIMB_UP] = Color(0.25f, 0.5f, 0.75f);
-        debugColors[LINE_CLIMB_HANG] = Color(0.65f, 0.25f, 0.25f);
+        debugColors[LINE_CLIMB_HANG] = Color(0.65f, 0.25f, 0.55f);
         debugColors[LINE_DANGLE] = Color(0.35f, 0.75f, 0.25f);
     }
 
@@ -251,7 +251,8 @@ class LineWorld
     {
         Vector3 dir = end - start;
         float lenSQR = dir.lengthSquared;
-        if (lenSQR < 0.5f*0.5f)
+        float maxError = 1.5f;
+        if (lenSQR < maxError*maxError)
             return null;
         Line@ l = Line();
         l.ray.origin = start;
@@ -362,7 +363,7 @@ class LineWorld
     Line@ GetNearestCrossLine(Line@ l, const Vector3& linePt, float distError = 1.0f)
     {
         float minDistSQR = distError * distError;
-        float distSQRError = 0.5f * 0.5f;
+        float distSQRError = 0.25f * 0.25f;
         Line@ ret = null;
 
         for (uint i=0; i<lines.length; ++i)

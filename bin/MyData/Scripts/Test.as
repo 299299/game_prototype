@@ -392,10 +392,10 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     {
         // gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
+        gLineWorld.DebugDraw(debug);
         Player@ player = GetPlayer();
         if (player !is null)
             player.DebugDraw(debug);
-        gLineWorld.DebugDraw(debug);
     }
     if (drawDebug > 1)
     {
@@ -1062,14 +1062,5 @@ class BM_Game_MotionManager : MotionManager
         AddThugAnimationTriggers();
         AddBruceAnimationTriggers();
         AddCatwomanAnimationTriggers();
-        if (game_type == 1)
-        {
-            TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle"), Vector3(0, -3.25f, 0));
-            TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Left"), Vector3(0, -3.25f, 0));
-            TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Right"), Vector3(0, -3.25f, 0));
-
-            TranslateAnimation(GetAnimationName("BM_Climb/Hang_Left"), Vector3(0, 0.4f, 0));
-            TranslateAnimation(GetAnimationName("BM_Climb/Hang_Right"), Vector3(0, 0.4f, 0));
-        }
     }
 };

@@ -539,6 +539,8 @@ class Player : Character
         // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
         // sensor.DebugDraw(debug);
         debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
+        if (dockLine !is null)
+            debug.AddLine(dockLine.ray.origin, dockLine.end, YELLOW, false);
     }
 
     void Update(float dt)
@@ -592,14 +594,22 @@ class Player : Character
             {
                 Vector3 proj = l.Project(charPos);
                 float h_diff = proj.y - charPos.y;
+                // Print("Climb-Up h_diff=" + h_diff);
                 if (h_diff <= 0.01f)
                 {
                     float distSQR = (proj- charPos).lengthSquared;
                     // Print("distSQR = " + distSQR);
                     if (distSQR < 1.0f*1.0f)
                     {
+                        Vector3 futurePos = GetNode().worldRotation * Vector3(0, 0, 2.0f) + GetNode().worldPosition;
+                        Vector3 groundPos = sensor.GetGround(futurePos);
+                        if (groundPos.y - GetNode().worldPosition.y < -4.0f)
+                            return false;
+
+                        PlayerClimbDownState@ s = cast<PlayerClimbDownState>(FindState("ClimbDownState"));
+                        s.groundPos = groundPos;
                         AssignDockLine(l);
-                        ChangeState("ClimbDownState");
+                        ChangeState(s.nameHash);
                         return true;
                     }
                     return false;
