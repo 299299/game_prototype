@@ -329,7 +329,7 @@ class GameInput
     String GetDebugText()
     {
         String ret =   "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
-                       " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " hold-frames" + m_leftStickHoldFrames + " left-magnitude=" + m_leftStickMagnitude +
+                       " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " hold-frames=" + m_leftStickHoldFrames + " left-magnitude=" + m_leftStickMagnitude +
                        " rightStick:(" + m_rightStickX + "," + m_rightStickY + ")\n";
 
         JoystickState@ joystick = GetJoystick();

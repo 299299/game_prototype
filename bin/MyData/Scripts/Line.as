@@ -37,7 +37,7 @@ class Line
         return ray.Project(charPos);
     }
 
-    bool IsProjectPositionInLine(const Vector3& proj, float bound = 1.0f)
+    bool IsProjectPositionInLine(const Vector3& proj, float bound = 0.5f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -48,7 +48,7 @@ class Line
         return l_to_start >= bound && l_to_end >= bound;
     }
 
-    Vector3 FixProjectPosition(const Vector3& proj, float bound = 1.0f)
+    Vector3 FixProjectPosition(const Vector3& proj, float bound = 0.5f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -163,6 +163,12 @@ class Line
     Vector3 GetCenter()
     {
         return ray.direction * length / 2 + ray.origin;
+    }
+
+    Vector3 GetLinePoint(Vector3 dir)
+    {
+        int towardHead = GetTowardHead(Atan2(dir.x, dir.z));
+        return (towardHead == 0) ? ray.origin : end;
     }
 };
 
@@ -365,7 +371,6 @@ class LineWorld
     {
         float distSQRError = 0.25f * 0.25f;
         float distSQRError1 = 0.5f * 0.5f;
-        Line@ ret = null;
         cacheLines.Clear();
         //cacheError.Clear();
 
@@ -373,6 +378,9 @@ class LineWorld
         {
             Line@ line = lines[i];
             if (l is line)
+                continue;
+
+            if (l.type != line.type)
                 continue;
 
             Vector3 proj = line.Project(linePt);
@@ -396,4 +404,50 @@ class LineWorld
             //cacheError.Push(proj_sqr);
         }
     }
+
+    Line@ FindCloseParallelLine(Line@ l, const Vector3& linePt, float maxHeightDiff, float maxDistance)
+    {
+        Line@ ret = null;
+        float maxDistanceSQR = maxDistance*maxDistance;
+        float maxDistError = 0.5f;
+
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ line = lines[i];
+            if (l is line)
+                continue;
+
+            if (l.type != line.type)
+                continue;
+
+            float angle_diff = Abs(AngleDiff(l.angle - line.angle));
+            if (angle_diff > 5)
+                continue;
+
+            float start_sqr = (line.ray.origin - linePt).lengthSquared;
+            float end_sqr = (line.end - linePt).lengthSquared;
+            if (start_sqr > maxDistanceSQR && end_sqr > maxDistanceSQR)
+                continue;
+
+            float heightDiff = Abs(l.end.y - line.end.y);
+            if (heightDiff > maxHeightDiff)
+                continue;
+
+            Vector3 v = linePt;
+            v.y = line.end.y;
+            float dist = line.ray.Distance(v);
+            if (dist > maxDistError)
+                continue;
+
+            float dist_sqr = Min(start_sqr, end_sqr);
+            if (dist_sqr < maxDistanceSQR)
+            {
+                maxDistanceSQR = dist_sqr;
+                @ret = line;
+            }
+        }
+
+        return ret;
+    }
 };
+

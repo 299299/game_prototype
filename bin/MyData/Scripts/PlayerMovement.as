@@ -788,6 +788,7 @@ class PlayerClimbAlignState : MultiMotionState
     int             dockBlendingMethod;
     float           targetRotation;
     float           climbBaseHeight;
+    float           dockInTargetBound = 0.25f;
 
     PlayerClimbAlignState(Character@ c)
     {
@@ -870,6 +871,13 @@ class PlayerClimbAlignState : MultiMotionState
         return ownner.dockLine.Project(ownner.GetNode().worldPosition);
     }
 
+    Vector3 PickDockInTarget()
+    {
+        Vector3 v = ownner.dockLine.Project(motionPositon);
+        v = ownner.dockLine.FixProjectPosition(v, dockInTargetBound);
+        return v;
+    }
+
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(motionPositon, 0.5f, RED, false);
@@ -900,9 +908,7 @@ class PlayerClimbAlignState : MultiMotionState
             float t = m.dockAlignTime;
             turnSpeed = AngleDiff(targetRotation - curAngle) / t;
             motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
-            // v = ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
-            targetPosition = ownner.dockLine.Project(motionPositon);
-            targetPosition = ownner.dockLine.FixProjectPosition(targetPosition, 0.1f);
+            targetPosition = PickDockInTarget();
 
             Vector3 vel = (targetPosition - motionPositon) / t;
             Vector3 filterV = Vector3(0, 0, 0);
@@ -1351,7 +1357,6 @@ class PlayerRailTurn180State : SingleMotionState
 
         float diff = AngleDiff(targetRotation - motionTargetAngle);
         turnSpeed = diff / alignTime;
-        combatReady = true;
         Print(this.name + " motionTargetAngle=" + String(motionTargetAngle) + " targetRotation=" + targetRotation + " diff=" + diff + " turnSpeed=" + turnSpeed);
         SingleMotionState::Enter(lastState);
     }
@@ -1462,13 +1467,14 @@ class PlayerHangMoveState : PlayerClimbAlignState
     Vector3         linePt;
     Line@           oldLine;
     bool            drawDebug;
+    int             numOfAnimations = 4;
+    int             type = 0;
 
     PlayerHangMoveState(Character@ ownner)
     {
         super(ownner);
         SetName("HangMoveState");
         dockBlendingMethod = 1;
-        motionFlagBeforeAlign = kMotion_XZ;
     }
 
     void OnMotionFinished()
@@ -1478,7 +1484,11 @@ class PlayerHangMoveState : PlayerClimbAlignState
 
     void Enter(State@ lastState)
     {
+        motionFlagBeforeAlign = kMotion_XZR;
+        if (type == 1)
+            motionFlagBeforeAlign = kMotion_XZ;
         PlayerClimbAlignState::Enter(lastState);
+        Print(this.name + " enter type = " + type);
         if (oldLine !is null)
         {
             float y_diff = ownner.dockLine.end.y - oldLine.end.y;
@@ -1506,7 +1516,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
 
     bool TestHangMove(bool left)
     {
-        int index = left ? 0 : 3;
+        int index = left ? 0 : numOfAnimations;
         Motion@ m = motions[index];
         Vector4 motionOut = m.GetKey(m.endTime);
         Node@ n = ownner.GetNode();
@@ -1520,13 +1530,11 @@ class PlayerHangMoveState : PlayerClimbAlignState
         {
             Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
             towardDir = n.worldRotation * towardDir;
-            float towardAngle = Atan2(towardDir.x, towardDir.z);
-            // Print("line.angle=" + oldLine.angle + " towardAngle = " + towardAngle);
-            int towardHead = oldLine.GetTowardHead(towardAngle);
-            Vector3 linePt = (towardHead == 0) ? oldLine.ray.origin : oldLine.end;
+            Vector3 linePt = oldLine.GetLinePoint(towardDir);
             gLineWorld.CollectCloseCrossLine(oldLine, linePt);
             if (gLineWorld.cacheLines.empty)
             {
+                @oldLine = null;
                 ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
                 ownner.ChangeState("HangMoveStartState");
                 return false;
@@ -1583,13 +1591,17 @@ class PlayerHangMoveState : PlayerClimbAlignState
             }
 
             if (bestLine is null)
+            {
+                @oldLine = null;
                 return false;
+            }
 
             index += convexIndex;
             ownner.AssignDockLine(bestLine);
             dockBlendingMethod = 1;
             linePt = linePt;
             drawDebug = true;
+            type = 1;
 
             // ownner.SetSceneTimeScale(0);
         }
@@ -1597,20 +1609,42 @@ class PlayerHangMoveState : PlayerClimbAlignState
         {
             dockBlendingMethod = 2;
             @oldLine = null;
+            type = 0;
         }
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         return true;
     }
+
+    void StartHangJump(Line@ line, const Vector3&in linePt, bool left)
+    {
+        @oldLine = ownner.dockLine;
+        int index = left ? 3 : 7;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        dockBlendingMethod = 1;
+        ownner.AssignDockLine(line);
+        type = 2;
+        dockInTargetBound = 1.5f;
+        // ownner.SetSceneTimeScale(0);
+        // Vector3 newLinePoint = line.GetNearPoint(linePt);
+    }
 };
 
 class PlayerHangMoveStartState : MultiAnimationState
 {
+    bool        searched = false;
+
     PlayerHangMoveStartState(Character@ c)
     {
         super(c);
         SetName("HangMoveStartState");
         physicsType = 0;
+    }
+
+    void Enter(State@ lastState)
+    {
+        searched = false;
+        MultiAnimationState::Enter(lastState);
     }
 
     void Update(float dt)
@@ -1624,9 +1658,36 @@ class PlayerHangMoveStartState : MultiAnimationState
             }
 
             if (backToIdle)
+            {
                 ownner.ChangeState("HangIdleState");
+                return;
+            }
+
+            if (SearchLine())
+                return;
         }
+
         CharacterState::Update(dt);
+    }
+
+    bool SearchLine()
+    {
+        if (searched)
+            return false;
+
+        searched = true;
+        bool left = selectIndex == 0;
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = ownner.GetNode().worldRotation * towardDir;
+        Vector3 linePt = ownner.dockLine.GetLinePoint(towardDir);
+        Line@ l = gLineWorld.FindCloseParallelLine(ownner.dockLine, linePt, 1.0f, 10.0f);
+        if (l is null)
+            return false;
+
+        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
+        s.StartHangJump(l, linePt, left);
+        ownner.ChangeState("HangMoveState");
+        return true;
     }
 };
 
@@ -1637,6 +1698,16 @@ class PlayerHangMoveEndState : MultiAnimationState
         super(c);
         SetName("HangMoveEndState");
         physicsType = 0;
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("HangIdleState");
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(animations.length);
     }
 };
 
