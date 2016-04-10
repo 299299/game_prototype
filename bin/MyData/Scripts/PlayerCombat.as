@@ -998,7 +998,7 @@ class PlayerBeatDownHitState : MultiMotionState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 1.0f, RED, false);
-        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW);
+        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW);
     }
 
     String GetDebugText()

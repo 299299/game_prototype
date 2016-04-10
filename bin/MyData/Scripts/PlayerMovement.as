@@ -114,7 +114,7 @@ class PlayerTurnState : MultiMotionState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW, 2.0f);
+        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW, 2.0f);
     }
 };
 
@@ -303,7 +303,7 @@ class PlayerRunTurn180State : SingleMotionState
     void DebugDraw(DebugRenderer@ debug)
     {
         SingleMotionState::DebugDraw(debug);
-        DebugDrawDirection(debug, ownner.GetNode(), targetAngle, Color(0.75f, 0.5f, 0.45f), 2.0f);
+        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetAngle, Color(0.75f, 0.5f, 0.45f), 2.0f);
         debug.AddCross(targetPos, 0.5f, YELLOW, false);
     }
 };
@@ -1371,7 +1371,7 @@ class PlayerRailTurn180State : SingleMotionState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        DebugDrawDirection(debug, ownner.GetNode(), targetRotation, YELLOW, 2.0f);
+        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW, 2.0f);
         debug.AddCross(targetPosition, 0.5f, RED, false);
     }
 };
@@ -1420,7 +1420,7 @@ class PlayerHangIdleState : SingleAnimationState
     {
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
-            int index = ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
+            int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
             // Print(this.name + " input index=" + index);
             if (index == 0)
             {

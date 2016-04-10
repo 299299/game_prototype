@@ -88,16 +88,7 @@ int GetAttackType(const String&in name)
     return ATTACK_PUNCH;
 }
 
-void DebugDrawDirection(DebugRenderer@ debug, Node@ _node, const Quaternion&in rotation, const Color&in color, float radius = 1.0, float yAdjust = 0)
-{
-    Vector3 dir = rotation * Vector3(0, 0, 1);
-    float angle = Atan2(dir.x, dir.z);
-    Vector3 start = _node.worldPosition;
-    start.y += yAdjust;
-    DebugDrawDirection(debug, start, angle, color, radius, yAdjust);
-}
-
-void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle, const Color&in color, float radius = 1.0, float yAdjust = 0)
+void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle, const Color&in color, float radius = 1.0)
 {
     Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
     debug.AddLine(start, end, color, false);

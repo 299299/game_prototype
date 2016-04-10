@@ -54,7 +54,6 @@ String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 40;
 
-int debugLevel = 0;
 int freeze_ai = 0;
 int test_beat_index = 1;
 bool base_on_player = false;
