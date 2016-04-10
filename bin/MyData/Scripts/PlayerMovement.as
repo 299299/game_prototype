@@ -1399,10 +1399,6 @@ class PlayerHangUpState : PlayerClimbAlignState
 
 class PlayerHangIdleState : SingleAnimationState
 {
-    Vector3 futureProj;
-    Vector3 otherProj;
-    bool drawDebug = false;
-
     PlayerHangIdleState(Character@ c)
     {
         super(c);
@@ -1416,8 +1412,6 @@ class PlayerHangIdleState : SingleAnimationState
     {
         ownner.SetVelocity(Vector3(0,0,0));
         ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, animSpeed);
-        otherProj = futureProj = Vector3(0,0,0);
-        drawDebug = false;
         CharacterState::Enter(lastState);
     }
 
@@ -1447,75 +1441,8 @@ class PlayerHangIdleState : SingleAnimationState
     {
         int index = left ? 0 : 3;
         PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
-        Motion@ m = s.motions[index];
-        Vector4 motionOut = m.GetKey(m.endTime);
-        Node@ n = ownner.GetNode();
-        Vector3 myPos = n.worldPosition;
-        Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
-        futureProj = ownner.dockLine.Project(futurePos);
-        Line@ oldLine = ownner.dockLine;
-        drawDebug = true;
-
-        if (!oldLine.IsProjectPositionInLine(futureProj, 0.5f))
-        {
-            Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
-            towardDir = n.worldRotation * towardDir;
-            float towardAngle = Atan2(towardDir.x, towardDir.z);
-            Print("line.angle=" + oldLine.angle + " towardAngle = " + towardAngle);
-            int towardHead = oldLine.GetTowardHead(towardAngle);
-            Vector3 linePt = (towardHead == 0) ? oldLine.ray.origin : oldLine.end;
-            gLineWorld.CollectCloseCrossLine(oldLine, linePt);
-            if (gLineWorld.cacheLines.empty)
-            {
-                ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
-                ownner.ChangeState("HangMoveStartState");
-                return;
-            }
-
-            Print(this.name + " CollectCloseCrossLine num=" + gLineWorld.cacheLines.length);
-
-            Line@ bestLine = null;
-            int convexIndex = 1;
-            float maxError = 1.0f;
-
-            // choose lines
-            for (uint i=0; i<gLineWorld.cacheLines.length; ++i)
-            {
-                Line@ l = gLineWorld.cacheLines[i];
-                otherProj = l.Project(myPos);
-                if (l.IsProjectPositionInLine(otherProj, 0.0f))
-                {
-                    convexIndex = 2;
-                    @bestLine = l;
-                    break;
-                }
-            }
-
-            index += convexIndex;
-            ownner.AssignDockLine(bestLine);
-            s.dockBlendingMethod = 1;
-            s.linePt = linePt;
-            @s.oldLine = oldLine;
-
-            // ownner.SetSceneTimeScale(0);
-        }
-        else
-        {
-            s.dockBlendingMethod = 2;
-        }
-
-        ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        ownner.ChangeState(s.nameHash);
-
-        s.turnSpeed = 0;
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        if (!drawDebug)
-            return;
-        debug.AddCross(futureProj, 0.5f, RED, false);
-        debug.AddCross(otherProj, 0.5f, GREEN, false);
+        if (s.TestHangMove(left))
+            ownner.ChangeState(s.nameHash);
     }
 };
 
@@ -1531,8 +1458,10 @@ class PlayerHangOverState : MultiMotionState
 
 class PlayerHangMoveState : PlayerClimbAlignState
 {
-    Vector3 linePt;
-    Line@ oldLine;
+    Vector3         r1, r2, r3;
+    Vector3         linePt;
+    Line@           oldLine;
+    bool            drawDebug;
 
     PlayerHangMoveState(Character@ ownner)
     {
@@ -1566,8 +1495,112 @@ class PlayerHangMoveState : PlayerClimbAlignState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(linePt, 0.5f, Color(0.25, 0.65, 0.35), false);
+        if (drawDebug)
+        {
+            debug.AddCross(linePt, 0.5f, Color(0.25, 0.65, 0.35), false);
+            debug.AddLine(r1, r2, Color(0.5, 0.45, 0.75), false);
+            debug.AddLine(r2, r3, Color(0.5, 0.45, 0.75), false);
+        }
         PlayerClimbAlignState::DebugDraw(debug);
+    }
+
+    bool TestHangMove(bool left)
+    {
+        int index = left ? 0 : 3;
+        Motion@ m = motions[index];
+        Vector4 motionOut = m.GetKey(m.endTime);
+        Node@ n = ownner.GetNode();
+        Vector3 myPos = n.worldPosition;
+        Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
+        Vector3 futureProj = ownner.dockLine.Project(futurePos);
+        @oldLine = ownner.dockLine;
+        drawDebug = false;
+
+        if (!oldLine.IsProjectPositionInLine(futureProj, 0.5f))
+        {
+            Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+            towardDir = n.worldRotation * towardDir;
+            float towardAngle = Atan2(towardDir.x, towardDir.z);
+            // Print("line.angle=" + oldLine.angle + " towardAngle = " + towardAngle);
+            int towardHead = oldLine.GetTowardHead(towardAngle);
+            Vector3 linePt = (towardHead == 0) ? oldLine.ray.origin : oldLine.end;
+            gLineWorld.CollectCloseCrossLine(oldLine, linePt);
+            if (gLineWorld.cacheLines.empty)
+            {
+                ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
+                ownner.ChangeState("HangMoveStartState");
+                return false;
+            }
+
+            Print(this.name + " CollectCloseCrossLine num=" + gLineWorld.cacheLines.length);
+
+            r1 = myPos;
+            r1.y += 0.5f;
+
+            Vector3 v = linePt - r1;
+            v.y = 0;
+            Vector3 dir = towardDir.Normalized();
+            float len = v.length + 1.5f;
+            r2 = r1 + dir * len;
+            Ray ray;
+            ray.Define(r1, dir);
+            bool hit1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE).body !is null;
+            dir = n.worldRotation * Vector3(0, 0, 1);
+            dir.Normalize();
+            len = 4.0f;
+            r3 = r2 + dir * len;
+            ray.Define(r2, dir);
+            bool hit2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE).body !is null;
+
+            Print(this.name + " hit1=" + hit1 + " hit2=" + hit2);
+
+            Line@ bestLine = null;
+            int convexIndex = 1;
+
+            // choose lines
+            for (uint i=0; i<gLineWorld.cacheLines.length; ++i)
+            {
+                Line@ l = gLineWorld.cacheLines[i];
+                Vector3 otherProj = l.Project(myPos);
+                convexIndex = l.IsProjectPositionInLine(otherProj, 0.0f) ? 2 : 1;
+
+                if (convexIndex == 1)
+                {
+                    if (hit1)
+                        continue;
+                    if (hit2)
+                        continue;
+
+                    @bestLine = l;
+                }
+                else if (convexIndex == 2)
+                {
+                    if (!hit1)
+                        continue;
+
+                    @bestLine = l;
+                }
+            }
+
+            if (bestLine is null)
+                return false;
+
+            index += convexIndex;
+            ownner.AssignDockLine(bestLine);
+            dockBlendingMethod = 1;
+            linePt = linePt;
+            drawDebug = true;
+
+            // ownner.SetSceneTimeScale(0);
+        }
+        else
+        {
+            dockBlendingMethod = 2;
+            @oldLine = null;
+        }
+
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        return true;
     }
 };
 

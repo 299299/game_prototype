@@ -221,6 +221,7 @@ class LineWorld
     Array<Line@>            lines;
     Array<Color>            debugColors;
     Array<Line@>            cacheLines;
+    //Array<float>            cacheError;
 
     LineWorld()
     {
@@ -363,8 +364,10 @@ class LineWorld
     void CollectCloseCrossLine(Line@ l, const Vector3& linePt)
     {
         float distSQRError = 0.25f * 0.25f;
+        float distSQRError1 = 0.5f * 0.5f;
         Line@ ret = null;
         cacheLines.Clear();
+        //cacheError.Clear();
 
         for (uint i=0; i<lines.length; ++i)
         {
@@ -377,6 +380,11 @@ class LineWorld
             if (proj_sqr > distSQRError)
                 continue;
 
+            float start_sqr = (line.ray.origin - linePt).lengthSquared;
+            float end_sqr = (line.end - linePt).lengthSquared;
+            if (start_sqr > distSQRError1 && end_sqr > distSQRError1)
+                continue;
+
             float angle_diff = Abs(AngleDiff(l.angle - line.angle));
             float diff_90 = Abs(angle_diff - 90);
 
@@ -385,6 +393,7 @@ class LineWorld
                 continue;
 
             cacheLines.Push(line);
+            //cacheError.Push(proj_sqr);
         }
     }
 };
