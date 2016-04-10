@@ -483,6 +483,9 @@ class BruceHangOverState : PlayerHangOverState
     {
         super(c);
         AddMotion("BM_Climb/Hang_Climb_Up_Run");
+        AddMotion("BM_Climb/Hang_Climb_Up_Over_128");
+        AddMotion("BM_Climb/Hang_Climb_Up_Rail");
+        AddMotion("BM_Climb/Hang_Climb_Up_Rail_128");
     }
 };
 
@@ -519,7 +522,9 @@ class BruceHangMoveEndState : PlayerHangMoveEndState
     {
         super(c);
         AddMotion("BM_Climb/Hang_Left_End");
+        AddMotion("BM_Climb/Hang_Left_End_1");
         AddMotion("BM_Climb/Hang_Right_End");
+        AddMotion("BM_Climb/Hang_Right_End_1");
     }
 };
 
@@ -538,7 +543,7 @@ class BruceDangleOverState : PlayerDangleOverState
     BruceDangleOverState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Climb/Hang_Jump_Over_Fall");
+        AddMotion("BM_Climb/Dangle_Climb_Up_Run_Take 001");
     }
 };
 
@@ -548,7 +553,13 @@ class BruceDangleMoveState : PlayerDangleMoveState
     {
         super(c);
         AddMotion("BM_Climb/Dangle_Left");
+        AddMotion("BM_Climb/Dangle_Left_Convex");
+        AddMotion("BM_Climb/Dangle_Left_Concave");
+        AddMotion("BM_Climb/Dangle_Left_1");
         AddMotion("BM_Climb/Dangle_Right");
+        AddMotion("BM_Climb/Dangle_Right_Convex");
+        AddMotion("BM_Climb/Dangle_Right_Concave");
+        AddMotion("BM_Climb/Dangle_Right_1");
     }
 };
 
@@ -569,7 +580,9 @@ class BruceDangleMoveEndState : PlayerDangleMoveEndState
     {
         super(c);
         AddMotion("BM_Climb/Dangle_Left_End");
+        AddMotion("BM_Climb/Dangle_Left_End_1");
         AddMotion("BM_Climb/Dangle_Right_End");
+        AddMotion("BM_Climb/Dangle_Right_End_1");
     }
 };
 
@@ -646,6 +659,12 @@ class Bruce : Player
             stateMachine.AddState(BruceHangMoveState(this));
             stateMachine.AddState(BruceHangMoveStartState(this));
             stateMachine.AddState(BruceHangMoveEndState(this));
+             // dangle
+            stateMachine.AddState(BruceDangleIdleState(this));
+            stateMachine.AddState(BruceDangleOverState(this));
+            stateMachine.AddState(BruceDangleMoveState(this));
+            stateMachine.AddState(BruceDangleMoveStartState(this));
+            stateMachine.AddState(BruceDangleMoveEndState(this));
         }
     }
 };
@@ -734,12 +753,21 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags);
     Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Over_128", climb_foot_flags);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail_128", climb_foot_flags);
     Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", climb_foot_flags);
+    Global_CreateMotion(preFix + "Hang_Jump_Over_128", climb_foot_flags);
 
     Global_CreateMotion(preFix + "Hang_Left",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
     Global_CreateMotion(preFix + "Hang_Left_1",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
     Global_CreateMotion(preFix + "Hang_Right",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
     Global_CreateMotion(preFix + "Hang_Right_1",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
+
+    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
+
     Global_CreateMotion(preFix + "Hang_Left_Start", 0);
     Global_CreateMotion(preFix + "Hang_Left_End", 0);
     Global_CreateMotion(preFix + "Hang_Left_End_1", 0);
@@ -747,19 +775,28 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Right_End", 0);
     Global_CreateMotion(preFix + "Hang_Right_End_1", 0);
 
-    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
-
-
     // Dangle
-    Global_CreateMotion(preFix + "Dangle_Left",  kMotion_X);
-    Global_CreateMotion(preFix + "Dangle_Right",  kMotion_X);
-    Global_AddAnimation(preFix + "Dangle_Left_Start");
-    Global_AddAnimation(preFix + "Dangle_Left_End");
-    Global_AddAnimation(preFix + "Dangle_Right_Start");
-    Global_AddAnimation(preFix + "Dangle_Right_End");
+    Global_CreateMotion(preFix + "Dangle_Left",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
+    Global_CreateMotion(preFix + "Dangle_Left_1",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
+    Global_CreateMotion(preFix + "Dangle_Right",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
+    Global_CreateMotion(preFix + "Dangle_Right_1",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
+
+    Global_CreateMotion(preFix + "Dangle_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Dangle_Left_Concave",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Dangle_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Dangle_Right_Concave",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
+
+    Global_CreateMotion(preFix + "Dangle_Left_Start", 0);
+    Global_CreateMotion(preFix + "Dangle_Left_End", 0);
+    Global_CreateMotion(preFix + "Dangle_Left_End_1", 0);
+    Global_CreateMotion(preFix + "Dangle_Right_Start", 0);
+    Global_CreateMotion(preFix + "Dangle_Right_End", 0);
+    Global_CreateMotion(preFix + "Dangle_Right_End_1", 0);
+
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Run", climb_foot_flags);
+    Global_CreateMotion(preFix + "Dangle__Climb_Up_Rail", climb_foot_flags);
+    Global_CreateMotion(preFix + "Dangle__Climb_Up_Over_128", climb_foot_flags);
+    Global_CreateMotion(preFix + "Dangle__Climb_Up_Rail_128", climb_foot_flags);
 
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);

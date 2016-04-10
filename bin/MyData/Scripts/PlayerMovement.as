@@ -1405,6 +1405,9 @@ class PlayerHangUpState : PlayerClimbAlignState
 
 class PlayerHangIdleState : SingleAnimationState
 {
+    float checkWallTimer = 0.1f;
+    float checkWallTime = 0.0f;
+
     PlayerHangIdleState(Character@ c)
     {
         super(c);
@@ -1416,6 +1419,7 @@ class PlayerHangIdleState : SingleAnimationState
 
     void Enter(State@ lastState)
     {
+        checkWallTime = 0.0f;
         ownner.SetVelocity(Vector3(0,0,0));
         ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, animSpeed);
         CharacterState::Enter(lastState);
@@ -1423,6 +1427,15 @@ class PlayerHangIdleState : SingleAnimationState
 
     void Update(float dt)
     {
+        checkWallTime += dt;
+        if (checkWallTime >= checkWallTimer)
+        {
+            checkWallTime -= checkWallTimer;
+            int ret = DetectWallBlockingFoot();
+            if (ret < 2)
+                ownner.ChangeState("DangleIdleState");
+        }
+
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
             int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
@@ -1437,6 +1450,7 @@ class PlayerHangIdleState : SingleAnimationState
             }
             else
                 StartHangMove(index == 3);
+            return;
         }
 
         SingleAnimationState::Update(dt);
@@ -1448,6 +1462,31 @@ class PlayerHangIdleState : SingleAnimationState
         PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
         if (s.TestHangMove(left))
             ownner.ChangeState(s.nameHash);
+        else
+        {
+            ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
+            ownner.ChangeState("HangMoveStartState");
+        }
+    }
+
+    int DetectWallBlockingFoot()
+    {
+        int ret = 0;
+        Node@ footLeft = ownner.GetNode().GetChild(L_FOOT, true);
+        Node@ foootRight = ownner.GetNode().GetChild(R_FOOT, true);
+        PhysicsWorld@ world = ownner.GetScene().physicsWorld;
+        Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
+        Ray ray;
+        ray.Define(footLeft.worldPosition, dir);
+        float dist = 5.0f;
+        PhysicsRaycastResult result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+            ret ++;
+        ray.Define(foootRight.worldPosition, dir);
+        result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+            ret ++;
+        return ret;
     }
 };
 
@@ -1475,11 +1514,6 @@ class PlayerHangMoveState : PlayerClimbAlignState
         super(ownner);
         SetName("HangMoveState");
         dockBlendingMethod = 1;
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.ChangeState("HangIdleState");
     }
 
     void Enter(State@ lastState)
@@ -1535,8 +1569,6 @@ class PlayerHangMoveState : PlayerClimbAlignState
             if (gLineWorld.cacheLines.empty)
             {
                 @oldLine = null;
-                ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
-                ownner.ChangeState("HangMoveStartState");
                 return false;
             }
 
@@ -1616,17 +1648,28 @@ class PlayerHangMoveState : PlayerClimbAlignState
         return true;
     }
 
-    void StartHangJump(Line@ line, const Vector3&in linePt, bool left)
+    void StartHangJump(Line@ line, const Vector3&in linePt, bool left, float distErrorSQR)
     {
         @oldLine = ownner.dockLine;
         int index = left ? 3 : 7;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        float bigJumpDistError = 1.5 * 1.5f;
+        type = (distErrorSQR > bigJumpDistError) ? 2 : 3;
+        if (type == 3)
+            index --;
         dockBlendingMethod = 1;
         ownner.AssignDockLine(line);
-        type = 2;
         dockInTargetBound = 1.5f;
         // ownner.SetSceneTimeScale(0);
         // Vector3 newLinePoint = line.GetNearPoint(linePt);
+    }
+
+    void OnMotionFinished()
+    {
+        if (type == 2)
+            ownner.ChangeState("HangMoveEndState");
+        else
+            ownner.ChangeState("HangIdleState");
     }
 };
 
@@ -1659,7 +1702,7 @@ class PlayerHangMoveStartState : MultiAnimationState
 
             if (backToIdle)
             {
-                ownner.ChangeState("HangIdleState");
+                BackToIdle();
                 return;
             }
 
@@ -1680,14 +1723,25 @@ class PlayerHangMoveStartState : MultiAnimationState
         Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
         towardDir = ownner.GetNode().worldRotation * towardDir;
         Vector3 linePt = ownner.dockLine.GetLinePoint(towardDir);
-        Line@ l = gLineWorld.FindCloseParallelLine(ownner.dockLine, linePt, 1.0f, 10.0f);
+        float distErrorSQR = 0.0f;
+        Line@ l = gLineWorld.FindCloseParallelLine(ownner.dockLine, linePt, 1.0f, 10.0f, distErrorSQR);
         if (l is null)
             return false;
 
-        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
-        s.StartHangJump(l, linePt, left);
-        ownner.ChangeState("HangMoveState");
+        StartJump(l, linePt, left, distErrorSQR);
         return true;
+    }
+
+    void BackToIdle()
+    {
+        ownner.ChangeState("HangIdleState");
+    }
+
+    void StartJump(Line@ l, const Vector3&in linePt, bool left, float distErrorSQR)
+    {
+        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
+        s.StartHangJump(l, linePt, left, distErrorSQR);
+        ownner.ChangeState("HangMoveState");
     }
 };
 
@@ -1707,7 +1761,11 @@ class PlayerHangMoveEndState : MultiAnimationState
 
     int PickIndex()
     {
-        return RandomInt(animations.length);
+        int curAnimationIndex = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
+        // HACK !!!!
+        bool left = curAnimationIndex < 4;
+        int startIndex = left ? 0 : 2;
+        return startIndex + RandomInt(2);
     }
 };
 
@@ -1719,6 +1777,45 @@ class PlayerDangleIdleState : PlayerHangIdleState
         super(c);
         SetName("DangleIdleState");
         animSpeed = 1.0f;
+    }
+
+    void Update(float dt)
+    {
+        checkWallTime += dt;
+        if (checkWallTime >= checkWallTimer)
+        {
+            checkWallTime -= checkWallTimer;
+            int ret = DetectWallBlockingFoot();
+            if (ret > 1)
+                ownner.ChangeState("HangIdleState");
+        }
+
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        {
+            int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4);
+            if (index == 0)
+                ownner.ChangeState("DangleOverState");
+            else if (index == 2)
+                ownner.ChangeState("FallState");
+            else
+                StartDangleMove(index == 3);
+            return;
+        }
+
+        SingleAnimationState::Update(dt);
+    }
+
+    void StartDangleMove(bool left)
+    {
+        int index = left ? 0 : 3;
+        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("DangleMoveState"));
+        if (s.TestHangMove(left))
+            ownner.ChangeState(s.nameHash);
+        else
+        {
+            ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
+            ownner.ChangeState("DangleMoveStartState");
+        }
     }
 };
 
@@ -1741,7 +1838,10 @@ class PlayerDangleMoveState : PlayerHangMoveState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState("DangleIdleState");
+        if (type == 2)
+            ownner.ChangeState("DangleMoveEndState");
+        else
+            ownner.ChangeState("DangleIdleState");
     }
 };
 
@@ -1752,6 +1852,18 @@ class PlayerDangleMoveStartState : PlayerHangMoveStartState
         super(c);
         SetName("DangleMoveStartState");
     }
+
+    void BackToIdle()
+    {
+        ownner.ChangeState("DangleIdleState");
+    }
+
+    void StartJump(Line@ l, const Vector3&in linePt, bool left, float distErrorSQR)
+    {
+        PlayerDangleMoveState@ s = cast<PlayerDangleMoveState>(ownner.FindState("DangleMoveState"));
+        s.StartHangJump(l, linePt, left, distErrorSQR);
+        ownner.ChangeState("DangleMoveState");
+    }
 };
 
 class PlayerDangleMoveEndState : PlayerHangMoveEndState
@@ -1760,6 +1872,11 @@ class PlayerDangleMoveEndState : PlayerHangMoveEndState
     {
         super(c);
         SetName("DangleMoveEndState");
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("DangleIdleState");
     }
 };
 

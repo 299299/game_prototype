@@ -405,7 +405,7 @@ class LineWorld
         }
     }
 
-    Line@ FindCloseParallelLine(Line@ l, const Vector3& linePt, float maxHeightDiff, float maxDistance)
+    Line@ FindCloseParallelLine(Line@ l, const Vector3& linePt, float maxHeightDiff, float maxDistance, float& out outDistanceSqr)
     {
         Line@ ret = null;
         float maxDistanceSQR = maxDistance*maxDistance;
@@ -444,6 +444,7 @@ class LineWorld
             {
                 maxDistanceSQR = dist_sqr;
                 @ret = line;
+                outDistanceSqr = dist_sqr;
             }
         }
 

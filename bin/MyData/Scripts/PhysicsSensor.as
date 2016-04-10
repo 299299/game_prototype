@@ -79,4 +79,5 @@ class PhysicsSensor
         PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, 30.0f, COLLISION_LAYER_LANDSCAPE);
         return (result.body !is null) ? result.position : end;
     }
+
 };
