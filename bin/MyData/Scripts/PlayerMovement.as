@@ -1464,25 +1464,40 @@ class PlayerHangIdleState : SingleAnimationState
             Print("line.angle=" + oldLine.angle + " towardAngle = " + towardAngle);
             int towardHead = oldLine.GetTowardHead(towardAngle);
             Vector3 linePt = (towardHead == 0) ? oldLine.ray.origin : oldLine.end;
-            Line@ l = gLineWorld.GetNearestCrossLine(oldLine, linePt);
-            if (l is null)
+            gLineWorld.CollectCloseCrossLine(oldLine, linePt);
+            if (gLineWorld.cacheLines.empty)
             {
                 ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
                 ownner.ChangeState("HangMoveStartState");
                 return;
             }
 
-            otherProj = l.Project(myPos);
+            Print(this.name + " CollectCloseCrossLine num=" + gLineWorld.cacheLines.length);
+
+            Line@ bestLine = null;
             int convexIndex = 1;
-            if (l.IsProjectPositionInLine(otherProj, 0.0f))
-                convexIndex = 2;
+            float maxError = 1.0f;
+
+            // choose lines
+            for (uint i=0; i<gLineWorld.cacheLines.length; ++i)
+            {
+                Line@ l = gLineWorld.cacheLines[i];
+                otherProj = l.Project(myPos);
+                if (l.IsProjectPositionInLine(otherProj, 0.0f))
+                {
+                    convexIndex = 2;
+                    @bestLine = l;
+                    break;
+                }
+            }
+
             index += convexIndex;
-            ownner.AssignDockLine(l);
+            ownner.AssignDockLine(bestLine);
             s.dockBlendingMethod = 1;
             s.linePt = linePt;
             @s.oldLine = oldLine;
 
-            ownner.SetSceneTimeScale(0);
+            // ownner.SetSceneTimeScale(0);
         }
         else
         {

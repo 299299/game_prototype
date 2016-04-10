@@ -360,11 +360,11 @@ class LineWorld
         }
     }
 
-    Line@ GetNearestCrossLine(Line@ l, const Vector3& linePt, float distError = 1.0f)
+    void CollectCloseCrossLine(Line@ l, const Vector3& linePt)
     {
-        float minDistSQR = distError * distError;
         float distSQRError = 0.25f * 0.25f;
         Line@ ret = null;
+        cacheLines.Clear();
 
         for (uint i=0; i<lines.length; ++i)
         {
@@ -372,27 +372,19 @@ class LineWorld
             if (l is line)
                 continue;
 
-            float start_sqr = (line.ray.origin - linePt).lengthSquared;
-            float end_sqr = (line.end - linePt).lengthSquared;
-            if (start_sqr > distSQRError && end_sqr > distSQRError)
+            Vector3 proj = line.Project(linePt);
+            float proj_sqr = (proj - linePt).lengthSquared;
+            if (proj_sqr > distSQRError)
                 continue;
 
             float angle_diff = Abs(AngleDiff(l.angle - line.angle));
             float diff_90 = Abs(angle_diff - 90);
 
             // Print("in-angle=" + l.angle + " out-angle=" + line.angle + " angle_diff=" + angle_diff);
-
             if (diff_90 > 5)
                 continue;
 
-            float diff_sqr = Min(start_sqr, end_sqr);
-            if (diff_sqr < minDistSQR)
-            {
-                @ret = line;
-                minDistSQR = diff_sqr;
-            }
+            cacheLines.Push(line);
         }
-
-        return ret;
     }
 };
