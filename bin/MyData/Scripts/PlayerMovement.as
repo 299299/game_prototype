@@ -28,7 +28,8 @@ class PlayerStandState : MultiAnimationState
             if (index == 0)
                 ownner.ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
             else
-                ownner.ChangeState("TurnState");
+                ownner.ChangeState(gInput.IsRunHolding() ? "StandToRunState" : "StandToWalkState");
+            //ownner.ChangeState("TurnState");
 
             return;
         }
@@ -115,6 +116,26 @@ class PlayerTurnState : MultiMotionState
     void DebugDraw(DebugRenderer@ debug)
     {
         DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW, 2.0f);
+    }
+};
+
+class PlayerStandToWalkState : PlayerTurnState
+{
+    PlayerStandToWalkState(Character@ c)
+    {
+        super(c);
+        SetName("StandToWalkState");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+};
+
+class PlayerStandToRunState : PlayerTurnState
+{
+    PlayerStandToRunState(Character@ c)
+    {
+        super(c);
+        SetName("StandToRunState");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
     }
 };
 
