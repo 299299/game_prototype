@@ -481,6 +481,8 @@ class BruceHangOverState : PlayerHangOverState
         AddMotion("BM_Climb/Hang_Climb_Up_Over_128");
         AddMotion("BM_Climb/Hang_Climb_Up_Rail");
         AddMotion("BM_Climb/Hang_Climb_Up_Rail_128");
+        AddMotion("BM_Climb/Hang_Jump_Over_128");
+        AddMotion("BM_Climb/Hang_Jump_Over_Fall");
     }
 };
 

@@ -1519,6 +1519,31 @@ class PlayerHangOverState : MultiMotionState
         SetName("HangOverState");
         physicsType = 0;
     }
+
+    void Enter(State@ lastState)
+    {
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Line@ l = ownner.dockLine;
+        Vector3 proj = l.Project(myPos);
+        Ray ray;
+        proj.y = l.end.y + CHARACTER_HEIGHT/2;
+        Vector3 dir = proj - myPos;
+        dir.y = 0;
+        ray.Define(proj, dir);
+        float dist = 4.0f;
+        int index = 0;
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+        {
+
+        }
+        else
+        {
+            index = 0;
+        }
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        MultiMotionState::Enter(lastState);
+    }
 };
 
 class PlayerHangMoveState : PlayerClimbAlignState
