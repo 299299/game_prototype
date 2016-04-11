@@ -403,3 +403,23 @@ void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&i
     sp.Define(position, size);
     debug.AddSphere(sp, color, false);
 }
+
+int DetectWallBlockingFoot()
+{
+    int ret = 0;
+    Node@ footLeft = ownner.GetNode().GetChild(L_FOOT, true);
+    Node@ foootRight = ownner.GetNode().GetChild(R_FOOT, true);
+    PhysicsWorld@ world = ownner.GetScene().physicsWorld;
+    Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
+    Ray ray;
+    ray.Define(footLeft.worldPosition, dir);
+    float dist = 5.0f;
+    PhysicsRaycastResult result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+    if (result.body !is null)
+        ret ++;
+    ray.Define(foootRight.worldPosition, dir);
+    result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+    if (result.body !is null)
+        ret ++;
+    return ret;
+}

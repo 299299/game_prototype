@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="92" />
-	<attribute name="Next Replicated Component ID" value="157" />
-	<attribute name="Next Local Node ID" value="16780704" />
-	<attribute name="Next Local Component ID" value="16778541" />
+	<attribute name="Next Replicated Node ID" value="93" />
+	<attribute name="Next Replicated Component ID" value="160" />
+	<attribute name="Next Local Node ID" value="16780705" />
+	<attribute name="Next Local Component ID" value="16778553" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -371,7 +371,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="Railing" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-17.5672 0 -4.62484" />
+		<attribute name="Position" value="-26.5677 0 -4.62484" />
 		<attribute name="Rotation" value="1 4.48876e-18 0 -0" />
 		<attribute name="Scale" value="5 19.5 0.5" />
 		<attribute name="Variables" />
@@ -383,14 +383,14 @@
 		<component type="CollisionShape" id="140" />
 		<component type="RigidBody" id="141">
 			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
-			<attribute name="Physics Position" value="-17.5672 0 -4.62484" />
+			<attribute name="Physics Position" value="-26.5677 0 -4.62484" />
 		</component>
 	</node>
 	<node id="87">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-9.04493 0.688904 8.5282" />
+		<attribute name="Position" value="-13.7887 0.688904 8.5282" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
 		<attribute name="Scale" value="0.5 13 5" />
 		<attribute name="Variables" />
@@ -402,7 +402,7 @@
 		<component type="CollisionShape" id="143" />
 		<component type="RigidBody" id="144">
 			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-			<attribute name="Physics Position" value="-9.04493 0.688904 8.5282" />
+			<attribute name="Physics Position" value="-13.7887 0.688904 8.5282" />
 		</component>
 	</node>
 	<node id="88">
@@ -447,7 +447,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="11.5376 -0.200026 8.5282" />
+		<attribute name="Position" value="2.46291 -0.200026 8.5282" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
 		<attribute name="Scale" value="0.5 13 5" />
 		<attribute name="Variables" />
@@ -459,16 +459,16 @@
 		<component type="CollisionShape" id="152" />
 		<component type="RigidBody" id="153">
 			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-			<attribute name="Physics Position" value="11.5376 -0.200026 8.5282" />
+			<attribute name="Physics Position" value="2.46291 -0.200026 8.5282" />
 		</component>
 	</node>
 	<node id="91">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="2.06148 -0.200026 8.5282" />
+		<attribute name="Position" value="-19.9505 6.50813 11.0306" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-		<attribute name="Scale" value="0.5 13 5" />
+		<attribute name="Scale" value="5 0.5 5" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="154">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
@@ -478,7 +478,26 @@
 		<component type="CollisionShape" id="155" />
 		<component type="RigidBody" id="156">
 			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-			<attribute name="Physics Position" value="2.06148 -0.200026 8.5282" />
+			<attribute name="Physics Position" value="-19.9505 6.50813 11.0306" />
+		</component>
+	</node>
+	<node id="92">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-8.26674 0.514351 8.5282" />
+		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
+		<attribute name="Scale" value="0.5 13 5" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="157">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="158" />
+		<component type="RigidBody" id="159">
+			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
+			<attribute name="Physics Position" value="-8.26674 0.514351 8.5282" />
 		</component>
 	</node>
 </scene>

@@ -27,6 +27,7 @@ class Line
     int             flag;
     float           maxHeight;
     float           maxFacingDiff = 45;
+    float           height;
 
     uint            nodeId;
 
@@ -240,7 +241,7 @@ class LineWorld
         lines.Push(l);
     }
 
-    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, float h, uint nodeId)
+    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, float h, float originH, uint nodeId)
     {
         Vector3 dir = end - start;
         float lenSQR = dir.lengthSquared;
@@ -258,6 +259,7 @@ class LineWorld
         l.angle = Atan2(dir.x, dir.z);
         l.maxHeight = h;
         l.nodeId = nodeId;
+        l.height = originH;
         AddLine(l);
         return l;
     }
@@ -271,10 +273,10 @@ class LineWorld
             float h = GetCorners(n, p1, p2, p3, p4);
             if (h <= 0)
                 return;
-            CreateLine(type, p1, p2, h + adjustH, n.id);
-            CreateLine(type, p2, p3, h + adjustH, n.id);
-            CreateLine(type, p3, p4, h + adjustH, n.id);
-            CreateLine(type, p4, p1, h + adjustH, n.id);
+            CreateLine(type, p1, p2, h + adjustH, h, n.id);
+            CreateLine(type, p2, p3, h + adjustH, h, n.id);
+            CreateLine(type, p3, p4, h + adjustH, h, n.id);
+            CreateLine(type, p4, p1, h + adjustH, h, n.id);
         }
         else
         {
@@ -282,7 +284,7 @@ class LineWorld
             float h = GetCorners(n, p1, p2);
             if (h <= 0)
                 return;
-            CreateLine(type, p1, p2, h + adjustH, n.id);
+            CreateLine(type, p1, p2, h + adjustH, h, n.id);
         }
     }
 

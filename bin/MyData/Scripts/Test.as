@@ -504,7 +504,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = GetAnimationName("BM_Railing/Railing_Idle");
         //String testName = ("BM_Railing/Railing_Climb_Down_Forward");
         //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
-        String testName = "BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
+        String testName = "BM_Climb/Hang_Right_1"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
         //testAnimations.Push("BM_Climb/Hang_Climb_Up_Run");
@@ -532,6 +532,20 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         Player@ p = GetPlayer();
         if (p !is null)
             p.SetPhysicsType(1 - p.physicsType);
+    }
+    else if (key == 'M')
+    {
+        Player@ p = GetPlayer();
+        if (p !is null)
+        {
+            Print("------------------------------------------------------------");
+            for (uint i=0; i<p.stateMachine.states.length; ++i)
+            {
+                State@ s = p.stateMachine.states[i];
+                Print("name=" + s.name + " nameHash=" + s.nameHash.ToString());
+            }
+            Print("------------------------------------------------------------");
+        }
     }
 }
 

@@ -54,7 +54,7 @@ class State
     void SetName(const String&in s)
     {
         name = s;
-        nameHash = StringHash(name);
+        nameHash = StringHash(s);
     }
 
     bool CanReEntered()

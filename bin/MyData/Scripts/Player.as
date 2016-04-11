@@ -621,21 +621,22 @@ class Player : Character
             {
                 // move up case
                 Ray ray;
-                Vector3 proj = l.Project(charPos);
                 proj.y = l.end.y + CHARACTER_HEIGHT/2;
                 Vector3 dir = proj - charPos;
                 dir.y = 0;
                 ray.Define(proj, dir);
                 float dist = 4.0f;
                 PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
-                if (result.body !is null)
+                bool canClimb = false;
+                if (result.body is null)
                 {
-                    ChangeState("HangUpState");
+                    Vector3 v = ray.origin + ray.direction * 2.0f;
+                    ray.Define(v, Vector3(0, -1, 0));
+                    result = sceneNode.scene.physicsWorld.RaycastSingle(ray, 3.0f, COLLISION_LAYER_LANDSCAPE);
+                    if (result.body !is null)
+                        canClimb = true;
                 }
-                else
-                {
-                    ChangeState("ClimbUpState");
-                }
+                ChangeState(canClimb ? "ClimbUpState" : "HangUpState");
                 return true;
             }
         }
