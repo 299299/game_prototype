@@ -10,10 +10,8 @@ enum LineType
 {
     LINE_COVER,
     LINE_CLIMB_OVER,
-    LINE_CLIMB_UP,
     LINE_RAILING,
-    LINE_CLIMB_HANG,
-    LINE_DANGLE,
+    LINE_EDGE,
     LINE_TYPE_NUM
 };
 
@@ -95,41 +93,31 @@ class Line
         return 1;
     }
 
-    int Test(const Vector3& pos, float angle, Vector3& out project, float&out outDistance)
+    float Test(const Vector3& pos, float angle)
     {
         float yDiff = end.y - pos.y;
         if (Abs(yDiff) > maxHeight)
-            return 0;
+            return -1;
 
-        /*
-        if (type == LINE_CLIMB_OVER || type == LINE_CLIMB_UP)
-        {
-            float h_diff = end.y - pos.y;
-            if (h_diff < 1.0f)
-                return 0;
-        }
-        */
-
-        if (type == LINE_CLIMB_OVER || type == LINE_CLIMB_HANG)
+        if (type == LINE_CLIMB_OVER)
         {
             float h_diff = end.y - pos.y;
             if (h_diff < 1.5f)
-                return 0;
+                return -1;
         }
 
-        project = ray.Project(pos);
+        Vector3 project = ray.Project(pos);
         if (!IsProjectPositionInLine(project))
-            return 0;
+            return -1;
 
         project.y = pos.y;
         Vector3 dir = project - pos;
         float projDir = Atan2(dir.x, dir.z);
         float aDiff = AngleDiff(projDir - angle);
         if (Abs(aDiff) > maxFacingDiff)
-            return 0;
+            return -1;
 
-        outDistance = dir.length;
-        return 1;
+        return dir.length;
     }
 
     void DebugDraw(DebugRenderer@ debug, const Color&in color)
@@ -235,9 +223,7 @@ class LineWorld
         debugColors[LINE_CLIMB_OVER] = Color(0.4f, 0.75f, 0.3f);
         debugColors[LINE_RAILING] = Color(0.25f, 0.25f, 0.75f);
         debugColors[LINE_COVER] = Color(0.75f, 0.15f, 0.15f);
-        debugColors[LINE_CLIMB_UP] = Color(0.25f, 0.5f, 0.75f);
-        debugColors[LINE_CLIMB_HANG] = Color(0.65f, 0.25f, 0.55f);
-        debugColors[LINE_DANGLE] = Color(0.35f, 0.75f, 0.25f);
+        debugColors[LINE_EDGE] = Color(0.25f, 0.5f, 0.75f);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -279,7 +265,7 @@ class LineWorld
     void CreateLine(int type, Node@ n)
     {
         float adjustH = 2.0f;
-        if (type == LINE_CLIMB_UP || type == LINE_CLIMB_HANG)
+        if (type == LINE_EDGE)
         {
             Vector3 p1, p2, p3, p4;
             float h = GetCorners(n, p1, p2, p3, p4);
@@ -319,15 +305,15 @@ class LineWorld
             }
             else if (_node.name.StartsWith("ClimbUp"))
             {
-                CreateLine(LINE_CLIMB_UP, _node);
+                CreateLine(LINE_EDGE, _node);
             }
             else if (_node.name.StartsWith("ClimbHang"))
             {
-                CreateLine(LINE_CLIMB_HANG, _node);
+                CreateLine(LINE_EDGE, _node);
             }
             else if (_node.name.StartsWith("Dangle"))
             {
-                CreateLine(LINE_DANGLE, _node);
+                CreateLine(LINE_EDGE, _node);
             }
         }
     }
@@ -335,14 +321,13 @@ class LineWorld
     Line@ GetNearestLine(const Vector3& pos, float angle, float maxDistance)
     {
         Line@ ret = null;
-        Vector3 project;
-
         for (uint i=0; i<lines.length; ++i)
         {
-            float dist = 999;
             Line@ l = lines[i];
-            if (l.Test(pos, angle, project, dist) == 0)
+            float dist = l.Test(pos, angle);
+            if (dist < 0)
                 continue;
+
             if (dist < maxDistance)
             {
                 maxDistance = dist;
@@ -357,10 +342,9 @@ class LineWorld
         cacheLines.Clear();
         for (uint i=0; i<lines.length; ++i)
         {
-            float dist = 999;
             Line@ l = lines[i];
-            Vector3 project;
-            if (l.Test(pos, angle, project, dist) == 0)
+            float dist = l.Test(pos, angle);
+            if (dist < 0)
                 continue;
             if (dist < maxDistance)
                 cacheLines.Push(l);

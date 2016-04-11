@@ -363,9 +363,6 @@ class BruceClimbOverState : PlayerClimbOverState
 
         AddMotion("BM_Climb/Stand_Climb_Over_128");
         AddMotion("BM_Climb/Run_Climb_Over_128");
-
-        //targetOffsets.Push(Vector3(0, 0, -1.9));
-        //targetOffsets.Push(Vector3(0, 0, -4.0));
     }
 };
 
@@ -380,14 +377,6 @@ class BruceClimbUpState : PlayerClimbUpState
         AddMotion("BM_Climb/Run_Climb_Up_128");
         AddMotion("BM_Climb/Run_Climb_Up_256");
         AddMotion("BM_Climb/Run_Climb_Up_384");
-
-        //targetOffsets.Push(Vector3(0, 0, -2.75));
-        //targetOffsets.Push(Vector3(0, 0, -1.43629));
-        //targetOffsets.Push(Vector3(0, 0, -1.8));
-
-        //targetOffsets.Push(Vector3(0, 0, -6.0));
-        //targetOffsets.Push(Vector3(0, 0, -6.4));
-        //targetOffsets.Push(Vector3(0, 0, -6.452));
     }
 };
 
@@ -402,14 +391,6 @@ class BruceRailUpState : PlayerRailUpState
         AddMotion("BM_Railing/Railing_Climb_Up");
         AddMotion("BM_Railing/Run_Climb_Onto_256_Railing");
         AddMotion("BM_Railing/Run_Climb_Onto_384_Railing");
-
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-        targetOffsets.Push(Vector3(0, 0, -6.4));
-        targetOffsets.Push(Vector3(0, 0, -6.452));
     }
 };
 
@@ -479,14 +460,6 @@ class BruceHangUpState : PlayerHangUpState
         AddMotion("BM_Climb/Stand_Climb_Up_384_Hang");
         AddMotion("BM_Climb/Run_Climb_Up_256_Hang");
         AddMotion("BM_Climb/Run_Climb_Up_384_Hang");
-
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-
-        targetOffsets.Push(Vector3(0, 0, -1.5));
-        targetOffsets.Push(Vector3(0, 0, -6.4));
-        targetOffsets.Push(Vector3(0, 0, -6.452));
     }
 };
 
@@ -620,6 +593,17 @@ class BruceClimbDownState : PlayerClimbDownState
     }
 };
 
+class BruceToHangState : PlayerToHangState
+{
+    BruceToHangState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Crouch_To_Hang");
+        AddMotion("BM_Climb/Crouch_To_Dangle");
+        AddMotion("BM_Climb/Crouch_To_Dangle_Wall");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -639,6 +623,8 @@ class Bruce : Player
         stateMachine.AddState(BruceEvadeState(this));
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
+        stateMachine.AddState(BruceStandToWalkState(this));
+        stateMachine.AddState(BruceStandToRunState(this));
 
         if (game_type == 0)
         {
@@ -666,6 +652,7 @@ class Bruce : Player
             stateMachine.AddState(BruceClimbOverState(this));
             stateMachine.AddState(BruceClimbUpState(this));
             stateMachine.AddState(BruceClimbDownState(this));
+            stateMachine.AddState(BruceToHangState(this));
             // rail states
             stateMachine.AddState(BruceRailUpState(this));
             stateMachine.AddState(BruceRailIdleState(this));
@@ -819,6 +806,10 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle__Climb_Up_Rail", climb_foot_flags);
     Global_CreateMotion(preFix + "Dangle__Climb_Up_Over_128", climb_foot_flags);
     Global_CreateMotion(preFix + "Dangle__Climb_Up_Rail_128", climb_foot_flags);
+
+    Global_CreateMotion(preFix + "Crouch_To_Hang", climb_foot_flags);
+    Global_CreateMotion(preFix + "Crouch_To_Dangle", climb_foot_flags);
+    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", climb_foot_flags);
 
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);

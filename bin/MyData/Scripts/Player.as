@@ -99,7 +99,7 @@ class Player : Character
                 }
                 else
                 {
-                    if (ChangeState("TurnState"))
+                    if (ChangeState(gInput.IsRunHolding() ? "StandToRunState" : "StandToWalkState"))
                         return;
                 }
             }
@@ -569,75 +569,76 @@ class Player : Character
 
     bool CheckDocking(float distance = 4)
     {
-        if (game_type == 0)
-            return false;
-
         Vector3 charPos = sceneNode.worldPosition;
         float charAngle = GetCharacterAngle();
         Line@ l = gLineWorld.GetNearestLine(charPos, charAngle, distance);
 
-        if (l !is null)
-        {
-            if (l.type == LINE_COVER)
-            {
-                AssignDockLine(l);
-                ChangeState("CoverState");
-                return true;
-            }
-            else if (l.type == LINE_CLIMB_OVER)
-            {
-                AssignDockLine(l);
-                ChangeState("ClimbOverState");
-                return true;
-            }
-            else if (l.type == LINE_CLIMB_UP)
-            {
-                Vector3 proj = l.Project(charPos);
-                float h_diff = proj.y - charPos.y;
-                // Print("Climb-Up h_diff=" + h_diff);
-                if (h_diff <= 0.01f)
-                {
-                    float distSQR = (proj- charPos).lengthSquared;
-                    // Print("distSQR = " + distSQR);
-                    if (distSQR < 1.0f*1.0f)
-                    {
-                        Vector3 futurePos = GetNode().worldRotation * Vector3(0, 0, 2.0f) + GetNode().worldPosition;
-                        Vector3 groundPos = sensor.GetGround(futurePos);
-                        if (groundPos.y - GetNode().worldPosition.y < -4.0f)
-                            return false;
+        if (l is null)
+            return false;
 
-                        PlayerClimbDownState@ s = cast<PlayerClimbDownState>(FindState("ClimbDownState"));
-                        s.groundPos = groundPos;
-                        AssignDockLine(l);
-                        ChangeState(s.nameHash);
-                        return true;
-                    }
-                    return false;
+        if (l.type == LINE_COVER)
+        {
+            AssignDockLine(l);
+            ChangeState("CoverState");
+            return true;
+        }
+        else if (l.type == LINE_CLIMB_OVER)
+        {
+            AssignDockLine(l);
+            ChangeState("ClimbOverState");
+            return true;
+        }
+        else if (l.type == LINE_RAILING)
+        {
+            AssignDockLine(l);
+            ChangeState("RailUpState");
+            return true;
+        }
+        else if (l.type == LINE_EDGE)
+        {
+            AssignDockLine(l);
+            Vector3 proj = l.Project(charPos);
+            float h_diff = proj.y - charPos.y;
+            // Print("Climb-Up h_diff=" + h_diff);
+            if (h_diff <= 0.01f)
+            {
+                // move down case
+                float distSQR = (proj- charPos).lengthSquared;
+                // Print("distSQR = " + distSQR);
+                if (distSQR < 1.0f*1.0f)
+                {
+                    Vector3 futurePos = GetNode().worldRotation * Vector3(0, 0, 2.0f) + GetNode().worldPosition;
+                    Vector3 groundPos = sensor.GetGround(futurePos);
+                    if (groundPos.y - GetNode().worldPosition.y < -4.0f)
+                        ChangeState("ToHangState");
+                    else
+                        ChangeState("ClimbDownState");
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                // move up case
+                Ray ray;
+                Vector3 proj = l.Project(charPos);
+                proj.y = l.end.y + CHARACTER_HEIGHT/2;
+                Vector3 dir = proj - charPos;
+                dir.y = 0;
+                ray.Define(proj, dir);
+                float dist = 4.0f;
+                PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+                if (result.body !is null)
+                {
+                    ChangeState("HangUpState");
                 }
                 else
                 {
-                    if (h_diff < 1.0f)
-                        return false;
-                    AssignDockLine(l);
                     ChangeState("ClimbUpState");
-                    return true;
                 }
-            }
-            else if (l.type == LINE_RAILING)
-            {
-                AssignDockLine(l);
-                ChangeState("RailUpState");
                 return true;
             }
-            else if (l.type == LINE_CLIMB_HANG)
-            {
-                AssignDockLine(l);
-                ChangeState("HangUpState");
-                return true;
-            }
-            return false;
         }
-        else
-            return false;
+        return false;
     }
 };

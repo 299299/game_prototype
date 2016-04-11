@@ -1933,9 +1933,19 @@ class PlayerClimbDownState : PlayerClimbAlignState
             animIndex = 2;
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
         PlayerClimbAlignState::Enter(lastState);
-        //Vector3 myPos = ownner.GetNode().worldPosition;
-        //Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
-        //Player@ p = cast<Player>(ownner);
-        //groundPos = p.sensor.GetGround(futurePos);
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
+        Player@ p = cast<Player>(ownner);
+        groundPos = p.sensor.GetGround(futurePos);
+    }
+};
+
+class PlayerToHangState : PlayerClimbAlignState
+{
+    PlayerToHangState(Character@ c)
+    {
+        super(c);
+        SetName("ToHangState");
+        dockBlendingMethod = 1;
     }
 };
