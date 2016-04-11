@@ -1449,13 +1449,9 @@ class PlayerHangIdleState : SingleAnimationState
             int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
             // Print(this.name + " input index=" + index);
             if (index == 0)
-            {
                 ownner.ChangeState("HangOverState");
-            }
             else if (index == 2)
-            {
                 ownner.ChangeState("FallState");
-            }
             else
                 StartHangMove(index == 3);
             return;
@@ -1679,17 +1675,16 @@ class PlayerHangMoveState : PlayerClimbAlignState
 
     void OnMotionFinished()
     {
-        Print(this.name + " OnMotionFinished dock-h=" + ownner.dockLine.height + " type=" + type);
         if (type == 2)
             ownner.ChangeState("HangMoveEndState");
         else
-            ownner.ChangeState(ownner.dockLine.height > 1.5 ? "HangIdleState" : "DangleIdleState");
+            ownner.ChangeState(ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? "DangleIdleState": "HangIdleState");
     }
 };
 
 class PlayerHangMoveStartState : MultiAnimationState
 {
-    bool        searched = false;
+    bool searched = false;
 
     PlayerHangMoveStartState(Character@ c)
     {
@@ -1742,20 +1737,15 @@ class PlayerHangMoveStartState : MultiAnimationState
         if (l is null)
             return false;
 
-        StartJump(l, linePt, left, distErrorSQR);
+        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
+        s.StartHangJump(l, linePt, left, distErrorSQR);
+        ownner.ChangeState("HangMoveState");
         return true;
     }
 
     void BackToIdle()
     {
         ownner.ChangeState("HangIdleState");
-    }
-
-    void StartJump(Line@ l, const Vector3&in linePt, bool left, float distErrorSQR)
-    {
-        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
-        s.StartHangJump(l, linePt, left, distErrorSQR);
-        ownner.ChangeState("HangMoveState");
     }
 };
 
@@ -1770,7 +1760,7 @@ class PlayerHangMoveEndState : MultiAnimationState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(ownner.dockLine.height > 1.5 ? "HangIdleState" : "DangleIdleState");
+        ownner.ChangeState(ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? "DangleIdleState": "HangIdleState");
     }
 
     int PickIndex()
@@ -1799,27 +1789,34 @@ class PlayerDangleIdleState : PlayerHangIdleState
         {
             int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4);
             if (index == 0)
+            {
                 ownner.ChangeState("DangleOverState");
+                return;
+            }
             else if (index == 2)
+            {
                 ownner.ChangeState("FallState");
+                return;
+            }
             else
-                StartDangleMove(index == 3);
-            return;
+            {
+                if (StartDangleMove(index == 3))
+                    return;
+            }
         }
+
         SingleAnimationState::Update(dt);
     }
 
-    void StartDangleMove(bool left)
+    bool StartDangleMove(bool left)
     {
-        int index = left ? 0 : 3;
         PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("DangleMoveState"));
         if (s.TestHangMove(left))
-            ownner.ChangeState(s.nameHash);
-        else
         {
-            ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
-            ownner.ChangeState("DangleMoveStartState");
+            ownner.ChangeState(s.nameHash);
+            return true;
         }
+        return false;
     }
 };
 
@@ -1845,31 +1842,27 @@ class PlayerDangleMoveState : PlayerHangMoveState
         if (type == 2)
             ownner.ChangeState("DangleMoveEndState");
         else
-            ownner.ChangeState(ownner.dockLine.height > 1.5 ? "HangIdleState" : "DangleIdleState");
+            PlayerHangMoveState::OnMotionFinished();
+    }
+
+    bool TestHangMove(bool left)
+    {
+        if (PlayerHangMoveState::TestHangMove(left))
+            return true;
+
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = ownner.GetNode().worldRotation * towardDir;
+        Vector3 linePt = ownner.dockLine.GetLinePoint(towardDir);
+        float distErrorSQR = 0.0f;
+        Line@ l = gLineWorld.FindCloseParallelLine(ownner.dockLine, linePt, 1.0f, 10.0f, distErrorSQR);
+        if (l !is null)
+        {
+            StartHangJump(l, linePt, left, distErrorSQR);
+            return true;
+        }
+        return false;
     }
 };
-
-/* TODO
-class PlayerDangleMoveStartState : PlayerHangMoveStartState
-{
-    PlayerDangleMoveStartState(Character@ c)
-    {
-        super(c);
-        SetName("DangleMoveStartState");
-    }
-
-    void BackToIdle()
-    {
-        ownner.ChangeState("DangleIdleState");
-    }
-
-    void StartJump(Line@ l, const Vector3&in linePt, bool left, float distErrorSQR)
-    {
-        PlayerDangleMoveState@ s = cast<PlayerDangleMoveState>(ownner.FindState("DangleMoveState"));
-        s.StartHangJump(l, linePt, left, distErrorSQR);
-        ownner.ChangeState("DangleMoveState");
-    }
-};]*/
 
 class PlayerDangleMoveEndState : PlayerHangMoveEndState
 {
@@ -1877,11 +1870,6 @@ class PlayerDangleMoveEndState : PlayerHangMoveEndState
     {
         super(c);
         SetName("DangleMoveEndState");
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.ChangeState(ownner.dockLine.height > 1.5 ? "HangIdleState" : "DangleIdleState");
     }
 };
 

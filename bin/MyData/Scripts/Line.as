@@ -15,21 +15,35 @@ enum LineType
     LINE_TYPE_NUM
 };
 
+enum LineFlags
+{
+    LINE_THING_WALL,
+    LINE_SHORT_WALL,
+};
+
+const float lineMinLength = 2.0f;
+
 class Line
 {
     Ray             ray;
     Vector3         end;
     Vector3         invDir;
+    Vector3         size;
+
+    int             flags;
+
     float           length;
     float           lengthSquared;
     int             type;
     float           angle;
-    int             flag;
-    float           maxHeight;
     float           maxFacingDiff = 45;
-    float           height;
 
     uint            nodeId;
+
+    bool HasFlag(int flag)
+    {
+        return flags & flag != 0;
+    }
 
     Vector3 Project(const Vector3& charPos)
     {
@@ -96,17 +110,6 @@ class Line
 
     float Test(const Vector3& pos, float angle)
     {
-        float yDiff = end.y - pos.y;
-        if (Abs(yDiff) > maxHeight)
-            return -1;
-
-        if (type == LINE_CLIMB_OVER)
-        {
-            float h_diff = end.y - pos.y;
-            if (h_diff < 1.5f)
-                return -1;
-        }
-
         Vector3 project = ray.Project(pos);
         if (!IsProjectPositionInLine(project))
             return -1;
@@ -125,10 +128,8 @@ class Line
     {
         //debug.AddCross(ray.origin, 0.25f, RED, false);
         //debug.AddCross(end, 0.25f, BLUE, false);
-
         debug.AddSphere(Sphere(ray.origin, 0.15f), YELLOW, false);
         debug.AddSphere(Sphere(end, 0.15f), YELLOW, false);
-
         debug.AddLine(ray.origin, end, color, false);
     }
 
@@ -161,15 +162,42 @@ class Line
     }
 };
 
-float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector3&out p4)
+bool GetNodeSizeAndOffset(Node@ n, Vector3&out size, Vector3&out offset)
 {
     CollisionShape@ shape = n.GetComponent("CollisionShape");
-    if (shape is null)
-        return -1;
+    if (shape !is null)
+    {
+        size = shape.size;
+        offset = shape.position;
+        return true;
+    }
 
-    Vector3 halfSize = shape.size/2;
-    Vector3 offset = shape.position;
+    StaticModel@ staticModel = n.GetComponent("StaticModel");
+    if (staticModel !is null)
+    {
+        size = staticModel.boundingBox.size;
+        offset = Vector3(0, 0, 0);
+        return true;
+    }
 
+    AnimatedModel@ animateModel = n.GetComponent("AnimatedModel");
+    if (animateModel !is null)
+    {
+        size = animateModel.boundingBox.size;
+        offset = Vector3(0, 0, 0);
+        return true;
+    }
+
+    return false;
+}
+
+bool GetCorners(Node@ n, Vector3&out outSize, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector3&out p4)
+{
+    Vector3 size, offset;
+    if (!GetNodeSizeAndOffset(n, size, offset))
+        return false;
+
+    Vector3 halfSize = size/2;
     p1 = Vector3(halfSize.x, halfSize.y, halfSize.z);
     p2 = Vector3(halfSize.x, halfSize.y, -halfSize.z);
     p3 = Vector3(-halfSize.x, halfSize.y, -halfSize.z);
@@ -179,18 +207,20 @@ float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector
     p3 = n.LocalToWorld(p3 + offset);
     p4 = n.LocalToWorld(p4 + offset);
 
-    return halfSize.y * 2 * n.worldScale.y;
+    outSize = size * n.worldScale;
+
+    Print(n.name + " size=" + outSize.ToString());
+
+    return true;
 }
 
-float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2)
+bool GetCorners(Node@ n, Vector3&out outSize, Vector3&out p1, Vector3&out p2)
 {
-    CollisionShape@ shape = n.GetComponent("CollisionShape");
-    if (shape is null)
-        return -1;
+    Vector3 size, offset;
+    if (!GetNodeSizeAndOffset(n, size, offset))
+        return false;
 
-    Vector3 halfSize = shape.size/2;
-    Vector3 offset = shape.position;
-
+    Vector3 halfSize = size/2;
     float x = halfSize.x * n.worldScale.x;
     float z = halfSize.z * n.worldScale.z;
 
@@ -208,7 +238,11 @@ float GetCorners(Node@ n, Vector3&out p1, Vector3&out p2)
     p1 = n.LocalToWorld(p1 + offset);
     p2 = n.LocalToWorld(p2 + offset);
 
-    return halfSize.y * 2 * n.worldScale.y;
+    outSize = size * n.worldScale;
+
+    Print(n.name + " size=" + outSize.ToString());
+
+    return true;
 }
 
 class LineWorld
@@ -241,12 +275,11 @@ class LineWorld
         lines.Push(l);
     }
 
-    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, float h, float originH, uint nodeId)
+    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, const Vector3&in size, uint nodeId)
     {
         Vector3 dir = end - start;
         float lenSQR = dir.lengthSquared;
-        float maxError = 2.0f;
-        if (lenSQR < maxError*maxError)
+        if (lenSQR < lineMinLength*lineMinLength)
             return null;
         Line@ l = Line();
         l.ray.origin = start;
@@ -257,34 +290,35 @@ class LineWorld
         l.length = dir.length;
         l.lengthSquared = lenSQR;
         l.angle = Atan2(dir.x, dir.z);
-        l.maxHeight = h;
         l.nodeId = nodeId;
-        l.height = originH;
+        l.size = size;
+
+        if (size.y < lineMinLength)
+            l.flags |= LINE_SHORT_WALL;
+        if (size.x < lineMinLength || size.z < lineMinLength)
+            l.flags |= LINE_THING_WALL;
+
         AddLine(l);
         return l;
     }
 
     void CreateLine(int type, Node@ n)
     {
-        float adjustH = 2.0f;
+        Vector3 size, p1, p2, p3, p4;
         if (type == LINE_EDGE)
         {
-            Vector3 p1, p2, p3, p4;
-            float h = GetCorners(n, p1, p2, p3, p4);
-            if (h <= 0)
+            if (!GetCorners(n, size, p1, p2, p3, p4))
                 return;
-            CreateLine(type, p1, p2, h + adjustH, h, n.id);
-            CreateLine(type, p2, p3, h + adjustH, h, n.id);
-            CreateLine(type, p3, p4, h + adjustH, h, n.id);
-            CreateLine(type, p4, p1, h + adjustH, h, n.id);
+            CreateLine(type, p1, p2, size, n.id);
+            CreateLine(type, p2, p3, size, n.id);
+            CreateLine(type, p3, p4, size, n.id);
+            CreateLine(type, p4, p1, size, n.id);
         }
         else
         {
-            Vector3 p1, p2;
-            float h = GetCorners(n, p1, p2);
-            if (h <= 0)
+            if (!GetCorners(n, size, p1, p2))
                 return;
-            CreateLine(type, p1, p2, h + adjustH, h, n.id);
+            CreateLine(type, p1, p2, size, n.id);
         }
     }
 
