@@ -576,33 +576,31 @@ class Player : Character
         if (l is null)
             return false;
 
-        AssignDockLine(l);
+        String stateToChange;
 
         if (l.type == LINE_COVER)
-        {
-            ChangeState("CoverState");
-            return true;
-        }
+            stateToChange = "CoverState";
         else if (l.type == LINE_RAILING)
-        {
-            ChangeState("RailUpState");
-            return true;
-        }
+            stateToChange = "RailUpState";
         else if (l.type == LINE_EDGE)
         {
             int action = AnalyzeForwadAction(l);
             if (action == LINE_ACTION_CLIMB_OVER)
-                ChangeState("ClimbOverState");
+                stateToChange = "ClimbOverState";
             else if (action == LINE_ACTION_CLIMB_UP)
-                ChangeState("ClimbUpState");
+                stateToChange = "ClimbUpState";
             else if (action == LINE_ACTION_HANG)
-                ChangeState("HangUpState");
+                stateToChange = "HangUpState";
             else if (action == LINE_ACTION_CLIMB_DOWN)
-                ChangeState("ClimbDownState");
-            else
-                return false;
+                stateToChange = "ClimbDownState";
         }
-        return false;
+
+        if (stateToChange.empty)
+            return false;
+
+        AssignDockLine(l);
+        ChangeState(stateToChange);
+        return true;
     }
 
     int AnalyzeForwadAction(Line@ l)
