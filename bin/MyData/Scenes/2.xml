@@ -5,8 +5,8 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="93" />
-	<attribute name="Next Replicated Component ID" value="160" />
+	<attribute name="Next Replicated Node ID" value="94" />
+	<attribute name="Next Replicated Component ID" value="163" />
 	<attribute name="Next Local Node ID" value="16780706" />
 	<attribute name="Next Local Component ID" value="16778565" />
 	<attribute name="Variables" />
@@ -409,9 +409,9 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="9.05754 0 -6.62271" />
+		<attribute name="Position" value="7.43998 0 -6.62271" />
 		<attribute name="Rotation" value="1 4.48876e-18 0 -0" />
-		<attribute name="Scale" value="10 13 10" />
+		<attribute name="Scale" value="15 13 15" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="145">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
@@ -421,7 +421,7 @@
 		<component type="CollisionShape" id="146" />
 		<component type="RigidBody" id="147">
 			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
-			<attribute name="Physics Position" value="9.05754 0 -6.62271" />
+			<attribute name="Physics Position" value="7.43998 0 -6.62271" />
 		</component>
 	</node>
 	<node id="89">
@@ -447,7 +447,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="2.46291 -0.200026 8.5282" />
+		<attribute name="Position" value="-26.5362 -0.200026 10.336" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
 		<attribute name="Scale" value="0.5 13 5" />
 		<attribute name="Variables" />
@@ -459,7 +459,7 @@
 		<component type="CollisionShape" id="152" />
 		<component type="RigidBody" id="153">
 			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-			<attribute name="Physics Position" value="2.46291 -0.200026 8.5282" />
+			<attribute name="Physics Position" value="-26.5362 -0.200026 10.336" />
 		</component>
 	</node>
 	<node id="91">
@@ -485,9 +485,9 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-8.26674 0.514351 8.5282" />
+		<attribute name="Position" value="8.47066 2.55343 -0.406212" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-		<attribute name="Scale" value="0.5 13 5" />
+		<attribute name="Scale" value="0.5 13 10" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="157">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
@@ -496,6 +496,25 @@
 		</component>
 		<component type="CollisionShape" id="158" />
 		<component type="RigidBody" id="159">
+			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
+			<attribute name="Physics Position" value="8.47066 2.55343 -0.406212" />
+		</component>
+	</node>
+	<node id="93">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-8.26674 0.514351 8.5282" />
+		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
+		<attribute name="Scale" value="0.5 13 5" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="160">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="161" />
+		<component type="RigidBody" id="162">
 			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
 			<attribute name="Physics Position" value="-8.26674 0.514351 8.5282" />
 		</component>

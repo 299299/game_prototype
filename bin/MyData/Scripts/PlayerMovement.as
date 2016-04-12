@@ -1040,7 +1040,7 @@ class PlayerClimbOverState : PlayerClimbAlignState
             futurePos.y = myPos.y;
             Player@ p = cast<Player>(ownner);
             groundPos = p.sensor.GetGround(futurePos);
-            float height = groundPos.y - myPos.y;
+            float height = Abs(groundPos.y - myPos.y);
             if (height < 1.5f)
             {
                 if (index == 0)

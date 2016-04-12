@@ -228,7 +228,7 @@ bool GetCorners(Node@ n, Vector3&out outSize, Vector3&out p1, Vector3&out p2, Ve
 
     outSize = size * n.worldScale;
 
-    Print(n.name + " size=" + outSize.ToString());
+    //Print(n.name + " size=" + outSize.ToString());
 
     return true;
 }
@@ -259,7 +259,7 @@ bool GetCorners(Node@ n, Vector3&out outSize, Vector3&out p1, Vector3&out p2)
 
     outSize = size * n.worldScale;
 
-    Print(n.name + " size=" + outSize.ToString());
+    //Print(n.name + " size=" + outSize.ToString());
 
     return true;
 }
@@ -318,7 +318,7 @@ class LineWorld
             l.flags |= LINE_SHORT_WALL;
 
         AddLine(l);
-        Print("CreateLine type=" + type + " for node=" + node.name + " size=" + size.ToString() + " flags=" + l.flags);
+        // Print("CreateLine type=" + type + " for node=" + node.name + " size=" + size.ToString() + " flags=" + l.flags);
         return l;
     }
 

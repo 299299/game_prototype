@@ -641,7 +641,7 @@ class Player : Character
                 ray.Define(v, Vector3(0, -1, 0));
                 result = sceneNode.scene.physicsWorld.RaycastSingle(ray, 3.0f, COLLISION_LAYER_LANDSCAPE);
                 if (result.body !is null)
-                    return LINE_ACTION_HANG; //LINE_ACTION_CLIMB_UP;
+                    return LINE_ACTION_CLIMB_UP; //LINE_ACTION_CLIMB_UP;
                 else
                     return (h_diff < 4.8) ? LINE_ACTION_CLIMB_OVER : LINE_ACTION_HANG;
             }
