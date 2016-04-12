@@ -795,7 +795,7 @@ class PlayerCoverTransitionState : SingleMotionState
     }
 };
 
-class PlayerClimbAlignState : MultiMotionState
+class PlayerDockAlignState : MultiMotionState
 {
     Array<Vector3>  targetOffsets;
     int             motionFlagAfterAlign;
@@ -811,7 +811,7 @@ class PlayerClimbAlignState : MultiMotionState
     float           climbBaseHeight;
     float           dockInTargetBound = 0.25f;
 
-    PlayerClimbAlignState(Character@ c)
+    PlayerDockAlignState(Character@ c)
     {
         super(c);
         physicsType = 0;
@@ -1005,15 +1005,9 @@ class PlayerClimbAlignState : MultiMotionState
             }
         }
     }
-
-    void Exit(State@ nextState)
-    {
-        ownner.SetVelocity(Vector3(0, 0, 0));
-        MultiMotionState::Exit(nextState);
-    }
 };
 
-class PlayerClimbOverState : PlayerClimbAlignState
+class PlayerClimbOverState : PlayerDockAlignState
 {
     Vector3 groundPos;
 
@@ -1052,7 +1046,7 @@ class PlayerClimbOverState : PlayerClimbAlignState
             }
         }
         // Print(this.name + " index = " + index);
-        PlayerClimbAlignState::Enter(lastState);
+        PlayerDockAlignState::Enter(lastState);
     }
 
     Vector3 PickDockOutTarget()
@@ -1062,20 +1056,20 @@ class PlayerClimbOverState : PlayerClimbAlignState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        PlayerClimbAlignState::DebugDraw(debug);
+        PlayerDockAlignState::DebugDraw(debug);
         debug.AddCross(groundPos, 0.5f, BLUE, false);
     }
 
     void OnMotionFinished()
     {
         if (selectIndex == 6 || selectIndex == 7)
-            PlayerClimbAlignState::OnMotionFinished();
+            PlayerDockAlignState::OnMotionFinished();
         else
             ownner.ChangeState("FallState");
     }
 };
 
-class PlayerClimbUpState : PlayerClimbAlignState
+class PlayerClimbUpState : PlayerDockAlignState
 {
     PlayerClimbUpState(Character@ c)
     {
@@ -1088,12 +1082,12 @@ class PlayerClimbUpState : PlayerClimbAlignState
     void Enter(State@ lastState)
     {
         PickTargetMotionByHeight(lastState);
-        PlayerClimbAlignState::Enter(lastState);
+        PlayerDockAlignState::Enter(lastState);
     }
 };
 
 
-class PlayerRailUpState : PlayerClimbAlignState
+class PlayerRailUpState : PlayerDockAlignState
 {
     PlayerRailUpState(Character@ c)
     {
@@ -1106,7 +1100,7 @@ class PlayerRailUpState : PlayerClimbAlignState
     void Enter(State@ lastState)
     {
         PickTargetMotionByHeight(lastState);
-        PlayerClimbAlignState::Enter(lastState);
+        PlayerDockAlignState::Enter(lastState);
     }
 
     void OnMotionFinished()
@@ -1402,7 +1396,7 @@ class PlayerRailTurn180State : SingleMotionState
     }
 };
 
-class PlayerHangUpState : PlayerClimbAlignState
+class PlayerHangUpState : PlayerDockAlignState
 {
     PlayerHangUpState(Character@ c)
     {
@@ -1415,7 +1409,7 @@ class PlayerHangUpState : PlayerClimbAlignState
     void Enter(State@ lastState)
     {
         PickTargetMotionByHeight(lastState, 2);
-        PlayerClimbAlignState::Enter(lastState);
+        PlayerDockAlignState::Enter(lastState);
     }
 
     void OnMotionFinished()
@@ -1514,26 +1508,29 @@ class PlayerHangIdleState : SingleAnimationState
         Vector3 charPos = ownner.GetNode().worldPosition;
         Vector3 proj = ownner.dockLine.Project(charPos);
         float h_diff = proj.y - charPos.y;
+        int animIndex = 0;
+        bool changeToOverState = false;
 
-        Vector3 v1 = charPos;
+        v1 = charPos;
         Ray ray;
         ray.Define(v1, Vector3(0, 1, 0));
         float dist = h_diff + CHARACTER_HEIGHT/2;
-        PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
-
-        int animIndex = 0;
-        bool changeToOverState = false;
         v2 = v1 + ray.direction * dist;
+
+        PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         Vector3 dir = proj - charPos;
         dir.y = 0;
         ray.Define(v2, dir);
         dist = dir.length + COLLISION_RADIUS;
         v3 = v2 + ray.direction * dist;
+
         PhysicsRaycastResult result2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         ray.Define(v3, Vector3(0, -1, 0));
         dist = CHARACTER_HEIGHT * 2;
+        v4 = v3 + ray.direction * dist;
+
         PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT * 2, COLLISION_LAYER_LANDSCAPE);
 
         bool hit1 = (result1.body != null);
@@ -1599,6 +1596,7 @@ class PlayerHangIdleState : SingleAnimationState
 
                 animIndex = (bestLine.type == LINE_RAILING) ? 3 : 2;
                 changeToOverState = true;
+                ownner.AssignDockLine(bestLine);
             }
             else
             {
@@ -1652,7 +1650,7 @@ class PlayerHangIdleState : SingleAnimationState
     }
 };
 
-class PlayerHangOverState : MultiMotionState
+class PlayerHangOverState : PlayerDockAlignState
 {
     PlayerHangOverState(Character@ ownner)
     {
@@ -1660,9 +1658,19 @@ class PlayerHangOverState : MultiMotionState
         SetName("HangOverState");
         physicsType = 0;
     }
+
+    void OnMotionFinished()
+    {
+        if (selectIndex == 0 || selectIndex == 2 || selectIndex == 4)
+            PlayerDockAlignState::OnMotionFinished();
+        else if (selectIndex == 1 || selectIndex == 3)
+            ownner.ChangeState("RailIdleState");
+        else if (selectIndex == 5)
+            ownner.ChangeState("FallState");
+    }
 };
 
-class PlayerHangMoveState : PlayerClimbAlignState
+class PlayerHangMoveState : PlayerDockAlignState
 {
     Vector3         r1, r2, r3, r4;
     Vector3         linePt;
@@ -1685,7 +1693,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
         motionFlagBeforeAlign = kMotion_XZR;
         if (type == 1)
             motionFlagBeforeAlign = kMotion_XZ;
-        PlayerClimbAlignState::Enter(lastState);
+        PlayerDockAlignState::Enter(lastState);
         Print(this.name + " enter type = " + type);
         if (oldLine !is null)
         {
@@ -1698,7 +1706,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
     void Exit(State@ nextState)
     {
         @oldLine = null;
-        PlayerClimbAlignState::Exit(nextState);
+        PlayerDockAlignState::Exit(nextState);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1711,7 +1719,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
             debug.AddLine(r3, r4, Color(0.5, 0.45, 0.75), false);
             debug.AddBoundingBox(box, Color(0.25, 0.75, 0.25), false);
         }
-        PlayerClimbAlignState::DebugDraw(debug);
+        PlayerDockAlignState::DebugDraw(debug);
     }
 
     bool FindCrossLine(bool left)
@@ -1907,20 +1915,25 @@ class PlayerHangMoveState : PlayerClimbAlignState
         Vector3 futureProj = ownner.dockLine.Project(futurePos);
         @oldLine = ownner.dockLine;
 
-        if (!oldLine.IsProjectPositionInLine(futureProj, 0.5f))
+        bool failed = !oldLine.IsProjectPositionInLine(futureProj, 0.5f);
+        Ray ray;
+        Vector3 dir = futurePos - myPos;
+        dir.y = 0;
+        ray.Define(myPos, dir);
+
+        if (ownner.GetScene().physicsWorld.RaycastSingle(ray, dir.length, COLLISION_LAYER_LANDSCAPE).body !is null)
         {
+            Print("Move left=" + left + " hit wall!");
+            failed = true;
+        }
+
+        if (failed)
             return FindCrossLine(left);
-            //if (bFind)
-            //    return true;
-            //return FindParalleLine(left);
-        }
-        else
-        {
-            dockBlendingMethod = 2;
-            @oldLine = null;
-            type = 0;
-            ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        }
+
+        dockBlendingMethod = 2;
+        @oldLine = null;
+        type = 0;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
         return true;
     }
 
@@ -2107,7 +2120,7 @@ class PlayerDangleMoveEndState : PlayerHangMoveEndState
     }
 };
 
-class PlayerClimbDownState : PlayerClimbAlignState
+class PlayerClimbDownState : PlayerDockAlignState
 {
     Vector3 groundPos;
 
@@ -2126,7 +2139,7 @@ class PlayerClimbDownState : PlayerClimbAlignState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        PlayerClimbAlignState::DebugDraw(debug);
+        PlayerDockAlignState::DebugDraw(debug);
         debug.AddCross(groundPos, 0.5f, BLUE, false);
     }
 
@@ -2138,7 +2151,7 @@ class PlayerClimbDownState : PlayerClimbAlignState
         else if (lastState.name == "CrouchMoveState")
             animIndex = 2;
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
-        PlayerClimbAlignState::Enter(lastState);
+        PlayerDockAlignState::Enter(lastState);
         Vector3 myPos = ownner.GetNode().worldPosition;
         Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
         Player@ p = cast<Player>(ownner);
@@ -2146,7 +2159,7 @@ class PlayerClimbDownState : PlayerClimbAlignState
     }
 };
 
-class PlayerToHangState : PlayerClimbAlignState
+class PlayerToHangState : PlayerDockAlignState
 {
     PlayerToHangState(Character@ c)
     {
