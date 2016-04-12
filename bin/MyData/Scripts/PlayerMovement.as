@@ -1672,7 +1672,7 @@ class PlayerHangOverState : PlayerDockAlignState
 
 class PlayerHangMoveState : PlayerDockAlignState
 {
-    Vector3         r1, r2, r3, r4;
+    Vector3         v1, v2, v3, v4;
     Vector3         linePt;
     BoundingBox     box;
 
@@ -1711,14 +1711,11 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        if (type > 0)
-        {
-            debug.AddCross(linePt, 0.5f, Color(0.25, 0.65, 0.35), false);
-            debug.AddLine(r1, r2, Color(0.5, 0.45, 0.75), false);
-            debug.AddLine(r2, r3, Color(0.5, 0.45, 0.75), false);
-            debug.AddLine(r3, r4, Color(0.5, 0.45, 0.75), false);
-            debug.AddBoundingBox(box, Color(0.25, 0.75, 0.25), false);
-        }
+        debug.AddCross(linePt, 0.5f, Color(0.25, 0.65, 0.35), false);
+        debug.AddLine(v1, v2, Color(0.75, 0.45, 0.25), false);
+        debug.AddLine(v2, v3, Color(0.75, 0.45, 0.25), false);
+        debug.AddLine(v3, v4, Color(0.75, 0.45, 0.25), false);
+        debug.AddBoundingBox(box, Color(0.25, 0.75, 0.25), false);
         PlayerDockAlignState::DebugDraw(debug);
     }
 
@@ -1729,29 +1726,29 @@ class PlayerHangMoveState : PlayerDockAlignState
         Vector3 myPos = n.worldPosition;
         Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
         towardDir = n.worldRotation * towardDir;
-        Vector3 linePt = oldLine.GetLinePoint(towardDir);
+        linePt = oldLine.GetLinePoint(towardDir);
 
-        r1 = myPos;
-        r1.y += 0.5f;
+        v1 = myPos;
+        v1.y += 0.5f;
 
-        Vector3 v = linePt - r1;
+        Vector3 v = linePt - v1;
         v.y = 0;
         Vector3 dir = towardDir;
         float len = v.length + COLLISION_RADIUS;
         Ray ray;
-        ray.Define(r1, dir);
-        r2 = r1 + ray.direction * len;
+        ray.Define(v1, dir);
+        v2 = v1 + ray.direction * len;
         PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
         dir = n.worldRotation * Vector3(0, 0, 1);
         len = COLLISION_RADIUS * 2;
-        ray.Define(r2, dir);
-        r3 = r2 + ray.direction * len;
+        ray.Define(v2, dir);
+        v3 = v2 + ray.direction * len;
         PhysicsRaycastResult result2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
 
         dir = left ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
         dir = n.worldRotation * dir;
-        ray.Define(r3, dir);
-        r4 = r3 + ray.direction * COLLISION_RADIUS * 2;
+        ray.Define(v3, dir);
+        v4 = v3 + ray.direction * COLLISION_RADIUS * 2;
 
         PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
         bool hit1 = result1.body !is null;
@@ -1784,7 +1781,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         Line@ bestLine = null;
         float maxHeightDiff = 1.0f;
         float maxDistSQR = 999999;
-        Vector3 comparePot = (convexIndex == 1) ? r2 : r3;
+        Vector3 comparePot = (convexIndex == 1) ? v2 : v3;
 
         for (uint i=0; i<lines.length; ++i)
         {
@@ -1812,7 +1809,6 @@ class PlayerHangMoveState : PlayerDockAlignState
         index += convexIndex;
         ownner.AssignDockLine(bestLine);
         dockBlendingMethod = 1;
-        linePt = linePt;
         type = 1;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         return true;
@@ -1826,7 +1822,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         Vector3 myPos = n.worldPosition;
         Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
         towardDir = n.worldRotation * towardDir;
-        Vector3 linePt = oldLine.GetLinePoint(towardDir);
+        linePt = oldLine.GetLinePoint(towardDir);
 
         float angle = Atan2(towardDir.x, towardDir.z);
         float w = 6.0f;
@@ -1843,7 +1839,6 @@ class PlayerHangMoveState : PlayerDockAlignState
         m.SetTranslation(center);
         m.SetRotation(q.rotationMatrix);
         box.Transform(m);
-
 
         Array<Line@>@ lines = gLineWorld.cacheLines;
         lines.Clear();
@@ -1888,7 +1883,6 @@ class PlayerHangMoveState : PlayerDockAlignState
 
         ownner.AssignDockLine(bestLine);
         dockBlendingMethod = 1;
-        linePt = linePt;
         type = 1;
         dockInTargetBound = 1.5f;
 
@@ -1901,6 +1895,32 @@ class PlayerHangMoveState : PlayerDockAlignState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         Print("FindParalleLine index = " + index + " maxDistSQR=" + maxDistSQR);
         // ownner.SetSceneTimeScale(0);
+        return true;
+    }
+
+    bool TryToMoveToLinePoint(bool left)
+    {
+        int index = left ? 0 : numOfAnimations;
+        Node@ n = ownner.GetNode();
+        Vector3 myPos = n.worldPosition;
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = n.worldRotation * towardDir;
+        linePt = oldLine.GetLinePoint(towardDir);
+        String handName = left ? L_HAND : R_HAND;
+        Vector3 handPos = n.GetChild(handName, true).worldPosition;
+        handPos = oldLine.Project(handPos);
+
+        float distSQR = (handPos - linePt).lengthSquared;
+        float moveMinDistSQR = 1.5f;
+        Print("TryToMoveToLinePoint distSQR=" + distSQR);
+
+        if (distSQR < moveMinDistSQR * moveMinDistSQR)
+            return false;
+
+        @oldLine = null;
+        type = 5;
+        dockBlendingMethod = 1;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
         return true;
     }
 
@@ -1928,7 +1948,12 @@ class PlayerHangMoveState : PlayerDockAlignState
         }
 
         if (failed)
+        {
+            // test if we are a little bit futher to the linePt
+            if (TryToMoveToLinePoint(left))
+                return true;
             return FindCrossLine(left);
+        }
 
         dockBlendingMethod = 2;
         @oldLine = null;
@@ -1954,7 +1979,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         {
             Vector3 dir;
             if (type == 1)
-                dir = convex ? (r3 - r4) : (r1 - r2);
+                dir = convex ? (v3 - v4) : (v1 - v2);
             else
                 dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
             dir.y = 0;
@@ -2166,5 +2191,14 @@ class PlayerToHangState : PlayerDockAlignState
         super(c);
         SetName("ToHangState");
         dockBlendingMethod = 1;
+    }
+
+    void Enter(State@ lastState)
+    {
+        int index = 0;
+        if (ownner.dockLine.HasFlag(LINE_SHORT_WALL))
+            index = 1;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        PlayerDockAlignState::Enter(lastState);
     }
 };
