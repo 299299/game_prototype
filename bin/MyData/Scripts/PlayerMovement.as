@@ -1553,8 +1553,9 @@ class PlayerHangMoveState : PlayerClimbAlignState
 {
     Vector3         r1, r2, r3, r4;
     Vector3         linePt;
+    BoundingBox     box;
+
     Line@           oldLine;
-    bool            drawDebug;
     int             numOfAnimations = 4;
     int             type = 0;
     bool            convex = true;
@@ -1589,14 +1590,206 @@ class PlayerHangMoveState : PlayerClimbAlignState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        if (drawDebug)
+        if (type > 0)
         {
             debug.AddCross(linePt, 0.5f, Color(0.25, 0.65, 0.35), false);
             debug.AddLine(r1, r2, Color(0.5, 0.45, 0.75), false);
             debug.AddLine(r2, r3, Color(0.5, 0.45, 0.75), false);
             debug.AddLine(r3, r4, Color(0.5, 0.45, 0.75), false);
+            debug.AddBoundingBox(box, Color(0.25, 0.75, 0.25), false);
         }
         PlayerClimbAlignState::DebugDraw(debug);
+    }
+
+    bool FindCrossLine(bool left)
+    {
+        int index = left ? 0 : numOfAnimations;
+        Node@ n = ownner.GetNode();
+        Vector3 myPos = n.worldPosition;
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = n.worldRotation * towardDir;
+        Vector3 linePt = oldLine.GetLinePoint(towardDir);
+
+        r1 = myPos;
+        r1.y += 0.5f;
+
+        Vector3 v = linePt - r1;
+        v.y = 0;
+        Vector3 dir = towardDir;
+        float len = v.length + COLLISION_RADIUS;
+        Ray ray;
+        ray.Define(r1, dir);
+        r2 = r1 + ray.direction * len;
+        PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        dir = n.worldRotation * Vector3(0, 0, 1);
+        len = COLLISION_RADIUS * 2;
+        ray.Define(r2, dir);
+        r3 = r2 + ray.direction * len;
+        PhysicsRaycastResult result2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+
+        dir = left ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
+        dir = n.worldRotation * dir;
+        ray.Define(r3, dir);
+        r4 = r3 + ray.direction * COLLISION_RADIUS * 2;
+
+        PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        bool hit1 = result1.body !is null;
+        bool hit2 = result2.body !is null;
+        bool hit3 = result3.body !is null;
+
+        Print(this.name + " hit1=" + hit1 + " hit2=" + hit2 + " hit3=" + hit3);
+        int convexIndex = 1;
+        Array<Line@>@ lines = gLineWorld.cacheLines;
+        lines.Clear();
+
+        if (hit1)
+        {
+            convexIndex = 2;
+            convex = false;
+            gLineWorld.CollectLinesByNode(result1.body.node, lines);
+        }
+        else if (!hit2 && hit3)
+        {
+            convexIndex = 1;
+            convex = true;
+            gLineWorld.CollectLinesByNode(result3.body.node, lines);
+        }
+        else
+            return false;
+
+        if (lines.empty)
+            return false;
+
+        Line@ bestLine = null;
+        float maxHeightDiff = 1.0f;
+        float maxDistSQR = 999999;
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ l = lines[i];
+            if (!l.TestAngleDiff(oldLine, 90))
+                continue;
+            if (Abs(l.end.y - oldLine.end.y) > maxHeightDiff)
+                continue;
+            Vector3 proj = l.Project(myPos);
+            proj.y = myPos.y;
+            float distSQR = (proj - myPos).lengthSquared;
+            if (distSQR < maxDistSQR)
+            {
+                @bestLine = l;
+                maxDistSQR = distSQR;
+            }
+        }
+
+        if (bestLine is null)
+        {
+            @oldLine = null;
+            return false;
+        }
+
+        index += convexIndex;
+        ownner.AssignDockLine(bestLine);
+        dockBlendingMethod = 1;
+        linePt = linePt;
+        type = 1;
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        return true;
+    }
+
+    bool FindParalleLine(bool left)
+    {
+        @oldLine = ownner.dockLine;
+        int index = left ? 0 : numOfAnimations;
+        Node@ n = ownner.GetNode();
+        Vector3 myPos = n.worldPosition;
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = n.worldRotation * towardDir;
+        Vector3 linePt = oldLine.GetLinePoint(towardDir);
+
+        float angle = Atan2(towardDir.x, towardDir.z);
+        float w = 6.0f;
+        float h = 2.0f;
+        float l = 2.0f;
+        Vector3 halfSize(w/2, h/2, l/2);
+        Vector3 min = halfSize * -1;
+        Vector3 max = halfSize;
+        box.Define(min, max);
+
+        Quaternion q(0, angle + 90, 0);
+        Vector3 center = towardDir.Normalized() * halfSize.x + linePt;
+        Matrix3x4 m;
+        m.SetTranslation(center);
+        m.SetRotation(q.rotationMatrix);
+        box.Transform(m);
+
+        Array<RigidBody@> bodies = ownner.GetScene().physicsWorld.GetRigidBodies(box, COLLISION_LAYER_LANDSCAPE);
+        Print("FindParalleLine bodies.num=" + bodies.length);
+        if (bodies.empty)
+        {
+            @oldLine = null;
+            return false;
+        }
+
+        Array<Line@>@ lines = gLineWorld.cacheLines;
+        lines.Clear();
+
+        for (uint i=0; i<bodies.length; ++i)
+        {
+            Node@ n = bodies[i].node;
+            if (n.id == oldLine.nodeId)
+                continue;
+
+            gLineWorld.CollectLinesByNode(n, lines);
+        }
+
+        if (lines.empty)
+        {
+            @oldLine = null;
+            return false;
+        }
+
+        Print("FindParalleLine lines.num=" + lines.length);
+
+        Line@ bestLine = null;
+        float maxHeightDiff = 1.0f;
+        float maxDistSQR = 999999;
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ l = lines[i];
+            if (!l.TestAngleDiff(oldLine, 0))
+                continue;
+            if (Abs(l.end.y - oldLine.end.y) > maxHeightDiff)
+                continue;
+            Vector3 v = l.GetNearPoint(myPos);
+            float distSQR = (v - myPos).lengthSquared;
+            if (distSQR < maxDistSQR)
+            {
+                @bestLine = l;
+                maxDistSQR = distSQR;
+            }
+        }
+
+        if (bestLine is null)
+        {
+            @oldLine = null;
+            return false;
+        }
+
+        ownner.AssignDockLine(bestLine);
+        dockBlendingMethod = 1;
+        linePt = linePt;
+        type = 1;
+        dockInTargetBound = 1.5f;
+
+        float bigJumpDistError = 6;
+        type = (maxDistSQR > bigJumpDistError * bigJumpDistError) ? 3 : 2;
+
+        if (type == 3)
+            index += (numOfAnimations - 1);
+
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        Print("FindParalleLine index = " + index + " maxDistSQR=" + maxDistSQR);
+        // ownner.SetSceneTimeScale(0);
+        return true;
     }
 
     bool HorizontalMove(bool left)
@@ -1609,128 +1802,27 @@ class PlayerHangMoveState : PlayerClimbAlignState
         Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
         Vector3 futureProj = ownner.dockLine.Project(futurePos);
         @oldLine = ownner.dockLine;
-        drawDebug = false;
 
         if (!oldLine.IsProjectPositionInLine(futureProj, 0.5f))
         {
-            Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
-            towardDir = n.worldRotation * towardDir;
-            Vector3 linePt = oldLine.GetLinePoint(towardDir);
-
-            r1 = myPos;
-            r1.y += 0.5f;
-
-            Vector3 v = linePt - r1;
-            v.y = 0;
-            Vector3 dir = towardDir;
-            float len = v.length + COLLISION_RADIUS;
-            Ray ray;
-            ray.Define(r1, dir);
-            r2 = r1 + ray.direction * len;
-            PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
-            dir = n.worldRotation * Vector3(0, 0, 1);
-            len = COLLISION_RADIUS * 2;
-            ray.Define(r2, dir);
-            r3 = r2 + ray.direction * len;
-            PhysicsRaycastResult result2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
-
-            dir = left ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
-            dir = n.worldRotation * dir;
-            ray.Define(r3, dir);
-            r4 = r3 + ray.direction * COLLISION_RADIUS * 2;
-
-            PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
-            bool hit1 = result1.body !is null;
-            bool hit2 = result2.body !is null;
-            bool hit3 = result3.body !is null;
-
-            Print(this.name + " hit1=" + hit1 + " hit2=" + hit2 + " hit3=" + hit3);
-            int convexIndex = 1;
-            Array<Line@>@ lines = gLineWorld.cacheLines;
-
-            if (hit1)
-            {
-                convexIndex = 2;
-                convex = false;
-                gLineWorld.CollectLinesByNode(result1.body.node, lines);
-            }
-            else if (!hit2 && hit3)
-            {
-                convexIndex = 1;
-                convex = true;
-                gLineWorld.CollectLinesByNode(result3.body.node, lines);
-            }
-            else
-                return false;
-
-            if (lines.empty)
-                return false;
-
-            Line@ bestLine = null;
-            float maxHeightDiff = 1.0f;
-            float maxDistSQR = 999999;
-            for (uint i=0; i<lines.length; ++i)
-            {
-                Line@ l = lines[i];
-                if (!l.TestAngleDiff(oldLine, 90))
-                    continue;
-                if (Abs(l.end.y - oldLine.end.y) > maxHeightDiff)
-                    continue;
-                Vector3 proj = l.Project(myPos);
-                proj.y = myPos.y;
-                float distSQR = (proj - myPos).lengthSquared;
-                if (distSQR < maxDistSQR)
-                {
-                    @bestLine = l;
-                    maxDistSQR = distSQR;
-                }
-            }
-
-            if (bestLine is null)
-            {
-                @oldLine = null;
-                return false;
-            }
-
-            index += convexIndex;
-            ownner.AssignDockLine(bestLine);
-            dockBlendingMethod = 1;
-            linePt = linePt;
-            drawDebug = true;
-            type = 1;
-
-            ownner.SetSceneTimeScale(0);
+            return FindCrossLine(left);
+            //if (bFind)
+            //    return true;
+            //return FindParalleLine(left);
         }
         else
         {
             dockBlendingMethod = 2;
             @oldLine = null;
             type = 0;
+            ownner.GetNode().vars[ANIMATION_INDEX] = index;
         }
-
-        ownner.GetNode().vars[ANIMATION_INDEX] = index;
         return true;
-    }
-
-    void HorizontalChangeLine(Line@ line, const Vector3&in linePt, bool left, float distErrorSQR)
-    {
-        @oldLine = ownner.dockLine;
-        int index = left ? 3 : 7;
-        float bigJumpDistError = 1.5 * 1.5f;
-        type = (distErrorSQR > bigJumpDistError) ? 2 : 3;
-        if (type == 3)
-            index -= 3;
-        dockBlendingMethod = 1;
-        dockInTargetBound = 1.5f;
-        ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        ownner.AssignDockLine(line);
-        Print(this.name + " HorizontalChangeLine -- index=" + index);
-        // ownner.SetSceneTimeScale(0);
     }
 
     void OnMotionFinished()
     {
-        if (type == 2)
+        if (type == 3)
             ownner.ChangeState("HangMoveEndState");
         else
             ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
@@ -1802,19 +1894,14 @@ class PlayerHangMoveStartState : MultiAnimationState
             return false;
 
         searched = true;
-        bool left = selectIndex == 0;
-        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
-        towardDir = ownner.GetNode().worldRotation * towardDir;
-        Vector3 linePt = ownner.dockLine.GetLinePoint(towardDir);
-        float distErrorSQR = 0.0f;
-        Line@ l = gLineWorld.FindCloseParallelLine(ownner.dockLine, linePt, 1.0f, 10.0f, distErrorSQR);
-        if (l is null)
-            return false;
-
         PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
-        s.HorizontalChangeLine(l, linePt, left, distErrorSQR);
-        ownner.ChangeState("HangMoveState");
-        return true;
+        bool left = selectIndex == 0;
+        if (s.FindParalleLine(left))
+        {
+            ownner.ChangeState("HangMoveState");
+            return true;
+        }
+        return false;
     }
 
     void BackToIdle()
@@ -1843,7 +1930,7 @@ class PlayerHangMoveEndState : MultiAnimationState
         // HACK !!!!
         bool left = curAnimationIndex < 4;
         int startIndex = left ? 0 : 2;
-        return startIndex + RandomInt(2);
+        return startIndex + 1;
     }
 };
 
@@ -1913,16 +2000,8 @@ class PlayerDangleMoveState : PlayerHangMoveState
         if (PlayerHangMoveState::HorizontalMove(left))
             return true;
 
-        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
-        towardDir = ownner.GetNode().worldRotation * towardDir;
-        Vector3 linePt = ownner.dockLine.GetLinePoint(towardDir);
-        float distErrorSQR = 0.0f;
-        Line@ l = gLineWorld.FindCloseParallelLine(ownner.dockLine, linePt, 1.0f, 10.0f, distErrorSQR);
-        if (l !is null)
-        {
-            HorizontalChangeLine(l, linePt, left, distErrorSQR);
+        if (FindParalleLine(left))
             return true;
-        }
         return false;
     }
 };

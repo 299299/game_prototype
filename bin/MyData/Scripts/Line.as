@@ -418,55 +418,9 @@ class LineWorld
         }
     }
 
-    Line@ FindCloseParallelLine(Line@ l, const Vector3& linePt, float maxHeightDiff, float maxDistance, float& out outDistanceSqr)
-    {
-        Line@ ret = null;
-        float maxDistanceSQR = maxDistance*maxDistance;
-        float maxDistError = 0.5f;
-
-        for (uint i=0; i<lines.length; ++i)
-        {
-            Line@ line = lines[i];
-            if (l is line)
-                continue;
-
-            if (l.type != line.type)
-                continue;
-
-            float angle_diff = Abs(AngleDiff(l.angle - line.angle));
-            if (angle_diff > 5)
-                continue;
-
-            float start_sqr = (line.ray.origin - linePt).lengthSquared;
-            float end_sqr = (line.end - linePt).lengthSquared;
-            if (start_sqr > maxDistanceSQR && end_sqr > maxDistanceSQR)
-                continue;
-
-            float heightDiff = Abs(l.end.y - line.end.y);
-            if (heightDiff > maxHeightDiff)
-                continue;
-
-            Vector3 v = linePt;
-            v.y = line.end.y;
-            float dist = line.ray.Distance(v);
-            if (dist > maxDistError)
-                continue;
-
-            float dist_sqr = Min(start_sqr, end_sqr);
-            if (dist_sqr < maxDistanceSQR)
-            {
-                maxDistanceSQR = dist_sqr;
-                @ret = line;
-                outDistanceSqr = dist_sqr;
-            }
-        }
-
-        return ret;
-    }
-
     int CollectLinesByNode(Node@ node, Array<Line@>@ outLines)
     {
-        outLines.Clear();
+        // outLines.Clear();
 
         for (uint i=0; i<lines.length; ++i)
         {
