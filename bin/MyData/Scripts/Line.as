@@ -9,7 +9,6 @@
 enum LineType
 {
     LINE_COVER,
-    LINE_CLIMB_OVER,
     LINE_RAILING,
     LINE_EDGE,
     LINE_TYPE_NUM
@@ -21,7 +20,20 @@ enum LineFlags
     LINE_SHORT_WALL,
 };
 
-const float lineMinLength = 2.0f;
+enum LineAction
+{
+    LINE_ACTION_NULL,
+    LINE_ACTION_CLIMB_OVER,
+    LINE_ACTION_CLIMB_UP,
+    LINE_ACTION_HANG,
+    LINE_ACTION_DANGE,
+    LINE_ACTION_CLIMB_DOWN,
+    LINE_ACTION_FALL_DOWN,
+};
+
+const float LINE_MIN_LENGTH = 2.0f;
+const float LINE_MAX_HEIGHT_DIFF = 12;
+const float LINE_MERGE_MAX_LENGTH = 1.0f;
 
 class Line
 {
@@ -110,6 +122,9 @@ class Line
 
     float Test(const Vector3& pos, float angle)
     {
+        if (Abs(pos.y - end.y) > LINE_MAX_HEIGHT_DIFF)
+            return -1;
+
         Vector3 project = ray.Project(pos);
         if (!IsProjectPositionInLine(project))
             return -1;
@@ -255,7 +270,6 @@ class LineWorld
     LineWorld()
     {
         debugColors.Resize(LINE_TYPE_NUM);
-        debugColors[LINE_CLIMB_OVER] = Color(0.4f, 0.75f, 0.3f);
         debugColors[LINE_RAILING] = Color(0.25f, 0.25f, 0.75f);
         debugColors[LINE_COVER] = Color(0.75f, 0.15f, 0.15f);
         debugColors[LINE_EDGE] = Color(0.25f, 0.5f, 0.75f);
@@ -279,7 +293,7 @@ class LineWorld
     {
         Vector3 dir = end - start;
         float lenSQR = dir.lengthSquared;
-        if (lenSQR < lineMinLength*lineMinLength)
+        if (lenSQR < LINE_MIN_LENGTH*LINE_MIN_LENGTH)
             return null;
         Line@ l = Line();
         l.ray.origin = start;
@@ -293,9 +307,9 @@ class LineWorld
         l.nodeId = nodeId;
         l.size = size;
 
-        if (size.y < lineMinLength)
+        if (size.y < LINE_MIN_LENGTH)
             l.flags |= LINE_SHORT_WALL;
-        if (size.x < lineMinLength || size.z < lineMinLength)
+        if (size.x < LINE_MIN_LENGTH || size.z < LINE_MIN_LENGTH)
             l.flags |= LINE_THING_WALL;
 
         AddLine(l);
@@ -309,10 +323,21 @@ class LineWorld
         {
             if (!GetCorners(n, size, p1, p2, p3, p4))
                 return;
-            CreateLine(type, p1, p2, size, n.id);
-            CreateLine(type, p2, p3, size, n.id);
-            CreateLine(type, p3, p4, size, n.id);
-            CreateLine(type, p4, p1, size, n.id);
+
+            if (size.x < LINE_MERGE_MAX_LENGTH || size.z < LINE_MERGE_MAX_LENGTH)
+            {
+                // if line length is too short just merge them to one
+                if (!GetCorners(n, size, p1, p2))
+                    return;
+                CreateLine(type, p1, p2, size, n.id);
+            }
+            else
+            {
+                CreateLine(type, p1, p2, size, n.id);
+                CreateLine(type, p2, p3, size, n.id);
+                CreateLine(type, p3, p4, size, n.id);
+                CreateLine(type, p4, p1, size, n.id);
+            }
         }
         else
         {
@@ -337,7 +362,7 @@ class LineWorld
             }
             else if (_node.name.StartsWith("ClimbOver"))
             {
-                CreateLine(LINE_CLIMB_OVER, _node);
+                CreateLine(LINE_EDGE, _node);
             }
             else if (_node.name.StartsWith("ClimbUp"))
             {
@@ -469,6 +494,19 @@ class LineWorld
         }
 
         return ret;
+    }
+
+    int CollectLinesByNode(Node@ node, Array<Line@>@ lines)
+    {
+        lines.Clear();
+
+        for (uint i=0; i<lines.length; ++i)
+        {
+            if (lines[i].nodeId == node.id)
+                lines.Push(lines[i]);
+        }
+
+        return lines.length;
     }
 };
 

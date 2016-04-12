@@ -1420,12 +1420,14 @@ class PlayerHangUpState : PlayerClimbAlignState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState("HangIdleState");
+        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 2 ? "DangleIdleState": "HangIdleState");
     }
 };
 
 class PlayerHangIdleState : SingleAnimationState
 {
+    bool checkFoot = true;
+
     PlayerHangIdleState(Character@ c)
     {
         super(c);
@@ -1437,40 +1439,64 @@ class PlayerHangIdleState : SingleAnimationState
 
     void Enter(State@ lastState)
     {
+        checkFoot = true;
         ownner.SetVelocity(Vector3(0,0,0));
         ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, animSpeed);
         CharacterState::Enter(lastState);
     }
 
+    bool CheckFootBlocking()
+    {
+        int n = cast<Player>(ownner).DetectWallBlockingFoot(COLLISION_RADIUS);
+        if (n != 2)
+        {
+            ownner.ChangeState("DangleIdleState");
+            return true;
+        }
+        return false;
+    }
+
     void Update(float dt)
     {
+        if (checkFoot)
+        {
+            checkFoot = false;
+            if (CheckFootBlocking())
+                return;
+        }
+
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
-            int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
-            // Print(this.name + " input index=" + index);
+            int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4);
             if (index == 0)
-                ownner.ChangeState("HangOverState");
+                VerticalMove();
             else if (index == 2)
                 ownner.ChangeState("FallState");
             else
-                StartHangMove(index == 3);
-            return;
+                HorizontalMove(index == 3);
         }
 
         SingleAnimationState::Update(dt);
     }
 
-    void StartHangMove(bool left)
+    void HorizontalMove(bool left)
     {
         int index = left ? 0 : 3;
         PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
-        if (s.TestHangMove(left))
+        if (s.HorizontalMove(left))
             ownner.ChangeState(s.nameHash);
         else
         {
             ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : 1;
             ownner.ChangeState("HangMoveStartState");
         }
+    }
+
+    void VerticalMove()
+    {
+        int lineAction = cast<Player>(ownner).AnalyzeForwadAction(ownner.dockLine);
+        if (lineAction == LINE_ACTION_CLIMB_UP)
+            ownner.ChangeState("HangOverState");
     }
 };
 
@@ -1557,7 +1583,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
         PlayerClimbAlignState::DebugDraw(debug);
     }
 
-    bool TestHangMove(bool left)
+    bool HorizontalMove(bool left)
     {
         int index = left ? 0 : numOfAnimations;
         Motion@ m = motions[index];
@@ -1678,7 +1704,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
         if (type == 2)
             ownner.ChangeState("HangMoveEndState");
         else
-            ownner.ChangeState(ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? "DangleIdleState": "HangIdleState");
+            ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 2 ? "DangleIdleState": "HangIdleState");
     }
 };
 
@@ -1760,7 +1786,7 @@ class PlayerHangMoveEndState : MultiAnimationState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? "DangleIdleState": "HangIdleState");
+        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 2 ? "DangleIdleState": "HangIdleState");
     }
 
     int PickIndex()
@@ -1783,40 +1809,29 @@ class PlayerDangleIdleState : PlayerHangIdleState
         animSpeed = 1.0f;
     }
 
-    void Update(float dt)
+    bool CheckFootBlocking()
     {
-        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        int n = cast<Player>(ownner).DetectWallBlockingFoot(COLLISION_RADIUS);
+        if (n == 2)
         {
-            int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4);
-            if (index == 0)
-            {
-                ownner.ChangeState("DangleOverState");
-                return;
-            }
-            else if (index == 2)
-            {
-                ownner.ChangeState("FallState");
-                return;
-            }
-            else
-            {
-                if (StartDangleMove(index == 3))
-                    return;
-            }
+            ownner.ChangeState("HangIdleState");
+            return false;
         }
-
-        SingleAnimationState::Update(dt);
+        return true;
     }
 
-    bool StartDangleMove(bool left)
+    void HorizontalMove(bool left)
     {
-        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("DangleMoveState"));
-        if (s.TestHangMove(left))
-        {
+        PlayerDangleMoveState@ s = cast<PlayerDangleMoveState>(ownner.FindState("DangleMoveState"));
+        if (s.HorizontalMove(left))
             ownner.ChangeState(s.nameHash);
-            return true;
-        }
-        return false;
+    }
+
+    void VerticalMove()
+    {
+        int lineAction = cast<Player>(ownner).AnalyzeForwadAction(ownner.dockLine);
+        if (lineAction == LINE_ACTION_CLIMB_UP)
+            ownner.ChangeState("DangleOverState");
     }
 };
 
@@ -1845,9 +1860,9 @@ class PlayerDangleMoveState : PlayerHangMoveState
             PlayerHangMoveState::OnMotionFinished();
     }
 
-    bool TestHangMove(bool left)
+    bool HorizontalMove(bool left)
     {
-        if (PlayerHangMoveState::TestHangMove(left))
+        if (PlayerHangMoveState::HorizontalMove(left))
             return true;
 
         Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);

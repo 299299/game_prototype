@@ -541,6 +541,9 @@ class BruceDangleOverState : PlayerDangleOverState
     {
         super(c);
         AddMotion("BM_Climb/Dangle_Climb_Up_Run");
+        AddMotion("BM_Climb/Dangle_Climb_Up_Over_128");
+        AddMotion("BM_Climb/Dangle_Climb_Up_Rail");
+        AddMotion("BM_Climb/Dangle_Climb_Up_Rail_128");
     }
 };
 
