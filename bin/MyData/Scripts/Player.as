@@ -608,7 +608,7 @@ class Player : Character
         Vector3 charPos = GetNode().worldPosition;
         Vector3 proj = l.Project(charPos);
         float h_diff = proj.y - charPos.y;
-
+        // Print("h_diff = " + h_diff);
         if (h_diff < 0.01f)
         {
             // move down case
@@ -641,14 +641,12 @@ class Player : Character
                 ray.Define(v, Vector3(0, -1, 0));
                 result = sceneNode.scene.physicsWorld.RaycastSingle(ray, 3.0f, COLLISION_LAYER_LANDSCAPE);
                 if (result.body !is null)
-                    return LINE_ACTION_CLIMB_UP;
+                    return LINE_ACTION_HANG; //LINE_ACTION_CLIMB_UP;
                 else
-                    return LINE_ACTION_CLIMB_OVER;
+                    return (h_diff < 4.8) ? LINE_ACTION_CLIMB_OVER : LINE_ACTION_HANG;
             }
             else
-            {
                 return LINE_ACTION_HANG; // on-ground case ignore dangle
-            }
         }
     }
 

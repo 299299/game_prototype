@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="93" />
 	<attribute name="Next Replicated Component ID" value="160" />
-	<attribute name="Next Local Node ID" value="16780705" />
-	<attribute name="Next Local Component ID" value="16778553" />
+	<attribute name="Next Local Node ID" value="16780706" />
+	<attribute name="Next Local Component ID" value="16778565" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -390,7 +390,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ClimbHang" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-13.7887 0.688904 8.5282" />
+		<attribute name="Position" value="-13.7887 0.95744 8.5282" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
 		<attribute name="Scale" value="0.5 13 5" />
 		<attribute name="Variables" />
@@ -402,7 +402,7 @@
 		<component type="CollisionShape" id="143" />
 		<component type="RigidBody" id="144">
 			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-			<attribute name="Physics Position" value="-13.7887 0.688904 8.5282" />
+			<attribute name="Physics Position" value="-13.7887 0.95744 8.5282" />
 		</component>
 	</node>
 	<node id="88">

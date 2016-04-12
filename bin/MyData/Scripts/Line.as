@@ -16,8 +16,8 @@ enum LineType
 
 enum LineFlags
 {
-    LINE_THING_WALL,
-    LINE_SHORT_WALL,
+    LINE_THIN_WALL  = (1 << 0),
+    LINE_SHORT_WALL = (1 << 1),
 };
 
 enum LineAction
@@ -32,7 +32,7 @@ enum LineAction
 };
 
 const float LINE_MIN_LENGTH = 2.0f;
-const float LINE_MAX_HEIGHT_DIFF = 12;
+const float LINE_MAX_HEIGHT_DIFF = 15;
 
 class Line
 {
@@ -41,8 +41,6 @@ class Line
     Vector3         invDir;
     Vector3         size;
 
-    int             flags;
-
     float           length;
     float           lengthSquared;
     int             type;
@@ -50,6 +48,7 @@ class Line
     float           maxFacingDiff = 45;
 
     uint            nodeId;
+    int             flags;
 
     bool HasFlag(int flag)
     {
@@ -83,7 +82,7 @@ class Line
             bFix = true;
         if (!bFix)
             return proj;
-        Print("FixProjectPosition");
+        // Print("FixProjectPosition");
         if (l_to_start > l_to_end)
             return end + invDir * bound;
         else
@@ -173,6 +172,12 @@ class Line
     {
         int towardHead = GetTowardHead(Atan2(dir.x, dir.z));
         return (towardHead == 0) ? ray.origin : end;
+    }
+
+    bool TestAngleDiff(Line@ l, float diff, float maxError = 5)
+    {
+        float angle_diff = Abs(AngleDiff(l.angle - this.angle));
+        return Abs(angle_diff - diff) < maxError;
     }
 };
 
@@ -288,12 +293,13 @@ class LineWorld
         lines.Push(l);
     }
 
-    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, const Vector3&in size, uint nodeId)
+    Line@ CreateLine(int type, const Vector3&in start, const Vector3&in end, const Vector3&in size, Node@ node)
     {
         Vector3 dir = end - start;
         float lenSQR = dir.lengthSquared;
         if (lenSQR < LINE_MIN_LENGTH*LINE_MIN_LENGTH)
             return null;
+
         Line@ l = Line();
         l.ray.origin = start;
         l.end = end;
@@ -303,15 +309,16 @@ class LineWorld
         l.length = dir.length;
         l.lengthSquared = lenSQR;
         l.angle = Atan2(dir.x, dir.z);
-        l.nodeId = nodeId;
+        l.nodeId = node.id;
         l.size = size;
 
-        if (size.y < LINE_MIN_LENGTH)
-            l.flags |= LINE_SHORT_WALL;
         if (size.x < LINE_MIN_LENGTH || size.z < LINE_MIN_LENGTH)
-            l.flags |= LINE_THING_WALL;
+            l.flags |= LINE_THIN_WALL;
+        if (size.y < 1.0f)
+            l.flags |= LINE_SHORT_WALL;
 
         AddLine(l);
+        Print("CreateLine type=" + type + " for node=" + node.name + " size=" + size.ToString() + " flags=" + l.flags);
         return l;
     }
 
@@ -328,21 +335,21 @@ class LineWorld
                 // if line length is too short just merge them to one
                 if (!GetCorners(n, size, p1, p2))
                     return;
-                CreateLine(type, p1, p2, size, n.id);
+                CreateLine(type, p1, p2, size, n);
             }
             else
             {
-                CreateLine(type, p1, p2, size, n.id);
-                CreateLine(type, p2, p3, size, n.id);
-                CreateLine(type, p3, p4, size, n.id);
-                CreateLine(type, p4, p1, size, n.id);
+                CreateLine(type, p1, p2, size, n);
+                CreateLine(type, p2, p3, size, n);
+                CreateLine(type, p3, p4, size, n);
+                CreateLine(type, p4, p1, size, n);
             }
         }
         else
         {
             if (!GetCorners(n, size, p1, p2))
                 return;
-            CreateLine(type, p1, p2, size, n.id);
+            CreateLine(type, p1, p2, size, n);
         }
     }
 
@@ -411,44 +418,6 @@ class LineWorld
         }
     }
 
-    void CollectCloseCrossLine(Line@ l, const Vector3& linePt)
-    {
-        float distSQRError = 0.25f * 0.25f;
-        float distSQRError1 = 0.5f * 0.5f;
-        cacheLines.Clear();
-        //cacheError.Clear();
-
-        for (uint i=0; i<lines.length; ++i)
-        {
-            Line@ line = lines[i];
-            if (l is line)
-                continue;
-
-            if (l.type != line.type)
-                continue;
-
-            Vector3 proj = line.Project(linePt);
-            float proj_sqr = (proj - linePt).lengthSquared;
-            if (proj_sqr > distSQRError)
-                continue;
-
-            float start_sqr = (line.ray.origin - linePt).lengthSquared;
-            float end_sqr = (line.end - linePt).lengthSquared;
-            if (start_sqr > distSQRError1 && end_sqr > distSQRError1)
-                continue;
-
-            float angle_diff = Abs(AngleDiff(l.angle - line.angle));
-            float diff_90 = Abs(angle_diff - 90);
-
-            // Print("in-angle=" + l.angle + " out-angle=" + line.angle + " angle_diff=" + angle_diff);
-            if (diff_90 > 5)
-                continue;
-
-            cacheLines.Push(line);
-            //cacheError.Push(proj_sqr);
-        }
-    }
-
     Line@ FindCloseParallelLine(Line@ l, const Vector3& linePt, float maxHeightDiff, float maxDistance, float& out outDistanceSqr)
     {
         Line@ ret = null;
@@ -495,17 +464,19 @@ class LineWorld
         return ret;
     }
 
-    int CollectLinesByNode(Node@ node, Array<Line@>@ lines)
+    int CollectLinesByNode(Node@ node, Array<Line@>@ outLines)
     {
-        lines.Clear();
+        outLines.Clear();
 
         for (uint i=0; i<lines.length; ++i)
         {
             if (lines[i].nodeId == node.id)
-                lines.Push(lines[i]);
+                outLines.Push(lines[i]);
         }
 
-        return lines.length;
+        Print("CollectLinesByNode " + node.name + " num=" + outLines.length);
+
+        return outLines.length;
     }
 };
 

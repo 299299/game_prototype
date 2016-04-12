@@ -1420,7 +1420,21 @@ class PlayerHangUpState : PlayerClimbAlignState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 2 ? "DangleIdleState": "HangIdleState");
+        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+    }
+
+    Vector3 PickDockInTarget()
+    {
+        Line@ l = ownner.dockLine;
+        Vector3 v = l.Project(motionPositon);
+        v = l.FixProjectPosition(v, dockInTargetBound);
+        if (l.HasFlag(LINE_THIN_WALL))
+        {
+            Vector3 dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
+            float dist = Min(l.size.x, l.size.z) / 2;
+            v += dir.Normalized() * dist;
+        }
+        return v;
     }
 };
 
@@ -1448,7 +1462,7 @@ class PlayerHangIdleState : SingleAnimationState
     bool CheckFootBlocking()
     {
         int n = cast<Player>(ownner).DetectWallBlockingFoot(COLLISION_RADIUS);
-        if (n != 2)
+        if (n == 0)
         {
             ownner.ChangeState("DangleIdleState");
             return true;
@@ -1537,12 +1551,13 @@ class PlayerHangOverState : MultiMotionState
 
 class PlayerHangMoveState : PlayerClimbAlignState
 {
-    Vector3         r1, r2, r3;
+    Vector3         r1, r2, r3, r4;
     Vector3         linePt;
     Line@           oldLine;
     bool            drawDebug;
     int             numOfAnimations = 4;
     int             type = 0;
+    bool            convex = true;
 
     PlayerHangMoveState(Character@ ownner)
     {
@@ -1579,6 +1594,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
             debug.AddCross(linePt, 0.5f, Color(0.25, 0.65, 0.35), false);
             debug.AddLine(r1, r2, Color(0.5, 0.45, 0.75), false);
             debug.AddLine(r2, r3, Color(0.5, 0.45, 0.75), false);
+            debug.AddLine(r3, r4, Color(0.5, 0.45, 0.75), false);
         }
         PlayerClimbAlignState::DebugDraw(debug);
     }
@@ -1600,60 +1616,73 @@ class PlayerHangMoveState : PlayerClimbAlignState
             Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
             towardDir = n.worldRotation * towardDir;
             Vector3 linePt = oldLine.GetLinePoint(towardDir);
-            gLineWorld.CollectCloseCrossLine(oldLine, linePt);
-            if (gLineWorld.cacheLines.empty)
-            {
-                @oldLine = null;
-                return false;
-            }
-
-            Print(this.name + " CollectCloseCrossLine num=" + gLineWorld.cacheLines.length);
 
             r1 = myPos;
             r1.y += 0.5f;
 
             Vector3 v = linePt - r1;
             v.y = 0;
-            Vector3 dir = towardDir.Normalized();
-            float len = v.length + 1.5f;
-            r2 = r1 + dir * len;
+            Vector3 dir = towardDir;
+            float len = v.length + COLLISION_RADIUS;
             Ray ray;
             ray.Define(r1, dir);
-            bool hit1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE).body !is null;
+            r2 = r1 + ray.direction * len;
+            PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
             dir = n.worldRotation * Vector3(0, 0, 1);
-            dir.Normalize();
-            len = 4.0f;
-            r3 = r2 + dir * len;
+            len = COLLISION_RADIUS * 2;
             ray.Define(r2, dir);
-            bool hit2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE).body !is null;
+            r3 = r2 + ray.direction * len;
+            PhysicsRaycastResult result2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
 
-            Print(this.name + " hit1=" + hit1 + " hit2=" + hit2);
+            dir = left ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
+            dir = n.worldRotation * dir;
+            ray.Define(r3, dir);
+            r4 = r3 + ray.direction * COLLISION_RADIUS * 2;
+
+            PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+            bool hit1 = result1.body !is null;
+            bool hit2 = result2.body !is null;
+            bool hit3 = result3.body !is null;
+
+            Print(this.name + " hit1=" + hit1 + " hit2=" + hit2 + " hit3=" + hit3);
+            int convexIndex = 1;
+            Array<Line@>@ lines = gLineWorld.cacheLines;
+
+            if (hit1)
+            {
+                convexIndex = 2;
+                convex = false;
+                gLineWorld.CollectLinesByNode(result1.body.node, lines);
+            }
+            else if (!hit2 && hit3)
+            {
+                convexIndex = 1;
+                convex = true;
+                gLineWorld.CollectLinesByNode(result3.body.node, lines);
+            }
+            else
+                return false;
+
+            if (lines.empty)
+                return false;
 
             Line@ bestLine = null;
-            int convexIndex = 1;
-
-            // choose lines
-            for (uint i=0; i<gLineWorld.cacheLines.length; ++i)
+            float maxHeightDiff = 1.0f;
+            float maxDistSQR = 999999;
+            for (uint i=0; i<lines.length; ++i)
             {
-                Line@ l = gLineWorld.cacheLines[i];
-                Vector3 otherProj = l.Project(myPos);
-                convexIndex = l.IsProjectPositionInLine(otherProj, 0.0f) ? 2 : 1;
-
-                if (convexIndex == 1)
+                Line@ l = lines[i];
+                if (!l.TestAngleDiff(oldLine, 90))
+                    continue;
+                if (Abs(l.end.y - oldLine.end.y) > maxHeightDiff)
+                    continue;
+                Vector3 proj = l.Project(myPos);
+                proj.y = myPos.y;
+                float distSQR = (proj - myPos).lengthSquared;
+                if (distSQR < maxDistSQR)
                 {
-                    if (hit1)
-                        continue;
-                    if (hit2)
-                        continue;
-
                     @bestLine = l;
-                }
-                else if (convexIndex == 2)
-                {
-                    if (!hit1)
-                        continue;
-
-                    @bestLine = l;
+                    maxDistSQR = distSQR;
                 }
             }
 
@@ -1670,7 +1699,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
             drawDebug = true;
             type = 1;
 
-            // ownner.SetSceneTimeScale(0);
+            ownner.SetSceneTimeScale(0);
         }
         else
         {
@@ -1704,7 +1733,26 @@ class PlayerHangMoveState : PlayerClimbAlignState
         if (type == 2)
             ownner.ChangeState("HangMoveEndState");
         else
-            ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 2 ? "DangleIdleState": "HangIdleState");
+            ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+    }
+
+    Vector3 PickDockInTarget()
+    {
+        Line@ l = ownner.dockLine;
+        Vector3 v = l.Project(motionPositon);
+        v = l.FixProjectPosition(v, dockInTargetBound);
+        if (l.HasFlag(LINE_THIN_WALL))
+        {
+            Vector3 dir;
+            if (type == 1)
+                dir = convex ? (r3 - r4) : (r1 - r2);
+            else
+                dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
+            dir.y = 0;
+            float dist = Min(l.size.x, l.size.z) / 2;
+            v += dir.Normalized() * dist;
+        }
+        return v;
     }
 };
 
@@ -1786,7 +1834,7 @@ class PlayerHangMoveEndState : MultiAnimationState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 2 ? "DangleIdleState": "HangIdleState");
+        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
     }
 
     int PickIndex()
@@ -1812,7 +1860,7 @@ class PlayerDangleIdleState : PlayerHangIdleState
     bool CheckFootBlocking()
     {
         int n = cast<Player>(ownner).DetectWallBlockingFoot(COLLISION_RADIUS);
-        if (n == 2)
+        if (n > 0)
         {
             ownner.ChangeState("HangIdleState");
             return false;
