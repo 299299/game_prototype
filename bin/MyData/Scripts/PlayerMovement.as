@@ -2201,4 +2201,12 @@ class PlayerToHangState : PlayerDockAlignState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         PlayerDockAlignState::Enter(lastState);
     }
+
+    void OnMotionFinished()
+    {
+        if (selectIndex == 0)
+            ownner.ChangeState("HangIdleState");
+        else
+            ownner.ChangeState("DangleIdleState");
+    }
 };

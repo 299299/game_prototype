@@ -594,9 +594,17 @@ class BruceToHangState : PlayerToHangState
     BruceToHangState(Character@ c)
     {
         super(c);
+
         AddMotion("BM_Climb/Crouch_To_Hang");
         AddMotion("BM_Climb/Crouch_To_Dangle");
         AddMotion("BM_Climb/Crouch_To_Dangle_Wall");
+
+        AddMotion("BM_Railing/Railing_To_Dangle");
+        AddMotion("BM_Railing/Railing_To_Dangle_128");
+        AddMotion("BM_Railing/Railing_To_Dangle_128_Wall");
+        AddMotion("BM_Railing/Railing_To_Dangle_Wall");
+        AddMotion("BM_Railing/Railing_To_Hang");
+        AddMotion("BM_Railing/Railing_To_Hang_128");
     }
 };
 
@@ -796,9 +804,9 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle_Right_End_1", 0);
 
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Run", climb_foot_flags);
-    Global_CreateMotion(preFix + "Dangle__Climb_Up_Rail", climb_foot_flags);
-    Global_CreateMotion(preFix + "Dangle__Climb_Up_Over_128", climb_foot_flags);
-    Global_CreateMotion(preFix + "Dangle__Climb_Up_Rail_128", climb_foot_flags);
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail", climb_foot_flags);
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Over_128", climb_foot_flags);
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail_128", climb_foot_flags);
 
     Global_CreateMotion(preFix + "Crouch_To_Hang", climb_foot_flags);
     Global_CreateMotion(preFix + "Crouch_To_Dangle", climb_foot_flags);
@@ -829,6 +837,13 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Stand_To_Walk_Right_180");
     Global_CreateMotion(preFix + "Railing_Run_Forward", kMotion_Z, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Railing_Run_Forward_Idle", 0);
+
+    Global_CreateMotion(preFix + "Railing_To_Dangle", climb_foot_flags);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_128", climb_foot_flags);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_128_Wall", climb_foot_flags);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", climb_foot_flags);
+    Global_CreateMotion(preFix + "Railing_To_Hang", climb_foot_flags);
+    Global_CreateMotion(preFix + "Railing_To_Hang_128", climb_foot_flags);
 
     Global_AddAnimation(preFix + "Railing_Idle");
 }
