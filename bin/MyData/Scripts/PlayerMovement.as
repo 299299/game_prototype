@@ -1441,6 +1441,9 @@ class PlayerHangUpState : PlayerClimbAlignState
 class PlayerHangIdleState : SingleAnimationState
 {
     bool checkFoot = true;
+    Vector3 v1, v2, v3, v4;
+    StringHash overStateName = StringHash("HangOverState");
+    StringHash moveStateName = StringHash("HangMoveState");
 
     PlayerHangIdleState(Character@ c)
     {
@@ -1496,7 +1499,7 @@ class PlayerHangIdleState : SingleAnimationState
     void HorizontalMove(bool left)
     {
         int index = left ? 0 : 3;
-        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
+        PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState(moveStateName));
         if (s.HorizontalMove(left))
             ownner.ChangeState(s.nameHash);
         else
@@ -1506,11 +1509,146 @@ class PlayerHangIdleState : SingleAnimationState
         }
     }
 
-    void VerticalMove()
+    bool VerticalMove()
     {
-        int lineAction = cast<Player>(ownner).AnalyzeForwadAction(ownner.dockLine);
-        if (lineAction == LINE_ACTION_CLIMB_UP)
-            ownner.ChangeState("HangOverState");
+        Vector3 charPos = ownner.GetNode().worldPosition;
+        Vector3 proj = ownner.dockLine.Project(charPos);
+        float h_diff = proj.y - charPos.y;
+
+        Vector3 v1 = charPos;
+        Ray ray;
+        ray.Define(v1, Vector3(0, 1, 0));
+        float dist = h_diff + CHARACTER_HEIGHT/2;
+        PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        int animIndex = 0;
+        bool changeToOverState = false;
+        v2 = v1 + ray.direction * dist;
+
+        Vector3 dir = proj - charPos;
+        dir.y = 0;
+        ray.Define(v2, dir);
+        dist = dir.length + COLLISION_RADIUS;
+        v3 = v2 + ray.direction * dist;
+        PhysicsRaycastResult result2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        ray.Define(v3, Vector3(0, -1, 0));
+        dist = CHARACTER_HEIGHT * 2;
+        PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT * 2, COLLISION_LAYER_LANDSCAPE);
+
+        bool hit1 = (result1.body != null);
+        bool hit2 = (result2.body != null);
+        bool hit3 = (result3.body != null);
+
+        Print(this.name + " VerticalMove hit1=" + hit1 + " hit2=" + hit2 + " hit3=" + hit3);
+
+        if (hit1)
+            return false;
+
+        if (ownner.dockLine.type == LINE_RAILING)
+        {
+            changeToOverState = true;
+            animIndex = 1;
+        }
+        else
+        {
+            if (hit2)
+            {
+                // hit a front wall
+                Array<Line@>@ lines = gLineWorld.cacheLines;
+                lines.Clear();
+
+                gLineWorld.CollectLinesByNode(result2.body.node, lines);
+                if (lines.empty)
+                    return false;
+
+
+                Line@ bestLine = null;
+                float maxDistSQR = 4.0f * 4.0f;
+                float minHeightDiff = 1.0f;
+                float maxHeightDiff = 4.5f;
+
+                Vector3 comparePot = proj;
+                Line@ oldLine = ownner.dockLine;
+
+                for (uint i=0; i<lines.length; ++i)
+                {
+                    Line@ l = lines[i];
+                    if (!l.TestAngleDiff(oldLine, 0))
+                        continue;
+
+                    float dh = l.end.y - oldLine.end.y;
+                    if (dh < minHeightDiff || dh > maxHeightDiff)
+                        continue;
+
+                    Vector3 tmpV = l.Project(comparePot);
+                    tmpV.y = comparePot.y;
+                    float distSQR = (tmpV - comparePot).lengthSquared;
+                    if (distSQR < maxDistSQR)
+                    {
+                        @bestLine = l;
+                        maxDistSQR = distSQR;
+                    }
+                }
+
+                if (bestLine is null)
+                {
+                    @oldLine = null;
+                    return false;
+                }
+
+                animIndex = (bestLine.type == LINE_RAILING) ? 3 : 2;
+                changeToOverState = true;
+            }
+            else
+            {
+                // no front wall
+                if (hit3)
+                {
+                    // hit gournd
+                    float hitGroundH = result3.position.y;
+                    float lineToGround = ownner.dockLine.end.y - hitGroundH;
+                    if (lineToGround < 0.5f)
+                    {
+                        // if gound is not low just stand and run
+                        animIndex = 0;
+                    }
+                    else if (lineToGround < 4.5)
+                    {
+                        // if gound is lower not than 4.5 we can perform a over jump
+                        animIndex = 4;
+                    }
+                    else
+                    {
+                        // if gound is lower enough just jump and fall
+                        animIndex = 5;
+                    }
+
+                    changeToOverState = true;
+                }
+                else
+                {
+                    // dont hit gournd
+                    animIndex = 5;
+                    changeToOverState = true;
+                }
+            }
+        }
+
+        if (changeToOverState)
+        {
+            ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+            ownner.ChangeState(overStateName);
+            return true;
+        }
+        return false;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddLine(v1, v2, Color(0.5, 0.45, 0.75), false);
+        debug.AddLine(v2, v3, Color(0.5, 0.45, 0.75), false);
+        debug.AddLine(v3, v4, Color(0.5, 0.45, 0.75), false);
     }
 };
 
@@ -1521,31 +1659,6 @@ class PlayerHangOverState : MultiMotionState
         super(ownner);
         SetName("HangOverState");
         physicsType = 0;
-    }
-
-    void Enter(State@ lastState)
-    {
-        Vector3 myPos = ownner.GetNode().worldPosition;
-        Line@ l = ownner.dockLine;
-        Vector3 proj = l.Project(myPos);
-        Ray ray;
-        proj.y = l.end.y + CHARACTER_HEIGHT/2;
-        Vector3 dir = proj - myPos;
-        dir.y = 0;
-        ray.Define(proj, dir);
-        float dist = 4.0f;
-        int index = 0;
-        PhysicsRaycastResult result = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
-        if (result.body !is null)
-        {
-
-        }
-        else
-        {
-            index = 0;
-        }
-        ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        MultiMotionState::Enter(lastState);
     }
 };
 
@@ -1663,6 +1776,8 @@ class PlayerHangMoveState : PlayerClimbAlignState
         Line@ bestLine = null;
         float maxHeightDiff = 1.0f;
         float maxDistSQR = 999999;
+        Vector3 comparePot = (convexIndex == 1) ? r2 : r3;
+
         for (uint i=0; i<lines.length; ++i)
         {
             Line@ l = lines[i];
@@ -1670,9 +1785,9 @@ class PlayerHangMoveState : PlayerClimbAlignState
                 continue;
             if (Abs(l.end.y - oldLine.end.y) > maxHeightDiff)
                 continue;
-            Vector3 proj = l.Project(myPos);
-            proj.y = myPos.y;
-            float distSQR = (proj - myPos).lengthSquared;
+            Vector3 proj = l.Project(comparePot);
+            proj.y = comparePot.y;
+            float distSQR = (proj - comparePot).lengthSquared;
             if (distSQR < maxDistSQR)
             {
                 @bestLine = l;
@@ -1721,49 +1836,38 @@ class PlayerHangMoveState : PlayerClimbAlignState
         m.SetRotation(q.rotationMatrix);
         box.Transform(m);
 
-        Array<RigidBody@> bodies = ownner.GetScene().physicsWorld.GetRigidBodies(box, COLLISION_LAYER_LANDSCAPE);
-        Print("FindParalleLine bodies.num=" + bodies.length);
-        if (bodies.empty)
-        {
-            @oldLine = null;
-            return false;
-        }
 
         Array<Line@>@ lines = gLineWorld.cacheLines;
         lines.Clear();
 
-        for (uint i=0; i<bodies.length; ++i)
-        {
-            Node@ n = bodies[i].node;
-            if (n.id == oldLine.nodeId)
-                continue;
-
-            gLineWorld.CollectLinesByNode(n, lines);
-        }
-
-        if (lines.empty)
+        int num = gLineWorld.CollectLinesInBox(ownner.GetScene(), box, oldLine.nodeId, lines);
+        if (num == 0)
         {
             @oldLine = null;
             return false;
         }
 
-        Print("FindParalleLine lines.num=" + lines.length);
+        Print("FindParalleLine lines.num=" + num);
 
         Line@ bestLine = null;
         float maxHeightDiff = 1.0f;
         float maxDistSQR = 999999;
+        Vector3 comparePot = linePt;
+
         for (uint i=0; i<lines.length; ++i)
         {
-            Line@ l = lines[i];
-            if (!l.TestAngleDiff(oldLine, 0))
+            Line@ line = lines[i];
+            if (!line.TestAngleDiff(oldLine, 0))
                 continue;
-            if (Abs(l.end.y - oldLine.end.y) > maxHeightDiff)
+            if (Abs(line.end.y - oldLine.end.y) > maxHeightDiff)
                 continue;
-            Vector3 v = l.GetNearPoint(myPos);
-            float distSQR = (v - myPos).lengthSquared;
+            Vector3 v = line.GetNearPoint(comparePot);
+            v -= comparePot;
+            v.y = 0;
+            float distSQR = v.lengthSquared;
             if (distSQR < maxDistSQR)
             {
-                @bestLine = l;
+                @bestLine = line;
                 maxDistSQR = distSQR;
             }
         }
@@ -1942,6 +2046,8 @@ class PlayerDangleIdleState : PlayerHangIdleState
         super(c);
         SetName("DangleIdleState");
         animSpeed = 1.0f;
+        overStateName = StringHash("DangleOverState");
+        moveStateName = StringHash("DangleMoveState");
     }
 
     bool CheckFootBlocking()
@@ -1953,20 +2059,6 @@ class PlayerDangleIdleState : PlayerHangIdleState
             return false;
         }
         return true;
-    }
-
-    void HorizontalMove(bool left)
-    {
-        PlayerDangleMoveState@ s = cast<PlayerDangleMoveState>(ownner.FindState("DangleMoveState"));
-        if (s.HorizontalMove(left))
-            ownner.ChangeState(s.nameHash);
-    }
-
-    void VerticalMove()
-    {
-        int lineAction = cast<Player>(ownner).AnalyzeForwadAction(ownner.dockLine);
-        if (lineAction == LINE_ACTION_CLIMB_UP)
-            ownner.ChangeState("DangleOverState");
     }
 };
 

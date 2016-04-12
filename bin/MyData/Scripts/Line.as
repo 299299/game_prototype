@@ -432,5 +432,26 @@ class LineWorld
 
         return outLines.length;
     }
+
+    int CollectLinesInBox(Scene@ scene, const BoundingBox& box, uint nodeToIgnore, Array<Line@>@ outLines)
+    {
+        outLines.Clear();
+
+        Array<RigidBody@> bodies = scene.physicsWorld.GetRigidBodies(box, COLLISION_LAYER_LANDSCAPE);
+        Print("CollectLinesInBox bodies.num=" + bodies.length);
+        if (bodies.empty)
+            return 0;
+
+        for (uint i=0; i<bodies.length; ++i)
+        {
+            Node@ n = bodies[i].node;
+            if (n.id == nodeToIgnore)
+                continue;
+            CollectLinesByNode(n, outLines);
+        }
+
+        return outLines.length;
+    }
 };
+
 

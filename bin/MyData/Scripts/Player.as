@@ -628,18 +628,24 @@ class Player : Character
         else
         {
             // move up case.
+            Vector3 v = charPos;
             Ray ray;
-            proj.y = l.end.y + CHARACTER_HEIGHT/2;
-            Vector3 dir = proj - charPos;
+            ray.Define(v, Vector3(0, 1, 0));
+            float h = CHARACTER_HEIGHT/2;
+            PhysicsRaycastResult result = GetScene().physicsWorld.RaycastSingle(ray, h_diff + h, COLLISION_LAYER_LANDSCAPE);
+            if (result.body !is null)
+                return LINE_ACTION_NULL;
+            v = proj;
+            v.y += h;
+            Vector3 dir = v - charPos;
             dir.y = 0;
-            ray.Define(proj, dir);
-            PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, 4.0f, COLLISION_LAYER_LANDSCAPE);
-            bool canClimb = false;
+            ray.Define(v, dir);
+            result = GetScene().physicsWorld.RaycastSingle(ray, COLLISION_RADIUS*2, COLLISION_LAYER_LANDSCAPE);
             if (result.body is null)
             {
-                Vector3 v = ray.origin + ray.direction * (dir.length + 0.5f);
+                v = ray.origin + ray.direction * (dir.length + 1);
                 ray.Define(v, Vector3(0, -1, 0));
-                result = sceneNode.scene.physicsWorld.RaycastSingle(ray, 3.0f, COLLISION_LAYER_LANDSCAPE);
+                result = GetScene().physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT, COLLISION_LAYER_LANDSCAPE);
                 if (result.body !is null)
                     return LINE_ACTION_CLIMB_UP; //LINE_ACTION_CLIMB_UP;
                 else
