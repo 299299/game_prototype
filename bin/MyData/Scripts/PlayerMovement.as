@@ -1683,7 +1683,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
         return true;
     }
 
-    void StartHangJump(Line@ line, const Vector3&in linePt, bool left, float distErrorSQR)
+    void HorizontalChangeLine(Line@ line, const Vector3&in linePt, bool left, float distErrorSQR)
     {
         @oldLine = ownner.dockLine;
         int index = left ? 3 : 7;
@@ -1695,7 +1695,7 @@ class PlayerHangMoveState : PlayerClimbAlignState
         dockInTargetBound = 1.5f;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.AssignDockLine(line);
-        Print(this.name + " StartHangJump -- index=" + index);
+        Print(this.name + " HorizontalChangeLine -- index=" + index);
         // ownner.SetSceneTimeScale(0);
     }
 
@@ -1764,7 +1764,7 @@ class PlayerHangMoveStartState : MultiAnimationState
             return false;
 
         PlayerHangMoveState@ s = cast<PlayerHangMoveState>(ownner.FindState("HangMoveState"));
-        s.StartHangJump(l, linePt, left, distErrorSQR);
+        s.HorizontalChangeLine(l, linePt, left, distErrorSQR);
         ownner.ChangeState("HangMoveState");
         return true;
     }
@@ -1872,7 +1872,7 @@ class PlayerDangleMoveState : PlayerHangMoveState
         Line@ l = gLineWorld.FindCloseParallelLine(ownner.dockLine, linePt, 1.0f, 10.0f, distErrorSQR);
         if (l !is null)
         {
-            StartHangJump(l, linePt, left, distErrorSQR);
+            HorizontalChangeLine(l, linePt, left, distErrorSQR);
             return true;
         }
         return false;

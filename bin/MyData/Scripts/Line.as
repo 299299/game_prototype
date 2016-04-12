@@ -33,7 +33,6 @@ enum LineAction
 
 const float LINE_MIN_LENGTH = 2.0f;
 const float LINE_MAX_HEIGHT_DIFF = 12;
-const float LINE_MERGE_MAX_LENGTH = 1.0f;
 
 class Line
 {
@@ -324,7 +323,7 @@ class LineWorld
             if (!GetCorners(n, size, p1, p2, p3, p4))
                 return;
 
-            if (size.x < LINE_MERGE_MAX_LENGTH || size.z < LINE_MERGE_MAX_LENGTH)
+            if (size.x < LINE_MIN_LENGTH || size.z < LINE_MIN_LENGTH)
             {
                 // if line length is too short just merge them to one
                 if (!GetCorners(n, size, p1, p2))
