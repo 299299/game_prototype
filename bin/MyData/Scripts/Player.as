@@ -631,7 +631,7 @@ class Player : Character
             Vector3 v = charPos;
             Ray ray;
             ray.Define(v, Vector3(0, 1, 0));
-            float h = CHARACTER_HEIGHT/2;
+            float h = 1.0f;
             PhysicsRaycastResult result = GetScene().physicsWorld.RaycastSingle(ray, h_diff + h, COLLISION_LAYER_LANDSCAPE);
             if (result.body !is null)
                 return LINE_ACTION_NULL;
@@ -643,7 +643,7 @@ class Player : Character
             result = GetScene().physicsWorld.RaycastSingle(ray, COLLISION_RADIUS*2, COLLISION_LAYER_LANDSCAPE);
             if (result.body is null)
             {
-                v = ray.origin + ray.direction * (dir.length + 1);
+                v = ray.origin + ray.direction * (dir.length + COLLISION_RADIUS);
                 ray.Define(v, Vector3(0, -1, 0));
                 result = GetScene().physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT, COLLISION_LAYER_LANDSCAPE);
                 if (result.body !is null)

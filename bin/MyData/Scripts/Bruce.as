@@ -763,12 +763,12 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
     Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.1, 0.24));
 
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags);
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags);
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Over_128", climb_foot_flags);
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail_128", climb_foot_flags);
-    Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", climb_foot_flags);
-    Global_CreateMotion(preFix + "Hang_Jump_Over_128", climb_foot_flags);
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Over_128", climb_foot_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail_128", climb_foot_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
+    Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Hang_Jump_Over_128", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
 
     Global_CreateMotion(preFix + "Hang_Left",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
     Global_CreateMotion(preFix + "Hang_Left_1",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));

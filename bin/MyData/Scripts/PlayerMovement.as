@@ -811,6 +811,8 @@ class PlayerDockAlignState : MultiMotionState
     float           climbBaseHeight;
     float           dockInTargetBound = 0.25f;
 
+    bool            debug = false;
+
     PlayerDockAlignState(Character@ c)
     {
         super(c);
@@ -851,7 +853,8 @@ class PlayerDockAlignState : MultiMotionState
                 Print(this.name + " animation:" + m.name + " OnMotionAlignTimeOut vel=" + v.ToString());
             }
 
-            //ownner.SetSceneTimeScale(0.0);
+            if (debug)
+                ownner.SetSceneTimeScale(0.0);
         }
     }
 
@@ -909,7 +912,8 @@ class PlayerDockAlignState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        // ownner.SetSceneTimeScale(0);
+        if (debug)
+            ownner.SetSceneTimeScale(0);
 
         if (dockBlendingMethod == 1)
         {
@@ -1004,6 +1008,13 @@ class PlayerDockAlignState : MultiMotionState
                 ownner.ChangeStateQueue(ALIGN_STATE);
             }
         }
+    }
+
+    void Exit(State@ nextState)
+    {
+        if (debug)
+            ownner.SetSceneTimeScale(0);
+        MultiMotionState::Exit(nextState);
     }
 };
 
@@ -1514,7 +1525,7 @@ class PlayerHangIdleState : SingleAnimationState
         v1 = charPos;
         Ray ray;
         ray.Define(v1, Vector3(0, 1, 0));
-        float dist = h_diff + CHARACTER_HEIGHT/2;
+        float dist = h_diff + 1.0f;
         v2 = v1 + ray.direction * dist;
 
         PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
@@ -1559,7 +1570,7 @@ class PlayerHangIdleState : SingleAnimationState
                 if (lines.empty)
                     return false;
 
-
+                Print(this.name + " hit front wall lines.num=" + lines.length);
                 Line@ bestLine = null;
                 float maxDistSQR = 4.0f * 4.0f;
                 float minHeightDiff = 1.0f;
@@ -1571,7 +1582,11 @@ class PlayerHangIdleState : SingleAnimationState
                 for (uint i=0; i<lines.length; ++i)
                 {
                     Line@ l = lines[i];
-                    if (!l.TestAngleDiff(oldLine, 0))
+
+                    if (l is oldLine)
+                        continue;
+
+                    if (!l.TestAngleDiff(oldLine, 0) && !l.TestAngleDiff(oldLine, 180))
                         continue;
 
                     float dh = l.end.y - oldLine.end.y;
@@ -1581,6 +1596,7 @@ class PlayerHangIdleState : SingleAnimationState
                     Vector3 tmpV = l.Project(comparePot);
                     tmpV.y = comparePot.y;
                     float distSQR = (tmpV - comparePot).lengthSquared;
+                    Print(this.name + " hit front wall distSQR=" + distSQR);
                     if (distSQR < maxDistSQR)
                     {
                         @bestLine = l;
@@ -1590,6 +1606,7 @@ class PlayerHangIdleState : SingleAnimationState
 
                 if (bestLine is null)
                 {
+                    Print(this.name + " hit front wall no best line!!");
                     @oldLine = null;
                     return false;
                 }
@@ -1635,7 +1652,11 @@ class PlayerHangIdleState : SingleAnimationState
 
         if (changeToOverState)
         {
+            Print(this.name + " Climb over animIndex=" + animIndex);
             ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+
+            PlayerHangOverState@ s = cast<PlayerHangOverState>(ownner.FindState(overStateName));
+            s.groundPos = result3.position;
             ownner.ChangeState(overStateName);
             return true;
         }
@@ -1652,20 +1673,51 @@ class PlayerHangIdleState : SingleAnimationState
 
 class PlayerHangOverState : PlayerDockAlignState
 {
+    Vector3    groundPos;
+    int        type = 0;
+
     PlayerHangOverState(Character@ ownner)
     {
         super(ownner);
         SetName("HangOverState");
         physicsType = 0;
+        dockBlendingMethod = 1;
+        // debug = true;
+    }
+
+    Vector3 PickDockOutTarget()
+    {
+        if (type == 0)
+            return groundPos;
+        else
+            return PlayerDockAlignState::PickDockOutTarget();
+    }
+
+    void Enter(State@ lastState)
+    {
+        PlayerDockAlignState::Enter(lastState);
+        if (selectIndex == 0 || selectIndex == 2 || selectIndex == 4)
+            type = 0;
+        else if (selectIndex == 1 || selectIndex == 3)
+            type = 1;
+        else
+            type = 2;
+
+        if (type == 0)
+            motionFlagAfterAlign = kMotion_Y;
+        else if (type == 1)
+            motionFlagAfterAlign = kMotion_XYZ;
+        else
+            motionFlagAfterAlign = 0;
     }
 
     void OnMotionFinished()
     {
-        if (selectIndex == 0 || selectIndex == 2 || selectIndex == 4)
+        if (type == 0)
             PlayerDockAlignState::OnMotionFinished();
-        else if (selectIndex == 1 || selectIndex == 3)
+        else if (type == 1)
             ownner.ChangeState("RailIdleState");
-        else if (selectIndex == 5)
+        else
             ownner.ChangeState("FallState");
     }
 };
@@ -1712,9 +1764,9 @@ class PlayerHangMoveState : PlayerDockAlignState
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(linePt, 0.5f, Color(0.25, 0.65, 0.35), false);
-        debug.AddLine(v1, v2, Color(0.75, 0.45, 0.25), false);
-        debug.AddLine(v2, v3, Color(0.75, 0.45, 0.25), false);
-        debug.AddLine(v3, v4, Color(0.75, 0.45, 0.25), false);
+        debug.AddLine(v1, v2, Color(0.65, 0.65, 0.25), false);
+        debug.AddLine(v2, v3, Color(0.65, 0.65, 0.25), false);
+        debug.AddLine(v3, v4, Color(0.65, 0.65, 0.25), false);
         debug.AddBoundingBox(box, Color(0.25, 0.75, 0.25), false);
         PlayerDockAlignState::DebugDraw(debug);
     }
@@ -1860,7 +1912,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         for (uint i=0; i<lines.length; ++i)
         {
             Line@ line = lines[i];
-            if (!line.TestAngleDiff(oldLine, 0))
+            if (!line.TestAngleDiff(oldLine, 0) && !line.TestAngleDiff(oldLine, 180))
                 continue;
             if (Abs(line.end.y - oldLine.end.y) > maxHeightDiff)
                 continue;
@@ -1935,24 +1987,34 @@ class PlayerHangMoveState : PlayerDockAlignState
         Vector3 futureProj = ownner.dockLine.Project(futurePos);
         @oldLine = ownner.dockLine;
 
-        bool failed = !oldLine.IsProjectPositionInLine(futureProj, 0.5f);
+        bool outOfLine = !oldLine.IsProjectPositionInLine(futureProj, 0.5f);
         Ray ray;
         Vector3 dir = futurePos - myPos;
         dir.y = 0;
+        v1 = myPos;
         ray.Define(myPos, dir);
+        float dist = dir.length + COLLISION_RADIUS;
+        v2 = v1 + ray.direction * dist;
+        v3 = futurePos;
+        v4 = futureProj;
 
-        if (ownner.GetScene().physicsWorld.RaycastSingle(ray, dir.length, COLLISION_LAYER_LANDSCAPE).body !is null)
+        bool blocked = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE).body !is null;
+
+        Print("Move left=" + left + " outOfLine=" + outOfLine + " blocked=" + blocked);
+
+        if (outOfLine || blocked)
         {
-            Print("Move left=" + left + " hit wall!");
-            failed = true;
+            if (FindCrossLine(left))
+                return true;
         }
 
-        if (failed)
+        if (blocked)
+            return false;
+
+        if (outOfLine)
         {
             // test if we are a little bit futher to the linePt
-            if (TryToMoveToLinePoint(left))
-                return true;
-            return FindCrossLine(left);
+            return TryToMoveToLinePoint(left);
         }
 
         dockBlendingMethod = 2;
