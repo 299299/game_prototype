@@ -420,6 +420,14 @@ class BruceRailDownState : PlayerRailDownState
         super(c);
         AddMotion("BM_Railing/Railing_Climb_Down_Forward");
         AddMotion("BM_Railing/Railing_Jump_To_Fall");
+
+        AddMotion("BM_Railing/Railing_To_Hang");
+        AddMotion("BM_Railing/Railing_To_Dangle");
+        AddMotion("BM_Railing/Railing_To_Dangle_Wall");
+
+        AddMotion("BM_Railing/Railing_To_Hang_128");
+        AddMotion("BM_Railing/Railing_To_Dangle_128");
+        AddMotion("BM_Railing/Railing_To_Dangle_128_Wall");
     }
 };
 
@@ -598,13 +606,6 @@ class BruceCrouchToClimbState : PlayerCrouchToClimbState
         AddMotion("BM_Climb/Crouch_To_Hang");
         AddMotion("BM_Climb/Crouch_To_Dangle");
         AddMotion("BM_Climb/Crouch_To_Dangle_Wall");
-
-        AddMotion("BM_Railing/Railing_To_Dangle");
-        AddMotion("BM_Railing/Railing_To_Dangle_128");
-        AddMotion("BM_Railing/Railing_To_Dangle_128_Wall");
-        AddMotion("BM_Railing/Railing_To_Dangle_Wall");
-        AddMotion("BM_Railing/Railing_To_Hang");
-        AddMotion("BM_Railing/Railing_To_Hang_128");
 
         AddMotion("BM_Climb/Crouch_Jump_128_To_Hang");
         AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle");

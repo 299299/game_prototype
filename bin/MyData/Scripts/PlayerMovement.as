@@ -1856,6 +1856,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         dockBlendingMethod = 1;
         type = 1;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
+        dockInTargetBound = 1.5f;
         return true;
     }
 
@@ -1965,6 +1966,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         @oldLine = null;
         type = 5;
         dockBlendingMethod = 1;
+        dockInTargetBound = 0.1f;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         return true;
     }
