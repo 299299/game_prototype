@@ -1432,7 +1432,7 @@ class PlayerHangUpState : PlayerDockAlignState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+        ownner.ChangeState(ownner.sensor.DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
     }
 };
 
@@ -1462,7 +1462,7 @@ class PlayerHangIdleState : SingleAnimationState
 
     bool CheckFootBlocking()
     {
-        int n = cast<Player>(ownner).DetectWallBlockingFoot(COLLISION_RADIUS);
+        int n = ownner.sensor.DetectWallBlockingFoot(COLLISION_RADIUS);
         if (n == 0)
         {
             ownner.ChangeState("DangleIdleState");
@@ -2024,7 +2024,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         if (type == 3)
             ownner.ChangeState("HangMoveEndState");
         else
-            ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+            ownner.ChangeState(ownner.sensor.DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
     }
 
     Vector3 PickDockInTarget()
@@ -2120,7 +2120,7 @@ class PlayerHangMoveEndState : MultiAnimationState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+        ownner.ChangeState(ownner.sensor.DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
     }
 
     int PickIndex()
@@ -2147,7 +2147,7 @@ class PlayerDangleIdleState : PlayerHangIdleState
 
     bool CheckFootBlocking()
     {
-        int n = cast<Player>(ownner).DetectWallBlockingFoot(COLLISION_RADIUS);
+        int n = ownner.sensor.DetectWallBlockingFoot(COLLISION_RADIUS);
         if (n > 0)
         {
             ownner.ChangeState("HangIdleState");

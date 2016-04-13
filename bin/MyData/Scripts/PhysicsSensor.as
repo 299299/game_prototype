@@ -80,4 +80,38 @@ class PhysicsSensor
         return (result.body !is null) ? result.position : end;
     }
 
+    int DetectWallBlockingFoot(float dist = 1.5f)
+    {
+        int ret = 0;
+        Node@ footLeft = sceneNode.GetChild(L_FOOT, true);
+        Node@ foootRight = sceneNode.GetChild(R_FOOT, true);
+        PhysicsWorld@ world = sceneNode.scene.physicsWorld;
+
+        Vector3 dir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        Ray ray;
+        ray.Define(footLeft.worldPosition, dir);
+        PhysicsRaycastResult result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+            ret ++;
+        ray.Define(foootRight.worldPosition, dir);
+        result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+            ret ++;
+        return ret;
+    }
+
+    void RayCastLines(Array<Vector3>@ points, Array<PhysicsRaycastResult>@ results)
+    {
+        if (points.empty)
+            return;
+
+        PhysicsWorld@ world = sceneNode.scene.physicsWorld;
+        Ray ray;
+        for (int i = 0; i < points.length - 1; ++i)
+        {
+            Vector3 dir = points[i+1] - points[i];
+            ray.Define(points[i], dir);
+            results.Push(world.RaycastSingle(ray, dir.length, COLLISION_LAYER_LANDSCAPE));
+        }
+    }
 };

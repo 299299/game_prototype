@@ -1027,6 +1027,8 @@ class Character : GameObject
     String                  lastAnimation;
     String                  walkAlignAnimation;
 
+    PhysicsSensor@          sensor;
+
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
