@@ -897,8 +897,15 @@ class PlayerDockAlignState : MultiMotionState
 
     Vector3 PickDockInTarget()
     {
-        Vector3 v = ownner.dockLine.Project(motionPositon);
-        v = ownner.dockLine.FixProjectPosition(v, dockInTargetBound);
+        Line@ l = ownner.dockLine;
+        Vector3 v = l.Project(motionPositon);
+        v = l.FixProjectPosition(v, dockInTargetBound);
+        if (l.HasFlag(LINE_THIN_WALL))
+        {
+            Vector3 dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
+            float dist = Min(l.size.x, l.size.z) / 2;
+            v += dir.Normalized() * dist;
+        }
         return v;
     }
 
@@ -1427,20 +1434,6 @@ class PlayerHangUpState : PlayerDockAlignState
     {
         ownner.ChangeState(cast<Player>(ownner).DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
     }
-
-    Vector3 PickDockInTarget()
-    {
-        Line@ l = ownner.dockLine;
-        Vector3 v = l.Project(motionPositon);
-        v = l.FixProjectPosition(v, dockInTargetBound);
-        if (l.HasFlag(LINE_THIN_WALL))
-        {
-            Vector3 dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
-            float dist = Min(l.size.x, l.size.z) / 2;
-            v += dir.Normalized() * dist;
-        }
-        return v;
-    }
 };
 
 class PlayerHangIdleState : SingleAnimationState
@@ -1544,9 +1537,9 @@ class PlayerHangIdleState : SingleAnimationState
 
         PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT * 2, COLLISION_LAYER_LANDSCAPE);
 
-        bool hit1 = (result1.body != null);
-        bool hit2 = (result2.body != null);
-        bool hit3 = (result3.body != null);
+        bool hit1 = result1.body !is null;
+        bool hit2 = result2.body !is null;
+        bool hit3 = result3.body !is null;
 
         Print(this.name + " VerticalMove hit1=" + hit1 + " hit2=" + hit2 + " hit3=" + hit3);
 
@@ -2246,12 +2239,12 @@ class PlayerClimbDownState : PlayerDockAlignState
     }
 };
 
-class PlayerToHangState : PlayerDockAlignState
+class PlayerCrouchToClimbState : PlayerDockAlignState
 {
-    PlayerToHangState(Character@ c)
+    PlayerCrouchToClimbState(Character@ c)
     {
         super(c);
-        SetName("ToHangState");
+        SetName("CrouchToClimbState");
         dockBlendingMethod = 1;
     }
 
