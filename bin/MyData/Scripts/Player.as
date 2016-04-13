@@ -613,15 +613,9 @@ class Player : Character
             float distSQR = (proj- charPos).lengthSquared;
             const float minDownDist = 1.0f;
             if (distSQR < minDownDist * minDownDist)
-            {
-                Vector3 futurePos = GetNode().worldRotation * Vector3(0, 0, 2.0f) + GetNode().worldPosition;
-                Vector3 groundPos = sensor.GetGround(futurePos);
-                if (groundPos.y - GetNode().worldPosition.y < -4.0f)
-                    return LINE_ACTION_FALL_DOWN;
-                else
-                    return LINE_ACTION_CLIMB_DOWN;
-            }
-            return LINE_ACTION_NULL;
+                return LINE_ACTION_CLIMB_DOWN;
+            else
+                return LINE_ACTION_NULL;
         }
         else
         {

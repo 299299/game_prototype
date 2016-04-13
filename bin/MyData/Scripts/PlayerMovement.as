@@ -2240,30 +2240,3 @@ class PlayerClimbDownState : PlayerDockAlignState
         groundPos = p.sensor.GetGround(futurePos);
     }
 };
-
-class PlayerCrouchToClimbState : PlayerDockAlignState
-{
-    PlayerCrouchToClimbState(Character@ c)
-    {
-        super(c);
-        SetName("CrouchToClimbState");
-        dockBlendingMethod = 1;
-    }
-
-    void Enter(State@ lastState)
-    {
-        int index = 0;
-        if (ownner.dockLine.HasFlag(LINE_SHORT_WALL))
-            index = 1;
-        ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        PlayerDockAlignState::Enter(lastState);
-    }
-
-    void OnMotionFinished()
-    {
-        if (selectIndex == 0)
-            ownner.ChangeState("HangIdleState");
-        else
-            ownner.ChangeState("DangleIdleState");
-    }
-};

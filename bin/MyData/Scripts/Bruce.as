@@ -590,18 +590,10 @@ class BruceClimbDownState : PlayerClimbDownState
     BruceClimbDownState(Character@ c)
     {
         super(c);
+
         AddMotion("BM_Climb/Walk_Climb_Down_128");
         AddMotion("BM_Climb/Run_Climb_Down_128");
         AddMotion("BM_Climb/Crouch_Down_128");
-        animSpeed = 1.5f;
-    }
-};
-
-class BruceCrouchToClimbState : PlayerCrouchToClimbState
-{
-    BruceCrouchToClimbState(Character@ c)
-    {
-        super(c);
 
         AddMotion("BM_Climb/Crouch_To_Hang");
         AddMotion("BM_Climb/Crouch_To_Dangle");
@@ -610,6 +602,8 @@ class BruceCrouchToClimbState : PlayerCrouchToClimbState
         AddMotion("BM_Climb/Crouch_Jump_128_To_Hang");
         AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle");
         AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle_Wall");
+
+        animSpeed = 1.5f;
     }
 };
 
@@ -661,7 +655,6 @@ class Bruce : Player
             stateMachine.AddState(BruceClimbOverState(this));
             stateMachine.AddState(BruceClimbUpState(this));
             stateMachine.AddState(BruceClimbDownState(this));
-            stateMachine.AddState(BruceCrouchToClimbState(this));
             // rail states
             stateMachine.AddState(BruceRailUpState(this));
             stateMachine.AddState(BruceRailIdleState(this));
