@@ -644,7 +644,11 @@ class Player : Character
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
         Vector3 v1, v2, v3, v4;
+        Vector3 dir = proj - charPos;
+        dir.y = 0;
+        float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
 
+        // up test
         v1 = charPos;
         Ray ray;
         ray.Define(v1, Vector3(0, 1, 0));
@@ -652,17 +656,66 @@ class Player : Character
         v2 = ray.origin + ray.direction * dist;
         results[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
-        Vector3 dir = proj - charPos;
-        dir.y = 0;
+        // forward test
         ray.Define(v2, dir);
-        dist = dir.length + COLLISION_RADIUS;
+        dist = fowardDist;
         v3 = ray.origin + ray.direction * dist;
         results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
+        // down test
         ray.Define(v3, Vector3(0, -1, 0));
         dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
         v4 = ray.origin + ray.direction * dist;
         results[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        if (points !is null)
+        {
+            points.Resize(4);
+            points[0] = v1;
+            points[1] = v2;
+            points[2] = v3;
+            points[3] = v4;
+        }
+    }
+
+    void ClimbDownRaycasts(Line@ line, Array<Vector3>@ points, Array<PhysicsRaycastResult>@ results)
+    {
+        results.Resize(3);
+
+        PhysicsWorld@ world = GetScene().physicsWorld;
+        Vector3 charPos = GetNode().worldPosition;
+        Vector3 proj = line.Project(charPos);
+        float h_diff = proj.y - charPos.y;
+        float above_height = 1.0f;
+        Vector3 v1, v2, v3, v4;
+        Vector3 dir = proj - charPos;
+        dir.y = 0;
+        float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
+        float dist;
+
+        // forward test
+        v1 = charPos + Vector3(0, above_height, 0);
+        Ray ray;
+        ray.Define(v1, dir);
+        dist = fowardDist;
+        v2 = ray.origin + ray.direction * dist;
+        results[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        // down test
+        ray.Define(v2, Vector3(0, -1, 0));
+        dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
+        v3 = ray.origin + ray.direction * dist;
+        results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        // here comes the tricking part
+        v3.y = line.end.y;
+        v3.y -= HEIGHT_128;
+        dir *= -1;
+        dir.Normalize();
+        dist = fowardDist;
+        v4 = v3 + dir * dist;
+
+        results[2] = world.ConvexCast(sensor.shape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         if (points !is null)
         {

@@ -99,19 +99,4 @@ class PhysicsSensor
             ret ++;
         return ret;
     }
-
-    void RayCastLines(Array<Vector3>@ points, Array<PhysicsRaycastResult>@ results)
-    {
-        if (points.empty)
-            return;
-
-        PhysicsWorld@ world = sceneNode.scene.physicsWorld;
-        Ray ray;
-        for (uint i = 0; i < points.length - 1; ++i)
-        {
-            Vector3 dir = points[i+1] - points[i];
-            ray.Define(points[i], dir);
-            results.Push(world.RaycastSingle(ray, dir.length, COLLISION_LAYER_LANDSCAPE));
-        }
-    }
 };
