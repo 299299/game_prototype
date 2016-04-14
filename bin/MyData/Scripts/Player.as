@@ -30,6 +30,10 @@ class Player : Character
     uint            lastAttackId = M_MAX_UNSIGNED;
     bool            applyGravity = true;
 
+    Array<Vector3>                  points;
+    Array<PhysicsRaycastResult>     results;
+    BoundingBox                      box;
+
     void ObjectStart()
     {
         Character::ObjectStart();
@@ -539,6 +543,22 @@ class Player : Character
         debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
         if (dockLine !is null)
             debug.AddLine(dockLine.ray.origin, dockLine.end, YELLOW, false);
+
+        if (points.length > 1)
+        {
+            for (uint i=0; i<points.length-1; ++i)
+            {
+                debug.AddLine(points[i], points[i+1], Color(0.5, 0.45, 0.75), false);
+            }
+
+            for (uint i=0; i<results.length; ++i)
+            {
+                if (results[i].body !is null)
+                    debug.AddCross(results[i].position, 0.25f, Color(0.25, 0.65, 0.35), false);
+            }
+        }
+
+        debug.AddBoundingBox(box, Color(0.25, 0.75, 0.25), false);
     }
 
     void Update(float dt)
@@ -595,8 +615,7 @@ class Player : Character
             }
             else
             {
-                Array<PhysicsRaycastResult> results;
-                ClimbUpRaycasts(l, null, results);
+                ClimbUpRaycasts(l);
 
                 bool hitUp = results[0].body !is null;
                 bool hitForward = results[1].body !is null;
@@ -635,9 +654,13 @@ class Player : Character
         return true;
     }
 
-    void ClimbUpRaycasts(Line@ line, Array<Vector3>@ points, Array<PhysicsRaycastResult>@ results)
+    void ClimbUpRaycasts(Line@ line, Array<Vector3>@ _points = null, Array<PhysicsRaycastResult>@ _results = null)
     {
-        results.Resize(3);
+        Array<Vector3>@ thePoints = (_points is null) ? this.points : _points;
+        Array<PhysicsRaycastResult>@ theResults = (_results is null) ? this.results : _results;
+
+        theResults.Resize(3);
+        thePoints.Resize(4);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
@@ -655,33 +678,33 @@ class Player : Character
         ray.Define(v1, Vector3(0, 1, 0));
         float dist = h_diff + above_height;
         v2 = ray.origin + ray.direction * dist;
-        results[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        theResults[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // forward test
         ray.Define(v2, dir);
         dist = fowardDist;
         v3 = ray.origin + ray.direction * dist;
-        results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        theResults[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // down test
         ray.Define(v3, Vector3(0, -1, 0));
         dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
         v4 = ray.origin + ray.direction * dist;
-        results[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        theResults[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
-        if (points !is null)
-        {
-            points.Resize(4);
-            points[0] = v1;
-            points[1] = v2;
-            points[2] = v3;
-            points[3] = v4;
-        }
+        thePoints[0] = v1;
+        thePoints[1] = v2;
+        thePoints[2] = v3;
+        thePoints[3] = v4;
     }
 
-    void ClimbDownRaycasts(Line@ line, Array<Vector3>@ points, Array<PhysicsRaycastResult>@ results)
+    void ClimbDownRaycasts(Line@ line, Array<Vector3>@ _points = null, Array<PhysicsRaycastResult>@ _results = null)
     {
-        results.Resize(3);
+        Array<Vector3>@ thePoints = (_points is null) ? this.points : _points;
+        Array<PhysicsRaycastResult>@ theResults = (_results is null) ? this.results : _results;
+
+        theResults.Resize(3);
+        thePoints.Resize(4);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
@@ -700,13 +723,13 @@ class Player : Character
         ray.Define(v1, dir);
         dist = fowardDist;
         v2 = ray.origin + ray.direction * dist;
-        results[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        theResults[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // down test
         ray.Define(v2, Vector3(0, -1, 0));
         dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
         v3 = ray.origin + ray.direction * dist;
-        results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        theResults[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // here comes the tricking part
         v3.y = line.end.y;
@@ -716,15 +739,187 @@ class Player : Character
         dist = fowardDist;
         v4 = v3 + dir * dist;
 
-        results[2] = world.ConvexCast(sensor.shape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        theResults[2] = world.ConvexCast(sensor.shape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
-        if (points !is null)
+        thePoints[0] = v1;
+        thePoints[1] = v2;
+        thePoints[2] = v3;
+        thePoints[3] = v4;
+    }
+
+    void ClimbLeftOrRightRaycasts(Line@ line, bool bLeft, Array<Vector3>@ _points = null, Array<PhysicsRaycastResult>@ _results = null)
+    {
+        Array<Vector3>@ thePoints = (_points is null) ? this.points : _points;
+        Array<PhysicsRaycastResult>@ theResults = (_results is null) ? this.results : _results;
+
+        theResults.Resize(3);
+        thePoints.Resize(4);
+
+        PhysicsWorld@ world = GetScene().physicsWorld;
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 towardDir = bLeft ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = sceneNode.worldRotation * towardDir;
+        Vector3 linePt = line.GetLinePoint(towardDir);
+        Vector3 v1, v2, v3, v4;
+
+        v1 = myPos;
+        v1.y += 0.5f;
+
+        Vector3 v = linePt - v1;
+        v.y = 0;
+        Vector3 dir = towardDir;
+        float len = v.length + COLLISION_RADIUS;
+
+        Ray ray;
+        ray.Define(v1, dir);
+        v2 = ray.origin + ray.direction * len;
+        theResults[0] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+
+        dir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        len = COLLISION_RADIUS * 2;
+        ray.Define(v2, dir);
+        v3 = v2 + ray.direction * len;
+        theResults[1] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+
+        dir = bLeft ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
+        dir = sceneNode.worldRotation * dir;
+        ray.Define(v3, dir);
+        v4 = v3 + ray.direction * len;
+        theResults[2] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+
+        thePoints[0] = v1;
+        thePoints[1] = v2;
+        thePoints[2] = v3;
+        thePoints[3] = v4;
+    }
+
+    Line@ FindCrossLine(bool left, int& out convexIndex)
+    {
+        Line@ oldLine = dockLine;
+        Node@ n = GetNode();
+        Vector3 myPos = n.worldPosition;
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = n.worldRotation * towardDir;
+        Vector3 linePt = oldLine.GetLinePoint(towardDir);
+
+        ClimbLeftOrRightRaycasts(oldLine, left);
+
+        bool hit1 = results[0].body !is null;
+        bool hit2 = results[1].body !is null;
+        bool hit3 = results[2].body !is null;
+
+        Print("FindCrossLine hit1=" + hit1 + " hit2=" + hit2 + " hit3=" + hit3);
+        convexIndex = 1;
+        Array<Line@>@ lines = gLineWorld.cacheLines;
+        lines.Clear();
+
+        if (hit1)
         {
-            points.Resize(4);
-            points[0] = v1;
-            points[1] = v2;
-            points[2] = v3;
-            points[3] = v4;
+            convexIndex = 2;
+            gLineWorld.CollectLinesByNode(results[0].body.node, lines);
         }
+        else if (!hit2 && hit3)
+        {
+            convexIndex = 1;
+            gLineWorld.CollectLinesByNode(results[2].body.node, lines);
+        }
+        else
+            return null;
+
+        if (lines.empty)
+            return null;
+
+        Line@ bestLine = null;
+        float maxHeightDiff = 1.0f;
+        float maxDistSQR = 999999;
+        Vector3 comparePot = (convexIndex == 1) ? points[1] : points[2];
+
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ l = lines[i];
+            if (!l.TestAngleDiff(oldLine, 90))
+                continue;
+            if (Abs(l.end.y - oldLine.end.y) > maxHeightDiff)
+                continue;
+            Vector3 proj = l.Project(comparePot);
+            proj.y = comparePot.y;
+            float distSQR = (proj - comparePot).lengthSquared;
+            if (distSQR < maxDistSQR)
+            {
+                @bestLine = l;
+                maxDistSQR = distSQR;
+            }
+        }
+        return bestLine;
+    }
+
+    Line@ FindParalleLine(bool left, float& outDistErrorSQR)
+    {
+        Line @oldLine = dockLine;
+        Node@ n = GetNode();
+        Vector3 myPos = n.worldPosition;
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = n.worldRotation * towardDir;
+        Vector3 linePt = oldLine.GetLinePoint(towardDir);
+        float myAngle = GetCharacterAngle();
+
+        float angle = Atan2(towardDir.x, towardDir.z);
+        float w = 6.0f;
+        float h = 2.0f;
+        float l = 2.0f;
+        Vector3 halfSize(w/2, h/2, l/2);
+        Vector3 min = halfSize * -1;
+        Vector3 max = halfSize;
+        box.Define(min, max);
+
+        Quaternion q(0, angle + 90, 0);
+        Vector3 center = towardDir.Normalized() * halfSize.x + linePt;
+        Matrix3x4 m;
+        m.SetTranslation(center);
+        m.SetRotation(q.rotationMatrix);
+        box.Transform(m);
+
+        Array<Line@>@ lines = gLineWorld.cacheLines;
+        lines.Clear();
+
+        int num = gLineWorld.CollectLinesInBox(GetScene(), box, oldLine.nodeId, lines);
+        if (num == 0)
+            return null;
+
+        Print("FindParalleLine lines.num=" + num);
+
+        Line@ bestLine = null;
+        float maxHeightDiff = 1.0f;
+        float maxDistSQR = COLLISION_RADIUS * COLLISION_RADIUS;
+        Vector3 comparePot = linePt;
+
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ line = lines[i];
+            if (!line.TestAngleDiff(oldLine, 0) && !line.TestAngleDiff(oldLine, 180))
+                continue;
+            if (Abs(line.end.y - oldLine.end.y) > maxHeightDiff)
+                continue;
+            if (!line.IsAngleValid(myAngle))
+                continue;
+            Vector3 v = line.GetNearPoint(comparePot);
+            v -= comparePot;
+            v.y = 0;
+            float distSQR = v.lengthSquared;
+            if (distSQR < maxDistSQR)
+            {
+                @bestLine = line;
+                maxDistSQR = distSQR;
+            }
+        }
+
+        outDistErrorSQR = maxDistSQR;
+        return bestLine;
+    }
+
+    void ClearPoints()
+    {
+        points.Clear();
+        results.Clear();
     }
 };

@@ -510,17 +510,6 @@ class BruceHangMoveState : PlayerHangMoveState
     }
 };
 
-class BruceHangMoveStartState : PlayerHangMoveStartState
-{
-    BruceHangMoveStartState(Character@ c)
-    {
-        super(c);
-        AddMotion("BM_Climb/Hang_Left_Start");
-        AddMotion("BM_Climb/Hang_Right_Start");
-    }
-};
-
-
 class BruceHangMoveEndState : PlayerHangMoveEndState
 {
     BruceHangMoveEndState(Character@ c)
@@ -668,7 +657,6 @@ class Bruce : Player
             stateMachine.AddState(BruceHangIdleState(this));
             stateMachine.AddState(BruceHangOverState(this));
             stateMachine.AddState(BruceHangMoveState(this));
-            stateMachine.AddState(BruceHangMoveStartState(this));
             stateMachine.AddState(BruceHangMoveEndState(this));
             // dangle
             stateMachine.AddState(BruceDangleIdleState(this));
@@ -771,10 +759,8 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
     Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
 
-    Global_CreateMotion(preFix + "Hang_Left_Start", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Left_End", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Left_End_1", kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Hang_Right_Start", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Right_End", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Right_End_1", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Dangle_Idle", kMotion_Ext_Foot_Based_Height);
