@@ -6,6 +6,10 @@
 //
 //
 
+const float HEIGHT_128 = 3.25f;
+const float HEIGHT_256 = HEIGHT_128 * 2;
+const float HEIGHT_384 = HEIGHT_128 * 3;
+
 enum LineType
 {
     LINE_COVER,
@@ -18,17 +22,6 @@ enum LineFlags
 {
     LINE_THIN_WALL  = (1 << 0),
     LINE_SHORT_WALL = (1 << 1),
-};
-
-enum LineAction
-{
-    LINE_ACTION_NULL,
-    LINE_ACTION_CLIMB_OVER,
-    LINE_ACTION_CLIMB_UP,
-    LINE_ACTION_HANG,
-    LINE_ACTION_DANGE,
-    LINE_ACTION_CLIMB_DOWN,
-    LINE_ACTION_FALL_DOWN,
 };
 
 const float LINE_MIN_LENGTH = 2.0f;

@@ -1439,7 +1439,9 @@ class PlayerHangUpState : PlayerDockAlignState
 class PlayerHangIdleState : SingleAnimationState
 {
     bool checkFoot = true;
-    Vector3 v1, v2, v3, v4;
+    Array<Vector3> points;
+    Array<PhysicsRaycastResult> resutls;
+
     StringHash overStateName = StringHash("HangOverState");
     StringHash moveStateName = StringHash("HangMoveState");
 
@@ -1510,57 +1512,36 @@ class PlayerHangIdleState : SingleAnimationState
 
     bool VerticalMove()
     {
-        Vector3 charPos = ownner.GetNode().worldPosition;
-        Vector3 proj = ownner.dockLine.Project(charPos);
-        float h_diff = proj.y - charPos.y;
+        Line@ oldLine = ownner.dockLine;
+        Array<PhysicsRaycastResult> results;
+        cast<Player>(ownner).ClimbUpRaycasts(oldLine, null, results);
+
+        bool hitUp = results[0].body !is null;
+        bool hitForward = results[1].body !is null;
+        bool hitDown = results[2].body !is null;
+
         int animIndex = 0;
         bool changeToOverState = false;
 
-        v1 = charPos;
-        Ray ray;
-        ray.Define(v1, Vector3(0, 1, 0));
-        float dist = h_diff + 1.0f;
-        v2 = v1 + ray.direction * dist;
+        Print(this.name + " VerticalMove hit1=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown);
 
-        PhysicsRaycastResult result1 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
-
-        Vector3 dir = proj - charPos;
-        dir.y = 0;
-        ray.Define(v2, dir);
-        dist = dir.length + COLLISION_RADIUS;
-        v3 = v2 + ray.direction * dist;
-
-        PhysicsRaycastResult result2 = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
-
-        ray.Define(v3, Vector3(0, -1, 0));
-        dist = CHARACTER_HEIGHT * 2;
-        v4 = v3 + ray.direction * dist;
-
-        PhysicsRaycastResult result3 = ownner.GetScene().physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT * 2, COLLISION_LAYER_LANDSCAPE);
-
-        bool hit1 = result1.body !is null;
-        bool hit2 = result2.body !is null;
-        bool hit3 = result3.body !is null;
-
-        Print(this.name + " VerticalMove hit1=" + hit1 + " hit2=" + hit2 + " hit3=" + hit3);
-
-        if (hit1)
+        if (hitUp)
             return false;
 
-        if (ownner.dockLine.type == LINE_RAILING)
+        if (oldLine.type == LINE_RAILING)
         {
             changeToOverState = true;
             animIndex = 1;
         }
         else
         {
-            if (hit2)
+            if (hitForward)
             {
                 // hit a front wall
                 Array<Line@>@ lines = gLineWorld.cacheLines;
                 lines.Clear();
 
-                gLineWorld.CollectLinesByNode(result2.body.node, lines);
+                gLineWorld.CollectLinesByNode(results[1].body.node, lines);
                 if (lines.empty)
                     return false;
 
@@ -1569,9 +1550,7 @@ class PlayerHangIdleState : SingleAnimationState
                 float maxDistSQR = 4.0f * 4.0f;
                 float minHeightDiff = 1.0f;
                 float maxHeightDiff = 4.5f;
-
-                Vector3 comparePot = proj;
-                Line@ oldLine = ownner.dockLine;
+                Vector3 comparePot = oldLine.Project(ownner.GetNode().worldPosition);
 
                 for (uint i=0; i<lines.length; ++i)
                 {
@@ -1612,17 +1591,17 @@ class PlayerHangIdleState : SingleAnimationState
             else
             {
                 // no front wall
-                if (hit3)
+                if (hitDown)
                 {
                     // hit gournd
-                    float hitGroundH = result3.position.y;
-                    float lineToGround = ownner.dockLine.end.y - hitGroundH;
-                    if (lineToGround < 0.5f)
+                    float hitGroundH = results[2].position.y;
+                    float lineToGround = oldLine.end.y - hitGroundH;
+                    if (lineToGround < (0 + HEIGHT_128) / 2)
                     {
                         // if gound is not low just stand and run
                         animIndex = 0;
                     }
-                    else if (lineToGround < 4.5)
+                    else if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
                     {
                         // if gound is lower not than 4.5 we can perform a over jump
                         animIndex = 4;
@@ -1650,7 +1629,7 @@ class PlayerHangIdleState : SingleAnimationState
             ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
 
             PlayerHangOverState@ s = cast<PlayerHangOverState>(ownner.FindState(overStateName));
-            s.groundPos = result3.position;
+            s.groundPos = results[2].position;
             ownner.ChangeState(overStateName);
             return true;
         }
@@ -1659,9 +1638,12 @@ class PlayerHangIdleState : SingleAnimationState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddLine(v1, v2, Color(0.5, 0.45, 0.75), false);
-        debug.AddLine(v2, v3, Color(0.5, 0.45, 0.75), false);
-        debug.AddLine(v3, v4, Color(0.5, 0.45, 0.75), false);
+        if (points.length < 2)
+            return;
+        for (uint i=0; i<points.length-1; ++i)
+        {
+            debug.AddLine(points[i], points[i+1], Color(0.5, 0.45, 0.75), false);
+        }
     }
 };
 
@@ -2153,7 +2135,7 @@ class PlayerDangleIdleState : PlayerHangIdleState
         int n = ownner.sensor.DetectWallBlockingFoot(COLLISION_RADIUS);
         if (n > 0)
         {
-            ownner.ChangeState("DangleToHangState");
+            ownner.ChangeState("HangIdleState");
             return false;
         }
         return true;
@@ -2251,21 +2233,5 @@ class PlayerClimbDownState : PlayerDockAlignState
         Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
         Player@ p = cast<Player>(ownner);
         groundPos = p.sensor.GetGround(futurePos);
-    }
-};
-
-class PlayerDangleToHangState : PlayerDockAlignState
-{
-    PlayerDangleToHangState(Character@ c)
-    {
-        super(c);
-        SetName("DangleToHangState");
-        dockBlendingMethod = 1;
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.SetSceneTimeScale(0);
-        ownner.ChangeState("HangIdleState");
     }
 };

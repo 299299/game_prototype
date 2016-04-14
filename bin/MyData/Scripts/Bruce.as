@@ -607,15 +607,6 @@ class BruceClimbDownState : PlayerClimbDownState
     }
 };
 
-class BruceDangleToHangState : PlayerDangleToHangState
-{
-    BruceDangleToHangState(Character@ c)
-    {
-        super(c);
-        AddMotion("BM_Climb/Dangle_To_Hang");
-    }
-};
-
 class Bruce : Player
 {
     Bruce()
@@ -684,8 +675,6 @@ class Bruce : Player
             stateMachine.AddState(BruceDangleOverState(this));
             stateMachine.AddState(BruceDangleMoveState(this));
             stateMachine.AddState(BruceDangleMoveEndState(this));
-
-            stateMachine.AddState(BruceDangleToHangState(this));
         }
     }
 };

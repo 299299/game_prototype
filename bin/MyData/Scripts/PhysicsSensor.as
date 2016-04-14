@@ -107,7 +107,7 @@ class PhysicsSensor
 
         PhysicsWorld@ world = sceneNode.scene.physicsWorld;
         Ray ray;
-        for (int i = 0; i < points.length - 1; ++i)
+        for (uint i = 0; i < points.length - 1; ++i)
         {
             Vector3 dir = points[i+1] - points[i];
             ray.Define(points[i], dir);

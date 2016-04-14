@@ -582,15 +582,48 @@ class Player : Character
             stateToChange = "RailUpState";
         else if (l.type == LINE_EDGE)
         {
-            int action = AnalyzeForwadAction(l);
-            if (action == LINE_ACTION_CLIMB_OVER)
-                stateToChange = "ClimbOverState";
-            else if (action == LINE_ACTION_CLIMB_UP)
-                stateToChange = "ClimbUpState";
-            else if (action == LINE_ACTION_HANG)
-                stateToChange = "HangUpState";
-            else if (action == LINE_ACTION_CLIMB_DOWN)
-                stateToChange = "ClimbDownState";
+            Vector3 charPos = GetNode().worldPosition;
+            Vector3 proj = l.Project(charPos);
+            float h_diff = proj.y - charPos.y;
+            // Print("h_diff = " + h_diff);
+            if (h_diff < 0.01f)
+            {
+                // move down case
+                float distSQR = (proj- charPos).lengthSquared;
+                const float minDownDist = 1.0f;
+                if (distSQR < minDownDist * minDownDist)
+                    stateToChange = "ClimbDownState";
+            }
+            else
+            {
+                Array<PhysicsRaycastResult> results;
+                ClimbUpRaycasts(l, null, results);
+
+                bool hitUp = results[0].body !is null;
+                bool hitForward = results[1].body !is null;
+                bool hitDown = results[2].body !is null;
+
+                if (hitUp)
+                {
+                    if (hitForward)
+                    {
+                        float lineToGround = l.end.y - results[2].position.y;
+                        if (hitDown && lineToGround < 0.25f)
+                        {
+                            stateToChange = "ClimbUpState";
+                        }
+                        else
+                        {
+                            // TODO
+                            stateToChange = "HangUpState";
+                        }
+                    }
+                    else
+                    {
+                        stateToChange = "HangUpState";
+                    }
+                }
+            }
         }
 
         if (stateToChange.empty)
@@ -601,50 +634,43 @@ class Player : Character
         return true;
     }
 
-    int AnalyzeForwadAction(Line@ l)
+    void ClimbUpRaycasts(Line@ line, Array<Vector3>@ points, Array<PhysicsRaycastResult>@ results)
     {
+        results.Resize(3);
+
+        PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
-        Vector3 proj = l.Project(charPos);
+        Vector3 proj = line.Project(charPos);
         float h_diff = proj.y - charPos.y;
-        // Print("h_diff = " + h_diff);
-        if (h_diff < 0.01f)
+        float above_height = 1.0f;
+        Vector3 v1, v2, v3, v4;
+
+        v1 = charPos;
+        Ray ray;
+        ray.Define(v1, Vector3(0, 1, 0));
+        float dist = h_diff + above_height;
+        v2 = ray.origin + ray.direction * dist;
+        results[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        Vector3 dir = proj - charPos;
+        dir.y = 0;
+        ray.Define(v2, dir);
+        dist = dir.length + COLLISION_RADIUS;
+        v3 = ray.origin + ray.direction * dist;
+        results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        ray.Define(v3, Vector3(0, -1, 0));
+        dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
+        v4 = ray.origin + ray.direction * dist;
+        results[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+
+        if (points !is null)
         {
-            // move down case
-            float distSQR = (proj- charPos).lengthSquared;
-            const float minDownDist = 1.0f;
-            if (distSQR < minDownDist * minDownDist)
-                return LINE_ACTION_CLIMB_DOWN;
-            else
-                return LINE_ACTION_NULL;
-        }
-        else
-        {
-            // move up case.
-            Vector3 v = charPos;
-            Ray ray;
-            ray.Define(v, Vector3(0, 1, 0));
-            float h = 1.0f;
-            PhysicsRaycastResult result = GetScene().physicsWorld.RaycastSingle(ray, h_diff + h, COLLISION_LAYER_LANDSCAPE);
-            if (result.body !is null)
-                return LINE_ACTION_NULL;
-            v = proj;
-            v.y += h;
-            Vector3 dir = v - charPos;
-            dir.y = 0;
-            ray.Define(v, dir);
-            result = GetScene().physicsWorld.RaycastSingle(ray, COLLISION_RADIUS*2, COLLISION_LAYER_LANDSCAPE);
-            if (result.body is null)
-            {
-                v = ray.origin + ray.direction * (dir.length + COLLISION_RADIUS);
-                ray.Define(v, Vector3(0, -1, 0));
-                result = GetScene().physicsWorld.RaycastSingle(ray, CHARACTER_HEIGHT, COLLISION_LAYER_LANDSCAPE);
-                if (result.body !is null)
-                    return LINE_ACTION_CLIMB_UP; //LINE_ACTION_CLIMB_UP;
-                else
-                    return (h_diff < 4.8) ? LINE_ACTION_CLIMB_OVER : LINE_ACTION_HANG;
-            }
-            else
-                return LINE_ACTION_HANG; // on-ground case ignore dangle
+            points.Resize(4);
+            points[0] = v1;
+            points[1] = v2;
+            points[2] = v3;
+            points[3] = v4;
         }
     }
 };
