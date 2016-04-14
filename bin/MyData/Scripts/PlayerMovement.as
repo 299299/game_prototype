@@ -935,6 +935,12 @@ class PlayerDockAlignState : MultiMotionState
             {
                 Vector3 dir = targetPosition - v;
                 targetRotation = Atan2(dir.x, dir.z);
+
+                if (!ownner.dockLine.IsAngleValid(targetRotation))
+                {
+                    targetRotation += 180;
+                    targetRotation = AngleDiff(targetRotation);
+                }
             }
 
             float t = m.dockAlignTime;
@@ -1852,6 +1858,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
         towardDir = n.worldRotation * towardDir;
         linePt = oldLine.GetLinePoint(towardDir);
+        float myAngle = ownner.GetCharacterAngle();
 
         float angle = Atan2(towardDir.x, towardDir.z);
         float w = 6.0f;
@@ -1883,7 +1890,7 @@ class PlayerHangMoveState : PlayerDockAlignState
 
         Line@ bestLine = null;
         float maxHeightDiff = 1.0f;
-        float maxDistSQR = 999999;
+        float maxDistSQR = COLLISION_RADIUS * COLLISION_RADIUS;
         Vector3 comparePot = linePt;
 
         for (uint i=0; i<lines.length; ++i)
@@ -1893,7 +1900,7 @@ class PlayerHangMoveState : PlayerDockAlignState
                 continue;
             if (Abs(line.end.y - oldLine.end.y) > maxHeightDiff)
                 continue;
-            if (!line.IsProjectAngleValid(myPos))
+            if (!line.IsAngleValid(myAngle))
                 continue;
             Vector3 v = line.GetNearPoint(comparePot);
             v -= comparePot;

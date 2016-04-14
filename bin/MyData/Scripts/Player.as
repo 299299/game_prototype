@@ -582,7 +582,6 @@ class Player : Character
             stateToChange = "RailUpState";
         else if (l.type == LINE_EDGE)
         {
-            Vector3 charPos = GetNode().worldPosition;
             Vector3 proj = l.Project(charPos);
             float h_diff = proj.y - charPos.y;
             // Print("h_diff = " + h_diff);
@@ -602,12 +601,14 @@ class Player : Character
                 bool hitUp = results[0].body !is null;
                 bool hitForward = results[1].body !is null;
                 bool hitDown = results[2].body !is null;
+                float lineToGround = l.end.y - results[2].position.y;
 
-                if (hitUp)
+                Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " lineToGround=" + lineToGround);
+
+                if (!hitUp)
                 {
                     if (hitForward)
                     {
-                        float lineToGround = l.end.y - results[2].position.y;
                         if (hitDown && lineToGround < 0.25f)
                         {
                             stateToChange = "ClimbUpState";

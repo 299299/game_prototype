@@ -140,17 +140,9 @@ class Line
         return dir.length;
     }
 
-    bool IsProjectAngleValid(const Vector3&in myPos)
+    bool IsAngleValid(float theAngle)
     {
-        if (invalidAngleSide > 360)
-            return true;
-
-        Vector3 proj = Project(myPos);
-        Vector3 dir = (proj - myPos);
-        dir.y = 0;
-        float projDir = Atan2(dir.x, dir.z);
-        float aDiff = Abs(AngleDiff(projDir - invalidAngleSide));
-        return (aDiff > 180);
+        return invalidAngleSide > 360 ? true : (Abs(AngleDiff(theAngle - invalidAngleSide)) < 175);
     }
 
     void DebugDraw(DebugRenderer@ debug, const Color&in color)

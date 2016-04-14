@@ -795,8 +795,6 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle_Right_End", 0);
     Global_CreateMotion(preFix + "Dangle_Right_End_1", 0);
 
-    Global_CreateMotion(preFix + "Dangle_To_Hang", 0).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.3));
-
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Hang_Climb_Up_Over_128", climb_foot_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
@@ -1131,14 +1129,16 @@ void AddBruceAnimationTriggers()
         TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Left"), Vector3(0, -3.25f, 0));
         TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Right"), Vector3(0, -3.25f, 0));
 
-        /*String preFix = "BM_Climb/";
+        preFix = "BM_Climb/";
         TranslateAnimation(GetAnimationName(preFix + "Dangle_Idle"), Vector3(0, -2.5f, 0));
+
+        /*
         TranslateAnimation(GetAnimationName(preFix + "Dangle_Left"), Vector3(0, -2.5f, 0));
         TranslateAnimation(GetAnimationName(preFix + "Dangle_Right"), Vector3(0, -2.5f, 0));
         TranslateAnimation(GetAnimationName(preFix + "Dangle_Right_1"), Vector3(0, -2.5f, 0));
         TranslateAnimation(GetAnimationName(preFix + "Dangle_Right_End"), Vector3(0, -2.5f, 0));
         TranslateAnimation(GetAnimationName(preFix + "Dangle_Right_End_1"), Vector3(0, -2.5f, 0));
-        TranslateAnimation(GetAnimationName(preFix + "Dangle_To_Hang"), Vector3(0, -2.5f, 0));*/
+        */
     }
 }
 
