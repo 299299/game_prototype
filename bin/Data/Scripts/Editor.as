@@ -22,7 +22,6 @@
 #include "Scripts/Editor/EditorColorWheel.as"
 #include "Scripts/Editor/EditorEventsHandlers.as"
 #include "Scripts/Editor/EditorViewDebugIcons.as"
-#include "Scripts/EditorHack.as"
 
 String configFileName;
 
@@ -147,8 +146,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
             }
         }
     }
-
-    UpdateEditorHack(timeStep);
 }
 
 void HandleReloadFinished(StringHash eventType, VariantMap& eventData)
@@ -186,7 +183,7 @@ void LoadConfig()
     XMLElement soundTypesElem = configElem.GetChild("soundtypes");
     XMLElement cubeMapElem = configElem.GetChild("cubegen");
     XMLElement defaultTagsElem = configElem.GetChild("tags");
-
+    
     if (!cameraElem.isNull)
     {
         if (cameraElem.HasAttribute("nearclip")) viewNearClip = cameraElem.GetFloat("nearclip");
@@ -316,7 +313,7 @@ void LoadConfig()
         cubeMapGen_Path = cubemapDefaultOutputPath;
         cubeMapGen_Size = 128;
     }
-
+    
     if (!defaultTagsElem.isNull)
     {
         if (defaultTagsElem.HasAttribute("tags")) defaultTags = defaultTagsElem.GetAttribute("tags");
@@ -415,13 +412,13 @@ void SaveConfig()
     consoleElem.SetAttribute("commandinterpreter", console.commandInterpreter);
 
     varNamesElem.SetVariantMap(globalVarNames);
-
+    
     cubeGenElem.SetAttribute("name", cubeMapGen_Name);
     cubeGenElem.SetAttribute("path", cubeMapGen_Path);
     cubeGenElem.SetAttribute("size", cubeMapGen_Size);
 
     defaultTagsElem.SetAttribute("tags", defaultTags);
-
+    
     SaveSoundTypes(soundTypesElem);
 
     config.Save(File(configFileName, FILE_WRITE));
