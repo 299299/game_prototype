@@ -1432,7 +1432,7 @@ class PlayerHangUpState : PlayerDockAlignState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(ownner.sensor.DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+        ownner.ChangeState("HangIdleState");
     }
 };
 
@@ -1465,6 +1465,7 @@ class PlayerHangIdleState : SingleAnimationState
         int n = ownner.sensor.DetectWallBlockingFoot(COLLISION_RADIUS);
         if (n == 0)
         {
+            ownner.SetSceneTimeScale(0);
             ownner.ChangeState("DangleIdleState");
             return true;
         }
@@ -2024,7 +2025,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         if (type == 3)
             ownner.ChangeState("HangMoveEndState");
         else
-            ownner.ChangeState(ownner.sensor.DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+            ownner.ChangeState("HangIdleState");
     }
 
     Vector3 PickDockInTarget()
@@ -2120,7 +2121,7 @@ class PlayerHangMoveEndState : MultiAnimationState
 
     void OnMotionFinished()
     {
-        ownner.ChangeState(ownner.sensor.DetectWallBlockingFoot() < 1 ? "DangleIdleState": "HangIdleState");
+        ownner.ChangeState("HangIdleState");
     }
 
     int PickIndex()
@@ -2150,7 +2151,7 @@ class PlayerDangleIdleState : PlayerHangIdleState
         int n = ownner.sensor.DetectWallBlockingFoot(COLLISION_RADIUS);
         if (n > 0)
         {
-            ownner.ChangeState("HangIdleState");
+            ownner.ChangeState("DangleToHangState");
             return false;
         }
         return true;
@@ -2163,6 +2164,11 @@ class PlayerDangleOverState : PlayerHangOverState
     {
         super(ownner);
         SetName("DangleOverState");
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("DangleIdleState");
     }
 };
 
@@ -2179,7 +2185,7 @@ class PlayerDangleMoveState : PlayerHangMoveState
         if (type == 2)
             ownner.ChangeState("DangleMoveEndState");
         else
-            PlayerHangMoveState::OnMotionFinished();
+            ownner.ChangeState("DangleIdleState");
     }
 
     bool HorizontalMove(bool left)
@@ -2199,6 +2205,11 @@ class PlayerDangleMoveEndState : PlayerHangMoveEndState
     {
         super(c);
         SetName("DangleMoveEndState");
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.ChangeState("DangleIdleState");
     }
 };
 
@@ -2238,5 +2249,21 @@ class PlayerClimbDownState : PlayerDockAlignState
         Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
         Player@ p = cast<Player>(ownner);
         groundPos = p.sensor.GetGround(futurePos);
+    }
+};
+
+class PlayerDangleToHangState : PlayerDockAlignState
+{
+    PlayerDangleToHangState(Character@ c)
+    {
+        super(c);
+        SetName("DangleToHangState");
+        dockBlendingMethod = 1;
+    }
+
+    void OnMotionFinished()
+    {
+        ownner.SetSceneTimeScale(0);
+        ownner.ChangeState("HangIdleState");
     }
 };

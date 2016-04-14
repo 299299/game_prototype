@@ -607,6 +607,15 @@ class BruceClimbDownState : PlayerClimbDownState
     }
 };
 
+class BruceDangleToHangState : PlayerDangleToHangState
+{
+    BruceDangleToHangState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Climb/Dangle_To_Hang");
+    }
+};
+
 class Bruce : Player
 {
     Bruce()
@@ -675,6 +684,8 @@ class Bruce : Player
             stateMachine.AddState(BruceDangleOverState(this));
             stateMachine.AddState(BruceDangleMoveState(this));
             stateMachine.AddState(BruceDangleMoveEndState(this));
+
+            stateMachine.AddState(BruceDangleToHangState(this));
         }
     }
 };
@@ -761,22 +772,23 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
     Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.1, 0.24));
 
-    Global_CreateMotion(preFix + "Hang_Left",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
-    Global_CreateMotion(preFix + "Hang_Left_1",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
-    Global_CreateMotion(preFix + "Hang_Right",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
-    Global_CreateMotion(preFix + "Hang_Right_1",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
+    Global_CreateMotion(preFix + "Hang_Left",  kMotion_X | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
+    Global_CreateMotion(preFix + "Hang_Left_1",  kMotion_X | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
+    Global_CreateMotion(preFix + "Hang_Right",  kMotion_X | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
+    Global_CreateMotion(preFix + "Hang_Right_1",  kMotion_X | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
 
-    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
 
-    Global_CreateMotion(preFix + "Hang_Left_Start", 0);
-    Global_CreateMotion(preFix + "Hang_Left_End", 0);
-    Global_CreateMotion(preFix + "Hang_Left_End_1", 0);
-    Global_CreateMotion(preFix + "Hang_Right_Start", 0);
-    Global_CreateMotion(preFix + "Hang_Right_End", 0);
-    Global_CreateMotion(preFix + "Hang_Right_End_1", 0);
+    Global_CreateMotion(preFix + "Hang_Left_Start", kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Hang_Left_End", kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Hang_Left_End_1", kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Hang_Right_Start", kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Hang_Right_End", kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Hang_Right_End_1", kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Dangle_Idle", kMotion_Ext_Foot_Based_Height);
 
     // Dangle
     Global_CreateMotion(preFix + "Dangle_Left",  kMotion_X).SetDockAlign(L_HAND, 0.5f, Vector3(0, 0, 0.3));
@@ -784,15 +796,17 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle_Right",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
     Global_CreateMotion(preFix + "Dangle_Right_1",  kMotion_X).SetDockAlign(R_HAND, 0.5f, Vector3(0, 0, 0.3));
 
-    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_XZR).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_XZR).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_XZR).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_XZR).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
+    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
 
     Global_CreateMotion(preFix + "Dangle_Left_End", 0);
     Global_CreateMotion(preFix + "Dangle_Left_End_1", 0);
     Global_CreateMotion(preFix + "Dangle_Right_End", 0);
     Global_CreateMotion(preFix + "Dangle_Right_End_1", 0);
+
+    Global_CreateMotion(preFix + "Dangle_To_Hang", 0).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.3));
 
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
@@ -1128,42 +1142,14 @@ void AddBruceAnimationTriggers()
         TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Left"), Vector3(0, -3.25f, 0));
         TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Right"), Vector3(0, -3.25f, 0));
 
-        String prefix = "BM_Climb/";
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Left"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Right"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_1"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_1"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_Start"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_End"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_End_1"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_Start"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_End"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_End_1"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_Convex"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_Convex"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Left_Concave"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Hang_Right_Concave"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Idle"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Left"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Right"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Left_1"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Right_1"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Left_End"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Left_End_1"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Right_End"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Right_End_1"), Vector3(0, 0.4f, 0));
-
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Convex_90_L"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Convex_90_R"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Concave_90_L"), Vector3(0, 0.4f, 0));
-        TranslateAnimation(GetAnimationName(prefix + "Dangle_Concave_90_R"), Vector3(0, 0.4f, 0));
+        /*String preFix = "BM_Climb/";
+        TranslateAnimation(GetAnimationName(preFix + "Dangle_Idle"), Vector3(0, -2.5f, 0));
+        TranslateAnimation(GetAnimationName(preFix + "Dangle_Left"), Vector3(0, -2.5f, 0));
+        TranslateAnimation(GetAnimationName(preFix + "Dangle_Right"), Vector3(0, -2.5f, 0));
+        TranslateAnimation(GetAnimationName(preFix + "Dangle_Right_1"), Vector3(0, -2.5f, 0));
+        TranslateAnimation(GetAnimationName(preFix + "Dangle_Right_End"), Vector3(0, -2.5f, 0));
+        TranslateAnimation(GetAnimationName(preFix + "Dangle_Right_End_1"), Vector3(0, -2.5f, 0));
+        TranslateAnimation(GetAnimationName(preFix + "Dangle_To_Hang"), Vector3(0, -2.5f, 0));*/
     }
 }
 

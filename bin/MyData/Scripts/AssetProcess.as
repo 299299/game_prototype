@@ -508,8 +508,12 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
             translateTrack.keyFrames[i] = kf;
             ground_heights[i] = ground_y;
         }
-        for (uint i=0; i<ground_heights.length; ++i)
-            outKeys[i].y = ground_heights[i] - ground_heights[0];
+
+        if (motionFlag & kMotion_Y != 0)
+        {
+            for (uint i=0; i<ground_heights.length; ++i)
+                outKeys[i].y = ground_heights[i] - ground_heights[0];
+        }
     }
 
     for (uint i=0; i<outKeys.length; ++i)
