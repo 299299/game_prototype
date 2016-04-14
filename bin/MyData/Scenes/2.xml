@@ -179,7 +179,7 @@
 	</node>
 	<node id="74">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbOver" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="25.8267 0 -27.9122" />
 		<attribute name="Rotation" value="0.90318 0.00136017 0.42926 -0.000646456" />
@@ -217,7 +217,7 @@
 	</node>
 	<node id="78">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="2.98101 5.74646 -39.7036" />
 		<attribute name="Rotation" value="0.999985 0.00150595 -0.00549396 8.27251e-06" />
@@ -243,7 +243,7 @@
 			<attribute name="Variables" />
 			<component type="Text3D" id="126">
 				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
-				<attribute name="Text" value="ClimbUp" />
+				<attribute name="Text" value="Edge" />
 				<attribute name="Width" value="113" />
 				<attribute name="Color" value="1 1 0 1" />
 				<attribute name="Top Left Color" value="1 1 0 1" />
@@ -255,7 +255,7 @@
 	</node>
 	<node id="80">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="7.30236 1.50918 -40.1688" />
 		<attribute name="Rotation" value="0.999985 0.00150595 -0.00549396 8.27251e-06" />
@@ -281,7 +281,7 @@
 			<attribute name="Variables" />
 			<component type="Text3D" id="130">
 				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
-				<attribute name="Text" value="ClimbUp" />
+				<attribute name="Text" value="Edge" />
 				<attribute name="Width" value="113" />
 				<attribute name="Color" value="1 1 0 1" />
 				<attribute name="Top Left Color" value="1 1 0 1" />
@@ -331,7 +331,7 @@
 	</node>
 	<node id="84">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbUp" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="33.5152 0 -18.2942" />
 		<attribute name="Rotation" value="1 4.48876e-18 -1.18793e-35 0" />
@@ -388,7 +388,7 @@
 	</node>
 	<node id="87">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="-13.7887 0.95744 8.5282" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
@@ -407,7 +407,7 @@
 	</node>
 	<node id="88">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="7.43998 0 -6.62271" />
 		<attribute name="Rotation" value="1 4.48876e-18 0 -0" />
@@ -426,7 +426,7 @@
 	</node>
 	<node id="89">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="14.4197 -0.200026 3.26769" />
 		<attribute name="Rotation" value="1 4.48876e-18 0 -0" />
@@ -445,7 +445,7 @@
 	</node>
 	<node id="90">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="-26.5362 -0.200026 10.336" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
@@ -464,7 +464,7 @@
 	</node>
 	<node id="91">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="-19.9505 6.50813 11.0306" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
@@ -483,7 +483,7 @@
 	</node>
 	<node id="92">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="8.47066 2.55343 0.256033" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
@@ -502,7 +502,7 @@
 	</node>
 	<node id="93">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ClimbHang" />
+		<attribute name="Name" value="Edge" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="-8.26674 0.514351 8.5282" />
 		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />

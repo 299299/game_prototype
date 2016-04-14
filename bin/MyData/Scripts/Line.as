@@ -46,6 +46,7 @@ class Line
     int             type;
     float           angle;
     float           maxFacingDiff = 45;
+    float           invalidAngleSide = 999;
 
     uint            nodeId;
     int             flags;
@@ -130,11 +131,33 @@ class Line
         project.y = pos.y;
         Vector3 dir = project - pos;
         float projDir = Atan2(dir.x, dir.z);
-        float aDiff = AngleDiff(projDir - angle);
-        if (Abs(aDiff) > maxFacingDiff)
+
+        // test facing angle
+        float aDiff = Abs(AngleDiff(projDir - angle));
+        if (aDiff > maxFacingDiff)
             return -1;
 
+        // test invalid angle side
+        if (invalidAngleSide < 360) {
+            aDiff = Abs(AngleDiff(projDir - invalidAngleSide));
+            if (aDiff < 180)
+                return -1;
+        }
+
         return dir.length;
+    }
+
+    bool IsProjectAngleValid(const Vector3&in myPos)
+    {
+        if (invalidAngleSide > 360)
+            return true;
+
+        Vector3 proj = Project(myPos);
+        Vector3 dir = (proj - myPos);
+        dir.y = 0;
+        float projDir = Atan2(dir.x, dir.z);
+        float aDiff = Abs(AngleDiff(projDir - invalidAngleSide));
+        return (aDiff > 180);
     }
 
     void DebugDraw(DebugRenderer@ debug, const Color&in color)
@@ -210,58 +233,42 @@ bool GetNodeSizeAndOffset(Node@ n, Vector3&out size, Vector3&out offset)
     return false;
 }
 
-bool GetCorners(Node@ n, Vector3&out outSize, Vector3&out p1, Vector3&out p2, Vector3&out p3, Vector3&out p4)
+int GetCorners(Node@ n, Vector3&out outSize, Array<Vector3>@ points)
 {
     Vector3 size, offset;
     if (!GetNodeSizeAndOffset(n, size, offset))
-        return false;
+        return 0;
 
     Vector3 halfSize = size/2;
-    p1 = Vector3(halfSize.x, halfSize.y, halfSize.z);
-    p2 = Vector3(halfSize.x, halfSize.y, -halfSize.z);
-    p3 = Vector3(-halfSize.x, halfSize.y, -halfSize.z);
-    p4 = Vector3(-halfSize.x, halfSize.y, halfSize.z);
-    p1 = n.LocalToWorld(p1 + offset);
-    p2 = n.LocalToWorld(p2 + offset);
-    p3 = n.LocalToWorld(p3 + offset);
-    p4 = n.LocalToWorld(p4 + offset);
+    float x = size.x * n.worldScale.x;
+    float z = size.z * n.worldScale.z;
 
-    outSize = size * n.worldScale;
-
-    //Print(n.name + " size=" + outSize.ToString());
-
-    return true;
-}
-
-bool GetCorners(Node@ n, Vector3&out outSize, Vector3&out p1, Vector3&out p2)
-{
-    Vector3 size, offset;
-    if (!GetNodeSizeAndOffset(n, size, offset))
-        return false;
-
-    Vector3 halfSize = size/2;
-    float x = halfSize.x * n.worldScale.x;
-    float z = halfSize.z * n.worldScale.z;
-
-    if (x > z)
+    if (x < LINE_MIN_LENGTH || z < LINE_MIN_LENGTH)
     {
-        p1 = Vector3(halfSize.x, halfSize.y, 0);
-        p2 = Vector3(-halfSize.x, halfSize.y, 0);
+        if (x > z)
+        {
+            points.Push(Vector3(halfSize.x, halfSize.y, 0));
+            points.Push(Vector3(-halfSize.x, halfSize.y, 0));
+        }
+        else
+        {
+            points.Push(Vector3(0, halfSize.y, halfSize.z));
+            points.Push(Vector3(0, halfSize.y, -halfSize.z));
+        }
     }
     else
     {
-        p1 = Vector3(0, halfSize.y, halfSize.z);
-        p2 = Vector3(0, halfSize.y, -halfSize.z);
+        points.Push(Vector3(halfSize.x, halfSize.y, halfSize.z));
+        points.Push(Vector3(halfSize.x, halfSize.y, -halfSize.z));
+        points.Push(Vector3(-halfSize.x, halfSize.y, -halfSize.z));
+        points.Push(Vector3(-halfSize.x, halfSize.y, halfSize.z));
     }
 
-    p1 = n.LocalToWorld(p1 + offset);
-    p2 = n.LocalToWorld(p2 + offset);
+    for (uint i=0; i<points.length; ++i)
+        points[i] = n.LocalToWorld(points[i] + offset);
 
     outSize = size * n.worldScale;
-
-    //Print(n.name + " size=" + outSize.ToString());
-
-    return true;
+    return int(points.length);
 }
 
 class LineWorld
@@ -324,32 +331,35 @@ class LineWorld
 
     void CreateLine(int type, Node@ n)
     {
-        Vector3 size, p1, p2, p3, p4;
-        if (type == LINE_EDGE)
-        {
-            if (!GetCorners(n, size, p1, p2, p3, p4))
-                return;
+        Vector3 size;
+        Array<Vector3> points;
 
-            if (size.x < LINE_MIN_LENGTH || size.z < LINE_MIN_LENGTH)
-            {
-                // if line length is too short just merge them to one
-                if (!GetCorners(n, size, p1, p2))
-                    return;
-                CreateLine(type, p1, p2, size, n);
-            }
-            else
-            {
-                CreateLine(type, p1, p2, size, n);
-                CreateLine(type, p2, p3, size, n);
-                CreateLine(type, p3, p4, size, n);
-                CreateLine(type, p4, p1, size, n);
-            }
+        if (GetCorners(n, size, points) < 2)
+            return;
+
+
+
+        if (points.length == 4)
+        {
+            Line@ l1 = CreateLine(type, points[0], points[1], size, n);
+            Line@ l2 = CreateLine(type, points[1], points[2], size, n);
+            Line@ l3 = CreateLine(type, points[2], points[3], size, n);
+            Line@ l4 = CreateLine(type, points[3], points[0], size, n);
+            Vector3 dir = points[2] - points[1];
+            l1.invalidAngleSide = Atan2(dir.x, dir.z);
+            dir = points[3] - points[2];
+            l2.invalidAngleSide = Atan2(dir.x, dir.z);
+            dir = points[0] - points[3];
+            l3.invalidAngleSide = Atan2(dir.x, dir.z);
+            dir = points[1] - points[0];
+            l4.invalidAngleSide = Atan2(dir.x, dir.z);
         }
         else
         {
-            if (!GetCorners(n, size, p1, p2))
-                return;
-            CreateLine(type, p1, p2, size, n);
+            for (uint i=0; i<points.length-1; ++i)
+            {
+                CreateLine(type, points[i], points[i+1], size, n);
+            }
         }
     }
 
@@ -366,19 +376,7 @@ class LineWorld
             {
                 CreateLine(LINE_RAILING, _node);
             }
-            else if (_node.name.StartsWith("ClimbOver"))
-            {
-                CreateLine(LINE_EDGE, _node);
-            }
-            else if (_node.name.StartsWith("ClimbUp"))
-            {
-                CreateLine(LINE_EDGE, _node);
-            }
-            else if (_node.name.StartsWith("ClimbHang"))
-            {
-                CreateLine(LINE_EDGE, _node);
-            }
-            else if (_node.name.StartsWith("Dangle"))
+            else if (_node.name.StartsWith("Edge"))
             {
                 CreateLine(LINE_EDGE, _node);
             }

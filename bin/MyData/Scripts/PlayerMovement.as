@@ -1911,6 +1911,8 @@ class PlayerHangMoveState : PlayerDockAlignState
                 continue;
             if (Abs(line.end.y - oldLine.end.y) > maxHeightDiff)
                 continue;
+            if (!line.IsProjectAngleValid(myPos))
+                continue;
             Vector3 v = line.GetNearPoint(comparePot);
             v -= comparePot;
             v.y = 0;
