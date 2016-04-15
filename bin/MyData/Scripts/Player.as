@@ -30,9 +30,9 @@ class Player : Character
     uint            lastAttackId = M_MAX_UNSIGNED;
     bool            applyGravity = true;
 
-    Array<Vector3>                  points;
-    Array<PhysicsRaycastResult>     results;
-    BoundingBox                      box;
+    Array<Vector3>                    points;
+    Array<PhysicsRaycastResult>       results;
+    BoundingBox                       box;
 
     void ObjectStart()
     {
@@ -630,17 +630,17 @@ class Player : Character
                     {
                         if (hitDown && lineToGround < 0.25f)
                         {
-                            stateToChange = "ClimbUpState";
+                            // stateToChange = "ClimbUpState";
                         }
                         else
                         {
                             // TODO
-                            stateToChange = "HangUpState";
+                            // stateToChange = "HangUpState";
                         }
                     }
                     else
                     {
-                        stateToChange = "HangUpState";
+                        // stateToChange = "HangUpState";
                     }
                 }
             }
@@ -654,13 +654,10 @@ class Player : Character
         return true;
     }
 
-    void ClimbUpRaycasts(Line@ line, Array<Vector3>@ _points = null, Array<PhysicsRaycastResult>@ _results = null)
+    void ClimbUpRaycasts(Line@ line)
     {
-        Array<Vector3>@ thePoints = (_points is null) ? this.points : _points;
-        Array<PhysicsRaycastResult>@ theResults = (_results is null) ? this.results : _results;
-
-        theResults.Resize(3);
-        thePoints.Resize(4);
+        results.Resize(3);
+        points.Resize(4);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
@@ -678,33 +675,30 @@ class Player : Character
         ray.Define(v1, Vector3(0, 1, 0));
         float dist = h_diff + above_height;
         v2 = ray.origin + ray.direction * dist;
-        theResults[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        results[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // forward test
         ray.Define(v2, dir);
         dist = fowardDist;
         v3 = ray.origin + ray.direction * dist;
-        theResults[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // down test
         ray.Define(v3, Vector3(0, -1, 0));
         dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
         v4 = ray.origin + ray.direction * dist;
-        theResults[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        results[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
-        thePoints[0] = v1;
-        thePoints[1] = v2;
-        thePoints[2] = v3;
-        thePoints[3] = v4;
+        points[0] = v1;
+        points[1] = v2;
+        points[2] = v3;
+        points[3] = v4;
     }
 
-    void ClimbDownRaycasts(Line@ line, Array<Vector3>@ _points = null, Array<PhysicsRaycastResult>@ _results = null)
+    void ClimbDownRaycasts(Line@ line)
     {
-        Array<Vector3>@ thePoints = (_points is null) ? this.points : _points;
-        Array<PhysicsRaycastResult>@ theResults = (_results is null) ? this.results : _results;
-
-        theResults.Resize(3);
-        thePoints.Resize(4);
+        results.Resize(3);
+        points.Resize(4);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
@@ -723,13 +717,13 @@ class Player : Character
         ray.Define(v1, dir);
         dist = fowardDist;
         v2 = ray.origin + ray.direction * dist;
-        theResults[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        results[0] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // down test
         ray.Define(v2, Vector3(0, -1, 0));
         dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
         v3 = ray.origin + ray.direction * dist;
-        theResults[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+        results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // here comes the tricking part
         v3.y = line.end.y;
@@ -739,21 +733,18 @@ class Player : Character
         dist = fowardDist;
         v4 = v3 + dir * dist;
 
-        theResults[2] = world.ConvexCast(sensor.shape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        results[2] = world.ConvexCast(sensor.shape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
-        thePoints[0] = v1;
-        thePoints[1] = v2;
-        thePoints[2] = v3;
-        thePoints[3] = v4;
+        points[0] = v1;
+        points[1] = v2;
+        points[2] = v3;
+        points[3] = v4;
     }
 
-    void ClimbLeftOrRightRaycasts(Line@ line, bool bLeft, Array<Vector3>@ _points = null, Array<PhysicsRaycastResult>@ _results = null)
+    void ClimbLeftOrRightRaycasts(Line@ line, bool bLeft)
     {
-        Array<Vector3>@ thePoints = (_points is null) ? this.points : _points;
-        Array<PhysicsRaycastResult>@ theResults = (_results is null) ? this.results : _results;
-
-        theResults.Resize(3);
-        thePoints.Resize(4);
+        results.Resize(3);
+        points.Resize(4);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 myPos = sceneNode.worldPosition;
@@ -773,24 +764,24 @@ class Player : Character
         Ray ray;
         ray.Define(v1, dir);
         v2 = ray.origin + ray.direction * len;
-        theResults[0] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        results[0] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
 
         dir = sceneNode.worldRotation * Vector3(0, 0, 1);
         len = COLLISION_RADIUS * 2;
         ray.Define(v2, dir);
         v3 = v2 + ray.direction * len;
-        theResults[1] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        results[1] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
 
         dir = bLeft ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
         dir = sceneNode.worldRotation * dir;
         ray.Define(v3, dir);
         v4 = v3 + ray.direction * len;
-        theResults[2] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        results[2] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
 
-        thePoints[0] = v1;
-        thePoints[1] = v2;
-        thePoints[2] = v3;
-        thePoints[3] = v4;
+        points[0] = v1;
+        points[1] = v2;
+        points[2] = v3;
+        points[3] = v4;
     }
 
     Line@ FindCrossLine(bool left, int& out convexIndex)

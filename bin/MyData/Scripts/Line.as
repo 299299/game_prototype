@@ -133,8 +133,10 @@ class Line
         // test invalid angle side
         if (invalidAngleSide < 360) {
             aDiff = Abs(AngleDiff(projDir - invalidAngleSide));
-            if (aDiff < 180)
+            if (aDiff < 90)
+            {
                 return -1;
+            }
         }
 
         return dir.length;
@@ -142,7 +144,7 @@ class Line
 
     bool IsAngleValid(float theAngle)
     {
-        return invalidAngleSide > 360 ? true : (Abs(AngleDiff(theAngle - invalidAngleSide)) < 175);
+        return invalidAngleSide > 360 ? true : (Abs(AngleDiff(theAngle - invalidAngleSide)) < 90);
     }
 
     void DebugDraw(DebugRenderer@ debug, const Color&in color)
@@ -152,6 +154,8 @@ class Line
         debug.AddSphere(Sphere(ray.origin, 0.15f), YELLOW, false);
         debug.AddSphere(Sphere(end, 0.15f), YELLOW, false);
         debug.AddLine(ray.origin, end, color, false);
+        if (invalidAngleSide < 360)
+            DebugDrawDirection(debug, (ray.origin + end)/2, invalidAngleSide, RED);
     }
 
     float GetProjectFacingDir(const Vector3& pos, float angle)
