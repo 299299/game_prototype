@@ -762,10 +762,11 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle_Right",  kMotion_XY | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
     Global_CreateMotion(preFix + "Dangle_Right_1",  kMotion_XY | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
 
-    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.3f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0, 0.5));
-    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.3f, Vector3(0, 0, 0.5));
+    offset = Vector3(0, 0.25, 0.25);
+    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.3f, offset);
 
     Global_CreateMotion(preFix + "Dangle_Left_End", dangle_add_flags);
     Global_CreateMotion(preFix + "Dangle_Left_End_1", dangle_add_flags);

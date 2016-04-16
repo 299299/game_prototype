@@ -1728,7 +1728,6 @@ class PlayerHangMoveState : PlayerDockAlignState
     Line@           oldLine;
     int             numOfAnimations = 4;
     int             type = 0;
-    bool            convex = true;
 
     PlayerHangMoveState(Character@ ownner)
     {
@@ -1821,6 +1820,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         {
             Player@ p = cast<Player>(ownner);
             Vector3 dir;
+            bool convex = selectIndex % 2 != 0;
             if (type == 1)
                 dir = convex ? (p.points[2] - p.points[3]) : (p.points[0] - p.points[1]);
             else
@@ -1915,8 +1915,6 @@ class PlayerDangleMoveState : PlayerHangMoveState
     {
         super(ownner);
         SetName("DangleMoveState");
-        debug = true;
-        motionFlagBeforeAlign = 0;
     }
 
     void OnMotionFinished()

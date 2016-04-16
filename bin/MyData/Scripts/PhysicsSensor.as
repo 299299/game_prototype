@@ -7,6 +7,9 @@ class PhysicsSensor
 
     CollisionShape@  shape;
 
+    CollisionShape@  verticalShape;
+    CollisionShape@  horinzontalShape;
+
     Vector3     start, end;
 
     float       inAirHeight = 0.0f;
@@ -20,11 +23,15 @@ class PhysicsSensor
         sensorNode = sceneNode.CreateChild("SensorNode");
         shape = sensorNode.CreateComponent("CollisionShape");
         shape.SetCapsule(COLLISION_RADIUS, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
+        verticalShape = sensorNode.CreateComponent("CollisionShape");
+        verticalShape.SetBox(Vector3(0.2f, CHARACTER_HEIGHT, 0));
+        horinzontalShape = sensorNode.CreateComponent("CollisionShape");
+        horinzontalShape.SetBox(Vector3(COLLISION_RADIUS*2, 0.2f, 0));
     }
 
     ~PhysicsSensor()
     {
-        shape.Remove();
+        sensorNode.Remove();
     }
 
     void Update(float dt)

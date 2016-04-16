@@ -603,9 +603,8 @@ class Player : Character
         else if (l.type == LINE_EDGE)
         {
             Vector3 proj = l.Project(charPos);
-            float h_diff = proj.y - charPos.y;
-            // Print("h_diff = " + h_diff);
-            if (h_diff < 0.01f)
+            float lineToMe = proj.y - charPos.y;
+            if (lineToMe < 0.01f)
             {
                 // move down case
                 float distSQR = (proj- charPos).lengthSquared;
@@ -621,8 +620,9 @@ class Player : Character
                 bool hitForward = results[1].body !is null;
                 bool hitDown = results[2].body !is null;
                 float lineToGround = l.end.y - results[2].position.y;
+                bool isWallTooShort = lineToMe < (HEIGHT_128 + HEIGHT_256) / 2;
 
-                Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " lineToGround=" + lineToGround);
+                Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
 
                 if (!hitUp)
                 {
@@ -635,7 +635,10 @@ class Player : Character
                         else
                         {
                             // TODO
-                            stateToChange = "HangUpState"; // "ClimbOverState";
+                            if (isWallTooShort)
+                                stateToChange = "ClimbOverState";
+                            else
+                                stateToChange = "HangUpState"; // "ClimbOverState";
                         }
                     }
                     else
@@ -733,7 +736,7 @@ class Player : Character
         dist = fowardDist;
         v4 = v3 + dir * dist;
 
-        results[2] = world.ConvexCast(sensor.shape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        results[2] = world.ConvexCast(sensor.verticalShape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         points[0] = v1;
         points[1] = v2;
@@ -747,14 +750,13 @@ class Player : Character
         points.Resize(4);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
-        Vector3 myPos = sceneNode.worldPosition;
         Vector3 towardDir = bLeft ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
         towardDir = sceneNode.worldRotation * towardDir;
         Vector3 linePt = line.GetLinePoint(towardDir);
         Vector3 v1, v2, v3, v4;
 
-        v1 = myPos;
-        v1.y += 0.5f;
+        v1 = sceneNode.worldPosition;
+        v1.y = sceneNode.GetChild(L_HAND, true).worldPosition.y;
 
         Vector3 v = linePt - v1;
         v.y = 0;
@@ -764,19 +766,21 @@ class Player : Character
         Ray ray;
         ray.Define(v1, dir);
         v2 = ray.origin + ray.direction * len;
-        results[0] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        // results[0] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        results[0] = world.ConvexCast(sensor.verticalShape, v1, Quaternion(), v2, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         dir = sceneNode.worldRotation * Vector3(0, 0, 1);
         len = COLLISION_RADIUS * 2;
         ray.Define(v2, dir);
         v3 = v2 + ray.direction * len;
-        results[1] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        results[1] = world.ConvexCast(sensor.verticalShape, v2, Quaternion(), v3, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         dir = bLeft ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
         dir = sceneNode.worldRotation * dir;
         ray.Define(v3, dir);
         v4 = v3 + ray.direction * len;
-        results[2] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        //results[2] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
+        results[2] = world.ConvexCast(sensor.verticalShape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         points[0] = v1;
         points[1] = v2;
@@ -881,8 +885,8 @@ class Player : Character
 
         Line@ bestLine = null;
         float maxHeightDiff = 1.0f;
-        float maxDistSQR = COLLISION_RADIUS * COLLISION_RADIUS;
-        Vector3 comparePot = linePt;
+        float maxDistSQR = 5.0f * 5.0f;
+        Vector3 comparePot = myPos;
 
         for (uint i=0; i<lines.length; ++i)
         {
@@ -893,6 +897,7 @@ class Player : Character
                 continue;
             if (!line.IsAngleValid(myAngle))
                 continue;
+
             Vector3 v = line.GetNearPoint(comparePot);
             v -= comparePot;
             v.y = 0;
