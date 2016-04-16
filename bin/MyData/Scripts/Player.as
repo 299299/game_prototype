@@ -751,17 +751,26 @@ class Player : Character
         points.Resize(4);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
+
+        Vector3 myPos = sceneNode.worldPosition;
+        Vector3 proj = line.Project(myPos);
+        Vector3 dir = proj - myPos;
+        Quaternion q(0, Atan2(dir.x, dir.z), 0);
+
         Vector3 towardDir = bLeft ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
-        towardDir = sceneNode.worldRotation * towardDir;
+        towardDir = q * towardDir;
         Vector3 linePt = line.GetLinePoint(towardDir);
+
         Vector3 v1, v2, v3, v4;
 
-        v1 = sceneNode.worldPosition;
+        v1 = myPos;
         v1.y = sceneNode.GetChild(L_HAND, true).worldPosition.y;
 
         Vector3 v = linePt - v1;
         v.y = 0;
-        Vector3 dir = towardDir;
+        dir = towardDir;
+        dir.y = 0;
+
         float len = v.length + COLLISION_RADIUS;
 
         Ray ray;
@@ -770,17 +779,16 @@ class Player : Character
         // results[0] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
         results[0] = world.ConvexCast(sensor.verticalShape, v1, Quaternion(), v2, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
-        dir = sceneNode.worldRotation * Vector3(0, 0, 1);
+        dir = q * Vector3(0, 0, 1);
         len = COLLISION_RADIUS * 2;
         ray.Define(v2, dir);
         v3 = v2 + ray.direction * len;
         results[1] = world.ConvexCast(sensor.verticalShape, v2, Quaternion(), v3, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         dir = bLeft ? Vector3(1, 0, 0) : Vector3(-1, 0, 0);
-        dir = sceneNode.worldRotation * dir;
+        dir = q * dir;
         ray.Define(v3, dir);
         v4 = v3 + ray.direction * len;
-        //results[2] = world.RaycastSingle(ray, len, COLLISION_LAYER_LANDSCAPE);
         results[2] = world.ConvexCast(sensor.verticalShape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         points[0] = v1;
@@ -792,12 +800,6 @@ class Player : Character
     Line@ FindCrossLine(bool left, int& out convexIndex)
     {
         Line@ oldLine = dockLine;
-        Node@ n = GetNode();
-        Vector3 myPos = n.worldPosition;
-        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
-        towardDir = n.worldRotation * towardDir;
-        Vector3 linePt = oldLine.GetLinePoint(towardDir);
-
         ClimbLeftOrRightRaycasts(oldLine, left);
 
         bool hit1 = results[0].body !is null;
@@ -854,12 +856,16 @@ class Player : Character
         Line @oldLine = dockLine;
         Node@ n = GetNode();
         Vector3 myPos = n.worldPosition;
+
         Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
         towardDir = n.worldRotation * towardDir;
         Vector3 linePt = oldLine.GetLinePoint(towardDir);
-        float myAngle = GetCharacterAngle();
 
+        towardDir = linePt - oldLine.Project(myPos);
+
+        float myAngle = GetCharacterAngle();
         float angle = Atan2(towardDir.x, towardDir.z);
+
         float w = 6.0f;
         float h = 2.0f;
         float l = 2.0f;

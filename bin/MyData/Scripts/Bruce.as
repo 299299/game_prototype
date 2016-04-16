@@ -739,7 +739,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Right",  flags).SetDockAlign(R_HAND, 0.5f, offset);
     Global_CreateMotion(preFix + "Hang_Right_1",  flags).SetDockAlign(R_HAND, 0.5f, offset);
 
-    offset = Vector3(0, 0.15, 0.45f);
+    offset = Vector3(0, 0.1, 0.25f);
     Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_ALL | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.8f, offset);
     Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_ALL | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.3f, offset);
     Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_ALL | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.8f, offset);

@@ -868,7 +868,7 @@ class PlayerDockAlignState : MultiMotionState
 
                 if (motionFlagAfterAlign & kMotion_R != 0)
                 {
-                    turnSpeedAfterAlign = (PickDockOutRotation() - ownner.GetCharacterAngle()) / t;
+                    turnSpeedAfterAlign = AngleDiff(PickDockOutRotation() - ownner.GetCharacterAngle()) / t;
                     ownner.motion_rotateEnabled = false;
                 }
 
@@ -961,6 +961,9 @@ class PlayerDockAlignState : MultiMotionState
     {
         if (debug)
             ownner.SetSceneTimeScale(0);
+
+        turnSpeedAfterAlign = 0;
+        turnSpeedBeforeAlign = 0;
 
         if (dockBlendingMethod == 1)
         {
@@ -1706,22 +1709,28 @@ class PlayerHangIdleState : MultiAnimationState
     {
         PlayerHangMoveState@ s = GetMoveState(ownner.dockLine);
         Player@ p = cast<Player>(ownner);
+        Line @oldLine = ownner.dockLine;
 
         int index = left ? 0 : s.numOfAnimations;
         Motion@ m = s.motions[index];
         Vector4 motionOut = m.GetKey(m.endTime);
         Node@ n = ownner.GetNode();
         Vector3 myPos = n.worldPosition;
-        Vector3 futurePos = n.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
-        Vector3 futureProj = ownner.dockLine.Project(futurePos);
-        Line @oldLine = ownner.dockLine;
+        Vector3 proj = oldLine.Project(myPos);
+        Vector3 dir = proj - myPos;
+        Quaternion q(0, Atan2(dir.x, dir.z), 0);
 
+        Vector3 towardDir = left ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+        towardDir = q * towardDir;
+        towardDir.y = 0;
+        Vector3 linePt = oldLine.GetLinePoint(towardDir);
+
+        Vector3 futurePos = q * Vector3(motionOut.x, motionOut.y, motionOut.z) + myPos;
+        Vector3 futureProj = oldLine.Project(futurePos);
         bool outOfLine = !oldLine.IsProjectPositionInLine(futureProj, 0.5f);
         Ray ray;
-        Vector3 dir = futurePos - myPos;
-        dir.y = 0;
-        ray.Define(myPos, dir);
-        float dist = dir.length + COLLISION_RADIUS;
+        ray.Define(myPos, towardDir);
+        float dist = (futureProj - proj).length + 1.0f;
         bool blocked = ownner.GetScene().physicsWorld.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE).body !is null;
         Print("Move left=" + left + " outOfLine=" + outOfLine + " blocked=" + blocked);
 
@@ -1777,6 +1786,8 @@ class PlayerHangMoveState : PlayerDockAlignState
     void Enter(State@ lastState)
     {
         motionFlagBeforeAlign = (type == 1) ? kMotion_XYZ : kMotion_ALL;
+        motionFlagAfterAlign = (type == 1) ? kMotion_R : kMotion_None;
+
         PlayerDockAlignState::Enter(lastState);
         Print(this.name + " enter type = " + type);
     }
