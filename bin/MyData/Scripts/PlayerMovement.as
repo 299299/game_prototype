@@ -1077,7 +1077,7 @@ class PlayerClimbOverState : PlayerDockAlignState
         super(c);
         SetName("ClimbOverState");
         dockBlendingMethod = 1;
-        motionFlagBeforeAlign = kMotion_Y;
+        motionFlagAfterAlign = kMotion_Y;
     }
 
     void Enter(State@ lastState)
@@ -1107,8 +1107,14 @@ class PlayerClimbOverState : PlayerDockAlignState
                 ownner.GetNode().vars[ANIMATION_INDEX] = index;
             }
         }
-        // Print(this.name + " index = " + index);
         PlayerDockAlignState::Enter(lastState);
+    }
+
+    Vector3 PickDockInTarget()
+    {
+        Line@ l = ownner.dockLine;
+        Vector3 v = l.Project(motionPositon);
+        return l.FixProjectPosition(v, dockInTargetBound);
     }
 
     Vector3 PickDockOutTarget()
