@@ -92,7 +92,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="106">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridGreen.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="109" />
@@ -130,7 +130,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="111">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridGreen.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="112" />
@@ -168,7 +168,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="115">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="116" />
@@ -187,7 +187,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="119">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridGreen.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="120" />
@@ -225,7 +225,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="123">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridLight.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="124" />
@@ -263,7 +263,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="127">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridDark.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="128" />
@@ -301,7 +301,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="131">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridGreen.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="132" />
@@ -339,7 +339,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="135">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridDark.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="136" />
@@ -377,7 +377,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="139">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="140" />
@@ -396,7 +396,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="142">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="143" />
@@ -415,7 +415,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="145">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridLight.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="146" />
@@ -434,7 +434,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="148">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="149" />
@@ -453,7 +453,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="151">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="152" />
@@ -472,7 +472,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="154">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridDark.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="155" />
@@ -491,7 +491,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="157">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="158" />
@@ -510,7 +510,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="160">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="161" />

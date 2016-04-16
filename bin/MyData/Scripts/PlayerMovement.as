@@ -240,6 +240,20 @@ class PlayerWalkState : PlayerMoveForwardState
 
         PlayerMoveForwardState::Update(dt);
     }
+
+    void Enter(State@ lastState)
+    {
+        startTime = 0.0f;
+        if (lastState.name == "StandToWalkState")
+        {
+            int index = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
+            if (index == 0)
+                startTime = 0.33f;
+            else
+                startTime = 0.43f;
+        }
+        PlayerMoveForwardState::Enter(lastState);
+    }
 };
 
 class PlayerRunState : PlayerMoveForwardState
@@ -284,6 +298,15 @@ class PlayerRunState : PlayerMoveForwardState
     void Enter(State@ lastState)
     {
         blendTime = (lastState.name == "RunTurn180State") ? 0.01 : 0.2f;
+        startTime = 0.0f;
+        if (lastState.name == "StandToRunState")
+        {
+            int index = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
+            if (index == 0)
+                startTime = 0.33f;
+            else
+                startTime = 0.33f;
+        }
         PlayerMoveForwardState::Enter(lastState);
     }
 };

@@ -354,7 +354,7 @@ class Motion
             if (object.motion_translateEnabled)
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-                tLocal = tLocal * ctrl.GetWeight(animationName);
+                // tLocal = tLocal * ctrl.GetWeight(animationName);
 
                 if (object.physicsType == 0)
                 {
