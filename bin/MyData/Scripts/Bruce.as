@@ -813,11 +813,13 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", climb_foot_flags);
     Global_CreateMotion(preFix + "Railing_Jump_To_Fall", climb_foot_flags);
 
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_XZR, kMotion_R);
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_XZR, kMotion_R);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180");
-    Global_CreateMotion(preFix + "Railing_Run_Forward", kMotion_Z, kMotion_Z, -1, true);
-    Global_CreateMotion(preFix + "Railing_Run_Forward_Idle", 0);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_XZR | kMotion_Ext_Foot_Based_Height, kMotion_R);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_XZR | kMotion_Ext_Foot_Based_Height, kMotion_R);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Railing_Run_Forward", kMotion_Z | kMotion_Ext_Foot_Based_Height, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Railing_Run_Forward_Idle", kMotion_Ext_Foot_Based_Height);
+    //Global_CreateMotion(preFix + "Railing_Idle", kMotion_Ext_Foot_Based_Height);
+    Global_AddAnimation(preFix + "Railing_Idle");
 
     Global_CreateMotion(preFix + "Railing_To_Dangle", climb_foot_flags);
     Global_CreateMotion(preFix + "Railing_To_Dangle_128", climb_foot_flags);
@@ -825,8 +827,6 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", climb_foot_flags);
     Global_CreateMotion(preFix + "Railing_To_Hang", climb_foot_flags);
     Global_CreateMotion(preFix + "Railing_To_Hang_128", climb_foot_flags);
-
-    Global_AddAnimation(preFix + "Railing_Idle");
 }
 
 void CreateBruceMotions()
@@ -1103,9 +1103,7 @@ void AddBruceAnimationTriggers()
         AddBruceCombatAnimationTriggers();
     else if (game_type == 1)
     {
-        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle"), Vector3(0, -3.25f, 0));
-        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Left"), Vector3(0, -3.25f, 0));
-        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle_Turn_180_Right"), Vector3(0, -3.25f, 0));
+        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle"), Vector3(0, -3.25, 0));
 
         preFix = "BM_Climb/";
         Vector3 offset = Vector3(0, -2.5f, 0);

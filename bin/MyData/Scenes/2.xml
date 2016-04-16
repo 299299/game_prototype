@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="94" />
 	<attribute name="Next Replicated Component ID" value="163" />
-	<attribute name="Next Local Node ID" value="16780709" />
-	<attribute name="Next Local Component ID" value="16778601" />
+	<attribute name="Next Local Node ID" value="16780710" />
+	<attribute name="Next Local Component ID" value="16778613" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -24,7 +24,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="3">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/Floor_Tile2.xml" />
 		</component>
 		<component type="CollisionShape" id="20" />
 		<component type="RigidBody" id="22">

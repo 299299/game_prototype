@@ -339,6 +339,9 @@ class Motion
         float localTime = ctrl.GetTime(animationName);
         float speed = ctrl.GetSpeed(animationName);
 
+        if (speed < 0.00001)
+            return 0;
+
         dt *= speed;
         if (looped)
         {

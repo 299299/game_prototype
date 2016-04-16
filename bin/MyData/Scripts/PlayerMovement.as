@@ -139,16 +139,32 @@ class PlayerStandToRunState : PlayerTurnState
     }
 };
 
-class PlayerWalkState : SingleMotionState
+class PlayerMoveForwardState : SingleMotionState
 {
     float turnSpeed = 5.0f;
-    int runHoldingFrames = 0;
+    float dockDist = 4.0f;
 
-    PlayerWalkState(Character@ c)
+    PlayerMoveForwardState(Character@ c)
     {
         super(c);
-        SetName("WalkState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        ownner.SetTarget(null);
+        combatReady = true;
+    }
+
+    void OnStop()
+    {
+
+    }
+
+    void OnTurn180()
+    {
+
     }
 
     void Update(float dt)
@@ -156,20 +172,55 @@ class PlayerWalkState : SingleMotionState
         float characterDifference = ownner.ComputeAngleDiff();
         Node@ _node = ownner.GetNode();
         _node.Yaw(characterDifference * turnSpeed * dt);
-        motion.Move(ownner, dt);
         // if the difference is large, then turn 180 degrees
         if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
             Print(this.name + " turn 180!!");
-            _node.vars[ANIMATION_INDEX] = 1;
-            ownner.ChangeState("StandToWalkState");
+            OnTurn180();
             return;
         }
+
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
         {
-            ownner.ChangeState("StandState");
+            OnStop();
             return;
         }
+
+        if (ownner.CheckFalling())
+            return;
+        if (ownner.CheckDocking(dockDist))
+            return;
+        if (ownner.ActionCheck(true, true, true, true))
+            return;
+
+        SingleMotionState::Update(dt);
+    }
+};
+
+class PlayerWalkState : PlayerMoveForwardState
+{
+    int runHoldingFrames = 0;
+
+    PlayerWalkState(Character@ c)
+    {
+        super(c);
+        SetName("WalkState");
+        turnSpeed = 5.0f;
+    }
+
+    void OnStop()
+    {
+        ownner.ChangeState("StandState");
+    }
+
+    void OnTurn180()
+    {
+        ownner.GetNode().vars[ANIMATION_INDEX] = 1;
+        ownner.ChangeState("StandToWalkState");
+    }
+
+    void Update(float dt)
+    {
         if (gInput.IsCrouchDown())
         {
             ownner.ChangeState("CrouchMoveState");
@@ -187,27 +238,12 @@ class PlayerWalkState : SingleMotionState
             return;
         }
 
-        if (ownner.CheckFalling())
-            return;
-        if (ownner.CheckDocking())
-            return;
-        if (ownner.ActionCheck(true, true, true, true))
-            return;
-
-        CharacterState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        SingleMotionState::Enter(lastState);
-        ownner.SetTarget(null);
-        combatReady = true;
+        PlayerMoveForwardState::Update(dt);
     }
 };
 
-class PlayerRunState : SingleMotionState
+class PlayerRunState : PlayerMoveForwardState
 {
-    float turnSpeed = 7.5f;
     int walkHoldingFrames = 0;
     int maxWalkHoldFrames = 4;
 
@@ -215,30 +251,22 @@ class PlayerRunState : SingleMotionState
     {
         super(c);
         SetName("RunState");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        turnSpeed = 7.5f;
+        dockDist = 6.0f;
+    }
+
+    void OnStop()
+    {
+        ownner.ChangeState("RunToStandState");
+    }
+
+    void OnTurn180()
+    {
+        ownner.ChangeState("RunTurn180State");
     }
 
     void Update(float dt)
     {
-        float characterDifference = ownner.ComputeAngleDiff();
-        // if the difference is large, then turn 180 degrees
-        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
-        {
-            ownner.ChangeState("RunTurn180State");
-            return;
-        }
-
-        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
-        {
-            ownner.ChangeState("RunToStandState");
-            return;
-        }
-        if (gInput.IsCrouchDown())
-        {
-            ownner.ChangeState("SlideInState");
-            return;
-        }
-
         if (!gInput.IsRunHolding())
             walkHoldingFrames ++;
         else
@@ -250,26 +278,13 @@ class PlayerRunState : SingleMotionState
             return;
         }
 
-        if (ownner.CheckFalling())
-            return;
-        if (ownner.CheckDocking(6))
-            return;
-        if (ownner.ActionCheck(true, true, true, true))
-            return;
-
-        Node@ _node = ownner.GetNode();
-        _node.Yaw(characterDifference * turnSpeed * dt);
-        motion.Move(ownner, dt);
-
-        CharacterState::Update(dt);
+        PlayerMoveForwardState::Update(dt);
     }
 
     void Enter(State@ lastState)
     {
         blendTime = (lastState.name == "RunTurn180State") ? 0.01 : 0.2f;
-        ownner.SetTarget(null);
-        combatReady = true;
-        CharacterState::Enter(lastState);
+        PlayerMoveForwardState::Enter(lastState);
     }
 };
 
@@ -483,62 +498,35 @@ class PlayerCrouchTurnState : PlayerTurnState
     }
 };
 
-class PlayerCrouchMoveState : SingleMotionState
+class PlayerCrouchMoveState : PlayerMoveForwardState
 {
-    float turnSpeed = 2.0f;
     PlayerCrouchMoveState(Character@ c)
     {
         super(c);
         SetName("CrouchMoveState");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        turnSpeed = 2.0f;
     }
 
-    void Update(float dt)
+    void OnTurn180()
     {
-        float characterDifference = ownner.ComputeAngleDiff();
-        Node@ _node = ownner.GetNode();
-        _node.Yaw(characterDifference * turnSpeed * dt);
-        motion.Move(ownner, dt);
-        // if the difference is large, then turn 180 degrees
-        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
-        {
-            _node.vars[ANIMATION_INDEX] = 1;
-            ownner.ChangeState("CrouchTurnState");
-            return;
-        }
+        ownner.GetNode().vars[ANIMATION_INDEX] = 1;
+        ownner.ChangeState("CrouchTurnState");
+    }
 
-        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
-        {
-            ownner.ChangeState("CrouchState");
-            return;
-        }
-
-        if (!gInput.IsCrouchDown())
-        {
-            ownner.ChangeState("WalkState");
-            return;
-        }
-
-        if (ownner.CheckFalling())
-            return;
-
-        if (ownner.CheckDocking())
-            return;
-
-        CharacterState::Update(dt);
+    void OnStop()
+    {
+        ownner.ChangeState("CrouchState");
     }
 
     void Enter(State@ lastState)
     {
-        SingleMotionState::Enter(lastState);
-        ownner.SetTarget(null);
-        combatReady = true;
+        PlayerMoveForwardState::Enter(lastState);
         ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
     }
 
     void Exit(State@ nextState)
     {
-        SingleMotionState::Exit(nextState);
+        PlayerMoveForwardState::Exit(nextState);
         ownner.SetHeight(CHARACTER_HEIGHT);
     }
 };
@@ -1802,6 +1790,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         dockBlendingMethod = 1;
         @oldLine = null;
         type = 0;
+        dockInTargetBound = 0.1;
         ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : numOfAnimations;
         ownner.ChangeState(this.nameHash);
     }

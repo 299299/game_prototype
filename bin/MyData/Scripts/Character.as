@@ -1165,6 +1165,7 @@ class Character : GameObject
 
     void SetVelocity(const Vector3&in vel)
     {
+        // Print("body.linearVelocity = " + vel.ToString());
         if (body !is null)
             body.linearVelocity = vel;
     }
