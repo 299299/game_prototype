@@ -132,7 +132,7 @@ class Line
 
         // test invalid angle side
         if (invalidAngleSide < 360) {
-            aDiff = Abs(AngleDiff(projDir - invalidAngleSide));
+            aDiff = Abs(AngleDiff(projDir + 180 - invalidAngleSide));
             if (aDiff < 90)
             {
                 return -1;

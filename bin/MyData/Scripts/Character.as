@@ -69,6 +69,9 @@ class CharacterState : State
     Character@                  ownner;
     int                         flags;
     float                       animSpeed = 1.0f;
+    float                       blendTime = 0.2f;
+    float                       startTime = 0.0f;
+
     bool                        combatReady = false;
     bool                        firstUpdate = true;
 
@@ -189,7 +192,6 @@ class SingleAnimationState : CharacterState
     String animation;
     bool looped = false;
     float stateTime = -1;
-    float blendTime = 0.2f;
 
     SingleAnimationState(Character@ c)
     {
@@ -213,7 +215,7 @@ class SingleAnimationState : CharacterState
 
     void Enter(State@ lastState)
     {
-        ownner.PlayAnimation(animation, LAYER_MOVE, looped, blendTime, 0.0f, animSpeed);
+        ownner.PlayAnimation(animation, LAYER_MOVE, looped, blendTime, startTime, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -249,7 +251,7 @@ class SingleMotionState : CharacterState
 
     void Enter(State@ lastState)
     {
-        motion.Start(ownner, 0.0f, 0.2f, animSpeed);
+        motion.Start(ownner, startTime, blendTime, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -278,7 +280,6 @@ class MultiAnimationState : CharacterState
     Array<String> animations;
     bool looped = false;
     float stateTime = -1;
-    float blendTime = 0.2f;
     int selectIndex;
 
     MultiAnimationState(Character@ c)
@@ -304,7 +305,7 @@ class MultiAnimationState : CharacterState
     void Enter(State@ lastState)
     {
         selectIndex = PickIndex();
-        ownner.PlayAnimation(animations[selectIndex], LAYER_MOVE, looped, blendTime, 0.0f, animSpeed);
+        ownner.PlayAnimation(animations[selectIndex], LAYER_MOVE, looped, blendTime, startTime, animSpeed);
         CharacterState::Enter(lastState);
     }
 
@@ -364,7 +365,7 @@ class MultiMotionState : CharacterState
 
         if (d_log)
             Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
-        motions[selectIndex].Start(ownner, 0.0f, 0.2f, animSpeed);
+        motions[selectIndex].Start(ownner, startTime, blendTime, animSpeed);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -448,16 +449,16 @@ class AnimationTestState : CharacterState
     void Start()
     {
         Motion@ motion = testMotions[currentIndex];
-        float blendTime = (currentIndex == 0) ? 0.2f : 0.2f;
+        blendTime = (currentIndex == 0) ? 0.2f : 0.0f;
         if (motion !is null)
         {
-            motion.Start(ownner, 0.0f, blendTime, animSpeed);
+            motion.Start(ownner, startTime, blendTime, animSpeed);
             if (ownner.side == 1)
                 gCameraMgr.CheckCameraAnimation(motion.name);
         }
         else
         {
-            ownner.PlayAnimation(testAnimations[currentIndex], LAYER_MOVE, false, blendTime, 0.0f, animSpeed);
+            ownner.PlayAnimation(testAnimations[currentIndex], LAYER_MOVE, false, blendTime, startTime, animSpeed);
             if (ownner.side == 1)
                 gCameraMgr.CheckCameraAnimation(testAnimations[currentIndex]);
         }
@@ -480,7 +481,9 @@ class AnimationTestState : CharacterState
             {
                 float t = ownner.animCtrl.GetTime(motion.animationName);
                 if (t < motion.dockAlignTime && (t + dt) > motion.dockAlignTime)
-                    ownner.SetSceneTimeScale(0.0f);
+                {
+                    // ownner.SetSceneTimeScale(0.0f);
+                }
             }
 
             finished = motion.Move(ownner, dt) == 1;

@@ -626,21 +626,21 @@ class Player : Character
 
                 if (!hitUp)
                 {
-                    if (hitForward)
+                    if (!hitForward)
                     {
                         if (hitDown && lineToGround < 0.25f)
                         {
-                            // stateToChange = "ClimbUpState";
+                            stateToChange = "ClimbUpState";
                         }
                         else
                         {
                             // TODO
-                            // stateToChange = "HangUpState";
+                            stateToChange = "HangUpState"; // "ClimbOverState";
                         }
                     }
                     else
                     {
-                        // stateToChange = "HangUpState";
+                        stateToChange = "HangUpState";
                     }
                 }
             }

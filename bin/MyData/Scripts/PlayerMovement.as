@@ -266,10 +266,7 @@ class PlayerRunState : SingleMotionState
 
     void Enter(State@ lastState)
     {
-        float blendSpeed = 0.2f;
-        if (lastState.name == "RunTurn180State")
-            blendSpeed = 0.01f;
-        motion.Start(ownner, 0.0f, blendSpeed, animSpeed);
+        blendTime = (lastState.name == "RunTurn180State") ? 0.01 : 0.2f;
         ownner.SetTarget(null);
         combatReady = true;
         CharacterState::Enter(lastState);
@@ -1442,7 +1439,7 @@ class PlayerHangUpState : PlayerDockAlignState
     }
 };
 
-class PlayerHangIdleState : SingleAnimationState
+class PlayerHangIdleState : MultiAnimationState
 {
     StringHash overStateName = StringHash("HangOverState");
     StringHash moveStateName = StringHash("HangMoveState");
@@ -1451,16 +1448,36 @@ class PlayerHangIdleState : SingleAnimationState
     {
         super(c);
         SetName("HangIdleState");
-        looped = true;
+        looped = false;
         physicsType = 0;
-        animSpeed = 0.0f;
+        blendTime = 0.0f;
+    }
+
+    void OnMotionFinished()
+    {
+
     }
 
     void Enter(State@ lastState)
     {
         ownner.SetVelocity(Vector3(0,0,0));
-        ownner.PlayAnimation(animation, LAYER_MOVE, looped, 0.2f, 1.0f, animSpeed);
-        CharacterState::Enter(lastState);
+        if (lastState.name == "HangMoveState" || lastState.name == "DangleMoveState")
+        {
+            int curAnimationIndex = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
+            int index = 0;
+            if (curAnimationIndex == 0 || curAnimationIndex == 1 || curAnimationIndex == 2)
+                index = 0;
+            else if (curAnimationIndex == 3)
+                index = 1;
+            else if (curAnimationIndex == 4 || curAnimationIndex == 5 || curAnimationIndex == 6)
+                index = 2;
+            else if (curAnimationIndex == 7)
+                index = 3;
+            ownner.GetNode().vars[ANIMATION_INDEX] = index;
+            MultiAnimationState::Enter(lastState);
+        }
+        else
+            CharacterState::Enter(lastState);
     }
 
     bool CheckFootBlocking()
@@ -1488,7 +1505,7 @@ class PlayerHangIdleState : SingleAnimationState
                 HorizontalMove(index == 3);
         }
 
-        SingleAnimationState::Update(dt);
+        MultiAnimationState::Update(dt);
     }
 
     bool VerticalMove()
@@ -1722,17 +1739,9 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void Enter(State@ lastState)
     {
-        motionFlagBeforeAlign = kMotion_XZR;
-        if (type == 1)
-            motionFlagBeforeAlign = kMotion_XZ;
+        motionFlagBeforeAlign = (type == 1) ? kMotion_XYZ : kMotion_ALL;
         PlayerDockAlignState::Enter(lastState);
         Print(this.name + " enter type = " + type);
-        if (oldLine !is null)
-        {
-            float y_diff = ownner.dockLine.end.y - oldLine.end.y;
-            Print(this.name + " dock line y diff=" + y_diff);
-            ownner.motion_velocity.y = y_diff / motions[selectIndex].dockAlignTime;
-        }
     }
 
     void Exit(State@ nextState)
@@ -1743,6 +1752,8 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void CrossMove(Line@ line, bool left, int convexIndex)
     {
+        Print(this.name + " CrossMove");
+
         @oldLine = ownner.dockLine;
         ownner.AssignDockLine(line);
 
@@ -1757,6 +1768,8 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void ParalleJumpMove(Line@ line, bool left, bool bigJump)
     {
+        Print(this.name + " ParalleJumpMove");
+
         @oldLine = ownner.dockLine;
         ownner.AssignDockLine(line);
 
@@ -1775,6 +1788,8 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void MoveToLinePoint(bool left)
     {
+        Print(this.name + " MoveToLinePoint");
+
         @oldLine = null;
         type = 4;
         dockBlendingMethod = 1;
@@ -1785,7 +1800,7 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void NormalMove(bool left)
     {
-        dockBlendingMethod = 2;
+        dockBlendingMethod = 1;
         @oldLine = null;
         type = 0;
         ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : numOfAnimations;
@@ -1794,10 +1809,7 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void OnMotionFinished()
     {
-        if (type == 3)
-            ownner.ChangeState("HangMoveEndState");
-        else
-            ownner.ChangeState("HangIdleState");
+        ownner.ChangeState("HangIdleState");
     }
 
     Vector3 PickDockInTarget()
@@ -1871,31 +1883,6 @@ class PlayerHangOverState : PlayerDockAlignState
     }
 };
 
-class PlayerHangMoveEndState : MultiAnimationState
-{
-    PlayerHangMoveEndState(Character@ c)
-    {
-        super(c);
-        SetName("HangMoveEndState");
-        physicsType = 0;
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.ChangeState("HangIdleState");
-    }
-
-    int PickIndex()
-    {
-        int curAnimationIndex = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
-        // HACK !!!!
-        bool left = curAnimationIndex < 4;
-        int startIndex = left ? 0 : 2;
-        return startIndex + 1;
-    }
-};
-
-
 class PlayerDangleIdleState : PlayerHangIdleState
 {
     PlayerDangleIdleState(Character@ c)
@@ -1928,23 +1915,8 @@ class PlayerDangleMoveState : PlayerHangMoveState
     {
         super(ownner);
         SetName("DangleMoveState");
-    }
-
-    void OnMotionFinished()
-    {
-        if (type == 2)
-            ownner.ChangeState("DangleMoveEndState");
-        else
-            ownner.ChangeState("DangleIdleState");
-    }
-};
-
-class PlayerDangleMoveEndState : PlayerHangMoveEndState
-{
-    PlayerDangleMoveEndState(Character@ c)
-    {
-        super(c);
-        SetName("DangleMoveEndState");
+        debug = true;
+        motionFlagBeforeAlign = 0;
     }
 
     void OnMotionFinished()
