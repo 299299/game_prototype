@@ -314,7 +314,7 @@ class Motion
     Vector3 GetDockAlignPosition(Character@ object, float targetRotation)
     {
         Node@ _node = object.GetNode();
-        Vector4 motionOut = GetKey(dockAlignTime);
+        Vector4 motionOut = GetKey(dockAlignBoneName.empty ? endTime : dockAlignTime);
         Vector3 motionPos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
         Vector3 offsetPos = Quaternion(0, targetRotation + motionOut.w, 0) * dockAlignOffset;
         return motionPos + offsetPos;

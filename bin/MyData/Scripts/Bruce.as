@@ -576,8 +576,6 @@ class BruceClimbDownState : PlayerClimbDownState
         AddMotion("BM_Climb/Crouch_Jump_128_To_Hang");
         AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle");
         AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle_Wall");
-
-        animSpeed = 1.5f;
     }
 };
 
@@ -785,13 +783,15 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Over_128", climb_foot_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail_128", climb_foot_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
 
-    Global_CreateMotion(preFix + "Crouch_To_Hang", kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Crouch_To_Dangle", kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height);
+    flags = kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height;
+    offset = Vector3(0, 0.1, 0.2);
+    Global_CreateMotion(preFix + "Crouch_To_Hang", flags).SetDockAlign(R_HAND, 0.7f, offset);
+    Global_CreateMotion(preFix + "Crouch_To_Dangle", flags).SetDockAlign(R_HAND, 0.7f, offset);
+    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", flags).SetDockAlign(R_HAND, 0.7f, offset);
 
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Hang", kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Hang", flags);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", flags);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", flags);
 
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);

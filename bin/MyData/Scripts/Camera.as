@@ -126,7 +126,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraDistSpeed = 100.0f;
     float   targetFov = BASE_FOV;
     float   fovSpeed = 1.5f;
-    Vector3 targetOffset = Vector3(2.5f, 3.0f, 0);
+    Vector3 targetOffset = Vector3(2.0f, -0.1f, 0);
 
     bool    isScrolling = false;
 
@@ -143,7 +143,7 @@ class ThirdPersonCameraController : CameraController
         Node@ _node = p.GetNode();
 
         bool blockView = false;
-        Vector3 target_pos = _node.worldPosition;
+        Vector3 target_pos = _node.GetChild(HEAD, true).worldPosition;
         if (p.target !is null)
         {
             if (!p.target.IsVisible())

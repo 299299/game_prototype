@@ -554,7 +554,7 @@ class Player : Character
             for (uint i=0; i<results.length; ++i)
             {
                 if (results[i].body !is null)
-                    debug.AddCross(results[i].position, 0.25f, Color(0.25, 0.65, 0.35), false);
+                    debug.AddCross(results[i].position, 0.25f, YELLOW, false);
             }
         }
 
@@ -608,7 +608,7 @@ class Player : Character
             {
                 // move down case
                 float distSQR = (proj- charPos).lengthSquared;
-                const float minDownDist = 1.0f;
+                const float minDownDist = 1.5f;
                 if (distSQR < minDownDist * minDownDist)
                     stateToChange = "ClimbDownState";
             }
@@ -724,19 +724,20 @@ class Player : Character
 
         // down test
         ray.Define(v2, Vector3(0, -1, 0));
-        dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
+        dist = above_height + HEIGHT_256;
         v3 = ray.origin + ray.direction * dist;
         results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // here comes the tricking part
-        v3.y = line.end.y;
-        v3.y -= HEIGHT_128;
+        Vector3 tmp = v3;
+        tmp.y = line.end.y;
+        tmp.y -= HEIGHT_128;
         dir *= -1;
         dir.Normalize();
         dist = fowardDist;
-        v4 = v3 + dir * dist;
+        v4 = tmp + dir * dist;
 
-        results[2] = world.ConvexCast(sensor.verticalShape, v3, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        results[2] = world.ConvexCast(sensor.verticalShape, tmp, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         points[0] = v1;
         points[1] = v2;

@@ -130,6 +130,7 @@ class Line
         if (aDiff > maxFacingDiff)
             return -1;
 
+        /*
         // test invalid angle side
         if (invalidAngleSide < 360) {
             aDiff = Abs(AngleDiff(projDir + 180 - invalidAngleSide));
@@ -138,6 +139,7 @@ class Line
                 return -1;
             }
         }
+        */
 
         return dir.length;
     }

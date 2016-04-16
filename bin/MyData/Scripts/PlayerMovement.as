@@ -806,15 +806,18 @@ class PlayerCoverTransitionState : SingleMotionState
 class PlayerDockAlignState : MultiMotionState
 {
     Array<Vector3>  targetOffsets;
-    int             motionFlagAfterAlign;
+    int             motionFlagAfterAlign = 0;
     int             motionFlagBeforeAlign = kMotion_ALL;
     float           alignTime = 0.1f;
 
-    float           turnSpeed;
+    float           turnSpeedBeforeAlign;
+    float           turnSpeedAfterAlign;
+
     Vector3         motionPositon;
     Vector3         targetPosition;
 
     int             dockBlendingMethod;
+    float           motionRotation;
     float           targetRotation;
     float           climbBaseHeight;
     float           dockInTargetBound = 0.25f;
@@ -829,7 +832,10 @@ class PlayerDockAlignState : MultiMotionState
 
     void Update(float dt)
     {
-        ownner.motion_deltaRotation += turnSpeed*dt;
+        if (ownner.motion_rotateEnabled)
+            ownner.motion_deltaRotation += turnSpeedBeforeAlign*dt;
+        else
+            ownner.GetNode().Yaw(turnSpeedAfterAlign * dt);
         MultiMotionState::Update(dt);
     }
 
@@ -837,13 +843,14 @@ class PlayerDockAlignState : MultiMotionState
     {
         if (dockBlendingMethod > 0)
         {
-            turnSpeed = 0;
+            turnSpeedBeforeAlign = 0;
             ownner.motion_velocity = Vector3(0, 0, 0);
+            Motion@ m = motions[selectIndex];
 
-            if (motionFlagAfterAlign != 0)
+            if (motionFlagAfterAlign != 0 && !m.dockAlignBoneName.empty)
             {
                 Vector3 targetPos = PickDockOutTarget();
-                Motion@ m = motions[selectIndex];
+
                 float t = m.endTime - m.dockAlignTime;
                 Vector4 motionOut = m.GetKey(m.endTime);
                 Vector3 tWorld = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + ownner.motion_startPosition + ownner.motion_deltaPosition;
@@ -858,7 +865,14 @@ class PlayerDockAlignState : MultiMotionState
                 if (motionFlagAfterAlign & kMotion_Z != 0)
                     v.z = diff.z;
                 ownner.motion_velocity = v;
-                Print(this.name + " animation:" + m.name + " OnMotionAlignTimeOut vel=" + v.ToString());
+
+                if (motionFlagAfterAlign & kMotion_R != 0)
+                {
+                    turnSpeedAfterAlign = (PickDockOutRotation() - ownner.GetCharacterAngle()) / t;
+                    ownner.motion_rotateEnabled = false;
+                }
+
+                Print(this.name + " animation:" + m.name + " OnMotionAlignTimeOut vel=" + v.ToString() + " turnSpeedAfterAlign=" + turnSpeedAfterAlign);
             }
 
             if (debug)
@@ -917,11 +931,29 @@ class PlayerDockAlignState : MultiMotionState
         return v;
     }
 
+    float PickDockInRotation()
+    {
+        Vector3 v = ownner.GetNode().worldPosition;
+        Vector3 proj = ownner.dockLine.Project(v);
+        Vector3 dir = proj - v;
+        float r = Atan2(dir.x, dir.z);
+        if (!ownner.dockLine.IsAngleValid(r))
+            r = AngleDiff(r + 180);
+        return r;
+    }
+
+    float PickDockOutRotation()
+    {
+        return PickDockInRotation();
+    }
+
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(motionPositon, 0.5f, RED, false);
         debug.AddCross(targetPosition, 0.5f, BLUE, false);
         DebugDrawDirection(debug, targetPosition, targetRotation, BLUE, 2.0f);
+        DebugDrawDirection(debug, targetPosition, motionRotation, RED, 2.0f);
+
         MultiMotionState::DebugDraw(debug);
     }
 
@@ -934,25 +966,23 @@ class PlayerDockAlignState : MultiMotionState
         {
             MultiMotionState::Enter(lastState);
             Motion@ m = motions[selectIndex];
-            Vector3 v = ownner.GetNode().worldPosition;
-            targetPosition = ownner.dockLine.Project(v);
-            float curAngle = ownner.GetCharacterAngle();
-            if (motionFlagBeforeAlign & kMotion_R == 0)
-                targetRotation = curAngle;
+            targetPosition = ownner.dockLine.Project(ownner.GetNode().worldPosition);
+
+            float t = m.endTime;
+            if (!m.dockAlignBoneName.empty)
+                t = m.dockAlignTime;
+
+            motionRotation = m.GetFutureRotation(ownner, t);
+            targetRotation = PickDockInRotation();
+
+            if (motionFlagBeforeAlign & kMotion_R != 0)
+                turnSpeedBeforeAlign = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
             else
             {
-                Vector3 dir = targetPosition - v;
-                targetRotation = Atan2(dir.x, dir.z);
-
-                if (!ownner.dockLine.IsAngleValid(targetRotation))
-                {
-                    targetRotation += 180;
-                    targetRotation = AngleDiff(targetRotation);
-                }
+                turnSpeedBeforeAlign = 0;
+                targetRotation = ownner.GetCharacterAngle();
             }
 
-            float t = m.dockAlignTime;
-            turnSpeed = AngleDiff(targetRotation - curAngle) / t;
             motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
             targetPosition = PickDockInTarget();
 
@@ -967,11 +997,7 @@ class PlayerDockAlignState : MultiMotionState
                 filterV.z = vel.z;
 
             ownner.motion_velocity = filterV;
-            Print(this.name + " animation:" + m.name + " vel=" + ownner.motion_velocity.ToString());
-        }
-        else if (dockBlendingMethod == 2)
-        {
-            MultiMotionState::Enter(lastState);
+            Print(this.name + " animation:" + m.name + " vel=" + ownner.motion_velocity.ToString() + " turnSpeedBeforeAlign=" + turnSpeedBeforeAlign);
         }
         else
         {
@@ -1048,6 +1074,7 @@ class PlayerClimbOverState : PlayerDockAlignState
         super(c);
         SetName("ClimbOverState");
         dockBlendingMethod = 1;
+        motionFlagBeforeAlign = kMotion_Y;
     }
 
     void Enter(State@ lastState)
@@ -1938,18 +1965,14 @@ class PlayerDangleMoveState : PlayerHangMoveState
 class PlayerClimbDownState : PlayerDockAlignState
 {
     Vector3 groundPos;
+    int type;
 
     PlayerClimbDownState(Character@ c)
     {
         super(c);
         SetName("ClimbDownState");
-        dockBlendingMethod = 2;
-        motionFlagAfterAlign = kMotion_Y;
-    }
-
-    Vector3 PickDockOutTarget()
-    {
-        return groundPos;
+        dockBlendingMethod = 1;
+        // motionFlagAfterAlign = kMotion_R;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1958,18 +1981,72 @@ class PlayerClimbDownState : PlayerDockAlignState
         debug.AddCross(groundPos, 0.5f, BLUE, false);
     }
 
+    Vector3 PickDockInTarget()
+    {
+        if (type == 0)
+            return groundPos;
+        return PlayerDockAlignState::PickDockInTarget();
+    }
+
+    float PickDockInRotation()
+    {
+        Vector3 v = ownner.GetNode().worldPosition;
+        Vector3 proj = ownner.dockLine.Project(v);
+        Vector3 dir = proj - v;
+        return Atan2(dir.x, dir.z);
+    }
+
     void Enter(State@ lastState)
     {
         int animIndex = 0;
-        if (lastState.name == "RunState")
-            animIndex = 1;
-        else if (lastState.name == "CrouchMoveState")
-            animIndex = 2;
+
+        Player@ p = cast<Player>(ownner);
+        p.ClimbDownRaycasts(ownner.dockLine);
+        groundPos = p.points[2];
+        float lineToGround = ownner.dockLine.end.y - groundPos.y;
+        Print(this.name + " lineToGround=" + lineToGround);
+
+        if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
+        {
+            animIndex = 0;
+            if (lastState.name == "RunState")
+                animIndex = 1;
+            else if (lastState.name == "CrouchMoveState")
+                animIndex = 2;
+
+            motionFlagBeforeAlign = kMotion_Y;
+            type = 0;
+            animSpeed = 1.5f;
+        }
+        else
+        {
+            type = 1;
+            animIndex = 3;
+            motionFlagBeforeAlign = kMotion_ALL;
+
+            if (ownner.dockLine.HasFlag(LINE_SHORT_WALL))
+            {
+                animIndex += RandomInt(2) + 1;
+            }
+            animSpeed = 1.0f;
+        }
+
+        // ownner.SetSceneTimeScale(0);
+
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
         PlayerDockAlignState::Enter(lastState);
-        Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
-        Player@ p = cast<Player>(ownner);
-        groundPos = p.sensor.GetGround(futurePos);
+    }
+
+    void OnMotionFinished()
+    {
+        if (selectIndex < 3)
+            PlayerDockAlignState::OnMotionFinished();
+        else
+        {
+            if (selectIndex == 3)
+                ownner.ChangeState("HangIdleState");
+            else
+                ownner.ChangeState("DangleIdleState");
+        }
     }
 };
