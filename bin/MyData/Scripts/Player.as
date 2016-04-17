@@ -639,7 +639,12 @@ class Player : Character
                         {
                             // TODO
                             if (isWallTooShort)
+                            {
                                 stateToChange = "ClimbOverState";
+                                PlayerClimbOverState@ s = cast<PlayerClimbOverState>(FindState(stateToChange));
+                                if (s !is null)
+                                    @s.downLine = line;
+                            }
                             else
                                 stateToChange = "HangUpState"; // "ClimbOverState";
                         }

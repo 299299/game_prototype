@@ -986,7 +986,7 @@ class PlayerDockAlignState : MultiMotionState
                 targetRotation = ownner.GetCharacterAngle();
             }
 
-            motionPositon = m.GetDockAlignPosition(ownner, targetRotation);
+            motionPositon = m.GetTargetPositionAtTime(ownner, targetRotation, t);
             targetPosition = PickDockInTarget();
 
             Vector3 vel = (targetPosition - motionPositon) / t;
@@ -1071,6 +1071,7 @@ class PlayerDockAlignState : MultiMotionState
 class PlayerClimbOverState : PlayerDockAlignState
 {
     Vector3 groundPos;
+    Line@ downLine;
 
     PlayerClimbOverState(Character@ c)
     {
