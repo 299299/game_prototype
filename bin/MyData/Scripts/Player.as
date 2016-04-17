@@ -668,7 +668,7 @@ class Player : Character
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
         Vector3 v1, v2, v3, v4;
-        Vector3 dir = proj - charPos;
+        Vector3 dir = (line.type != LINE_RAILING) ? (proj - charPos) : (GetNode().worldRotation * Vector3(0, 0, 1));
         dir.y = 0;
         float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
 
@@ -709,7 +709,7 @@ class Player : Character
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
         Vector3 v1, v2, v3, v4;
-        Vector3 dir = proj - charPos;
+        Vector3 dir = (line.type != LINE_RAILING) ? (proj - charPos) : (GetNode().worldRotation * Vector3(0, 0, 1));
         dir.y = 0;
         float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
         float dist;
@@ -754,7 +754,15 @@ class Player : Character
 
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 proj = line.Project(myPos);
-        Vector3 dir = proj - myPos;
+        Vector3 dir;
+        if (line.type == LINE_RAILING)
+        {
+            dir = bLeft ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
+            dir = GetNode().worldRotation * dir;
+        }
+        else
+            dir = proj - myPos;
+
         Quaternion q(0, Atan2(dir.x, dir.z), 0);
 
         Vector3 towardDir = bLeft ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
@@ -917,6 +925,54 @@ class Player : Character
         }
 
         outDistErrorSQR = maxDistSQR;
+        return bestLine;
+    }
+
+    Line@ FindDownLine(Line@ oldLine)
+    {
+        ClimbDownRaycasts(oldLine);
+
+        if (results[2].body is null)
+            return null;
+
+        Array<Line@>@ lines = gLineWorld.cacheLines;
+        lines.Clear();
+
+        Vector3 myPos = sceneNode.worldPosition;
+        gLineWorld.CollectLinesByNode(results[2].body.node, lines);
+
+        Vector3 comparePot = points[2];
+        float maxDistSQR = 3.0*3.0;
+        Line@ bestLine;
+
+        if (lines.empty)
+            return null;
+
+        for (uint i=0; i<lines.length; ++i)
+        {
+            Line@ l = lines[i];
+            if (l is oldLine)
+                continue;
+
+            if (!l.TestAngleDiff(oldLine, 0) && !l.TestAngleDiff(oldLine, 180))
+                continue;
+
+            float heightDiff = myPos.y - l.end.y;
+            float diffTo256 = Abs(heightDiff - HEIGHT_256);
+
+            if (diffTo256 > HEIGHT_128/2)
+                continue;
+
+            Vector3 tmpV = l.Project(comparePot);
+            tmpV.y = comparePot.y;
+            float distSQR = (tmpV - comparePot).lengthSquared;
+            if (distSQR < maxDistSQR)
+            {
+                @bestLine = l;
+                maxDistSQR = distSQR;
+            }
+        }
+
         return bestLine;
     }
 

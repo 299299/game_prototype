@@ -1322,7 +1322,7 @@ class PlayerRailFwdIdleState : SingleAnimationState
     }
 };
 
-class PlayerRailDownState : MultiMotionState
+class PlayerRailDownState : PlayerDockAlignState
 {
     Vector3 groundPos;
 
@@ -1331,39 +1331,61 @@ class PlayerRailDownState : MultiMotionState
         super(c);
         SetName("RailDownState");
         physicsType = 0;
+        dockBlendingMethod = 1;
+    }
+
+    Vector3 PickDockOutTarget()
+    {
+        return groundPos;
     }
 
     void Enter(State@ lastState)
     {
         int animIndex = 0;
-        Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 futurePos = ownner.GetNode().worldRotation * Vector3(0, 0, 2.0f) + myPos;
         Player@ p = cast<Player>(ownner);
-        groundPos = p.sensor.GetGround(futurePos);
-        float height = myPos.y - groundPos.y;
-        if (height > 4.5f)
-            animIndex = 1;
+        Line@ l = p.FindDownLine(ownner.dockLine);
 
-        Print(this.name + " height-diff=" + height);
+        bool hitForward = p.results[0].body !is null;
+        bool hitDown = p.results[1].body !is null;
+        bool hitBack = p.results[2].body !is null;
+        groundPos = p.points[2];
+        float lineToGround = ownner.dockLine.end.y - groundPos.y;
+
+        Print(this.name + " lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
+
+        if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
+        {
+            animIndex = 0;
+            motionFlagAfterAlign = kMotion_Y;
+        }
+        else
+        {
+            animIndex = 2;
+            motionFlagAfterAlign = 0;
+
+            if (l !is null)
+            {
+                animIndex = 5;
+            }
+        }
+
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
         MultiMotionState::Enter(lastState);
-
-        if (animIndex == 0)
-        {
-            Motion@ m = motions[selectIndex];
-            float t = m.endTime;
-            Vector3 v = m.GetFuturePosition(ownner, t);
-            float y_diff = groundPos.y - v.y;
-            ownner.motion_velocity = Vector3(0, y_diff/t, 0);
-        }
     }
 
     void OnMotionFinished()
     {
         if (selectIndex == 0)
+        {
             MultiMotionState::OnMotionFinished();
+        }
         else
-            ownner.ChangeState("FallState");
+        {
+            if (selectIndex == 1)
+                ownner.ChangeState("FallState");
+            else
+                ownner.ChangeState("HangIdleState");
+        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1543,7 +1565,7 @@ class PlayerHangIdleState : MultiAnimationState
     {
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
-            int index = DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4); //ownner.RadialSelectAnimation(4);
+            int index = ownner.RadialSelectAnimation(4); //DirectionMapToIndex(gInput.GetLeftAxisAngle(), 4);
             if (index == 0)
                 VerticalMove();
             else if (index == 2)

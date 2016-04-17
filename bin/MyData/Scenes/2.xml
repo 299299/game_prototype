@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="94" />
-	<attribute name="Next Replicated Component ID" value="163" />
-	<attribute name="Next Local Node ID" value="16780710" />
-	<attribute name="Next Local Component ID" value="16778613" />
+	<attribute name="Next Replicated Node ID" value="95" />
+	<attribute name="Next Replicated Component ID" value="166" />
+	<attribute name="Next Local Node ID" value="16780711" />
+	<attribute name="Next Local Component ID" value="16778625" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -233,25 +233,6 @@
 			<attribute name="Physics Rotation" value="0.999984 0.00150595 -0.00549395 8.2725e-06" />
 			<attribute name="Physics Position" value="2.98101 5.74646 -39.7036" />
 		</component>
-		<node id="79">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="text" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.316434 0.475602 -0.547479" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="0.312885 1 1" />
-			<attribute name="Variables" />
-			<component type="Text3D" id="126">
-				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
-				<attribute name="Text" value="Edge" />
-				<attribute name="Width" value="66" />
-				<attribute name="Color" value="1 1 0 1" />
-				<attribute name="Top Left Color" value="1 1 0 1" />
-				<attribute name="Top Right Color" value="1 1 0 1" />
-				<attribute name="Bottom Left Color" value="1 1 0 1" />
-				<attribute name="Bottom Right Color" value="1 1 0 1" />
-			</component>
-		</node>
 	</node>
 	<node id="80">
 		<attribute name="Is Enabled" value="true" />
@@ -271,25 +252,6 @@
 			<attribute name="Physics Rotation" value="0.999984 0.00150595 -0.00549395 8.2725e-06" />
 			<attribute name="Physics Position" value="7.30236 1.50918 -40.1688" />
 		</component>
-		<node id="81">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="text" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="-0.316434 0.475602 -0.547479" />
-			<attribute name="Rotation" value="1 0 0 0" />
-			<attribute name="Scale" value="0.312885 1 1" />
-			<attribute name="Variables" />
-			<component type="Text3D" id="130">
-				<attribute name="Font" value="Font;Fonts/BlueHighway.sdf" />
-				<attribute name="Text" value="Edge" />
-				<attribute name="Width" value="66" />
-				<attribute name="Color" value="1 1 0 1" />
-				<attribute name="Top Left Color" value="1 1 0 1" />
-				<attribute name="Top Right Color" value="1 1 0 1" />
-				<attribute name="Bottom Left Color" value="1 1 0 1" />
-				<attribute name="Bottom Right Color" value="1 1 0 1" />
-			</component>
-		</node>
 	</node>
 	<node id="82">
 		<attribute name="Is Enabled" value="true" />
@@ -483,21 +445,21 @@
 	</node>
 	<node id="92">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="Edge" />
+		<attribute name="Name" value="Railing" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="8.47066 2.55343 0.256033" />
-		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
+		<attribute name="Position" value="0.307341 2.55343 -6.79094" />
+		<attribute name="Rotation" value="1 4.26937e-35 0 -2.10195e-44" />
 		<attribute name="Scale" value="0.5 13 10" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="157">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
+			<attribute name="Material" value="Material;Materials/GridGreen.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 		<component type="CollisionShape" id="158" />
 		<component type="RigidBody" id="159">
-			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
-			<attribute name="Physics Position" value="8.47066 2.55343 0.256033" />
+			<attribute name="Physics Rotation" value="1 4.26937e-35 0 -2.10195e-44" />
+			<attribute name="Physics Position" value="0.307341 2.55343 -6.79094" />
 		</component>
 	</node>
 	<node id="93">
@@ -517,6 +479,25 @@
 		<component type="RigidBody" id="162">
 			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
 			<attribute name="Physics Position" value="-8.26674 0.514351 8.5282" />
+		</component>
+	</node>
+	<node id="94">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Edge" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="8.47066 2.55343 0.256033" />
+		<attribute name="Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
+		<attribute name="Scale" value="0.5 13 10" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="163">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+		<component type="CollisionShape" id="164" />
+		<component type="RigidBody" id="165">
+			<attribute name="Physics Rotation" value="0.707107 3.17403e-18 0.707107 -3.17403e-18" />
+			<attribute name="Physics Position" value="8.47066 2.55343 0.256033" />
 		</component>
 	</node>
 </scene>

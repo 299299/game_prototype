@@ -821,12 +821,13 @@ void CreateBruceClimbAnimations()
     //Global_CreateMotion(preFix + "Railing_Idle", kMotion_Ext_Foot_Based_Height);
     Global_AddAnimation(preFix + "Railing_Idle");
 
-    Global_CreateMotion(preFix + "Railing_To_Dangle", climb_foot_flags);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_128", climb_foot_flags);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_128_Wall", climb_foot_flags);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", climb_foot_flags);
-    Global_CreateMotion(preFix + "Railing_To_Hang", climb_foot_flags);
-    Global_CreateMotion(preFix + "Railing_To_Hang_128", climb_foot_flags);
+    flags = kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height;
+    Global_CreateMotion(preFix + "Railing_To_Dangle", flags);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_128", flags);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_128_Wall", flags);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", flags);
+    Global_CreateMotion(preFix + "Railing_To_Hang", flags);
+    Global_CreateMotion(preFix + "Railing_To_Hang_128", flags);
 }
 
 void CreateBruceMotions()
