@@ -1078,36 +1078,48 @@ class PlayerClimbOverState : PlayerDockAlignState
         super(c);
         SetName("ClimbOverState");
         dockBlendingMethod = 1;
-        motionFlagAfterAlign = kMotion_Y;
     }
 
     void Enter(State@ lastState)
     {
-        motionFlagAfterAlign = 0;
-        int index = PickTargetMotionByHeight(lastState);
-        if (index == 0 || index == 3)
+        int index = 0;
+        if (downLine is null)
         {
-            Vector3 myPos = ownner.GetNode().worldPosition;
-            Motion@ m = motions[index];
-            Vector4 motionOut = m.GetKey(m.endTime);
-            Vector3 proj = ownner.dockLine.Project(myPos);
-            Vector3 dir = proj - myPos;
-            float targetRotation = Atan2(dir.x, dir.z);
-            Vector3 futurePos = Quaternion(0, targetRotation, 0) * Vector3(0, 0, 2.0f) + proj;
-            futurePos.y = myPos.y;
-            Player@ p = cast<Player>(ownner);
-            groundPos = p.sensor.GetGround(futurePos);
-            float height = Abs(groundPos.y - myPos.y);
-            if (height < 1.5f)
+            motionFlagAfterAlign = 0;
+            index = PickTargetMotionByHeight(lastState);
+            if (index == 0 || index == 3)
             {
-                if (index == 0)
-                    index = 6;
-                else
-                    index = 7;
-                motionFlagAfterAlign = kMotion_Y;
-                ownner.GetNode().vars[ANIMATION_INDEX] = index;
+                Vector3 myPos = ownner.GetNode().worldPosition;
+                Motion@ m = motions[index];
+                Vector4 motionOut = m.GetKey(m.endTime);
+                Vector3 proj = ownner.dockLine.Project(myPos);
+                Vector3 dir = proj - myPos;
+                float targetRotation = Atan2(dir.x, dir.z);
+                Vector3 futurePos = Quaternion(0, targetRotation, 0) * Vector3(0, 0, 2.0f) + proj;
+                futurePos.y = myPos.y;
+                Player@ p = cast<Player>(ownner);
+                groundPos = p.sensor.GetGround(futurePos);
+                float height = Abs(groundPos.y - myPos.y);
+                if (height < 1.5f)
+                {
+                    if (index == 0)
+                        index = 6;
+                    else
+                        index = 7;
+                    motionFlagAfterAlign = kMotion_Y;
+                }
             }
         }
+        else
+        {
+            index = 8;
+            if (downLine.HasFlag(LINE_SHORT_WALL))
+                index += (RandomInt(2) + 1);
+            motionFlagAfterAlign = 0;
+        }
+
+        Print(this.name + " animation index=" + index);
+        ownner.GetNode().vars[ANIMATION_INDEX] = index;
         PlayerDockAlignState::Enter(lastState);
     }
 
@@ -1135,6 +1147,11 @@ class PlayerClimbOverState : PlayerDockAlignState
             PlayerDockAlignState::OnMotionFinished();
         else
             ownner.ChangeState("FallState");
+    }
+
+    void OnMotionAlignTimeOut2()
+    {
+
     }
 };
 
