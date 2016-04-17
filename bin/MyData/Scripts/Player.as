@@ -554,7 +554,7 @@ class Player : Character
             for (uint i=0; i<results.length; ++i)
             {
                 if (results[i].body !is null)
-                    debug.AddCross(results[i].position, 0.25f, YELLOW, false);
+                    debug.AddCross(results[i].position, 0.25f, Color(0.1f, 0.7f, 0.25f), false);
             }
         }
 
@@ -614,15 +614,18 @@ class Player : Character
             }
             else
             {
-                ClimbUpRaycasts(l);
+                // ClimbUpRaycasts(l);
+                Line@ line = FindForwardUpDownLine(l);
 
                 bool hitUp = results[0].body !is null;
                 bool hitForward = results[1].body !is null;
                 bool hitDown = results[2].body !is null;
+                bool hitBack = results[3].body !is null;
+
                 float lineToGround = l.end.y - results[2].position.y;
                 bool isWallTooShort = lineToMe < (HEIGHT_128 + HEIGHT_256) / 2;
 
-                Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
+                Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + "hitBack" + hitBack + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
 
                 if (!hitUp)
                 {
@@ -659,15 +662,15 @@ class Player : Character
 
     void ClimbUpRaycasts(Line@ line)
     {
-        results.Resize(3);
-        points.Resize(4);
+        results.Resize(4);
+        points.Resize(6);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
         Vector3 proj = line.Project(charPos);
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
-        Vector3 v1, v2, v3, v4;
+        Vector3 v1, v2, v3, v4, v5, v6;
         Vector3 dir = (line.type != LINE_RAILING) ? (proj - charPos) : (GetNode().worldRotation * Vector3(0, 0, 1));
         dir.y = 0;
         float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
@@ -692,23 +695,35 @@ class Player : Character
         v4 = ray.origin + ray.direction * dist;
         results[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
+        // here comes the tricking part
+        v5 = v4;
+        v5.y = line.end.y;
+        v5.y -= HEIGHT_128;
+        dir *= -1;
+        dir.Normalize();
+        dist = fowardDist;
+        v6 = v5 + dir * dist;
+        results[3] = world.ConvexCast(sensor.verticalShape, v5, Quaternion(), v6, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+
         points[0] = v1;
         points[1] = v2;
         points[2] = v3;
         points[3] = v4;
+        points[4] = v5;
+        points[5] = v6;
     }
 
     void ClimbDownRaycasts(Line@ line)
     {
         results.Resize(3);
-        points.Resize(4);
+        points.Resize(5);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
         Vector3 proj = line.Project(charPos);
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
-        Vector3 v1, v2, v3, v4;
+        Vector3 v1, v2, v3, v4, v5;
         Vector3 dir = (line.type != LINE_RAILING) ? (proj - charPos) : (GetNode().worldRotation * Vector3(0, 0, 1));
         dir.y = 0;
         float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
@@ -729,20 +744,21 @@ class Player : Character
         results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // here comes the tricking part
-        Vector3 tmp = v3;
-        tmp.y = line.end.y;
-        tmp.y -= HEIGHT_128;
+        v4 = v3;
+        v4.y = line.end.y;
+        v4.y -= HEIGHT_128;
         dir *= -1;
         dir.Normalize();
         dist = fowardDist;
-        v4 = tmp + dir * dist;
+        v5 = v4 + dir * dist;
 
-        results[2] = world.ConvexCast(sensor.verticalShape, tmp, Quaternion(), v4, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        results[2] = world.ConvexCast(sensor.verticalShape, v4, Quaternion(), v5, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         points[0] = v1;
         points[1] = v2;
         points[2] = v3;
         points[3] = v4;
+        points[4] = v5;
     }
 
     void ClimbLeftOrRightRaycasts(Line@ line, bool bLeft)
@@ -928,25 +944,16 @@ class Player : Character
         return bestLine;
     }
 
-    Line@ FindDownLine(Line@ oldLine)
+    Line@ FindDownLine(Array<Line@>@ lines, Line@ oldLine)
     {
-        ClimbDownRaycasts(oldLine);
-
-        if (results[2].body is null)
-            return null;
-
-        Array<Line@>@ lines = gLineWorld.cacheLines;
-        lines.Clear();
-
-        Vector3 myPos = sceneNode.worldPosition;
-        gLineWorld.CollectLinesByNode(results[2].body.node, lines);
-
-        Vector3 comparePot = points[2];
-        float maxDistSQR = 3.0*3.0;
+        Vector3 comparePot = oldLine.end;
+        float maxDistSQR = COLLISION_RADIUS*COLLISION_RADIUS;
         Line@ bestLine;
 
         if (lines.empty)
             return null;
+
+        Print("FindDownLine lines.num=" + lines.length);
 
         for (uint i=0; i<lines.length; ++i)
         {
@@ -957,15 +964,18 @@ class Player : Character
             if (!l.TestAngleDiff(oldLine, 0) && !l.TestAngleDiff(oldLine, 180))
                 continue;
 
-            float heightDiff = myPos.y - l.end.y;
-            float diffTo256 = Abs(heightDiff - HEIGHT_256);
+            float heightDiff = oldLine.end.y - l.end.y;
+            float diffTo128 = Abs(heightDiff - HEIGHT_128);
+            Print("heightDiff= " + heightDiff + " diffTo128 = " + diffTo128);
 
-            if (diffTo256 > HEIGHT_128/2)
+            if (diffTo128 > HEIGHT_128/2)
                 continue;
 
             Vector3 tmpV = l.Project(comparePot);
             tmpV.y = comparePot.y;
             float distSQR = (tmpV - comparePot).lengthSquared;
+            Print("distSQR=" + distSQR);
+
             if (distSQR < maxDistSQR)
             {
                 @bestLine = l;
@@ -974,6 +984,30 @@ class Player : Character
         }
 
         return bestLine;
+    }
+
+    Line@ FindDownLine(Line@ oldLine)
+    {
+        ClimbDownRaycasts(oldLine);
+        if (results[2].body is null)
+            return null;
+        Array<Line@>@ lines = gLineWorld.cacheLines;
+        lines.Clear();
+        Vector3 myPos = sceneNode.worldPosition;
+        gLineWorld.CollectLinesByNode(results[2].body.node, lines);
+        return FindDownLine(lines, oldLine);
+    }
+
+    Line@ FindForwardUpDownLine(Line@ oldLine)
+    {
+        ClimbUpRaycasts(oldLine);
+        if (results[3].body is null)
+            return null;
+        Array<Line@>@ lines = gLineWorld.cacheLines;
+        lines.Clear();
+        Vector3 myPos = sceneNode.worldPosition;
+        gLineWorld.CollectLinesByNode(results[3].body.node, lines);
+        return FindDownLine(lines, oldLine);
     }
 
     void ClearPoints()

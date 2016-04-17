@@ -363,6 +363,10 @@ class BruceClimbOverState : PlayerClimbOverState
 
         AddMotion("BM_Climb/Stand_Climb_Over_128");
         AddMotion("BM_Climb/Run_Climb_Over_128");
+
+        AddMotion("BM_Climb/Crouch_Jump_128_To_Hang");
+        AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle");
+        AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle_Wall");
     }
 };
 
@@ -572,10 +576,6 @@ class BruceClimbDownState : PlayerClimbDownState
         AddMotion("BM_Climb/Crouch_To_Hang");
         AddMotion("BM_Climb/Crouch_To_Dangle");
         AddMotion("BM_Climb/Crouch_To_Dangle_Wall");
-
-        AddMotion("BM_Climb/Crouch_Jump_128_To_Hang");
-        AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle");
-        AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle_Wall");
     }
 };
 
@@ -789,9 +789,9 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Crouch_To_Dangle", flags).SetDockAlign(R_HAND, 0.7f, offset);
     Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", flags).SetDockAlign(R_HAND, 0.7f, offset);
 
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Hang", flags);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", flags);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", flags);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Hang", flags).SetDockAlign(R_HAND, 1.2, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", flags).SetDockAlign(R_HAND, 1.2, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", flags).SetDockAlign(R_HAND, 1.2, offset);
 
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);
@@ -822,12 +822,15 @@ void CreateBruceClimbAnimations()
     Global_AddAnimation(preFix + "Railing_Idle");
 
     flags = kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height;
-    Global_CreateMotion(preFix + "Railing_To_Dangle", flags);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_128", flags);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_128_Wall", flags);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", flags);
-    Global_CreateMotion(preFix + "Railing_To_Hang", flags);
-    Global_CreateMotion(preFix + "Railing_To_Hang_128", flags);
+    offset = Vector3(0, 0.2, 0.2);
+    Global_CreateMotion(preFix + "Railing_To_Dangle", flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_128", flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_128_Wall", flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", flags).SetDockAlign(L_HAND, 0.8f, offset);
+
+    offset = Vector3(0.0, 0.2, 0.2);
+    Global_CreateMotion(preFix + "Railing_To_Hang", flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Railing_To_Hang_128", flags).SetDockAlign(L_HAND, 0.8f, offset);
 }
 
 void CreateBruceMotions()

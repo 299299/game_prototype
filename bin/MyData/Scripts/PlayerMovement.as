@@ -1334,9 +1334,21 @@ class PlayerRailDownState : PlayerDockAlignState
         dockBlendingMethod = 1;
     }
 
-    Vector3 PickDockOutTarget()
+    Vector3 PickDockInTarget()
     {
-        return groundPos;
+        if (selectIndex == 0)
+            return groundPos;
+
+        Line@ l = ownner.dockLine;
+        Vector3 v = l.Project(motionPositon);
+        v = l.FixProjectPosition(v, dockInTargetBound);
+        if (l.HasFlag(LINE_THIN_WALL))
+        {
+            Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
+            float dist = Min(l.size.x, l.size.z) / 2;
+            v += dir.Normalized() * dist;
+        }
+        return v;
     }
 
     void Enter(State@ lastState)
@@ -1348,7 +1360,7 @@ class PlayerRailDownState : PlayerDockAlignState
         bool hitForward = p.results[0].body !is null;
         bool hitDown = p.results[1].body !is null;
         bool hitBack = p.results[2].body !is null;
-        groundPos = p.points[2];
+        groundPos = p.results[1].position;
         float lineToGround = ownner.dockLine.end.y - groundPos.y;
 
         Print(this.name + " lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
@@ -1356,41 +1368,47 @@ class PlayerRailDownState : PlayerDockAlignState
         if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
         {
             animIndex = 0;
-            motionFlagAfterAlign = kMotion_Y;
+            motionFlagBeforeAlign = kMotion_Y;
         }
         else
         {
-            animIndex = 2;
-            motionFlagAfterAlign = 0;
+
+            motionFlagBeforeAlign = kMotion_XYZ;
 
             if (l !is null)
             {
-                animIndex = 5;
+                animIndex = l.HasFlag(LINE_SHORT_WALL) ? (6 + RandomInt(2)) : 5;
+                ownner.AssignDockLine(l);
             }
+            else
+                animIndex = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (3 + RandomInt(2)) : 2;
         }
 
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
-        MultiMotionState::Enter(lastState);
+        PlayerDockAlignState::Enter(lastState);
     }
 
     void OnMotionFinished()
     {
         if (selectIndex == 0)
         {
-            MultiMotionState::OnMotionFinished();
+            PlayerDockAlignState::OnMotionFinished();
         }
         else
         {
             if (selectIndex == 1)
                 ownner.ChangeState("FallState");
-            else
+            else if (selectIndex == 2 || selectIndex == 5)
                 ownner.ChangeState("HangIdleState");
+            else
+                ownner.ChangeState("DangleIdleState");
         }
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(groundPos, 0.5f, BLUE, false);
+        debug.AddCross(groundPos, 0.5f, BLACK, false);
+        PlayerDockAlignState::DebugDraw(debug);
     }
 };
 
@@ -2004,46 +2022,45 @@ class PlayerDangleMoveState : PlayerHangMoveState
 class PlayerClimbDownState : PlayerDockAlignState
 {
     Vector3 groundPos;
-    int type;
 
     PlayerClimbDownState(Character@ c)
     {
         super(c);
         SetName("ClimbDownState");
         dockBlendingMethod = 1;
-        // motionFlagAfterAlign = kMotion_R;
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
         PlayerDockAlignState::DebugDraw(debug);
-        debug.AddCross(groundPos, 0.5f, BLUE, false);
+        debug.AddCross(groundPos, 0.5f, BLACK, false);
     }
 
     Vector3 PickDockInTarget()
     {
-        if (type == 0)
+        if (selectIndex < 3)
             return groundPos;
         return PlayerDockAlignState::PickDockInTarget();
     }
 
     float PickDockInRotation()
     {
-        Vector3 v = ownner.GetNode().worldPosition;
-        Vector3 proj = ownner.dockLine.Project(v);
-        Vector3 dir = proj - v;
-        return Atan2(dir.x, dir.z);
+        return AngleDiff(180 + PlayerDockAlignState::PickDockInRotation());
     }
 
     void Enter(State@ lastState)
     {
         int animIndex = 0;
-
         Player@ p = cast<Player>(ownner);
         p.ClimbDownRaycasts(ownner.dockLine);
-        groundPos = p.points[2];
+
+        bool hitForward = p.results[0].body !is null;
+        bool hitDown = p.results[1].body !is null;
+        bool hitBack = p.results[2].body !is null;
+        groundPos = p.results[1].position;
         float lineToGround = ownner.dockLine.end.y - groundPos.y;
-        Print(this.name + " lineToGround=" + lineToGround);
+
+        Print(this.name + " lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
 
         if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
         {
@@ -2054,23 +2071,14 @@ class PlayerClimbDownState : PlayerDockAlignState
                 animIndex = 2;
 
             motionFlagBeforeAlign = kMotion_Y;
-            type = 0;
             animSpeed = 1.5f;
         }
         else
         {
-            type = 1;
-            animIndex = 3;
-            motionFlagBeforeAlign = kMotion_ALL;
-
-            if (ownner.dockLine.HasFlag(LINE_SHORT_WALL))
-            {
-                animIndex += RandomInt(2) + 1;
-            }
             animSpeed = 1.0f;
+            motionFlagBeforeAlign = kMotion_ALL;
+            animIndex = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (4 + RandomInt(2)) : 3;
         }
-
-        // ownner.SetSceneTimeScale(0);
 
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
         PlayerDockAlignState::Enter(lastState);
