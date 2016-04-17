@@ -1070,8 +1070,10 @@ class PlayerDockAlignState : MultiMotionState
 
 class PlayerClimbOverState : PlayerDockAlignState
 {
-    Vector3 groundPos;
-    Line@ downLine;
+    Vector3     groundPos;
+    Vector3     down128Pos;
+
+    Line@       downLine;
 
     PlayerClimbOverState(Character@ c)
     {
@@ -1115,7 +1117,7 @@ class PlayerClimbOverState : PlayerDockAlignState
             index = 8;
             if (downLine.HasFlag(LINE_SHORT_WALL))
                 index += (RandomInt(2) + 1);
-            motionFlagAfterAlign = 0;
+            motionFlagAfterAlign = kMotion_ALL;
         }
 
         Print(this.name + " animation index=" + index);
@@ -1123,22 +1125,27 @@ class PlayerClimbOverState : PlayerDockAlignState
         PlayerDockAlignState::Enter(lastState);
     }
 
-    Vector3 PickDockInTarget()
-    {
-        Line@ l = ownner.dockLine;
-        Vector3 v = l.Project(motionPositon);
-        return l.FixProjectPosition(v, dockInTargetBound);
-    }
-
     Vector3 PickDockOutTarget()
     {
-        return groundPos;
+        return (selectIndex >= 8) ? down128Pos : groundPos;
+    }
+
+    float PickDockOutRotation()
+    {
+        if (downLine is null)
+            return PlayerDockAlignState::PickDockOutRotation();
+        Vector3 v = ownner.GetNode().worldPosition;
+        Vector3 proj = downLine.Project(v);
+        Vector3 dir = v - proj;
+        dir.y = 0;
+        return Atan2(dir.x, dir.z);
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
         PlayerDockAlignState::DebugDraw(debug);
         debug.AddCross(groundPos, 0.5f, BLUE, false);
+        debug.AddCross(down128Pos, 0.5f, Color(1, 0, 1), false);
     }
 
     void OnMotionFinished()
@@ -1149,9 +1156,25 @@ class PlayerClimbOverState : PlayerDockAlignState
             ownner.ChangeState("FallState");
     }
 
-    void OnMotionAlignTimeOut2()
+    void OnMotionAlignTimeOut()
     {
-
+        if (downLine !is null && selectIndex >= 8)
+        {
+            Motion@ m = motions[selectIndex];
+            Node@ n = ownner.GetNode();
+            Vector3 bonePos = n.GetChild(m.dockAlignBoneName, true).worldPosition;
+            Vector3 v = downLine.Project(motionPositon);
+            Vector3 boneOffset;
+            if (selectIndex == 8)
+                boneOffset = Vector3(1.5, 2.5, 0);
+            else
+                boneOffset = Vector3(1.5, 3, 0);
+            down128Pos = downLine.FixProjectPosition(v, dockInTargetBound);
+            boneOffset = n.worldRotation * boneOffset;
+            down128Pos -= boneOffset;
+            ownner.AssignDockLine(downLine);
+        }
+        PlayerDockAlignState::OnMotionAlignTimeOut();
     }
 };
 

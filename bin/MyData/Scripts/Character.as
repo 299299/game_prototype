@@ -345,8 +345,6 @@ class MultiMotionState : CharacterState
         }
         else if (ret == 2)
             OnMotionAlignTimeOut();
-        else if (ret == 3)
-            OnMotionAlignTimeOut2();
         CharacterState::Update(dt);
     }
 
@@ -400,10 +398,6 @@ class MultiMotionState : CharacterState
     }
 
     void OnMotionAlignTimeOut()
-    {
-    }
-
-    void OnMotionAlignTimeOut2()
     {
     }
 };

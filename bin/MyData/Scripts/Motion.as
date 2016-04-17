@@ -157,10 +157,6 @@ class Motion
     Vector3                 dockAlignOffset;
     String                  dockAlignBoneName;
 
-    float                   dockAlignTime2;
-    Vector3                 dockAlignOffset2;
-    String                  dockAlignBoneName2;
-
     Motion()
     {
     }
@@ -212,13 +208,6 @@ class Motion
             dockAlignOffset += v;
         }
 
-        if (!dockAlignBoneName2.empty)
-        {
-            Vector3 v = GetBoneWorldPosition(curRig, animationName, dockAlignBoneName2, dockAlignTime2);
-            Print(this.name + " bone " + dockAlignBoneName2 + " world-pos=" + v.ToString() + " at time:" + dockAlignTime2);
-            dockAlignOffset2 += v;
-        }
-
         if (!motionKeys.empty)
         {
             Vector4 v = motionKeys[0];
@@ -244,13 +233,6 @@ class Motion
         dockAlignBoneName = boneName;
         dockAlignOffset = offset;
         dockAlignTime = alignTime;
-    }
-
-    void SetDockAlign2(const String&in boneName, float alignTime, const Vector3&in offset)
-    {
-        dockAlignBoneName2 = boneName;
-        dockAlignOffset2 = offset;
-        dockAlignTime2 = alignTime;
     }
 
     void SetEndFrame(int frame)
@@ -423,12 +405,6 @@ class Motion
             {
                 if (localTime < dockAlignTime && (localTime + dt) > dockAlignTime)
                     return 2;
-            }
-
-            if (!dockAlignBoneName2.empty)
-            {
-                if (localTime < dockAlignTime2 && (localTime + dt) > dockAlignTime2)
-                    return 3;
             }
 
             bool bFinished =  localTime >= endTime;
