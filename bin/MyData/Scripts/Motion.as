@@ -316,7 +316,7 @@ class Motion
         Node@ _node = object.GetNode();
         Vector4 motionOut = GetKey(t);
         Vector3 motionPos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
-        Vector3 offsetPos = Quaternion(0, targetRotation, 0) * dockAlignOffset;
+        Vector3 offsetPos = Quaternion(0, targetRotation + motionOut.w, 0) * dockAlignOffset;
         return motionPos + offsetPos;
     }
 
