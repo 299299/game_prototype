@@ -292,17 +292,17 @@ class Motion
         Vector4 motionOut = GetKey(t);
         Node@ _node = object.GetNode();
         if (looped)
-            return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
+            return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition + object.motion_deltaPosition;
         else
-            return Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition;
+            return Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
     }
 
     float GetFutureRotation(Character@ object, float t)
     {
         if (looped)
-            return AngleDiff(object.GetNode().worldRotation.eulerAngles.y + GetKey(t).w);
+            return AngleDiff(object.GetNode().worldRotation.eulerAngles.y + object.motion_deltaRotation + GetKey(t).w);
         else
-            return AngleDiff(object.motion_startRotation + GetKey(t).w);
+            return AngleDiff(object.motion_startRotation + + object.motion_deltaRotation + GetKey(t).w);
     }
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
@@ -311,12 +311,12 @@ class Motion
         InnerStart(object);
     }
 
-    Vector3 GetTargetPositionAtTime(Character@ object, float targetRotation, float t)
+    Vector3 GetDockAlignPositionAtTime(Character@ object, float targetRotation, float t)
     {
         Node@ _node = object.GetNode();
         Vector4 motionOut = GetKey(t);
-        Vector3 motionPos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
-        Vector3 offsetPos = Quaternion(0, targetRotation + motionOut.w, 0) * dockAlignOffset;
+        Vector3 motionPos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+        Vector3 offsetPos = Quaternion(0, targetRotation, 0) * dockAlignOffset;
         return motionPos + offsetPos;
     }
 

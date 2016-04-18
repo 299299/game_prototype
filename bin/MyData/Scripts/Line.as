@@ -310,8 +310,11 @@ class LineWorld
         l.nodeId = node.id;
         l.size = size;
 
-        if (size.x < LINE_MIN_LENGTH || size.z < LINE_MIN_LENGTH)
-            l.flags |= LINE_THIN_WALL;
+        if (type != LINE_RAILING)
+        {
+            if (size.x < LINE_MIN_LENGTH || size.z < LINE_MIN_LENGTH)
+                l.flags |= LINE_THIN_WALL;
+        }
         if (size.y < 1.0f)
             l.flags |= LINE_SHORT_WALL;
 

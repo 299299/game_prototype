@@ -820,7 +820,7 @@ class PlayerDockAlignState : MultiMotionState
     float           climbBaseHeight;
     float           dockInTargetBound = 0.25f;
 
-    bool            debug = false;
+    bool            debug = true;
 
     PlayerDockAlignState(Character@ c)
     {
@@ -854,7 +854,7 @@ class PlayerDockAlignState : MultiMotionState
                 targetPosition = PickDockOutTarget();
                 targetRotation = PickDockOutRotation();
                 motionRotation = m.GetFutureRotation(ownner, m.endTime);
-                motionPositon = m.GetTargetPositionAtTime(ownner, targetRotation, m.endTime);
+                motionPositon = m.GetFuturePosition(ownner, m.endTime);
 
                 float t = m.endTime - m.dockAlignTime;
                 Vector3 diff = (targetPosition - motionPositon) / t;
@@ -977,14 +977,14 @@ class PlayerDockAlignState : MultiMotionState
             if (motionFlagBeforeAlign & kMotion_R != 0)
             {
                 targetRotation = PickDockInRotation();
-                turnSpeed = AngleDiff(targetRotation - ownner.GetCharacterAngle()) / t;
+                turnSpeed = AngleDiff(targetRotation - motionRotation) / t;
             }
             else
             {
                 targetRotation = ownner.GetCharacterAngle();
             }
 
-            motionPositon = m.GetTargetPositionAtTime(ownner, targetRotation, t);
+            motionPositon = m.GetDockAlignPositionAtTime(ownner, targetRotation, t);
             targetPosition = PickDockInTarget();
 
             Vector3 vel = (targetPosition - motionPositon) / t;
@@ -2085,7 +2085,10 @@ class PlayerClimbDownState : PlayerDockAlignState
 
     float PickDockInRotation()
     {
-        return AngleDiff(180 + PlayerDockAlignState::PickDockInRotation());
+        Vector3 v = ownner.GetNode().worldPosition;
+        Vector3 proj = ownner.dockLine.Project(v);
+        Vector3 dir = v - proj;
+        return Atan2(dir.x, dir.z);
     }
 
     void Enter(State@ lastState)
