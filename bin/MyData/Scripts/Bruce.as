@@ -789,9 +789,10 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Crouch_To_Dangle", flags).SetDockAlign(R_HAND, 0.7f, offset);
     Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", flags).SetDockAlign(R_HAND, 0.7f, offset);
 
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Hang", flags).SetDockAlign(R_HAND, 0.3, offset);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", flags).SetDockAlign(R_HAND, 0.3, offset);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", flags).SetDockAlign(R_HAND, 0.3, offset);
+    offset = Vector3(0, 0.0, 0.0);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Hang", flags).SetDockAlign(L_HAND, 0.6, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", flags).SetDockAlign(L_HAND, 0.6, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", flags).SetDockAlign(L_HAND, 0.6, offset);
 
     preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Cover_Run", kMotion_Z, kMotion_Z, -1, true);

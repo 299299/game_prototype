@@ -820,7 +820,7 @@ class PlayerDockAlignState : MultiMotionState
     float           climbBaseHeight;
     float           dockInTargetBound = 0.25f;
 
-    bool            debug = true;
+    bool            debug = false;
 
     PlayerDockAlignState(Character@ c)
     {
@@ -840,13 +840,6 @@ class PlayerDockAlignState : MultiMotionState
         {
             turnSpeed = 0;
             ownner.motion_velocity = Vector3(0, 0, 0);
-
-            if (motionFlagBeforeAlign & kMotion_R != 0)
-            {
-                ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-                ownner.motion_startRotation = targetRotation;
-                ownner.motion_deltaRotation = 0;
-            }
 
             Motion@ m = motions[selectIndex];
             if (motionFlagAfterAlign != 0 && !m.dockAlignBoneName.empty)
@@ -1063,6 +1056,7 @@ class PlayerClimbOverState : PlayerDockAlignState
 {
     Vector3     groundPos;
     Vector3     down128Pos;
+    Vector3     startPos;
 
     Line@       downLine;
 
@@ -1071,7 +1065,7 @@ class PlayerClimbOverState : PlayerDockAlignState
         super(c);
         SetName("ClimbOverState");
         dockBlendingMethod = 1;
-        debug = true;
+        // debug = true;
     }
 
     void Enter(State@ lastState)
@@ -1109,12 +1103,20 @@ class PlayerClimbOverState : PlayerDockAlignState
             index = 8;
             if (downLine.HasFlag(LINE_SHORT_WALL))
                 index += (RandomInt(2) + 1);
-            motionFlagAfterAlign = kMotion_ALL;
+            motionFlagAfterAlign = kMotion_XYZ;
+            startPos = downLine.Project(ownner.GetNode().worldPosition);
         }
 
         Print(this.name + " animation index=" + index);
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         PlayerDockAlignState::Enter(lastState);
+    }
+
+    Vector3 PickDockInTarget()
+    {
+        Line@ l = ownner.dockLine;
+        Vector3 v = l.Project(motionPositon);
+        return l.FixProjectPosition(v, dockInTargetBound);
     }
 
     Vector3 PickDockOutTarget()
@@ -1137,13 +1139,17 @@ class PlayerClimbOverState : PlayerDockAlignState
     {
         PlayerDockAlignState::DebugDraw(debug);
         debug.AddCross(groundPos, 0.5f, BLUE, false);
-        debug.AddCross(down128Pos, 0.5f, Color(1, 0, 1), false);
+        // debug.AddCross(down128Pos, 0.5f, Color(1, 0, 1), false);
     }
 
     void OnMotionFinished()
     {
         if (selectIndex == 6 || selectIndex == 7)
             PlayerDockAlignState::OnMotionFinished();
+        else if (selectIndex == 8)
+            ownner.ChangeState("HangIdleState");
+        else if (selectIndex == 9 || selectIndex == 10)
+            ownner.ChangeState("DangleIdleState");
         else
             ownner.ChangeState("FallState");
     }
@@ -1152,18 +1158,12 @@ class PlayerClimbOverState : PlayerDockAlignState
     {
         if (downLine !is null && selectIndex >= 8)
         {
-            Motion@ m = motions[selectIndex];
-            Node@ n = ownner.GetNode();
-            Vector3 bonePos = n.GetChild(m.dockAlignBoneName, true).worldPosition;
-            Vector3 v = downLine.Project(motionPositon);
-            Vector3 boneOffset;
+            Vector3 offset;
             if (selectIndex == 8)
-                boneOffset = Vector3(1.5, 2.5, 0);
+                offset = Vector3(0, -3.7, 1.45);
             else
-                boneOffset = Vector3(1.5, 3, 0);
-            down128Pos = downLine.FixProjectPosition(v, dockInTargetBound);
-            boneOffset = n.worldRotation * boneOffset;
-            down128Pos -= boneOffset;
+                offset = Vector3(0, -3.7, 1.8);
+            down128Pos = startPos + Quaternion(0, targetRotation, 0) * offset;
             ownner.AssignDockLine(downLine);
         }
         PlayerDockAlignState::OnMotionAlignTimeOut();
