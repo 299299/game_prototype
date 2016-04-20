@@ -2024,7 +2024,6 @@ class PlayerDangleIdleState : PlayerHangIdleState
         animSpeed = 1.0f;
         overStateName = StringHash("DangleOverState");
         moveStateName = StringHash("DangleMoveState");
-        moveToLinePtDist = 0.25f;
     }
 };
 

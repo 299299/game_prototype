@@ -731,7 +731,7 @@ void CreateBruceClimbAnimations()
     // DANGLE
     // ========================================================================================================================
     int dangle_add_flags = kMotion_Ext_Foot_Based_Height;
-    offset = Vector3(0, 0.25, 0.3);
+    offset = Vector3(0, 0.25, 0.75);
 
     Global_CreateMotion(preFix + "Dangle_Left",  kMotion_XYZ | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
     Global_CreateMotion(preFix + "Dangle_Left_1",  kMotion_XYZ | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
@@ -739,9 +739,9 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle_Right_1",  kMotion_XYZ | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     //offset = Vector3(0, 0.20, 0.25);
-    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.6f, offset);
     Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.6f, offset);
     Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.3f, offset);
 
     Global_CreateMotion(preFix + "Dangle_Left_End", kMotion_Y | dangle_add_flags);
@@ -751,7 +751,7 @@ void CreateBruceClimbAnimations()
 
     Global_CreateMotion(preFix + "Dangle_Idle", dangle_add_flags);
 
-    offset = Vector3(0, 0.25, 0.25);
+    // offset = Vector3(0, 0.25, 0.75);
     Global_CreateMotion(preFix + "Crouch_To_Dangle", kMotion_YZR | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
     Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", kMotion_YZR | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
 
