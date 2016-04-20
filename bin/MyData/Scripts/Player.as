@@ -625,7 +625,7 @@ class Player : Character
                 float lineToGround = l.end.y - results[2].position.y;
                 bool isWallTooShort = lineToMe < (HEIGHT_128 + HEIGHT_256) / 2;
 
-                Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
+                // Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
 
                 if (!hitUp)
                 {
@@ -633,7 +633,8 @@ class Player : Character
                     {
                         if (hitDown && lineToGround < 0.25f)
                         {
-                            stateToChange = "ClimbUpState";
+                            if (!l.HasFlag(LINE_SHORT_WALL))
+                                stateToChange = "ClimbUpState";
                         }
                         else
                         {

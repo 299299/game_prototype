@@ -1563,6 +1563,7 @@ class PlayerHangIdleState : MultiAnimationState
 {
     StringHash overStateName = StringHash("HangOverState");
     StringHash moveStateName = StringHash("HangMoveState");
+    float moveToLinePtDist = 1.0f;
 
     PlayerHangIdleState(Character@ c)
     {
@@ -1774,10 +1775,9 @@ class PlayerHangIdleState : MultiAnimationState
         handPos = ownner.dockLine.Project(handPos);
 
         float distSQR = (handPos - linePt).lengthSquared;
-        float moveMinDistSQR = 0.25f;
         Print("TryToMoveToLinePoint distSQR=" + distSQR);
 
-        if (distSQR < moveMinDistSQR * moveMinDistSQR)
+        if (distSQR < moveToLinePtDist * moveToLinePtDist)
             return false;
 
         GetMoveState(ownner.dockLine).MoveToLinePoint(left);
@@ -1788,6 +1788,11 @@ class PlayerHangIdleState : MultiAnimationState
     {
         PlayerHangMoveState@ s = GetMoveState(ownner.dockLine);
         Player@ p = cast<Player>(ownner);
+
+        // test if we are a little bit futher to the linePt
+        if (TryToMoveToLinePoint(left))
+            return true;
+
         Line @oldLine = ownner.dockLine;
 
         int index = left ? 0 : s.numOfAnimations;
@@ -1829,10 +1834,6 @@ class PlayerHangIdleState : MultiAnimationState
 
         if (outOfLine)
         {
-            // test if we are a little bit futher to the linePt
-            if (TryToMoveToLinePoint(left))
-                return true;
-
             float distErrSQR = 0;
             Line@ l = p.FindParalleLine(left, distErrSQR);
             if (l !is null)
@@ -2021,6 +2022,7 @@ class PlayerDangleIdleState : PlayerHangIdleState
         animSpeed = 1.0f;
         overStateName = StringHash("DangleOverState");
         moveStateName = StringHash("DangleMoveState");
+        moveToLinePtDist = 0.25f;
     }
 };
 
@@ -2030,11 +2032,6 @@ class PlayerDangleOverState : PlayerHangOverState
     {
         super(ownner);
         SetName("DangleOverState");
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.ChangeState("DangleIdleState");
     }
 };
 

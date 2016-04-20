@@ -504,10 +504,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = GetAnimationName("BM_Railing/Railing_Idle");
         //String testName = ("BM_Railing/Railing_Climb_Down_Forward");
         //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
-        String testName = "BM_Climb/Hang_Left"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
+        String testName = "BM_Climb/Dangle_Left"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
-        testAnimations.Push(GetAnimationName("BM_Climb/Hang_Left_End"));
+        testAnimations.Push("BM_Climb/Dangle_Right");
         // testAnimations.Push(GetAnimationName("BM_Railing/Railing_Run_Forward_Idle"));
         if (player !is null)
             player.TestAnimation(testAnimations);
