@@ -1561,6 +1561,7 @@ class PlayerHangUpState : PlayerDockAlignState
 
 class PlayerHangIdleState : MultiAnimationState
 {
+    String idleAnim;
     StringHash overStateName = StringHash("HangOverState");
     StringHash moveStateName = StringHash("HangMoveState");
     float moveToLinePtDist = 1.0f;
@@ -1576,7 +1577,8 @@ class PlayerHangIdleState : MultiAnimationState
 
     void OnMotionFinished()
     {
-
+        if (!idleAnim.empty)
+            ownner.PlayAnimation(idleAnim, LAYER_MOVE, true, blendTime, startTime, animSpeed);
     }
 
     void Enter(State@ lastState)

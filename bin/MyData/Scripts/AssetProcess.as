@@ -18,6 +18,9 @@ enum RootMotionFlag
     kMotion_Ext_Foot_Based_Height = (1 << 7),
 
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
+    kMotion_YZR = kMotion_Y | kMotion_Z | kMotion_R,
+    kMotion_XYR = kMotion_X | kMotion_Y | kMotion_R,
+
     kMotion_XZ  = kMotion_X | kMotion_Z,
     kMotion_XR  = kMotion_X | kMotion_R,
     kMotion_ZR  = kMotion_Z | kMotion_R,

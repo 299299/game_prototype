@@ -529,7 +529,8 @@ class BruceDangleIdleState : PlayerDangleIdleState
         AddMotion("BM_Climb/Dangle_Right_End");
         AddMotion("BM_Climb/Dangle_Right_End_1");
 
-        AddMotion("BM_Climb/Dangle_Idle");
+        //AddMotion("BM_Climb/Dangle_Idle");
+        idleAnim = GetAnimationName("BM_Climb/Dangle_Idle");
     }
 };
 
@@ -730,18 +731,18 @@ void CreateBruceClimbAnimations()
     // DANGLE
     // ========================================================================================================================
     int dangle_add_flags = kMotion_Ext_Foot_Based_Height;
-    offset = Vector3(0, 0.75, 0.3);
+    offset = Vector3(0, 0.25, 0.3);
 
-    Global_CreateMotion(preFix + "Dangle_Left",  kMotion_X | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Left_1",  kMotion_X | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Right",  kMotion_X | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Right_1",  kMotion_X | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Left",  kMotion_XYZ | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Left_1",  kMotion_XYZ | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Right",  kMotion_XYZ | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Right_1",  kMotion_XYZ | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     //offset = Vector3(0, 0.20, 0.25);
-    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_XZR | dangle_add_flags).SetDockAlign(L_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_XZR | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_XZR | dangle_add_flags).SetDockAlign(R_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_XZR | dangle_add_flags).SetDockAlign(R_HAND, 0.3f, offset);
+    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.3f, offset);
 
     Global_CreateMotion(preFix + "Dangle_Left_End", kMotion_Y | dangle_add_flags);
     Global_CreateMotion(preFix + "Dangle_Left_End_1", kMotion_Y | dangle_add_flags);
@@ -751,11 +752,11 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Dangle_Idle", dangle_add_flags);
 
     offset = Vector3(0, 0.25, 0.25);
-    Global_CreateMotion(preFix + "Crouch_To_Dangle", kMotion_YZ | kMotion_R | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
-    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", kMotion_YZ | kMotion_R | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
+    Global_CreateMotion(preFix + "Crouch_To_Dangle", kMotion_YZR | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
+    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", kMotion_YZR | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
 
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", kMotion_YZ | kMotion_R | dangle_add_flags).SetDockAlign(L_HAND, 0.6, offset);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", kMotion_YZ | kMotion_R | dangle_add_flags).SetDockAlign(L_HAND, 0.6, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", kMotion_YZR | dangle_add_flags).SetDockAlign(L_HAND, 0.6, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", kMotion_YZR | dangle_add_flags).SetDockAlign(L_HAND, 0.6, offset);
 
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Run", kMotion_YZ | dangle_add_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail", kMotion_YZ | dangle_add_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
