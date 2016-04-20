@@ -1774,7 +1774,7 @@ class PlayerHangIdleState : MultiAnimationState
         handPos = ownner.dockLine.Project(handPos);
 
         float distSQR = (handPos - linePt).lengthSquared;
-        float moveMinDistSQR = 1.5f;
+        float moveMinDistSQR = 0.25f;
         Print("TryToMoveToLinePoint distSQR=" + distSQR);
 
         if (distSQR < moveMinDistSQR * moveMinDistSQR)
