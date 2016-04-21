@@ -49,12 +49,22 @@ class Line
         return flags & flag != 0;
     }
 
-    Vector3 Project(const Vector3& charPos)
+    Vector3 Project(const Vector3&in pos)
     {
-        return ray.Project(charPos);
+        return ray.Project(pos);
     }
 
-    bool IsProjectPositionInLine(const Vector3& proj, float bound = 0.5f)
+    Vector3 Project(const Vector3&in pos, float rotation)
+    {
+        Vector3 v = Project(pos);
+        v.x = pos.x;
+        v.z = pos.z;
+        Ray otherRay;
+        otherRay.Define(v, Quaternion(0, rotation, 0) * Vector3(0, 0, 1));
+        return ray.ClosestPoint(otherRay);
+    }
+
+    bool IsProjectPositionInLine(const Vector3&in proj, float bound = 0.5f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -65,7 +75,7 @@ class Line
         return l_to_start >= bound && l_to_end >= bound;
     }
 
-    Vector3 FixProjectPosition(const Vector3& proj, float bound = 0.5f)
+    Vector3 FixProjectPosition(const Vector3&in proj, float bound = 0.5f)
     {
         float l_to_start = (proj - ray.origin).length;
         float l_to_end = (proj - end).length;
@@ -83,7 +93,7 @@ class Line
             return ray.origin + ray.direction * bound;
     }
 
-    int GetHead(const Quaternion& rot)
+    int GetHead(const Quaternion&in rot)
     {
         float yaw = rot.eulerAngles.y;
         float diff = AngleDiff(angle - AngleDiff(yaw));
@@ -93,7 +103,7 @@ class Line
         return 0;
     }
 
-    float GetHeadDirection(const Quaternion& rot)
+    float GetHeadDirection(const Quaternion&in rot)
     {
         int head = GetHead(rot);
         Vector3 dir;
@@ -112,7 +122,7 @@ class Line
         return 1;
     }
 
-    float Test(const Vector3& pos, float angle)
+    float Test(const Vector3&in pos, float angle)
     {
         if (Abs(pos.y - end.y) > LINE_MAX_HEIGHT_DIFF)
             return -1;
@@ -160,7 +170,7 @@ class Line
             DebugDrawDirection(debug, (ray.origin + end)/2, invalidAngleSide, RED);
     }
 
-    float GetProjectFacingDir(const Vector3& pos, float angle)
+    float GetProjectFacingDir(const Vector3&in pos, float angle)
     {
         Vector3 proj = Project(pos);
         proj.y = pos.y;
@@ -170,7 +180,7 @@ class Line
         return Abs(aDiff);
     }
 
-    Vector3 GetNearPoint(const Vector3& pos)
+    Vector3 GetNearPoint(const Vector3&in pos)
     {
         float start_sqr = (pos - ray.origin).lengthSquared;
         float end_sqr = (pos - end).lengthSquared;
@@ -182,7 +192,7 @@ class Line
         return ray.direction * length / 2 + ray.origin;
     }
 
-    Vector3 GetLinePoint(Vector3 dir)
+    Vector3 GetLinePoint(const Vector3&in dir)
     {
         int towardHead = GetTowardHead(Atan2(dir.x, dir.z));
         return (towardHead == 0) ? ray.origin : end;
@@ -192,6 +202,11 @@ class Line
     {
         float angle_diff = Abs(AngleDiff(l.angle - this.angle));
         return Abs(angle_diff - diff) < maxError;
+    }
+
+    float HeightDifference(const Vector3&in pos)
+    {
+        return Project(pos).y - pos.y;
     }
 };
 

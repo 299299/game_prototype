@@ -74,6 +74,7 @@ class PlayerTurnState : MultiMotionState
 {
     float       turnSpeed;
     float       targetRotation;
+    float       dockDist = -1;
 
     PlayerTurnState(Character@ c)
     {
@@ -84,6 +85,11 @@ class PlayerTurnState : MultiMotionState
 
     void Update(float dt)
     {
+        if (dockDist > 0)
+        {
+            if (ownner.CheckDocking(dockDist))
+                return;
+        }
         ownner.motion_deltaRotation += turnSpeed * dt;
         MultiMotionState::Update(dt);
     }
@@ -126,6 +132,7 @@ class PlayerStandToWalkState : PlayerTurnState
         super(c);
         SetName("StandToWalkState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
+        dockDist = 4.0f;
     }
 };
 
@@ -136,6 +143,7 @@ class PlayerStandToRunState : PlayerTurnState
         super(c);
         SetName("StandToRunState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
+        dockDist = 6.0f;
     }
 };
 
@@ -481,6 +489,8 @@ class PlayerCrouchState : SingleAnimationState
         }
         if (ownner.CheckFalling())
             return;
+        if (ownner.CheckDocking())
+            return;
 
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
@@ -505,6 +515,7 @@ class PlayerCrouchTurnState : PlayerTurnState
     {
         super(c);
         SetName("CrouchTurnState");
+        dockDist = 4;
     }
 
     void Enter(State@ lastState)
@@ -820,7 +831,7 @@ class PlayerDockAlignState : MultiMotionState
     float           climbBaseHeight;
     float           dockInTargetBound = 0.25f;
 
-    bool            debug = false;
+    bool            debug = true;
 
     PlayerDockAlignState(Character@ c)
     {
@@ -912,7 +923,7 @@ class PlayerDockAlignState : MultiMotionState
     Vector3 PickDockInTarget()
     {
         Line@ l = ownner.dockLine;
-        Vector3 v = l.Project(motionPositon);
+        Vector3 v = l.Project(motionPositon, ownner.GetCharacterAngle());
         v = l.FixProjectPosition(v, dockInTargetBound);
         if (l.HasFlag(LINE_THIN_WALL))
         {
@@ -943,6 +954,13 @@ class PlayerDockAlignState : MultiMotionState
     {
         debug.AddCross(targetPosition, 0.5f, BLUE, false);
         debug.AddCross(motionPositon, 0.5f, RED, false);
+        Motion@ m = motions[selectIndex];
+        if (m !is null)
+        {
+            Vector3 v = m.dockAlignBoneName.empty ? ownner.GetNode().worldPosition : ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
+            debug.AddLine(v, targetPosition, Color(0.25, 0.75, 0.75), false);
+        }
+
         DebugDrawDirection(debug, targetPosition, targetRotation, BLUE, 2.0f);
         DebugDrawDirection(debug, targetPosition, motionRotation, RED, 2.0f);
 
@@ -1065,7 +1083,6 @@ class PlayerClimbOverState : PlayerDockAlignState
         super(c);
         SetName("ClimbOverState");
         dockBlendingMethod = 1;
-        // debug = true;
     }
 
     void Enter(State@ lastState)
@@ -1716,6 +1733,7 @@ class PlayerHangIdleState : MultiMotionState
                     // hit gournd
                     float hitGroundH = p.results[2].position.y;
                     float lineToGround = oldLine.end.y - hitGroundH;
+
                     if (lineToGround < (0 + HEIGHT_128) / 2)
                     {
                         // if gound is not low just stand and run
@@ -1790,10 +1808,6 @@ class PlayerHangIdleState : MultiMotionState
         PlayerHangMoveState@ s = GetMoveState(ownner.dockLine);
         Player@ p = cast<Player>(ownner);
 
-        // test if we are a little bit futher to the linePt
-        if (TryToMoveToLinePoint(left))
-            return true;
-
         Line @oldLine = ownner.dockLine;
 
         int index = left ? 0 : s.numOfAnimations;
@@ -1835,6 +1849,11 @@ class PlayerHangIdleState : MultiMotionState
 
         if (outOfLine)
         {
+            // test if we are a little bit futher to the linePt
+            if (TryToMoveToLinePoint(left))
+                return true;
+
+
             float distErrSQR = 0;
             Line@ l = p.FindParalleLine(left, distErrSQR);
             if (l !is null)

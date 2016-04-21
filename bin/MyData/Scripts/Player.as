@@ -639,7 +639,7 @@ class Player : Character
                         else
                         {
                             // TODO
-                            if (isWallTooShort)
+                            if (isWallTooShort && l.HasFlag(LINE_THIN_WALL))
                             {
                                 stateToChange = "ClimbOverState";
                                 PlayerClimbOverState@ s = cast<PlayerClimbOverState>(FindState(stateToChange));
@@ -669,14 +669,14 @@ class Player : Character
     void ClimbUpRaycasts(Line@ line)
     {
         results.Resize(4);
-        points.Resize(6);
+        points.Resize(7);
 
         PhysicsWorld@ world = GetScene().physicsWorld;
         Vector3 charPos = GetNode().worldPosition;
         Vector3 proj = line.Project(charPos);
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
-        Vector3 v1, v2, v3, v4, v5, v6;
+        Vector3 v1, v2, v3, v4, v5, v6, v7;
         Vector3 dir = (line.type != LINE_RAILING) ? (proj - charPos) : (GetNode().worldRotation * Vector3(0, 0, 1));
         dir.y = 0;
         float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
@@ -696,20 +696,23 @@ class Player : Character
         results[1] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // down test
-        ray.Define(v3, Vector3(0, -1, 0));
-        dist = above_height + (HEIGHT_128 + HEIGHT_256) / 2;
-        v4 = ray.origin + ray.direction * dist;
+        v4 = v3;
+        v4.y = line.end.y;
+        v4.y += HEIGHT_384;
+        ray.Define(v4, Vector3(0, -1, 0));
+        dist = HEIGHT_384 + HEIGHT_256;
+        v5 = ray.origin + ray.direction * dist;
         results[2] = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
 
         // here comes the tricking part
-        v5 = v4;
-        v5.y = line.end.y;
-        v5.y -= HEIGHT_128;
+        v6 = v5;
+        v6.y = line.end.y;
+        v6.y -= HEIGHT_128;
         dir *= -1;
         dir.Normalize();
         dist = fowardDist;
-        v6 = v5 + dir * dist;
-        results[3] = world.ConvexCast(sensor.verticalShape, v5, Quaternion(), v6, Quaternion(), COLLISION_LAYER_LANDSCAPE);
+        v7 = v6 + dir * dist;
+        results[3] = world.ConvexCast(sensor.verticalShape, v6, Quaternion(), v7, Quaternion(), COLLISION_LAYER_LANDSCAPE);
 
         points[0] = v1;
         points[1] = v2;
@@ -717,6 +720,7 @@ class Player : Character
         points[3] = v4;
         points[4] = v5;
         points[5] = v6;
+        points[6] = v7;
     }
 
     void ClimbDownRaycasts(Line@ line)
