@@ -703,9 +703,10 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Slide_Floor_Stop");
 
     // Climb Down
-    Global_CreateMotion(preFix + "Crouch_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y, kMotion_ALL, 20);
-    Global_CreateMotion(preFix + "Walk_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y, kMotion_ALL, 35);
-    Global_CreateMotion(preFix + "Run_Climb_Down_128", kMotion_YZ | kMotion_Ext_Adjust_Y, kMotion_ALL, 16);
+    flags = kMotion_YZ | kMotion_Ext_Adjust_Y;
+    Global_CreateMotion(preFix + "Crouch_Down_128", flags, kMotion_ALL, 20);
+    Global_CreateMotion(preFix + "Walk_Climb_Down_128", flags, kMotion_ALL, 35);
+    Global_CreateMotion(preFix + "Run_Climb_Down_128", flags, kMotion_ALL, 16);
 
     // Climb Over
     Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z, kMotion_ALL, 37).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
@@ -732,76 +733,83 @@ void CreateBruceClimbAnimations()
     // ========================================================================================================================
     int dangle_add_flags = kMotion_Ext_Foot_Based_Height;
     offset = Vector3(0, 0.25, 0.75);
+    flags = kMotion_XYZ | dangle_add_flags;
 
-    Global_CreateMotion(preFix + "Dangle_Left",  kMotion_XYZ | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Left_1",  kMotion_XYZ | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Right",  kMotion_XYZ | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Right_1",  kMotion_XYZ | dangle_add_flags).SetDockAlign(R_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Left",  flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Left_1",  flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Right",  flags).SetDockAlign(R_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Right_1",  flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     //offset = Vector3(0, 0.20, 0.25);
-    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.6f, offset);
-    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  kMotion_ALL | dangle_add_flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.6f, offset);
-    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  kMotion_ALL | dangle_add_flags).SetDockAlign(R_HAND, 0.3f, offset);
+    flags = kMotion_ALL | dangle_add_flags;
+    Global_CreateMotion(preFix + "Dangle_Convex_90_L",  flags).SetDockAlign(L_HAND, 0.6f, offset);
+    Global_CreateMotion(preFix + "Dangle_Concave_90_L",  flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Dangle_Convex_90_R",  flags).SetDockAlign(R_HAND, 0.6f, offset);
+    Global_CreateMotion(preFix + "Dangle_Concave_90_R",  flags).SetDockAlign(R_HAND, 0.3f, offset);
 
-    Global_CreateMotion(preFix + "Dangle_Left_End", kMotion_Y | dangle_add_flags);
-    Global_CreateMotion(preFix + "Dangle_Left_End_1", kMotion_Y | dangle_add_flags);
-    Global_CreateMotion(preFix + "Dangle_Right_End", kMotion_Y | dangle_add_flags);
-    Global_CreateMotion(preFix + "Dangle_Right_End_1", kMotion_Y | dangle_add_flags);
+    flags = kMotion_Y | dangle_add_flags;
+    Global_CreateMotion(preFix + "Dangle_Left_End", flags);
+    Global_CreateMotion(preFix + "Dangle_Left_End_1", flags);
+    Global_CreateMotion(preFix + "Dangle_Right_End", flags);
+    Global_CreateMotion(preFix + "Dangle_Right_End_1", flags);
 
     Global_CreateMotion(preFix + "Dangle_Idle", dangle_add_flags);
 
     // offset = Vector3(0, 0.25, 0.75);
-    Global_CreateMotion(preFix + "Crouch_To_Dangle", kMotion_YZR | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
-    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", kMotion_YZR | dangle_add_flags).SetDockAlign(R_HAND, 0.7f, offset);
+    flags = kMotion_YZR | dangle_add_flags;
+    Global_CreateMotion(preFix + "Crouch_To_Dangle", flags).SetDockAlign(R_HAND, 0.7f, offset);
+    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", flags).SetDockAlign(R_HAND, 0.7f, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", flags).SetDockAlign(L_HAND, 0.6, offset);
+    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", flags).SetDockAlign(L_HAND, 0.6, offset);
 
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", kMotion_YZR | dangle_add_flags).SetDockAlign(L_HAND, 0.6, offset);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", kMotion_YZR | dangle_add_flags).SetDockAlign(L_HAND, 0.6, offset);
-
-    Global_CreateMotion(preFix + "Dangle_Climb_Up_Run", kMotion_YZ | dangle_add_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
-    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail", kMotion_YZ | dangle_add_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
-    Global_CreateMotion(preFix + "Dangle_Climb_Up_Over_128", kMotion_YZ | dangle_add_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
-    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail_128", kMotion_YZ | dangle_add_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
+    flags = kMotion_YZ | dangle_add_flags;
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Run", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Over_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
+    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
 
     // ========================================================================================================================
     // HANG
     // ========================================================================================================================
 
-    int climb_foot_flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
+    flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
     // Climb Hang
-    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
-    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.18, 0.27));
-    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
-    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", climb_foot_flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.1, 0.24));
+    Global_CreateMotion(preFix + "Stand_Climb_Up_256_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
+    Global_CreateMotion(preFix + "Stand_Climb_Up_384_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.18, 0.27));
+    Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
+    Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.1, 0.24));
 
     offset = Vector3(0, 0.15, 0.1);
     flags = kMotion_X | kMotion_Ext_Foot_Based_Height;
 
-    Global_CreateMotion(preFix + "Hang_Left",  flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Hang_Left_1",  flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Hang_Right",  flags).SetDockAlign(R_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Hang_Right_1",  flags).SetDockAlign(R_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Hang_Left", flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Hang_Left_1", flags).SetDockAlign(L_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Hang_Right", flags).SetDockAlign(R_HAND, 0.5f, offset);
+    Global_CreateMotion(preFix + "Hang_Right_1", flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     offset = Vector3(0, 0.1, 0.25f);
-    Global_CreateMotion(preFix + "Hang_Left_Convex",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Hang_Left_Concave",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.3f, offset);
-    Global_CreateMotion(preFix + "Hang_Right_Convex",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(L_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Hang_Right_Concave",  kMotion_XZR | kMotion_Ext_Foot_Based_Height).SetDockAlign(R_HAND, 0.3f, offset);
+    flags = kMotion_XZR | kMotion_Ext_Foot_Based_Height;
+    Global_CreateMotion(preFix + "Hang_Left_Convex", flags).SetDockAlign(R_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Hang_Left_Concave", flags).SetDockAlign(L_HAND, 0.3f, offset);
+    Global_CreateMotion(preFix + "Hang_Right_Convex", flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Hang_Right_Concave", flags).SetDockAlign(R_HAND, 0.3f, offset);
 
     Global_CreateMotion(preFix + "Hang_Left_End", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Left_End_1", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Right_End", kMotion_Ext_Foot_Based_Height);
     Global_CreateMotion(preFix + "Hang_Right_End_1", kMotion_Ext_Foot_Based_Height);
+    Global_CreateMotion(preFix + "Dangle_To_Hang",  kMotion_Ext_Foot_Based_Height);
 
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Over_128", climb_foot_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail_128", climb_foot_flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
-    Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
-    Global_CreateMotion(preFix + "Hang_Jump_Over_128", climb_foot_flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Run", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Over_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
+    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
+    Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
+    Global_CreateMotion(preFix + "Hang_Jump_Over_128", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
 
 
-    flags = kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height;
+    flags = kMotion_YZR | kMotion_Ext_Foot_Based_Height;
     offset = Vector3(0, 0.1, 0.2);
     Global_CreateMotion(preFix + "Crouch_To_Hang", flags).SetDockAlign(R_HAND, 0.7f, offset);
 
@@ -820,18 +828,20 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
 
     preFix = "BM_Railing/";
-    Global_CreateMotion(preFix + "Railing_Climb_Up", climb_foot_flags).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.3, 0.25));
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", climb_foot_flags).SetDockAlign(L_HAND, 0.6f, Vector3(0, 0, 0.25));
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", climb_foot_flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.25));
-    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", climb_foot_flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.3));
-    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", climb_foot_flags).SetDockAlign(R_HAND, 0.8f, Vector3(0, -0.05, 0.4));
+    flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
+    Global_CreateMotion(preFix + "Railing_Climb_Up", flags).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.3, 0.25));
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", flags).SetDockAlign(L_HAND, 0.6f, Vector3(0, 0, 0.25));
+    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.25));
+    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.3));
+    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", flags).SetDockAlign(R_HAND, 0.8f, Vector3(0, -0.05, 0.4));
 
-    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", climb_foot_flags);
-    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", climb_foot_flags);
+    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", flags);
+    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", flags);
 
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", kMotion_XZR | kMotion_Ext_Foot_Based_Height, kMotion_R);
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", kMotion_XZR | kMotion_Ext_Foot_Based_Height, kMotion_R);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR | kMotion_Ext_Foot_Based_Height);
+    flags = kMotion_XZR | kMotion_Ext_Foot_Based_Height;
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", flags, kMotion_R);
+    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", flags, kMotion_R);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", flags);
     Global_CreateMotion(preFix + "Railing_Run_Forward", kMotion_Z | kMotion_Ext_Foot_Based_Height, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Railing_Run_Forward_Idle", kMotion_Ext_Foot_Based_Height);
     //Global_CreateMotion(preFix + "Railing_Idle", kMotion_Ext_Foot_Based_Height);

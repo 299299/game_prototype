@@ -1559,7 +1559,7 @@ class PlayerHangUpState : PlayerDockAlignState
     }
 };
 
-class PlayerHangIdleState : MultiAnimationState
+class PlayerHangIdleState : MultiMotionState
 {
     String idleAnim;
     StringHash overStateName = StringHash("HangOverState");
@@ -1570,7 +1570,6 @@ class PlayerHangIdleState : MultiAnimationState
     {
         super(c);
         SetName("HangIdleState");
-        looped = false;
         physicsType = 0;
         blendTime = 0.0f;
     }
@@ -1597,7 +1596,7 @@ class PlayerHangIdleState : MultiAnimationState
             else if (curAnimationIndex == 7)
                 index = 3;
             ownner.GetNode().vars[ANIMATION_INDEX] = index;
-            MultiAnimationState::Enter(lastState);
+            MultiMotionState::Enter(lastState);
         }
         else
             CharacterState::Enter(lastState);
@@ -1628,7 +1627,7 @@ class PlayerHangIdleState : MultiAnimationState
                 HorizontalMove(index == 3);
         }
 
-        MultiAnimationState::Update(dt);
+        MultiMotionState::Update(dt);
     }
 
     bool VerticalMove()
@@ -2021,7 +2020,6 @@ class PlayerDangleIdleState : PlayerHangIdleState
     {
         super(c);
         SetName("DangleIdleState");
-        animSpeed = 1.0f;
         overStateName = StringHash("DangleOverState");
         moveStateName = StringHash("DangleMoveState");
     }
