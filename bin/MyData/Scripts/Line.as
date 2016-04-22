@@ -27,6 +27,40 @@ enum LineFlags
 const float LINE_MIN_LENGTH = 2.0f;
 const float LINE_MAX_HEIGHT_DIFF = 15;
 
+float dot(const Vector3&in u, const Vector3&in v)
+{
+    return u.DotProduct(v);
+}
+
+float norm2( const Vector3&in v )
+{
+    return v.lengthSquared;
+}
+
+Vector3 cross( const Vector3&in b, const Vector3&in c) // cross product
+{
+    return b.CrossProduct(c);
+}
+
+bool intersection(const Vector3&in a_1, const Vector3&in a_2, const Vector3&in b_1, const Vector3&in b_2, Vector3&out ip)
+{
+    Vector3 da = a_2 - a_1;
+    Vector3 db = b_2 - b_1;
+    Vector3 dc = b_1 - a_1;
+
+    if (dot(dc, cross(da,db)) != 0.0) // lines are not coplanar
+        return false;
+
+    float s = dot(cross(dc,db), cross(da,db)) / norm2(cross(da,db));
+    if (s >= 0.0 && s <= 1.0)
+    {
+        ip = a_1 + da * Vector3(s,s,s);
+        return true;
+    }
+
+    return false;
+}
+
 class Line
 {
     Ray             ray;
@@ -54,14 +88,15 @@ class Line
         return ray.Project(pos);
     }
 
-    Vector3 Project(const Vector3&in pos, float rotation)
+    Vector3 Project(const Vector3&in pos, float angle)
     {
-        Vector3 v = Project(pos);
-        v.x = pos.x;
-        v.z = pos.z;
-        Ray otherRay;
-        otherRay.Define(v, Quaternion(0, rotation, 0) * Vector3(0, 0, 1));
-        return ray.ClosestPoint(otherRay);
+        float radius = 30.0f;
+        Vector3 start = pos;
+        start.y = end.y;
+        Vector3 v = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
+        Vector3 vo;
+        bool b = intersection(ray.origin, end, start, v, vo);
+        return b ? vo : Project(pos);
     }
 
     bool IsProjectPositionInLine(const Vector3&in proj, float bound = 0.5f)

@@ -831,7 +831,9 @@ class PlayerDockAlignState : MultiMotionState
     float           climbBaseHeight;
     float           dockInTargetBound = 0.25f;
 
-    bool            debug = true;
+    bool            dockInCheckThinWall = true;
+
+    bool            debug = false;
 
     PlayerDockAlignState(Character@ c)
     {
@@ -923,9 +925,11 @@ class PlayerDockAlignState : MultiMotionState
     Vector3 PickDockInTarget()
     {
         Line@ l = ownner.dockLine;
-        Vector3 v = l.Project(motionPositon, ownner.GetCharacterAngle());
+        Motion@ m = motions[selectIndex];
+        Vector3 bonePos = m.dockAlignBoneName.empty ? ownner.GetNode().worldPosition : ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
+        Vector3 v = l.Project(bonePos, ownner.GetCharacterAngle());
         v = l.FixProjectPosition(v, dockInTargetBound);
-        if (l.HasFlag(LINE_THIN_WALL))
+        if (dockInCheckThinWall && l.HasFlag(LINE_THIN_WALL))
         {
             Vector3 dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
             float dist = Min(l.size.x, l.size.z) / 2;
@@ -1083,6 +1087,7 @@ class PlayerClimbOverState : PlayerDockAlignState
         super(c);
         SetName("ClimbOverState");
         dockBlendingMethod = 1;
+        dockInCheckThinWall = false;
     }
 
     void Enter(State@ lastState)
@@ -1127,13 +1132,6 @@ class PlayerClimbOverState : PlayerDockAlignState
         Print(this.name + " animation index=" + index);
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         PlayerDockAlignState::Enter(lastState);
-    }
-
-    Vector3 PickDockInTarget()
-    {
-        Line@ l = ownner.dockLine;
-        Vector3 v = l.Project(motionPositon);
-        return l.FixProjectPosition(v, dockInTargetBound);
     }
 
     Vector3 PickDockOutTarget()
@@ -1390,7 +1388,9 @@ class PlayerRailDownState : PlayerDockAlignState
             return groundPos;
 
         Line@ l = ownner.dockLine;
-        Vector3 v = l.Project(motionPositon);
+        Motion@ m = motions[selectIndex];
+        Vector3 bonePos = m.dockAlignBoneName.empty ? ownner.GetNode().worldPosition : ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
+        Vector3 v = l.Project(bonePos);
         v = l.FixProjectPosition(v, dockInTargetBound);
         if (l.HasFlag(LINE_THIN_WALL))
         {
@@ -1964,7 +1964,9 @@ class PlayerHangMoveState : PlayerDockAlignState
     Vector3 PickDockInTarget()
     {
         Line@ l = ownner.dockLine;
-        Vector3 v = l.Project(motionPositon);
+        Motion@ m = motions[selectIndex];
+        Vector3 bonePos = m.dockAlignBoneName.empty ? ownner.GetNode().worldPosition : ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
+        Vector3 v = l.Project(bonePos);
         v = l.FixProjectPosition(v, dockInTargetBound);
         if (l.HasFlag(LINE_THIN_WALL))
         {
