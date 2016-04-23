@@ -779,7 +779,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
     Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.1, 0.24));
 
-    offset = Vector3(0, 0.15, 0.25);
+    offset = Vector3(0, 0.15, 0.3);
     flags = kMotion_X | kMotion_Ext_Foot_Based_Height;
 
     Global_CreateMotion(preFix + "Hang_Left", flags).SetDockAlign(L_HAND, 0.5f, offset);
@@ -797,7 +797,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Right_Concave", flags).SetDockAlign(R_HAND, 0.3f, offset);
 
     flags = kMotion_Y | kMotion_Ext_Foot_Based_Height;
-    offset = Vector3(0, 0.15, 0.3);
+    offset = Vector3(0, 0.15, 0.4);
     Global_CreateMotion(preFix + "Hang_Left_End", flags).SetDockAlign(L_HAND, 0.6f, offset);
     Global_CreateMotion(preFix + "Hang_Left_End_1", flags).SetDockAlign(L_HAND, 0.6f, offset);
     Global_CreateMotion(preFix + "Hang_Right_End", flags).SetDockAlign(R_HAND, 0.6f, offset);
@@ -859,7 +859,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Railing_To_Dangle_128_Wall", flags).SetDockAlign(L_HAND, 0.8f, offset);
     Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", flags).SetDockAlign(L_HAND, 0.8f, offset);
 
-    offset = Vector3(0.0, 0.2, 0.2);
+    offset = Vector3(0.0, 0.2, 0.3);
     Global_CreateMotion(preFix + "Railing_To_Hang", flags).SetDockAlign(L_HAND, 0.8f, offset);
     Global_CreateMotion(preFix + "Railing_To_Hang_128", flags).SetDockAlign(L_HAND, 0.8f, offset);
 }

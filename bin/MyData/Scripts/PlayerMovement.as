@@ -1383,7 +1383,18 @@ class PlayerRailDownState : PlayerDockAlignState
 
     Vector3 PickDockInTarget()
     {
-        return (selectIndex == 0) ? groundPos : PlayerDockAlignState::PickDockInTarget();
+        if (selectIndex == 0)
+            return groundPos;
+
+        Line@ l = ownner.dockLine;
+        Vector3 v = ownner.GetNode().worldPosition;
+        v = l.Project(v);
+
+        Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
+        float dist = Min(l.size.x, l.size.z) / 2;
+        v += dir.Normalized() * dist;
+
+        return v;
     }
 
     void Enter(State@ lastState)
@@ -1662,8 +1673,10 @@ class PlayerHangIdleState : MultiMotionState
         motionPositon = m.GetDockAlignPositionAtTime(ownner, targetRotation, alignTime);
         targetPosition = ownner.dockLine.Project(motionPositon);
 
-        //if (!fromMove)
-        ownner.motion_velocity = (targetPosition - motionPositon) / alignTime;
+        if (fromMove && (curAnimationIndex == 0 || curAnimationIndex == 3 || curAnimationIndex == 4 || curAnimationIndex == 7))
+            ownner.motion_velocity = Vector3(0, 0, 0);
+        else
+            ownner.motion_velocity = (targetPosition - motionPositon) / alignTime;
 
         // ownner.SetSceneTimeScale(0);
     }
@@ -2160,11 +2173,6 @@ class PlayerClimbDownState : PlayerDockAlignState
     {
         PlayerDockAlignState::DebugDraw(debug);
         debug.AddCross(groundPos, 0.5f, BLACK, false);
-    }
-
-    Vector3 PickDockInTarget()
-    {
-        return (selectIndex < 3) ? groundPos : PlayerDockAlignState::PickDockInTarget();
     }
 
     float PickDockInRotation()

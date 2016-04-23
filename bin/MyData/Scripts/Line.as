@@ -366,7 +366,7 @@ class LineWorld
         l.nodeId = node.id;
         l.size = size;
 
-        if (type != LINE_RAILING)
+        // if (type != LINE_RAILING)
         {
             if (size.x < LINE_MIN_LENGTH || size.z < LINE_MIN_LENGTH)
                 l.flags |= LINE_THIN_WALL;
