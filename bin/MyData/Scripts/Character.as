@@ -1161,8 +1161,8 @@ class Character : GameObject
         AnimationController@ ctrl = animCtrl;
         ctrl.StopLayer(layer, blendTime);
         ctrl.PlayExclusive(animName, layer, loop, blendTime);
-        ctrl.SetTime(animName, startTime);
         ctrl.SetSpeed(animName, speed * timeScale);
+        ctrl.SetTime(animName, (speed < 0) ? ctrl.GetLength(animName) : startTime);
     }
 
     String GetDebugText()

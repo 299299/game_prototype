@@ -329,7 +329,7 @@ class Motion
         object.motion_velocity = Vector3(0, 0, 0);
         object.motion_translateEnabled = true;
         object.motion_rotateEnabled = true;
-        // Print("motion " + animationName + " start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
+        Print("motion " + animationName + " start start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
     }
 
     int Move(Character@ object, float dt)
@@ -344,10 +344,15 @@ class Motion
             return 0;
 
         dt *= absSpeed;
-        if (looped)
+        if (looped || speed < 0)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
             GetMotion(localTime, dt, looped, motionOut);
+            if (!looped)
+            {
+                if (localTime < SEC_PER_FRAME)
+                    motionOut = Vector4(0, 0, 0, 0);
+            }
 
             if (object.motion_rotateEnabled)
                 _node.Yaw(motionOut.w);
@@ -359,8 +364,7 @@ class Motion
 
                 if (object.physicsType == 0)
                 {
-                    object.motion_deltaPosition += object.motion_velocity * dt;
-                    Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_deltaPosition;
+                    Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_velocity * dt;
                     object.MoveTo(tWorld, dt);
                 }
                 else
@@ -372,6 +376,9 @@ class Motion
             }
             else
                 object.SetVelocity(Vector3(0, 0, 0));
+
+            if (speed < 0 && localTime < 0.001)
+                return 1;
 
             return 0;
         }
