@@ -926,8 +926,11 @@ class PlayerDockAlignState : MultiMotionState
     {
         Line@ l = ownner.dockLine;
         Motion@ m = motions[selectIndex];
-        Vector3 bonePos = m.dockAlignBoneName.empty ? ownner.GetNode().worldPosition : ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
-        Vector3 v = l.Project(bonePos, ownner.GetCharacterAngle());
+
+        float t = m.dockAlignBoneName.empty ? m.endTime : m.dockAlignTime;
+        Vector3 v = m.GetDockAlignPositionAtTime(ownner, ownner.GetCharacterAngle(), t);
+        //Vector3 v = l.Project(bonePos, ownner.GetCharacterAngle());
+        v = l.Project(v);
         v = l.FixProjectPosition(v, dockInTargetBound);
         if (dockInCheckThinWall && l.HasFlag(LINE_THIN_WALL))
         {
@@ -984,10 +987,7 @@ class PlayerDockAlignState : MultiMotionState
             Motion@ m = motions[selectIndex];
             targetPosition = ownner.dockLine.Project(ownner.GetNode().worldPosition);
 
-            float t = m.endTime;
-            if (!m.dockAlignBoneName.empty)
-                t = m.dockAlignTime;
-
+            float t = m.dockAlignBoneName.empty ? m.endTime : m.dockAlignTime;
             motionRotation = ownner.GetCharacterAngle(); //m.GetFutureRotation(ownner, t);
             targetRotation = (motionFlagBeforeAlign & kMotion_R != 0) ? PickDockInRotation() : motionRotation;
 
@@ -1384,21 +1384,7 @@ class PlayerRailDownState : PlayerDockAlignState
 
     Vector3 PickDockInTarget()
     {
-        if (selectIndex == 0)
-            return groundPos;
-
-        Line@ l = ownner.dockLine;
-        Motion@ m = motions[selectIndex];
-        Vector3 bonePos = m.dockAlignBoneName.empty ? ownner.GetNode().worldPosition : ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
-        Vector3 v = l.Project(bonePos);
-        v = l.FixProjectPosition(v, dockInTargetBound);
-        if (l.HasFlag(LINE_THIN_WALL))
-        {
-            Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
-            float dist = Min(l.size.x, l.size.z) / 2;
-            v += dir.Normalized() * dist;
-        }
-        return v;
+        return (selectIndex == 0) ? groundPos : PlayerDockAlignState::PickDockInTarget();
     }
 
     void Enter(State@ lastState)
@@ -1562,6 +1548,7 @@ class PlayerHangUpState : PlayerDockAlignState
         SetName("HangUpState");
         climbBaseHeight = 3.0f;
         dockBlendingMethod = 1;
+        debug = true;
     }
 
     void Enter(State@ lastState)
@@ -2088,9 +2075,7 @@ class PlayerClimbDownState : PlayerDockAlignState
 
     Vector3 PickDockInTarget()
     {
-        if (selectIndex < 3)
-            return groundPos;
-        return PlayerDockAlignState::PickDockInTarget();
+        return (selectIndex < 3) ? groundPos : PlayerDockAlignState::PickDockInTarget();
     }
 
     float PickDockInRotation()
