@@ -6,6 +6,8 @@ xcopy /s /e /h .\Data .\Release\Data\
 xcopy /s /e /h .\MyData .\Release\MyData\
 copy .\Test.bat .\Release\Game.bat
 copy .\Urho3DPlayer.exe .\Release\
+copy .\Urho3DPlayer.dll .\Release\
+copy .\d3dcompiler_47.dll .\Release\
 .\tool\ScriptCompiler.exe .\Release\MyData\Scripts\Test.as
 del .\Release\MyData\Scripts\*.as
 .\tool\PackageTool .\Release\CoreData .\Release\CoreData.pak -c -q
