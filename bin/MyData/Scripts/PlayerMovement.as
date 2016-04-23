@@ -1653,8 +1653,8 @@ class PlayerHangIdleState : MultiMotionState
         motionPositon = m.GetDockAlignPositionAtTime(ownner, targetRotation, alignTime);
         targetPosition = ownner.dockLine.Project(motionPositon);
 
-        if (!fromMove)
-            ownner.motion_velocity = (targetPosition - motionPositon) / alignTime;
+        //if (!fromMove)
+        ownner.motion_velocity = (targetPosition - motionPositon) / alignTime;
 
         // ownner.SetSceneTimeScale(0);
     }
