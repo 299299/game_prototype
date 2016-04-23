@@ -200,16 +200,25 @@ class SingleAnimationState : CharacterState
 
     void Update(float dt)
     {
+        bool finished = false;
         if (looped)
         {
             if (stateTime > 0 && timeInState > stateTime)
-                OnMotionFinished();
+                finished = true;
         }
         else
         {
-            if (ownner.animCtrl.IsAtEnd(animation))
-                OnMotionFinished();
+            if (animSpeed < 0)
+            {
+                finished = ownner.animCtrl.GetTime(animation) < 0.0001f;
+            }
+            else
+                finished = ownner.animCtrl.IsAtEnd(animation);
         }
+
+        if (finished)
+            OnMotionFinished();
+
         CharacterState::Update(dt);
     }
 
@@ -242,10 +251,8 @@ class SingleMotionState : CharacterState
 
     void Update(float dt)
     {
-        if (motion.Move(ownner, dt) == 1) {
+        if (motion.Move(ownner, dt) == 1)
             OnMotionFinished();
-            return;
-        }
         CharacterState::Update(dt);
     }
 
@@ -289,16 +296,25 @@ class MultiAnimationState : CharacterState
 
     void Update(float dt)
     {
+        bool finished = false;
         if (looped)
         {
             if (stateTime > 0 && timeInState > stateTime)
-                OnMotionFinished();
+                finished = true;
         }
         else
         {
-            if (ownner.animCtrl.IsAtEnd(animations[selectIndex]))
-                OnMotionFinished();
+            if (animSpeed < 0)
+            {
+                finished = ownner.animCtrl.GetTime(animations[selectIndex]) < 0.0001f;
+            }
+            else
+                finished = ownner.animCtrl.IsAtEnd(animations[selectIndex]);
         }
+
+        if (finished)
+            OnMotionFinished();
+
         CharacterState::Update(dt);
     }
 
@@ -339,10 +355,7 @@ class MultiMotionState : CharacterState
     {
         int ret = motions[selectIndex].Move(ownner, dt);
         if (ret == 1)
-        {
             OnMotionFinished();
-            return;
-        }
         else if (ret == 2)
             OnMotionAlignTimeOut();
         CharacterState::Update(dt);
@@ -380,7 +393,7 @@ class MultiMotionState : CharacterState
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) + " current motion=" + motions[selectIndex].animationName + "\n";
+        return " name=" + name + " timeInState=" + timeInState + " current motion=" + motions[selectIndex].animationName + "\n";
     }
 
     void AddMotion(const String&in name)
@@ -490,7 +503,14 @@ class AnimationTestState : CharacterState
                 finished = true;
         }
         else
-            finished = ownner.animCtrl.IsAtEnd(testAnimations[currentIndex]);
+        {
+            if (animSpeed < 0)
+            {
+                finished = ownner.animCtrl.GetTime(testAnimations[currentIndex]) < 0.0001f;
+            }
+            else
+                finished = ownner.animCtrl.IsAtEnd(testAnimations[currentIndex]);
+        }
 
         if (finished) {
             Print("AnimationTestState finished, currentIndex=" + currentIndex);
@@ -519,8 +539,8 @@ class AnimationTestState : CharacterState
     String GetDebugText()
     {
         if (currentIndex >= int(testAnimations.length))
-            return "";
-        return " name=" + name + " timeInState=" + String(timeInState) + " animation=" + testAnimations[currentIndex] + "\n";
+            return CharacterState::GetDebugText();
+        return " name=" + this.name + " timeInState=" + timeInState + " animation=" + testAnimations[currentIndex] + "\n";
     }
 
     bool CanReEntered()
@@ -1148,7 +1168,7 @@ class Character : GameObject
     String GetDebugText()
     {
         String debugText = stateMachine.GetDebugText();
-        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " health:" + health + "\n";
+        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " timeScale:" + timeScale + " health:" + health + "\n";
         if (animModel.numAnimationStates > 0)
         {
             debugText += "Debug-Animations:\n";

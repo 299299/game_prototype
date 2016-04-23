@@ -243,6 +243,12 @@ class Line
     {
         return Project(pos).y - pos.y;
     }
+
+    float GetTargetRotation(const Vector3&in pos)
+    {
+        Vector3 dir = Project(pos) - pos;
+        return Atan2(dir.x, dir.z);
+    }
 };
 
 bool GetNodeSizeAndOffset(Node@ n, Vector3&out size, Vector3&out offset)
@@ -439,6 +445,7 @@ class LineWorld
 
             if (dist < maxDistance)
             {
+                // Print("dist=" + dist + " maxDistance=" + maxDistance);
                 maxDistance = dist;
                 @ret = l;
             }

@@ -564,6 +564,15 @@ class BruceDangleMoveState : PlayerDangleMoveState
     }
 };
 
+class BruceHangDangleTransitionState : PlayerHangDangleTransitionState
+{
+    BruceHangDangleTransitionState(Character@ c)
+    {
+        super(c);
+        SetMotion("BM_Climb/Dangle_To_Hang");
+    }
+};
+
 class BruceClimbDownState : PlayerClimbDownState
 {
     BruceClimbDownState(Character@ c)
@@ -645,6 +654,7 @@ class Bruce : Player
             stateMachine.AddState(BruceDangleIdleState(this));
             stateMachine.AddState(BruceDangleOverState(this));
             stateMachine.AddState(BruceDangleMoveState(this));
+            stateMachine.AddState(BruceHangDangleTransitionState(this));
         }
     }
 };
@@ -801,7 +811,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Left_End_1", flags);
     Global_CreateMotion(preFix + "Hang_Right_End", flags);
     Global_CreateMotion(preFix + "Hang_Right_End_1", flags);
-    Global_CreateMotion(preFix + "Dangle_To_Hang",  flags);
+    Global_CreateMotion(preFix + "Dangle_To_Hang",  0);
 
     flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));

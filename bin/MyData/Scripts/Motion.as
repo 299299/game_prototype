@@ -338,11 +338,12 @@ class Motion
         Node@ _node = object.GetNode();
         float localTime = ctrl.GetTime(animationName);
         float speed = ctrl.GetSpeed(animationName);
+        float absSpeed = Abs(speed);
 
-        if (speed < 0.00001)
+        if (absSpeed < 0.001)
             return 0;
 
-        dt *= speed;
+        dt *= absSpeed;
         if (looped)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
@@ -407,7 +408,7 @@ class Motion
                     return 2;
             }
 
-            bool bFinished =  localTime >= endTime;
+            bool bFinished = (speed > 0) ? localTime >= endTime : (localTime < 0.001);
             //if (bFinished)
             //    object.SetVelocity(Vector3(0, 0, 0));
             return bFinished ? 1 : 0;

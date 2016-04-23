@@ -585,7 +585,7 @@ class Player : Character
         return false;
     }
 
-    bool CheckDocking(float distance = 4)
+    bool CheckDocking(float distance = 3)
     {
         Vector3 charPos = sceneNode.worldPosition;
         float charAngle = GetCharacterAngle();
@@ -604,7 +604,9 @@ class Player : Character
         {
             Vector3 proj = l.Project(charPos);
             float lineToMe = proj.y - charPos.y;
-            if (lineToMe < 0.01f)
+            // Print("lineToMe_Height=" + lineToMe);
+
+            if (lineToMe < 0.1f)
             {
                 // move down case
                 float distSQR = (proj- charPos).lengthSquared;
@@ -612,7 +614,7 @@ class Player : Character
                 if (distSQR < minDownDist * minDownDist)
                     stateToChange = "ClimbDownState";
             }
-            else
+            else if (lineToMe > HEIGHT_128 / 4)
             {
                 // ClimbUpRaycasts(l);
                 Line@ line = FindForwardUpDownLine(l);
@@ -625,7 +627,7 @@ class Player : Character
                 float lineToGround = l.end.y - results[2].position.y;
                 bool isWallTooShort = lineToMe < (HEIGHT_128 + HEIGHT_256) / 2;
 
-                Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
+                // Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
 
                 if (!hitUp)
                 {
