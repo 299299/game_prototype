@@ -1389,34 +1389,43 @@ class PlayerRailDownState : PlayerDockAlignState
     void Enter(State@ lastState)
     {
         int animIndex = 0;
-        Player@ p = cast<Player>(ownner);
-        Line@ l = p.FindDownLine(ownner.dockLine);
-
-        bool hitForward = p.results[0].body !is null;
-        bool hitDown = p.results[1].body !is null;
-        bool hitBack = p.results[2].body !is null;
-        groundPos = p.results[1].position;
-        float lineToGround = ownner.dockLine.end.y - groundPos.y;
-
-        Print(this.name + " lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
-
-        if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
+        if (lastState.name == "RailRunForwardState")
         {
-            animIndex = 0;
-            motionFlagBeforeAlign = kMotion_Y;
+            animIndex = 1;
+            motionFlagBeforeAlign = 0;
         }
         else
         {
 
-            motionFlagBeforeAlign = kMotion_XYZ;
+            Player@ p = cast<Player>(ownner);
+            Line@ l = p.FindDownLine(ownner.dockLine);
 
-            if (l !is null)
+            bool hitForward = p.results[0].body !is null;
+            bool hitDown = p.results[1].body !is null;
+            bool hitBack = p.results[2].body !is null;
+            groundPos = p.results[1].position;
+            float lineToGround = ownner.dockLine.end.y - groundPos.y;
+
+            Print(this.name + " lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
+
+            if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
             {
-                animIndex = l.HasFlag(LINE_SHORT_WALL) ? (6 + RandomInt(2)) : 5;
-                ownner.AssignDockLine(l);
+                animIndex = 0;
+                motionFlagBeforeAlign = kMotion_Y;
             }
             else
-                animIndex = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (3 + RandomInt(2)) : 2;
+            {
+
+                motionFlagBeforeAlign = kMotion_XYZ;
+
+                if (l !is null)
+                {
+                    animIndex = l.HasFlag(LINE_SHORT_WALL) ? (6 + RandomInt(2)) : 5;
+                    ownner.AssignDockLine(l);
+                }
+                else
+                    animIndex = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (3 + RandomInt(2)) : 2;
+            }
         }
 
         ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
@@ -1567,7 +1576,7 @@ class PlayerHangIdleState : MultiMotionState
     StringHash overStateName = StringHash("HangOverState");
     StringHash moveStateName = StringHash("HangMoveState");
 
-    float moveToLinePtDist = 1.0f;
+    float moveToLinePtDist = 1.5f;
     float turnSpeed = 0.0f;
     float alignTime = 0.2f;
     float inputCheckTime = 0.2f;
@@ -1860,6 +1869,10 @@ class PlayerHangIdleState : MultiMotionState
 
     bool HorizontalMove(bool left)
     {
+        // test if we are a little bit futher to the linePt
+        if (TryToMoveToLinePoint(left))
+            return true;
+
         PlayerHangMoveState@ s = GetMoveState(ownner.dockLine);
         Player@ p = cast<Player>(ownner);
 
@@ -1904,11 +1917,6 @@ class PlayerHangIdleState : MultiMotionState
 
         if (outOfLine)
         {
-            // test if we are a little bit futher to the linePt
-            if (TryToMoveToLinePoint(left))
-                return true;
-
-
             float distErrSQR = 0;
             Line@ l = p.FindParalleLine(left, distErrSQR);
             if (l !is null)
