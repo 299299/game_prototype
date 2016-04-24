@@ -2184,6 +2184,11 @@ class PlayerClimbDownState : PlayerDockAlignState
         return ownner.dockLine.GetTargetRotation(ownner.GetNode().worldPosition);
     }
 
+    Vector3 PickDockInTarget()
+    {
+        return (selectIndex < 3) ? groundPos : PlayerDockAlignState::PickDockInTarget();
+    }
+
     void Enter(State@ lastState)
     {
         int animIndex = 0;
