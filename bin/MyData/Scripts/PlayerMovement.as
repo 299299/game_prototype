@@ -1385,16 +1385,20 @@ class PlayerRailDownState : PlayerDockAlignState
     {
         if (selectIndex == 0)
             return groundPos;
+        else if (selectIndex >= 5)
+            return PlayerDockAlignState::PickDockInTarget();
+        else
+        {
+            Line@ l = ownner.dockLine;
+            Vector3 v = ownner.GetNode().worldPosition;
+            v = l.Project(v);
 
-        Line@ l = ownner.dockLine;
-        Vector3 v = ownner.GetNode().worldPosition;
-        v = l.Project(v);
+            Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
+            float dist = Min(l.size.x, l.size.z) / 2;
+            v += dir.Normalized() * dist;
 
-        Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
-        float dist = Min(l.size.x, l.size.z) / 2;
-        v += dir.Normalized() * dist;
-
-        return v;
+            return v;
+        }
     }
 
     void Enter(State@ lastState)
