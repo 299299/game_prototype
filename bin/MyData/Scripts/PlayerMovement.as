@@ -858,11 +858,11 @@ class PlayerDockAlignState : MultiMotionState
             Motion@ m = motions[selectIndex];
             if (motionFlagAfterAlign != 0 && !m.dockAlignBoneName.empty)
             {
-                targetPosition = PickDockOutTarget();
-                targetRotation = PickDockOutRotation();
-
-                motionPositon = m.GetFuturePosition(ownner, m.endTime);
                 motionRotation = m.GetFutureRotation(ownner, m.endTime);
+                motionPositon = m.GetFuturePosition(ownner, m.endTime);
+
+                targetRotation = PickDockOutRotation();
+                targetPosition = PickDockOutTarget();
 
                 float t = m.endTime - m.dockAlignTime;
                 Vector3 diff = (targetPosition - motionPositon) / t;
@@ -1673,12 +1673,7 @@ class PlayerHangIdleState : MultiMotionState
         motionPositon = m.GetDockAlignPositionAtTime(ownner, targetRotation, alignTime);
         targetPosition = ownner.dockLine.Project(motionPositon);
 
-        if (fromMove && (curAnimationIndex == 0 || curAnimationIndex == 3 || curAnimationIndex == 4 || curAnimationIndex == 7))
-            ownner.motion_velocity = Vector3(0, 0, 0);
-        else
-            ownner.motion_velocity = (targetPosition - motionPositon) / alignTime;
-
-        // ownner.SetSceneTimeScale(0);
+        ownner.motion_velocity = fromMove ? Vector3(0, 0, 0) : (targetPosition - motionPositon) / alignTime;
     }
 
     bool CheckFootBlocking()
@@ -1882,10 +1877,6 @@ class PlayerHangIdleState : MultiMotionState
 
     bool HorizontalMove(bool left)
     {
-        // test if we are a little bit futher to the linePt
-        if (TryToMoveToLinePoint(left))
-            return true;
-
         PlayerHangMoveState@ s = GetMoveState(ownner.dockLine);
         Player@ p = cast<Player>(ownner);
 
@@ -1930,6 +1921,10 @@ class PlayerHangIdleState : MultiMotionState
 
         if (outOfLine)
         {
+            // test if we are a little bit futher to the linePt
+            if (TryToMoveToLinePoint(left))
+                return true;
+
             float distErrSQR = 0;
             Line@ l = p.FindParalleLine(left, distErrSQR);
             if (l !is null)
@@ -1962,7 +1957,7 @@ class PlayerHangMoveState : PlayerDockAlignState
     void Enter(State@ lastState)
     {
         motionFlagBeforeAlign = (type == 1) ? kMotion_XYZ : kMotion_ALL;
-        motionFlagAfterAlign = (type == 1) ? kMotion_R : kMotion_None;
+        motionFlagAfterAlign = (type == 1) ? kMotion_XZR : kMotion_None;
 
         PlayerDockAlignState::Enter(lastState);
         Print(this.name + " enter type = " + type);
@@ -2061,6 +2056,11 @@ class PlayerHangMoveState : PlayerDockAlignState
             v += dir.Normalized() * dist;
         }
         return v;
+    }
+
+    Vector3 PickDockOutTarget()
+    {
+        return ownner.dockLine.Project(motionPositon) + Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1.15);
     }
 };
 
