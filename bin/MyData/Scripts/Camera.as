@@ -28,11 +28,6 @@ class CameraController
 
     }
 
-    void DebugDraw(DebugRenderer@ debug)
-    {
-
-    }
-
     void OnCameraEvent(VariantMap& eventData)
     {
 
@@ -73,6 +68,35 @@ class CameraController
     void Reset()
     {
 
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        float w = float(graphics.width);
+        float h = float(graphics.height);
+        float w1 = w;
+        float h1 = h;
+        float gap = 1.0f;
+        w -= gap * 2;
+        h -= gap * 2;
+        // draw horizontal lines
+        float depth = 25.0f;
+        Color c(0, 1, 0);
+        float y = gap;
+        float step = h/3;
+        for (int i=0; i<4; ++i)
+        {
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(gap/w1, y/h1, depth)), camera.ScreenToWorldPoint(Vector3((w + gap)/w1, y/h1, depth)), c, false);
+            y += step;
+        }
+        // draw vertical lines
+        float x = gap;
+        step = w/3;
+        for (int i=0; i<4; ++i)
+        {
+            debug.AddLine(camera.ScreenToWorldPoint(Vector3(x/w1, gap/h1, depth)), camera.ScreenToWorldPoint(Vector3(x/w1, (h + gap)/h1, depth)), c, false);
+            x += step;
+        }
     }
 };
 
@@ -198,35 +222,6 @@ class ThirdPersonCameraController : CameraController
         targetFov = BASE_FOV;
     }
 
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        float w = float(graphics.width);
-        float h = float(graphics.height);
-        float w1 = w;
-        float h1 = h;
-        float gap = 1.0f;
-        w -= gap * 2;
-        h -= gap * 2;
-        // draw horizontal lines
-        float depth = 25.0f;
-        Color c(0, 1, 0);
-        float y = gap;
-        float step = h/3;
-        for (int i=0; i<4; ++i)
-        {
-            debug.AddLine(camera.ScreenToWorldPoint(Vector3(gap/w1, y/h1, depth)), camera.ScreenToWorldPoint(Vector3((w + gap)/w1, y/h1, depth)), c, false);
-            y += step;
-        }
-        // draw vertical lines
-        float x = gap;
-        step = w/3;
-        for (int i=0; i<4; ++i)
-        {
-            debug.AddLine(camera.ScreenToWorldPoint(Vector3(x/w1, gap/h1, depth)), camera.ScreenToWorldPoint(Vector3(x/w1, (h + gap)/h1, depth)), c, false);
-            x += step;
-        }
-    }
-
     String GetDebugText()
     {
         return "camera fov=" + camera.fov + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + " targetFov=" + targetFov + "\n";
@@ -239,8 +234,11 @@ class ThirdPersonCameraController : CameraController
         Vector3 offset = q * targetOffset;
         Vector3 target_pos = p.GetNode().worldPosition + offset;
         Vector3 dir = target_pos - cameraNode.worldPosition;
-        float dist = dir.length;
-
+        cameraDistance = dir.length;
+        float h = Abs(dir.y);
+        gInput.m_rightStickY = Asin(h/cameraDistance);
+        gInput.m_rightStickX = Asin(dir.x/cameraDistance);
+        gInput.m_rightStickMagnitude = gInput.m_rightStickX * gInput.m_rightStickX + gInput.m_rightStickY * gInput.m_rightStickY;
     }
 };
 
