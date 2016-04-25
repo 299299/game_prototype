@@ -312,6 +312,11 @@ class Motion
         InnerStart(object);
     }
 
+    float GetDockAlignTime()
+    {
+        return dockAlignBoneName.empty ? endTime : dockAlignTime;
+    }
+
     Vector3 GetDockAlignPositionAtTime(Character@ object, float targetRotation, float t)
     {
         Node@ _node = object.GetNode();
@@ -371,7 +376,7 @@ class Motion
                 else
                 {
                     Vector3 tWorld = _node.worldRotation * tLocal;
-                    object.SetVelocity(tWorld / dt * speed + object.motion_velocity);
+                    object.SetVelocity(tWorld / dt + object.motion_velocity);
                 }
 
             }
@@ -403,7 +408,7 @@ class Motion
                     motionOut = GetKey(localTime + dt);
                     Vector3 tWorld2 = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
                     Vector3 vel = (tWorld2 - tWorld1) / dt;
-                    object.SetVelocity(vel * speed + object.motion_velocity);
+                    object.SetVelocity(vel + object.motion_velocity);
                 }
             }
             else

@@ -840,8 +840,8 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.3));
     Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", flags).SetDockAlign(R_HAND, 0.8f, Vector3(0, -0.05, 0.4));
 
-    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", flags);
-    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", flags);
+    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", flags, kMotion_ALL, 16);
+    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", flags, kMotion_ALL, 20);
 
     flags = kMotion_XZR | kMotion_Ext_Foot_Based_Height;
     Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", flags, kMotion_R);

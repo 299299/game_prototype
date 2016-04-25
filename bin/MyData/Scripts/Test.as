@@ -434,15 +434,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_F5)
         ToggleDebugWindow();
-    else if (key == 'R')
-        scene_.updateEnabled = !scene_.updateEnabled;
-    else if (key == 'T')
-    {
-        if (scene_.timeScale >= 0.999f)
-            scene_.timeScale = 0.1f;
-        else
-            scene_.timeScale = 1.0f;
-    }
     else if (key == KEY_1)
         ShootSphere(scene_);
     else if (key == KEY_2)
@@ -478,6 +469,15 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         colorGradingIndex --;
         SetColorGrading(colorGradingIndex);
+    }
+    else if (key == 'R')
+        scene_.updateEnabled = !scene_.updateEnabled;
+    else if (key == 'T')
+    {
+        if (scene_.timeScale >= 0.999f)
+            scene_.timeScale = 0.1f;
+        else
+            scene_.timeScale = 1.0f;
     }
     else if (key == 'Q')
         engine.Exit();
@@ -546,6 +546,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             }
             Print("------------------------------------------------------------");
         }
+    }
+    else if (key == 'U')
+    {
+        Player@ p = GetPlayer();
+        if (p.timeScale > 1.0f)
+            p.timeScale = 1.0f;
+        else
+            p.timeScale = 1.25f;
     }
 }
 

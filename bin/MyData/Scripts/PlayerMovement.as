@@ -927,7 +927,7 @@ class PlayerDockAlignState : MultiMotionState
     {
         Line@ l = ownner.dockLine;
         Motion@ m = motions[selectIndex];
-        float t = m.dockAlignBoneName.empty ? m.endTime : m.dockAlignTime;
+        float t = m.GetDockAlignTime();
         Vector3 v = m.GetDockAlignPositionAtTime(ownner, ownner.GetCharacterAngle(), t);
         v = l.Project(v);
         v = l.FixProjectPosition(v, dockInTargetBound);
@@ -986,7 +986,7 @@ class PlayerDockAlignState : MultiMotionState
             Motion@ m = motions[selectIndex];
             targetPosition = ownner.dockLine.Project(ownner.GetNode().worldPosition);
 
-            float t = m.dockAlignBoneName.empty ? m.endTime : m.dockAlignTime;
+            float t = m.GetDockAlignTime();
             motionRotation = ownner.GetCharacterAngle(); //m.GetFutureRotation(ownner, t);
             targetRotation = (motionFlagBeforeAlign & kMotion_R != 0) ? PickDockInRotation() : motionRotation;
 
@@ -2039,12 +2039,7 @@ class PlayerHangMoveState : PlayerDockAlignState
     Vector3 PickDockInTarget()
     {
         Line@ l = ownner.dockLine;
-        Vector3 v;
-        //Motion@ m = motions[selectIndex];
-        //float t = m.dockAlignBoneName.empty ? m.endTime : m.dockAlignTime;
-        //v = m.GetDockAlignPositionAtTime(ownner, ownner.GetCharacterAngle(), t);
-        //v = l.Project(v);
-        v = l.Project(motionPositon);
+        Vector3 v = l.Project(motionPositon);
         v = l.FixProjectPosition(v, dockInTargetBound);
         if (l.HasFlag(LINE_THIN_WALL))
         {
