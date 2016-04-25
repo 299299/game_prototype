@@ -69,6 +69,11 @@ class CameraController
     {
         return "camera fov=" + camera.fov + " position=" + cameraNode.worldPosition.ToString() + "\n";
     }
+
+    void Reset()
+    {
+
+    }
 };
 
 
@@ -225,6 +230,17 @@ class ThirdPersonCameraController : CameraController
     String GetDebugText()
     {
         return "camera fov=" + camera.fov + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + " targetFov=" + targetFov + "\n";
+    }
+
+    void Reset()
+    {
+        Player@ p = GetPlayer();
+        Quaternion q = cameraNode.worldRotation;
+        Vector3 offset = q * targetOffset;
+        Vector3 target_pos = p.GetNode().worldPosition + offset;
+        Vector3 dir = target_pos - cameraNode.worldPosition;
+        float dist = dir.length;
+
     }
 };
 

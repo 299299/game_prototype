@@ -151,6 +151,8 @@ class GameInput
     Vector2 GetRightStick()
     {
         JoystickState@ joystick = GetJoystick();
+        Vector2 rightAxis = m_rightAxis;
+
         if (joystick !is null)
         {
             if (joystick.numAxes >= 4)
@@ -163,8 +165,6 @@ class GameInput
                     lookY = joystick.axisPosition[2];
                 }
 
-                Vector2 rightAxis = m_rightAxis;
-
                 if (lookX < -joyLookDeadZone)
                     rightAxis.x -= joySensitivity * lookX * lookX;
                 if (lookX > joyLookDeadZone)
@@ -173,15 +173,14 @@ class GameInput
                     rightAxis.y -= joySensitivity * lookY * lookY;
                 if (lookY > joyLookDeadZone)
                     rightAxis.y += joySensitivity * lookY * lookY;
-                m_rightAxis = rightAxis;
             }
         }
         else
         {
-            m_rightAxis.x += mouseSensitivity * input.mouseMoveX;
-            m_rightAxis.y += mouseSensitivity * input.mouseMoveY;
+            rightAxis.x += mouseSensitivity * input.mouseMoveX;
+            rightAxis.y += mouseSensitivity * input.mouseMoveY;
         }
-        return m_rightAxis;
+        return rightAxis;
     }
 
     JoystickState@ GetJoystick()
