@@ -27,8 +27,6 @@ class GameInput
 
     float m_smooth = 0.9f;
 
-    Vector2  m_rightAxis = Vector2(0, 30);
-
     float mouseSensitivity = 0.125f;
     float joySensitivity = 0.75;
     float joyLookDeadZone = 0.05;
@@ -63,8 +61,8 @@ class GameInput
 
         m_leftStickX = Lerp(m_leftStickX, leftStick.x, m_smooth);
         m_leftStickY = Lerp(m_leftStickY, leftStick.y, m_smooth);
-        m_rightStickX = Lerp(m_rightStickX, rightStick.x, m_smooth);
-        m_rightStickY = Lerp(m_rightStickY, rightStick.y, m_smooth);
+        m_rightStickX = rightStick.x; //Lerp(m_rightStickX, rightStick.x, m_smooth);
+        m_rightStickY = rightStick.y; //Lerp(m_rightStickY, rightStick.y, m_smooth);
 
         m_leftStickMagnitude = m_leftStickX * m_leftStickX + m_leftStickY * m_leftStickY;
         m_rightStickMagnitude = m_rightStickX * m_rightStickX + m_rightStickY * m_rightStickY;
@@ -151,7 +149,7 @@ class GameInput
     Vector2 GetRightStick()
     {
         JoystickState@ joystick = GetJoystick();
-        Vector2 rightAxis = m_rightAxis;
+        Vector2 rightAxis = Vector2(m_rightStickX, m_rightStickY);
 
         if (joystick !is null)
         {

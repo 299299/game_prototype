@@ -366,7 +366,8 @@ class TestGameState : GameState
                 EnemyManager@ em = GetEnemyMgr();
                 if (fullscreenUI.opacity > 0.95f && em.enemyList.empty)
                 {
-                    gInput.m_rightAxis = Vector2(0, 30);
+                    gInput.m_rightStickX = 20;
+                    gInput.m_rightStickY = 30;
                     em.CreateEnemies();
                 }
 
