@@ -965,7 +965,7 @@ class Player : Character
         if (lines.empty)
             return null;
 
-        Print("FindDownLine lines.num=" + lines.length);
+        // Print("FindDownLine lines.num=" + lines.length);
 
         for (uint i=0; i<lines.length; ++i)
         {

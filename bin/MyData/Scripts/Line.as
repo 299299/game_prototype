@@ -477,7 +477,7 @@ class LineWorld
                 outLines.Push(lines[i]);
         }
 
-        Print("CollectLinesByNode " + node.name + " num=" + outLines.length);
+        // Print("CollectLinesByNode " + node.name + " num=" + outLines.length);
 
         return outLines.length;
     }
@@ -487,7 +487,7 @@ class LineWorld
         outLines.Clear();
 
         Array<RigidBody@> bodies = scene.physicsWorld.GetRigidBodies(box, COLLISION_LAYER_LANDSCAPE);
-        Print("CollectLinesInBox bodies.num=" + bodies.length);
+        // Print("CollectLinesInBox bodies.num=" + bodies.length);
         if (bodies.empty)
             return 0;
 
