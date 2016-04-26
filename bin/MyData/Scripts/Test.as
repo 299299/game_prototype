@@ -1074,14 +1074,20 @@ class BM_Game_MotionManager : MotionManager
     void AddMotions()
     {
         CreateBruceMotions();
-        CreateThugMotions();
-        CreateCatwomanMotions();
+        if (game_type == 0)
+        {
+            CreateThugMotions();
+            CreateCatwomanMotions();
+        }
     }
 
     void AddTriggers()
     {
-        AddThugAnimationTriggers();
         AddBruceAnimationTriggers();
-        AddCatwomanAnimationTriggers();
+        if (game_type == 0)
+        {
+            AddThugAnimationTriggers();
+            AddCatwomanAnimationTriggers();
+        }
     }
 };

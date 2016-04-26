@@ -236,7 +236,7 @@ class TestGameState : GameState
         fullscreenUI.visible = false;
         fullscreenUI.priority = -9999;
         fullscreenUI.opacity = 1.0f;
-        fullscreenUI.texture = cache.GetResource("Texture2D", "Data/Textures/Fade.png");
+        fullscreenUI.texture = cache.GetResource("Texture2D", "Textures/fade.png");
         fullscreenUI.SetFullImageRect();
         if (!engine.headless)
             fullscreenUI.SetFixedSize(graphics.width, graphics.height);

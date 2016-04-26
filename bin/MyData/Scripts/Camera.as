@@ -468,8 +468,6 @@ class CameraManager
         if (currentController is cc)
             return;
 
-        Print("SetCameraController -- " + nameHash.ToString());
-
         if (currentController !is null)
             currentController.Exit();
         @currentController = cc;
