@@ -209,39 +209,6 @@ class BruceDeadState : PlayerDeadState
     }
 };
 
-class BruceBeatDownEndState : PlayerBeatDownEndState
-{
-    BruceBeatDownEndState(Character@ c)
-    {
-        super(c);
-        String preFix = "BM_TG_Beatdown/";
-        AddMotion(preFix + "Beatdown_Strike_End_01");
-        AddMotion(preFix + "Beatdown_Strike_End_02");
-        AddMotion(preFix + "Beatdown_Strike_End_03");
-        AddMotion(preFix + "Beatdown_Strike_End_04");
-    }
-};
-
-class BruceBeatDownHitState : PlayerBeatDownHitState
-{
-    BruceBeatDownHitState(Character@ c)
-    {
-        super(c);
-        String preFix = "BM_Attack/";
-        AddMotion(preFix + "Beatdown_Test_01");
-        AddMotion(preFix + "Beatdown_Test_02");
-        AddMotion(preFix + "Beatdown_Test_03");
-        AddMotion(preFix + "Beatdown_Test_04");
-        AddMotion(preFix + "Beatdown_Test_05");
-        AddMotion(preFix + "Beatdown_Test_06");
-    }
-
-    bool IsTransitionNeeded(float curDist)
-    {
-        return curDist > BRUCE_TRANSITION_DIST + 0.5f;
-    }
-};
-
 class BruceTransitionState : PlayerTransitionState
 {
     BruceTransitionState(Character@ c)
@@ -608,8 +575,6 @@ class Bruce : Player
             stateMachine.AddState(BruceCounterState(this));
             stateMachine.AddState(BruceHitState(this));
             stateMachine.AddState(BruceDeadState(this));
-            stateMachine.AddState(BruceBeatDownHitState(this));
-            stateMachine.AddState(BruceBeatDownEndState(this));
             stateMachine.AddState(BruceTransitionState(this));
         }
         else if (game_type == 1)

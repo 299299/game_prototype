@@ -19,7 +19,6 @@
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
 #include "Scripts/Bruce.as"
-#include "Scripts/Catwoman.as"
 #include "Scripts/PlayerCombat.as"
 #include "Scripts/PlayerMovement.as"
 
@@ -42,7 +41,6 @@ Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "Camera";
-int playerType = 0;
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
@@ -82,14 +80,6 @@ void Start()
                 nobgm = !nobgm;
             else if (argument == "bighead")
                 bigHeadMode = !bigHeadMode;
-            else if (argument == "player")
-            {
-                String name = arguments[i+1];
-                if (name == "bruce")
-                    playerType = 0;
-                else if (name == "catwoman")
-                    playerType = 1;
-            }
             else if (argument == "lowend")
                 render_features = RF_NONE;
             else if (argument == "freezeai")
@@ -481,14 +471,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == 'Q')
         engine.Exit();
-    else if (key == 'J')
-        TestAnimations_Group_2();
-    else if (key == 'K')
-        TestAnimations_Group_3();
-    else if (key == 'L')
-        TestAnimations_Group_4();
-    else if (key == 'H')
-        TestAnimations_Group_Beat();
     else if (key == 'E')
     {
         Array<String> testAnimations;
@@ -704,173 +686,6 @@ void SetColorGrading(int index)
     ChangeRenderCommandTexture(renderer.viewports[0].renderPath, "ColorCorrection", "Textures/LUT/" + LUT + ".xml", TU_VOLUMEMAP);
 }
 
-void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
-{
-    Player@ player = GetPlayer();
-    EnemyManager@ em = GetEnemyMgr();
-
-    if (em.enemyList.length < thugAnims.length)
-        return;
-
-    Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
-    if (m_player is null)
-        return;
-
-    Print("TestAnimation_Group " + playerAnim);
-
-    Array<String> testAnims;
-
-    for (uint i=0; i<thugAnims.length; ++i)
-    {
-        Motion@ m = gMotionMgr.FindMotion(thugAnims[i]);
-        Enemy@ e = em.enemyList[i];
-        Vector4 t = GetTargetTransform(player.GetNode(), m, m_player);
-        e.Transform(Vector3(t.x, e.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
-        e.TestAnimation(thugAnims[i]);
-    }
-    player.TestAnimation(playerAnim);
-    player.SetSceneTimeScale(0.0f);
-}
-
-void TestAnimation_Group_s(const String&in playerAnim, const String& thugAnim, bool baseOnPlayer = false)
-{
-    Player@ player = GetPlayer();
-    EnemyManager@ em = GetEnemyMgr();
-
-    if (em.enemyList.empty)
-        return;
-
-    Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
-    Motion@ m = gMotionMgr.FindMotion(thugAnim);
-    Enemy@ e = em.enemyList[0];
-
-    if (baseOnPlayer)
-    {
-        Vector4 t = GetTargetTransform(player.GetNode(), m, m_player);
-        e.Transform(Vector3(t.x, e.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
-    }
-    else
-    {
-        Vector4 t = GetTargetTransform(e.GetNode(), m_player, m);
-        player.Transform(Vector3(t.x, player.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
-    }
-
-    e.TestAnimation(thugAnim);
-    player.TestAnimation(playerAnim);
-}
-
-void TestAnimations_Group_Beat()
-{
-    String playerAnim = "BM_Attack/Beatdown_Test_0" + test_beat_index;
-    String thugAnim = "TG_BM_Beatdown/Beatdown_HitReaction_0" + test_beat_index;
-    test_beat_index ++;
-    if (test_beat_index > 6)
-    {
-        test_beat_index = 1;
-        base_on_player = !base_on_player;
-    }
-    TestAnimation_Group_s(playerAnim, thugAnim, base_on_player);
-}
-
-void TestAnimations_Group_2()
-{
-    Player@ player = GetPlayer();
-    EnemyManager@ em = GetEnemyMgr();
-    if (em.enemyList.empty)
-        return;
-
-    Enemy@ e = em.enemyList[0];
-    CharacterCounterState@ s1 = cast<CharacterCounterState>(player.FindState("CounterState"));
-    CharacterCounterState@ s2 = cast<CharacterCounterState>(e.FindState("CounterState"));
-    Motion@ m1, m2;
-    int i = RandomInt(4);
-    if (i == 0)
-    {
-        int k = RandomInt(s1.frontArmMotions.length);
-        @m1 = s1.frontArmMotions[k];
-        @m2 = s2.frontArmMotions[k];
-    }
-    else if (i == 1)
-    {
-        int k = RandomInt(s1.frontLegMotions.length);
-        @m1 = s1.frontLegMotions[k];
-        @m2 = s2.frontLegMotions[k];
-    }
-    else if (i == 2)
-    {
-        int k = RandomInt(s1.backArmMotions.length);
-        @m1 = s1.backArmMotions[k];
-        @m2 = s2.backArmMotions[k];
-    }
-    else if (i == 3)
-    {
-        int k = RandomInt(s1.backLegMotions.length);
-        @m1 = s1.backLegMotions[k];
-        @m2 = s2.backLegMotions[k];
-    }
-
-    Vector4 t = GetTargetTransform(e.GetNode(), m1, m2);
-    player.Transform(Vector3(t.x, player.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
-
-    e.TestAnimation(m2.name);
-    player.TestAnimation(m1.name);
-    player.SetSceneTimeScale(0.0f);
-
-    Print("TestAnimations_Group_2 -> " + m1.name);
-}
-
-void TestAnimations_Group_3()
-{
-    Array<String> tests =
-    {
-        "Double_Counter_2ThugsA",
-        "Double_Counter_2ThugsB",
-        "Double_Counter_2ThugsC",
-        "Double_Counter_2ThugsD",
-        "Double_Counter_2ThugsE",
-        "Double_Counter_2ThugsF",
-        "Double_Counter_2ThugsG",
-        "Double_Counter_2ThugsH"
-    };
-    String preFix = "BM";
-    if (playerType == 1)
-        preFix = "CW";
-    String test = tests[test_double_counter_index];
-    test_double_counter_index ++;
-    if (test_double_counter_index >= int(tests.length))
-        test_double_counter_index = 0;
-    String playerAnim = preFix + "_TG_Counter/" + test;
-    Array<String> thugAnims;
-    String thugAnim = "TG_" + preFix + "_Counter/" + test;
-    thugAnims.Push(thugAnim + "_01");
-    thugAnims.Push(thugAnim + "_02");
-    TestAnimation_Group(playerAnim, thugAnims);
-}
-
-void TestAnimations_Group_4()
-{
-    String preFix = "BM";
-    if (playerType == 1)
-        preFix = "CW";
-    Array<String> tests =
-    {
-        "Double_Counter_3ThugsA",
-        "Double_Counter_3ThugsB",
-        "Double_Counter_3ThugsC"
-    };
-    String test = tests[test_triple_counter_index];
-    test_triple_counter_index ++;
-    if (test_triple_counter_index >= int(tests.length))
-        test_triple_counter_index = 0;
-    String playerAnim = preFix + "_TG_Counter/" + test;
-    Array<String> thugAnims;
-    String thugAnim = "TG_" + preFix + "_Counter/" + test;
-    thugAnims.Push(thugAnim + "_01");
-    thugAnims.Push(thugAnim + "_02");
-    thugAnims.Push(thugAnim + "_03");
-    TestAnimation_Group(playerAnim, thugAnims);
-}
-
 void ToggleDebugWindow()
 {
     Window@ win = ui.root.GetChild("DebugWindow", true);
@@ -1077,7 +892,6 @@ class BM_Game_MotionManager : MotionManager
         if (game_type == 0)
         {
             CreateThugMotions();
-            CreateCatwomanMotions();
         }
     }
 
@@ -1087,7 +901,6 @@ class BM_Game_MotionManager : MotionManager
         if (game_type == 0)
         {
             AddThugAnimationTriggers();
-            AddCatwomanAnimationTriggers();
         }
     }
 };
