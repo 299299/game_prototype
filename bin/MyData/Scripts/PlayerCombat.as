@@ -774,51 +774,6 @@ class PlayerDeadState : MultiMotionState
     }
 };
 
-class PlayerTransitionState : SingleMotionState
-{
-    String nextStateName;
 
-    PlayerTransitionState(Character@ c)
-    {
-        super(c);
-        SetName("TransitionState");
-    }
-
-    void OnMotionFinished()
-    {
-        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
-        if (!nextStateName.empty)
-            ownner.ChangeState(nextStateName);
-        else
-            ownner.CommonStateFinishedOnGroud();
-    }
-
-    void Enter(State@ lastState)
-    {
-        Character@ target = ownner.target;
-        if (target !is null)
-        {
-            target.RequestDoNotMove();
-            Vector3 dir = target.GetNode().worldPosition - ownner.GetNode().worldPosition;
-            float angle = Atan2(dir.x, dir.z);
-            ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
-            target.GetNode().worldRotation = Quaternion(0, angle + 180, 0);
-        }
-        SingleMotionState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        SingleMotionState::Exit(nextState);
-        if (ownner.target !is null)
-            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
-        Print("After Player Transition Target dist = " + ownner.GetTargetDistance());
-    }
-
-    String GetDebugText()
-    {
-        return " name=" + name + " timeInState=" + String(timeInState) + " nextState=" + nextStateName + "\n";
-    }
-};
 
 

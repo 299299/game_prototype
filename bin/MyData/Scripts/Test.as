@@ -17,7 +17,7 @@
 #include "Scripts/Enemy.as"
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
-#include "Scripts/Bruce.as"
+#include "Scripts/Batman.as"
 #include "Scripts/PlayerCombat.as"
 #include "Scripts/PlayerMovement.as"
 
@@ -887,7 +887,7 @@ class BM_Game_MotionManager : MotionManager
 {
     void AddMotions()
     {
-        CreateBruceMotions();
+        Create_BM_Motions();
         if (game_type == 0)
         {
             CreateThugMotions();
@@ -896,7 +896,7 @@ class BM_Game_MotionManager : MotionManager
 
     void AddTriggers()
     {
-        AddBruceAnimationTriggers();
+        Add_BM_AnimationTriggers();
         if (game_type == 0)
         {
             AddThugAnimationTriggers();

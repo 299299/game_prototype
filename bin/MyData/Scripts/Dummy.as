@@ -404,22 +404,61 @@ void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&i
     debug.AddSphere(sp, color, false);
 }
 
-int DetectWallBlockingFoot()
+float GetFootFrontDiff()
 {
-    int ret = 0;
-    Node@ footLeft = ownner.GetNode().GetChild(L_FOOT, true);
-    Node@ foootRight = ownner.GetNode().GetChild(R_FOOT, true);
-    PhysicsWorld@ world = ownner.GetScene().physicsWorld;
-    Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
-    Ray ray;
-    ray.Define(footLeft.worldPosition, dir);
-    float dist = 5.0f;
-    PhysicsRaycastResult result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
-    if (result.body !is null)
-        ret ++;
-    ray.Define(foootRight.worldPosition, dir);
-    result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
-    if (result.body !is null)
-        ret ++;
-    return ret;
+    Vector3 fwd_dir = renderNode.worldRotation * Vector3(0, 0, 1);
+    Vector3 pt_lf = renderNode.GetChild("Bip01_L_Foot").worldPosition - renderNode.worldPosition;
+    Vector3 pt_rf = renderNode.GetChild("Bip01_R_Foot").worldPosition - renderNode.worldPosition;
+    float dot_lf = pt_lf.DotProduct(fwd_dir);
+    float dot_rf = pt_rf.DotProduct(fwd_dir);
+    Print(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));
+    return dot_lf - dot_rf;
 }
+
+class PlayerTransitionState : SingleMotionState
+{
+    String nextStateName;
+
+    PlayerTransitionState(Character@ c)
+    {
+        super(c);
+        SetName("TransitionState");
+    }
+
+    void OnMotionFinished()
+    {
+        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        if (!nextStateName.empty)
+            ownner.ChangeState(nextStateName);
+        else
+            ownner.CommonStateFinishedOnGroud();
+    }
+
+    void Enter(State@ lastState)
+    {
+        Character@ target = ownner.target;
+        if (target !is null)
+        {
+            target.RequestDoNotMove();
+            Vector3 dir = target.GetNode().worldPosition - ownner.GetNode().worldPosition;
+            float angle = Atan2(dir.x, dir.z);
+            ownner.GetNode().worldRotation = Quaternion(0, angle, 0);
+            target.GetNode().worldRotation = Quaternion(0, angle + 180, 0);
+        }
+        SingleMotionState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        if (ownner.target !is null)
+            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
+        Print("After Player Transition Target dist = " + ownner.GetTargetDistance());
+    }
+
+    String GetDebugText()
+    {
+        return " name=" + name + " timeInState=" + String(timeInState) + " nextState=" + nextStateName + "\n";
+    }
+};
+

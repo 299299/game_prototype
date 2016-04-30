@@ -1,24 +1,21 @@
 // ==============================================
 //
-//    Bruce Class
+//    Batman Class
 //
 // ==============================================
 
-// -- non cost
-float BRUCE_TRANSITION_DIST = 0.0f;
-
-class BruceStandState : PlayerStandState
+class BatmanStandState : PlayerStandState
 {
-    BruceStandState(Character@ c)
+    BatmanStandState(Character@ c)
     {
         super(c);
         AddMotion("BM_Movement/Stand_Idle");
     }
 };
 
-class BruceTurnState : PlayerTurnState
+class BatmanTurnState : PlayerTurnState
 {
-    BruceTurnState(Character@ c)
+    BatmanTurnState(Character@ c)
     {
         super(c);
         AddMotion("BW_Movement/Turn_Right_90");
@@ -27,9 +24,9 @@ class BruceTurnState : PlayerTurnState
     }
 };
 
-class BruceStandToWalkState : PlayerStandToWalkState
+class BatmanStandToWalkState : PlayerStandToWalkState
 {
-    BruceStandToWalkState(Character@ c)
+    BatmanStandToWalkState(Character@ c)
     {
         super(c);
         AddMotion("BW_Movement/Stand_To_Walk_Right_90");
@@ -38,18 +35,18 @@ class BruceStandToWalkState : PlayerStandToWalkState
     }
 };
 
-class BruceWalkState : PlayerWalkState
+class BatmanWalkState : PlayerWalkState
 {
-    BruceWalkState(Character@ c)
+    BatmanWalkState(Character@ c)
     {
         super(c);
         SetMotion("BW_Movement/Walk_Forward");
     }
 };
 
-class BruceStandToRunState : PlayerStandToRunState
+class BatmanStandToRunState : PlayerStandToRunState
 {
-    BruceStandToRunState(Character@ c)
+    BatmanStandToRunState(Character@ c)
     {
         super(c);
         AddMotion("BW_Movement/Stand_To_Run_Right_90");
@@ -58,36 +55,36 @@ class BruceStandToRunState : PlayerStandToRunState
     }
 };
 
-class BruceRunState : PlayerRunState
+class BatmanRunState : PlayerRunState
 {
-    BruceRunState(Character@ c)
+    BatmanRunState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Run_Forward");
     }
 };
 
-class BruceRunToStandState : PlayerRunToStandState
+class BatmanRunToStandState : PlayerRunToStandState
 {
-    BruceRunToStandState(Character@ c)
+    BatmanRunToStandState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Run_Right_Passing_To_Stand");
     }
 };
 
-class BruceRunTurn180State : PlayerRunTurn180State
+class BatmanRunTurn180State : PlayerRunTurn180State
 {
-    BruceRunTurn180State(Character@ c)
+    BatmanRunTurn180State(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Run_Right_Passing_To_Run_Right_180");
     }
 };
 
-class BruceEvadeState : PlayerEvadeState
+class BatmanEvadeState : PlayerEvadeState
 {
-    BruceEvadeState(Character@ c)
+    BatmanEvadeState(Character@ c)
     {
         super(c);
         String prefix = "BM_Combat/";
@@ -98,9 +95,9 @@ class BruceEvadeState : PlayerEvadeState
     }
 };
 
-class BruceAttackState : PlayerAttackState
+class BatmanAttackState : PlayerAttackState
 {
-    BruceAttackState(Character@ c)
+    BatmanAttackState(Character@ c)
     {
         super(c);
 
@@ -174,18 +171,18 @@ class BruceAttackState : PlayerAttackState
 };
 
 
-class BruceCounterState : PlayerCounterState
+class BatmanCounterState : PlayerCounterState
 {
-    BruceCounterState(Character@ c)
+    BatmanCounterState(Character@ c)
     {
         super(c);
         AddBW_Counter_Animations("BW_TG_Counter/", "BM_TG_Counter/", true);
     }
 };
 
-class BruceHitState : PlayerHitState
+class BatmanHitState : PlayerHitState
 {
-    BruceHitState(Character@ c)
+    BatmanHitState(Character@ c)
     {
         super(c);
         String hitPrefix = "BM_HitReaction/";
@@ -196,9 +193,9 @@ class BruceHitState : PlayerHitState
     }
 };
 
-class BruceDeadState : PlayerDeadState
+class BatmanDeadState : PlayerDeadState
 {
-    BruceDeadState(Character@ c)
+    BatmanDeadState(Character@ c)
     {
         super(c);
         String prefix = "BM_Death_Primers/";
@@ -209,29 +206,18 @@ class BruceDeadState : PlayerDeadState
     }
 };
 
-class BruceTransitionState : PlayerTransitionState
+class BatmanSlideInState : PlayerSlideInState
 {
-    BruceTransitionState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Combat/Into_Takedown");
-        BRUCE_TRANSITION_DIST = motion.endDistance;
-        Print("Bruce-Transition Dist=" + BRUCE_TRANSITION_DIST);
-    }
-};
-
-class BruceSlideInState : PlayerSlideInState
-{
-    BruceSlideInState(Character@ c)
+    BatmanSlideInState(Character@ c)
     {
         super(c);
         SetMotion("BM_Climb/Slide_Floor_In");
     }
 };
 
-class BruceSlideOutState : PlayerSlideOutState
+class BatmanSlideOutState : PlayerSlideOutState
 {
-    BruceSlideOutState(Character@ c)
+    BatmanSlideOutState(Character@ c)
     {
         super(c);
         String preFix = "BM_Climb/";
@@ -240,18 +226,18 @@ class BruceSlideOutState : PlayerSlideOutState
     }
 };
 
-class BruceCrouchState : PlayerCrouchState
+class BatmanCrouchState : PlayerCrouchState
 {
-    BruceCrouchState(Character@ c)
+    BatmanCrouchState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Crouch_Idle");
     }
 };
 
-class BruceCrouchTurnState : PlayerCrouchTurnState
+class BatmanCrouchTurnState : PlayerCrouchTurnState
 {
-    BruceCrouchTurnState(Character@ c)
+    BatmanCrouchTurnState(Character@ c)
     {
         super(c);
         AddMotion("BM_Crouch_Turns/Turn_Right_90");
@@ -260,9 +246,9 @@ class BruceCrouchTurnState : PlayerCrouchTurnState
     }
 };
 
-class BruceCrouchMoveState : PlayerCrouchMoveState
+class BatmanCrouchMoveState : PlayerCrouchMoveState
 {
-    BruceCrouchMoveState(Character@ c)
+    BatmanCrouchMoveState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Cover_Run");
@@ -270,36 +256,36 @@ class BruceCrouchMoveState : PlayerCrouchMoveState
     }
 };
 
-class BruceFallState : PlayerFallState
+class BatmanFallState : PlayerFallState
 {
-    BruceFallState(Character@ c)
+    BatmanFallState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Fall");
     }
 };
 
-class BruceLandState : PlayerLandState
+class BatmanLandState : PlayerLandState
 {
-    BruceLandState(Character@ c)
+    BatmanLandState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Land");
     }
 };
 
-class BruceCoverState : PlayerCoverState
+class BatmanCoverState : PlayerCoverState
 {
-    BruceCoverState(Character@ c)
+    BatmanCoverState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Cover_Idle");
     }
 };
 
-class BruceCoverRunState : PlayerCoverRunState
+class BatmanCoverRunState : PlayerCoverRunState
 {
-    BruceCoverRunState(Character@ c)
+    BatmanCoverRunState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Cover_Run");
@@ -307,18 +293,18 @@ class BruceCoverRunState : PlayerCoverRunState
     }
 };
 
-class BruceCoverTransitionState : PlayerCoverTransitionState
+class BatmanCoverTransitionState : PlayerCoverTransitionState
 {
-    BruceCoverTransitionState(Character@ c)
+    BatmanCoverTransitionState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Cover_Transition");
     }
 };
 
-class BruceClimbOverState : PlayerClimbOverState
+class BatmanClimbOverState : PlayerClimbOverState
 {
-    BruceClimbOverState(Character@ c)
+    BatmanClimbOverState(Character@ c)
     {
         super(c);
         AddMotion("BM_Climb/Stand_Climb_Over_128_Fall");
@@ -337,9 +323,9 @@ class BruceClimbOverState : PlayerClimbOverState
     }
 };
 
-class BruceClimbUpState : PlayerClimbUpState
+class BatmanClimbUpState : PlayerClimbUpState
 {
-    BruceClimbUpState(Character@ c)
+    BatmanClimbUpState(Character@ c)
     {
         super(c);
         AddMotion("BM_Climb/Stand_Climb_Up_128");
@@ -351,9 +337,9 @@ class BruceClimbUpState : PlayerClimbUpState
     }
 };
 
-class BruceHangUpState : PlayerHangUpState
+class BatmanHangUpState : PlayerHangUpState
 {
-    BruceHangUpState(Character@ c)
+    BatmanHangUpState(Character@ c)
     {
         super(c);
         AddMotion("BM_Climb/Stand_Climb_Up_256_Hang");
@@ -363,9 +349,9 @@ class BruceHangUpState : PlayerHangUpState
     }
 };
 
-class BruceHangIdleState : PlayerHangIdleState
+class BatmanHangIdleState : PlayerHangIdleState
 {
-    BruceHangIdleState(Character@ c)
+    BatmanHangIdleState(Character@ c)
     {
         super(c);
 
@@ -376,9 +362,9 @@ class BruceHangIdleState : PlayerHangIdleState
     }
 };
 
-class BruceHangOverState : PlayerHangOverState
+class BatmanHangOverState : PlayerHangOverState
 {
-    BruceHangOverState(Character@ c)
+    BatmanHangOverState(Character@ c)
     {
         super(c);
         AddMotion("BM_Climb/Hang_Climb_Up_Run");
@@ -388,9 +374,9 @@ class BruceHangOverState : PlayerHangOverState
     }
 };
 
-class BruceHangMoveState : PlayerHangMoveState
+class BatmanHangMoveState : PlayerHangMoveState
 {
-    BruceHangMoveState(Character@ c)
+    BatmanHangMoveState(Character@ c)
     {
         super(c);
         AddMotion("BM_Climb/Hang_Left");
@@ -404,9 +390,9 @@ class BruceHangMoveState : PlayerHangMoveState
     }
 };
 
-class BruceDangleIdleState : PlayerDangleIdleState
+class BatmanDangleIdleState : PlayerDangleIdleState
 {
-    BruceDangleIdleState(Character@ c)
+    BatmanDangleIdleState(Character@ c)
     {
         super(c);
 
@@ -420,9 +406,9 @@ class BruceDangleIdleState : PlayerDangleIdleState
     }
 };
 
-class BruceDangleOverState : PlayerDangleOverState
+class BatmanDangleOverState : PlayerDangleOverState
 {
-    BruceDangleOverState(Character@ c)
+    BatmanDangleOverState(Character@ c)
     {
         super(c);
         AddMotion("BM_Climb/Dangle_Climb_Up_Run");
@@ -432,9 +418,9 @@ class BruceDangleOverState : PlayerDangleOverState
     }
 };
 
-class BruceDangleMoveState : PlayerDangleMoveState
+class BatmanDangleMoveState : PlayerDangleMoveState
 {
-    BruceDangleMoveState(Character@ c)
+    BatmanDangleMoveState(Character@ c)
     {
         super(c);
         AddMotion("BM_Climb/Dangle_Left");
@@ -448,9 +434,9 @@ class BruceDangleMoveState : PlayerDangleMoveState
     }
 };
 
-class BruceClimbDownState : PlayerClimbDownState
+class BatmanClimbDownState : PlayerClimbDownState
 {
-    BruceClimbDownState(Character@ c)
+    BatmanClimbDownState(Character@ c)
     {
         super(c);
 
@@ -464,9 +450,9 @@ class BruceClimbDownState : PlayerClimbDownState
     }
 };
 
-class Bruce : Player
+class Batman : Player
 {
-    Bruce()
+    Batman()
     {
         super();
         walkAlignAnimation = GetAnimationName("BW_Movement/Walk_Forward");
@@ -474,56 +460,55 @@ class Bruce : Player
 
     void AddStates()
     {
-        stateMachine.AddState(BruceStandState(this));
-        stateMachine.AddState(BruceTurnState(this));
-        stateMachine.AddState(BruceWalkState(this));
-        stateMachine.AddState(BruceRunState(this));
-        stateMachine.AddState(BruceRunToStandState(this));
-        stateMachine.AddState(BruceRunTurn180State(this));
-        stateMachine.AddState(BruceEvadeState(this));
+        stateMachine.AddState(BatmanStandState(this));
+        stateMachine.AddState(BatmanTurnState(this));
+        stateMachine.AddState(BatmanWalkState(this));
+        stateMachine.AddState(BatmanRunState(this));
+        stateMachine.AddState(BatmanRunToStandState(this));
+        stateMachine.AddState(BatmanRunTurn180State(this));
+        stateMachine.AddState(BatmanEvadeState(this));
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
-        stateMachine.AddState(BruceStandToWalkState(this));
-        stateMachine.AddState(BruceStandToRunState(this));
+        stateMachine.AddState(BatmanStandToWalkState(this));
+        stateMachine.AddState(BatmanStandToRunState(this));
 
         if (game_type == 0)
         {
-            stateMachine.AddState(BruceAttackState(this));
-            stateMachine.AddState(BruceCounterState(this));
-            stateMachine.AddState(BruceHitState(this));
-            stateMachine.AddState(BruceDeadState(this));
-            stateMachine.AddState(BruceTransitionState(this));
+            stateMachine.AddState(BatmanAttackState(this));
+            stateMachine.AddState(BatmanCounterState(this));
+            stateMachine.AddState(BatmanHitState(this));
+            stateMachine.AddState(BatmanDeadState(this));
         }
         else if (game_type == 1)
         {
-            stateMachine.AddState(BruceSlideInState(this));
-            stateMachine.AddState(BruceSlideOutState(this));
-            stateMachine.AddState(BruceCrouchState(this));
-            stateMachine.AddState(BruceCrouchTurnState(this));
-            stateMachine.AddState(BruceCrouchMoveState(this));
-            stateMachine.AddState(BruceFallState(this));
-            stateMachine.AddState(BruceLandState(this));
-            stateMachine.AddState(BruceCoverState(this));
-            stateMachine.AddState(BruceCoverRunState(this));
-            stateMachine.AddState(BruceCoverTransitionState(this));
+            stateMachine.AddState(BatmanSlideInState(this));
+            stateMachine.AddState(BatmanSlideOutState(this));
+            stateMachine.AddState(BatmanCrouchState(this));
+            stateMachine.AddState(BatmanCrouchTurnState(this));
+            stateMachine.AddState(BatmanCrouchMoveState(this));
+            stateMachine.AddState(BatmanFallState(this));
+            stateMachine.AddState(BatmanLandState(this));
+            stateMachine.AddState(BatmanCoverState(this));
+            stateMachine.AddState(BatmanCoverRunState(this));
+            stateMachine.AddState(BatmanCoverTransitionState(this));
             // climb
-            stateMachine.AddState(BruceClimbOverState(this));
-            stateMachine.AddState(BruceClimbUpState(this));
-            stateMachine.AddState(BruceClimbDownState(this));
+            stateMachine.AddState(BatmanClimbOverState(this));
+            stateMachine.AddState(BatmanClimbUpState(this));
+            stateMachine.AddState(BatmanClimbDownState(this));
             // hang
-            stateMachine.AddState(BruceHangUpState(this));
-            stateMachine.AddState(BruceHangIdleState(this));
-            stateMachine.AddState(BruceHangOverState(this));
-            stateMachine.AddState(BruceHangMoveState(this));
+            stateMachine.AddState(BatmanHangUpState(this));
+            stateMachine.AddState(BatmanHangIdleState(this));
+            stateMachine.AddState(BatmanHangOverState(this));
+            stateMachine.AddState(BatmanHangMoveState(this));
             // dangle
-            stateMachine.AddState(BruceDangleIdleState(this));
-            stateMachine.AddState(BruceDangleOverState(this));
-            stateMachine.AddState(BruceDangleMoveState(this));
+            stateMachine.AddState(BatmanDangleIdleState(this));
+            stateMachine.AddState(BatmanDangleOverState(this));
+            stateMachine.AddState(BatmanDangleMoveState(this));
         }
     }
 };
 
-void CreateBruceCombatMotions()
+void Create_BM_CombatMotions()
 {
     String preFix = "BM_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Back"); // back attacked
@@ -552,7 +537,7 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Death_Side_Right");
 }
 
-void CreateBruceClimbAnimations()
+void Create_BM_ClimbAnimations()
 {
     Vector3 offset;
     String preFix = "BM_Climb/";
@@ -689,7 +674,7 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
 }
 
-void CreateBruceMotions()
+void Create_BM_Motions()
 {
     AssignMotionRig("Models/bruce_w.mdl");
 
@@ -721,12 +706,12 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Evade_Right_01");
 
     if (game_type == 0)
-        CreateBruceCombatMotions();
+        Create_BM_CombatMotions();
     else if (game_type == 1)
-        CreateBruceClimbAnimations();
+        Create_BM_ClimbAnimations();
 }
 
-void AddBruceCombatAnimationTriggers()
+void Add_BM_CombatAnimationTriggers()
 {
     String preFix = "BM_Attack/";
 
@@ -929,7 +914,7 @@ void AddBruceCombatAnimationTriggers()
     AddAnimationTrigger(preFix + "Double_Counter_3ThugsC", 52, READY_TO_FIGHT);
 }
 
-void AddBruceAnimationTriggers()
+void Add_BM_AnimationTriggers()
 {
     String preFix = "BM_Combat/";
     AddAnimationTrigger(preFix + "Evade_Forward_01", 48, READY_TO_FIGHT);
@@ -948,7 +933,7 @@ void AddBruceAnimationTriggers()
     AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
 
     if (game_type == 0)
-        AddBruceCombatAnimationTriggers();
+        Add_BM_CombatAnimationTriggers();
     else if (game_type == 1)
     {
         preFix = "BM_Climb/";

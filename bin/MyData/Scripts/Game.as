@@ -577,7 +577,7 @@ class TestGameState : GameState
             tmpPlayerNode.Remove();
         }
 
-        Node@ playerNode = CreateCharacter("player", "bruce_w", "Bruce", playerPos, playerRot);
+        Node@ playerNode = CreateCharacter("player", "batman", "Batman", playerPos, playerRot);
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         playerId = playerNode.id;
 
