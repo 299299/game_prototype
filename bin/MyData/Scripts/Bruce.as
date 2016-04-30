@@ -351,85 +351,6 @@ class BruceClimbUpState : PlayerClimbUpState
     }
 };
 
-class BruceRailUpState : PlayerRailUpState
-{
-    BruceRailUpState(Character@ c)
-    {
-        super(c);
-        AddMotion("BM_Railing/Railing_Climb_Up");
-        AddMotion("BM_Railing/Stand_Climb_Onto_256_Railing");
-        AddMotion("BM_Railing/Stand_Climb_Onto_384_Railing");
-        AddMotion("BM_Railing/Railing_Climb_Up");
-        AddMotion("BM_Railing/Run_Climb_Onto_256_Railing");
-        AddMotion("BM_Railing/Run_Climb_Onto_384_Railing");
-    }
-};
-
-class BruceRailIdleState : PlayerRailIdleState
-{
-    BruceRailIdleState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Railing/Railing_Idle");
-    }
-};
-
-class BruceRailTurnState : PlayerRailTurnState
-{
-    BruceRailTurnState(Character@ c)
-    {
-        super(c);
-        AddMotion("BM_Railing/Railing_Idle_Turn_180_Right");
-        AddMotion("BM_Railing/Railing_Idle_Turn_180_Left");
-    }
-};
-
-class BruceRailDownState : PlayerRailDownState
-{
-    BruceRailDownState(Character@ c)
-    {
-        super(c);
-        AddMotion("BM_Railing/Railing_Climb_Down_Forward");
-        AddMotion("BM_Railing/Railing_Jump_To_Fall");
-
-        AddMotion("BM_Railing/Railing_To_Hang");
-        AddMotion("BM_Railing/Railing_To_Dangle");
-        AddMotion("BM_Railing/Railing_To_Dangle_Wall");
-
-        AddMotion("BM_Railing/Railing_To_Hang_128");
-        AddMotion("BM_Railing/Railing_To_Dangle_128");
-        AddMotion("BM_Railing/Railing_To_Dangle_128_Wall");
-    }
-};
-
-class BruceRailFwdIdleState : PlayerRailFwdIdleState
-{
-    BruceRailFwdIdleState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Railing/Railing_Run_Forward_Idle");
-    }
-};
-
-
-class BruceRailRunForwardState : PlayerRailRunForwardState
-{
-    BruceRailRunForwardState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Railing/Railing_Run_Forward");
-    }
-};
-
-class BruceRailRunTurn180State : PlayerRailTurn180State
-{
-    BruceRailRunTurn180State(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Railing/Stand_To_Walk_Right_180");
-    }
-};
-
 class BruceHangUpState : PlayerHangUpState
 {
     BruceHangUpState(Character@ c)
@@ -461,9 +382,7 @@ class BruceHangOverState : PlayerHangOverState
     {
         super(c);
         AddMotion("BM_Climb/Hang_Climb_Up_Run");
-        AddMotion("BM_Climb/Hang_Climb_Up_Rail");
         AddMotion("BM_Climb/Hang_Climb_Up_Over_128");
-        AddMotion("BM_Climb/Hang_Climb_Up_Rail_128");
         AddMotion("BM_Climb/Hang_Jump_Over_128");
         AddMotion("BM_Climb/Hang_Jump_Over_Fall");
     }
@@ -507,9 +426,7 @@ class BruceDangleOverState : PlayerDangleOverState
     {
         super(c);
         AddMotion("BM_Climb/Dangle_Climb_Up_Run");
-        AddMotion("BM_Climb/Dangle_Climb_Up_Rail");
         AddMotion("BM_Climb/Dangle_Climb_Up_Over_128");
-        AddMotion("BM_Climb/Dangle_Climb_Up_Rail_128");
         AddMotion("BM_Climb/Hang_Jump_Over_128");
         AddMotion("BM_Climb/Hang_Jump_Over_Fall");
     }
@@ -593,14 +510,6 @@ class Bruce : Player
             stateMachine.AddState(BruceClimbOverState(this));
             stateMachine.AddState(BruceClimbUpState(this));
             stateMachine.AddState(BruceClimbDownState(this));
-            // rail states
-            stateMachine.AddState(BruceRailUpState(this));
-            stateMachine.AddState(BruceRailIdleState(this));
-            stateMachine.AddState(BruceRailTurnState(this));
-            stateMachine.AddState(BruceRailDownState(this));
-            stateMachine.AddState(BruceRailFwdIdleState(this));
-            stateMachine.AddState(BruceRailRunForwardState(this));
-            stateMachine.AddState(BruceRailRunTurn180State(this));
             // hang
             stateMachine.AddState(BruceHangUpState(this));
             stateMachine.AddState(BruceHangIdleState(this));
@@ -715,9 +624,7 @@ void CreateBruceClimbAnimations()
 
     flags = kMotion_YZ | dangle_add_flags;
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Run", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
-    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Over_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
-    Global_CreateMotion(preFix + "Dangle_Climb_Up_Rail_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
 
     // ========================================================================================================================
     // HANG
@@ -758,9 +665,7 @@ void CreateBruceClimbAnimations()
 
     flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
     Global_CreateMotion(preFix + "Hang_Climb_Up_Run", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Hang_Climb_Up_Over_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
-    Global_CreateMotion(preFix + "Hang_Climb_Up_Rail_128", flags).SetDockAlign(L_HAND, 1.2f, Vector3(0, -0.1, 0.05));
     Global_CreateMotion(preFix + "Hang_Jump_Over_Fall", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
     Global_CreateMotion(preFix + "Hang_Jump_Over_128", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
 
@@ -782,37 +687,6 @@ void CreateBruceClimbAnimations()
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_XZR, kMotion_XZR, 12);
     Global_CreateMotion(preFix + "Turn_Right_180", kMotion_XZR, kMotion_XZR, 20);
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_XZR, kMotion_XZR, 12);
-
-    preFix = "BM_Railing/";
-    flags = kMotion_YZ | kMotion_Ext_Foot_Based_Height;
-    Global_CreateMotion(preFix + "Railing_Climb_Up", flags).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.3, 0.25));
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_256_Railing", flags).SetDockAlign(L_HAND, 0.6f, Vector3(0, 0, 0.25));
-    Global_CreateMotion(preFix + "Stand_Climb_Onto_384_Railing", flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.25));
-    Global_CreateMotion(preFix + "Run_Climb_Onto_256_Railing", flags).SetDockAlign(L_HAND, 0.8f, Vector3(0, -0.1, 0.3));
-    Global_CreateMotion(preFix + "Run_Climb_Onto_384_Railing", flags).SetDockAlign(R_HAND, 0.8f, Vector3(0, -0.05, 0.4));
-
-    Global_CreateMotion(preFix + "Railing_Climb_Down_Forward", flags, kMotion_ALL, 16);
-    Global_CreateMotion(preFix + "Railing_Jump_To_Fall", flags, kMotion_ALL, 20);
-
-    flags = kMotion_XZR | kMotion_Ext_Foot_Based_Height;
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Right", flags, kMotion_R);
-    Global_CreateMotion(preFix + "Railing_Idle_Turn_180_Left", flags, kMotion_R);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", flags);
-    Global_CreateMotion(preFix + "Railing_Run_Forward", kMotion_Z | kMotion_Ext_Foot_Based_Height, kMotion_Z, -1, true);
-    Global_CreateMotion(preFix + "Railing_Run_Forward_Idle", kMotion_Ext_Foot_Based_Height);
-    //Global_CreateMotion(preFix + "Railing_Idle", kMotion_Ext_Foot_Based_Height);
-    Global_AddAnimation(preFix + "Railing_Idle");
-
-    flags = kMotion_YZ | kMotion_R | kMotion_Ext_Foot_Based_Height;
-    offset = Vector3(0, 0.2, 0.2);
-    Global_CreateMotion(preFix + "Railing_To_Dangle", flags).SetDockAlign(L_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_128", flags).SetDockAlign(L_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_128_Wall", flags).SetDockAlign(L_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Railing_To_Dangle_Wall", flags).SetDockAlign(L_HAND, 0.8f, offset);
-
-    offset = Vector3(0.0, 0.2, 0.3);
-    Global_CreateMotion(preFix + "Railing_To_Hang", flags).SetDockAlign(L_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Railing_To_Hang_128", flags).SetDockAlign(L_HAND, 0.8f, offset);
 }
 
 void CreateBruceMotions()
@@ -1077,8 +951,6 @@ void AddBruceAnimationTriggers()
         AddBruceCombatAnimationTriggers();
     else if (game_type == 1)
     {
-        TranslateAnimation(GetAnimationName("BM_Railing/Railing_Idle"), Vector3(0, -3.25, 0));
-
         preFix = "BM_Climb/";
         Vector3 offset = Vector3(0, -2.5f, 0);
         //TranslateAnimation(GetAnimationName(preFix + "Dangle_Idle"), offset);

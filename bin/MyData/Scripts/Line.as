@@ -13,7 +13,6 @@ const float HEIGHT_384 = HEIGHT_128 * 3;
 enum LineType
 {
     LINE_COVER,
-    LINE_RAILING,
     LINE_EDGE,
     LINE_TYPE_NUM
 };
@@ -328,7 +327,6 @@ class LineWorld
     LineWorld()
     {
         debugColors.Resize(LINE_TYPE_NUM);
-        debugColors[LINE_RAILING] = Color(0.25f, 0.25f, 0.75f);
         debugColors[LINE_COVER] = Color(0.75f, 0.15f, 0.15f);
         debugColors[LINE_EDGE] = Color(0.25f, 0.5f, 0.75f);
     }
@@ -421,10 +419,6 @@ class LineWorld
             if (_node.name.StartsWith("Cover"))
             {
                 CreateLine(LINE_COVER, _node);
-            }
-            else if (_node.name.StartsWith("Railing"))
-            {
-                CreateLine(LINE_RAILING, _node);
             }
             else if (_node.name.StartsWith("Edge"))
             {

@@ -598,8 +598,6 @@ class Player : Character
 
         if (l.type == LINE_COVER)
             stateToChange = "CoverState";
-        else if (l.type == LINE_RAILING)
-            stateToChange = "RailUpState";
         else if (l.type == LINE_EDGE)
         {
             Vector3 proj = l.Project(charPos);
@@ -679,7 +677,7 @@ class Player : Character
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
         Vector3 v1, v2, v3, v4, v5, v6, v7;
-        Vector3 dir = (line.type != LINE_RAILING) ? (proj - charPos) : (GetNode().worldRotation * Vector3(0, 0, 1));
+        Vector3 dir = proj - charPos;
         dir.y = 0;
         float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
 
@@ -736,7 +734,7 @@ class Player : Character
         float h_diff = proj.y - charPos.y;
         float above_height = 1.0f;
         Vector3 v1, v2, v3, v4, v5;
-        Vector3 dir = (line.type != LINE_RAILING) ? (proj - charPos) : (GetNode().worldRotation * Vector3(0, 0, 1));
+        Vector3 dir = proj - charPos;
         dir.y = 0;
         float fowardDist = dir.length + COLLISION_RADIUS * 1.5f;
         float dist;
@@ -783,13 +781,7 @@ class Player : Character
         Vector3 myPos = sceneNode.worldPosition;
         Vector3 proj = line.Project(myPos);
         Vector3 dir;
-        if (line.type == LINE_RAILING)
-        {
-            dir = bLeft ? Vector3(-1, 0, 0) : Vector3(1, 0, 0);
-            dir = GetNode().worldRotation * dir;
-        }
-        else
-            dir = proj - myPos;
+        dir = proj - myPos;
 
         Quaternion q(0, Atan2(dir.x, dir.z), 0);
 

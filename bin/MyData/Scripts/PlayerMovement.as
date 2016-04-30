@@ -1201,368 +1201,6 @@ class PlayerClimbUpState : PlayerDockAlignState
     }
 };
 
-
-class PlayerRailUpState : PlayerDockAlignState
-{
-    PlayerRailUpState(Character@ c)
-    {
-        super(c);
-        SetName("RailUpState");
-        motionFlagAfterAlign = kMotion_XYZ;
-        dockBlendingMethod = 1;
-    }
-
-    void Enter(State@ lastState)
-    {
-        PickTargetMotionByHeight(lastState);
-        PlayerDockAlignState::Enter(lastState);
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.ChangeState("RailIdleState");
-    }
-};
-
-class PlayerRailIdleState : SingleAnimationState
-{
-    PlayerRailIdleState(Character@ c)
-    {
-        super(c);
-        SetName("RailIdleState");
-        looped = true;
-        physicsType = 0;
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.SetVelocity(Vector3(0,0,0));
-        SingleAnimationState::Enter(lastState);
-    }
-
-    void Update(float dt)
-    {
-        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-        {
-            int index = ownner.RadialSelectAnimation(4);
-            Print(this.name + " Idle->Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
-
-            PlayerRailTurnState@ s = cast<PlayerRailTurnState>(ownner.FindState("RailTurnState"));
-            float turnAngle = 0;
-            int animIndex = 0;
-            StringHash nextState;
-
-            if (index == 0)
-            {
-                ownner.ChangeState("RailDownState");
-                return;
-            }
-            else if (index == 1)
-            {
-                turnAngle = 90;
-                animIndex = 0;
-                nextState = StringHash("RailFwdIdleState");
-            }
-            else if (index == 2)
-            {
-                turnAngle = 180;
-                animIndex = 0;
-                nextState = StringHash("RailIdleState");
-            }
-            else if (index == 3)
-            {
-                turnAngle = -90;
-                animIndex = 1;
-                nextState = StringHash("RailFwdIdleState");
-            }
-
-            s.turnAngle = turnAngle;
-            s.nextStateName = nextState;
-            ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
-            ownner.ChangeState("RailTurnState");
-
-            return;
-        }
-
-        SingleAnimationState::Update(dt);
-    }
-};
-
-class PlayerRailTurnState : PlayerTurnState
-{
-    float       turnAngle;
-    StringHash  nextStateName;
-
-    PlayerRailTurnState(Character@ c)
-    {
-        super(c);
-        SetName("RailTurnState");
-        physicsType = 0;
-    }
-
-    void CaculateTargetRotation()
-    {
-        targetRotation = AngleDiff(ownner.GetCharacterAngle() + turnAngle);
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-        ownner.ChangeState(nextStateName);
-    }
-};
-
-class PlayerRailFwdIdleState : SingleAnimationState
-{
-    PlayerRailFwdIdleState(Character@ c)
-    {
-        super(c);
-        SetName("RailFwdIdleState");
-        looped = true;
-        physicsType = 0;
-    }
-
-    void Update(float dt)
-    {
-        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-        {
-            int index = ownner.RadialSelectAnimation(4);
-            Print(this.name + " Idle->Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
-
-            PlayerRailTurnState@ s = cast<PlayerRailTurnState>(ownner.FindState("RailTurnState"));
-            float turnAngle = 0;
-            int animIndex = 0;
-            StringHash nextState;
-
-            if (index == 0)
-            {
-                ownner.ChangeState("RailRunForwardState");
-                return;
-            }
-            else if (index == 2)
-            {
-                ownner.ChangeState("RailRunTurn180State");
-                return;
-            }
-            else if (index == 1)
-            {
-                turnAngle = 90;
-                animIndex = 0;
-                nextState = StringHash("RailIdleState");
-            }
-            else if (index == 3)
-            {
-                turnAngle = -90;
-                animIndex = 1;
-                nextState = StringHash("RailIdleState");
-            }
-
-            s.turnAngle = turnAngle;
-            s.nextStateName = nextState;
-            ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
-            ownner.ChangeState("RailTurnState");
-
-            return;
-        }
-
-        SingleAnimationState::Update(dt);
-    }
-};
-
-class PlayerRailDownState : PlayerDockAlignState
-{
-    Vector3 groundPos;
-
-    PlayerRailDownState(Character@ c)
-    {
-        super(c);
-        SetName("RailDownState");
-        physicsType = 0;
-        dockBlendingMethod = 1;
-    }
-
-    Vector3 PickDockInTarget()
-    {
-        if (selectIndex == 0)
-            return groundPos;
-        else if (selectIndex >= 5)
-            return PlayerDockAlignState::PickDockInTarget();
-        else
-        {
-            Line@ l = ownner.dockLine;
-            Vector3 v = ownner.GetNode().worldPosition;
-            v = l.Project(v);
-
-            Vector3 dir = ownner.GetNode().worldRotation * Vector3(0, 0, 1);
-            float dist = Min(l.size.x, l.size.z) / 2;
-            v += dir.Normalized() * dist;
-
-            return v;
-        }
-    }
-
-    void Enter(State@ lastState)
-    {
-        int animIndex = 0;
-        if (lastState.name == "RailRunForwardState")
-        {
-            animIndex = 1;
-            motionFlagBeforeAlign = 0;
-        }
-        else
-        {
-
-            Player@ p = cast<Player>(ownner);
-            Line@ l = p.FindDownLine(ownner.dockLine);
-
-            bool hitForward = p.results[0].body !is null;
-            bool hitDown = p.results[1].body !is null;
-            bool hitBack = p.results[2].body !is null;
-            groundPos = p.results[1].position;
-            float lineToGround = ownner.dockLine.end.y - groundPos.y;
-
-            Print(this.name + " lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
-
-            if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
-            {
-                animIndex = 0;
-                motionFlagBeforeAlign = kMotion_Y;
-            }
-            else
-            {
-
-                motionFlagBeforeAlign = kMotion_XYZ;
-
-                if (l !is null)
-                {
-                    animIndex = l.HasFlag(LINE_SHORT_WALL) ? (6 + RandomInt(2)) : 5;
-                    ownner.AssignDockLine(l);
-                }
-                else
-                    animIndex = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (3 + RandomInt(2)) : 2;
-            }
-        }
-
-        ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
-        PlayerDockAlignState::Enter(lastState);
-    }
-
-    void OnMotionFinished()
-    {
-        if (selectIndex == 0)
-        {
-            PlayerDockAlignState::OnMotionFinished();
-        }
-        else
-        {
-            if (selectIndex == 1)
-                ownner.ChangeState("FallState");
-            else if (selectIndex == 2 || selectIndex == 5)
-                ownner.ChangeState("HangIdleState");
-            else
-                ownner.ChangeState("DangleIdleState");
-        }
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        debug.AddCross(groundPos, 0.5f, BLACK, false);
-        PlayerDockAlignState::DebugDraw(debug);
-    }
-};
-
-class PlayerRailRunForwardState : SingleMotionState
-{
-    PlayerRailRunForwardState(Character@ c)
-    {
-        super(c);
-        SetName("RailRunForwardState");
-        physicsType = 0;
-    }
-
-    void Update(float dt)
-    {
-        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
-        {
-            ownner.ChangeState("RailFwdIdleState");
-            return;
-        }
-        float characterDifference = ownner.ComputeAngleDiff();
-        // if the difference is large, then turn 180 degrees
-        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
-        {
-            ownner.ChangeState("RailRunTurn180State");
-            return;
-        }
-
-        Vector3 facePoint;
-        if (ownner.dockLine.GetHead(ownner.GetNode().worldRotation) == 0)
-            facePoint = ownner.dockLine.end;
-        else
-            facePoint = ownner.dockLine.ray.origin;
-
-        float dist_sqr = (ownner.GetNode().worldPosition - facePoint).lengthSquared;
-        float max_dist = 1.0f;
-
-        if (dist_sqr < max_dist * max_dist)
-        {
-            ownner.ChangeState("RailDownState");
-            return;
-        }
-
-        SingleMotionState::Update(dt);
-    }
-};
-
-class PlayerRailTurn180State : SingleMotionState
-{
-    Vector3 targetPosition;
-    float targetRotation;
-    float turnSpeed;
-
-    PlayerRailTurn180State(Character@ c)
-    {
-        super(c);
-        SetName("RailRunTurn180State");
-    }
-
-    void Enter(State@ lastState)
-    {
-        SingleMotionState::Enter(lastState);
-        targetRotation = AngleDiff(ownner.GetCharacterAngle() + 180);
-        float alignTime = motion.endTime;
-        float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
-        Vector3 motionPos = motion.GetFuturePosition(ownner, alignTime);
-        targetPosition = ownner.dockLine.Project(motionPos);
-        motionPos.y = targetPosition.y;
-        ownner.motion_velocity = (targetPosition - motionPos) / alignTime;
-
-        float diff = AngleDiff(targetRotation - motionTargetAngle);
-        turnSpeed = diff / alignTime;
-        Print(this.name + " motionTargetAngle=" + String(motionTargetAngle) + " targetRotation=" + targetRotation + " diff=" + diff + " turnSpeed=" + turnSpeed);
-        SingleMotionState::Enter(lastState);
-    }
-
-    void Update(float dt)
-    {
-        ownner.motion_deltaRotation += turnSpeed * dt;
-        SingleMotionState::Update(dt);
-    }
-
-    void OnMotionFinished()
-    {
-        ownner.GetNode().worldPosition = targetPosition;
-        ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
-        ownner.ChangeState("RailRunForwardState");
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW, 2.0f);
-        debug.AddCross(targetPosition, 0.5f, RED, false);
-    }
-};
-
 class PlayerHangUpState : PlayerDockAlignState
 {
     PlayerHangUpState(Character@ c)
@@ -1740,99 +1378,91 @@ class PlayerHangIdleState : MultiMotionState
         if (hitUp)
             return false;
 
-        if (oldLine.type == LINE_RAILING)
+        if (hitForward)
         {
+            // hit a front wall
+            Array<Line@>@ lines = gLineWorld.cacheLines;
+            lines.Clear();
+
+            gLineWorld.CollectLinesByNode(p.results[1].body.node, lines);
+            if (lines.empty)
+                return false;
+
+            Print(this.name + " hit front wall lines.num=" + lines.length);
+            Line@ bestLine = null;
+            float maxDistSQR = 4.0f * 4.0f;
+            float minHeightDiff = 1.0f;
+            float maxHeightDiff = 4.5f;
+            Vector3 comparePot = oldLine.Project(ownner.GetNode().worldPosition);
+
+            for (uint i=0; i<lines.length; ++i)
+            {
+                Line@ l = lines[i];
+
+                if (l is oldLine)
+                    continue;
+
+                if (!l.TestAngleDiff(oldLine, 0) && !l.TestAngleDiff(oldLine, 180))
+                    continue;
+
+                float dh = l.end.y - oldLine.end.y;
+                if (dh < minHeightDiff || dh > maxHeightDiff)
+                    continue;
+
+                Vector3 tmpV = l.Project(comparePot);
+                tmpV.y = comparePot.y;
+                float distSQR = (tmpV - comparePot).lengthSquared;
+                Print(this.name + " hit front wall distSQR=" + distSQR);
+                if (distSQR < maxDistSQR)
+                {
+                    @bestLine = l;
+                    maxDistSQR = distSQR;
+                }
+            }
+
+            if (bestLine is null)
+            {
+                Print(this.name + " hit front wall no best line!!");
+                @oldLine = null;
+                return false;
+            }
+
+            animIndex = 2;
             changeToOverState = true;
-            animIndex = 1;
+            ownner.AssignDockLine(bestLine);
         }
         else
         {
-            if (hitForward)
+            // no front wall
+            if (hitDown)
             {
-                // hit a front wall
-                Array<Line@>@ lines = gLineWorld.cacheLines;
-                lines.Clear();
+                // hit gournd
+                float hitGroundH = p.results[2].position.y;
+                float lineToGround = oldLine.end.y - hitGroundH;
 
-                gLineWorld.CollectLinesByNode(p.results[1].body.node, lines);
-                if (lines.empty)
-                    return false;
-
-                Print(this.name + " hit front wall lines.num=" + lines.length);
-                Line@ bestLine = null;
-                float maxDistSQR = 4.0f * 4.0f;
-                float minHeightDiff = 1.0f;
-                float maxHeightDiff = 4.5f;
-                Vector3 comparePot = oldLine.Project(ownner.GetNode().worldPosition);
-
-                for (uint i=0; i<lines.length; ++i)
+                if (lineToGround < (0 + HEIGHT_128) / 2)
                 {
-                    Line@ l = lines[i];
-
-                    if (l is oldLine)
-                        continue;
-
-                    if (!l.TestAngleDiff(oldLine, 0) && !l.TestAngleDiff(oldLine, 180))
-                        continue;
-
-                    float dh = l.end.y - oldLine.end.y;
-                    if (dh < minHeightDiff || dh > maxHeightDiff)
-                        continue;
-
-                    Vector3 tmpV = l.Project(comparePot);
-                    tmpV.y = comparePot.y;
-                    float distSQR = (tmpV - comparePot).lengthSquared;
-                    Print(this.name + " hit front wall distSQR=" + distSQR);
-                    if (distSQR < maxDistSQR)
-                    {
-                        @bestLine = l;
-                        maxDistSQR = distSQR;
-                    }
+                    // if gound is not low just stand and run
+                    animIndex = 0;
                 }
-
-                if (bestLine is null)
+                else if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
                 {
-                    Print(this.name + " hit front wall no best line!!");
-                    @oldLine = null;
-                    return false;
-                }
-
-                animIndex = (bestLine.type == LINE_RAILING) ? 3 : 2;
-                changeToOverState = true;
-                ownner.AssignDockLine(bestLine);
-            }
-            else
-            {
-                // no front wall
-                if (hitDown)
-                {
-                    // hit gournd
-                    float hitGroundH = p.results[2].position.y;
-                    float lineToGround = oldLine.end.y - hitGroundH;
-
-                    if (lineToGround < (0 + HEIGHT_128) / 2)
-                    {
-                        // if gound is not low just stand and run
-                        animIndex = 0;
-                    }
-                    else if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
-                    {
-                        // if gound is lower not than 4.5 we can perform a over jump
-                        animIndex = 4;
-                    }
-                    else
-                    {
-                        // if gound is lower enough just jump and fall
-                        animIndex = 5;
-                    }
-
-                    changeToOverState = true;
+                    // if gound is lower not than 4.5 we can perform a over jump
+                    animIndex = 4;
                 }
                 else
                 {
-                    // dont hit gournd
+                    // if gound is lower enough just jump and fall
                     animIndex = 5;
-                    changeToOverState = true;
                 }
+
+                changeToOverState = true;
+            }
+            else
+            {
+                // dont hit gournd
+                animIndex = 5;
+                changeToOverState = true;
             }
         }
 
