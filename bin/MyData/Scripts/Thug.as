@@ -1071,36 +1071,11 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
 
-    preFix = "TG_BM_Beatdown/";
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_01");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_02");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_03");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_04");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_05");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_06");
-
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_01");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_02");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_03");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
-
     preFix = "TG_Combat/";
     Global_AddAnimation(preFix + "Stand_Idle_Additive_01");
     Global_AddAnimation(preFix + "Stand_Idle_Additive_02");
     Global_AddAnimation(preFix + "Stand_Idle_Additive_03");
     Global_AddAnimation(preFix + "Stand_Idle_Additive_04");
-
-    preFix = "TG_CW_Beatdown/";
-    Global_CreateMotion(preFix + "Beatdown_01");
-    Global_CreateMotion(preFix + "Beatdown_02");
-    Global_CreateMotion(preFix + "Beatdown_03");
-    Global_CreateMotion(preFix + "Beatdown_04");
-    Global_CreateMotion(preFix + "Beatdown_05");
-    Global_CreateMotion(preFix + "Beatdown_06");
-
-    Global_CreateMotion(preFix + "Beatdown_End_01");
-    Global_CreateMotion(preFix + "Beatdown_End_02");
-    Global_CreateMotion(preFix + "Beatdown_End_03");
 }
 
 void CreateThugMotions()

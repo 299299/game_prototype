@@ -2,7 +2,6 @@
 #include "Scripts/Game.as"
 #include "Scripts/AssetProcess.as"
 #include "Scripts/Motion.as"
-#include "Scripts/PhysicsDrag.as"
 #include "Scripts/Input.as"
 #include "Scripts/FSM.as"
 #include "Scripts/Ragdoll.as"
@@ -549,7 +548,7 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
         if (ui.GetElementAt(pos, true) !is null)
             return;
 
-        CreateDrag(float(pos.x), float(pos.y));
+        //CreateDrag(float(pos.x), float(pos.y));
         SubscribeToEvent("MouseMove", "HandleMouseMove");
         SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
     }
@@ -560,7 +559,7 @@ void HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
     int button = eventData["Button"].GetInt();
     if (button == MOUSEB_RIGHT)
     {
-        DestroyDrag();
+        //DestroyDrag();
         UnsubscribeFromEvent("MouseMove");
         UnsubscribeFromEvent("MouseButtonUp");
     }
@@ -570,7 +569,7 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
 {
     int x = input.mousePosition.x;
     int y = input.mousePosition.y;
-    MoveDrag(float(x), float(y));
+    //MoveDrag(float(x), float(y));
 }
 
 void HandleSceneLoadFinished(StringHash eventType, VariantMap& eventData)

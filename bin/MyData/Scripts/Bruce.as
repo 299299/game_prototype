@@ -641,20 +641,6 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Death_Back");
     Global_CreateMotion(preFix + "Death_Side_Left");
     Global_CreateMotion(preFix + "Death_Side_Right");
-
-    preFix = "BM_Attack/";
-    Global_CreateMotion(preFix + "Beatdown_Test_01");
-    Global_CreateMotion(preFix + "Beatdown_Test_02");
-    Global_CreateMotion(preFix + "Beatdown_Test_03");
-    Global_CreateMotion(preFix + "Beatdown_Test_04");
-    Global_CreateMotion(preFix + "Beatdown_Test_05");
-    Global_CreateMotion(preFix + "Beatdown_Test_06");
-
-    preFix = "BM_TG_Beatdown/";
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_01");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_02");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_03");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
 }
 
 void CreateBruceClimbAnimations()
@@ -869,24 +855,12 @@ void CreateBruceMotions()
 void AddBruceCombatAnimationTriggers()
 {
     String preFix = "BM_Attack/";
-    int beat_impact_frame = 4;
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT, L_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, IMPACT, L_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, IMPACT, R_HAND);
 
     // ===========================================================================
     //
     //   COUNTER TRIGGERS
     //
     // ===========================================================================
-    preFix = "BM_TG_Beatdown/";
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
 
     preFix = "BW_TG_Counter/";
     String animName = preFix + "Counter_Arm_Back_01";
