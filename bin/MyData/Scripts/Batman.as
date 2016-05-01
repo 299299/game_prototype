@@ -328,6 +328,7 @@ class BatmanClimbOverState : PlayerClimbOverState
         AddMotion("BM_Climb/Stand_Climb_Over_128_Fall");
         AddMotion("BM_Climb/Stand_Climb_Over_256_Fall");
         AddMotion("BM_Climb/Stand_Climb_Over_384_Fall");
+
         AddMotion("BM_Climb/Run_Climb_Over_128_Fall");
         AddMotion("BM_Climb/Run_Climb_Over_256_Fall");
         AddMotion("BM_Climb/Run_Climb_Over_384_Fall");
@@ -611,7 +612,7 @@ void Create_BM_ClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Up_256_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.16, 0.3));
     Global_CreateMotion(preFix + "Run_Climb_Up_384_Hang", flags, kMotion_ALL, 30).SetDockAlign(L_HAND, 0.8f, Vector3(0, 0.1, 0.24));
 
-    offset = Vector3(0, 0.15, 0.3);
+    offset = Vector3(0, 0.15, 0.25);
     flags = kMotion_X | kMotion_Ext_Foot_Based_Height;
 
     Global_CreateMotion(preFix + "Hang_Left", flags).SetDockAlign(L_HAND, 0.5f, offset);
@@ -620,13 +621,13 @@ void Create_BM_ClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Right_1", flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     flags = kMotion_XZR | kMotion_Ext_Foot_Based_Height;
-    offset = Vector3(0, 0.15, 0.45);
-    Global_CreateMotion(preFix + "Hang_Left_Convex", flags).SetDockAlign(R_HAND, 0.8f, offset);
-    Global_CreateMotion(preFix + "Hang_Right_Convex", flags).SetDockAlign(L_HAND, 0.8f, offset);
+    offset = Vector3(0, 0.15, 0.5);
+    Global_CreateMotion(preFix + "Hang_Left_Convex", flags).SetDockAlign(L_HAND, 0.8f, offset);
+    Global_CreateMotion(preFix + "Hang_Right_Convex", flags).SetDockAlign(R_HAND, 0.8f, offset);
 
-    offset = Vector3(0, 0.3, 0.25);
-    Global_CreateMotion(preFix + "Hang_Left_Concave", flags).SetDockAlign(L_HAND, 0.3f, offset);
-    Global_CreateMotion(preFix + "Hang_Right_Concave", flags).SetDockAlign(R_HAND, 0.3f, offset);
+    offset = Vector3(0, 0.15, 0.5);
+    Global_CreateMotion(preFix + "Hang_Left_Concave", flags).SetDockAlign(L_HAND, 0.4f, offset);
+    Global_CreateMotion(preFix + "Hang_Right_Concave", flags).SetDockAlign(R_HAND, 0.4f, offset);
 
     flags = kMotion_Y | kMotion_Ext_Foot_Based_Height;
     offset = Vector3(0, 0.15, 0.4);

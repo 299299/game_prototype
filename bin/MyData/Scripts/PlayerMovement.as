@@ -1389,7 +1389,7 @@ class PlayerHangIdleState : MultiMotionState
                 return false;
             }
 
-            animIndex = 2;
+            animIndex = 1;
             changeToOverState = true;
             ownner.AssignDockLine(bestLine);
         }
@@ -1410,12 +1410,12 @@ class PlayerHangIdleState : MultiMotionState
                 else if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
                 {
                     // if gound is lower not than 4.5 we can perform a over jump
-                    animIndex = 4;
+                    animIndex = 2;
                 }
                 else
                 {
                     // if gound is lower enough just jump and fall
-                    animIndex = 5;
+                    animIndex = 3;
                 }
 
                 changeToOverState = true;
@@ -1423,7 +1423,7 @@ class PlayerHangIdleState : MultiMotionState
             else
             {
                 // dont hit gournd
-                animIndex = 5;
+                animIndex = 3;
                 changeToOverState = true;
             }
         }
@@ -1548,12 +1548,13 @@ class PlayerHangMoveState : PlayerDockAlignState
         super(ownner);
         SetName("HangMoveState");
         dockBlendingMethod = 1;
+        //debug = true;
     }
 
     void Enter(State@ lastState)
     {
         motionFlagBeforeAlign = (type == 1) ? kMotion_XYZ : kMotion_ALL;
-        motionFlagAfterAlign = (type == 1) ? kMotion_XZR : kMotion_None;
+        motionFlagAfterAlign = (type == 1) ? kMotion_ALL : kMotion_None;
 
         PlayerDockAlignState::Enter(lastState);
         Print(this.name + " enter type = " + type);
@@ -1651,14 +1652,13 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     Vector3 PickDockOutTarget()
     {
-        return ownner.dockLine.Project(motionPositon) + Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1.15);
+        return ownner.dockLine.Project(motionPositon) + Quaternion(0, targetRotation, 0) * Vector3(0, -3.6, -1.45);
     }
 };
 
 class PlayerHangOverState : PlayerDockAlignState
 {
     Vector3    groundPos;
-    int        type = 0;
 
     PlayerHangOverState(Character@ ownner)
     {
@@ -1670,7 +1670,7 @@ class PlayerHangOverState : PlayerDockAlignState
 
     Vector3 PickDockOutTarget()
     {
-        if (type == 0)
+        if (selectIndex <= 2)
             return groundPos;
         else
             return PlayerDockAlignState::PickDockOutTarget();
@@ -1679,29 +1679,15 @@ class PlayerHangOverState : PlayerDockAlignState
     void Enter(State@ lastState)
     {
         PlayerDockAlignState::Enter(lastState);
-        if (selectIndex == 0 || selectIndex == 2 || selectIndex == 4)
-            type = 0;
-        else if (selectIndex == 1 || selectIndex == 3)
-            type = 1;
-        else
-            type = 2;
-
-        if (type == 0)
-            motionFlagAfterAlign = kMotion_Y;
-        else if (type == 1)
-            motionFlagAfterAlign = kMotion_XYZ;
-        else
-            motionFlagAfterAlign = 0;
+        motionFlagAfterAlign = (selectIndex <= 2) ? int(kMotion_Y) : 0;
     }
 
     void OnMotionFinished()
     {
-        if (type == 0)
-            PlayerDockAlignState::OnMotionFinished();
-        else if (type == 1)
-            ownner.ChangeState("RailIdleState");
-        else
+        if (selectIndex > 2)
             ownner.ChangeState("FallState");
+        else
+            PlayerDockAlignState::OnMotionFinished();
     }
 };
 
