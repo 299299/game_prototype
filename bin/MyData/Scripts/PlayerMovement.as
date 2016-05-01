@@ -249,20 +249,6 @@ class PlayerWalkState : PlayerMoveForwardState
 
         PlayerMoveForwardState::Update(dt);
     }
-
-    void Enter(State@ lastState)
-    {
-        startTime = 0.0f;
-        if (lastState.name == "StandToWalkState")
-        {
-            int index = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
-            if (index == 0)
-                startTime = 0.33f;
-            else
-                startTime = 0.43f;
-        }
-        PlayerMoveForwardState::Enter(lastState);
-    }
 };
 
 class PlayerRunState : PlayerMoveForwardState
@@ -303,21 +289,6 @@ class PlayerRunState : PlayerMoveForwardState
 
         PlayerMoveForwardState::Update(dt);
     }
-
-    void Enter(State@ lastState)
-    {
-        blendTime = (lastState.name == "RunTurn180State") ? 0.01 : 0.2f;
-        startTime = 0.0f;
-        if (lastState.name == "StandToRunState")
-        {
-            int index = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
-            if (index == 0)
-                startTime = 0.33f;
-            else
-                startTime = 0.33f;
-        }
-        PlayerMoveForwardState::Enter(lastState);
-    }
 };
 
 class PlayerRunToStandState : SingleMotionState
@@ -332,10 +303,8 @@ class PlayerRunToStandState : SingleMotionState
 
 class PlayerRunTurn180State : SingleMotionState
 {
-    Vector3   targetPos;
     float     targetAngle;
     float     yawPerSec;
-    int       state;
 
     PlayerRunTurn180State(Character@ c)
     {
@@ -349,14 +318,8 @@ class PlayerRunTurn180State : SingleMotionState
         SingleMotionState::Enter(lastState);
         targetAngle = AngleDiff(ownner.GetTargetAngle());
         float alignTime = motion.endTime;
-        Vector4 tFinnal = motion.GetKey(alignTime);
-        Vector4 t1 = motion.GetKey(0.78f);
-        float dist = Abs(t1.z - tFinnal.z);
-        targetPos = ownner.GetNode().worldPosition + Quaternion(0, targetAngle, 0) * Vector3(0, 0, dist);
         float rotation = motion.GetFutureRotation(ownner, alignTime);
         yawPerSec = AngleDiff(targetAngle - rotation) / alignTime;
-        Vector3 v = motion.GetFuturePosition(ownner, alignTime);
-        ownner.motion_velocity = (targetPos - v) / alignTime;
     }
 
     void Update(float dt)
@@ -369,7 +332,6 @@ class PlayerRunTurn180State : SingleMotionState
     {
         SingleMotionState::DebugDraw(debug);
         DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetAngle, Color(0.75f, 0.5f, 0.45f), 2.0f);
-        debug.AddCross(targetPos, 0.5f, YELLOW, false);
     }
 };
 

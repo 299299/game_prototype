@@ -18,9 +18,9 @@ class BatmanTurnState : PlayerTurnState
     BatmanTurnState(Character@ c)
     {
         super(c);
-        AddMotion("BW_Movement/Turn_Right_90");
-        AddMotion("BW_Movement/Turn_Right_180");
-        AddMotion("BW_Movement/Turn_Left_90");
+        AddMotion("BM_Movement/Turn_Right_90");
+        AddMotion("BM_Movement/Turn_Right_180");
+        AddMotion("BM_Movement/Turn_Left_90");
     }
 };
 
@@ -29,9 +29,9 @@ class BatmanStandToWalkState : PlayerStandToWalkState
     BatmanStandToWalkState(Character@ c)
     {
         super(c);
-        AddMotion("BW_Movement/Stand_To_Walk_Right_90");
-        AddMotion("BW_Movement/Stand_To_Walk_Right_180");
-        AddMotion("BW_Movement/Stand_To_Walk_Right_180");
+        AddMotion("BM_Movement/Stand_To_Walk_Right_90");
+        AddMotion("BM_Movement/Stand_To_Walk_Right_180");
+        AddMotion("BM_Movement/Stand_To_Walk_Right_180");
     }
 };
 
@@ -40,7 +40,13 @@ class BatmanWalkState : PlayerWalkState
     BatmanWalkState(Character@ c)
     {
         super(c);
-        SetMotion("BW_Movement/Walk_Forward");
+        SetMotion("BM_Movement/Walk");
+    }
+
+    void Enter(State@ lastState)
+    {
+        startTime = (lastState.name == "StandToWalkState") ? 14 * SEC_PER_FRAME : 0;
+        PlayerMoveForwardState::Enter(lastState);
     }
 };
 
@@ -49,9 +55,10 @@ class BatmanStandToRunState : PlayerStandToRunState
     BatmanStandToRunState(Character@ c)
     {
         super(c);
-        AddMotion("BW_Movement/Stand_To_Run_Right_90");
-        AddMotion("BW_Movement/Stand_To_Run_Right_180");
-        AddMotion("BW_Movement/Stand_To_Run_Right_180");
+        // AddMotion("BM_Movement/Stand_To_Run");
+        AddMotion("BM_Movement/Stand_To_Run_Right_90");
+        AddMotion("BM_Movement/Stand_To_Run_Right_180");
+        AddMotion("BM_Movement/Stand_To_Run_Right_180");
     }
 };
 
@@ -60,7 +67,18 @@ class BatmanRunState : PlayerRunState
     BatmanRunState(Character@ c)
     {
         super(c);
-        SetMotion("BM_Movement/Run_Forward");
+        SetMotion("BM_Movement/Run");
+    }
+
+    void Enter(State@ lastState)
+    {
+        blendTime = 0.2f;//(lastState.name == "RunTurn180State") ? 0.01 : 0.2f;
+        startTime = 0.0f;
+        if (lastState.name == "StandToRunState")
+            startTime = 9 * SEC_PER_FRAME;
+        else if (lastState.name == "RunTurn180State")
+            startTime = 10 * SEC_PER_FRAME;
+        PlayerMoveForwardState::Enter(lastState);
     }
 };
 
@@ -455,7 +473,7 @@ class Batman : Player
     Batman()
     {
         super();
-        walkAlignAnimation = GetAnimationName("BW_Movement/Walk_Forward");
+        walkAlignAnimation = GetAnimationName("BM_Movement/Walk");
     }
 
     void AddStates()
@@ -507,35 +525,6 @@ class Batman : Player
         }
     }
 };
-
-void Create_BM_CombatMotions()
-{
-    String preFix = "BM_HitReaction/";
-    Global_CreateMotion(preFix + "HitReaction_Back"); // back attacked
-    Global_CreateMotion(preFix + "HitReaction_Face_Right"); // front punched
-    Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
-    Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
-
-    Global_CreateMotion_InFolder("BW_Attack/");
-    Global_CreateMotion_InFolder("BW_TG_Counter/");
-
-    preFix = "BM_TG_Counter/";
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsE");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsG");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsH");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
-
-    preFix = "BM_Death_Primers/";
-    Global_CreateMotion(preFix + "Death_Front");
-    Global_CreateMotion(preFix + "Death_Back");
-    Global_CreateMotion(preFix + "Death_Side_Left");
-    Global_CreateMotion(preFix + "Death_Side_Right");
-}
 
 void Create_BM_ClimbAnimations()
 {
@@ -678,21 +667,22 @@ void Create_BM_Motions()
 {
     AssignMotionRig("Models/batman.mdl");
 
-    String preFix = "BW_Movement/";
+    String preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
     Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 25);
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 14);
-    Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Walk", kMotion_Z, kMotion_Z, -1, true);
 
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ALL, 21);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ALL, 25);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ALL, 18);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ALL, 17);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ALL, 17);
+    Global_CreateMotion(preFix + "Stand_To_Run", kMotion_Z, kMotion_ALL, 15);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ALL, 17);
     Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ALL, 25);
 
     preFix = "BM_Movement/";
-    Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Run", kMotion_Z, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Run_Right_Passing_To_Stand");
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_ZR, kMotion_ZR, 28);
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 20);
     Global_AddAnimation(preFix + "Stand_Idle");
     Global_AddAnimation(preFix + "Fall");
     Global_AddAnimation(preFix + "Land");
@@ -705,213 +695,8 @@ void Create_BM_Motions()
     Global_CreateMotion(preFix + "Evade_Left_01");
     Global_CreateMotion(preFix + "Evade_Right_01");
 
-    if (game_type == 0)
-        Create_BM_CombatMotions();
-    else if (game_type == 1)
+    if (game_type == 1)
         Create_BM_ClimbAnimations();
-}
-
-void Add_BM_CombatAnimationTriggers()
-{
-    String preFix = "BM_Attack/";
-
-    // ===========================================================================
-    //
-    //   COUNTER TRIGGERS
-    //
-    // ===========================================================================
-
-    preFix = "BW_TG_Counter/";
-    String animName = preFix + "Counter_Arm_Back_01";
-    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 38, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(animName, 40, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Back_02";
-    AddStringAnimationTrigger(animName, 8, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 41, COMBAT_SOUND, R_FOOT);
-    AddAnimationTrigger(animName, 43, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Back_03";
-    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 17, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 33, COMBAT_SOUND, L_FOOT);
-    AddAnimationTrigger(animName, 35, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Back_04";
-    AddStringAnimationTrigger(animName, 14, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 28, COMBAT_SOUND, R_CALF);
-    AddAnimationTrigger(animName, 40, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Back_Weak_01";
-    AddStringAnimationTrigger(animName, 11, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 25, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(animName, 27, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_01";
-    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 17, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 34, COMBAT_SOUND, R_FOOT);
-    AddAnimationTrigger(animName, 36, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_02";
-    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 22, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 45, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(animName, 47, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_03";
-    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 39, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(animName, 41, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_04";
-    AddStringAnimationTrigger(animName, 12, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 34, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(animName, 41, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_05";
-    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 26, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 43, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(animName, 45, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_06";
-    AddStringAnimationTrigger(animName, 5, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, R_FOOT);
-    AddStringAnimationTrigger(animName, 38, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(animName, 40, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_07";
-    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 24, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(animName, 26, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_08";
-    AddStringAnimationTrigger(animName, 4, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 11, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 30, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(animName, 32, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_09";
-    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 22, COMBAT_SOUND, L_ARM);
-    AddStringAnimationTrigger(animName, 39, COMBAT_SOUND, R_HAND);
-    AddAnimationTrigger(animName, 41, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_10";
-    AddStringAnimationTrigger(animName, 10, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 23, COMBAT_SOUND, L_FOOT);
-    AddAnimationTrigger(animName, 25, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Arm_Front_Weak_02";
-    AddStringAnimationTrigger(animName, 4, COMBAT_SOUND, L_ARM);
-    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 21, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(animName, 23, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Back_01";
-    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 17, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(animName, 46, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(animName, 48, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Back_02";
-    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 46, COMBAT_SOUND, L_CALF);
-    AddAnimationTrigger(animName, 48, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Back_Weak_01";
-    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 30, COMBAT_SOUND, R_ARM);
-    AddAnimationTrigger(animName, 32, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Front_01";
-    AddStringAnimationTrigger(animName, 11, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(animName, 30, COMBAT_SOUND, L_FOOT);
-    AddAnimationTrigger(animName, 32, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Front_02";
-    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 42, COMBAT_SOUND, L_CALF);
-    AddAnimationTrigger(animName, 44, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Front_03";
-    AddStringAnimationTrigger(animName, 3, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 22, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(animName, 24, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Front_04";
-    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(animName, 30, COMBAT_SOUND, R_FOOT);
-    AddAnimationTrigger(animName, 32, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Front_05";
-    AddStringAnimationTrigger(animName, 5, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(animName, 38, COMBAT_SOUND, R_FOOT);
-    AddAnimationTrigger(animName, 40, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Front_06";
-    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, L_HAND);
-    AddAnimationTrigger(animName, 20, READY_TO_FIGHT);
-
-    animName = preFix + "Counter_Leg_Front_Weak";
-    AddStringAnimationTrigger(animName, 12, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, L_FOOT);
-    AddAnimationTrigger(animName, 20, READY_TO_FIGHT);
-
-    preFix = "BM_TG_Counter/";
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 12, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 12, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 77, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 77, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsA", 79, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsB", 12, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsB", 36, COMBAT_SOUND_LARGE, L_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsB", 60, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 7, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 7, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 15, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 38, PARTICLE, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 38, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsD", 43, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 21, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 43, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 76, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 83, COMBAT_SOUND_LARGE, L_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsE", 85, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, COMBAT_SOUND_LARGE, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, PARTICLE, R_FOOT);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsF", 60, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsG", 23, COMBAT_SOUND_LARGE, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsG", 23, PARTICLE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsG", 25, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 21, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 21, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 36, PARTICLE, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 36, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsH", 65, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, PARTICLE, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, PARTICLE, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_3ThugsB", 50, READY_TO_FIGHT);
-
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 5, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 5, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, PARTICLE, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_3ThugsC", 52, READY_TO_FIGHT);
 }
 
 void Add_BM_AnimationTriggers()
@@ -922,9 +707,9 @@ void Add_BM_AnimationTriggers()
     AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
 
-    preFix = "BW_Movement/";
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
+    preFix = "BM_Movement/";
+    AddStringAnimationTrigger(preFix + "Walk", 11, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger(preFix + "Walk", 24, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, R_FOOT);
@@ -932,9 +717,7 @@ void Add_BM_AnimationTriggers()
     AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
 
-    if (game_type == 0)
-        Add_BM_CombatAnimationTriggers();
-    else if (game_type == 1)
+    if (game_type == 1)
     {
         preFix = "BM_Climb/";
         Vector3 offset = Vector3(0, -2.5f, 0);
