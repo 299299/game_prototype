@@ -1537,6 +1537,15 @@ class PlayerHangIdleState : MultiMotionState
     }
 };
 
+enum HangMoveType
+{
+    HANG_NORMAL,
+    HANG_CONVEX,
+    HANG_CONCAVE,
+    HANG_JUMP,
+    HANG_JUMP_BIG,
+};
+
 class PlayerHangMoveState : PlayerDockAlignState
 {
     Line@           oldLine;
@@ -1593,9 +1602,9 @@ class PlayerHangMoveState : PlayerDockAlignState
         dockBlendingMethod = 1;
         dockInTargetBound = 1.5f;
 
-        type = bigJump ? 3 : 2;
+        type = bigJump ? HANG_JUMP_BIG : HANG_JUMP;
 
-        if (type == 3)
+        if (type == HANG_JUMP_BIG)
             index += (numOfAnimations - 1);
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
@@ -1607,7 +1616,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         Print(this.name + " MoveToLinePoint");
 
         @oldLine = null;
-        type = 4;
+        type = HANG_NORMAL;
         dockBlendingMethod = 1;
         dockInTargetBound = 0.1f;
         ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : numOfAnimations;
@@ -1618,7 +1627,7 @@ class PlayerHangMoveState : PlayerDockAlignState
     {
         dockBlendingMethod = 1;
         @oldLine = null;
-        type = 0;
+        type = HANG_NORMAL;
         dockInTargetBound = 0.1;
         ownner.GetNode().vars[ANIMATION_INDEX] = left ? 0 : numOfAnimations;
         ownner.ChangeState(this.nameHash);
@@ -1639,7 +1648,7 @@ class PlayerHangMoveState : PlayerDockAlignState
             Player@ p = cast<Player>(ownner);
             Vector3 dir;
             bool convex = selectIndex % 2 != 0;
-            if (type == 1)
+            if (type == HANG_CONCAVE || type == HANG_CONVEX)
                 dir = convex ? (p.points[2] - p.points[3]) : (p.points[0] - p.points[1]);
             else
                 dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
