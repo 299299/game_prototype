@@ -1125,7 +1125,6 @@ class PlayerHangIdleState : MultiMotionState
         super(c);
         SetName("HangIdleState");
         physicsType = 0;
-        blendTime = 0.0f;
     }
 
     void OnMotionFinished()
@@ -1165,11 +1164,9 @@ class PlayerHangIdleState : MultiMotionState
         bool fromMove = lastState.name == "HangMoveState" || lastState.name == "DangleMoveState";
         blendTime = fromMove ? 0.0f : 0.3f;
         if (fromMove)
-        {
-            index = (curAnimationIndex <= 3) ? 0 : 1;
-        }
+            index = (curAnimationIndex <= 2) ? 0 : 1;
         else
-            index = RandomInt(2) == 0 ? 0 : 2;
+            index = RandomInt(2) == 0 ? 0 : 1;
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         MultiMotionState::Enter(lastState);
