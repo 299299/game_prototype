@@ -192,9 +192,8 @@ class ThirdPersonCameraController : CameraController
         float yaw = v.x;
         pitch = Clamp(pitch, -10.0f, 60.0f);
 
-        float dist = cameraDistance;
         Quaternion q(pitch, yaw, 0);
-        Vector3 pos = q * Vector3(0, 0, -dist) + target_pos;
+        Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
         UpdateView(pos, target_pos, dt * cameraSpeed);
 
         if (input.mouseMoveWheel != 0)
@@ -205,7 +204,7 @@ class ThirdPersonCameraController : CameraController
             if (t_diff > 500)
                 cameraDistance +=  float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
         }
-        cameraDistance = Clamp(cameraDistance, 9.0f, 50.0f);
+        // cameraDistance = Clamp(cameraDistance, 9.0f, 50.0f);
     }
 
     String GetDebugText()
@@ -215,9 +214,9 @@ class ThirdPersonCameraController : CameraController
 
     void Reset()
     {
+        Print("Reset Camera !!!");
         Player@ p = GetPlayer();
-        Quaternion q = cameraNode.worldRotation;
-        Vector3 offset = q * targetOffset;
+        Vector3 offset = cameraNode.worldRotation * targetOffset;
         Vector3 target_pos = p.GetNode().worldPosition + offset;
         Vector3 dir = target_pos - cameraNode.worldPosition;
         cameraDistance = dir.length;
@@ -225,6 +224,12 @@ class ThirdPersonCameraController : CameraController
         gInput.m_rightStickY = Asin(h/cameraDistance);
         gInput.m_rightStickX = Asin(dir.x/cameraDistance);
         gInput.m_rightStickMagnitude = gInput.m_rightStickX * gInput.m_rightStickX + gInput.m_rightStickY * gInput.m_rightStickY;
+        Print("cameraDistance=" + cameraDistance);
+    }
+
+    void Enter()
+    {
+        Reset();
     }
 };
 

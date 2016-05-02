@@ -373,11 +373,7 @@ class TestGameState : GameState
             {
                 EnemyManager@ em = GetEnemyMgr();
                 if (fullscreenUI.opacity > 0.95f && em.enemyList.empty)
-                {
-                    gInput.m_rightStickX = 20;
-                    gInput.m_rightStickY = 30;
                     em.CreateEnemies();
-                }
 
                 float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
                 if (t + 0.05f >= fadeTime)
@@ -568,6 +564,7 @@ class TestGameState : GameState
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
         cameraId = cameraNode.id;
+        cameraNode.worldPosition = Vector3(0, 20, -30);
 
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;
