@@ -40,9 +40,6 @@ class PlayerStandState : MultiAnimationState
         if (ownner.CheckDocking())
             return;
 
-        if (ownner.ActionCheck(true, true, true))
-            return;
-
         if (timeInState > 0.25f && gInput.IsCrouchDown())
             ownner.ChangeState("CrouchState");
 
@@ -192,8 +189,6 @@ class PlayerMoveForwardState : SingleMotionState
         if (ownner.CheckFalling())
             return;
         if (ownner.CheckDocking(dockDist))
-            return;
-        if (ownner.ActionCheck(true, true, true))
             return;
 
         SingleMotionState::Update(dt);

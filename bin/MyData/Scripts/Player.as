@@ -21,14 +21,13 @@ const float PLAYER_NEAR_DIST = 6.0f;
 const float GOOD_COUNTER_DIST = 3.0f;
 const float ATTACK_DIST_PICK_RANGE = 6.0f;
 float MAX_ATTACK_DIST = 25.0f;
-float MAX_BEAT_DIST = 25.0f;
 
 class Player : Character
 {
-    int             combo;
-    int             killed;
-    uint            lastAttackId = M_MAX_UNSIGNED;
-    bool            applyGravity = true;
+    int                               combo;
+    int                               killed;
+    uint                              lastAttackId = M_MAX_UNSIGNED;
+    bool                              applyGravity = true;
 
     Array<Vector3>                    points;
     Array<PhysicsRaycastResult>       results;
@@ -662,7 +661,12 @@ class Player : Character
             }
         }
 
+        ShowInputAction(stateToChange, !stateToChange.empty);
+
         if (stateToChange.empty)
+            return false;
+
+        if (!gInput.IsActionPressed())
             return false;
 
         AssignDockLine(l);
@@ -1022,5 +1026,15 @@ class Player : Character
     {
         points.Clear();
         results.Clear();
+    }
+
+    void ShowInputAction(const String&in message, bool bShow)
+    {
+        Text@ text = ui.root.GetChild("input", true);
+        if (text !is null)
+        {
+            text.visible = bShow;
+            text.text = message;
+        }
     }
 };

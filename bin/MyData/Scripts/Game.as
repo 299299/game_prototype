@@ -337,6 +337,14 @@ class TestGameState : GameState
             statusText.SetPosition(0, 0);
             statusText.color = Color(1, 1, 0);
             statusText.visible = true;
+
+            Text@ inputText = ui.root.CreateChild("Text", "input");
+            inputText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+            inputText.SetAlignment(HA_LEFT, VA_TOP);
+            inputText.SetPosition(0, 50);
+            inputText.color = Color(0, 1, 1);
+            inputText.visible = false;
+
             OnPlayerStatusUpdate(GetPlayer());
         }
     }

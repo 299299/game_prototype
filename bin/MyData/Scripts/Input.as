@@ -261,15 +261,6 @@ class GameInput
         return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE] || input.mouseButtonPress[MOUSEB_LEFT];
     }
 
-    bool IsDistractPressed()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[1];
-        else
-            return input.mouseButtonPress[MOUSEB_MIDDLE];
-    }
-
     bool IsCrouchPressed()
     {
         JoystickState@ joystick = GetJoystick();
@@ -286,6 +277,18 @@ class GameInput
             return joystick.buttonDown[1];
         else
             return input.keyDown[KEY_LCTRL];
+    }
+
+    bool IsActionPressed()
+    {
+        if (freezeInput)
+            return false;
+
+        JoystickState@ joystick = GetJoystick();
+        if (joystick !is null)
+            return joystick.buttonPress[0];
+        else
+            return input.keyPress[KEY_SPACE];
     }
 
     int GetDirectionPressed()
