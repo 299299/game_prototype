@@ -105,11 +105,7 @@ class BatmanEvadeState : PlayerEvadeState
     BatmanEvadeState(Character@ c)
     {
         super(c);
-        String prefix = "BM_Combat/";
-        AddMotion(prefix + "Evade_Forward_01");
-        AddMotion(prefix + "Evade_Right_01");
-        AddMotion(prefix + "Evade_Back_01");
-        AddMotion(prefix + "Evade_Left_01");
+        SetMotion("BM_Combat/Evade_Forward_03");
     }
 };
 
@@ -630,11 +626,7 @@ void Create_BM_Motions()
     Global_CreateMotion(preFix + "Cover_Transition", kMotion_R, kMotion_R);
 
     preFix = "BM_Combat/";
-    Global_CreateMotion(preFix + "Into_Takedown");
-    Global_CreateMotion(preFix + "Evade_Forward_01");
-    Global_CreateMotion(preFix + "Evade_Back_01");
-    Global_CreateMotion(preFix + "Evade_Left_01");
-    Global_CreateMotion(preFix + "Evade_Right_01");
+    Global_CreateMotion(preFix + "Evade_Forward_03");
 
     if (game_type == 1)
         Create_BM_ClimbAnimations();
@@ -643,7 +635,7 @@ void Create_BM_Motions()
 void Add_BM_AnimationTriggers()
 {
     String preFix = "BM_Combat/";
-    AddAnimationTrigger(preFix + "Evade_Forward_01", 48, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Evade_Forward_03", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Back_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);

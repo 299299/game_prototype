@@ -55,18 +55,12 @@ class PlayerStandState : MultiAnimationState
     }
 };
 
-class PlayerEvadeState : MultiMotionState
+class PlayerEvadeState : SingleMotionState
 {
     PlayerEvadeState(Character@ c)
     {
         super(c);
         SetName("EvadeState");
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.GetNode().vars[ANIMATION_INDEX] = ownner.RadialSelectAnimation(4);
-        MultiMotionState::Enter(lastState);
     }
 };
 
@@ -1465,8 +1459,9 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     void Enter(State@ lastState)
     {
-        motionFlagBeforeAlign = (type == 1) ? kMotion_XYZ : kMotion_ALL;
-        motionFlagAfterAlign = (type == 1) ? kMotion_ALL : kMotion_None;
+        motionFlagBeforeAlign = (type == HANG_CONVEX || type == HANG_CONCAVE) ? kMotion_XYZ : kMotion_ALL;
+        motionFlagAfterAlign = (type == HANG_CONVEX || type == HANG_CONCAVE) ? kMotion_ALL : kMotion_None;
+        debug = (type == HANG_CONVEX || type == HANG_CONCAVE) ? true : false;
 
         PlayerDockAlignState::Enter(lastState);
         Print(this.name + " enter type = " + type);
@@ -1488,7 +1483,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         int index = left ? 0 : numOfAnimations;
         index += convexIndex;
         dockBlendingMethod = 1;
-        type = 1;
+        type = (convexIndex == 1) ? HANG_CONVEX : HANG_CONCAVE;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         dockInTargetBound = 1.5f;
         ownner.ChangeState(this.nameHash);
