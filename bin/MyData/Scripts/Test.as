@@ -443,12 +443,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             gCameraMgr.SetCameraController("Debug");
         }
     }
-    else if (key == KEY_5)
-    {
-        VariantMap data;
-        data[TARGET_FOV] = 60;
-        SendEvent("CameraEvent", data);
-    }
     else if (key == KEY_6)
     {
         colorGradingIndex ++;

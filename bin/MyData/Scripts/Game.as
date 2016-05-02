@@ -453,10 +453,6 @@ class TestGameState : GameState
                     player.RemoveFlag(FLAGS_INVINCIBLE);
 
                 freezeInput = false;
-                VariantMap data;
-                data[NAME] = CHANGE_STATE;
-                data[VALUE] = StringHash("ThirdPerson");
-                SendEvent("CameraEvent", data);
             }
             break;
 

@@ -178,27 +178,6 @@ class Player : Character
 
     void StatusChanged()
     {
-        const int speed_up_combo = 10;
-        float fov = BASE_FOV;
-
-        if (combo < speed_up_combo)
-        {
-            SetTimeScale(1.0f);
-        }
-        else
-        {
-            int max_comb = 80;
-            int c = Min(combo, max_comb);
-            float a = float(c)/float(max_comb);
-            const float max_time_scale = 1.35f;
-            float time_scale = Lerp(1.0f, max_time_scale, a);
-            SetTimeScale(time_scale);
-            const float max_fov = 75;
-            fov = Lerp(BASE_FOV, max_fov, a);
-        }
-        VariantMap data;
-        data[TARGET_FOV] = fov;
-        SendEvent("CameraEvent", data);
         gGame.OnPlayerStatusUpdate(this);
     }
 
@@ -460,9 +439,6 @@ class Player : Character
         combo = 0;
         killed = 0;
         gGame.OnPlayerStatusUpdate(this);
-        VariantMap data;
-        data[TARGET_FOV] = BASE_FOV;
-        SendEvent("CameraEvent", data);
     }
 
     bool ActionCheck(bool bAttack, bool bCounter, bool bEvade)

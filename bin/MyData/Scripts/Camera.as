@@ -153,8 +153,6 @@ class ThirdPersonCameraController : CameraController
     float   cameraSpeed = 4.5f;
     float   cameraDistance = 8.0f;
     float   cameraDistSpeed = 100.0f;
-    float   targetFov = BASE_FOV;
-    float   fovSpeed = 1.5f;
     Vector3 targetOffset = Vector3(2.0f, 3.5f, 0);
 
     ThirdPersonCameraController(Node@ n, const String&in name)
@@ -208,26 +206,11 @@ class ThirdPersonCameraController : CameraController
                 cameraDistance +=  float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
         }
         cameraDistance = Clamp(cameraDistance, 9.0f, 50.0f);
-
-        float diff = targetFov - camera.fov;
-        camera.fov += diff * dt * fovSpeed;
-    }
-
-    void OnCameraEvent(VariantMap& eventData)
-    {
-        if (!eventData.Contains(TARGET_FOV))
-            return;
-        targetFov = eventData[TARGET_FOV].GetFloat();
-    }
-
-    void Enter()
-    {
-        targetFov = BASE_FOV;
     }
 
     String GetDebugText()
     {
-        return "camera fov=" + camera.fov + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + " targetFov=" + targetFov + "\n";
+        return "camera fov=" + camera.fov + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + "\n";
     }
 
     void Reset()
