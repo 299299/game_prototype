@@ -1454,14 +1454,13 @@ class PlayerHangMoveState : PlayerDockAlignState
         super(ownner);
         SetName("HangMoveState");
         dockBlendingMethod = 1;
-        //debug = true;
     }
 
     void Enter(State@ lastState)
     {
         motionFlagBeforeAlign = (type == HANG_CONVEX || type == HANG_CONCAVE) ? kMotion_XYZ : kMotion_ALL;
         motionFlagAfterAlign = (type == HANG_CONVEX || type == HANG_CONCAVE) ? kMotion_ALL : kMotion_None;
-        debug = (type == HANG_CONVEX || type == HANG_CONCAVE) ? true : false;
+        // debug = (type == HANG_CONVEX || type == HANG_CONCAVE) ? true : false;
 
         PlayerDockAlignState::Enter(lastState);
         Print(this.name + " enter type = " + type);
