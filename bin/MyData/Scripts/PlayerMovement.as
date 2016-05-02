@@ -1556,7 +1556,8 @@ class PlayerHangMoveState : PlayerDockAlignState
 
     Vector3 PickDockOutTarget()
     {
-        return ownner.dockLine.Project(motionPositon) + Quaternion(0, targetRotation, 0) * Vector3(0, -3.6, -1.45);
+        Vector3 offset = (type == HANG_CONCAVE) ? Vector3(0, -3.6, -1.45) : Vector3(0, -3.6, -1.15);
+        return ownner.dockLine.Project(motionPositon) + Quaternion(0, targetRotation, 0) * offset;
     }
 };
 

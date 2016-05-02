@@ -559,7 +559,7 @@ void Create_BM_ClimbAnimations()
     Global_CreateMotion(preFix + "Hang_Right", flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     flags = kMotion_XZR | kMotion_Ext_Foot_Based_Height;
-    offset = Vector3(0, 0.15, 0.5);
+    offset = Vector3(0, 0.15, 0.75);
     Global_CreateMotion(preFix + "Hang_Left_Convex", flags).SetDockAlign(L_HAND, 0.8f, offset);
     Global_CreateMotion(preFix + "Hang_Right_Convex", flags).SetDockAlign(R_HAND, 0.8f, offset);
 
