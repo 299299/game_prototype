@@ -1055,12 +1055,6 @@ class Character : GameObject
         return false;
     }
 
-    bool Redirect()
-    {
-        ChangeState("RedirectState");
-        return false;
-    }
-
     void CommonStateFinishedOnGroud()
     {
         ChangeState("StandState");
