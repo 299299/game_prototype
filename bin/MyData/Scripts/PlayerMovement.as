@@ -973,8 +973,8 @@ class PlayerClimbOverState : PlayerDockAlignState
         if (downLine is null)
         {
             motionFlagAfterAlign = 0;
-            index = PickTargetMotionByHeight(lastState);
-            if (index == 0 || index == 3)
+            index = PickTargetMotionByHeight(lastState, 2);
+            if (index == 0 || index == 2)
             {
                 Vector3 myPos = ownner.GetNode().worldPosition;
                 Motion@ m = motions[index];
@@ -990,18 +990,18 @@ class PlayerClimbOverState : PlayerDockAlignState
                 if (height < 1.5f)
                 {
                     if (index == 0)
-                        index = 6;
+                        index = 4;
                     else
-                        index = 7;
+                        index = 5;
                     motionFlagAfterAlign = kMotion_Y;
                 }
             }
         }
         else
         {
-            index = 8;
+            index = 6;
             if (downLine.HasFlag(LINE_SHORT_WALL))
-                index += (RandomInt(2) + 1);
+                index += 1;
             motionFlagAfterAlign = kMotion_XYZ;
             startPos = downLine.Project(ownner.GetNode().worldPosition);
         }
@@ -1013,7 +1013,7 @@ class PlayerClimbOverState : PlayerDockAlignState
 
     Vector3 PickDockOutTarget()
     {
-        return (selectIndex >= 8) ? down128Pos : groundPos;
+        return (selectIndex >= 6) ? down128Pos : groundPos;
     }
 
     float PickDockOutRotation()
@@ -1031,16 +1031,16 @@ class PlayerClimbOverState : PlayerDockAlignState
     {
         PlayerDockAlignState::DebugDraw(debug);
         debug.AddCross(groundPos, 0.5f, BLUE, false);
-        // debug.AddCross(down128Pos, 0.5f, Color(1, 0, 1), false);
+        debug.AddCross(down128Pos, 0.5f, Color(1, 0, 1), false);
     }
 
     void OnMotionFinished()
     {
-        if (selectIndex == 6 || selectIndex == 7)
+        if (selectIndex == 4 || selectIndex == 5)
             PlayerDockAlignState::OnMotionFinished();
-        else if (selectIndex == 8)
+        else if (selectIndex == 6)
             ownner.ChangeState("HangIdleState");
-        else if (selectIndex == 9 || selectIndex == 10)
+        else if (selectIndex == 7)
             ownner.ChangeState("DangleIdleState");
         else
             ownner.ChangeState("FallState");
@@ -1048,10 +1048,10 @@ class PlayerClimbOverState : PlayerDockAlignState
 
     void OnMotionAlignTimeOut()
     {
-        if (downLine !is null && selectIndex >= 8)
+        if (downLine !is null && selectIndex >= 6)
         {
             Vector3 offset;
-            if (selectIndex == 8)
+            if (selectIndex == 6)
                 offset = Vector3(0, -3.7, 1.45);
             else
                 offset = Vector3(0, -3.7, 1.8);
@@ -1166,15 +1166,7 @@ class PlayerHangIdleState : MultiMotionState
         blendTime = fromMove ? 0.0f : 0.3f;
         if (fromMove)
         {
-            // hack
-            if (curAnimationIndex == 0 || curAnimationIndex == 1 || curAnimationIndex == 2)
-                index = 0;
-            else if (curAnimationIndex == 3)
-                index = 1;
-            else if (curAnimationIndex == 4 || curAnimationIndex == 5 || curAnimationIndex == 6)
-                index = 2;
-            else if (curAnimationIndex == 7)
-                index = 3;
+            index = (curAnimationIndex <= 3) ? 0 : 1;
         }
         else
             index = RandomInt(2) == 0 ? 0 : 2;
@@ -1441,8 +1433,7 @@ class PlayerHangIdleState : MultiMotionState
             Line@ l = p.FindParalleLine(left, distErrSQR);
             if (l !is null)
             {
-                const float bigJumpErrSQR = 6.0f * 6.0f;
-                GetMoveState(l).ParalleJumpMove(l, left, distErrSQR > bigJumpErrSQR);
+                GetMoveState(l).ParalleJumpMove(l, left);
                 return true;
             }
             return false;
@@ -1459,13 +1450,12 @@ enum HangMoveType
     HANG_CONVEX,
     HANG_CONCAVE,
     HANG_JUMP,
-    HANG_JUMP_BIG,
 };
 
 class PlayerHangMoveState : PlayerDockAlignState
 {
     Line@           oldLine;
-    int             numOfAnimations = 4;
+    int             numOfAnimations = 3;
     int             type = 0;
 
     PlayerHangMoveState(Character@ ownner)
@@ -1507,7 +1497,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         ownner.ChangeState(this.nameHash);
     }
 
-    void ParalleJumpMove(Line@ line, bool left, bool bigJump)
+    void ParalleJumpMove(Line@ line, bool left)
     {
         Print(this.name + " ParalleJumpMove");
 
@@ -1518,10 +1508,7 @@ class PlayerHangMoveState : PlayerDockAlignState
         dockBlendingMethod = 1;
         dockInTargetBound = 1.5f;
 
-        type = bigJump ? HANG_JUMP_BIG : HANG_JUMP;
-
-        if (type == HANG_JUMP_BIG)
-            index += (numOfAnimations - 1);
+        type = HANG_JUMP;
 
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.ChangeState(this.nameHash);
@@ -1677,7 +1664,7 @@ class PlayerClimbDownState : PlayerDockAlignState
 
     void Enter(State@ lastState)
     {
-        ownner.GetNode().vars[ANIMATION_INDEX] = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (1 + RandomInt(2)) : 0;
+        ownner.GetNode().vars[ANIMATION_INDEX] = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? 1 : 0;
         PlayerDockAlignState::Enter(lastState);
     }
 

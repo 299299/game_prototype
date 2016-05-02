@@ -307,18 +307,15 @@ class BatmanClimbOverState : PlayerClimbOverState
         super(c);
         AddMotion("BM_Climb/Stand_Climb_Over_128_Fall");
         AddMotion("BM_Climb/Stand_Climb_Over_256_Fall");
-        AddMotion("BM_Climb/Stand_Climb_Over_384_Fall");
 
         AddMotion("BM_Climb/Run_Climb_Over_128_Fall");
         AddMotion("BM_Climb/Run_Climb_Over_256_Fall");
-        AddMotion("BM_Climb/Run_Climb_Over_384_Fall");
 
         AddMotion("BM_Climb/Stand_Climb_Over_128");
         AddMotion("BM_Climb/Run_Climb_Over_128");
 
         AddMotion("BM_Climb/Crouch_Jump_128_To_Hang");
         AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle");
-        AddMotion("BM_Climb/Crouch_Jump_128_To_Dangle_Wall");
     }
 };
 
@@ -355,9 +352,7 @@ class BatmanHangIdleState : PlayerHangIdleState
         super(c);
 
         AddMotion("BM_Climb/Hang_Left_End");
-        AddMotion("BM_Climb/Hang_Left_End_1");
         AddMotion("BM_Climb/Hang_Right_End");
-        AddMotion("BM_Climb/Hang_Right_End_1");
     }
 };
 
@@ -381,11 +376,9 @@ class BatmanHangMoveState : PlayerHangMoveState
         AddMotion("BM_Climb/Hang_Left");
         AddMotion("BM_Climb/Hang_Left_Convex");
         AddMotion("BM_Climb/Hang_Left_Concave");
-        AddMotion("BM_Climb/Hang_Left_1");
         AddMotion("BM_Climb/Hang_Right");
         AddMotion("BM_Climb/Hang_Right_Convex");
         AddMotion("BM_Climb/Hang_Right_Concave");
-        AddMotion("BM_Climb/Hang_Right_1");
     }
 };
 
@@ -396,9 +389,7 @@ class BatmanDangleIdleState : PlayerDangleIdleState
         super(c);
 
         AddMotion("BM_Climb/Dangle_Left_End");
-        AddMotion("BM_Climb/Dangle_Left_End_1");
         AddMotion("BM_Climb/Dangle_Right_End");
-        AddMotion("BM_Climb/Dangle_Right_End_1");
 
         //AddMotion("BM_Climb/Dangle_Idle");
         idleAnim = GetAnimationName("BM_Climb/Dangle_Idle");
@@ -425,11 +416,9 @@ class BatmanDangleMoveState : PlayerDangleMoveState
         AddMotion("BM_Climb/Dangle_Left");
         AddMotion("BM_Climb/Dangle_Convex_90_L");
         AddMotion("BM_Climb/Dangle_Concave_90_L");
-        AddMotion("BM_Climb/Dangle_Left_1");
         AddMotion("BM_Climb/Dangle_Right");
         AddMotion("BM_Climb/Dangle_Convex_90_R");
         AddMotion("BM_Climb/Dangle_Concave_90_R");
-        AddMotion("BM_Climb/Dangle_Right_1");
     }
 };
 
@@ -441,7 +430,6 @@ class BatmanClimbDownState : PlayerClimbDownState
 
         AddMotion("BM_Climb/Crouch_To_Hang");
         AddMotion("BM_Climb/Crouch_To_Dangle");
-        AddMotion("BM_Climb/Crouch_To_Dangle_Wall");
     }
 };
 
@@ -511,12 +499,10 @@ void Create_BM_ClimbAnimations()
     Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z, kMotion_ALL, 37).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
     Global_CreateMotion(preFix + "Run_Climb_Over_128_Fall", kMotion_YZ).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
     Global_CreateMotion(preFix + "Run_Climb_Over_256_Fall", kMotion_YZ).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
-    Global_CreateMotion(preFix + "Run_Climb_Over_384_Fall", kMotion_YZ).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
 
     Global_CreateMotion(preFix + "Stand_Climb_Over_128", kMotion_Z).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
     Global_CreateMotion(preFix + "Stand_Climb_Over_128_Fall", kMotion_YZ).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
     Global_CreateMotion(preFix + "Stand_Climb_Over_256_Fall", kMotion_YZ).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
-    Global_CreateMotion(preFix + "Stand_Climb_Over_384_Fall", kMotion_YZ).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));
 
     // Climb Up
     Global_CreateMotion(preFix + "Stand_Climb_Up_128", kMotion_YZ).SetDockAlign(L_FOOT, 0.27f, Vector3(0, -0.3, 0));
@@ -535,9 +521,7 @@ void Create_BM_ClimbAnimations()
     flags = kMotion_XYZ | dangle_add_flags;
 
     Global_CreateMotion(preFix + "Dangle_Left",  flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Left_1",  flags).SetDockAlign(L_HAND, 0.5f, offset);
     Global_CreateMotion(preFix + "Dangle_Right",  flags).SetDockAlign(R_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Dangle_Right_1",  flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     //offset = Vector3(0, 0.20, 0.25);
     flags = kMotion_ALL | dangle_add_flags;
@@ -548,18 +532,14 @@ void Create_BM_ClimbAnimations()
 
     flags = kMotion_Y | dangle_add_flags;
     Global_CreateMotion(preFix + "Dangle_Left_End", flags).SetDockAlign(L_HAND, 0.6f, offset);
-    Global_CreateMotion(preFix + "Dangle_Left_End_1", flags).SetDockAlign(L_HAND, 0.6f, offset);
     Global_CreateMotion(preFix + "Dangle_Right_End", flags).SetDockAlign(R_HAND, 0.6f, offset);
-    Global_CreateMotion(preFix + "Dangle_Right_End_1", flags).SetDockAlign(R_HAND, 0.6f, offset);
 
     Global_CreateMotion(preFix + "Dangle_Idle", dangle_add_flags);
 
     // offset = Vector3(0, 0.25, 0.75);
     flags = kMotion_YZR | dangle_add_flags;
     Global_CreateMotion(preFix + "Crouch_To_Dangle", flags).SetDockAlign(R_HAND, 0.7f, offset);
-    Global_CreateMotion(preFix + "Crouch_To_Dangle_Wall", flags).SetDockAlign(R_HAND, 0.7f, offset);
     Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle", flags).SetDockAlign(L_HAND, 0.6, offset);
-    Global_CreateMotion(preFix + "Crouch_Jump_128_To_Dangle_Wall", flags).SetDockAlign(L_HAND, 0.6, offset);
 
     flags = kMotion_YZ | dangle_add_flags;
     Global_CreateMotion(preFix + "Dangle_Climb_Up_Run", flags).SetDockAlign(L_HAND, 0.4f, Vector3(0, -0.1, 0.1));
@@ -580,9 +560,7 @@ void Create_BM_ClimbAnimations()
     flags = kMotion_X | kMotion_Ext_Foot_Based_Height;
 
     Global_CreateMotion(preFix + "Hang_Left", flags).SetDockAlign(L_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Hang_Left_1", flags).SetDockAlign(L_HAND, 0.5f, offset);
     Global_CreateMotion(preFix + "Hang_Right", flags).SetDockAlign(R_HAND, 0.5f, offset);
-    Global_CreateMotion(preFix + "Hang_Right_1", flags).SetDockAlign(R_HAND, 0.5f, offset);
 
     flags = kMotion_XZR | kMotion_Ext_Foot_Based_Height;
     offset = Vector3(0, 0.15, 0.5);
@@ -596,9 +574,7 @@ void Create_BM_ClimbAnimations()
     flags = kMotion_Y | kMotion_Ext_Foot_Based_Height;
     offset = Vector3(0, 0.15, 0.4);
     Global_CreateMotion(preFix + "Hang_Left_End", flags).SetDockAlign(L_HAND, 0.6f, offset);
-    Global_CreateMotion(preFix + "Hang_Left_End_1", flags).SetDockAlign(L_HAND, 0.6f, offset);
     Global_CreateMotion(preFix + "Hang_Right_End", flags).SetDockAlign(R_HAND, 0.6f, offset);
-    Global_CreateMotion(preFix + "Hang_Right_End_1", flags).SetDockAlign(R_HAND, 0.6f, offset);
 
     Global_CreateMotion(preFix + "Dangle_To_Hang", flags);
 
