@@ -40,7 +40,7 @@ class PlayerStandState : MultiAnimationState
         if (ownner.CheckDocking())
             return;
 
-        if (ownner.ActionCheck(true, true, true, true))
+        if (ownner.ActionCheck(true, true, true))
             return;
 
         if (timeInState > 0.25f && gInput.IsCrouchDown())
@@ -199,7 +199,7 @@ class PlayerMoveForwardState : SingleMotionState
             return;
         if (ownner.CheckDocking(dockDist))
             return;
-        if (ownner.ActionCheck(true, true, true, true))
+        if (ownner.ActionCheck(true, true, true))
             return;
 
         SingleMotionState::Update(dt);
@@ -332,90 +332,6 @@ class PlayerRunTurn180State : SingleMotionState
     {
         SingleMotionState::DebugDraw(debug);
         DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetAngle, Color(0.75f, 0.5f, 0.45f), 2.0f);
-    }
-};
-
-class PlayerSlideInState : SingleMotionState
-{
-    int state = 0;
-    float slideTimer = 1.0f;
-    Vector3 idleVelocity = Vector3(0, 0, 10);
-
-    PlayerSlideInState(Character@ c)
-    {
-        super(c);
-        SetName("SlideInState");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
-    }
-
-    void OnMotionFinished()
-    {
-        state = 1;
-        timeInState = 0.0f;
-    }
-
-    void Update(float dt)
-    {
-        if (state == 0)
-        {
-            SingleMotionState::Update(dt);
-        }
-        else if (state == 1)
-        {
-            if (timeInState >= slideTimer)
-            {
-                int index = 0;
-                if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary() && gInput.IsRunHolding())
-                {
-                    index = 1;
-                }
-                ownner.GetNode().vars[ANIMATION_INDEX] = index;
-                ownner.ChangeState("SlideOutState");
-                return;
-            }
-            if (ownner.physicsType == 0)
-            {
-                Vector3 oldPos = ownner.GetNode().worldPosition;
-                oldPos += (ownner.GetNode().worldRotation * idleVelocity * dt);
-                ownner.MoveTo(oldPos, dt);
-            }
-            else
-                ownner.SetVelocity(ownner.GetNode().worldRotation * idleVelocity);
-
-            CharacterState::Update(dt);
-        }
-    }
-
-    void Enter(State@ lastState)
-    {
-        SingleMotionState::Enter(lastState);
-        ownner.SetHeight(CHARACTER_CROUCH_HEIGHT);
-    }
-
-    void Exit(State@ nextState)
-    {
-        SingleMotionState::Exit(nextState);
-        ownner.SetHeight(CHARACTER_HEIGHT);
-    }
-};
-
-class PlayerSlideOutState : MultiMotionState
-{
-    PlayerSlideOutState(Character@ c)
-    {
-        super(c);
-        SetName("SlideOutState");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
-    }
-
-    void OnMotionFinished()
-    {
-        if (selectIndex == 1)
-        {
-            ownner.ChangeState("RunState");
-            return;
-        }
-        MultiMotionState::OnMotionFinished();
     }
 };
 
@@ -1746,19 +1662,12 @@ class PlayerDangleMoveState : PlayerHangMoveState
 
 class PlayerClimbDownState : PlayerDockAlignState
 {
-    Vector3 groundPos;
-
     PlayerClimbDownState(Character@ c)
     {
         super(c);
         SetName("ClimbDownState");
         dockBlendingMethod = 1;
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        PlayerDockAlignState::DebugDraw(debug);
-        debug.AddCross(groundPos, 0.5f, BLACK, false);
+        motionFlagBeforeAlign = kMotion_ALL;
     }
 
     float PickDockInRotation()
@@ -1766,57 +1675,17 @@ class PlayerClimbDownState : PlayerDockAlignState
         return ownner.dockLine.GetTargetRotation(ownner.GetNode().worldPosition);
     }
 
-    Vector3 PickDockInTarget()
-    {
-        return (selectIndex < 3) ? groundPos : PlayerDockAlignState::PickDockInTarget();
-    }
-
     void Enter(State@ lastState)
     {
-        int animIndex = 0;
-        Player@ p = cast<Player>(ownner);
-        p.ClimbDownRaycasts(ownner.dockLine);
-
-        bool hitForward = p.results[0].body !is null;
-        bool hitDown = p.results[1].body !is null;
-        bool hitBack = p.results[2].body !is null;
-        groundPos = p.results[1].position;
-        float lineToGround = ownner.dockLine.end.y - groundPos.y;
-
-        Print(this.name + " lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
-
-        if (lineToGround < (HEIGHT_128 + HEIGHT_256) / 2)
-        {
-            animIndex = 0;
-            if (lastState.name == "RunState")
-                animIndex = 1;
-            else if (lastState.name == "CrouchMoveState")
-                animIndex = 2;
-
-            motionFlagBeforeAlign = kMotion_Y;
-            animSpeed = 1.5f;
-        }
-        else
-        {
-            animSpeed = 1.0f;
-            motionFlagBeforeAlign = kMotion_ALL;
-            animIndex = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (4 + RandomInt(2)) : 3;
-        }
-
-        ownner.GetNode().vars[ANIMATION_INDEX] = animIndex;
+        ownner.GetNode().vars[ANIMATION_INDEX] = ownner.dockLine.HasFlag(LINE_SHORT_WALL) ? (1 + RandomInt(2)) : 0;
         PlayerDockAlignState::Enter(lastState);
     }
 
     void OnMotionFinished()
     {
-        if (selectIndex < 3)
-            PlayerDockAlignState::OnMotionFinished();
+        if (selectIndex == 0)
+            ownner.ChangeState("HangIdleState");
         else
-        {
-            if (selectIndex == 3)
-                ownner.ChangeState("HangIdleState");
-            else
-                ownner.ChangeState("DangleIdleState");
-        }
+            ownner.ChangeState("DangleIdleState");
     }
 };

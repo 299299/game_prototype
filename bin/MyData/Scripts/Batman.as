@@ -224,26 +224,6 @@ class BatmanDeadState : PlayerDeadState
     }
 };
 
-class BatmanSlideInState : PlayerSlideInState
-{
-    BatmanSlideInState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Climb/Slide_Floor_In");
-    }
-};
-
-class BatmanSlideOutState : PlayerSlideOutState
-{
-    BatmanSlideOutState(Character@ c)
-    {
-        super(c);
-        String preFix = "BM_Climb/";
-        AddMotion(preFix + "Slide_Floor_Stop");
-        AddMotion(preFix + "Slide_Floor_Out");
-    }
-};
-
 class BatmanCrouchState : PlayerCrouchState
 {
     BatmanCrouchState(Character@ c)
@@ -459,10 +439,6 @@ class BatmanClimbDownState : PlayerClimbDownState
     {
         super(c);
 
-        AddMotion("BM_Climb/Walk_Climb_Down_128");
-        AddMotion("BM_Climb/Run_Climb_Down_128");
-        AddMotion("BM_Climb/Crouch_Down_128");
-
         AddMotion("BM_Climb/Crouch_To_Hang");
         AddMotion("BM_Climb/Crouch_To_Dangle");
         AddMotion("BM_Climb/Crouch_To_Dangle_Wall");
@@ -500,8 +476,6 @@ class Batman : Player
         }
         else if (game_type == 1)
         {
-            stateMachine.AddState(BatmanSlideInState(this));
-            stateMachine.AddState(BatmanSlideOutState(this));
             stateMachine.AddState(BatmanCrouchState(this));
             stateMachine.AddState(BatmanCrouchTurnState(this));
             stateMachine.AddState(BatmanCrouchMoveState(this));
@@ -531,17 +505,7 @@ void Create_BM_ClimbAnimations()
 {
     Vector3 offset;
     String preFix = "BM_Climb/";
-    int flags = 0;
-
-    Global_CreateMotion(preFix + "Slide_Floor_In", kMotion_Z);
-    Global_CreateMotion(preFix + "Slide_Floor_Out", kMotion_Z);
-    Global_CreateMotion(preFix + "Slide_Floor_Stop");
-
-    // Climb Down
-    flags = kMotion_YZ | kMotion_Ext_Adjust_Y;
-    Global_CreateMotion(preFix + "Crouch_Down_128", flags, kMotion_ALL, 20);
-    Global_CreateMotion(preFix + "Walk_Climb_Down_128", flags, kMotion_ALL, 35);
-    Global_CreateMotion(preFix + "Run_Climb_Down_128", flags, kMotion_ALL, 16);
+    int flags = kMotion_YZ | kMotion_Ext_Adjust_Y;
 
     // Climb Over
     Global_CreateMotion(preFix + "Run_Climb_Over_128", kMotion_Z, kMotion_ALL, 37).SetDockAlign(L_HAND, 0.5f, Vector3(0, -0.1, 0));

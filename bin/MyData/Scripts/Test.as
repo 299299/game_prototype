@@ -865,12 +865,6 @@ void ExecuteCommand()
         em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
         em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
     }
-    else if (command == "distract")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Distract();
-    }
     else if (command == "kill")
     {
         Node@ _node = script.defaultScene.GetChild(command_list[1]);

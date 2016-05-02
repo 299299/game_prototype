@@ -965,12 +965,6 @@ class Thug : Enemy
             return;
         KeepDistanceWithEnemy();
     }
-
-    bool Distract()
-    {
-        ChangeState("DistractState");
-        return true;
-    }
 };
 
 Vector3 GetRagdollForce()

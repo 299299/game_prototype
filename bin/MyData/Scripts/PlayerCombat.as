@@ -148,7 +148,7 @@ class PlayerAttackState : CharacterState
         int addition_frames = slowMotion ? slowMotionFrames : 0;
         bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1 + addition_frames);
         bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME * addition_frames;
-        ownner.ActionCheck(check_attack, check_others, check_others, check_others);
+        ownner.ActionCheck(check_attack, check_others, check_others);
     }
 
     void PickBestMotion(Array<AttackMotion@>@ attacks, int dir)

@@ -460,13 +460,10 @@ class Player : Character
         SendEvent("CameraEvent", data);
     }
 
-    bool ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
+    bool ActionCheck(bool bAttack, bool bCounter, bool bEvade)
     {
         if (bAttack && gInput.IsAttackPressed())
             return Attack();
-
-        if (bDistract && gInput.IsDistractPressed())
-            return Distract();
 
         if (bCounter && gInput.IsCounterPressed())
             return Counter();
@@ -489,20 +486,6 @@ class Player : Character
             ChangeState("BeatDownHitState");
         else
             ChangeState("AttackState");
-        return true;
-    }
-
-    bool Distract()
-    {
-        if (game_type != 0)
-            return false;
-
-        Print("Do--Distract--->");
-        Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
-        if (e is null)
-            return false;
-        SetTarget(e);
-        ChangeState("BeatDownHitState");
         return true;
     }
 
@@ -610,7 +593,22 @@ class Player : Character
                 float distSQR = (proj- charPos).lengthSquared;
                 const float minDownDist = 1.5f;
                 if (distSQR < minDownDist * minDownDist)
-                    stateToChange = "ClimbDownState";
+                {
+                    int animIndex = 0;
+                    ClimbDownRaycasts(l);
+
+                    bool hitForward = results[0].body !is null;
+                    bool hitDown = results[1].body !is null;
+                    bool hitBack = results[2].body !is null;
+                    Vector3 groundPos = results[1].position;
+                    float lineToGround = l.end.y - groundPos.y;
+
+                    Print("CheckDocking lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
+
+                    if (lineToGround > (HEIGHT_128 + HEIGHT_256) / 2)
+                        stateToChange = "ClimbDownState";
+
+                }
             }
             else if (lineToMe > HEIGHT_128 / 4)
             {

@@ -171,7 +171,7 @@ class CharacterState : State
         {
             if (!ownner.IsInAir())
             {
-                if (ownner.ActionCheck(true, true, true, true))
+                if (ownner.ActionCheck(true, true, true))
                     return;
             }
         }
@@ -1144,11 +1144,6 @@ class Character : GameObject
         return false;
     }
 
-    bool Distract()
-    {
-        return false;
-    }
-
     void CommonStateFinishedOnGroud()
     {
         ChangeState("StandState");
@@ -1488,7 +1483,7 @@ class Character : GameObject
             PlaySound("Sfx/big_" + (RandomInt(num_of_big_sounds) + 1) + ".ogg");
     }
 
-    bool ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
+    bool ActionCheck(bool bAttack, bool bCounter, bool bEvade)
     {
         return false;
     }
