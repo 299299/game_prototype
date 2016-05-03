@@ -33,8 +33,6 @@ class GameInput
 
     int   m_leftStickHoldFrames = 0;
 
-    uint  lastMiddlePressedTime = 0;
-
     bool  flipRightStick = false;
 
     GameInput()
@@ -83,9 +81,6 @@ class GameInput
             m_leftStickHoldTime = 0;
             m_leftStickHoldFrames = 0;
         }
-
-        if (input.mouseButtonPress[MOUSEB_MIDDLE])
-            lastMiddlePressedTime = time.systemTime;
 
         // Print("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
     }

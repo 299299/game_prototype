@@ -134,7 +134,7 @@ class PlayerStandToRunState : PlayerTurnState
     {
         super(c);
         SetName("StandToRunState");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN;
         dockDist = 6.0f;
     }
 };
@@ -251,6 +251,7 @@ class PlayerRunState : PlayerMoveForwardState
         SetName("RunState");
         turnSpeed = 7.5f;
         dockDist = 6.0f;
+        flags |= FLAGS_RUN;
     }
 
     void OnStop()
@@ -286,7 +287,7 @@ class PlayerRunToStandState : SingleMotionState
     {
         super(c);
         SetName("RunToStandState");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN;
     }
 };
 
@@ -299,7 +300,7 @@ class PlayerRunTurn180State : SingleMotionState
     {
         super(c);
         SetName("RunTurn180State");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN;
     }
 
     void Enter(State@ lastState)
