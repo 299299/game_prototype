@@ -262,7 +262,7 @@ void CreateResourceFilterUI()
     Array<ResourceType@> sorted;
     for (int i=1; i <= NUMBER_OF_VALID_RESOURCE_TYPES; ++i)
         sorted.Push(ResourceType(i, ResourceTypeName(i)));
-        
+
     // 2 unknown types are reserved for the top, the rest are alphabetized
     sorted.Sort();
     sorted.Insert(0, ResourceType(RESOURCE_TYPE_UNKNOWN, ResourceTypeName(RESOURCE_TYPE_UNKNOWN)) );
@@ -347,7 +347,7 @@ void InitializeBrowserFileListRow(Text@ fileText, BrowserFile@ file)
         text.text = file.ResourceTypeName();
     }
 
-    if (file.resourceType == RESOURCE_TYPE_MATERIAL || 
+    if (file.resourceType == RESOURCE_TYPE_MATERIAL ||
             file.resourceType == RESOURCE_TYPE_MODEL ||
             file.resourceType == RESOURCE_TYPE_PARTICLEEFFECT ||
             file.resourceType == RESOURCE_TYPE_PREFAB
@@ -487,7 +487,7 @@ BrowserDir@ InitBrowserDir(String path)
                 parent.children.Push(browserDir);
             }
             @parent = browserDir;
-        } 
+        }
         return browserDir;
     }
     return null;
@@ -992,6 +992,19 @@ void HandleBrowserFileDragBegin(StringHash eventType, VariantMap& eventData)
     @browserDragFile = GetBrowserFileFromUIElement(uiElement);
 }
 
+Vector3 GetNodeSize(Node@ node)
+{
+    CollisionShape@ shape = node.GetComponent("CollisionShape");
+    if (shape !is null)
+        return shape.size;
+
+    Drawable@ object = node.GetComponent("Drawable");
+    if (object !is null)
+        return object.boundingBox.size;
+
+    return Vector3(0, 0, 0);
+}
+
 void HandleBrowserFileDragEnd(StringHash eventType, VariantMap& eventData)
 {
     if (@browserDragFile is null)
@@ -1001,6 +1014,7 @@ void HandleBrowserFileDragEnd(StringHash eventType, VariantMap& eventData)
     if (element !is null)
         return;
 
+    Node@ createdNode = null;
     if (browserDragFile.resourceType == RESOURCE_TYPE_MATERIAL)
     {
         StaticModel@ model = cast<StaticModel>(GetDrawableAtMousePostion());
@@ -1008,6 +1022,32 @@ void HandleBrowserFileDragEnd(StringHash eventType, VariantMap& eventData)
         {
             AssignMaterial(model, browserDragFile.resourceKey);
         }
+    }
+    else if (browserDragFile.resourceType == RESOURCE_TYPE_PREFAB)
+    {
+        createdNode = LoadNode(browserDragFile.GetFullPath());
+    }
+    else if (browserDragFile.resourceType == RESOURCE_TYPE_MODEL)
+    {
+        createdNode = CreateNode(REPLICATED);
+        Model@ model = cache.GetResource("Model", browserDragFile.resourceKey);
+        if (model.skeleton.numBones > 0)
+        {
+            AnimatedModel@ am = createdNode.CreateComponent("AnimatedModel");
+            am.model = model;
+        }
+        else
+        {
+            StaticModel@ sm = createdNode.CreateComponent("StaticModel");
+            sm.model = model;
+        }
+    }
+
+    if (createdNode !is null)
+    {
+        Vector3 pos = GetScreenCollision(ui.cursorPosition);
+        pos.y += GetNodeSize(createdNode).y/2;
+        createdNode.worldPosition = pos;
     }
 
     browserDragFile = null;
@@ -1019,10 +1059,10 @@ void HandleFileChanged(StringHash eventType, VariantMap& eventData)
 {
     String filename = eventData["FileName"].GetString();
     BrowserFile@ file = GetBrowserFileFromPath(filename);
-    
+
     if (file is null)
     {
-        // TODO: new file logic when watchers are supported 
+        // TODO: new file logic when watchers are supported
         return;
     }
     else
@@ -1106,7 +1146,7 @@ int GetResourceType(StringHash fileType)
         return RESOURCE_TYPE_CUBEMAP;
     else if (fileType == XML_TYPE_SPRITER_DATA)
         return RESOURCE_TYPE_2D_ANIMATION_SET;
-   
+
     // JSON fileTypes
     else if (fileType == JSON_TYPE_SCENE)
         return RESOURCE_TYPE_SCENE;
@@ -1214,7 +1254,7 @@ bool GetExtensionType(String path, StringHash &out fileType)
     else if(type == EXTENSION_TYPE_JPEG)
         fileType = EXTENSION_TYPE_JPEG;
     else if(type == EXTENSION_TYPE_HDR)
-        fileType =  EXTENSION_TYPE_HDR;    
+        fileType =  EXTENSION_TYPE_HDR;
     else if(type == EXTENSION_TYPE_BMP)
         fileType = EXTENSION_TYPE_BMP;
     else if(type == EXTENSION_TYPE_TGA)
@@ -1252,7 +1292,7 @@ bool GetExtensionType(String path, StringHash &out fileType)
 }
 
 bool GetBinaryType(String path, StringHash &out fileType, bool useCache = false)
-{   
+{
     StringHash type;
     if (useCache)
     {
@@ -1519,7 +1559,7 @@ class BrowserFile
             InitializeBrowserFileListRow(browserFileListRow_, this);
         }
     }
-    
+
     String ResourceTypeName()
     {
         return ::ResourceTypeName(resourceType);
@@ -1539,7 +1579,7 @@ class BrowserFile
 void CreateResourcePreview(String path, Node@ previewNode)
 {
     resourceBrowserPreview.autoUpdate = false;
-    int resourceType = GetResourceType(path); 
+    int resourceType = GetResourceType(path);
     if (resourceType > 0)
     {
         File file;
@@ -1629,7 +1669,7 @@ void RotateResourceBrowserPreview(StringHash eventType, VariantMap& eventData)
 {
     int elemX = eventData["ElementX"].GetInt();
     int elemY = eventData["ElementY"].GetInt();
-    
+
     if (resourceBrowserPreview.height > 0 && resourceBrowserPreview.width > 0)
     {
         float yaw = ((resourceBrowserPreview.height / 2) - elemY) * (90.0 / resourceBrowserPreview.height);
