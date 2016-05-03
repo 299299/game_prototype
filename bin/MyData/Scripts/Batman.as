@@ -190,7 +190,7 @@ class BatmanCounterState : PlayerCounterState
     BatmanCounterState(Character@ c)
     {
         super(c);
-        AddBW_Counter_Animations("BW_TG_Counter/", "BM_TG_Counter/", true);
+        Add_Counter_Animations("BM_TG_Counter/");
     }
 };
 

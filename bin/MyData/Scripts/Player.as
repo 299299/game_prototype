@@ -64,8 +64,8 @@ class Player : Character
         if (state is null)
             return false;
 
-        int len = PickCounterEnemy(state.counterEnemies);
-        if (len == 0)
+        state.counterEnemy = PickCounterEnemy();
+        if (state.counterEnemy is null)
             return false;
 
         ChangeState("CounterState");
@@ -206,14 +206,16 @@ class Player : Character
     //====================================================================
     //      SMART ENEMY PICK FUNCTIONS
     //====================================================================
-    int PickCounterEnemy(Array<Enemy@>@ counterEnemies)
+    Enemy@ PickCounterEnemy()
     {
         EnemyManager@ em = cast<EnemyManager>(GetScene().GetScriptObject("EnemyManager"));
         if (em is null)
-            return 0;
+            return null;
 
-        counterEnemies.Clear();
         Vector3 myPos = sceneNode.worldPosition;
+        Enemy@ ret = null;
+        float maxDistSQR = 999999;
+
         for (uint i=0; i<em.enemyList.length; ++i)
         {
             Enemy@ e = em.enemyList[i];
@@ -232,11 +234,15 @@ class Player : Character
                     Print(e.GetName() + " counter distance too long" + distSQR);
                 continue;
             }
-            counterEnemies.Push(e);
+
+            if (distSQR < maxDistSQR)
+            {
+                maxDistSQR = distSQR;
+                @ret = e;
+            }
         }
 
-        Print("PickCounterEnemy ret=" + counterEnemies.length);
-        return counterEnemies.length;
+        return ret;
     }
 
     Enemy@ PickRedirectEnemy()

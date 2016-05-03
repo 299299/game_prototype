@@ -996,74 +996,7 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
     Global_CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
-    Global_CreateMotion_InFolder("TG_BW_Counter/");
-    preFix = "TG_BM_Counter/";
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_01");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_03");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_01");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
-
-    preFix = "TG_CW_Counter/";
-    for (int i=1; i<=3; ++i)
-        Global_CreateMotion(preFix + "Counter_Arm_Back_0" + i);
-    Global_CreateMotion(preFix + "Counter_Arm_Back_Weak_01");
-    Global_CreateMotion(preFix + "Counter_Arm_Back_Weak_02");
-    for (int i=1; i<=5; ++i)
-        Global_CreateMotion(preFix + "Counter_Arm_Front_0" + i);
-    Global_CreateMotion(preFix + "Counter_Arm_Front_Weak_01");
-    Global_CreateMotion(preFix + "Counter_Arm_Front_Weak_02");
-    Global_CreateMotion(preFix + "Counter_Leg_Back_01");
-    Global_CreateMotion(preFix + "Counter_Leg_Back_02");
-    Global_CreateMotion(preFix + "Counter_Leg_Back_Weak_01");
-    Global_CreateMotion(preFix + "Counter_Leg_Back_Weak_02");
-    Global_CreateMotion(preFix + "Counter_Leg_Front_01");
-    Global_CreateMotion(preFix + "Counter_Leg_Front_03");
-    Global_CreateMotion(preFix + "Counter_Leg_Front_04");
-    Global_CreateMotion(preFix + "Counter_Leg_Front_Weak_01");
-    Global_CreateMotion(preFix + "Counter_Leg_Front_Weak_02");
-
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsB_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsC_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsC_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsD_02", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsE_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsG_02");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsH_02");
-
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_01", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_02");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsA_03", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_01");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB_03");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_01");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
+    Global_CreateMotion_InFolder("TG_BM_Counter/");
 
     preFix = "TG_Combat/";
     Global_AddAnimation(preFix + "Stand_Idle_Additive_01");
