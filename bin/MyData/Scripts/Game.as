@@ -319,34 +319,31 @@ class TestGameState : GameState
 
     void CreateUI()
     {
-        if (game_type == 0)
-        {
-            int height = graphics.height / 22;
-            if (height > 64)
-                height = 64;
-            Text@ messageText = ui.root.CreateChild("Text", "message");
-            messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-            messageText.SetAlignment(HA_CENTER, VA_CENTER);
-            messageText.SetPosition(0, -height * 2 + 100);
-            messageText.color = Color(1, 0, 0);
-            messageText.visible = false;
+        int height = graphics.height / 22;
+        if (height > 64)
+            height = 64;
+        Text@ messageText = ui.root.CreateChild("Text", "message");
+        messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+        messageText.SetAlignment(HA_CENTER, VA_CENTER);
+        messageText.SetPosition(0, -height * 2 + 100);
+        messageText.color = Color(1, 0, 0);
+        messageText.visible = false;
 
-            Text@ statusText = ui.root.CreateChild("Text", "status");
-            statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-            statusText.SetAlignment(HA_LEFT, VA_TOP);
-            statusText.SetPosition(0, 0);
-            statusText.color = Color(1, 1, 0);
-            statusText.visible = true;
+        Text@ statusText = ui.root.CreateChild("Text", "status");
+        statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+        statusText.SetAlignment(HA_LEFT, VA_BOTTOM);
+        statusText.SetPosition(0, 0);
+        statusText.color = Color(1, 1, 0);
+        statusText.visible = true;
 
-            Text@ inputText = ui.root.CreateChild("Text", "input");
-            inputText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-            inputText.SetAlignment(HA_LEFT, VA_TOP);
-            inputText.SetPosition(0, 50);
-            inputText.color = Color(0, 1, 1);
-            inputText.visible = false;
+        Text@ inputText = ui.root.CreateChild("Text", "input");
+        inputText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+        inputText.SetAlignment(HA_LEFT, VA_BOTTOM);
+        inputText.SetPosition(0, -UI_FONT_SIZE - 5);
+        inputText.color = Color(0, 1, 1);
+        inputText.visible = false;
 
-            OnPlayerStatusUpdate(GetPlayer());
-        }
+        OnPlayerStatusUpdate(GetPlayer());
     }
 
     void Exit(State@ nextState)
@@ -622,8 +619,7 @@ class TestGameState : GameState
         maxKilled = em.enemyResetRotations.length;
 
         Vector3 v_pos = playerNode.worldPosition;
-        cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
-        cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
+        cameraNode.position = Vector3(10, 20.0f, -20);
 
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");

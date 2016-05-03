@@ -49,7 +49,7 @@ int render_features = RF_FULL;
 
 String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
-int UI_FONT_SIZE = 40;
+int UI_FONT_SIZE = 20;
 
 int freeze_ai = 0;
 int test_beat_index = 1;

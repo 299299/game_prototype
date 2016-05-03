@@ -555,83 +555,83 @@ class Player : Character
         float charAngle = GetCharacterAngle();
         Line@ l = gLineWorld.GetNearestLine(charPos, charAngle, distance);
 
-        if (l is null)
-            return false;
-
         String stateToChange;
 
-        if (l.type == LINE_COVER)
-            stateToChange = "CoverState";
-        else if (l.type == LINE_EDGE)
+        if (l !is null)
         {
-            Vector3 proj = l.Project(charPos);
-            float lineToMe = proj.y - charPos.y;
-            // Print("lineToMe_Height=" + lineToMe);
-
-            if (lineToMe < 0.1f)
+            if (l.type == LINE_COVER)
+                stateToChange = "CoverState";
+            else if (l.type == LINE_EDGE)
             {
-                // move down case
-                float distSQR = (proj- charPos).lengthSquared;
-                const float minDownDist = 1.5f;
-                if (distSQR < minDownDist * minDownDist)
+                Vector3 proj = l.Project(charPos);
+                float lineToMe = proj.y - charPos.y;
+                // Print("lineToMe_Height=" + lineToMe);
+
+                if (lineToMe < 0.1f)
                 {
-                    int animIndex = 0;
-                    ClimbDownRaycasts(l);
-
-                    bool hitForward = results[0].body !is null;
-                    bool hitDown = results[1].body !is null;
-                    bool hitBack = results[2].body !is null;
-                    Vector3 groundPos = results[1].position;
-                    float lineToGround = l.end.y - groundPos.y;
-
-                    Print("CheckDocking lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
-
-                    if (lineToGround > (HEIGHT_128 + HEIGHT_256) / 2)
-                        stateToChange = "ClimbDownState";
-
-                }
-            }
-            else if (lineToMe > HEIGHT_128 / 4)
-            {
-                // ClimbUpRaycasts(l);
-                Line@ line = FindForwardUpDownLine(l);
-
-                bool hitUp = results[0].body !is null;
-                bool hitForward = results[1].body !is null;
-                bool hitDown = results[2].body !is null;
-                bool hitBack = results[3].body !is null;
-
-                float lineToGround = l.end.y - results[2].position.y;
-                bool isWallTooShort = lineToMe < (HEIGHT_128 + HEIGHT_256) / 2;
-
-                // Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
-
-                if (!hitUp)
-                {
-                    if (!hitForward)
+                    // move down case
+                    float distSQR = (proj- charPos).lengthSquared;
+                    const float minDownDist = 1.5f;
+                    if (distSQR < minDownDist * minDownDist)
                     {
-                        if (hitDown && lineToGround < 0.25f)
+                        int animIndex = 0;
+                        ClimbDownRaycasts(l);
+
+                        bool hitForward = results[0].body !is null;
+                        bool hitDown = results[1].body !is null;
+                        bool hitBack = results[2].body !is null;
+                        Vector3 groundPos = results[1].position;
+                        float lineToGround = l.end.y - groundPos.y;
+
+                        Print("CheckDocking lineToGround=" + lineToGround + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack);
+
+                        if (lineToGround > (HEIGHT_128 + HEIGHT_256) / 2)
+                            stateToChange = "ClimbDownState";
+
+                    }
+                }
+                else if (lineToMe > HEIGHT_128 / 4)
+                {
+                    // ClimbUpRaycasts(l);
+                    Line@ line = FindForwardUpDownLine(l);
+
+                    bool hitUp = results[0].body !is null;
+                    bool hitForward = results[1].body !is null;
+                    bool hitDown = results[2].body !is null;
+                    bool hitBack = results[3].body !is null;
+
+                    float lineToGround = l.end.y - results[2].position.y;
+                    bool isWallTooShort = lineToMe < (HEIGHT_128 + HEIGHT_256) / 2;
+
+                    // Print("CheckDocking hitUp=" + hitUp + " hitForward=" + hitForward + " hitDown=" + hitDown + " hitBack=" + hitBack + " lineToGround=" + lineToGround + " isWallTooShort=" + isWallTooShort);
+
+                    if (!hitUp)
+                    {
+                        if (!hitForward)
                         {
-                            if (!l.HasFlag(LINE_SHORT_WALL))
-                                stateToChange = "ClimbUpState";
+                            if (hitDown && lineToGround < 0.25f)
+                            {
+                                if (!l.HasFlag(LINE_SHORT_WALL))
+                                    stateToChange = "ClimbUpState";
+                            }
+                            else
+                            {
+                                // TODO
+                                if (isWallTooShort && l.HasFlag(LINE_THIN_WALL))
+                                {
+                                    stateToChange = "ClimbOverState";
+                                    PlayerClimbOverState@ s = cast<PlayerClimbOverState>(FindState(stateToChange));
+                                    if (s !is null)
+                                        @s.downLine = line;
+                                }
+                                else
+                                    stateToChange = "HangUpState"; // "ClimbOverState";
+                            }
                         }
                         else
                         {
-                            // TODO
-                            if (isWallTooShort && l.HasFlag(LINE_THIN_WALL))
-                            {
-                                stateToChange = "ClimbOverState";
-                                PlayerClimbOverState@ s = cast<PlayerClimbOverState>(FindState(stateToChange));
-                                if (s !is null)
-                                    @s.downLine = line;
-                            }
-                            else
-                                stateToChange = "HangUpState"; // "ClimbOverState";
+                            stateToChange = "HangUpState";
                         }
-                    }
-                    else
-                    {
-                        stateToChange = "HangUpState";
                     }
                 }
             }

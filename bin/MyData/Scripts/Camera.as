@@ -168,7 +168,7 @@ class ThirdPersonCameraController : CameraController
         Node@ _node = p.GetNode();
 
         bool blockView = false;
-        Vector3 target_pos = _node.worldPosition;//_node.GetChild(HEAD, true).worldPosition;
+        Vector3 target_pos = _node.worldPosition;
         if (p.target !is null)
         {
             if (!p.target.IsVisible())
@@ -181,7 +181,7 @@ class ThirdPersonCameraController : CameraController
 
         if (p.GetState().nameHash == RUN_STATE)
         {
-            cameraDistance *= 2;
+            // cameraDistance *= 2;
         }
 
         Vector3 offset = cameraNode.worldRotation * targetOffset;
@@ -209,20 +209,23 @@ class ThirdPersonCameraController : CameraController
 
     String GetDebugText()
     {
-        return "camera fov=" + camera.fov + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + "\n";
+        return "camera fov=" + camera.fov + " position=" + cameraNode.worldPosition.ToString()  + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + "\n";
     }
 
     void Reset()
     {
         Print("Reset Camera !!!");
+        targetOffset.x = 0;
+        targetOffset.z = 0;
         Player@ p = GetPlayer();
-        Vector3 offset = cameraNode.worldRotation * targetOffset;
+        Vector3 offset = p.GetNode().worldRotation * targetOffset;
         Vector3 target_pos = p.GetNode().worldPosition + offset;
         Vector3 dir = target_pos - cameraNode.worldPosition;
+        cameraNode.LookAt(target_pos);
         cameraDistance = dir.length;
-        float h = Abs(dir.y);
-        gInput.m_rightStickY = Asin(h/cameraDistance);
-        gInput.m_rightStickX = Asin(dir.x/cameraDistance);
+        Vector3 angles = cameraNode.worldRotation.eulerAngles;
+        gInput.m_rightStickY = angles.x;
+        gInput.m_rightStickX = angles.y;
         gInput.m_rightStickMagnitude = gInput.m_rightStickX * gInput.m_rightStickX + gInput.m_rightStickY * gInput.m_rightStickY;
         Print("cameraDistance=" + cameraDistance);
     }
