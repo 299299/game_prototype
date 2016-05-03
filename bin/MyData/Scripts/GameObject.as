@@ -145,7 +145,7 @@ class GameObject : ScriptObject
     void Transform(const Vector3& pos, const Quaternion& qua)
     {
         Node@ _node = GetNode();
-        _node.worldPosition = FilterPosition(pos);
+        _node.worldPosition = pos;
         _node.worldRotation = qua;
     }
 
@@ -172,14 +172,4 @@ void SetWorldTimeScale(Scene@ _scene, float scale)
             continue;
         object.SetTimeScale(scale);
     }
-}
-
-Vector3 FilterPosition(const Vector3&in position)
-{
-    float x = position.x;
-    float z = position.z;
-    float radius = COLLISION_RADIUS + 1.0f;
-    x = Clamp(x, radius - WORLD_HALF_SIZE.x, WORLD_HALF_SIZE.x - radius);
-    z = Clamp(z, radius - WORLD_HALF_SIZE.z, WORLD_HALF_SIZE.z - radius);
-    return Vector3(x, position.y, z);
 }

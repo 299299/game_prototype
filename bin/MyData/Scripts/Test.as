@@ -52,11 +52,6 @@ const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 20;
 
 int freeze_ai = 0;
-int test_beat_index = 1;
-bool base_on_player = false;
-int test_counter_index = 0;
-int test_double_counter_index = 0;
-int test_triple_counter_index = 0;
 int game_type = 1;
 int collision_type = 0;
 
@@ -83,8 +78,6 @@ void Start()
                 render_features = RF_NONE;
             else if (argument == "freezeai")
                 freeze_ai = 1;
-            else if (argument == "reflection")
-                reflection = !reflection;
             else if (argument == "game")
             {
                 String type = arguments[i+1];
@@ -97,10 +90,7 @@ void Start()
     }
 
     if (game_type == 1)
-    {
         collision_type = 1;
-        reflection = false;
-    }
 
     if (!engine.headless && graphics.width < 640)
         render_features = RF_NONE;

@@ -52,8 +52,6 @@ const StringHash SOUND("Sound");
 const StringHash RANGE("Range");
 const StringHash TAG("Tag");
 
-Vector3 WORLD_HALF_SIZE(1000, 0, 1000);
-
 int num_of_sounds = 37;
 int num_of_big_sounds = 6;
 
@@ -1037,7 +1035,7 @@ class Character : GameObject
 
     void MoveTo(const Vector3& position, float dt)
     {
-        sceneNode.worldPosition = FilterPosition(position);
+        sceneNode.worldPosition = position;
     }
 
     bool Attack()
