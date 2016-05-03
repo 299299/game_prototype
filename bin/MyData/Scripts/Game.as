@@ -514,7 +514,7 @@ class TestGameState : GameState
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
         cameraId = cameraNode.id;
-        cameraNode.worldPosition = Vector3(0, 20, -10);
+        cameraNode.worldPosition = Vector3(0, 10, -5);
 
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;

@@ -151,8 +151,8 @@ class DebugFPSCameraController: CameraController
 class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 4.5f;
-    float   cameraDistance = 8.0f;
-    float   cameraDistSpeed = 100.0f;
+    float   cameraDistance = 4.0f;
+    float   cameraDistSpeed = 10.0f;
     Vector3 targetOffset = Vector3(2.0f, 3.5f, 0);
 
     ThirdPersonCameraController(Node@ n, const String&in name)
@@ -179,10 +179,7 @@ class ThirdPersonCameraController : CameraController
             }
         }
 
-        if (p.GetState().nameHash == RUN_STATE)
-        {
-            // cameraDistance *= 2;
-        }
+        cameraDistance = (p.GetState().nameHash == RUN_STATE) ? 15 : 7.5;
 
         Vector3 offset = cameraNode.worldRotation * targetOffset;
         target_pos += offset;
@@ -196,6 +193,7 @@ class ThirdPersonCameraController : CameraController
         Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
         UpdateView(pos, target_pos, dt * cameraSpeed);
 
+        /*
         if (input.mouseMoveWheel != 0)
         {
             uint t = time.systemTime;
@@ -204,6 +202,7 @@ class ThirdPersonCameraController : CameraController
             if (t_diff > 500)
                 cameraDistance +=  float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
         }
+        */
         // cameraDistance = Clamp(cameraDistance, 9.0f, 50.0f);
     }
 
