@@ -214,9 +214,6 @@ class ThirdPersonCameraController : CameraController
 
     void Reset()
     {
-        Print("Reset Camera !!!");
-        targetOffset.x = 0;
-        targetOffset.z = 0;
         Player@ p = GetPlayer();
         Vector3 offset = p.GetNode().worldRotation * targetOffset;
         Vector3 target_pos = p.GetNode().worldPosition + offset;
@@ -227,7 +224,7 @@ class ThirdPersonCameraController : CameraController
         gInput.m_rightStickY = angles.x;
         gInput.m_rightStickX = angles.y;
         gInput.m_rightStickMagnitude = gInput.m_rightStickX * gInput.m_rightStickX + gInput.m_rightStickY * gInput.m_rightStickY;
-        Print("cameraDistance=" + cameraDistance);
+        Print("Camera Reset cameraDistance=" + cameraDistance + " angles=" + angles.ToString());
     }
 
     void Enter()

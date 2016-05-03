@@ -109,9 +109,9 @@ void Start()
         SetWindowTitleAndIcon();
         CreateConsoleAndDebugHud();
         CreateUI();
-        InitAudio();
     }
 
+    InitAudio();
     SubscribeToEvents();
 
     gGame.Start();

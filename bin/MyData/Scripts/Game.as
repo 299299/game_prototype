@@ -514,7 +514,7 @@ class TestGameState : GameState
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
         cameraId = cameraNode.id;
-        cameraNode.worldPosition = Vector3(0, 20, -30);
+        cameraNode.worldPosition = Vector3(0, 20, -10);
 
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;
@@ -570,9 +570,6 @@ class TestGameState : GameState
         em.CreateEnemies();
 
         maxKilled = em.enemyResetRotations.length;
-
-        Vector3 v_pos = playerNode.worldPosition;
-        cameraNode.position = Vector3(10, 20.0f, -20);
 
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");
