@@ -151,13 +151,11 @@ class DebugFPSCameraController: CameraController
 class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 4.5f;
-    float   cameraDistance = 14.0f;
+    float   cameraDistance = 8.0f;
     float   cameraDistSpeed = 100.0f;
     float   targetFov = BASE_FOV;
     float   fovSpeed = 1.5f;
     Vector3 targetOffset = Vector3(2.0f, 3.5f, 0);
-
-    bool    isScrolling = false;
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -181,6 +179,11 @@ class ThirdPersonCameraController : CameraController
                 //target_pos /= 2.0f;
                 //blockView = true;
             }
+        }
+
+        if (p.GetState().nameHash == RUN_STATE)
+        {
+            cameraDistance *= 2;
         }
 
         Vector3 offset = cameraNode.worldRotation * targetOffset;
