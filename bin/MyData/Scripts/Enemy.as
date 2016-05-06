@@ -192,7 +192,7 @@ class EnemyManager : ScriptObject
         if (thugName == "")
             thugName = "thug_" + thugId;
         thugId ++;
-        return CreateCharacter(thugName, "thug", "Thug", position, rotation);
+        return CreateCharacter(thugName, "BATMAN/thug/thug.xml", "Thug", position, rotation);
     }
 
     void RemoveAll()

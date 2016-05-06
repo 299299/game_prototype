@@ -602,7 +602,7 @@ void Create_BM_ClimbAnimations()
 
 void Create_BM_Motions()
 {
-    AssignMotionRig("Models/batman.mdl");
+    AssignMotionRig("Objects/BATMAN/batman/batman.mdl");
 
     String preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
