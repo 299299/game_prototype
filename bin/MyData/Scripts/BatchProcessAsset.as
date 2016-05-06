@@ -9,6 +9,7 @@ const String ASSET_DIR = "Asset/";
 const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-ns", "-nm","-nt", "-mb", "75"};
 const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75"};
 String exportFolder;
+Scene@ processScene;
 
 void PreProcess()
 {
@@ -23,6 +24,7 @@ void PreProcess()
     fileSystem.CreateDir(OUT_DIR + "Models");
     fileSystem.CreateDir(OUT_DIR + "Animations");
     fileSystem.CreateDir(OUT_DIR + "Objects");
+    processScene = Scene();
 }
 
 String DoProcess(const String&in name, const String&in folderName, const Array<String>&in args, bool checkFolders)
@@ -91,13 +93,48 @@ void ProcessObjects()
     for (uint i=0; i<objects.length; ++i)
     {
         Print("Found a object " + objects[i]);
-        DoProcess(objects[i], "Objects/", MODEL_ARGS, false);
+        String outMdlName = DoProcess(objects[i], "Objects/", MODEL_ARGS, false);
+
+        String oname = OUT_DIR + "Objects/" + objects[i];
+        String objectFile = oname.Substring(0, oname.FindLast('/'));
+        int index = objectFile.FindLast('/') + 1;
+        String objectName = objectFile.Substring(index, objectFile.length - index);
+        objectFile += "/" + objectName + ".xml";
+        Print("ObjectFile: " + objectFile);
+
+        if (!fileSystem.FileExists(objectFile))
+        {
+            Node@ node = processScene.CreateChild(objectName);
+            Model@ model = Model();
+            File file(outMdlName, FILE_READ);
+            if (!model.Load(file))
+            {
+                Print("model " + outMdlName + " load failed!!");
+                return;
+            }
+
+            if (model.skeleton.numBones > 0)
+            {
+                AnimatedModel@ am = node.CreateComponent("AnimatedModel");
+                am.model = model;
+            }
+            else
+            {
+                StaticModel@ sm = node.CreateComponent("StaticModel");
+                sm.model = model;
+            }
+
+            File outFile(objectFile, FILE_WRITE);
+            node.SaveXML(outFile);
+        }
     }
 }
 
 void PostProcess()
 {
-
+    if (processScene !is null)
+        processScene.Remove();
+    @processScene = null;
 }
 
 void Start()
