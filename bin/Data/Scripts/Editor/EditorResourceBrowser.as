@@ -1045,9 +1045,14 @@ void HandleBrowserFileDragEnd(StringHash eventType, VariantMap& eventData)
 
     if (createdNode !is null)
     {
-        Vector3 pos = GetScreenCollision(ui.cursorPosition);
-        pos.y += GetNodeSize(createdNode).y/2;
-        createdNode.worldPosition = pos;
+        Drawable@ drawable = GetFirstDrawable(createdNode);
+        if (drawable !is null)
+        {
+            BoundingBox aabb = drawable.worldBoundingBox;
+            Vector3 aabbBottomCenter(aabb.center.x, aabb.min.y, aabb.center.z);
+            Vector3 offset = aabbBottomCenter - createdNode.worldPosition;
+            createdNode.worldPosition = createdNode.worldPosition - offset;
+        }
     }
 
     browserDragFile = null;

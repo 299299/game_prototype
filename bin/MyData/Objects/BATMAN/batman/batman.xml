@@ -16,8 +16,8 @@
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="16778023">
-			<attribute name="Model" value="Model;Models/batman.mdl" />
-			<attribute name="Material" value="Material;Materials/BM_Leg.xml;Materials/BM_Body.xml;Materials/BM_Head.xml;Materials/BM_Eye.xml" />
+			<attribute name="Model" value="Model;Objects/BATMAN/batman/batman.mdl" />
+			<attribute name="Material" value="Material;Objects/BATMAN/batman/BM_Leg.xml;Objects/BATMAN/batman/BM_Body.xml;Objects/BATMAN/batman/BM_Head.xml;Objects/BATMAN/batman/BM_Eye.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

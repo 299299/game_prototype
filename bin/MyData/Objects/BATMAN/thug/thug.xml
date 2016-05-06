@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <node id="8">
 	<attribute name="Is Enabled" value="true" />
-	<attribute name="Name" value="preload_thug" />
+	<attribute name="Name" value="thug" />
 	<attribute name="Position" value="-18.028 0 -7.10246" />
 	<attribute name="Rotation" value="-4.37114e-008 0 1 -0" />
 	<attribute name="Scale" value="1 1 1" />
@@ -14,8 +14,8 @@
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="16777399">
-			<attribute name="Model" value="Model;Models/thug.mdl" />
-			<attribute name="Material" value="Material;Materials/Thug_Leg.xml;Materials/Thug_Torso.xml;Materials/Thug_Hat.xml;Materials/Thug_Head.xml;Materials/Thug_Body.xml" />
+			<attribute name="Model" value="Model;Objects/BATMAN/thug/thug.mdl" />
+			<attribute name="Material" value="Material;Objects/BATMAN/thug/Thug_Leg.xml;Objects/BATMAN/thug/Thug_Torso.xml;Objects/BATMAN/thug/Thug_Hat.xml;Objects/BATMAN/thug/Thug_Head.xml;Objects/BATMAN/thug/Thug_Body.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />
@@ -93,15 +93,6 @@
 				<variant type="Bool" value="true" />
 				<variant type="Bool" value="true" />
 				<variant type="Bool" value="true" />
-			</attribute>
-			<attribute name="Animation States">
-				<variant type="Int" value="1" />
-				<variant type="ResourceRef" value="Animation;Animations/TG_Combat/Stand_Idle_Additive_01_Take 001.ani" />
-				<variant type="String" value="RootNode" />
-				<variant type="Bool" value="true" />
-				<variant type="Float" value="1" />
-				<variant type="Float" value="0" />
-				<variant type="Int" value="0" />
 			</attribute>
 		</component>
 		<component type="AnimationController" id="16777403">

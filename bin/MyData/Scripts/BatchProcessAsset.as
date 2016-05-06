@@ -6,7 +6,7 @@
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
-const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-nm", "-nt", "-mb", "75"};
+const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-ns", "-nm","-nt", "-mb", "75"};
 const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75"};
 String exportFolder;
 
@@ -22,6 +22,7 @@ void PreProcess()
     Print("exportFolder=" + exportFolder);
     fileSystem.CreateDir(OUT_DIR + "Models");
     fileSystem.CreateDir(OUT_DIR + "Animations");
+    fileSystem.CreateDir(OUT_DIR + "Objects");
 }
 
 String DoProcess(const String&in name, const String&in folderName, const Array<String>&in args, bool checkFolders)
@@ -77,10 +78,20 @@ void ProcessAnimations()
     Array<String> animations = fileSystem.ScanDir(ASSET_DIR + "Animations", "*.*", SCAN_FILES, true);
     for (uint i=0; i<animations.length; ++i)
     {
-        Print("Found a animation " + animations[i]);
+        // Print("Found a animation " + animations[i]);
         String outMdlName = DoProcess(animations[i], "Animations/", ANIMATION_ARGS, true);
         if (!outMdlName.empty)
             fileSystem.Delete(outMdlName);
+    }
+}
+
+void ProcessObjects()
+{
+    Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.*", SCAN_FILES, true);
+    for (uint i=0; i<objects.length; ++i)
+    {
+        Print("Found a object " + objects[i]);
+        DoProcess(objects[i], "Objects/", MODEL_ARGS, false);
     }
 }
 
@@ -94,6 +105,7 @@ void Start()
     uint startTime = time.systemTime;
     PreProcess();
     ProcessModels();
+    ProcessObjects();
     ProcessAnimations();
     PostProcess();
     engine.Exit();
