@@ -105,17 +105,20 @@ void ProcessObjects()
         if (!fileSystem.FileExists(objectFile))
         {
             Node@ node = processScene.CreateChild(objectName);
-            Model@ model = Model();
-            File file(outMdlName, FILE_READ);
-            if (!model.Load(file))
+            int i = outMdlName.Find('/') + 1;
+            String modelName = outMdlName.Substring(i, outMdlName.length - i);
+            Model@ model = cache.GetResource("Model", modelName);
+            if (model is null)
             {
-                Print("model " + outMdlName + " load failed!!");
+                Print("model " + modelName + " load failed!!");
                 return;
             }
 
             if (model.skeleton.numBones > 0)
             {
-                AnimatedModel@ am = node.CreateComponent("AnimatedModel");
+                Node@ renderNode = node.CreateChild("RenderNode");
+                AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
+                renderNode.worldRotation = Quaternion(0, 180, 0);
                 am.model = model;
             }
             else
