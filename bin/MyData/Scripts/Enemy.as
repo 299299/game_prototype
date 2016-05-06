@@ -3,6 +3,9 @@
 //    Enemy Base Class and EnemyManager Class
 //
 // ==============================================
+const int MAX_NUM_OF_ATTACK = 3;
+const int MAX_NUM_OF_MOVING = 3;
+const int MAX_NUM_OF_NEAR = 4;
 
 class Enemy : Character
 {

@@ -7,13 +7,8 @@
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
 const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85f;
-const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
 const float CHARACTER_CROUCH_HEIGHT = 3.0f;
-
-const int MAX_NUM_OF_ATTACK = 3;
-const int MAX_NUM_OF_MOVING = 3;
-const int MAX_NUM_OF_NEAR = 4;
 
 const int INITIAL_HEALTH = 100;
 
@@ -30,14 +25,12 @@ const StringHash TIME_SCALE("TimeScale");
 const StringHash DATA("Data");
 const StringHash NAME("Name");
 const StringHash ANIMATION("Animation");
-const StringHash SPEED("Speed");
 const StringHash STATE("State");
 const StringHash VALUE("Value");
 const StringHash COUNTER_CHECK("CounterCheck");
 const StringHash ATTACK_CHECK("AttackCheck");
 const StringHash BONE("Bone");
 const StringHash NODE("Node");
-const StringHash RADIUS("Radius");
 const StringHash COMBAT_SOUND("CombatSound");
 const StringHash COMBAT_SOUND_LARGE("CombatSoundLarge");
 const StringHash COMBAT_PARTICLE("CombatParticle");
