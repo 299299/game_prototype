@@ -457,14 +457,14 @@ void SetRenderPath(const String&in newRenderPathName)
             }
         }
     }
-
+    
     // If renderPath is null, the engine default will be used
     for (uint i = 0; i < renderer.numViewports; ++i)
         renderer.viewports[i].renderPath = renderPath;
 
     if (materialPreview !is null && materialPreview.viewport !is null)
         materialPreview.viewport.renderPath = renderPath;
-
+        
     if (particleEffectPreview !is null && particleEffectPreview.viewport !is null)
         particleEffectPreview.viewport.renderPath = renderPath;
 }
@@ -1217,7 +1217,7 @@ void UpdateView(float timeStep)
         ReleaseMouseLock();
         return;
     }
-
+    
     // Check for camara fly mode
     if (hotKeyMode == HOTKEYS_MODE_BLENDER)
     {
@@ -1231,10 +1231,10 @@ void UpdateView(float timeStep)
     float speedMultiplier = 1.0;
     if (input.keyDown[KEY_LSHIFT])
         speedMultiplier = cameraShiftSpeedMultiplier;
-
+    
     if (!input.keyDown[KEY_LCTRL] && !input.keyDown[KEY_LALT])
     {
-        if (hotKeyMode == HOTKEYS_MODE_STANDARD || (hotKeyMode == HOTKEYS_MODE_BLENDER && cameraFlyMode && !input.keyDown[KEY_LSHIFT]))
+        if (hotKeyMode == HOTKEYS_MODE_STANDARD || (hotKeyMode == HOTKEYS_MODE_BLENDER && cameraFlyMode && !input.keyDown[KEY_LSHIFT])) 
         {
             if (input.keyDown['W'] || input.keyDown[KEY_UP])
             {
@@ -1266,9 +1266,9 @@ void UpdateView(float timeStep)
                 cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * timeStep * speedMultiplier, TS_WORLD);
                 FadeUI();
             }
-        }
+        } 
     }
-
+    
     if (input.mouseMoveWheel != 0 && ui.GetElementAt(ui.cursor.position) is null)
     {
         if (hotKeyMode == HOTKEYS_MODE_STANDARD)
@@ -1284,10 +1284,10 @@ void UpdateView(float timeStep)
                 camera.zoom = Clamp(zoom, .1, 30);
             }
         }
-        else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
+        else if (hotKeyMode == HOTKEYS_MODE_BLENDER) 
         {
             if (mouseWheelCameraPosition && !camera.orthographic)
-            {
+            {   
                 if (input.keyDown[KEY_LSHIFT])
                     cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * -input.mouseMoveWheel*20* timeStep * speedMultiplier);
                 else if (input.keyDown[KEY_LCTRL])
@@ -1302,7 +1302,7 @@ void UpdateView(float timeStep)
                 }
             }
             else
-            {
+            {   
                 if (input.keyDown[KEY_LSHIFT])
                 {
                     cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * -input.mouseMoveWheel*20* timeStep * speedMultiplier);
@@ -1311,14 +1311,14 @@ void UpdateView(float timeStep)
                 {
                     cameraNode.Translate(Vector3(-cameraBaseSpeed,0, 0) * -input.mouseMoveWheel*20 * timeStep * speedMultiplier);
                 }
-                else
+                else 
                 {
                     if (input.qualifierDown[QUAL_ALT])
                     {
                         float zoom = camera.zoom + -input.mouseMoveWheel *.1 * speedMultiplier;
                         camera.zoom = Clamp(zoom, .1, 30);
                     }
-                    else
+                    else 
                     {
                         cameraNode.Translate(Vector3(0, 0, -cameraBaseSpeed) * -input.mouseMoveWheel*20 * timeStep * speedMultiplier);
                     }
@@ -1337,11 +1337,11 @@ void UpdateView(float timeStep)
             cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0,10);
         }
     }
-
+    
     // Rotate/orbit/pan camera
     bool changeCamViewButton = false;
 
-    if (hotKeyMode == HOTKEYS_MODE_STANDARD)
+    if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
         changeCamViewButton = input.mouseButtonDown[MOUSEB_RIGHT] || input.mouseButtonDown[MOUSEB_MIDDLE];
     else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
     {
@@ -1397,19 +1397,19 @@ void UpdateView(float timeStep)
                         Vector3 d = cameraNode.worldPosition - centerPoint;
                         cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0, d.length);
                         orbiting = true;
-                    }
+                    }    
                 }
                 else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
                 {
                     if (input.mouseButtonDown[MOUSEB_MIDDLE])
                     {
                         Vector3 centerPoint = Vector3(0,0,0);
-
+                        
                         if ((selectedNodes.length > 0 || selectedComponents.length > 0))
                             centerPoint = SelectedNodesCenterPoint();
                         else
                             centerPoint = lastSelectedNodesCenterPoint;
-
+                            
                         Vector3 d = cameraNode.worldPosition - centerPoint;
                         cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0, d.length);
                         orbiting = true;
@@ -1435,7 +1435,7 @@ void UpdateView(float timeStep)
             if (selectedNodes.length <= 1)
             {
                 Drawable@ drawable = lastSelectedDrawable.Get();
-                if (drawable !is null)
+                if (drawable !is null) 
                 {
                     bb = drawable.boundingBox;
                     centerPoint = drawable.node.worldPosition;
@@ -1461,7 +1461,7 @@ void UpdateView(float timeStep)
             // ReacquireCameraYawPitch();
             viewCloser =  false;
         }
-        else
+        else 
             viewCloser =  false;
     }
 
@@ -1771,31 +1771,31 @@ void ViewRaycast(bool mouseClick)
 
         RayQueryResult result = editorScene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, camera.farClip,
             pickModeDrawableFlags[pickMode], 0x7fffffff);
-
+        
         if (result.drawable !is null)
-        {
+        {            
             Drawable@ drawable = result.drawable;
-
+            
             // for actual last selected node or component in both modes
-            if (hotKeyMode == HOTKEYS_MODE_STANDARD)
+            if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
             {
-                if (input.mouseButtonDown[MOUSEB_LEFT])
+                if (input.mouseButtonDown[MOUSEB_LEFT]) 
                 {
                     lastSelectedNode = drawable.node;
                     lastSelectedDrawable = drawable;
                     lastSelectedComponent = drawable;
                 }
             }
-            else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
+            else if (hotKeyMode == HOTKEYS_MODE_BLENDER) 
             {
-                if (input.mouseButtonDown[MOUSEB_RIGHT])
+                if (input.mouseButtonDown[MOUSEB_RIGHT]) 
                 {
                     lastSelectedNode = drawable.node;
                     lastSelectedDrawable = drawable;
                     lastSelectedComponent = drawable;
                 }
             }
-
+             
             // If selecting a terrain patch, select the parent terrain instead
             if (drawable.typeName != "TerrainPatch")
             {
@@ -1831,12 +1831,12 @@ void ViewRaycast(bool mouseClick)
             selectedComponent = body;
         }
     }
-
+    
     bool multiselect = false;
     bool componentSelectQualifier = false;
     bool mouseButtonPressRL = false;
-
-    if (hotKeyMode == HOTKEYS_MODE_STANDARD)
+    
+    if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
     {
         mouseButtonPressRL = input.mouseButtonPress[MOUSEB_LEFT];
         componentSelectQualifier = input.qualifierDown[QUAL_SHIFT];
@@ -1848,7 +1848,7 @@ void ViewRaycast(bool mouseClick)
         componentSelectQualifier = input.qualifierDown[QUAL_CTRL];
         multiselect = input.qualifierDown[QUAL_SHIFT];
     }
-
+    
     if (mouseClick && mouseButtonPressRL)
     {
         if (selectedComponent !is null)
@@ -1877,13 +1877,13 @@ void ViewRaycast(bool mouseClick)
     }
 }
 
-Vector3 GetNewNodePosition()
+Vector3 GetNewNodePosition(bool raycastToMouse = false)
 {
     if (newNodeMode == NEW_NODE_IN_CENTER)
         return Vector3(0, 0, 0);
     if (newNodeMode == NEW_NODE_RAYCAST)
     {
-        Ray cameraRay = camera.GetScreenRay(0.5, 0.5);
+        Ray cameraRay = raycastToMouse ? GetActiveViewportCameraRay() : camera.GetScreenRay(0.5, 0.5);
         Vector3 position, normal;
         if (GetSpawnPosition(cameraRay, camera.farClip, position, normal, 0, false))
             return position;
@@ -1988,54 +1988,16 @@ Vector3 SelectedNodesCenterPoint()
             centerPoint += selectedComponents[i].node.worldPosition;
     }
 
-    if (count > 0)
+    if (count > 0) 
     {
         lastSelectedNodesCenterPoint = centerPoint / count;
         return centerPoint / count;
     }
-    else
+    else 
     {
         lastSelectedNodesCenterPoint = centerPoint;
         return centerPoint;
     }
-}
-
-Vector3 GetScreenCollision(IntVector2 pos)
-{
-    Ray cameraRay = camera.GetScreenRay(float(pos.x) / activeViewport.viewport.rect.width, float(pos.y) / activeViewport.viewport.rect.height);
-    Vector3 res = cameraNode.position + cameraRay.direction * Vector3(0, 0, newNodeDistance);
-
-    bool physicsFound = false;
-    if (editorScene.physicsWorld !is null)
-    {
-        if (!runUpdate)
-            editorScene.physicsWorld.UpdateCollisions();
-
-        PhysicsRaycastResult result = editorScene.physicsWorld.RaycastSingle(cameraRay, camera.farClip);
-
-        if (result.body !is null)
-        {
-            physicsFound = true;
-            result.position;
-        }
-    }
-
-    if (editorScene.octree is null)
-        return res;
-
-    RayQueryResult result = editorScene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, camera.farClip,
-        DRAWABLE_GEOMETRY, 0x7fffffff);
-
-    if (result.drawable !is null)
-    {
-        // take the closer of the results
-        if (physicsFound && (cameraNode.position - res).length < (cameraNode.position - result.position).length)
-            return res;
-        else
-            return result.position;
-    }
-
-    return res;
 }
 
 Drawable@ GetDrawableAtMousePostion()
