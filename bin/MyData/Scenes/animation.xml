@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="9.57799" />
-	<attribute name="Next Replicated Node ID" value="43" />
-	<attribute name="Next Replicated Component ID" value="58" />
-	<attribute name="Next Local Node ID" value="16780044" />
-	<attribute name="Next Local Component ID" value="16778065" />
+	<attribute name="Next Replicated Node ID" value="46" />
+	<attribute name="Next Replicated Component ID" value="61" />
+	<attribute name="Next Local Node ID" value="16780143" />
+	<attribute name="Next Local Component ID" value="16778089" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -43,6 +43,7 @@
 			<attribute name="Bounding Box Max" value="100 100 100" />
 			<attribute name="Ambient Color" value="1 1 1 1" />
 			<attribute name="Fog Color" value="0.45 0.5 0.5 1" />
+			<attribute name="Fog Start" value="500" />
 		</component>
 	</node>
 	<node id="20">
@@ -3107,5 +3108,18 @@
 				</node>
 			</node>
 		</node>
+	</node>
+	<node id="45">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="skydome" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="2.6122 0 0" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="10 10 10" />
+		<attribute name="Variables" />
+		<component type="Skybox" id="60">
+			<attribute name="Model" value="Model;Objects/LIS/skydome/SkyDome.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/skydome/material_0.xml" />
+		</component>
 	</node>
 </scene>

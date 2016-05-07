@@ -92,11 +92,15 @@ void ProcessObjects()
     Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.*", SCAN_FILES, true);
     for (uint i=0; i<objects.length; ++i)
     {
-        Print("Found a object " + objects[i]);
-        String outMdlName = DoProcess(objects[i], "Objects/", MODEL_ARGS, false);
+        String object = objects[i];
+        Print("Found a object " + object);
+        String outMdlName = DoProcess(object, "Objects/", MODEL_ARGS, false);
 
-        String oname = OUT_DIR + "Objects/" + objects[i];
+        String oname = OUT_DIR + "Objects/" + object;
         String objectFile = oname.Substring(0, oname.FindLast('/'));
+        String objectResourceFolder = "Objects/" + object.Substring(0, object.FindLast('/') + 1);
+        Print("objectResourceFolder=" + objectResourceFolder);
+
         int index = objectFile.FindLast('/') + 1;
         String objectName = objectFile.Substring(index, objectFile.length - index);
         objectFile += "/" + objectName + ".xml";
@@ -114,17 +118,46 @@ void ProcessObjects()
                 return;
             }
 
+            String matFile = outMdlName;
+            matFile.Replace(".mdl", ".txt");
+            Print("matFile=" + matFile);
+
+            Array<String> matList;
+            File file;
+            if (file.Open(matFile, FILE_READ))
+            {
+                while (!file.eof)
+                {
+                    String line = file.ReadLine();
+                    if (!line.empty)
+                    {
+                        Print(line);
+                        matList.Push(line);
+                    }
+                }
+            }
+
             if (model.skeleton.numBones > 0)
             {
                 Node@ renderNode = node.CreateChild("RenderNode");
                 AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
                 renderNode.worldRotation = Quaternion(0, 180, 0);
                 am.model = model;
+
+                for (uint i=0; i<matList.length; ++i)
+                {
+                    am.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
+                }
             }
             else
             {
                 StaticModel@ sm = node.CreateComponent("StaticModel");
                 sm.model = model;
+
+                for (uint i=0; i<matList.length; ++i)
+                {
+                    sm.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
+                }
             }
 
             File outFile(objectFile, FILE_WRITE);
