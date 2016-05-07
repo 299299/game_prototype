@@ -6,7 +6,7 @@
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
-const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-ns", "-nm","-nt", "-mb", "75"};
+const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-ns", "-nt", "-mb", "75"};//"-nm",
 const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75"};
 String exportFolder;
 Scene@ processScene;

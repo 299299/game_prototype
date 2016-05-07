@@ -1,0 +1,7 @@
+MT_CH_MAX.xml
+MT_CH_Max_Bag.xml
+MT_CH_Max_Head.xml
+MT_Max_Eyelashes.xml
+MT_CH_Cornea.xml
+MT_CH_Max_Hair.xml
+CH_NPC_Void.xml
