@@ -46,9 +46,9 @@ class MaxFallState : PlayerFallState
     }
 };
 
-class Batman : Player
+class Max : Player
 {
-    Batman()
+    Max()
     {
         super();
         walkAlignAnimation = GetAnimationName("BM_Movement/Walk");
@@ -59,7 +59,7 @@ class Batman : Player
         stateMachine.AddState(MaxStandState(this));
         stateMachine.AddState(MaxWalkState(this));
         stateMachine.AddState(MaxRunState(this));
-        stateMachine.AddStates(MaxFallState(this));
+        stateMachine.AddState(MaxFallState(this));
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
     }

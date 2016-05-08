@@ -132,6 +132,15 @@ class PlayerRunState : PlayerMoveForwardState
     }
 };
 
+class PlayerFallState : SingleAnimationState
+{
+    PlayerFallState(Character@ c)
+    {
+        super(c);
+        SetName("FallState");
+    }
+};
+
 class Player : Character
 {
     bool                              applyGravity = true;
@@ -154,9 +163,6 @@ class Player : Character
 
     void CommonStateFinishedOnGroud()
     {
-        if (health <= 0)
-            return;
-
         if (CheckFalling())
             return;
 

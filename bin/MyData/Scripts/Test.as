@@ -13,7 +13,6 @@
 #include "Scripts/Character.as"
 #include "Scripts/Max.as"
 #include "Scripts/Player.as"
-#include "Scripts/PlayerMovement.as"
 
 enum RenderFeature
 {
@@ -78,7 +77,7 @@ void Start()
         renderer.hdrRendering = true;
 
     SetRandomSeed(time.systemTime);
-    @gMotionMgr = BM_Game_MotionManager();
+    @gMotionMgr = LIS_Game_MotionManager();
 
     if (!engine.headless)
     {
@@ -338,8 +337,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == KEY_2)
         ShootBox(scene_);
     else if (key == KEY_3)
-        CreateEnemy(scene_);
-    else if (key == KEY_4)
     {
         CameraController@ cc = gCameraMgr.currentController;
         if (cc.nameHash == StringHash("Debug"))
@@ -353,12 +350,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             gCameraMgr.SetCameraController("Debug");
         }
     }
-    else if (key == KEY_6)
+    else if (key == KEY_4)
     {
         colorGradingIndex ++;
         SetColorGrading(colorGradingIndex);
     }
-    else if (key == KEY_7)
+    else if (key == KEY_5)
     {
         colorGradingIndex --;
         SetColorGrading(colorGradingIndex);
@@ -376,6 +373,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         engine.Exit();
     else if (key == 'E')
     {
+        String testName;
         Array<String> testAnimations;
         Player@ player = GetPlayer();
         testAnimations.Push(testName);

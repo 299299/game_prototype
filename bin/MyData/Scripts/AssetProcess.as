@@ -37,15 +37,15 @@ const String TranslateBoneName = "Bip01_$AssimpFbx$_Translation";
 const String RotateBoneName = "Bip01_$AssimpFbx$_Rotation";
 const String ScaleBoneName = "Bip01_$AssimpFbx$_Scaling";
 
-const String HEAD = "Bip01_Head";
-const String L_HAND = "Bip01_L_Hand";
-const String R_HAND = "Bip01_R_Hand";
-const String L_FOOT = "Bip01_L_Foot";
-const String R_FOOT = "Bip01_R_Foot";
-const String L_ARM = "Bip01_L_Forearm";
-const String R_ARM = "Bip01_R_Forearm";
-const String L_CALF = "Bip01_L_Calf";
-const String R_CALF = "Bip01_R_Calf";
+const String HEAD = "Head";
+const String L_HAND = "Left_Hand";
+const String R_HAND = "Right_Hand";
+const String L_FOOT = "LeftFoot";
+const String R_FOOT = "RightFoot";
+const String L_ARM = "LeftForearm";
+const String R_ARM = "RightForearm";
+const String L_CALF = "LeftLeg";
+const String R_CALF = "RightLeg";
 
 const float FRAME_PER_SEC = 30.0f;
 const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
@@ -637,39 +637,12 @@ void AddStringHashAnimationTrigger(const String&in name, int frame, const String
     Animation_AddTrigger(name, frame, eventData);
 }
 
-void AddAttackTrigger(const String&in name, int startFrame, int endFrame, const String&in boneName)
-{
-    VariantMap eventData;
-    eventData[NAME] = ATTACK_CHECK;
-    eventData[VALUE] = 1;
-    eventData[BONE] = boneName;
-    Animation_AddTrigger(name, startFrame, eventData);
-    eventData[VALUE] = 0;
-    Animation_AddTrigger(name, endFrame + 1, eventData);
-}
-
-void AddRagdollTrigger(const String&in name, int prepareFrame, int startFrame)
-{
-    if (prepareFrame >= 0)
-        AddAnimationTrigger(name, prepareFrame, RAGDOLL_PERPARE);
-    AddAnimationTrigger(name, startFrame, RAGDOLL_START);
-}
-
 void AddParticleTrigger(const String&in name, int startFrame, const String&in boneName, const String&in effectName, float duration)
 {
     VariantMap eventData;
-    eventData[NAME] = ATTACK_CHECK;
+    eventData[NAME] = PARTICLE;
     eventData[VALUE] = effectName;
     eventData[BONE] = boneName;
     eventData[DURATION] = duration;
     Animation_AddTrigger(name, startFrame, eventData);
-}
-
-void AddComplexAttackTrigger(const String&in name, int counterStart, int counterEnd, int attackStart, int attackEnd, const String&in attackBone)
-{
-    AddFloatAnimationTrigger(name, counterStart, TIME_SCALE, 0.3f);
-    AddFloatAnimationTrigger(name, counterEnd, TIME_SCALE, 1.0f);
-    AddIntAnimationTrigger(name, counterStart, COUNTER_CHECK, 1);
-    AddIntAnimationTrigger(name, counterEnd, COUNTER_CHECK, 0);
-    AddAttackTrigger(name, attackStart, attackEnd, attackBone);
 }

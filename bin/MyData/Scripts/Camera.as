@@ -154,7 +154,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraDistance = 7.5f;
     float   targetCameraDistance = cameraDistance;
     float   cameraDistSpeed = 5.0f;
-    Vector3 targetOffset = Vector3(1.5f, 3.5f, 0);
+    Vector3 targetOffset = Vector3(0.75, 3.75, 0);
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -180,7 +180,7 @@ class ThirdPersonCameraController : CameraController
             }
         }
 
-        targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 15 : 7.5;
+        targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 15 : 4;
         cameraDistance += (targetCameraDistance - cameraDistance) * dt * cameraDistSpeed;
 
         Vector3 offset = cameraNode.worldRotation * targetOffset;
@@ -203,17 +203,17 @@ class ThirdPersonCameraController : CameraController
 
     void Reset()
     {
-        Player@ p = GetPlayer();
-        Vector3 offset = p.GetNode().worldRotation * targetOffset;
-        Vector3 target_pos = p.GetNode().worldPosition + offset;
-        Vector3 dir = target_pos - cameraNode.worldPosition;
-        cameraNode.LookAt(target_pos);
-        cameraDistance = dir.length;
-        Vector3 angles = cameraNode.worldRotation.eulerAngles;
-        gInput.m_rightStickY = angles.x;
-        gInput.m_rightStickX = angles.y;
-        gInput.m_rightStickMagnitude = gInput.m_rightStickX * gInput.m_rightStickX + gInput.m_rightStickY * gInput.m_rightStickY;
-        Print("Camera Reset cameraDistance=" + cameraDistance + " angles=" + angles.ToString());
+        //Player@ p = GetPlayer();
+        //Vector3 offset = p.GetNode().worldRotation * targetOffset;
+        //Vector3 target_pos = p.GetNode().worldPosition + offset;
+        //Vector3 dir = target_pos - cameraNode.worldPosition;
+        //cameraNode.LookAt(target_pos);
+        //cameraDistance = dir.length;
+        //Vector3 angles = cameraNode.worldRotation.eulerAngles;
+        //gInput.m_rightStickY = angles.x;
+        //gInput.m_rightStickX = angles.y;
+        //gInput.m_rightStickMagnitude = gInput.m_rightStickX * gInput.m_rightStickX + gInput.m_rightStickY * gInput.m_rightStickY;
+        //Print("Camera Reset cameraDistance=" + cameraDistance + " angles=" + angles.ToString());
     }
 
     void Enter()

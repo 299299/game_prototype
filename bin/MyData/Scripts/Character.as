@@ -4,8 +4,8 @@
 //
 // ==============================================
 
-const float COLLISION_RADIUS = 1.5f;
-const float CHARACTER_HEIGHT = 5.0f;
+const float COLLISION_RADIUS = 1.0f;
+const float CHARACTER_HEIGHT = 4.5f;
 
 const StringHash TURN_STATE("TurnState");
 const StringHash RUN_STATE("RunState");
@@ -96,7 +96,6 @@ class CharacterState : State
         if (flags >= 0)
             ownner.AddFlag(flags);
         State::Enter(lastState);
-        combatReady = false;
         firstUpdate = true;
 
         if (physicsType >= 0)
@@ -366,7 +365,6 @@ class AnimationTestState : CharacterState
 
     void Enter(State@ lastState)
     {
-        SendAnimationTriger(ownner.renderNode, RAGDOLL_STOP);
         currentIndex = 0;
         allFinished = false;
         Start();

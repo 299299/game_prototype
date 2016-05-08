@@ -367,9 +367,6 @@ class TestGameState : GameState
         {
         case GAME_RUNNING:
             {
-                if (player !is null)
-                    player.RemoveFlag(FLAGS_INVINCIBLE);
-
                 freezeInput = false;
             }
             break;
@@ -387,8 +384,6 @@ class TestGameState : GameState
                 }
 
                 freezeInput = true;
-                if (player !is null)
-                    player.AddFlag(FLAGS_INVINCIBLE);
             }
             break;
 
@@ -408,10 +403,7 @@ class TestGameState : GameState
 
                 freezeInput = true;
                 if (player !is null)
-                {
                     player.Reset();
-                    player.AddFlag(FLAGS_INVINCIBLE);
-                }
             }
             break;
 
@@ -487,13 +479,12 @@ class TestGameState : GameState
             tmpPlayerNode.Remove();
         }
 
-        Node@ playerNode = CreateCharacter("player", "BATMAN/batman/batman.xml", "Batman", playerPos, playerRot);
+        Node@ playerNode = CreateCharacter("player", "LIS/max/max.xml", "Max", playerPos, playerRot);
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         playerId = playerNode.id;
 
         // preprocess current scene
         Array<uint> nodes_to_remove;
-        int enemyNum = 0;
         for (uint i=0; i<scene_.numChildren; ++i)
         {
             Node@ _node = scene_.children[i];
