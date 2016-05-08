@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="96" />
 	<attribute name="Next Replicated Component ID" value="169" />
-	<attribute name="Next Local Node ID" value="16780718" />
-	<attribute name="Next Local Component ID" value="16778709" />
+	<attribute name="Next Local Node ID" value="16780719" />
+	<attribute name="Next Local Component ID" value="16778721" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -66,7 +66,9 @@
 			<attribute name="Range" value="60" />
 			<attribute name="Spot FOV" value="90" />
 			<attribute name="Cast Shadows" value="true" />
-			<attribute name="CSM Splits" value="0 10 50 100" />
+			<attribute name="CSM Splits" value="10 20 100 1000" />
+			<attribute name="Depth Constant Bias" value="0" />
+			<attribute name="Normal Offset" value="0.002" />
 		</component>
 	</node>
 	<node id="44">
@@ -79,7 +81,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="63">
 			<attribute name="Model" value="Model;Models/Cylinder.mdl" />
-			<attribute name="Material" value="Material;Materials/Blue.xml" />
+			<attribute name="Material" value="Material;Materials/GridBlue.xml" />
 		</component>
 	</node>
 	<node id="61">
