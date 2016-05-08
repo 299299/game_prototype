@@ -4,21 +4,15 @@
 #include "Scripts/Motion.as"
 #include "Scripts/Input.as"
 #include "Scripts/FSM.as"
-#include "Scripts/Ragdoll.as"
 #include "Scripts/Camera.as"
 #include "Scripts/Menu.as"
-#include "Scripts/HeadIndicator.as"
 #include "Scripts/Follow.as"
 #include "Scripts/PhysicsSensor.as"
-#include "Scripts/Line.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
-#include "Scripts/Enemy.as"
-#include "Scripts/Thug.as"
+#include "Scripts/Max.as"
 #include "Scripts/Player.as"
-#include "Scripts/Batman.as"
-#include "Scripts/PlayerCombat.as"
 #include "Scripts/PlayerMovement.as"
 
 enum RenderFeature
@@ -238,38 +232,6 @@ void ShootSphere(Scene@ _scene)
     body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * 10.0f;
 }
 
-
-void CreateEnemy(Scene@ _scene)
-{
-    Scene@ scene_ = script.defaultScene;
-    if (scene_ is null)
-        return;
-
-    EnemyManager@ em = GetEnemyMgr();
-    if (em is null)
-        return;
-
-    IntVector2 pos = ui.cursorPosition;
-    // Check the cursor is visible and there is no UI element in front of the cursor
-    if (ui.GetElementAt(pos, true) !is null)
-            return;
-
-    Camera@ camera = GetCamera();
-    if (camera is null)
-        return;
-
-    Ray cameraRay = camera.GetScreenRay(float(pos.x) / graphics.width, float(pos.y) / graphics.height);
-    float rayDistance = 100.0f;
-    PhysicsRaycastResult result = scene_.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_LANDSCAPE);
-    if (result.body is null)
-        return;
-
-    if (result.body.node.name != "floor")
-        return;
-
-    em.CreateEnemy(result.position, Quaternion(0, Random(360), 0), "Thug");
-}
-
 Player@ GetPlayer()
 {
     Scene@ scene_ = script.defaultScene;
@@ -290,14 +252,6 @@ Camera@ GetCamera()
     if (cameraNode is null)
         return null;
     return cameraNode.GetComponent("Camera");
-}
-
-EnemyManager@ GetEnemyMgr()
-{
-    Scene@ scene_ = script.defaultScene;
-    if (scene_ is null)
-        return null;
-    return cast<EnemyManager>(scene_.GetScriptObject("EnemyManager"));
 }
 
 void SubscribeToEvents()
@@ -340,15 +294,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         if (player !is null)
             debugText += player.GetDebugText();
         debugText += seperator;
-        if (drawDebug > 1)
-        {
-            EnemyManager@ em = GetEnemyMgr();
-            if (em !is null && !em.enemyList.empty)
-            {
-                debugText += em.enemyList[0].GetDebugText();
-                debugText += seperator;
-            }
-        }
 
         Text@ text = ui.root.GetChild("debug", true);
         if (text !is null)
@@ -370,18 +315,11 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     {
         // gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
-        gLineWorld.DebugDraw(debug);
         Player@ player = GetPlayer();
         if (player !is null)
             player.DebugDraw(debug);
     }
     if (drawDebug > 1)
-    {
-        EnemyManager@ em = GetEnemyMgr();
-        if (em !is null)
-            em.DebugDraw(debug);
-    }
-    if (drawDebug > 2)
         scene_.physicsWorld.DrawDebugGeometry(true);
 }
 
@@ -822,42 +760,6 @@ void ExecuteCommand()
         if (scene_ is null)
             return;
         scene_.Clear();
-    }
-    else if (command == "attack")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Attack();
-    }
-    else if (command == "evade")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Evade();
-    }
-    else if (command == "counter")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Counter();
-    }
-    else if (command == "avoid")
-    {
-        EnemyManager@ em = GetEnemyMgr();
-        if (em is null)
-            return;
-        em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
-        em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
-    }
-    else if (command == "kill")
-    {
-        Node@ _node = script.defaultScene.GetChild(command_list[1]);
-        if (_node !is null)
-        {
-            Character@ c = cast<Character>(_node.scriptObject);
-            if (c !is null)
-                c.ChangeState("DeadState");
-        }
     }
 }
 

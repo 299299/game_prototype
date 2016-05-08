@@ -92,8 +92,6 @@ class CharacterState : State
             ownner.PlaySound(eventData[VALUE].GetString());
         else if (name == CHANGE_STATE)
             ownner.ChangeState(eventData[VALUE].GetStringHash());
-        else if (name == HEALTH)
-            ownner.SetHealth(eventData[VALUE].GetInt());
         else if (name == IMPACT)
             combatReady = true;
         else if (name == READY_TO_FIGHT)
@@ -533,259 +531,6 @@ class AnimationTestState : CharacterState
     }
 };
 
-enum CounterSubState
-{
-    COUNTER_NONE,
-    COUNTER_WAITING,
-    COUNTER_ANIMATING,
-};
-
-class CharacterCounterState : CharacterState
-{
-    Array<Motion@>      frontArmMotions;
-    Array<Motion@>      frontLegMotions;
-    Array<Motion@>      backArmMotions;
-    Array<Motion@>      backLegMotions;
-
-    Motion@             currentMotion;
-    int                 state; // sub state
-    int                 type;
-    int                 index;
-
-    float               alignTime = 0.2f;
-    Vector3             movePerSec;
-    float               yawPerSec;
-    Vector3             targetPosition;
-    float               targetRotation;
-
-    CharacterCounterState(Character@ c)
-    {
-        super(c);
-        SetName("CounterState");
-    }
-
-    void Enter(State@ lastState)
-    {
-        if (lastState.nameHash != ALIGN_STATE)
-            state = COUNTER_NONE;
-        CharacterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        CharacterState::Exit(nextState);
-        if (nextState.nameHash != ALIGN_STATE)
-        {
-            @currentMotion = null;
-            state = COUNTER_NONE;
-        }
-    }
-
-    void StartCounterMotion()
-    {
-        if (currentMotion is null)
-            return;
-        Print(ownner.GetName() + " start counter motion " + currentMotion.animationName);
-        ChangeSubState(COUNTER_ANIMATING);
-        currentMotion.Start(ownner);
-    }
-
-    int GetCounterDirection(int attackType, bool isBack)
-    {
-        if (attackType == ATTACK_PUNCH)
-            return isBack ? 1 : 0;
-        else
-            return isBack ? 3 : 2;
-    }
-
-    Array<Motion@>@ GetCounterMotions(int attackType, bool isBack)
-    {
-        if (isBack)
-            return attackType == ATTACK_PUNCH ? backArmMotions : backLegMotions;
-        else
-            return attackType == ATTACK_PUNCH ? frontArmMotions : frontLegMotions;
-    }
-
-    void DumpCounterMotions(Array<Motion@>@ motions)
-    {
-        for (uint i=0; i<motions.length; ++i)
-        {
-            Motion@ motion = motions[i];
-            String other_name = motion.name.Replaced("BM_TG_Counter", "TG_BM_Counter");
-            Motion@ other_motion = gMotionMgr.FindMotion(other_name);
-            Vector3 startDiff = other_motion.GetStartPos() - motion.GetStartPos();
-            Print("couter-motion " + motion.name + " diff-len=" + startDiff.length);
-        }
-    }
-
-    void Update(float dt)
-    {
-        if (state == COUNTER_ANIMATING)
-        {
-             if (currentMotion.Move(ownner, dt) == 1)
-             {
-                ownner.CommonStateFinishedOnGroud();
-                return;
-             }
-        }
-        CharacterState::Update(dt);
-    }
-
-    void ChangeSubState(int newState)
-    {
-        if (state == newState)
-            return;
-
-        Print(ownner.GetName() + " CounterState ChangeSubState from " + state + " to " + newState);
-        state = newState;
-    }
-
-    void Dump()
-    {
-        DumpCounterMotions(frontArmMotions);
-        DumpCounterMotions(backArmMotions);
-        DumpCounterMotions(frontLegMotions);
-        DumpCounterMotions(backLegMotions);
-    }
-
-    void Add_Counter_Animations(const String&in preFix)
-    {
-        // Front Arm
-        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
-        for(int i=1; i<=9; ++i)
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_0" + i));
-        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_10"));
-        // Front Leg
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak"));
-        for(int i=1; i<=6; ++i)
-            frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
-        // Back Arm
-        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
-        for(int i=1; i<=4; ++i)
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_0" + i));
-        // Back Leg
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
-    }
-
-
-    void SetTargetTransform(const Vector3&in pos, float rot)
-    {
-        Vector3 pos1 = ownner.GetNode().worldPosition;
-        targetPosition = pos;
-        targetPosition.y = pos1.y;
-        targetRotation = rot;
-    }
-
-    void StartAligning()
-    {
-        CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-        state.Start(this.nameHash, targetPosition, targetRotation, alignTime, 0, ownner.walkAlignAnimation);
-        ownner.ChangeStateQueue(ALIGN_STATE);
-    }
-
-    String GetDebugText()
-    {
-        return "current motion=" + currentMotion.animationName;
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        debug.AddCross(targetPosition, 1.0f, RED, false);
-        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW);
-    }
-};
-
-class CharacterRagdollState : CharacterState
-{
-    CharacterRagdollState(Character@ c)
-    {
-        super(c);
-        SetName("RagdollState");
-    }
-
-    void Update(float dt)
-    {
-        if (timeInState > 0.1f)
-        {
-            int ragdoll_state = ownner.GetNode().vars[RAGDOLL_STATE].GetInt();
-            if (ragdoll_state == RAGDOLL_NONE)
-            {
-                if (ownner.health > 0)
-                {
-                    ownner.PlayCurrentPose();
-                    ownner.ChangeState("GetUpState");
-                }
-                else
-                {
-                    ownner.ChangeState("DeadState");
-                }
-            }
-        }
-        CharacterState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        CharacterState::Enter(lastState);
-        ownner.SetPhysics(false);
-    }
-};
-
-class CharacterGetUpState : MultiMotionState
-{
-    int                         state = 0;
-    float                       ragdollToAnimTime = 0.0f;
-
-    CharacterGetUpState(Character@ c)
-    {
-        super(c);
-        SetName("GetUpState");
-    }
-
-    void Enter(State@ lastState)
-    {
-        state = 0;
-        selectIndex = PickIndex();
-        if (selectIndex >= int(motions.length))
-        {
-            Print("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
-            selectIndex = 0;
-        }
-
-        Motion@ motion = motions[selectIndex];
-        //if (blend_to_anim)
-        //    ragdollToAnimTime = 0.2f;
-        ownner.PlayAnimation(motion.animationName, LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
-        CharacterState::Enter(lastState);
-    }
-
-    void Update(float dt)
-    {
-        Motion@ motion = motions[selectIndex];
-        if (state == 0)
-        {
-            if (timeInState >= ragdollToAnimTime)
-            {
-                ownner.animCtrl.SetSpeed(motion.animationName, 1.0f);
-                motion.InnerStart(ownner);
-                state = 1;
-            }
-        }
-        else
-        {
-            if (motion.Move(ownner, dt) == 1)
-            {
-                ownner.CommonStateFinishedOnGroud();
-                return;
-            }
-        }
-
-        CharacterState::Update(dt);
-    }
-};
-
 class CharacterAlignState : CharacterState
 {
     StringHash  nextStateName;
@@ -865,16 +610,7 @@ class Character : GameObject
     Vector3                 startPosition;
     Quaternion              startRotation;
 
-    Animation@              ragdollPoseAnim;
-
-    int                     health = INITIAL_HEALTH;
-
-    float                   attackRadius = 0.15f;
-    int                     attackDamage = 10;
-
     RigidBody@              body;
-
-    Line@                   dockLine;
 
     int                     physicsType;
 
@@ -907,17 +643,6 @@ class Character : GameObject
         startRotation = sceneNode.worldRotation;
         sceneNode.vars[TIME_SCALE] = 1.0f;
 
-        String name = sceneNode.name + "_Ragdoll_Pose";
-        ragdollPoseAnim = cache.GetResource("Animation", name);
-        if (ragdollPoseAnim is null)
-        {
-            // Print("Creating animation for ragdoll pose " + name);
-            ragdollPoseAnim = Animation();
-            ragdollPoseAnim.name = name;
-            ragdollPoseAnim.animationName = name;
-            cache.AddManualResource(ragdollPoseAnim);
-        }
-
         if (collision_type == 1)
         {
             body = sceneNode.CreateComponent("RigidBody");
@@ -932,7 +657,6 @@ class Character : GameObject
             SetGravity(Vector3(0, -20, 0));
         }
 
-        SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
 
@@ -953,7 +677,6 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
-        @dockLine = null;
     }
 
     void Remove()
@@ -1031,21 +754,6 @@ class Character : GameObject
         sceneNode.worldPosition = position;
     }
 
-    bool Attack()
-    {
-        return false;
-    }
-
-    bool Counter()
-    {
-        return false;
-    }
-
-    bool Evade()
-    {
-        return false;
-    }
-
     void CommonStateFinishedOnGroud()
     {
         ChangeState("StandState");
@@ -1056,36 +764,8 @@ class Character : GameObject
         flags = FLAGS_ATTACK;
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
-        SetHealth(INITIAL_HEALTH);
         SetTimeScale(1.0f);
         ChangeState("StandState");
-    }
-
-    void SetHealth(int h)
-    {
-        health = h;
-    }
-
-    bool CanBeAttacked()
-    {
-        if (HasFlag(FLAGS_INVINCIBLE))
-            return false;
-        return HasFlag(FLAGS_ATTACK);
-    }
-
-    bool CanBeCountered()
-    {
-        return HasFlag(FLAGS_COUNTER);
-    }
-
-    bool CanBeRedirected()
-    {
-        return HasFlag(FLAGS_REDIRECTED);
-    }
-
-    bool CanAttack()
-    {
-        return false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -1167,56 +847,9 @@ class Character : GameObject
         return sceneNode.name;
     }
 
-    void PlayCurrentPose()
-    {
-        FillAnimationWithCurrentPose(ragdollPoseAnim, renderNode);
-        AnimationState@ state = animModel.AddAnimationState(ragdollPoseAnim);
-        state.weight = 1.0f;
-        animCtrl.PlayExclusive(ragdollPoseAnim.name, LAYER_MOVE, false, 0.0f);
-    }
-
-    bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
-    {
-        ChangeState("HitState");
-        return true;
-    }
-
     Node@ GetNode()
     {
         return sceneNode;
-    }
-
-    void OnDead()
-    {
-        Print(GetName() + " OnDead !!!");
-        ChangeState("DeadState");
-    }
-
-    void MakeMeRagdoll(const Vector3&in velocity = Vector3(0, 0, 0), const Vector3&in position = Vector3(0, 0, 0))
-    {
-        Print("MakeMeRagdoll -- velocity=" + velocity.ToString() + " position=" + position.ToString());
-        VariantMap anim_data;
-        anim_data[NAME] = RAGDOLL_START;
-        anim_data[VELOCITY] = velocity;
-        anim_data[POSITION] = position;
-        VariantMap data;
-        data[DATA] = anim_data;
-        renderNode.SendEvent("AnimationTrigger", data);
-    }
-
-    void OnAttackSuccess(Character@ object)
-    {
-
-    }
-
-    void OnCounterSuccess()
-    {
-
-    }
-
-    void RequestDoNotMove()
-    {
-        AddFlag(FLAGS_NO_MOVE);
     }
 
     Node@ SpawnParticleEffect(const Vector3&in position, const String&in effectName, float duration, float scale = 1.0f)
@@ -1439,16 +1072,6 @@ class Character : GameObject
     bool CheckFalling()
     {
         return false;
-    }
-
-    bool CheckDocking(float dist = 3)
-    {
-        return false;
-    }
-
-    void AssignDockLine(Line@ l)
-    {
-        @dockLine = l;
     }
 
     void SetPhysicsType(int type)

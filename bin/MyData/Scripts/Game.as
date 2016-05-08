@@ -6,11 +6,6 @@
 
 class GameState : State
 {
-    void OnCharacterKilled(Character@ killer, Character@ dead)
-    {
-
-    }
-
     void OnSceneLoadFinished(Scene@ _scene)
     {
 
@@ -30,11 +25,6 @@ class GameState : State
             else
                 console.visible = false;
         }
-    }
-
-    void OnPlayerStatusUpdate(Player@ player)
-    {
-
     }
 
     void OnESC()
@@ -295,8 +285,6 @@ class TestGameState : GameState
         inputText.SetPosition(0, -UI_FONT_SIZE - 5);
         inputText.color = Color(0, 1, 1);
         inputText.visible = false;
-
-        OnPlayerStatusUpdate(GetPlayer());
     }
 
     void Exit(State@ nextState)
@@ -310,21 +298,6 @@ class TestGameState : GameState
         {
         case GAME_FADING:
             {
-                float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
-                if (t + 0.05f >= fadeTime)
-                {
-                    fullscreenUI.visible = false;
-                    ChangeSubState(GAME_RUNNING);
-                }
-            }
-            break;
-
-        case GAME_RESTARTING:
-            {
-                EnemyManager@ em = GetEnemyMgr();
-                if (fullscreenUI.opacity > 0.95f && em.enemyList.empty)
-                    em.CreateEnemies();
-
                 float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
                 if (t + 0.05f >= fadeTime)
                 {
@@ -389,7 +362,6 @@ class TestGameState : GameState
             pauseMenu.Remove();
 
         Player@ player = GetPlayer();
-        EnemyManager@ em = GetEnemyMgr();
 
         switch (newState)
         {
@@ -435,9 +407,6 @@ class TestGameState : GameState
                 }
 
                 freezeInput = true;
-                if (em !is null)
-                    em.RemoveAll();
-
                 if (player !is null)
                 {
                     player.Reset();
@@ -508,8 +477,6 @@ class TestGameState : GameState
         scene_.LoadXML(cache.GetFile(scnFile));
         Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
-        EnemyManager@ em = cast<EnemyManager>(scene_.CreateScriptObject(scriptFile, "EnemyManager"));
-
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
@@ -539,20 +506,7 @@ class TestGameState : GameState
         {
             Node@ _node = scene_.children[i];
             Print("_node.name=" + _node.name);
-            if (_node.name.StartsWith("thug"))
-            {
-                nodes_to_remove.Push(_node.id);
-                if (test_enemy_num_override > 0 && enemyNum >= test_enemy_num_override)
-                    continue;
-                if (game_type != 0)
-                    continue;
-                Vector3 v = _node.worldPosition;
-                v.y = 0;
-                em.enemyResetPositions.Push(v);
-                em.enemyResetRotations.Push(_node.worldRotation);
-                ++enemyNum;
-            }
-            else if (_node.name.StartsWith("preload_"))
+            if (_node.name.StartsWith("preload_"))
                 nodes_to_remove.Push(_node.id);
             else if (_node.name.StartsWith("light"))
             {
@@ -566,10 +520,6 @@ class TestGameState : GameState
 
         for (uint i=0; i<nodes_to_remove.length; ++i)
             scene_.GetNode(nodes_to_remove[i]).Remove();
-
-        em.CreateEnemies();
-
-        maxKilled = em.enemyResetRotations.length;
 
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");
@@ -585,9 +535,6 @@ class TestGameState : GameState
             f.offset = Vector3(0, 10, 0);
         }
 
-        if (game_type == 1)
-            gLineWorld.Process(scene_);
-
         //DumpSkeletonNames(playerNode);
         Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms.");
     }
@@ -599,31 +546,6 @@ class TestGameState : GameState
         {
             messageText.text = msg;
             messageText.visible = true;
-        }
-    }
-
-    void OnCharacterKilled(Character@ killer, Character@ dead)
-    {
-        if (dead.side == 1)
-        {
-            Print("OnPlayerDead!!!!!!!!");
-            ChangeSubState(GAME_FAIL);
-        }
-
-        if (killer !is null)
-        {
-            if (killer.side == 1)
-            {
-                Player@ player = cast<Player>(killer);
-                if (player !is null)
-                {
-                    if (player.killed >= maxKilled)
-                    {
-                        Print("WIN!!!!!!!!");
-                        ChangeSubState(GAME_WIN);
-                    }
-                }
-            }
         }
     }
 
@@ -648,19 +570,6 @@ class TestGameState : GameState
         }
 
         GameState::OnKeyDown(key);
-    }
-
-    void OnPlayerStatusUpdate(Player@ player)
-    {
-        if (player is null)
-            return;
-        Text@ statusText = ui.root.GetChild("status", true);
-        if (statusText !is null)
-        {
-            statusText.text = "HP: " + player.health + " COMBO: " + player.combo + " KILLED:" + player.killed;
-        }
-
-        // ApplyBGMScale(gameScene.timeScale *  GetPlayer().timeScale);
     }
 
     void OnSceneTimeScaleUpdated(Scene@ scene, float newScale)
@@ -721,12 +630,6 @@ class GameFSM : FSM
         return b;
     }
 
-    void OnCharacterKilled(Character@ killer, Character@ dead)
-    {
-        if (gameState !is null)
-            gameState.OnCharacterKilled(killer, dead);
-    }
-
     void OnSceneLoadFinished(Scene@ _scene)
     {
         if (gameState !is null)
@@ -743,12 +646,6 @@ class GameFSM : FSM
     {
         if (gameState !is null)
             gameState.OnKeyDown(key);
-    }
-
-    void OnPlayerStatusUpdate(Player@ player)
-    {
-        if (gameState !is null)
-            gameState.OnPlayerStatusUpdate(player);
     }
 
     void OnSceneTimeScaleUpdated(Scene@ scene, float newScale)

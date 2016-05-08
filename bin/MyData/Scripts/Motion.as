@@ -5,13 +5,6 @@
 // ==============================================
 
 const int LAYER_MOVE = 0;
-const int LAYER_ATTACK = 1;
-
-enum AttackType
-{
-    ATTACK_PUNCH,
-    ATTACK_KICK,
-};
 
 void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
 {
@@ -32,61 +25,6 @@ int FindMotionIndex(const Array<Motion@>&in motions, const String&in name)
     return -1;
 }
 
-void FillAnimationWithCurrentPose(Animation@ anim, Node@ _node)
-{
-    Array<String> boneNames =
-    {
-        "Bip01_$AssimpFbx$_Translation",
-        "Bip01_$AssimpFbx$_PreRotation",
-        "Bip01_$AssimpFbx$_Rotation",
-        "Bip01_Pelvis",
-        "Bip01_Spine",
-        "Bip01_Spine1",
-        "Bip01_Spine2",
-        "Bip01_Spine3",
-        "Bip01_Neck",
-        "Bip01_Head",
-        "Bip01_L_Thigh",
-        "Bip01_L_Calf",
-        "Bip01_L_Foot",
-        "Bip01_R_Thigh",
-        "Bip01_R_Calf",
-        "Bip01_R_Foot",
-        "Bip01_L_Clavicle",
-        "Bip01_L_UpperArm",
-        "Bip01_L_Forearm",
-        "Bip01_L_Hand",
-        "Bip01_R_Clavicle",
-        "Bip01_R_UpperArm",
-        "Bip01_R_Forearm",
-        "Bip01_R_Hand"
-    };
-
-    anim.RemoveAllTracks();
-    for (uint i=0; i<boneNames.length; ++i)
-    {
-        Node@ n = _node.GetChild(boneNames[i], true);
-        if (n is null)
-        {
-            log.Error("FillAnimationWithCurrentPose can not find bone " + boneNames[i]);
-            continue;
-        }
-        AnimationTrack@ track = anim.CreateTrack(boneNames[i]);
-        track.channelMask = CHANNEL_POSITION | CHANNEL_ROTATION;
-        AnimationKeyFrame kf;
-        kf.time = 0.0f;
-        kf.position = n.position;
-        kf.rotation = n.rotation;
-        track.AddKeyFrame(kf);
-    }
-}
-
-int GetAttackType(const String&in name)
-{
-    if (name.Contains("Foot") || name.Contains("Calf"))
-        return ATTACK_KICK;
-    return ATTACK_PUNCH;
-}
 
 void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle, const Color&in color, float radius = 1.0)
 {
@@ -463,44 +401,6 @@ class Motion
     float GetStartRot()
     {
         return -rotateAngle;
-    }
-};
-
-class AttackMotion
-{
-    Motion@                  motion;
-
-    // ==============================================
-    //   ATTACK VALUES
-    // ==============================================
-
-    float                   impactTime;
-    float                   impactDist;;
-    Vector3                 impactPosition;
-    int                     type;
-    String                  boneName;
-
-    AttackMotion(const String&in name, int impactFrame, int _type, const String&in bName)
-    {
-        @motion = gMotionMgr.FindMotion(name);
-        if (motion is null)
-            return;
-        impactTime = impactFrame * SEC_PER_FRAME;
-        Vector4 k = motion.motionKeys[impactFrame];
-        impactPosition = Vector3(k.x, k.y, k.z);
-        impactDist = impactPosition.length;
-        type = _type;
-        boneName = bName;
-    }
-
-    int opCmp(const AttackMotion&in obj)
-    {
-        if (impactDist > obj.impactDist)
-            return 1;
-        else if (impactDist < obj.impactDist)
-            return -1;
-        else
-            return 0;
     }
 };
 
