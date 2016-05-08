@@ -424,16 +424,12 @@ class TestGameState : GameState
         case GAME_WIN:
             {
                 ShowMessage("You Win! Press Stride to restart!", true);
-                if (player !is null)
-                    player.SetTarget(null);
             }
             break;
 
         case GAME_FAIL:
             {
                 ShowMessage("You Died! Press Stride to restart!", true);
-                if (player !is null)
-                    player.SetTarget(null);
             }
             break;
         }
@@ -471,9 +467,7 @@ class TestGameState : GameState
         uint t = time.systemTime;
         Scene@ scene_ = Scene();
         script.defaultScene = scene_;
-        String scnFile = "Scenes/1.xml";
-        if (game_type == 1)
-            scnFile = "Scenes/2.xml";
+        String scnFile = "Scenes/2.xml";
         scene_.LoadXML(cache.GetFile(scnFile));
         Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
@@ -490,8 +484,6 @@ class TestGameState : GameState
         {
             playerPos = tmpPlayerNode.worldPosition;
             playerRot = tmpPlayerNode.worldRotation;
-            if (collision_type == 0)
-                playerPos.y = 0;
             tmpPlayerNode.Remove();
         }
 
@@ -553,11 +545,9 @@ class TestGameState : GameState
     {
         if (key == KEY_ESC)
         {
-            if (game_type == 1)
-            {
-                engine.Exit();
-                return;
-            }
+            engine.Exit();
+            return;
+
             int oldState = state;
             if (oldState == GAME_PAUSE)
                 ChangeSubState(pauseState);

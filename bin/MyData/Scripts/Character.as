@@ -4,49 +4,30 @@
 //
 // ==============================================
 
-const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85f;
 const float CHARACTER_HEIGHT = 5.0f;
-const float CHARACTER_CROUCH_HEIGHT = 3.0f;
 
-const int INITIAL_HEALTH = 100;
-
-const StringHash ATTACK_STATE("AttackState");
 const StringHash TURN_STATE("TurnState");
 const StringHash RUN_STATE("RunState");
-const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
 const StringHash ALIGN_STATE("AlignState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
-const StringHash ATTACK_TYPE("AttackType");
 const StringHash TIME_SCALE("TimeScale");
 const StringHash DATA("Data");
 const StringHash NAME("Name");
 const StringHash ANIMATION("Animation");
 const StringHash STATE("State");
 const StringHash VALUE("Value");
-const StringHash COUNTER_CHECK("CounterCheck");
-const StringHash ATTACK_CHECK("AttackCheck");
 const StringHash BONE("Bone");
 const StringHash NODE("Node");
-const StringHash COMBAT_SOUND("CombatSound");
-const StringHash COMBAT_SOUND_LARGE("CombatSoundLarge");
-const StringHash COMBAT_PARTICLE("CombatParticle");
 const StringHash PARTICLE("Particle");
 const StringHash DURATION("Duration");
-const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
 const StringHash CHANGE_STATE("ChangeState");
-const StringHash IMPACT("Impact");
-const StringHash HEALTH("Health");
 const StringHash SOUND("Sound");
 const StringHash RANGE("Range");
 const StringHash TAG("Tag");
-
-int num_of_sounds = 37;
-int num_of_big_sounds = 6;
 
 class CharacterState : State
 {
@@ -56,7 +37,6 @@ class CharacterState : State
     float                       blendTime = 0.2f;
     float                       startTime = 0.0f;
 
-    bool                        combatReady = false;
     bool                        firstUpdate = true;
 
     int                         lastPhysicsType = 0;
@@ -75,14 +55,8 @@ class CharacterState : State
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         StringHash name = eventData[NAME].GetStringHash();
-        if (name == RAGDOLL_START)
-            ownner.ChangeState("RagdollState");
-        else if (name == COMBAT_SOUND)
-            OnCombatSound(eventData[VALUE].GetString(), false);
-        else if (name == COMBAT_SOUND_LARGE)
-            OnCombatSound(eventData[VALUE].GetString(), true);
-        else if (name == PARTICLE)
-            OnCombatParticle(eventData[VALUE].GetString(), eventData[PARTICLE].GetString());
+        if (name == PARTICLE)
+            OnParticle(eventData[VALUE].GetString(), eventData[PARTICLE].GetString());
         else if (name == FOOT_STEP)
         {
             if (animState !is null && animState.weight > 0.5f)
@@ -92,10 +66,6 @@ class CharacterState : State
             ownner.PlaySound(eventData[VALUE].GetString());
         else if (name == CHANGE_STATE)
             ownner.ChangeState(eventData[VALUE].GetStringHash());
-        else if (name == IMPACT)
-            combatReady = true;
-        else if (name == READY_TO_FIGHT)
-            combatReady = true;
     }
 
     void OnFootStep(const String&in boneName)
@@ -108,16 +78,7 @@ class CharacterState : State
         ownner.SpawnParticleEffect(pos, "Particle/SnowExplosionFade.xml", 2, 2.5f);
     }
 
-    void OnCombatSound(const String& boneName, bool large)
-    {
-        ownner.PlayRandomSound(large ? 1 : 0);
-
-        Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
-        if (boneNode !is null)
-            ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
-    }
-
-    void OnCombatParticle(const String& boneName, const String& particleName)
+    void OnParticle(const String& boneName, const String& particleName)
     {
         Node@ boneNode = ownner.renderNode.GetChild(boneName, true);
         if (boneNode !is null)
@@ -156,14 +117,6 @@ class CharacterState : State
 
     void Update(float dt)
     {
-        if (combatReady)
-        {
-            if (!ownner.IsInAir())
-            {
-                if (ownner.ActionCheck(true, true, true))
-                    return;
-            }
-        }
         State::Update(dt);
         firstUpdate = false;
     }
@@ -643,19 +596,16 @@ class Character : GameObject
         startRotation = sceneNode.worldRotation;
         sceneNode.vars[TIME_SCALE] = 1.0f;
 
-        if (collision_type == 1)
-        {
-            body = sceneNode.CreateComponent("RigidBody");
-            body.collisionLayer = COLLISION_LAYER_CHARACTER;
-            body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_PROP;
-            body.mass = 1.0f;
-            body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
-            body.collisionEventMode = COLLISION_ALWAYS;
-            CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
-            shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
-            physicsType = 1;
-            SetGravity(Vector3(0, -20, 0));
-        }
+        body = sceneNode.CreateComponent("RigidBody");
+        body.collisionLayer = COLLISION_LAYER_CHARACTER;
+        body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_PROP;
+        body.mass = 1.0f;
+        body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
+        body.collisionEventMode = COLLISION_ALWAYS;
+        CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
+        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
+        physicsType = 1;
+        SetGravity(Vector3(0, -20, 0));
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
@@ -723,7 +673,7 @@ class Character : GameObject
     String GetDebugText()
     {
         String debugText = stateMachine.GetDebugText();
-        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " timeScale:" + timeScale + " health:" + health + "\n";
+        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " timeScale:" + timeScale + "\n";
         if (animModel.numAnimationStates > 0)
         {
             debugText += "Debug-Animations:\n";
@@ -761,7 +711,7 @@ class Character : GameObject
 
     void Reset()
     {
-        flags = FLAGS_ATTACK;
+        flags = 0;
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
         SetTimeScale(1.0f);
@@ -788,7 +738,6 @@ class Character : GameObject
         Array<String> animations = { animation };
         TestAnimation(animations);
     }
-
 
     float GetTargetAngle()
     {
@@ -995,14 +944,6 @@ class Character : GameObject
 
     }
 
-    void SetTarget(Character@ t)
-    {
-        if (t is target)
-            return;
-        @target = t;
-        // Print(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
-    }
-
     void SetPhysics(bool b)
     {
         if (body !is null)
@@ -1010,43 +951,9 @@ class Character : GameObject
         SetNodeEnabled("Collision", b);
     }
 
-    void PlayRandomSound(int type)
-    {
-        if (type == 0)
-            PlaySound("Sfx/impact_" + (RandomInt(num_of_sounds) + 1) + ".ogg");
-        else if (type == 1)
-            PlaySound("Sfx/big_" + (RandomInt(num_of_big_sounds) + 1) + ".ogg");
-    }
-
-    bool ActionCheck(bool bAttack, bool bCounter, bool bEvade)
-    {
-        return false;
-    }
-
     bool IsVisible()
     {
         return animModel.IsInView(gCameraMgr.GetCamera());
-    }
-
-    void CheckAvoidance(float dt)
-    {
-
-    }
-
-    void ClearAvoidance()
-    {
-
-    }
-
-    void CheckTargetDistance(Character@ t, float dist)
-    {
-        if (t is null)
-            return;
-        if (motion_translateEnabled && GetTargetDistance(t.GetNode()) < dist)
-        {
-            Print(GetName() + " is too close to " + t.GetName() + " set translateEnabled to false");
-            motion_translateEnabled = false;
-        }
     }
 
     bool IsInAir()
@@ -1129,7 +1036,5 @@ Node@ CreateCharacter(const String&in name, const String&in objectFile, const St
     Node@ p_node = script.defaultScene.InstantiateXML(xml, position, rotation);
     p_node.name = name;
     p_node.CreateScriptObject(scriptFile, scriptClass);
-    p_node.CreateScriptObject(scriptFile, "Ragdoll");
-    p_node.CreateScriptObject(scriptFile, "HeadIndicator");
     return p_node;
 }

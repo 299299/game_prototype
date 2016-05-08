@@ -45,12 +45,7 @@ String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 20;
 
-int freeze_ai = 0;
-int game_type = 1;
-int collision_type = 0;
-
 GameInput@ gInput = GameInput();
-LineWorld@ gLineWorld = LineWorld();
 
 void Start()
 {
@@ -70,21 +65,8 @@ void Start()
                 bigHeadMode = !bigHeadMode;
             else if (argument == "lowend")
                 render_features = RF_NONE;
-            else if (argument == "freezeai")
-                freeze_ai = 1;
-            else if (argument == "game")
-            {
-                String type = arguments[i+1];
-                if (type == "combat")
-                    game_type = 0;
-                else if (type == "climb")
-                    game_type = 1;
-            }
         }
     }
-
-    if (game_type == 1)
-        collision_type = 1;
 
     if (!engine.headless && graphics.width < 640)
         render_features = RF_NONE;
@@ -186,7 +168,7 @@ void CreateUI()
     text.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
-    text.SetPosition(5, game_type == 0 ? 50 : 0);
+    text.SetPosition(5, 0);
     text.color = Color(0, 0, 1);
     text.priority = -99999;
     // text.textEffect = TE_SHADOW;
@@ -395,19 +377,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == 'E')
     {
         Array<String> testAnimations;
-        //String testName = "TG_Getup/GetUp_Back";
-        //String testName = "TG_BM_Counter/Counter_Leg_Front_01";
-        //String testName = "TG_HitReaction/Push_Reaction";
-        //String testName = "BM_TG_Beatdown/Beatdown_Strike_End_01";
-        //String testName = "TG_HitReaction/HitReaction_Back_NoTurn";
-        //String testName = "BM_Attack/Attack_Far_Back_04";
-        //String testName = "TG_BM_Counter/Double_Counter_2ThugsB_01";
-        //String testName = "BM_Attack/Attack_Far_Back_03";
-        //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
-        //String testName = GetAnimationName("BM_Railing/Railing_Idle");
-        //String testName = ("BM_Railing/Railing_Climb_Down_Forward");
-        //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
-        String testName = "BM_Climb/Dangle_To_Hang"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
         //testAnimations.Push("BM_Climb/Dangle_Right");
@@ -419,16 +388,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         scene_.timeScale = 1.0f;
         // SetWorldTimeScale(scene_, 1);
-    }
-    else if (key == 'O')
-    {
-        Node@ n = scene_.GetChild("thug2");
-        if (n !is null)
-        {
-            n.vars[ANIMATION_INDEX] = RandomInt(4);
-            Thug@ thug = cast<Thug>(n.scriptObject);
-            thug.ChangeState("HitState");
-        }
     }
     else if (key == 'I')
     {
@@ -763,23 +722,15 @@ void ExecuteCommand()
     }
 }
 
-class BM_Game_MotionManager : MotionManager
+class LIS_Game_MotionManager : MotionManager
 {
     void AddMotions()
     {
-        Create_BM_Motions();
-        if (game_type == 0)
-        {
-            CreateThugMotions();
-        }
+        Create_Max_Motions();
     }
 
     void AddTriggers()
     {
-        Add_BM_AnimationTriggers();
-        if (game_type == 0)
-        {
-            AddThugAnimationTriggers();
-        }
+        Add_Max_AnimationTriggers();
     }
 };

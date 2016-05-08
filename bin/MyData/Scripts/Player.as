@@ -4,6 +4,134 @@
 //
 // ==============================================
 
+
+class PlayerStandState : MultiAnimationState
+{
+    PlayerStandState(Character@ c)
+    {
+        super(c);
+        SetName("StandState");
+        looped = true;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetVelocity(Vector3(0,0,0));
+        MultiAnimationState::Enter(lastState);
+    }
+
+    void Update(float dt)
+    {
+        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        {
+            ownner.ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
+            return;
+        }
+
+        if (ownner.CheckFalling())
+            return;
+
+        MultiAnimationState::Update(dt);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(animations.length);
+    }
+};
+
+class PlayerMoveForwardState : SingleMotionState
+{
+    float turnSpeed = 5.0f;
+
+    PlayerMoveForwardState(Character@ c)
+    {
+        super(c);
+        flags = FLAGS_MOVING;
+    }
+
+    void OnStop()
+    {
+        ownner.ChangeState("StandState");
+    }
+
+    void Update(float dt)
+    {
+        float characterDifference = ownner.ComputeAngleDiff();
+        Node@ _node = ownner.GetNode();
+        _node.Yaw(characterDifference * turnSpeed * dt);
+
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
+        {
+            OnStop();
+            return;
+        }
+
+        if (ownner.CheckFalling())
+            return;
+
+        SingleMotionState::Update(dt);
+    }
+};
+
+class PlayerWalkState : PlayerMoveForwardState
+{
+    int runHoldingFrames = 0;
+
+    PlayerWalkState(Character@ c)
+    {
+        super(c);
+        SetName("WalkState");
+        turnSpeed = 5.0f;
+    }
+
+    void Update(float dt)
+    {
+        if (gInput.IsRunHolding())
+            runHoldingFrames ++;
+        else
+            runHoldingFrames = 0;
+
+        if (runHoldingFrames > 4)
+        {
+            ownner.ChangeState("RunState");
+            return;
+        }
+
+        PlayerMoveForwardState::Update(dt);
+    }
+};
+
+class PlayerRunState : PlayerMoveForwardState
+{
+    int walkHoldingFrames = 0;
+    int maxWalkHoldFrames = 4;
+
+    PlayerRunState(Character@ c)
+    {
+        super(c);
+        SetName("RunState");
+        turnSpeed = 7.5f;
+        flags |= FLAGS_RUN;
+    }
+
+    void Update(float dt)
+    {
+        if (!gInput.IsRunHolding())
+            walkHoldingFrames ++;
+        else
+            walkHoldingFrames = 0;
+
+        if (walkHoldingFrames > maxWalkHoldFrames)
+        {
+            ownner.ChangeState("WalkState");
+            return;
+        }
+
+        PlayerMoveForwardState::Update(dt);
+    }
+};
+
 class Player : Character
 {
     bool                              applyGravity = true;
@@ -14,11 +142,6 @@ class Player : Character
 
         side = 1;
         @sensor = PhysicsSensor(sceneNode);
-
-        Node@ tailNode = sceneNode.CreateChild("TailNode");
-        ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
-        emitter.effect = cache.GetResource("ParticleEffect", "Particle/Tail.xml");
-        tailNode.enabled = false;
 
         AddStates();
         ChangeState("StandState");
@@ -37,47 +160,15 @@ class Player : Character
         if (CheckFalling())
             return;
 
-        bool bCrouch = gInput.IsCrouchDown();
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-        {
-            int index = RadialSelectAnimation(4);
-            sceneNode.vars[ANIMATION_INDEX] = index -1;
-            Print("CommonStateFinishedOnGroud crouch=" + bCrouch + "To->Move|Turn hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
-            if (index != 0)
-            {
-                if (bCrouch)
-                {
-                    if (ChangeState("CrouchTurnState"))
-                        return;
-                }
-                else
-                {
-                    if (ChangeState(gInput.IsRunHolding() ? "StandToRunState" : "StandToWalkState"))
-                        return;
-                }
-            }
-
-            if (bCrouch)
-                ChangeState("CrouchState");
-            else
-                ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
-        }
+            ChangeState(gInput.IsRunHolding() ? "RunState" : "WalkState");
         else
-            ChangeState(bCrouch ? "CrouchState" : "StandState");
+            ChangeState("StandState");
     }
 
     float GetTargetAngle()
     {
         return gInput.GetLeftAxisAngle() + gCameraMgr.GetCameraAngle();
-    }
-
-    void SetTarget(Character@ t)
-    {
-        if (target is t)
-            return;
-        if (target !is null)
-            target.RemoveFlag(FLAGS_NO_MOVE);
-        Character::SetTarget(t);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -86,22 +177,6 @@ class Player : Character
         // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
         // sensor.DebugDraw(debug);
         debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
-
-        if (points.length > 1)
-        {
-            for (uint i=0; i<points.length-1; ++i)
-            {
-                debug.AddLine(points[i], points[i+1], Color(0.5, 0.45, 0.75), false);
-            }
-
-            for (uint i=0; i<results.length; ++i)
-            {
-                if (results[i].body !is null)
-                    debug.AddCross(results[i].position, 0.25f, Color(0.1f, 0.7f, 0.25f), false);
-            }
-        }
-
-        debug.AddBoundingBox(box, Color(0.25, 0.75, 0.25), false);
     }
 
     void Update(float dt)
