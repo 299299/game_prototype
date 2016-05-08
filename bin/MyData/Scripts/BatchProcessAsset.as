@@ -143,6 +143,7 @@ void ProcessObjects()
                 AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
                 renderNode.worldRotation = Quaternion(0, 180, 0);
                 am.model = model;
+                am.castShadows = true;
 
                 for (uint i=0; i<matList.length; ++i)
                 {
@@ -153,6 +154,7 @@ void ProcessObjects()
             {
                 StaticModel@ sm = node.CreateComponent("StaticModel");
                 sm.model = model;
+                sm.castShadows = true;
 
                 for (uint i=0; i<matList.length; ++i)
                 {
