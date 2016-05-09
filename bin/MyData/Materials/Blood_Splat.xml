@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<material>
-	<technique name="Techniques/DiffAlpha.xml" quality="0" loddistance="0" />
-	<texture unit="diffuse" name="Textures/blood_splatter_transparency_by_sagacious-d3h1yw6.png" />
-	<parameter name="MatDiffColor" value="1 1 1 1" />
-    <depthbias constant="-0.00001" slopescaled="0" />
-</material>
