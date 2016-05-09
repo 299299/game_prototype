@@ -9,7 +9,7 @@ class MaxStandState : PlayerStandState
     MaxStandState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Movement/Stand_Idle");
+        AddMotion("AS_Gen_Body_SF/A_S_Gen_IdleStand01");
     }
 };
 
@@ -18,7 +18,7 @@ class MaxWalkState : PlayerWalkState
     MaxWalkState(Character@ c)
     {
         super(c);
-        SetMotion("BM_Movement/Walk");
+        SetMotion("AS_Gen_Max/A_GEN_WalkMaxGP_Loop_SF");
     }
 };
 
@@ -27,7 +27,7 @@ class MaxRunState : PlayerRunState
     MaxRunState(Character@ c)
     {
         super(c);
-        SetMotion("BM_Movement/Run");
+        SetMotion("AS_Gen_Body_SF/A_S_Gen_Jog01");
     }
 };
 
@@ -36,7 +36,6 @@ class MaxFallState : PlayerFallState
     MaxFallState(Character@ c)
     {
         super(c);
-        SetMotion("BM_Movement/Fall");
     }
 };
 

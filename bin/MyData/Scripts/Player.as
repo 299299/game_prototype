@@ -49,6 +49,7 @@ class PlayerMoveForwardState : SingleAnimationState
     {
         super(c);
         flags = FLAGS_MOVING;
+        looped = true;
     }
 
     void OnStop()
@@ -106,6 +107,7 @@ class PlayerRunState : PlayerMoveForwardState
         SetName("RunState");
         turnSpeed = 7.5f;
         flags |= FLAGS_RUN;
+        velocity = Vector3(0, 0, 5.0f);
     }
 
     void Update(float dt)

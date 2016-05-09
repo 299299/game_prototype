@@ -651,7 +651,7 @@ class Character : GameObject
         sceneNode.vars[TIME_SCALE] = scale;
     }
 
-    void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
+    void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.2f, float startTime = 0.0f, float speed = 1.0f)
     {
         if (d_log)
             Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
@@ -661,8 +661,8 @@ class Character : GameObject
 
         lastAnimation = animName;
         AnimationController@ ctrl = animCtrl;
-        ctrl.StopLayer(layer, blendTime);
-        ctrl.PlayExclusive(animName, layer, loop, blendTime);
+        ctrl.StopLayer(layer, blendTime * 5.0);
+        ctrl.Play(animName, layer, loop, blendTime);
         ctrl.SetSpeed(animName, speed * timeScale);
         ctrl.SetTime(animName, (speed < 0) ? ctrl.GetLength(animName) : startTime);
     }

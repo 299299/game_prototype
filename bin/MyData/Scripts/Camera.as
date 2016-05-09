@@ -150,9 +150,9 @@ class DebugFPSCameraController: CameraController
 
 class ThirdPersonCameraController : CameraController
 {
-    float   cameraSpeed = 4.5f;
+    float   cameraSpeed = 7.5f;
     float   cameraDistance = 7.5f;
-    float   targetCameraDistance = cameraDistance;
+    float   targetCameraDistance = 5;
     float   cameraDistSpeed = 5.0f;
     Vector3 targetOffset = Vector3(0.75, 3.75, 0);
 
@@ -180,7 +180,7 @@ class ThirdPersonCameraController : CameraController
             }
         }
 
-        targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 15 : 4;
+        //targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 4 : 4;
         cameraDistance += (targetCameraDistance - cameraDistance) * dt * cameraDistSpeed;
 
         Vector3 offset = cameraNode.worldRotation * targetOffset;
@@ -259,74 +259,6 @@ class TransitionCameraController : CameraController
         targetPosition = eventData[TARGET_POSITION].GetVector3();
         targetRotation = eventData[TARGET_ROTATION].GetQuaternion();
         targetController = eventData[TARGET_CONTROLLER].GetStringHash();
-    }
-};
-
-class DeathCameraController : CameraController
-{
-    uint    nodeId = M_MAX_UNSIGNED;
-    float   cameraSpeed = 3.5f;
-    float   cameraDist = 12.5f;
-    float   cameraHeight = 0.5f;
-    float   sideAngle = 0.0;
-    float   timeInState = 0.0f;
-
-    DeathCameraController(Node@ n, const String&in name)
-    {
-        super(n, name);
-    }
-
-    void Exit()
-    {
-        nodeId = M_MAX_UNSIGNED;
-        timeInState = 0;
-    }
-
-    void Update(float dt)
-    {
-        timeInState += dt;
-        Node@ _node = cameraNode.scene.GetNode(nodeId);
-        if (_node is null || timeInState > 7.5f)
-        {
-            gCameraMgr.SetCameraController("ThirdPerson");
-            return;
-        }
-        Node@ playerNode = GetPlayer().GetNode();
-
-        Vector3 dir = _node.worldPosition - playerNode.worldPosition;
-        float angle = Atan2(dir.x, dir.z) + sideAngle;
-
-        Vector3 v1(Sin(angle) * cameraDist, cameraHeight, Cos(angle) * cameraDist);
-        v1 += _node.worldPosition;
-        Vector3 v2 = _node.worldPosition + playerNode.worldPosition;
-        v2 /= 2;
-        v2.y += CHARACTER_HEIGHT;
-        UpdateView(v1, v2, dt * cameraSpeed);
-    }
-
-    void OnCameraEvent(VariantMap& eventData)
-    {
-        if (!eventData.Contains(NODE))
-            return;
-        nodeId = eventData[NODE].GetUInt();
-        Node@ _node = cameraNode.scene.GetNode(nodeId);
-        if (_node is null)
-        {
-            gCameraMgr.SetCameraController("ThirdPerson");
-            return;
-        }
-        Node@ playerNode = GetPlayer().GetNode();
-        Vector3 dir = _node.worldPosition - playerNode.worldPosition;
-        float angle = Atan2(dir.x, dir.z);
-        float angle_1 = AngleDiff(angle - 90);
-        float angle_2 = AngleDiff(angle + 90);
-        float cur_angle = gCameraMgr.GetCameraAngle();
-        if (Abs(cur_angle - angle_1) > Abs(cur_angle - angle_2))
-            sideAngle = -90.0f;
-        else
-            sideAngle = +90.0f;
-
-        Print("DeathCamera sideAngle="+sideAngle);
     }
 };
 
@@ -461,7 +393,6 @@ class CameraManager
         cameraControllers.Push(DebugFPSCameraController(n, "Debug"));
         cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
         cameraControllers.Push(TransitionCameraController(n, "Transition"));
-        cameraControllers.Push(DeathCameraController(n, "Death"));
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
 
         /*
