@@ -152,7 +152,7 @@ class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 7.5f;
     float   cameraDistance = 7.5f;
-    float   targetCameraDistance = 5;
+    float   targetCameraDistance = 4;
     float   cameraDistSpeed = 5.0f;
     Vector3 targetOffset = Vector3(0.75, 3.75, 0);
 
@@ -180,7 +180,7 @@ class ThirdPersonCameraController : CameraController
             }
         }
 
-        //targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 4 : 4;
+        targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 6 : 4;
         cameraDistance += (targetCameraDistance - cameraDistance) * dt * cameraDistSpeed;
 
         Vector3 offset = cameraNode.worldRotation * targetOffset;

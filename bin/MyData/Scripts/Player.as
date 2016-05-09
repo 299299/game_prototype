@@ -42,7 +42,7 @@ class PlayerStandState : MultiAnimationState
 
 class PlayerMoveForwardState : SingleAnimationState
 {
-    Vector3 velocity = Vector3(0, 0, 3.0f);
+    Vector3 velocity = Vector3(0, 0, 3.5f);
     float turnSpeed = 5.0f;
 
     PlayerMoveForwardState(Character@ c)
@@ -107,7 +107,7 @@ class PlayerRunState : PlayerMoveForwardState
         SetName("RunState");
         turnSpeed = 7.5f;
         flags |= FLAGS_RUN;
-        velocity = Vector3(0, 0, 5.0f);
+        velocity = Vector3(0, 0, 5.5f);
     }
 
     void Update(float dt)

@@ -9,7 +9,7 @@ class MaxStandState : PlayerStandState
     MaxStandState(Character@ c)
     {
         super(c);
-        AddMotion("AS_Gen_Body_SF/A_S_Gen_IdleStand01");
+        AddMotion("AS_DIAL_Stand01_SF/A_Dial_Stand01_Base_SF");
     }
 };
 
