@@ -271,20 +271,6 @@ class TestGameState : GameState
         messageText.SetPosition(0, -height * 2 + 100);
         messageText.color = Color(1, 0, 0);
         messageText.visible = false;
-
-        Text@ statusText = ui.root.CreateChild("Text", "status");
-        statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-        statusText.SetAlignment(HA_LEFT, VA_BOTTOM);
-        statusText.SetPosition(0, 0);
-        statusText.color = Color(1, 1, 0);
-        statusText.visible = true;
-
-        Text@ inputText = ui.root.CreateChild("Text", "input");
-        inputText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-        inputText.SetAlignment(HA_LEFT, VA_BOTTOM);
-        inputText.SetPosition(0, -UI_FONT_SIZE - 5);
-        inputText.color = Color(0, 1, 1);
-        inputText.visible = false;
     }
 
     void Exit(State@ nextState)

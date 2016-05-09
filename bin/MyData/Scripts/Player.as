@@ -42,7 +42,7 @@ class PlayerStandState : MultiAnimationState
 
 class PlayerMoveForwardState : SingleAnimationState
 {
-    Vector3 velocity = Vector3(0, 0, 1.0f);
+    Vector3 velocity = Vector3(0, 0, 3.0f);
     float turnSpeed = 5.0f;
 
     PlayerMoveForwardState(Character@ c)
@@ -127,6 +127,21 @@ class PlayerFallState : SingleAnimationState
         super(c);
         SetName("FallState");
     }
+
+    void Update(float dt)
+    {
+        Player@ p = cast<Player@>(ownner);
+        if (p.sensor.grounded)
+        {
+            ownner.ChangeState("StandState");
+            return;
+        }
+        SingleAnimationState::Update(dt);
+    }
+
+    void OnMotionFinished()
+    {
+    }
 };
 
 class Player : Character
@@ -195,15 +210,5 @@ class Player : Character
             return true;
         }
         return false;
-    }
-
-    void ShowInputAction(const String&in message, bool bShow)
-    {
-        Text@ text = ui.root.GetChild("input", true);
-        if (text !is null)
-        {
-            text.visible = bShow;
-            text.text = message;
-        }
     }
 };
