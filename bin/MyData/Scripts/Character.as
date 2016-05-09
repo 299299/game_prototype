@@ -566,7 +566,6 @@ class Character : GameObject
     int                     physicsType;
 
     String                  lastAnimation;
-    String                  walkAlignAnimation;
 
     PhysicsSensor@          sensor;
 

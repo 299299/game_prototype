@@ -20,12 +20,6 @@ class MaxWalkState : PlayerWalkState
         super(c);
         SetMotion("BM_Movement/Walk");
     }
-
-    void Enter(State@ lastState)
-    {
-        startTime = (lastState.name == "StandToWalkState") ? 14 * SEC_PER_FRAME : 0;
-        PlayerMoveForwardState::Enter(lastState);
-    }
 };
 
 class MaxRunState : PlayerRunState
@@ -51,7 +45,6 @@ class Max : Player
     Max()
     {
         super();
-        walkAlignAnimation = GetAnimationName("BM_Movement/Walk");
     }
 
     void AddStates()

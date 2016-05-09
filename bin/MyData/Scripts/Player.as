@@ -40,8 +40,9 @@ class PlayerStandState : MultiAnimationState
     }
 };
 
-class PlayerMoveForwardState : SingleMotionState
+class PlayerMoveForwardState : SingleAnimationState
 {
+    Vector3 velocity = Vector3(0, 0, 1.0f);
     float turnSpeed = 5.0f;
 
     PlayerMoveForwardState(Character@ c)
@@ -70,14 +71,14 @@ class PlayerMoveForwardState : SingleMotionState
         if (ownner.CheckFalling())
             return;
 
-        SingleMotionState::Update(dt);
+        ownner.SetVelocity(ownner.GetNode().worldRotation * velocity);
+
+        SingleAnimationState::Update(dt);
     }
 };
 
 class PlayerWalkState : PlayerMoveForwardState
 {
-    int runHoldingFrames = 0;
-
     PlayerWalkState(Character@ c)
     {
         super(c);
@@ -88,11 +89,6 @@ class PlayerWalkState : PlayerMoveForwardState
     void Update(float dt)
     {
         if (gInput.IsRunHolding())
-            runHoldingFrames ++;
-        else
-            runHoldingFrames = 0;
-
-        if (runHoldingFrames > 4)
         {
             ownner.ChangeState("RunState");
             return;
@@ -104,9 +100,6 @@ class PlayerWalkState : PlayerMoveForwardState
 
 class PlayerRunState : PlayerMoveForwardState
 {
-    int walkHoldingFrames = 0;
-    int maxWalkHoldFrames = 4;
-
     PlayerRunState(Character@ c)
     {
         super(c);
@@ -118,11 +111,6 @@ class PlayerRunState : PlayerMoveForwardState
     void Update(float dt)
     {
         if (!gInput.IsRunHolding())
-            walkHoldingFrames ++;
-        else
-            walkHoldingFrames = 0;
-
-        if (walkHoldingFrames > maxWalkHoldFrames)
         {
             ownner.ChangeState("WalkState");
             return;

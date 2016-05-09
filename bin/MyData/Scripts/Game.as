@@ -557,18 +557,6 @@ class TestGameState : GameState
     {
         if (gameScene !is scene)
             return;
-        // ApplyBGMScale(newScale *  GetPlayer().timeScale);
-    }
-
-    void ApplyBGMScale(float scale)
-    {
-        if (musicNode is null)
-            return;
-        Print("Game::ApplyBGMScale " + scale);
-        SoundSource@ s = musicNode.GetComponent("SoundSource");
-        if (s is null)
-            return;
-        s.frequency = BGM_BASE_FREQ * scale;
     }
 
     String GetDebugText()
