@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="96" />
 	<attribute name="Next Replicated Component ID" value="169" />
-	<attribute name="Next Local Node ID" value="16780719" />
-	<attribute name="Next Local Component ID" value="16778721" />
+	<attribute name="Next Local Node ID" value="16780723" />
+	<attribute name="Next Local Component ID" value="16778746" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -47,7 +47,7 @@
 			<attribute name="Ambient Color" value="0.4 0.4 0.4 1" />
 			<attribute name="Fog Color" value="0.75 0.75 0.75 1" />
 			<attribute name="Fog Start" value="50" />
-			<attribute name="Fog End" value="100" />
+			<attribute name="Fog End" value="200" />
 			<attribute name="Fog Height" value="0.75" />
 			<attribute name="Ambient Gradient" value="true" />
 		</component>
@@ -367,6 +367,29 @@
 		<component type="RigidBody" id="168">
 			<attribute name="Physics Rotation" value="1 4.48876e-18 -1.00573e-27 2.24056e-10" />
 			<attribute name="Physics Position" value="33.5152 0 -27.8718" />
+		</component>
+	</node>
+	<node id="16780720">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="0 -3.94427 7.88854" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+	</node>
+	<node id="16780721">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="skydome" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="0 -3 0" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="10 10 10" />
+		<attribute name="Variables" />
+		<component type="Skybox" id="16778733">
+			<attribute name="Model" value="Model;Objects/LIS/skydome/SkyDome.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/skydome/material_0.xml" />
+			<attribute name="Can Be Occluded" value="false" />
 		</component>
 	</node>
 </scene>

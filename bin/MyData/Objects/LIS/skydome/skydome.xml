@@ -3,12 +3,13 @@
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="skydome" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="0.816941 0 0" />
+	<attribute name="Position" value="2.6122 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="10 10 10" />
 	<attribute name="Variables" />
 	<component type="Skybox" id="60">
 		<attribute name="Model" value="Model;Objects/LIS/skydome/SkyDome.mdl" />
 		<attribute name="Material" value="Material;Objects/LIS/skydome/material_0.xml" />
+		<attribute name="Can Be Occluded" value="false" />
 	</component>
 </node>
