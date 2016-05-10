@@ -659,12 +659,12 @@ class Character : GameObject
         if (layer == LAYER_MOVE && lastAnimation == animName && loop)
             return;
 
-        lastAnimation = animName;
         AnimationController@ ctrl = animCtrl;
-        ctrl.StopLayer(layer, blendTime * 5.0);
-        ctrl.Play(animName, layer, loop, blendTime);
+        // ctrl.Stop(lastAnimation, blendTime);
+        ctrl.PlayExclusive(animName, layer, loop, blendTime);
         ctrl.SetSpeed(animName, speed * timeScale);
         ctrl.SetTime(animName, (speed < 0) ? ctrl.GetLength(animName) : startTime);
+        lastAnimation = animName;
     }
 
     String GetDebugText()
@@ -677,7 +677,7 @@ class Character : GameObject
             for (uint i=0; i<animModel.numAnimationStates; ++i)
             {
                 AnimationState@ state = animModel.GetAnimationState(i);
-                if (state.weight > 0.0f && state.enabled)
+                if (animCtrl.IsPlaying(state.animation.name))
                     debugText +=  state.animation.name + " time=" + String(state.time) + " weight=" + String(state.weight) + "\n";
             }
         }
