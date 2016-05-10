@@ -8,12 +8,10 @@ class GameState : State
 {
     void OnSceneLoadFinished(Scene@ _scene)
     {
-
     }
 
     void OnAsyncLoadProgress(Scene@ _scene, float progress, int loadedNodes, int totalNodes, int loadedResources, int totalResources)
     {
-
     }
 
     void OnKeyDown(int key)
@@ -440,14 +438,9 @@ class TestGameState : GameState
         SetColorGrading(colorGradingIndex);
     }
 
-    void CreateScene()
+    void OnSceneLoaded(Scene@ scene_)
     {
         uint t = time.systemTime;
-        Scene@ scene_ = Scene();
-        script.defaultScene = scene_;
-        String scnFile = "Scenes/2.xml";
-        scene_.LoadXML(cache.GetFile(scnFile));
-        Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
         Camera@ cam = cameraNode.CreateComponent("Camera");
@@ -469,15 +462,12 @@ class TestGameState : GameState
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         playerId = playerNode.id;
 
-        // preprocess current scene
-        Array<uint> nodes_to_remove;
+        // process current scene
         for (uint i=0; i<scene_.numChildren; ++i)
         {
             Node@ _node = scene_.children[i];
             Print("_node.name=" + _node.name);
-            if (_node.name.StartsWith("preload_"))
-                nodes_to_remove.Push(_node.id);
-            else if (_node.name.StartsWith("light"))
+            if (_node.name.StartsWith("light"))
             {
                 Light@ light = _node.GetComponent("Light");
                 if (render_features & RF_SHADOWS == 0)
@@ -487,13 +477,8 @@ class TestGameState : GameState
             }
         }
 
-        for (uint i=0; i<nodes_to_remove.length; ++i)
-            scene_.GetNode(nodes_to_remove[i]).Remove();
-
         gCameraMgr.Start(cameraNode);
-        //gCameraMgr.SetCameraController("Debug");
         gCameraMgr.SetCameraController("ThirdPerson");
-
         gameScene = scene_;
 
         Node@ lightNode = scene_.GetChild("light");
@@ -506,6 +491,20 @@ class TestGameState : GameState
 
         //DumpSkeletonNames(playerNode);
         Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms.");
+    }
+
+    void CreateScene()
+    {
+        Scene@ scene_ = Scene();
+        script.defaultScene = scene_;
+        String scnFile = "Scenes/2.xml";
+        scene_.LoadXML(cache.GetFile(scnFile));
+        OnSceneLoaded(scene_);
+    }
+
+    void OnSceneLoadFinished(Scene@ scene)
+    {
+
     }
 
     void ShowMessage(const String&in msg, bool show)

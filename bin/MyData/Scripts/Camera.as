@@ -72,6 +72,7 @@ class CameraController
 
     void DebugDraw(DebugRenderer@ debug)
     {
+        /*
         float w = float(graphics.width);
         float h = float(graphics.height);
         float w1 = w;
@@ -97,6 +98,7 @@ class CameraController
             debug.AddLine(camera.ScreenToWorldPoint(Vector3(x/w1, gap/h1, depth)), camera.ScreenToWorldPoint(Vector3(x/w1, (h + gap)/h1, depth)), c, false);
             x += step;
         }
+        */
     }
 };
 
@@ -180,7 +182,7 @@ class ThirdPersonCameraController : CameraController
             }
         }
 
-        targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 6 : 4;
+        targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 5 : 4;
         cameraDistance += (targetCameraDistance - cameraDistance) * dt * cameraDistSpeed;
 
         Vector3 offset = cameraNode.worldRotation * targetOffset;
@@ -219,6 +221,11 @@ class ThirdPersonCameraController : CameraController
     void Enter()
     {
         Reset();
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(gCameraMgr.cameraTarget, 0.1, RED, true);
     }
 };
 
@@ -390,6 +397,7 @@ class CameraManager
     void Start(Node@ n)
     {
         cameraNode = n;
+        cameraControllers.Clear();
         cameraControllers.Push(DebugFPSCameraController(n, "Debug"));
         cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
         cameraControllers.Push(TransitionCameraController(n, "Transition"));

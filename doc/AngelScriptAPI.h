@@ -295,6 +295,7 @@ class Animation
 // Methods:
 void AddTrigger(const AnimationTriggerPoint&);
 void AddTrigger(float, bool, const Variant&);
+Animation Clone(const String& = String ( )) const;
 AnimationTrack CreateTrack(const String&);
 bool HasSubscribedToEvent(Object, const String&);
 bool HasSubscribedToEvent(const String&);
@@ -625,6 +626,7 @@ class BiasParameters
 
 // Properties:
 float constantBias;
+float normalOffset;
 float slopeScaledBias;
 };
 
@@ -5055,7 +5057,7 @@ void SendEvent(const String&, VariantMap& = VariantMap ( ));
 bool SetDrawRange(PrimitiveType, uint, uint, bool = true);
 bool SetDrawRange(PrimitiveType, uint, uint, uint, uint, bool = true);
 void SetIndexBuffer(IndexBuffer);
-bool SetVertexBuffer(uint, VertexBuffer, uint = MASK_DEFAULT);
+bool SetVertexBuffer(uint, VertexBuffer);
 
 // Properties:
 /* readonly */
@@ -5082,8 +5084,6 @@ Array<VertexBuffer> vertexBuffers;
 /* readonly */
 uint vertexCount;
 /* readonly */
-Array<uint> vertexElementMasks;
-/* readonly */
 uint vertexStart;
 /* readonly */
 int weakRefs;
@@ -5103,7 +5103,7 @@ void PrecacheShaders(File);
 void PrecacheShaders(VectorBuffer&);
 void SendEvent(const String&, VariantMap& = VariantMap ( ));
 bool SetMode(int, int);
-bool SetMode(int, int, bool, bool, bool, bool, bool, int);
+bool SetMode(int, int, bool, bool, bool, bool, bool, bool, int);
 void SetWindowPosition(int, int);
 bool TakeScreenShot(Image);
 bool ToggleFullscreen();
@@ -8357,6 +8357,7 @@ int maxOccluderTriangles;
 int maxShadowMaps;
 int maxSortedInstances;
 int minInstances;
+float mobileNormalOffsetMul;
 float mobileShadowBiasAdd;
 float mobileShadowBiasMul;
 /* readonly */
@@ -10391,6 +10392,9 @@ void AddTags(const String&, int8 = ';');
 void ApplyAttributes();
 void BringToFront();
 UIElement CreateChild(const String&, const String& = String ( ), uint = M_MAX_UNSIGNED);
+void DisableLayoutUpdate();
+IntVector2 ElementToScreen(const IntVector2&);
+void EnableLayoutUpdate();
 uint FindChild(UIElement) const;
 Variant GetAttribute(const String&) const;
 ValueAnimation GetAttributeAnimation(const String&) const;
@@ -10409,6 +10413,8 @@ bool HasSubscribedToEvent(Object, const String&);
 bool HasSubscribedToEvent(const String&);
 bool HasTag(const String&) const;
 void InsertChild(uint, UIElement);
+bool IsInside(IntVector2, bool);
+bool IsInsideCombined(IntVector2, bool);
 bool Load(File, bool = false);
 bool Load(VectorBuffer&, bool = false);
 bool LoadChildXML(XMLFile, XMLFile = null);
@@ -10429,6 +10435,7 @@ void RemoveChild(uint);
 void RemoveInstanceDefault();
 void RemoveObjectAnimation();
 bool RemoveTag(const String&);
+void ResetDeepEnabled();
 void ResetToDefault();
 bool Save(File) const;
 bool Save(VectorBuffer&) const;
@@ -10436,6 +10443,7 @@ bool SaveJSON(JSONValue&) const;
 bool SaveXML(File, const String& = "\t");
 bool SaveXML(VectorBuffer&, const String& = "\t");
 bool SaveXML(XMLElement&) const;
+IntVector2 ScreenToElement(const IntVector2&);
 void SendEvent(const String&, VariantMap& = VariantMap ( ));
 void SetAlignment(HorizontalAlignment, VerticalAlignment);
 void SetAnimationTime(float);
@@ -10444,12 +10452,15 @@ void SetAttributeAnimation(const String&, ValueAnimation, WrapMode = WM_LOOP, fl
 void SetAttributeAnimationSpeed(const String&, float);
 void SetAttributeAnimationTime(const String&, float);
 void SetAttributeAnimationWrapMode(const String&, WrapMode);
+void SetDeepEnabled(bool);
+void SetEnabledRecursive(bool);
 void SetFixedHeight(int);
 void SetFixedSize(int, int);
 void SetFixedWidth(int);
 void SetFullImageRect();
 void SetHotSpot(int, int);
 void SetInterceptNetworkUpdate(const String&, bool);
+void SetLayout(LayoutMode, int = 0, const IntRect& = IntRect ( 0 , 0 , 0 , 0 ));
 void SetMaxSize(int, int);
 void SetMinSize(int, int);
 void SetParent(UIElement, uint = M_MAX_UNSIGNED);
@@ -10460,6 +10471,7 @@ void SetSize(int, int);
 bool SetStyle(const String&, XMLFile = null);
 bool SetStyle(const XMLElement&);
 bool SetStyleAuto(XMLFile = null);
+void UpdateLayout();
 const Variant& GetVar(const StringHash&);
 
 // Properties:
@@ -10475,12 +10487,18 @@ bool bringToFront;
 /* readonly */
 String category;
 /* readonly */
+IntVector2 childOffset;
+/* readonly */
 Array<UIElement> children;
+IntRect clipBorder;
+bool clipChildren;
 /* writeonly */
 Color color;
 /* readonly */
 bool colorGradient;
 Array<Color> colors;
+/* readonly */
+IntRect combinedScreenRect;
 XMLFile defaultStyle;
 /* readonly */
 float derivedOpacity;
@@ -10488,11 +10506,41 @@ float derivedOpacity;
 uint dragButtonCombo;
 /* readonly */
 int dragButtonCount;
+uint dragDropMode;
+bool editable;
 bool elementEventSender;
+bool enabled;
+/* readonly */
+bool enabledSelf;
+/* readonly */
+bool fixedHeight;
+/* readonly */
+bool fixedSize;
+/* readonly */
+bool fixedWidth;
+bool focus;
+FocusMode focusMode;
 int height;
 HorizontalAlignment horizontalAlignment;
 IntVector2 hotSpot;
+/* readonly */
+bool hovering;
 IntRect imageRect;
+int indent;
+int indentSpacing;
+/* readonly */
+int indentWidth;
+bool internal;
+IntRect layoutBorder;
+Vector2 layoutFlexScale;
+LayoutMode layoutMode;
+int layoutSpacing;
+int maxHeight;
+IntVector2 maxSize;
+int maxWidth;
+int minHeight;
+IntVector2 minSize;
+int minWidth;
 String name;
 /* readonly */
 uint numAllChildren;
@@ -10511,6 +10559,9 @@ int refs;
 UIElement root;
 float rotation;
 Vector2 scale;
+/* readonly */
+IntVector2 screenPosition;
+bool selected;
 IntVector2 size;
 bool sortChildren;
 String style;
@@ -10518,6 +10569,7 @@ String style;
 Array<String> tags;
 bool temporary;
 Texture texture;
+TraversalMode traversalMode;
 /* readonly */
 StringHash type;
 /* readonly */
@@ -12859,12 +12911,17 @@ uint size;
 class VertexBuffer
 {
 // Methods:
-VectorBuffer GetData();
+VectorBuffer GetData() const;
+uint GetElementOffset(VertexElementSemantic, uint8 = 0) const;
+uint GetElementOffset(VertexElementType, VertexElementSemantic, uint8 = 0) const;
+bool HasElement(VertexElementSemantic, uint8 = 0) const;
+bool HasElement(VertexElementType, VertexElementSemantic, uint8 = 0) const;
 bool HasSubscribedToEvent(Object, const String&);
 bool HasSubscribedToEvent(const String&);
 void SendEvent(const String&, VariantMap& = VariantMap ( ));
 bool SetData(VectorBuffer&);
 bool SetDataRange(VectorBuffer&, uint, uint, bool = false);
+void SetSize(uint, Array<VertexElement>, bool = false);
 void SetSize(uint, uint, bool = false);
 
 // Properties:
@@ -12874,6 +12931,8 @@ String category;
 bool dynamic;
 /* readonly */
 uint elementMask;
+/* readonly */
+Array<VertexElement> elements;
 /* readonly */
 int refs;
 bool shadowed;
@@ -12887,6 +12946,17 @@ uint vertexCount;
 uint vertexSize;
 /* readonly */
 int weakRefs;
+};
+
+class VertexElement
+{
+
+// Properties:
+uint8 index;
+uint offset;
+bool perInstance;
+VertexElementSemantic semantic;
+VertexElementType type;
 };
 
 class View3D
@@ -13848,6 +13918,7 @@ HTTP_CLOSED,
 
 enum InterpMethod
 {
+IM_NONE,
 IM_LINEAR,
 IM_SPLINE,
 };
@@ -14145,6 +14216,32 @@ VAR_MATRIX3X4,
 VAR_MATRIX4,
 VAR_DOUBLE,
 VAR_STRINGVECTOR,
+};
+
+enum VertexElementSemantic
+{
+SEM_POSITION,
+SEM_NORMAL,
+SEM_BINORMAL,
+SEM_TANGENT,
+SEM_TEXCOORD,
+SEM_COLOR,
+SEM_BLENDWEIGHTS,
+SEM_BLENDINDICES,
+SEM_OBJECTINDEX,
+MAX_VERTEX_ELEMENT_SEMANTICS,
+};
+
+enum VertexElementType
+{
+TYPE_INT,
+TYPE_FLOAT,
+TYPE_VECTOR2,
+TYPE_VECTOR3,
+TYPE_VECTOR4,
+TYPE_UBYTE4,
+TYPE_UBYTE4_NORM,
+MAX_VERTEX_ELEMENT_TYPES,
 };
 
 enum VerticalAlignment
@@ -14494,7 +14591,6 @@ uint MASK_BLENDWEIGHTS;
 uint MASK_COLOR;
 uint MASK_CUBETEXCOORD1;
 uint MASK_CUBETEXCOORD2;
-uint MASK_DEFAULT;
 uint MASK_INSTANCEMATRIX1;
 uint MASK_INSTANCEMATRIX2;
 uint MASK_INSTANCEMATRIX3;

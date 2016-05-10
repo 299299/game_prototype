@@ -64,6 +64,9 @@ void Create_Max_Motions()
 
 void Add_Max_AnimationTriggers()
 {
-
+    AddStringAnimationTrigger("AS_Gen_Max/A_GEN_WalkMaxGP_Loop_SF", 14, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger("AS_Gen_Max/A_GEN_WalkMaxGP_Loop_SF", 32, FOOT_STEP, L_FOOT);
+    AddStringAnimationTrigger("AS_Gen_Body_SF/A_S_Gen_Jog01", 10, FOOT_STEP, R_FOOT);
+    AddStringAnimationTrigger("AS_Gen_Body_SF/A_S_Gen_Jog01", 23, FOOT_STEP, L_FOOT);
 }
 

@@ -245,6 +245,7 @@ void SubscribeToEvents()
     SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
     SubscribeToEvent("CameraEvent", "HandleCameraEvent");
     SubscribeToEvent("SliderChanged", "HandleSliderChanged");
+    SubscribeToEvent("ReloadFinished", "HandleResourceReloadFinished");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -294,7 +295,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 
     if (drawDebug > 0)
     {
-        // gCameraMgr.DebugDraw(debug);
+        gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
         Player@ player = GetPlayer();
         if (player !is null)
@@ -472,6 +473,11 @@ void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
 void HandleCameraEvent(StringHash eventType, VariantMap& eventData)
 {
     gCameraMgr.OnCameraEvent(eventData);
+}
+
+void HandleResourceReloadFinished(StringHash eventType, VariantMap& eventData)
+{
+
 }
 
 int FindRenderCommand(RenderPath@ path, const String&in tag)
