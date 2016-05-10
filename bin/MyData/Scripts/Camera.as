@@ -43,11 +43,6 @@ class CameraController
 
     }
 
-    bool IsDebugCamera()
-    {
-        return false;
-    }
-
     void UpdateView(const Vector3&in position, const Vector3& lookat, float blend)
     {
         Vector3 cameraPos = cameraNode.worldPosition;
@@ -143,11 +138,6 @@ class DebugFPSCameraController: CameraController
         if (input.keyDown[KEY_RIGHT])
             cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * speed * dt);
     }
-
-    bool IsDebugCamera()
-    {
-        return true;
-    }
 };
 
 class ThirdPersonCameraController : CameraController
@@ -156,7 +146,7 @@ class ThirdPersonCameraController : CameraController
     float   cameraDistance = 7.5f;
     float   targetCameraDistance = 4;
     float   cameraDistSpeed = 5.0f;
-    Vector3 targetOffset = Vector3(0.75, 3.75, 0);
+    Vector3 targetOffset = Vector3(0.65, 3.75, 0);
 
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
@@ -191,7 +181,7 @@ class ThirdPersonCameraController : CameraController
         Vector3 v = gInput.GetRightAxis();
         float pitch = v.y;
         float yaw = v.x;
-        pitch = Clamp(pitch, -10.0f, 60.0f);
+        pitch = Clamp(pitch, -20.0f, 35.0f);
 
         Quaternion q(pitch, yaw, 0);
         Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
@@ -225,7 +215,7 @@ class ThirdPersonCameraController : CameraController
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(gCameraMgr.cameraTarget, 0.1, RED, true);
+        // debug.AddCross(gCameraMgr.cameraTarget, 0.1, RED, true);
     }
 };
 
@@ -451,12 +441,6 @@ class CameraManager
 
     float GetCameraAngle()
     {
-        if (currentController !is null)
-        {
-            if (currentController.IsDebugCamera())
-                return 0;
-        }
-
         Vector3 dir = GetCameraForwardDirection();
         return Atan2(dir.x, dir.z);
     }

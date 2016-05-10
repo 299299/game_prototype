@@ -4,7 +4,7 @@
 //
 // ==============================================
 
-const float COLLISION_RADIUS = 1.0f;
+const float COLLISION_RADIUS = 0.75f;
 const float CHARACTER_HEIGHT = 4.5f;
 
 const StringHash TURN_STATE("TurnState");
