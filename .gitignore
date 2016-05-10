@@ -101,6 +101,7 @@ Thumbs.db
 
 /bin/Urho3DPlayer.exe
 /bin/tool/AssetImporter.exe
+/bin/tool/ScriptCompiler.exe
 /bin/Urho3D.dll
 /bin/tool/Urho3D.dll
 
