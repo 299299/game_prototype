@@ -15,6 +15,7 @@ class CameraController
     StringHash nameHash;
     Node@      cameraNode;
     Camera@    camera;
+    bool       checkCollision = false;
 
     CameraController(Node@ n, const String&in name)
     {
@@ -46,11 +47,26 @@ class CameraController
     void UpdateView(const Vector3&in position, const Vector3& lookat, float blend)
     {
         Vector3 cameraPos = cameraNode.worldPosition;
+        Vector3 vPos = position;
+
         Vector3 diff = position - cameraPos;
-        cameraNode.worldPosition = cameraPos + diff * blend;
+        Vector3 pos = cameraPos + diff * blend;
         Vector3 target = gCameraMgr.cameraTarget;
         diff = lookat - target;
         target += diff * blend;
+
+        cameraNode.worldPosition = pos;
+
+        if (checkCollision)
+        {
+            CollisionShape@ shape = cameraNode.GetComponent("CollisionShape");
+            Quaternion r;
+            PhysicsRaycastResult result = cameraNode.scene.physicsWorld.ConvexCast(shape, target, r, pos, r, COLLISION_LAYER_LANDSCAPE);
+            if (result.body !is null)
+                cameraNode.worldPosition = pos + (result.position - pos) * blend;
+        }
+
+
         cameraNode.LookAt(target);
         gCameraMgr.cameraTarget = target;
     }
@@ -151,6 +167,7 @@ class ThirdPersonCameraController : CameraController
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
+        checkCollision = true;
     }
 
     void Update(float dt)
@@ -392,6 +409,9 @@ class CameraManager
         cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
         cameraControllers.Push(TransitionCameraController(n, "Transition"));
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
+
+        CollisionShape@ cameraSphere = cameraNode.CreateComponent("CollisionShape");
+        cameraSphere.SetSphere(1.5f);
 
         /*
         cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));

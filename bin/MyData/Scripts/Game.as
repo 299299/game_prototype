@@ -192,10 +192,7 @@ enum GameSubState
 {
     GAME_FADING,
     GAME_RUNNING,
-    GAME_FAIL,
-    GAME_RESTARTING,
     GAME_PAUSE,
-    GAME_WIN,
 };
 
 class TestGameState : GameState
@@ -206,7 +203,6 @@ class TestGameState : GameState
 
     int                 state = -1;
     int                 pauseState = -1;
-    int                 maxKilled = 5;
 
     float               fadeTime;
     float               fadeInDuration = 2.0f;
@@ -291,18 +287,6 @@ class TestGameState : GameState
             }
             break;
 
-        case GAME_FAIL:
-        case GAME_WIN:
-            {
-                if (gInput.IsAttackPressed())
-                {
-                    ChangeSubState(GAME_RESTARTING);
-                    ShowMessage("", false);
-                }
-
-            }
-            break;
-
         case GAME_PAUSE:
             {
                 int selection = pauseMenu.Update(dt);
@@ -371,43 +355,12 @@ class TestGameState : GameState
             }
             break;
 
-        case GAME_RESTARTING:
-            {
-                if (oldState != GAME_PAUSE)
-                {
-                    ValueAnimation@ alphaAnimation = ValueAnimation();
-                    alphaAnimation.SetKeyFrame(0.0f, Variant(0.0f));
-                    alphaAnimation.SetKeyFrame(restartDuration/2, Variant(1.0f));
-                    alphaAnimation.SetKeyFrame(restartDuration, Variant(0.0f));
-                    fadeTime = restartDuration;
-                    fullscreenUI.opacity = 0.0f;
-                    fullscreenUI.visible = true;
-                    fullscreenUI.SetAttributeAnimation("Opacity", alphaAnimation, WM_ONCE);
-                }
-
-                freezeInput = true;
-                if (player !is null)
-                    player.Reset();
-            }
-            break;
-
         case GAME_PAUSE:
             {
                 // ....
             }
             break;
 
-        case GAME_WIN:
-            {
-                ShowMessage("You Win! Press Stride to restart!", true);
-            }
-            break;
-
-        case GAME_FAIL:
-            {
-                ShowMessage("You Died! Press Stride to restart!", true);
-            }
-            break;
         }
     }
 
