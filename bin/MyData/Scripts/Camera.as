@@ -9,13 +9,61 @@ const StringHash TARGET_CONTROLLER("TargetController");
 const StringHash TARGET_FOV("TargetFOV");
 
 const float BASE_FOV = 45.0f;
+const float CAMERA_RADIUS = 0.1f;
+
+Vector3 FindLineSphereIntersections(const Vector3& linePoint0, const Vector3& linePoint1, const Vector3& sphereCenter, const Vector3& target, float circleRadius)
+{
+    float cx = sphereCenter.x;
+    float cy = sphereCenter.y;
+    float cz = sphereCenter.z;
+
+    float px = linePoint0.x;
+    float py = linePoint0.y;
+    float pz = linePoint0.z;
+
+    float vx = linePoint1.x - px;
+    float vy = linePoint1.y - py;
+    float vz = linePoint1.z - pz;
+
+    float A = vx * vx + vy * vy + vz * vz;
+    float B = 2.0f * (px * vx + py * vy + pz * vz - vx * cx - vy * cy - vz * cz);
+    float C = px * px - 2 * px * cx + cx * cx + py * py - 2 * py * cy + cy * cy +
+               pz * pz - 2 * pz * cz + cz * cz - circleRadius * circleRadius;
+
+    // discriminant
+    float D = B * B - 4 * A * C;
+
+    if (D < 0)
+    {
+        return Vector3(0, 0, 0);
+    }
+
+    float t1 = (-B - Sqrt(D)) / (2.0f * A);
+
+    Vector3 solution1 = Vector3(linePoint0.x * (1 - t1) + t1 * linePoint1.x, linePoint0.y * (1 - t1) + t1 * linePoint1.y, linePoint0.z * (1 - t1) + t1 * linePoint1.z);
+
+    if (D == 0)
+    {
+        return solution1;
+    }
+
+    float t2 = (-B + Sqrt(D)) / (2.0f * A);
+    Vector3 solution2 = Vector3(linePoint0.x * (1 - t2) + t2 * linePoint1.x, linePoint0.y * (1 - t2) + t2 * linePoint1.y, linePoint0.z * (1 - t2) + t2 * linePoint1.z);
+
+    // prefer a solution that's on the line segment itself
+    if (Abs(t1 - 0.5f) < Abs(t2 - 0.5f))
+    {
+        return ((solution2 - target).length <= (solution1 - target).length ? solution2 : solution1);
+    }
+
+    return ((solution2 - target).length <= (solution1 - target).length ? solution2 : solution1);
+}
 
 class CameraController
 {
     StringHash nameHash;
     Node@      cameraNode;
     Camera@    camera;
-    bool       checkCollision = false;
 
     CameraController(Node@ n, const String&in name)
     {
@@ -56,17 +104,6 @@ class CameraController
         target += diff * blend;
 
         cameraNode.worldPosition = pos;
-
-        if (checkCollision)
-        {
-            CollisionShape@ shape = cameraNode.GetComponent("CollisionShape");
-            Quaternion r;
-            PhysicsRaycastResult result = cameraNode.scene.physicsWorld.ConvexCast(shape, target, r, pos, r, COLLISION_LAYER_LANDSCAPE);
-            if (result.body !is null)
-                cameraNode.worldPosition = pos + (result.position - pos) * blend;
-        }
-
-
         cameraNode.LookAt(target);
         gCameraMgr.cameraTarget = target;
     }
@@ -167,31 +204,30 @@ class ThirdPersonCameraController : CameraController
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
-        checkCollision = true;
     }
 
     void Update(float dt)
     {
-        Player@ p = GetPlayer();
-        if (p is null)
-            return;
-        Node@ _node = p.GetNode();
-
-        bool blockView = false;
-        Vector3 target_pos = _node.worldPosition;
-        if (p.target !is null)
-        {
-            if (!p.target.IsVisible())
-            {
-                //target_pos += p.target.GetNode().worldPosition;
-                //target_pos /= 2.0f;
-                //blockView = true;
-            }
-        }
-
-        targetCameraDistance = p.HasFlag(FLAGS_RUN) ? 5 : 4;
+        targetCameraDistance = GetPlayer().HasFlag(FLAGS_RUN) ? 5 : 4;
         cameraDistance += (targetCameraDistance - cameraDistance) * dt * cameraDistSpeed;
 
+        Vector3 from, to;
+        CaculateView(from, to);
+
+        CollisionShape@ shape = cameraNode.GetComponent("CollisionShape");
+        Quaternion r = Quaternion();
+        PhysicsRaycastResult result = cameraNode.scene.physicsWorld.ConvexCast(shape, to, r, from, r, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+        {
+            from = result.position;
+        }
+
+        UpdateView(from, to, dt * cameraSpeed);
+    }
+
+    void CaculateView(Vector3&out from, Vector3&out to)
+    {
+        Vector3 target_pos = GetPlayer().GetNode().worldPosition;
         Vector3 offset = cameraNode.worldRotation * targetOffset;
         target_pos += offset;
 
@@ -201,8 +237,8 @@ class ThirdPersonCameraController : CameraController
         pitch = Clamp(pitch, -20.0f, 35.0f);
 
         Quaternion q(pitch, yaw, 0);
-        Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
-        UpdateView(pos, target_pos, dt * cameraSpeed);
+        from = q * Vector3(0, 0, -cameraDistance) + target_pos;
+        to = target_pos;
     }
 
     String GetDebugText()
@@ -411,7 +447,7 @@ class CameraManager
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
 
         CollisionShape@ cameraSphere = cameraNode.CreateComponent("CollisionShape");
-        cameraSphere.SetSphere(1.5f);
+        cameraSphere.SetSphere(CAMERA_RADIUS);
 
         /*
         cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));
