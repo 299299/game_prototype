@@ -187,6 +187,7 @@ class ThirdPersonCameraController : CameraController
         float pitch = v.y;
         float yaw = v.x;
         pitch = Clamp(pitch, -20.0f, 35.0f);
+        gInput.m_rightStickY = pitch;
 
         Quaternion q(pitch, yaw, 0);
         from = q * Vector3(0, 0, -cameraDistance) + target_pos;
