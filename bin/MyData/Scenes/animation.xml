@@ -4,11 +4,11 @@
 	<attribute name="Time Scale" value="1" />
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
-	<attribute name="Elapsed Time" value="9.57799" />
-	<attribute name="Next Replicated Node ID" value="58" />
-	<attribute name="Next Replicated Component ID" value="69" />
-	<attribute name="Next Local Node ID" value="16780258" />
-	<attribute name="Next Local Component ID" value="16778161" />
+	<attribute name="Elapsed Time" value="11.9094" />
+	<attribute name="Next Replicated Node ID" value="75" />
+	<attribute name="Next Replicated Component ID" value="86" />
+	<attribute name="Next Local Node ID" value="16780259" />
+	<attribute name="Next Local Component ID" value="16778173" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -60,220 +60,11 @@
 			<attribute name="Material" value="Material;" />
 		</component>
 	</node>
-	<node id="22">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Run_Rail_Climb_Up_256" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-50 3.25 9.20824" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 6.5 0.5" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="39">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="23">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Run_Climb_Up_384_Hang" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="21.94 4.875 9.90564" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 9.75 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="40">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="24">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Run_Cimb_Up_128" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="8.85103 1.625 9.30051" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 3.25 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="41">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="26">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Stand_Climb_Over_128" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="14.3555 1.625 1.89751" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="5 3.25 0.25" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="43">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="27">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Stand_Cimb_Up_128" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-21.2579 1.625 3.75" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 3.25 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="44">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="28">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Stand_Climb_Up_256_Hang" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="100 3.25 2.43629" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 6.5 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="45">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="29">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Rail_Climb_Up_384" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-30 4.875 0.412472" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 9.75 0.5" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="46">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="30">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Rail_Cimb_Up_128" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="11 1.625 -0.0394331" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 3.25 0.5" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="47">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="31">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Run_Climb_Up_256_Hang" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="100 3.25 9.88079" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 6.5 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="48">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="34">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Stand_Climb_Up_384_Hang" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-100 4.875 2.29521" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 9.75 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="51">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="35">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Stand_Climb_Up_256" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="11 3.25 2.43629" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 6.5 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="52">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="36">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Stand_Climb_Up_384" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-30 4.875 1.4396" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 9.75 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="53">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="37">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Run_Climb_Up_256" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="40 3.25 10.0218" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 6.5 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="54">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="38">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Run_Climb_Up_384" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-19.1559 4.875 10.112" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 9.75 2" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="55">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-			<attribute name="Cast Shadows" value="true" />
-		</component>
-	</node>
-	<node id="39">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="BOX_Hang_Left" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-12.195 2.75663 3.3544" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="2 1 4" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="56">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
-		</component>
-	</node>
 	<node id="41">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="max" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="0 0 0" />
+		<attribute name="Position" value="5.63434 0 0" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
@@ -1682,7 +1473,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="dog" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="0 0 10" />
+		<attribute name="Position" value="0 0 32.7956" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
@@ -2448,7 +2239,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="SK_Furn_StudentChair01" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="0.18522 1.37055 -5.34006" />
+		<attribute name="Position" value="0.18522 0 -9.81292" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
@@ -2526,7 +2317,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_BookCase01" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-1.94956 0.0712563 -4.56333" />
+		<attribute name="Position" value="-12.8267 0.0712563 -4.56333" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
@@ -2540,13 +2331,237 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_BookCase02" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-8.80949 1.26368 -8.5199" />
+		<attribute name="Position" value="-12.4366 1.26368 -8.5199" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="68">
 			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_BookCase02/ST_Furn_BookCase02.mdl" />
 			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_BookCase01/material_0.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="58">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_CarSeat01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="15.42 0 0" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="69">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_CarSeat01/ST_Furn_CarSeat01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_CarSeat01/MT_Furn_CarSeat01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="59">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Chair01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="9.30087 0 -4.66259" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="70">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_Chair01/ST_Furn_Chair01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_Chair01/MT_Furn_Chair01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="61">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Chair02" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="11.9557 0 -3.91307" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="72">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_Chair02/ST_Furn_Chair02.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_Chair01/MT_Furn_Chair01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="62">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Chair03" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="9.28404 0 -2.15569" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="73">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_Chair03/ST_Furn_Chair03.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_Chair03/MT_Furn_Chair03.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="63">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChairProOffice01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="7.85658 0 -2.59612" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="74">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_ChairProOffice01/ST_Furn_ChairProOffice01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_ChairProOffice01/MT_Furn_ChairProOffice01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="64">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChairWood01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="7.37549 0 3.345" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="75">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_ChairWood01/ST_Furn_ChairWood01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_ChairWood01/material_0.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="65">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChalkBoardOld_A" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="23.1537 0 11.7735" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="76">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_ChalkBoardOld_A/ST_Furn_ChalkBoardOld_A.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_ChalkBoardOld_A/material_0.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="66">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChestDrawer01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="18.6271 -1.09243 -1.051" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="77">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_ChestDrawer01/ST_Furn_ChestDrawer01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_ChestDrawer01/MT_Furn_ChestDrawer01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="67">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChestDrawer01Hole" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="18.9735 0.22738 6.94149" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="78">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_ChestDrawer01Hole/ST_Furn_ChestDrawer01Hole.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_ChestDrawer01/MT_Furn_ChestDrawer01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="68">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChestDrawer01HoleDr" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="16.6 0.736619 8.19913" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="79">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_ChestDrawer01HoleDr/ST_Furn_ChestDrawer01HoleDr.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_ChestDrawer01/MT_Furn_ChestDrawer01.xml;Objects/LIS/ST_Furn_ChestDrawer01/MT_Furn_ChestDrawer01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="69">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChestDrawers02" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="12.2708 0 8.4655" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="80">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_ChestDrawers02/ST_Furn_ChestDrawers02.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_ChestDrawers02/MT_Furn_ChestDrawers02.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="70">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_CoatRack01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="12.3111 1.25614 9.09807" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="81">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_CoatRack01/ST_Furn_CoatRack01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_CoatRack01/material_0.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="71">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_CoffeeTable01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="9.41318 1.25614 12.1495" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="82">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_CoffeeTable01/ST_Furn_CoffeeTable01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_CoffeeTable01/material_0.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="72">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_CoffeeTable03" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-8.82343 0 12.1979" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="83">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_CoffeeTable03/ST_Furn_CoffeeTable03.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_CoffeeTable03/material_0.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="73">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_CondomsDist01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-10.1068 -0.834811 12.1301" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="84">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_CondomsDist01/ST_Furn_CondomsDist01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_CondomsDist01/MT_Furn_CondomsDist01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="74">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Cooker01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-9.06428 -3.04072 21.7012" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="85">
+			<attribute name="Model" value="Model;Objects/LIS/ST_Furn_Cooker01/ST_Furn_Cooker01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/ST_Furn_Cooker01/MT_Furn_Cooker01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
