@@ -89,83 +89,153 @@ void ProcessAnimations()
 
 void ProcessObjects()
 {
-    Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.*", SCAN_FILES, true);
+    Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.FBX", SCAN_FILES, true);
     for (uint i=0; i<objects.length; ++i)
     {
         String object = objects[i];
         Print("Found a object " + object);
-        String outMdlName = DoProcess(object, "Objects/", MODEL_ARGS, false);
 
-        String oname = OUT_DIR + "Objects/" + object;
+        String outFolder = OUT_DIR + "Objects/";
+        String oname = outFolder + object;
         String objectFile = oname.Substring(0, oname.FindLast('/'));
-        String objectResourceFolder = "Objects/" + object.Substring(0, object.FindLast('/') + 1);
-        Print("objectResourceFolder=" + objectResourceFolder);
-
-        int index = objectFile.FindLast('/') + 1;
-        String objectName = objectFile.Substring(index, objectFile.length - index);
+        String objectName = GetFileName(object);
         objectFile += "/" + objectName + ".xml";
-        Print("ObjectFile: " + objectFile);
 
-        if (!fileSystem.FileExists(objectFile))
+        if (fileSystem.FileExists(objectFile))
         {
-            Node@ node = processScene.CreateChild(objectName);
-            int i = outMdlName.Find('/') + 1;
-            String modelName = outMdlName.Substring(i, outMdlName.length - i);
-            Model@ model = cache.GetResource("Model", modelName);
-            if (model is null)
-            {
-                Print("model " + modelName + " load failed!!");
-                return;
-            }
+            Print(objectFile + " exist.");
+            continue;
+        }
 
-            String matFile = outMdlName;
-            matFile.Replace(".mdl", ".txt");
-            Print("matFile=" + matFile);
+        String outMdlName = DoProcess(object, "Objects/", MODEL_ARGS, false);
+        String subFolder = object.Substring(0, object.FindLast('/') + 1);
+        String objectResourceFolder = "Objects/" + subFolder;
+        String assetFolder = ASSET_DIR + "Objects/" + subFolder;
+        Print("ObjectFile: " + objectFile + " objectName: " + objectName + " objectResourceFolder: " + objectResourceFolder);
 
-            Array<String> matList;
-            File file;
-            if (file.Open(matFile, FILE_READ))
+        Node@ node = processScene.CreateChild(objectName);
+        int i = outMdlName.Find('/') + 1;
+        String modelName = outMdlName.Substring(i, outMdlName.length - i);
+        Model@ model = cache.GetResource("Model", modelName);
+        if (model is null)
+        {
+            Print("model " + modelName + " load failed!!");
+            return;
+        }
+
+        String matFile = outMdlName;
+        matFile.Replace(".mdl", ".txt");
+        Print("matFile=" + matFile);
+
+        Array<String> matList;
+        File file;
+        if (file.Open(matFile, FILE_READ))
+        {
+            while (!file.eof)
             {
-                while (!file.eof)
+                String line = file.ReadLine();
+                if (!line.empty)
                 {
-                    String line = file.ReadLine();
-                    if (!line.empty)
-                    {
-                        Print(line);
-                        matList.Push(line);
-                    }
+                    Print(line);
+                    matList.Push(line);
                 }
             }
+        }
 
-            if (model.skeleton.numBones > 0)
+        if (model.skeleton.numBones > 0)
+        {
+            Node@ renderNode = node.CreateChild("RenderNode");
+            AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
+            renderNode.worldRotation = Quaternion(0, 180, 0);
+            am.model = model;
+            am.castShadows = true;
+
+            for (uint i=0; i<matList.length; ++i)
             {
-                Node@ renderNode = node.CreateChild("RenderNode");
-                AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
-                renderNode.worldRotation = Quaternion(0, 180, 0);
-                am.model = model;
-                am.castShadows = true;
-
-                for (uint i=0; i<matList.length; ++i)
-                {
-                    am.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
-                }
+                am.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
             }
-            else
+        }
+        else
+        {
+            StaticModel@ sm = node.CreateComponent("StaticModel");
+            sm.model = model;
+            sm.castShadows = true;
+
+            for (uint i=0; i<matList.length; ++i)
             {
-                StaticModel@ sm = node.CreateComponent("StaticModel");
-                sm.model = model;
-                sm.castShadows = true;
+                sm.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
 
-                for (uint i=0; i<matList.length; ++i)
-                {
-                    sm.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
-                }
+                String matTxt = matList[i];
+                matTxt.Replace("xml", "mat");
+                ReadMaterial(assetFolder + matTxt, sm.materials[i]);
             }
+        }
 
-            File outFile(objectFile, FILE_WRITE);
-            node.SaveXML(outFile);
+        File outFile(objectFile, FILE_WRITE);
+        node.SaveXML(outFile);
+    }
+}
+
+void ReadMaterial(const String&in matTxt, Material@ m)
+{
+    File file;
+    if (!file.Open(matTxt, FILE_READ))
+    {
+        Print("not found " + matTxt);
+        return;
+    }
+
+    if (m.textures[TU_DIFFUSE] !is null)
+        return;
+
+    String diffuse, normal, spec;
+    while (!file.eof)
+    {
+        String line = file.ReadLine();
+        if (!line.empty)
+        {
+            Print(line);
+
+            if (line.StartsWith("Diffuse="))
+            {
+                diffuse = line;
+                diffuse.Replace("Diffuse=", "");
+            }
+            else if (line.StartsWith("Normal="))
+            {
+                normal = line;
+                normal.Replace("Normal=", "");
+            }
+            else if (line.StartsWith("Specular="))
+            {
+                spec = line;
+                spec.Replace("Specular=", "");
+            }
         }
     }
+
+    String tech = "Techniques/Diff.xml";
+    if (!diffuse.empty && !normal.empty && !spec.empty)
+        tech = "Techniques/DiffNormalSpec.xml";
+    else if (!diffuse.empty && !normal.empty)
+        tech = "Techniques/DiffNormal.xml";
+
+    m.SetTechnique(0, cache.GetResource("Technique", tech));
+
+    String texFolder = "BIG_Textures/";
+    if (!diffuse.empty)
+        m.textures[TU_DIFFUSE] = cache.GetResource("Texture2D", texFolder + diffuse + ".tga");
+    if (!normal.empty)
+        m.textures[TU_NORMAL] = cache.GetResource("Texture2D", texFolder + normal + ".tga");
+    if (!spec.empty)
+        m.textures[TU_SPECULAR] = cache.GetResource("Texture2D", texFolder + spec + ".tga");
+
+    Variant diffColor = Vector4(1, 1, 1, 1);
+    m.shaderParameters["MatDiffColor"] = diffColor;
+
+    String fullName = cache.GetResourceFileName(m.name);
+    File saveFile(fullName, FILE_WRITE);
+    m.Save(saveFile);
 }
 
 void PostProcess()
