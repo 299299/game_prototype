@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="59">
+<node id="116">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_KitchenElementsTop01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="0 0 0" />
+	<attribute name="Position" value="-17.3645 -2.53976 21.0502" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="57">
+	<component type="StaticModel" id="127">
 		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_KitchenElementsTop01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/material_0.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/MT_Furn_KitchenElements.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

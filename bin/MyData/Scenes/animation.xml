@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="11.9094" />
-	<attribute name="Next Replicated Node ID" value="75" />
-	<attribute name="Next Replicated Component ID" value="86" />
-	<attribute name="Next Local Node ID" value="16780260" />
-	<attribute name="Next Local Component ID" value="16778185" />
+	<attribute name="Next Replicated Node ID" value="101" />
+	<attribute name="Next Replicated Component ID" value="112" />
+	<attribute name="Next Local Node ID" value="16780261" />
+	<attribute name="Next Local Component ID" value="16778197" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
