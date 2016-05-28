@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="86">
+<node id="226">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_OldDresserDrawer01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-15.8412 0.14102 18.9115" />
+	<attribute name="Position" value="13.765 -5.94724 34.7902" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="97">
+	<component type="StaticModel" id="237">
 		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_OldDresserDrawer01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/MT_Furn_OldDresser.xml" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_OldDresser.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>
