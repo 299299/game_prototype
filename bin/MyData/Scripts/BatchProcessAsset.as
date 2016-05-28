@@ -130,8 +130,8 @@ void ProcessObjects()
 
         String texFolder = "BIG_Textures/";
         String tmp = objectResourceFolder.Substring(0, objectResourceFolder.length - 1);
-        index = objectResourceFolder.FindLast('/') + 1;
-        tmp = objectResourceFolder.Substring(index, objectResourceFolder.length - index);
+        index = tmp.FindLast('/') + 1;
+        tmp = tmp.Substring(index, tmp.length - index);
         texFolder += tmp + "/";
 
         Print("texFolder=" + texFolder);
@@ -173,10 +173,6 @@ void ProcessObjects()
             for (uint i=0; i<matList.length; ++i)
             {
                 sm.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
-
-                String matTxt = matList[i];
-                matTxt.Replace("xml", "mat");
-                ReadMaterial(assetFolder + matTxt, sm.materials[i], texFolder);
             }
         }
 
