@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="149">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Ceil_TileRoof01" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="-21.2804 27.268 6.35158" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="160">
+		<attribute name="Model" value="Model;Objects/LIS/EN_Ceilings/ST_Ceil_TileRoof01.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/EN_Ceilings/MT_Ceil_TileRoof.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>

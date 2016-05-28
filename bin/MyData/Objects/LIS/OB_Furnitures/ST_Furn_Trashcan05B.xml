@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="166">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Furn_Trashcan05B" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="20.1422 0.745841 44.4492" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="177">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_Trashcan05B.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_Trashcan05.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>

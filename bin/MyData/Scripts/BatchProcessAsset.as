@@ -115,8 +115,8 @@ void ProcessObjects()
         Print("ObjectFile: " + objectFile + " objectName: " + objectName + " objectResourceFolder: " + objectResourceFolder);
 
         Node@ node = processScene.CreateChild(objectName);
-        int i = outMdlName.Find('/') + 1;
-        String modelName = outMdlName.Substring(i, outMdlName.length - i);
+        int index = outMdlName.Find('/') + 1;
+        String modelName = outMdlName.Substring(index, outMdlName.length - index);
         Model@ model = cache.GetResource("Model", modelName);
         if (model is null)
         {
@@ -127,6 +127,14 @@ void ProcessObjects()
         String matFile = outMdlName;
         matFile.Replace(".mdl", ".txt");
         Print("matFile=" + matFile);
+
+        String texFolder = "BIG_Textures/";
+        String tmp = objectResourceFolder.Substring(0, objectResourceFolder.length - 1);
+        index = objectResourceFolder.FindLast('/') + 1;
+        tmp = objectResourceFolder.Substring(index, objectResourceFolder.length - index);
+        texFolder += tmp + "/";
+
+        Print("texFolder=" + texFolder);
 
         Array<String> matList;
         File file;
@@ -168,7 +176,7 @@ void ProcessObjects()
 
                 String matTxt = matList[i];
                 matTxt.Replace("xml", "mat");
-                ReadMaterial(assetFolder + matTxt, sm.materials[i]);
+                ReadMaterial(assetFolder + matTxt, sm.materials[i], texFolder);
             }
         }
 
@@ -177,7 +185,7 @@ void ProcessObjects()
     }
 }
 
-void ReadMaterial(const String&in matTxt, Material@ m)
+void ReadMaterial(const String&in matTxt, Material@ m, const String& texFolder)
 {
     File file;
     if (!file.Open(matTxt, FILE_READ))
@@ -223,7 +231,6 @@ void ReadMaterial(const String&in matTxt, Material@ m)
 
     m.SetTechnique(0, cache.GetResource("Technique", tech));
 
-    String texFolder = "BIG_Textures/";
     if (!diffuse.empty)
         m.textures[TU_DIFFUSE] = cache.GetResource("Texture2D", texFolder + diffuse + ".tga");
     if (!normal.empty)

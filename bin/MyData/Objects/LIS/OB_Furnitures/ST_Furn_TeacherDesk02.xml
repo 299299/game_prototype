@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="185">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Furn_TeacherDesk02" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="4.16335 3.63624 25.7497" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="196">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_TeacherDesk02.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_TeacherDesk.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>
