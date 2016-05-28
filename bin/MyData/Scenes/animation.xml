@@ -5,8 +5,8 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="11.9094" />
-	<attribute name="Next Replicated Node ID" value="109" />
-	<attribute name="Next Replicated Component ID" value="120" />
+	<attribute name="Next Replicated Node ID" value="134" />
+	<attribute name="Next Replicated Component ID" value="145" />
 	<attribute name="Next Local Node ID" value="16780262" />
 	<attribute name="Next Local Component ID" value="16778209" />
 	<attribute name="Variables" />
@@ -2237,17 +2237,17 @@
 			</node>
 		</node>
 	</node>
-	<node id="108">
+	<node id="133">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="ST_Furn_Sofa04" />
+		<attribute name="Name" value="ST_Build_House03B" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="15.5863 0.162317 26.503" />
+		<attribute name="Position" value="1.51143 9.09992 44.513" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="119">
-			<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures02/ST_Furn_Sofa04.mdl" />
-			<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures02/MT_Furn_Sofa04.xml" />
+		<component type="StaticModel" id="144">
+			<attribute name="Model" value="Model;Objects/LIS/EN_Buildings/ST_Build_House03B.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/EN_Buildings/MT_WallWood.xml;Objects/LIS/EN_Buildings/MT_WallWood.xml;Objects/LIS/EN_Buildings/MT_WallWood.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
