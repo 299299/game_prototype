@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="113">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Furn_FileCabinet01B_Door01" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="26.3165 -3.41551 55.505" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="124">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures02/ST_Furn_FileCabinet01B_Door01.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures02/MT_Furn_FileCabinet.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>

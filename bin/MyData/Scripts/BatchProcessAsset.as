@@ -106,6 +106,9 @@ void ProcessObjects()
         }
 
         String outMdlName = DoProcess(object, "Objects/", "model", MODEL_ARGS);
+        if (outMdlName.empty)
+            continue;
+
         String subFolder = object.Substring(0, object.FindLast('/') + 1);
         String objectResourceFolder = "Objects/" + subFolder;
         String assetFolder = ASSET_DIR + "Objects/" + subFolder;
