@@ -702,6 +702,7 @@ bool enabled;
 /* readonly */
 bool enabledEffective;
 FaceCameraMode faceCameraMode;
+bool fixedScreenSize;
 /* readonly */
 uint id;
 /* readonly */
@@ -7673,6 +7674,7 @@ float dampingForce;
 Vector3 emitterSize;
 EmitterType emitterType;
 FaceCameraMode faceCameraMode;
+bool fixedScreenSize;
 float inactiveTime;
 Material material;
 Vector3 maxDirection;
@@ -7807,6 +7809,7 @@ bool enabled;
 /* readonly */
 bool enabledEffective;
 FaceCameraMode faceCameraMode;
+bool fixedScreenSize;
 /* readonly */
 uint id;
 /* readonly */
@@ -11653,6 +11656,7 @@ bool enabled;
 /* readonly */
 bool enabledEffective;
 FaceCameraMode faceCameraMode;
+bool fixedScreenSize;
 /* readonly */
 Font font;
 /* readonly */
@@ -14126,6 +14130,7 @@ enum Orientation2D
 O_ORTHOGONAL,
 O_ISOMETRIC,
 O_STAGGERED,
+O_HEXAGONAL,
 };
 
 enum PassLightingMode
@@ -14603,7 +14608,7 @@ int KEY_DELETE;
 int KEY_DOWN;
 int KEY_E;
 int KEY_END;
-int KEY_ESC;
+int KEY_ESCAPE;
 int KEY_F;
 int KEY_F1;
 int KEY_F10;
