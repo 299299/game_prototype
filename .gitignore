@@ -83,7 +83,6 @@ configure*
 Thumbs.db
 .build
 
-
 /bin/Urho3DPlayer
 /bin/tool/AssetImporter
 /bin/tool/ScriptCompiler
@@ -99,10 +98,8 @@ Thumbs.db
 /bin/Release.zip
 /bin/Editor
 
-/bin/Urho3DPlayer.exe
-/bin/tool/AssetImporter.exe
-/bin/tool/ScriptCompiler.exe
 /bin/Urho3D.dll
 /bin/tool/Urho3D.dll
 /bin/MyData/BIG_Textures
 
+*.pdb
