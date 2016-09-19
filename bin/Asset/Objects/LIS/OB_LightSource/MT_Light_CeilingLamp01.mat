@@ -1,0 +1,4 @@
+Diffuse=TX_Light_CeilingLamp01_D
+Normal=TX_Light_CeilingLamp01_N
+Specular=TX_Shaders_PlasticLight_S
+Emissive=TX_Light_CordBulb01_RGB
