@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="23">
+<node id="150">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Doors_Interior03_Lib02" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="0 0 0" />
+	<attribute name="Position" value="22.56 1.73957 17.1427" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="16">
+	<component type="StaticModel" id="159">
 		<attribute name="Model" value="Model;Objects/LIS/EN_Doors/ST_Doors_Interior03_Lib02.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Doors/material_0.xml" />
+		<attribute name="Material" value="Material;Objects/LIS/EN_Doors/MT_Doors_Interior03.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>
