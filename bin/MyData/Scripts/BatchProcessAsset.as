@@ -6,8 +6,8 @@
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
-const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-ns", "-nt", "-mb", "75"};//"-nm",
-const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75"};
+const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-ns", "-nt", "-mb", "75", "-np"};//"-nm",
+const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75", "-np"};
 String exportFolder;
 Scene@ processScene;
 
@@ -91,7 +91,7 @@ void ProcessObjects()
     for (uint i=0; i<objects.length; ++i)
     {
         String object = objects[i];
-        Print("Found a object " + object);
+        //Print("Found a object " + object);
 
         String outFolder = OUT_DIR + "Objects/";
         String oname = outFolder + object;
@@ -101,7 +101,7 @@ void ProcessObjects()
 
         if (fileSystem.FileExists(objectFile))
         {
-            Print(objectFile + " exist.");
+            //Print(objectFile + " exist.");
             continue;
         }
 
@@ -190,7 +190,7 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
         return;
     }
 
-    String diffuse, normal, spec;
+    String diffuse, normal, spec, emissive;
     while (!file.eof)
     {
         String line = file.ReadLine();
@@ -213,11 +213,18 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
                 spec = line;
                 spec.Replace("Specular=", "");
             }
+            else if (line.StartsWith("Emissive="))
+            {
+                emissive = line;
+                emissive.Replace("Emissive=", "");
+            }
         }
     }
 
     String tech = "Techniques/Diff.xml";
-    if (!diffuse.empty && !normal.empty && !spec.empty)
+    if (!diffuse.empty && !normal.empty && !spec.empty && !emissive.empty)
+        tech = "Techniques/DiffNormalSpecEmissive.xml";
+    else if (!diffuse.empty && !normal.empty && !spec.empty)
         tech = "Techniques/DiffNormalSpec.xml";
     else if (!diffuse.empty && !normal.empty)
         tech = "Techniques/DiffNormal.xml";
@@ -227,11 +234,29 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
     m.name = GetFileName(matTxt);
 
     if (!diffuse.empty)
+    {
         m.textures[TU_DIFFUSE] = cache.GetResource("Texture2D", texFolder + diffuse + ".tga");
+        if (m.textures[TU_DIFFUSE] is null)
+            m.textures[TU_DIFFUSE] = cache.GetResource("Texture2D", "BIG_Textures/common/" + diffuse + ".tga");
+    }
     if (!normal.empty)
+    {
         m.textures[TU_NORMAL] = cache.GetResource("Texture2D", texFolder + normal + ".tga");
+        if (m.textures[TU_NORMAL] is null)
+            m.textures[TU_NORMAL] = cache.GetResource("Texture2D", "BIG_Textures/common/" + normal + ".tga");
+    }
     if (!spec.empty)
+    {
         m.textures[TU_SPECULAR] = cache.GetResource("Texture2D", texFolder + spec + ".tga");
+        if (m.textures[TU_SPECULAR] is null)
+            m.textures[TU_SPECULAR] = cache.GetResource("Texture2D", "BIG_Textures/common/" + spec + ".tga");
+    }
+    if (!emissive.empty)
+    {
+        m.textures[TU_EMISSIVE] = cache.GetResource("Texture2D", texFolder + emissive + ".tga");
+        if (m.textures[TU_EMISSIVE] is null)
+            m.textures[TU_EMISSIVE] = cache.GetResource("Texture2D", "BIG_Textures/common/" + emissive + ".tga");
+    }
 
     Variant diffColor = Vector4(1, 1, 1, 1);
     m.shaderParameters["MatDiffColor"] = diffColor;
@@ -246,19 +271,18 @@ void ProcessMatFiles()
     for (uint i=0; i<matFiles.length; ++i)
     {
         String matFile = matFiles[i];
-        Print("Found a mat file " + matFile);
+        //Print("Found a mat file " + matFile);
 
         String outFolder = OUT_DIR + "Objects/";
         String temp = matFile.Substring(0, matFile.FindLast('/'));
         uint index = temp.FindLast("/") + 1;
         temp = temp.Substring(index, temp.length - index);
-        // Print(temp);
 
         String matName = GetFileName(matFile);
         String outMatFile = outFolder + "LIS/" + temp + "/" + matName + ".xml";
         if (fileSystem.FileExists(outMatFile))
         {
-            Print(outMatFile + " exist.");
+            //Print(outMatFile + " exist.");
             continue;
         }
 

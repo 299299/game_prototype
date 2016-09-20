@@ -411,7 +411,7 @@ class TestGameState : GameState
             tmpPlayerNode.Remove();
         }
 
-        Node@ playerNode = CreateCharacter("player", "LIS/max/max.xml", "Max", playerPos, playerRot);
+        Node@ playerNode = CreateCharacter("player", "LIS/max/CH_S_Max01.xml", "Max", playerPos, playerRot);
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         playerId = playerNode.id;
 
