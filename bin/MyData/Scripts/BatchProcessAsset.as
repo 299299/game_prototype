@@ -181,7 +181,7 @@ void ProcessObjects()
     }
 }
 
-void ReadMaterial(const String&in matTxt, Material@ m, const String& texFolder)
+void ProcessMaterial(const String&in matTxt, const String&in matName, const String& texFolder)
 {
     File file;
     if (!file.Open(matTxt, FILE_READ))
@@ -189,9 +189,6 @@ void ReadMaterial(const String&in matTxt, Material@ m, const String& texFolder)
         Print("not found " + matTxt);
         return;
     }
-
-    if (m.textures[TU_DIFFUSE] !is null)
-        return;
 
     String diffuse, normal, spec;
     while (!file.eof)
@@ -225,6 +222,7 @@ void ReadMaterial(const String&in matTxt, Material@ m, const String& texFolder)
     else if (!diffuse.empty && !normal.empty)
         tech = "Techniques/DiffNormal.xml";
 
+    Material@ m = Material();
     m.SetTechnique(0, cache.GetResource("Technique", tech));
 
     if (!diffuse.empty)
@@ -242,6 +240,34 @@ void ReadMaterial(const String&in matTxt, Material@ m, const String& texFolder)
     m.Save(saveFile);
 }
 
+void ProcessMatFiles()
+{
+    Array<String> matFiles = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.mat", SCAN_FILES, true);
+    for (uint i=0; i<matFiles.length; ++i)
+    {
+        String matFile = matFiles[i];
+        Print("Found a mat file " + matFile);
+
+        String outFolder = OUT_DIR + "Objects/";
+        String oname = outFolder + matFile;
+        String outMatFile = oname.Substring(0, oname.FindLast('/'));
+        String matName = GetFileName(outMatFile);
+        matFile += "/" + matName + ".xml";
+
+        if (fileSystem.FileExists(outMatFile))
+        {
+            Print(outMatFile + " exist.");
+            continue;
+        }
+
+        String subFolder = outMatFile.Substring(0, outMatFile.FindLast('/') + 1);
+        String texFolder = "BIG_Textures/" + subFolder;
+        Print("MatFile: " + matFile + " matName: " + matName + " texFolder: " + texFolder);
+
+        // ProcessMatFile(matFile, matName, texFolder);
+    }
+}
+
 void PostProcess()
 {
     if (processScene !is null)
@@ -251,11 +277,13 @@ void PostProcess()
 
 void Start()
 {
+    Print("Start Processing .....");
     uint startTime = time.systemTime;
     PreProcess();
     ProcessModels();
     ProcessObjects();
     ProcessAnimations();
+    ProcessMatFiles();
     PostProcess();
     engine.Exit();
     uint timeSec = (time.systemTime - startTime) / 1000;
