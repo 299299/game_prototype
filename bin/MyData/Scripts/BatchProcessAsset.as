@@ -159,9 +159,9 @@ void ProcessObjects()
             am.model = model;
             am.castShadows = true;
 
-            for (uint i=0; i<matList.length; ++i)
+            for (uint j=0; j<matList.length; ++j)
             {
-                am.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
+                am.materials[j] = cache.GetResource("Material", objectResourceFolder + matList[j]);
             }
         }
         else
@@ -181,7 +181,7 @@ void ProcessObjects()
     }
 }
 
-void ProcessMaterial(const String&in matTxt, const String&in matName, const String& texFolder)
+void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const String& texFolder)
 {
     File file;
     if (!file.Open(matTxt, FILE_READ))
@@ -224,6 +224,7 @@ void ProcessMaterial(const String&in matTxt, const String&in matName, const Stri
 
     Material@ m = Material();
     m.SetTechnique(0, cache.GetResource("Technique", tech));
+    m.name = GetFileName(matTxt);
 
     if (!diffuse.empty)
         m.textures[TU_DIFFUSE] = cache.GetResource("Texture2D", texFolder + diffuse + ".tga");
@@ -235,8 +236,7 @@ void ProcessMaterial(const String&in matTxt, const String&in matName, const Stri
     Variant diffColor = Vector4(1, 1, 1, 1);
     m.shaderParameters["MatDiffColor"] = diffColor;
 
-    String fullName = cache.GetResourceFileName(m.name);
-    File saveFile(fullName, FILE_WRITE);
+    File saveFile(outMatFile, FILE_WRITE);
     m.Save(saveFile);
 }
 
@@ -249,22 +249,22 @@ void ProcessMatFiles()
         Print("Found a mat file " + matFile);
 
         String outFolder = OUT_DIR + "Objects/";
-        String oname = outFolder + matFile;
-        String outMatFile = oname.Substring(0, oname.FindLast('/'));
-        String matName = GetFileName(outMatFile);
-        matFile += "/" + matName + ".xml";
+        String temp = matFile.Substring(0, matFile.FindLast('/'));
+        uint index = temp.FindLast("/") + 1;
+        temp = temp.Substring(index, temp.length - index);
+        // Print(temp);
 
+        String matName = GetFileName(matFile);
+        String outMatFile = outFolder + "LIS/" + temp + "/" + matName + ".xml";
         if (fileSystem.FileExists(outMatFile))
         {
             Print(outMatFile + " exist.");
             continue;
         }
 
-        String subFolder = outMatFile.Substring(0, outMatFile.FindLast('/') + 1);
-        String texFolder = "BIG_Textures/" + subFolder;
-        Print("MatFile: " + matFile + " matName: " + matName + " texFolder: " + texFolder);
-
-        // ProcessMatFile(matFile, matName, texFolder);
+        String texFolder = "BIG_Textures/" + temp + "/";
+        // Print("MatFile: " + matFile + " matName: " + matName + " texFolder: " + texFolder + " outMatFile: " + outMatFile);
+        ProcessMaterial(ASSET_DIR + "Objects/" + matFile, outMatFile, texFolder);
     }
 }
 
