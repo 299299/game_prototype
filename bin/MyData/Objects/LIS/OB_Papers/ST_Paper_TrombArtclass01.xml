@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="320">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Paper_TrombArtclass01" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="37.3357 -46.0685 51.7322" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="311">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Papers/ST_Paper_TrombArtclass01.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Papers/MT_Papers_TrombArtclass01.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>

@@ -10,6 +10,18 @@ const Array<String> MODEL_ARGS = {"-t", "-na", "-cm", "-ct", "-ns", "-nt", "-nm"
 const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75", "-np"};
 String exportFolder;
 Scene@ processScene;
+Array<Material@> materials;
+
+Material@ FindMaterial(const String&in name)
+{
+    for (uint i=0; i<materials.length; ++i)
+    {
+        // Print("name=" + name + " , " + " mat=" + materials[i].name);
+        if (materials[i].name.StartsWith(name))
+            return materials[i];
+    }
+    return null;
+}
 
 void PreProcess()
 {
@@ -124,33 +136,10 @@ void ProcessObjects()
             return;
         }
 
-        /*String matFile = outMdlName;
-        matFile.Replace(".mdl", ".txt");
-        Print("matFile=" + matFile);
-
-        String texFolder = "BIG_Textures/";
-        String tmp = objectResourceFolder.Substring(0, objectResourceFolder.length - 1);
-        index = tmp.FindLast('/') + 1;
-        tmp = tmp.Substring(index, tmp.length - index);
-        texFolder += tmp + "/";
-
-        Print("texFolder=" + texFolder);
-
-        Array<String> matList;
-        File file;
-        if (file.Open(matFile, FILE_READ))
-        {
-            while (!file.eof)
-            {
-                String line = file.ReadLine();
-                if (!line.empty)
-                {
-                    Print(line);
-                    matList.Push(line);
-                }
-            }
-        }
-        */
+        String matName = objectName;
+        matName.Replace("SK_", "MT_");
+        matName.Replace("ST_", "MT_");
+        Material@ m = FindMaterial(matName);
 
         if (model.skeleton.numBones > 0)
         {
@@ -159,22 +148,17 @@ void ProcessObjects()
             renderNode.worldRotation = Quaternion(0, 180, 0);
             am.model = model;
             am.castShadows = true;
+            if (m !is null)
+                am.material =  cache.GetResource("Material", objectResourceFolder + m.name + ".xml");
 
-            /*for (uint j=0; j<matList.length; ++j)
-            {
-                am.materials[j] = cache.GetResource("Material", objectResourceFolder + matList[j]);
-            }*/
         }
         else
         {
             StaticModel@ sm = node.CreateComponent("StaticModel");
             sm.model = model;
             sm.castShadows = true;
-
-            /*for (uint i=0; i<matList.length; ++i)
-            {
-                sm.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
-            }*/
+            if (m !is null)
+                sm.material =  cache.GetResource("Material", objectResourceFolder + m.name + ".xml");
         }
 
         File outFile(objectFile, FILE_WRITE);
@@ -187,7 +171,9 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
     if (!exportFolder.empty)
     {
         if (!matTxt.Contains(exportFolder))
+        {
             return;
+        }
     }
 
     File file;
@@ -268,8 +254,13 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
     Variant diffColor = Vector4(1, 1, 1, 1);
     m.shaderParameters["MatDiffColor"] = diffColor;
 
+    String outFolder = outMatFile.Substring(0, outMatFile.FindLast('/'));
+    fileSystem.CreateDir(outFolder);
+
     File saveFile(outMatFile, FILE_WRITE);
     m.Save(saveFile);
+
+    materials.Push(m);
 }
 
 void ProcessMatFiles()
@@ -308,18 +299,20 @@ void PostProcess()
 
 void Start()
 {
+    Print("*************************************************************************");
     Print("Start Processing .....");
+    Print("*************************************************************************");
     uint startTime = time.systemTime;
     PreProcess();
     ProcessModels();
-    ProcessObjects();
     ProcessAnimations();
     ProcessMatFiles();
+    ProcessObjects();
     PostProcess();
     engine.Exit();
     uint timeSec = (time.systemTime - startTime) / 1000;
     if (timeSec > 60)
         ErrorDialog("BATCH PROCESS", "Time cost = " + String(float(timeSec)/60.0f) + " min");
-    else
-        ErrorDialog("BATCH PROCESS", "Time cost = " + String(timeSec) + " sec");
+    Print("*************************************************************************");
+    Print("*************************************************************************");
 }

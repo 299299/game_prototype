@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<node id="335">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="SK_Papers_DanielSketchBook01" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="40.9461 -54.0784 50.4882" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<node id="336">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="RenderNode" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="0 0 0" />
+		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="AnimatedModel" id="320">
+			<attribute name="Model" value="Model;Objects/LIS/OB_Papers/SK_Papers_DanielSketchBook01.mdl" />
+			<attribute name="Material" value="Material;Objects/LIS/OB_Papers/MT_Paper_DanielSketchBook01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+			<attribute name="Bone Animation Enabled">
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+				<variant type="Bool" value="true" />
+			</attribute>
+			<attribute name="Animation States">
+				<variant type="Int" value="0" />
+			</attribute>
+		</component>
+		<node id="16781034">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="RootNode" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="0 0 -0" />
+			<attribute name="Rotation" value="1 0 0 0" />
+			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Variables" />
+			<node id="16781035">
+				<attribute name="Is Enabled" value="true" />
+				<attribute name="Name" value="Root_$AssimpFbx$_Translation" />
+				<attribute name="Tags" />
+				<attribute name="Position" value="-0.256453 0.025344 0" />
+				<attribute name="Rotation" value="1 0 0 0" />
+				<attribute name="Scale" value="1 1 1" />
+				<attribute name="Variables" />
+				<node id="16781036">
+					<attribute name="Is Enabled" value="true" />
+					<attribute name="Name" value="Root_$AssimpFbx$_PreRotation" />
+					<attribute name="Tags" />
+					<attribute name="Position" value="0 0 -0" />
+					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
+					<attribute name="Scale" value="1 1 1" />
+					<attribute name="Variables" />
+					<node id="16781037">
+						<attribute name="Is Enabled" value="true" />
+						<attribute name="Name" value="Root_$AssimpFbx$_Rotation" />
+						<attribute name="Tags" />
+						<attribute name="Position" value="0 0 -0" />
+						<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
+						<attribute name="Scale" value="1 1 1" />
+						<attribute name="Variables" />
+						<node id="16781038">
+							<attribute name="Is Enabled" value="true" />
+							<attribute name="Name" value="Root_$AssimpFbx$_Scaling" />
+							<attribute name="Tags" />
+							<attribute name="Position" value="0 0 -0" />
+							<attribute name="Rotation" value="1 0 0 0" />
+							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
+							<attribute name="Variables" />
+							<node id="16781039">
+								<attribute name="Is Enabled" value="true" />
+								<attribute name="Name" value="Root" />
+								<attribute name="Tags" />
+								<attribute name="Position" value="0 0 -0" />
+								<attribute name="Rotation" value="1 0 0 0" />
+								<attribute name="Scale" value="1 1 1" />
+								<attribute name="Variables" />
+								<node id="16781040">
+									<attribute name="Is Enabled" value="true" />
+									<attribute name="Name" value="FrontPage" />
+									<attribute name="Tags" />
+									<attribute name="Position" value="15.3072 0 -0" />
+									<attribute name="Rotation" value="1 0 0 0" />
+									<attribute name="Scale" value="1 1 1" />
+									<attribute name="Variables" />
+								</node>
+								<node id="16781041">
+									<attribute name="Is Enabled" value="true" />
+									<attribute name="Name" value="MiddlePage" />
+									<attribute name="Tags" />
+									<attribute name="Position" value="10.1482 0 -0" />
+									<attribute name="Rotation" value="1 0 0 0" />
+									<attribute name="Scale" value="1 1 1" />
+									<attribute name="Variables" />
+								</node>
+								<node id="16781042">
+									<attribute name="Is Enabled" value="true" />
+									<attribute name="Name" value="BackPage" />
+									<attribute name="Tags" />
+									<attribute name="Position" value="4.86339 0 -0" />
+									<attribute name="Rotation" value="1 0 0 0" />
+									<attribute name="Scale" value="1 1 1" />
+									<attribute name="Variables" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</node>
+	</node>
+</node>
