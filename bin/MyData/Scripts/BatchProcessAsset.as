@@ -19,6 +19,8 @@ Material@ FindMaterial(const String&in name)
         // Print("name=" + name + " , " + " mat=" + materials[i].name);
         if (materials[i].name.StartsWith(name))
             return materials[i];
+        if (name.StartsWith(materials[i].name))
+            return materials[i];
     }
     return null;
 }
