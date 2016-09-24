@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="351">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="TX_Sign_DormitoryBathRoom02" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="-29.7957 21.3529 -33.4707" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="335">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Signs/TX_Sign_DormitoryBathRoom02.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Signs/MT_Sign_DormitoryBathRoom01.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>
