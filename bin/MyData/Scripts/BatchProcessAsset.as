@@ -6,7 +6,7 @@
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
-const Array<String> MODEL_ARGS = {"-t", "-na", "-cm", "-ct", "-ns", "-nt", "-mb", "75", "-np"};//"-nm","-l",
+const Array<String> MODEL_ARGS = {"-t", "-na", "-cm", "-ct", "-ns", "-nt", "-nm", "-mb", "75", "-np"};//"-l",
 const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75", "-np"};
 String exportFolder;
 Scene@ processScene;
@@ -124,7 +124,7 @@ void ProcessObjects()
             return;
         }
 
-        String matFile = outMdlName;
+        /*String matFile = outMdlName;
         matFile.Replace(".mdl", ".txt");
         Print("matFile=" + matFile);
 
@@ -150,6 +150,7 @@ void ProcessObjects()
                 }
             }
         }
+        */
 
         if (model.skeleton.numBones > 0)
         {
@@ -159,10 +160,10 @@ void ProcessObjects()
             am.model = model;
             am.castShadows = true;
 
-            for (uint j=0; j<matList.length; ++j)
+            /*for (uint j=0; j<matList.length; ++j)
             {
                 am.materials[j] = cache.GetResource("Material", objectResourceFolder + matList[j]);
-            }
+            }*/
         }
         else
         {
@@ -170,10 +171,10 @@ void ProcessObjects()
             sm.model = model;
             sm.castShadows = true;
 
-            for (uint i=0; i<matList.length; ++i)
+            /*for (uint i=0; i<matList.length; ++i)
             {
                 sm.materials[i] = cache.GetResource("Material", objectResourceFolder + matList[i]);
-            }
+            }*/
         }
 
         File outFile(objectFile, FILE_WRITE);
@@ -183,6 +184,12 @@ void ProcessObjects()
 
 void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const String& texFolder)
 {
+    if (!exportFolder.empty)
+    {
+        if (!matTxt.Contains(exportFolder))
+            return;
+    }
+
     File file;
     if (!file.Open(matTxt, FILE_READ))
     {
