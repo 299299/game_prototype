@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="413">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Post_HalloweenPumpkin01B" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="34.6487 -6.7282 27.0895" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="397">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Posters/ST_Post_HalloweenPumpkin01B.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Posters/MT_Post_Halloween01.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>

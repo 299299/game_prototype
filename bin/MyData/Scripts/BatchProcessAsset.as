@@ -143,6 +143,12 @@ void ProcessObjects()
         matName.Replace("ST_", "MT_");
         Material@ m = FindMaterial(matName);
 
+        if (m is null)
+        {
+            matName = matName.Substring(0, matName.length - 1);
+            m = FindMaterial(matName);
+        }
+
         if (model.skeleton.numBones > 0)
         {
             Node@ renderNode = node.CreateChild("RenderNode");
@@ -314,7 +320,9 @@ void Start()
     engine.Exit();
     uint timeSec = (time.systemTime - startTime) / 1000;
     if (timeSec > 60)
-        ErrorDialog("BATCH PROCESS", "Time cost = " + String(float(timeSec)/60.0f) + " min");
+        ErrorDialog("BATCH PROCESS", "Time cost = " + String(float(timeSec)/60.0f) + " min.");
+    else
+        Print("BATCH PROCESS  Time cost = " + timeSec + " sec.");
     Print("*************************************************************************");
     Print("*************************************************************************");
 }
