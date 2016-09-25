@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="152">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Acc_ScrewdriverBox01Opened" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="4.36696 -4.28383 7.73632" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="162">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Accessories/ST_Acc_ScrewdriverBox01Opened.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Accessories/MT_Acc_Screwdriver01.xml;Objects/LIS/OB_Accessories/MT_Acc_Screwdriver01.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>

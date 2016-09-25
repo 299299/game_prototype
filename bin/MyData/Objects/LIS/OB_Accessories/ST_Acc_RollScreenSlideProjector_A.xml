@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="155">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Acc_RollScreenSlideProjector_A" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="4.36696 -3.90251 7.87541" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="165">
+		<attribute name="Model" value="Model;Objects/LIS/OB_Accessories/ST_Acc_RollScreenSlideProjector_A.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/OB_Accessories/MT_Acc_RollScreenSlideProjector01.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>
