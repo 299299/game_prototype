@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<node id="144">
+	<attribute name="Is Enabled" value="true" />
+	<attribute name="Name" value="ST_Bckg_FootBallGoals01" />
+	<attribute name="Tags" />
+	<attribute name="Position" value="-21.5716 58.7092 -81.229" />
+	<attribute name="Rotation" value="1 0 0 0" />
+	<attribute name="Scale" value="1 1 1" />
+	<attribute name="Variables" />
+	<component type="StaticModel" id="154">
+		<attribute name="Model" value="Model;Objects/LIS/EN_Background/ST_Bckg_FootBallGoals01.mdl" />
+		<attribute name="Material" value="Material;Objects/LIS/EN_Background/MT_Bckg_FootballBarrier01.xml" />
+		<attribute name="Cast Shadows" value="true" />
+	</component>
+</node>
