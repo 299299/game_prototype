@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="136">
+<node id="881">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Food_WaterBottle01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-9.08924 8.35216 8.02164" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="146">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Foods/ST_Food_WaterBottle01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Foods/MT_Food_WaterBottle01_A.xml" />
+	<component type="StaticModel" id="842">
+		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_WaterBottle01.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/MT_Food_WaterBottle01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

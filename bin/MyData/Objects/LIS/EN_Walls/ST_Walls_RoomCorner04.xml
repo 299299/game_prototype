@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="179">
+<node id="339">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Walls_RoomCorner04" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="1.85319 14.78 42.2881" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="189">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Walls/ST_Walls_RoomCorner04.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Walls/MT_Walls_Brick02.xml;Objects/LIS/EN_Walls/MT_Walls_Brick02.xml" />
+	<component type="StaticModel" id="331">
+		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_RoomCorner04.mdl" />
+		<attribute name="Material" value="Material;;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="417">
+<node id="1257">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Post_CampusABoards03" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="38.7744 -7.59887 40.8305" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="401">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Posters/ST_Post_CampusABoards03.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Posters/MT_Post_CampusABoards01.xml" />
+	<component type="StaticModel" id="1203">
+		<attribute name="Model" value="Model;Models/LIS/OB_Posters/ST_Post_CampusABoards03.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Posters/MT_Post_CampusABoards01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

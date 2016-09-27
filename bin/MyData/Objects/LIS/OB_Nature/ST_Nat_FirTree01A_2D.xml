@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="474">
+<node id="1122">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Nat_FirTree01A_2D" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="13.6277 81.3599 -61.5721" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="458">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Nature/ST_Nat_FirTree01A_2D.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Nature/MT_Nat_2DFirTree01B.xml" />
+	<component type="StaticModel" id="1080">
+		<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_FirTree01A_2D.mdl" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

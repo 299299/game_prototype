@@ -1,2 +1,0 @@
-MT_Furn_VentMachine01.xml
-MT_Win_Glass02_Alpha.xml

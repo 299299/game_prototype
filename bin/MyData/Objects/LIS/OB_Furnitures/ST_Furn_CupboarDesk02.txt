@@ -1,2 +1,0 @@
-MT_Furn_ScienceDesk01.xml
-MT_Furn_ScienceDeskDetails01.xml

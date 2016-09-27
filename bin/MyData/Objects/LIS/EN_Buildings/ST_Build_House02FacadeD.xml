@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="136">
+<node id="61">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Build_House02FacadeD" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-32.2369 24.2942 -39.2204" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="147">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Buildings/ST_Build_House02FacadeD.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Buildings/MT_WallWood.xml;Objects/LIS/EN_Buildings/MT_WallWood.xml;Objects/LIS/EN_Buildings/MT_WallWood.xml" />
+	<component type="StaticModel" id="59">
+		<attribute name="Model" value="Model;Models/LIS/EN_Buildings/ST_Build_House02FacadeD.mdl" />
+		<attribute name="Material" value="Material;;;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

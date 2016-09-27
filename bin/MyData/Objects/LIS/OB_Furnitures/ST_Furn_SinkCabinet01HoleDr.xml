@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="198">
+<node id="1002">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_SinkCabinet01HoleDr" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="11.158 -3.02271 59.1996" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="209">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_SinkCabinet01HoleDr.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_SkinCabinet.xml;Objects/LIS/OB_Furnitures/MT_Furn_SkinCabinet.xml;Objects/LIS/OB_Furnitures/MT_Furn_SkinCabinet.xml;Objects/LIS/OB_Furnitures/MT_Furn_SkinCabinet.xml" />
+	<component type="StaticModel" id="962">
+		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_SinkCabinet01HoleDr.mdl" />
+		<attribute name="Material" value="Material;;;;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -1,2 +1,0 @@
-material_0.xml
-material_1.xml

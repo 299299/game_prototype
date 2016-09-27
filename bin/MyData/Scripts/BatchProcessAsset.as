@@ -10,19 +10,19 @@ const Array<String> MODEL_ARGS = {"-t", "-na", "-cm", "-ct", "-ns", "-nt", "-nm"
 const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75", "-np"};
 String exportFolder;
 Scene@ processScene;
-Array<Material@> materials;
+Array<String> materials;
 
-Material@ FindMaterial(const String&in name)
+String FindMaterial(const String&in name)
 {
     for (uint i=0; i<materials.length; ++i)
     {
         // Print("name=" + name + " , " + " mat=" + materials[i].name);
-        if (materials[i].name.StartsWith(name))
+        if (materials[i].StartsWith(name))
             return materials[i];
-        if (name.StartsWith(materials[i].name))
+        if (name.StartsWith(materials[i]))
             return materials[i];
     }
-    return null;
+    return "";
 }
 
 void PreProcess()
@@ -41,18 +41,24 @@ void PreProcess()
     processScene = Scene();
 }
 
-String DoProcess(const String&in name, const String&in folderName, const String&in command, const Array<String>&in args)
+String DoProcess(const String&in inName, const String&in outName, const String&in command, const Array<String>&in args)
 {
     if (!exportFolder.empty)
     {
-        if (!name.Contains(exportFolder))
+        if (!inName.Contains(exportFolder))
             return "";
     }
 
-    String iname = "Asset/" + folderName + name;
-    uint pos = name.FindLast('.');
-    String oname = OUT_DIR + folderName + name.Substring(0, pos) + ".mdl";
-    pos = oname.FindLast('/');
+    String iname = inName; //"Asset/" + folderName + name;
+    String oname = outName; //OUT_DIR + folderName + GetFileName(name) + ".mdl";
+
+    if (fileSystem.FileExists(oname))
+    {
+        // Print(oname + " exist ...");
+        return oname;
+    }
+
+    uint pos = oname.FindLast('/');
     String outFolder = oname.Substring(0, pos);
     fileSystem.CreateDir(outFolder);
 
@@ -69,12 +75,9 @@ String DoProcess(const String&in name, const String&in folderName, const String&
     for (uint i=0; i<args.length; ++i)
         runArgs.Push(args[i]);
 
-    //for (uint i=0; i<runArgs.length; ++i)
-    //    Print("args[" + i +"]=" + runArgs[i]);
-
     int ret = fileSystem.SystemRun(fileSystem.programDir + "tool/AssetImporter", runArgs);
     if (ret != 0)
-        Print("DoProcess " + name + " ret=" + ret);
+        Print("DoProcess " + inName + " ret=" + ret);
 
     return oname;
 }
@@ -84,8 +87,10 @@ void ProcessModels()
     Array<String> models = fileSystem.ScanDir(ASSET_DIR + "Models", "*.*", SCAN_FILES, true);
     for (uint i=0; i<models.length; ++i)
     {
-        Print("Found a model " + models[i]);
-        DoProcess(models[i], "Models/", "model", MODEL_ARGS);
+        // Print("Found a model " + models[i]);
+        String model = models[i];
+        uint pos = model.FindLast('.');
+        DoProcess(ASSET_DIR + "Models/" + model, OUT_DIR + "Models/" + model.Substring(0, pos) + ".mdl", "model", MODEL_ARGS);
     }
 }
 
@@ -95,17 +100,29 @@ void ProcessAnimations()
     for (uint i=0; i<animations.length; ++i)
     {
         // Print("Found a animation " + animations[i]);
-        DoProcess(animations[i], "Animations/", "anim", ANIMATION_ARGS);
+        String anim = animations[i];
+        uint pos = anim.FindLast('.');
+        DoProcess(ASSET_DIR + "Animations/" + anim, OUT_DIR + "Animations/" + anim.Substring(0, pos) + "_Take 001.ani", "anim", ANIMATION_ARGS);
     }
 }
 
 void ProcessObjects()
 {
+    Array<String> materialFiles = fileSystem.ScanDir(OUT_DIR + "Materials", "*.xml", SCAN_FILES, true);
+    for (uint i=0; i<materialFiles.length; ++i)
+    {
+        Print("Add Material " + materialFiles[i]);
+        materials.Push(GetFileName(materialFiles[i]));
+    }
+
     Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.FBX", SCAN_FILES, true);
     for (uint i=0; i<objects.length; ++i)
     {
         String object = objects[i];
-        //Print("Found a object " + object);
+        uint pos = object.FindLast('.');
+        String outMdlName = DoProcess(ASSET_DIR + "Objects/" + object, OUT_DIR + "Models/" + object.Substring(0, pos) + ".mdl", "model", MODEL_ARGS);
+        if (outMdlName.empty)
+            continue;
 
         String outFolder = OUT_DIR + "Objects/";
         String oname = outFolder + object;
@@ -115,18 +132,15 @@ void ProcessObjects()
 
         if (fileSystem.FileExists(objectFile))
         {
-            //Print(objectFile + " exist.");
+            //Print("fileSystem Exist " + objectFile);
             continue;
         }
 
-        String outMdlName = DoProcess(object, "Objects/", "model", MODEL_ARGS);
-        if (outMdlName.empty)
-            continue;
-
         String subFolder = object.Substring(0, object.FindLast('/') + 1);
-        String objectResourceFolder = "Objects/" + subFolder;
+        String objectFolder = "MyData/Objects/" + subFolder;
         String assetFolder = ASSET_DIR + "Objects/" + subFolder;
-        Print("ObjectFile: " + objectFile + " objectName: " + objectName + " objectResourceFolder: " + objectResourceFolder);
+        Print("ObjectFile: " + objectFile + " objectName: " + objectName + " objectFolder: " + objectFolder);
+        fileSystem.CreateDir(objectFolder);
 
         Node@ node = processScene.CreateChild(objectName);
         int index = outMdlName.Find('/') + 1;
@@ -141,12 +155,17 @@ void ProcessObjects()
         String matName = objectName;
         matName.Replace("SK_", "MT_");
         matName.Replace("ST_", "MT_");
-        Material@ m = FindMaterial(matName);
+        String m = FindMaterial(matName);
 
-        if (m is null)
+        if (m == "")
         {
             matName = matName.Substring(0, matName.length - 1);
             m = FindMaterial(matName);
+        }
+
+        if (m == "")
+        {
+            Print("Warning, objectFile=" + objectFile + " no material find!!");
         }
 
         if (model.skeleton.numBones > 0)
@@ -156,17 +175,14 @@ void ProcessObjects()
             renderNode.worldRotation = Quaternion(0, 180, 0);
             am.model = model;
             am.castShadows = true;
-            if (m !is null)
-                am.material =  cache.GetResource("Material", objectResourceFolder + m.name + ".xml");
-
+            am.material =  cache.GetResource("Material", "Materials/" + subFolder + m + ".xml");
         }
         else
         {
             StaticModel@ sm = node.CreateComponent("StaticModel");
             sm.model = model;
             sm.castShadows = true;
-            if (m !is null)
-                sm.material =  cache.GetResource("Material", objectResourceFolder + m.name + ".xml");
+            sm.material =  cache.GetResource("Material", "Materials/" + subFolder + m + ".xml");
         }
 
         File outFile(objectFile, FILE_WRITE);
@@ -267,8 +283,6 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
 
     File saveFile(outMatFile, FILE_WRITE);
     m.Save(saveFile);
-
-    materials.Push(m);
 }
 
 void ProcessMatFiles()
@@ -279,7 +293,7 @@ void ProcessMatFiles()
         String matFile = matFiles[i];
         //Print("Found a mat file " + matFile);
 
-        String outFolder = OUT_DIR + "Objects/";
+        String outFolder = OUT_DIR + "Materials/";
         String temp = matFile.Substring(0, matFile.FindLast('/'));
         uint index = temp.FindLast("/") + 1;
         temp = temp.Substring(index, temp.length - index);
@@ -288,7 +302,6 @@ void ProcessMatFiles()
         String outMatFile = outFolder + "LIS/" + temp + "/" + matName + ".xml";
         if (fileSystem.FileExists(outMatFile))
         {
-            //Print(outMatFile + " exist.");
             continue;
         }
 

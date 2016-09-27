@@ -1,2 +1,0 @@
-JoinedMaterial_#2.xml
-MT_Furn_Fridge01_Alpha.xml

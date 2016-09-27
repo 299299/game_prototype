@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="140">
+<node id="909">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_DecoTable01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="14.2333 3.28024 48.8846" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="151">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_DecoTable01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_DecoTable.xml" />
+	<component type="StaticModel" id="869">
+		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_DecoTable01.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_DecoTable01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

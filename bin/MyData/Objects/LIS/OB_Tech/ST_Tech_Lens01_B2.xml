@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="273">
+<node id="1515">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Tech_Lens01_B2" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="10.275 -4.26619 8.5833" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="264">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Tech/ST_Tech_Lens01_B2.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Tech/MT_Tech_Lens01.xml" />
+	<component type="StaticModel" id="1451">
+		<attribute name="Model" value="Model;Models/LIS/OB_Tech/ST_Tech_Lens01_B2.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Tech/MT_Tech_Lens01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

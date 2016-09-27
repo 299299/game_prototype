@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="228">
+<node id="196">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Stairs_Medium01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="21.8391 17.7663 40.3766" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="238">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Stairs/ST_Stairs_Medium01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Stairs/MT_Stairs_128x32.xml" />
+	<component type="StaticModel" id="188">
+		<attribute name="Model" value="Model;Models/LIS/EN_Stairs/ST_Stairs_Medium01.mdl" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

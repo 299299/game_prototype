@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="139">
+<node id="878">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Food_Tins15" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="10.3825 0.444054 -30.0438" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="149">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Foods/ST_Food_Tins15.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Foods/MT_Food_TinsLabels.xml" />
+	<component type="StaticModel" id="839">
+		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins15.mdl" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

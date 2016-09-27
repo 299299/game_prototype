@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="97">
+<node id="953">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_Lockers01B" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-4.70914 -1.44556 52.6323" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="108">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_Lockers01B.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_LockersB.xml;Objects/LIS/OB_Furnitures/MT_Furn_LockersB.xml" />
+	<component type="StaticModel" id="913">
+		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Lockers01B.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Lockers01B.xml;Materials/LIS/OB_Furnitures/MT_Furn_Lockers01B.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

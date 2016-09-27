@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="165">
+<node id="1077">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Light_Ground01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-6.78217 -5.90094 48.847" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="176">
-		<attribute name="Model" value="Model;Objects/LIS/OB_LightSource/ST_Light_Ground01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_LightSource/MT_Light_Ground01.xml" />
+	<component type="StaticModel" id="1036">
+		<attribute name="Model" value="Model;Models/LIS/OB_LightSource/ST_Light_Ground01.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/MT_Light_Ground01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="132">
+<node id="919">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_Fridge01_L_Door" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="5.08779 4.36318 46.6172" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="143">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_Fridge01_L_Door.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Objects/LIS/OB_Furnitures/MT_Furn_Fridge01_Alpha.xml" />
+	<component type="StaticModel" id="879">
+		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Fridge01_L_Door.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="138">
+<node id="59">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Build_House01RoofA" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-25.8336 34.6247 -43.6949" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="149">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Buildings/ST_Build_House01RoofA.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Buildings/MT_Roof.xml;Objects/LIS/EN_Buildings/MT_Roof.xml" />
+	<component type="StaticModel" id="57">
+		<attribute name="Model" value="Model;Models/LIS/EN_Buildings/ST_Build_House01RoofA.mdl" />
+		<attribute name="Material" value="Material;;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

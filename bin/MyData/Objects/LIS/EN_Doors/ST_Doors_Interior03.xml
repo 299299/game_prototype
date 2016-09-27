@@ -1,79 +1,15 @@
 <?xml version="1.0"?>
-<node id="138">
+<node id="98">
 	<attribute name="Is Enabled" value="true" />
-	<attribute name="Name" value="" />
+	<attribute name="Name" value="ST_Doors_Interior03" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="10.6468 -0.206014 8.07819" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="AnimatedModel" id="149">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Doors/SK_Doors_Interior03.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Doors/MT_Doors_Interior03.xml;Objects/LIS/EN_Doors/MT_Doors_Interior03.xml" />
-		<attribute name="Bone Animation Enabled">
-			<variant type="Bool" value="true" />
-			<variant type="Bool" value="true" />
-			<variant type="Bool" value="true" />
-			<variant type="Bool" value="true" />
-			<variant type="Bool" value="true" />
-			<variant type="Bool" value="true" />
-		</attribute>
-		<attribute name="Animation States">
-			<variant type="Int" value="0" />
-		</attribute>
+	<component type="StaticModel" id="90">
+		<attribute name="Model" value="Model;Models/LIS/EN_Doors/ST_Doors_Interior03.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Doors/MT_Doors_Interior03.xml;Materials/LIS/EN_Doors/MT_Doors_Interior03.xml" />
+		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<node id="16780287">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="RootNode" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="0 0 -0" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="1 1 1" />
-		<attribute name="Variables" />
-		<node id="16780288">
-			<attribute name="Is Enabled" value="true" />
-			<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_PreRotation" />
-			<attribute name="Tags" />
-			<attribute name="Position" value="0 0 -0" />
-			<attribute name="Rotation" value="0.707107 0.707107 0 0" />
-			<attribute name="Scale" value="1 1 1" />
-			<attribute name="Variables" />
-			<node id="16780289">
-				<attribute name="Is Enabled" value="true" />
-				<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_Rotation" />
-				<attribute name="Tags" />
-				<attribute name="Position" value="0 0 -0" />
-				<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
-				<attribute name="Scale" value="1 1 1" />
-				<attribute name="Variables" />
-				<node id="16780290">
-					<attribute name="Is Enabled" value="true" />
-					<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_Scaling" />
-					<attribute name="Tags" />
-					<attribute name="Position" value="0 0 -0" />
-					<attribute name="Rotation" value="1 0 0 0" />
-					<attribute name="Scale" value="0.0254 0.0254 0.0254" />
-					<attribute name="Variables" />
-					<node id="16780291">
-						<attribute name="Is Enabled" value="true" />
-						<attribute name="Name" value="OB_SK_Door" />
-						<attribute name="Tags" />
-						<attribute name="Position" value="0 0 -0" />
-						<attribute name="Rotation" value="1 0 0 0" />
-						<attribute name="Scale" value="1 1 1" />
-						<attribute name="Variables" />
-						<node id="16780292">
-							<attribute name="Is Enabled" value="true" />
-							<attribute name="Name" value="OB_SK_Handle" />
-							<attribute name="Tags" />
-							<attribute name="Position" value="76 108 1.83915" />
-							<attribute name="Rotation" value="1 0 0 0" />
-							<attribute name="Scale" value="1 1 1" />
-							<attribute name="Variables" />
-						</node>
-					</node>
-				</node>
-			</node>
-		</node>
-	</node>
 </node>

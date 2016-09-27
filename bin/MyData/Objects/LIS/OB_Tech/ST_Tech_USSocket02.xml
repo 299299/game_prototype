@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="295">
+<node id="1538">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Tech_USSocket02" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="20.8815 -6.46162 18.1185" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="286">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Tech/ST_Tech_USSocket02.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Tech/MT_Tech_USSockets01.xml" />
+	<component type="StaticModel" id="1474">
+		<attribute name="Model" value="Model;Models/LIS/OB_Tech/ST_Tech_USSocket02.mdl" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="195">
+<node id="258">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Walls_ColumnWood01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="13.8082 15.4008 98.8591" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="205">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Walls/ST_Walls_ColumnWood01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Walls/MT_Walls_WoodColumns01.xml" />
+	<component type="StaticModel" id="250">
+		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_ColumnWood01.mdl" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

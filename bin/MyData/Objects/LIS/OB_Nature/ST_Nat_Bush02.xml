@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="485">
+<node id="1109">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Nat_Bush02" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-5.69271 2.30383 -9.39006" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="469">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Nature/ST_Nat_Bush02.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Nature/MT_Nat_Bush02_Wind.xml" />
+	<component type="StaticModel" id="1067">
+		<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush02.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush02_Wind.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

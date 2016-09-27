@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="525">
+<node id="743">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Eng_DodgeDart01Windows" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="13.258 -5.2075 9.1096" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="509">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Engines/ST_Eng_DodgeDart01Windows.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Engines/MT_Eng_DodgeDart01Windows.xml" />
+	<component type="StaticModel" id="707">
+		<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_DodgeDart01Windows.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

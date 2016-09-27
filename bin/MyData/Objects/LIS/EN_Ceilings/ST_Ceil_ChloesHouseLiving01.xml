@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="153">
+<node id="74">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Ceil_ChloesHouseLiving01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-3.57362 7.32847 -10.5342" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="164">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Ceilings/ST_Ceil_ChloesHouseLiving01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Ceilings/MT_Ceil_Plaster.xml" />
+	<component type="StaticModel" id="72">
+		<attribute name="Model" value="Model;Models/LIS/EN_Ceilings/ST_Ceil_ChloesHouseLiving01.mdl" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

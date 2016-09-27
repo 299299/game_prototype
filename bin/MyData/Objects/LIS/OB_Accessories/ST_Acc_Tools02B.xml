@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="139">
+<node id="635">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Acc_Tools02B" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="0.632283 -6.47122 9.53815" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="149">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Accessories/ST_Acc_Tools02B.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Accessories/MT_Acc_Tools01.xml" />
+	<component type="StaticModel" id="604">
+		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_Tools02B.mdl" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

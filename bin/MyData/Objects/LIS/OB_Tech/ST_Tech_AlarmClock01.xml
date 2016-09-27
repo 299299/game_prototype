@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="225">
+<node id="1465">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Tech_AlarmClock01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="7.96495 -15.6274 6.34529" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="216">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Tech/ST_Tech_AlarmClock01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Tech/MT_Tech_AlarmClock01.xml" />
+	<component type="StaticModel" id="1401">
+		<attribute name="Model" value="Model;Models/LIS/OB_Tech/ST_Tech_AlarmClock01.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Tech/MT_Tech_AlarmClock01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

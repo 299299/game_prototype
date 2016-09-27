@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="159">
+<node id="884">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_BookCase01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="-2.80076 -2.65692 59.4812" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="170">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_BookCase01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_BookCase.xml" />
+	<component type="StaticModel" id="844">
+		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_BookCase01.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_BookCase01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="188">
+<node id="1012">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_Sunshield" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="3.80098 -0.679443 43.2192" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="199">
-		<attribute name="Model" value="Model;Objects/LIS/OB_Furnitures/ST_Furn_Sunshield.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/OB_Furnitures/MT_Furn_Sunshield.xml" />
+	<component type="StaticModel" id="972">
+		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Sunshield.mdl" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Sunshield.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

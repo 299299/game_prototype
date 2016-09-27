@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<node id="221">
+<node id="194">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Stairs_LargeInterirorLanding01" />
 	<attribute name="Tags" />
-	<attribute name="Position" value="5.15123 27.5133 15.1746" />
+	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="231">
-		<attribute name="Model" value="Model;Objects/LIS/EN_Stairs/ST_Stairs_LargeInterirorLanding01.mdl" />
-		<attribute name="Material" value="Material;Objects/LIS/EN_Stairs/MT_Stairs_LargeInteriror01.xml;Objects/LIS/EN_Stairs/MT_Stairs_LargeInteriror01.xml" />
+	<component type="StaticModel" id="186">
+		<attribute name="Model" value="Model;Models/LIS/EN_Stairs/ST_Stairs_LargeInterirorLanding01.mdl" />
+		<attribute name="Material" value="Material;;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>
