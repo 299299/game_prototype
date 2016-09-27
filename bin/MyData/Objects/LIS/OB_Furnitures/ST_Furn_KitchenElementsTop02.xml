@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="940">
+<node id="938">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_KitchenElementsTop02" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="900">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_KitchenElementsTop02.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_KitchenElements01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

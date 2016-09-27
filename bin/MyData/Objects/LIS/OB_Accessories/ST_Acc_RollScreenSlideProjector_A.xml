@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="601">
+<node id="599">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Acc_RollScreenSlideProjector_A" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="570">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_RollScreenSlideProjector_A.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_RollScreenSlideProjector01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

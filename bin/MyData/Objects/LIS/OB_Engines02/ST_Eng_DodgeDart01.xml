@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="755">
+<node id="753">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Eng_DodgeDart01" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="719">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines02/ST_Eng_DodgeDart01.mdl" />
-		<attribute name="Material" value="Material;;;;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

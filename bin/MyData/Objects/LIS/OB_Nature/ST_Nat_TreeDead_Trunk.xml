@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1154">
+<node id="1152">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Nat_TreeDead_Trunk" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1112">
 		<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_TreeDead_Trunk.mdl" />
-		<attribute name="Material" value="Material;;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Tree01_Wind.xml;Materials/LIS/OB_Nature/MT_Nat_Tree01_Wind.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

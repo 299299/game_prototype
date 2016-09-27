@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="358">
+<node id="356">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Walls_StandardDoorEntrance01" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="350">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_StandardDoorEntrance01.mdl" />
-		<attribute name="Material" value="Material;;;" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Walls/MT_Walls_Standard01.xml;Materials/LIS/EN_Walls/MT_Walls_Standard01.xml;Materials/LIS/EN_Walls/MT_Walls_Standard01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

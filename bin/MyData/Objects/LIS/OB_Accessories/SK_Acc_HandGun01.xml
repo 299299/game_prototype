@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="434">
+<node id="432">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="SK_Acc_HandGun01" />
 	<attribute name="Tags" />
@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<node id="435">
+	<node id="433">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
 		<attribute name="Tags" />
@@ -30,7 +30,7 @@
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>
-		<node id="16777378">
+		<node id="16777281">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RootNode" />
 			<attribute name="Tags" />
@@ -38,7 +38,7 @@
 			<attribute name="Rotation" value="1 0 0 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<node id="16777379">
+			<node id="16777282">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="joint1_$AssimpFbx$_PreRotation" />
 				<attribute name="Tags" />
@@ -46,7 +46,7 @@
 				<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16777380">
+				<node id="16777283">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="joint1_$AssimpFbx$_Rotation" />
 					<attribute name="Tags" />
@@ -54,7 +54,7 @@
 					<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16777381">
+					<node id="16777284">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="joint1_$AssimpFbx$_Scaling" />
 						<attribute name="Tags" />
@@ -62,7 +62,7 @@
 						<attribute name="Rotation" value="1 0 0 0" />
 						<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 						<attribute name="Variables" />
-						<node id="16777382">
+						<node id="16777285">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="joint1" />
 							<attribute name="Tags" />

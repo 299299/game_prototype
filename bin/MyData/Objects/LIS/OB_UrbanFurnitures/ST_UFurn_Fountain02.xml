@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1555">
+<node id="1553">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_UFurn_Fountain02" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1491">
 		<attribute name="Model" value="Model;Models/LIS/OB_UrbanFurnitures/ST_UFurn_Fountain02.mdl" />
-		<attribute name="Material" value="Material;;;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_UrbanFurnitures/MT_UFurn_FountainElement01.xml;Materials/LIS/OB_UrbanFurnitures/MT_UFurn_FountainElement01.xml;Materials/LIS/OB_UrbanFurnitures/MT_UFurn_FountainElement01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

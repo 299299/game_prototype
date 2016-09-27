@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="913">
+<node id="911">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_DeskProOfficeDrawer01" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="873">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_DeskProOfficeDrawer01.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_DeskProOffice01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

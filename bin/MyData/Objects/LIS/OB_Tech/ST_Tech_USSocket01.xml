@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1537">
+<node id="1535">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Tech_USSocket01" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1473">
 		<attribute name="Model" value="Model;Models/LIS/OB_Tech/ST_Tech_USSocket01.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Tech/MT_Tech_USSockets01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

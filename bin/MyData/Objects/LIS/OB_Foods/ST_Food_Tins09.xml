@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="872">
+<node id="870">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Food_Tins09" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="833">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins09.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/MT_Food_TinsLabels.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

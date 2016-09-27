@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="684">
+<node id="682">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Deco_PlantPolt04" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="651">
 		<attribute name="Model" value="Model;Models/LIS/OB_Decorations/ST_Deco_PlantPolt04.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/MT_Deco_Plant01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

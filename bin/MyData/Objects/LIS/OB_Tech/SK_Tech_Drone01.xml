@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1459">
+<node id="1457">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="SK_Tech_Drone01" />
 	<attribute name="Tags" />
@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<node id="1460">
+	<node id="1458">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
 		<attribute name="Tags" />
@@ -34,7 +34,7 @@
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>
-		<node id="16777672">
+		<node id="16777575">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RootNode" />
 			<attribute name="Tags" />
@@ -42,7 +42,7 @@
 			<attribute name="Rotation" value="1 0 0 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<node id="16777673">
+			<node id="16777576">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="Root_$AssimpFbx$_PreRotation" />
 				<attribute name="Tags" />
@@ -50,7 +50,7 @@
 				<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16777674">
+				<node id="16777577">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="Root_$AssimpFbx$_Rotation" />
 					<attribute name="Tags" />
@@ -58,7 +58,7 @@
 					<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16777675">
+					<node id="16777578">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="Root_$AssimpFbx$_Scaling" />
 						<attribute name="Tags" />
@@ -66,7 +66,7 @@
 						<attribute name="Rotation" value="1 0 0 0" />
 						<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 						<attribute name="Variables" />
-						<node id="16777676">
+						<node id="16777579">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="Root" />
 							<attribute name="Tags" />
@@ -74,7 +74,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
-							<node id="16777677">
+							<node id="16777580">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="RotorFR" />
 								<attribute name="Tags" />
@@ -83,7 +83,7 @@
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
 							</node>
-							<node id="16777678">
+							<node id="16777581">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="RotorFL" />
 								<attribute name="Tags" />
@@ -92,7 +92,7 @@
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
 							</node>
-							<node id="16777679">
+							<node id="16777582">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="RotorBR" />
 								<attribute name="Tags" />
@@ -101,7 +101,7 @@
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
 							</node>
-							<node id="16777680">
+							<node id="16777583">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="RotorBL" />
 								<attribute name="Tags" />

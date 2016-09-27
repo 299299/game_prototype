@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="963">
+<node id="961">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_OldDresserDrawer01" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="923">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_OldDresserDrawer01.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_OldDresser01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

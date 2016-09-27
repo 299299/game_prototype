@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1197">
+<node id="1195">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Papers_MailsPack01" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1143">
 		<attribute name="Model" value="Model;Models/LIS/OB_Papers/ST_Papers_MailsPack01.mdl" />
-		<attribute name="Material" value="Material;;;;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Papers/MT_Papers_Mail03.xml;Materials/LIS/OB_Papers/MT_Papers_Mail03.xml;Materials/LIS/OB_Papers/MT_Papers_Mail03.xml;Materials/LIS/OB_Papers/MT_Papers_Mail03.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

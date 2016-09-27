@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1001">
+<node id="999">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_SinkCabinet01Hole" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="961">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_SinkCabinet01Hole.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Sink01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

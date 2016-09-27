@@ -11,17 +11,40 @@ const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75", "-np"};
 String exportFolder;
 Scene@ processScene;
 Array<String> materials;
+Array<String> materialFolders;
 
 String FindMaterial(const String&in name)
 {
     for (uint i=0; i<materials.length; ++i)
     {
-        // Print("name=" + name + " , " + " mat=" + materials[i].name);
         if (materials[i].StartsWith(name))
-            return materials[i];
+            return materialFolders[i] + materials[i];
         if (name.StartsWith(materials[i]))
-            return materials[i];
+            return materialFolders[i] + materials[i];
     }
+
+    String inName = name.Substring(0, name.FindLast('0')-1);
+    for (uint i=0; i<materials.length; ++i)
+    {
+        if (materials[i].StartsWith(inName))
+            return materialFolders[i] + materials[i];
+    }
+
+    inName = name.Substring(0, name.length-1);
+    for (uint i=0; i<materials.length; ++i)
+    {
+        if (materials[i].StartsWith(inName))
+            return materialFolders[i] + materials[i];
+    }
+
+    for (uint i=0; i<materials.length; ++i)
+    {
+        uint pos = materials[i].FindLast('0');
+        String matName = materials[i].Substring(0, pos-1);
+        if (name.StartsWith(matName))
+            return materialFolders[i] + materials[i];
+    }
+
     return "";
 }
 
@@ -39,6 +62,7 @@ void PreProcess()
     fileSystem.CreateDir(OUT_DIR + "Animations");
     fileSystem.CreateDir(OUT_DIR + "Objects");
     processScene = Scene();
+    processScene.CreateComponent("Octree");
 }
 
 String DoProcess(const String&in inName, const String&in outName, const String&in command, const Array<String>&in args)
@@ -111,11 +135,13 @@ void ProcessObjects()
     Array<String> materialFiles = fileSystem.ScanDir(OUT_DIR + "Materials", "*.xml", SCAN_FILES, true);
     for (uint i=0; i<materialFiles.length; ++i)
     {
-        Print("Add Material " + materialFiles[i]);
+        // Print("Add Material " + materialFiles[i]);
         materials.Push(GetFileName(materialFiles[i]));
+        materialFolders.Push(materialFiles[i].Substring(0, materialFiles[i].FindLast('/') + 1));
     }
 
     Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.FBX", SCAN_FILES, true);
+    int numObjectsMissingMaterials = 0;
     for (uint i=0; i<objects.length; ++i)
     {
         String object = objects[i];
@@ -139,7 +165,7 @@ void ProcessObjects()
         String subFolder = object.Substring(0, object.FindLast('/') + 1);
         String objectFolder = "MyData/Objects/" + subFolder;
         String assetFolder = ASSET_DIR + "Objects/" + subFolder;
-        Print("ObjectFile: " + objectFile + " objectName: " + objectName + " objectFolder: " + objectFolder);
+        // Print("ObjectFile: " + objectFile + " objectName: " + objectName + " objectFolder: " + objectFolder);
         fileSystem.CreateDir(objectFolder);
 
         Node@ node = processScene.CreateChild(objectName);
@@ -159,13 +185,8 @@ void ProcessObjects()
 
         if (m == "")
         {
-            matName = matName.Substring(0, matName.length - 1);
-            m = FindMaterial(matName);
-        }
-
-        if (m == "")
-        {
             Print("Warning, objectFile=" + objectFile + " no material find!!");
+            ++numObjectsMissingMaterials;
         }
 
         if (model.skeleton.numBones > 0)
@@ -175,19 +196,23 @@ void ProcessObjects()
             renderNode.worldRotation = Quaternion(0, 180, 0);
             am.model = model;
             am.castShadows = true;
-            am.material =  cache.GetResource("Material", "Materials/" + subFolder + m + ".xml");
+            if (m != "")
+                am.material =  cache.GetResource("Material", "Materials/" + m + ".xml");
         }
         else
         {
             StaticModel@ sm = node.CreateComponent("StaticModel");
             sm.model = model;
             sm.castShadows = true;
-            sm.material =  cache.GetResource("Material", "Materials/" + subFolder + m + ".xml");
+            if (m != "")
+                sm.material =  cache.GetResource("Material", "Materials/" + m + ".xml");
         }
 
         File outFile(objectFile, FILE_WRITE);
         node.SaveXML(outFile);
     }
+
+    Print("Total objects num=" + objects.length + " missing material object num=" + numObjectsMissingMaterials);
 }
 
 void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const String& texFolder)

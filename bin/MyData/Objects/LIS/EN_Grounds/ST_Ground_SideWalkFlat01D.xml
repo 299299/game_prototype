@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="171">
+<node id="169">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Ground_SideWalkFlat01D" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="163">
 		<attribute name="Model" value="Model;Models/LIS/EN_Grounds/ST_Ground_SideWalkFlat01D.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/MT_Ground_SideWalk01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

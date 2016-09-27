@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="129">
+<node id="127">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Ground_Campus03" />
 	<attribute name="Tags" />
@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="121">
 		<attribute name="Model" value="Model;Models/LIS/EN_Grounds/ST_Ground_Campus03.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/MT_Ground_CampusPathway01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>
