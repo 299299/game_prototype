@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="997">
+<node id="156">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_ShowerTray01" />
 	<attribute name="Tags" />
@@ -7,9 +7,16 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="959">
+	<component type="StaticModel" id="453">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_ShowerTray01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_ShowerTray01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_showertray01.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="454">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+	</component>
+	<component type="CollisionShape" id="455">
+		<attribute name="Size" value="2.6416 0.406399 2.6416" />
+		<attribute name="Offset Position" value="0 0.2032 0" />
 	</component>
 </node>

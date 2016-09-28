@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1162">
+<node id="683">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="SK_Papers_DanaMagazines01" />
 	<attribute name="Tags" />
@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<node id="1163">
+	<node id="684">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
 		<attribute name="Tags" />
@@ -15,9 +15,9 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="1121">
+		<component type="AnimatedModel" id="1032">
 			<attribute name="Model" value="Model;Models/LIS/OB_Papers/SK_Papers_DanaMagazines01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/MT_Papers_DanaMagazines01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/mt_papers_danamagazines01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />
@@ -34,7 +34,7 @@
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>
-		<node id="16777459">
+		<node id="16777302">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RootNode" />
 			<attribute name="Tags" />
@@ -42,7 +42,7 @@
 			<attribute name="Rotation" value="1 0 0 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<node id="16777460">
+			<node id="16777303">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="Root_$AssimpFbx$_PreRotation" />
 				<attribute name="Tags" />
@@ -50,7 +50,7 @@
 				<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16777461">
+				<node id="16777304">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="Root_$AssimpFbx$_Rotation" />
 					<attribute name="Tags" />
@@ -58,7 +58,7 @@
 					<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16777462">
+					<node id="16777305">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="Root_$AssimpFbx$_Scaling" />
 						<attribute name="Tags" />
@@ -66,7 +66,7 @@
 						<attribute name="Rotation" value="1 0 0 0" />
 						<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 						<attribute name="Variables" />
-						<node id="16777463">
+						<node id="16777306">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="Root" />
 							<attribute name="Tags" />
@@ -74,7 +74,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
-							<node id="16777464">
+							<node id="16777307">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="FrontPage" />
 								<attribute name="Tags" />
@@ -83,7 +83,7 @@
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
 							</node>
-							<node id="16777465">
+							<node id="16777308">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="MiddlePage" />
 								<attribute name="Tags" />
@@ -91,7 +91,7 @@
 								<attribute name="Rotation" value="1 0 0 0" />
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
-								<node id="16777466">
+								<node id="16777309">
 									<attribute name="Is Enabled" value="true" />
 									<attribute name="Name" value="MiddlePage2" />
 									<attribute name="Tags" />
@@ -101,7 +101,7 @@
 									<attribute name="Variables" />
 								</node>
 							</node>
-							<node id="16777467">
+							<node id="16777310">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="BackPage" />
 								<attribute name="Tags" />

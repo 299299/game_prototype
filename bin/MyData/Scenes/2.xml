@@ -5,9 +5,9 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="97" />
-	<attribute name="Next Replicated Component ID" value="171" />
-	<attribute name="Next Local Node ID" value="16780725" />
+	<attribute name="Next Replicated Node ID" value="121" />
+	<attribute name="Next Replicated Component ID" value="206" />
+	<attribute name="Next Local Node ID" value="16780737" />
 	<attribute name="Next Local Component ID" value="16778771" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
@@ -75,13 +75,13 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="player" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-13.6163 3.0713 1.63886" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="3 5 3" />
+		<attribute name="Position" value="-15.5085 0 -22.5299" />
+		<attribute name="Rotation" value="-4.37114e-08 -0 -1 0" />
+		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="StaticModel" id="63">
-			<attribute name="Model" value="Model;Models/Cylinder.mdl" />
-			<attribute name="Material" value="Material;Materials/GridOrange.xml" />
+			<attribute name="Model" value="Model;Models/LIS/CH_Max/CH_S_Max01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/CH_Max/MT_CH_MAX.xml;Materials/LIS/CH_Max/MT_CH_Max_Bag.xml;Materials/LIS/CH_Max/MT_CH_Max_Head.xml;Materials/LIS/CH_Max/MT_Max_Eyelashes.xml;Materials/LIS/CH_Max/MT_CH_Max_Head.xml;Materials/LIS/CH_Max/MT_CH_Max_Hair.xml;" />
 			<attribute name="Can Be Occluded" value="false" />
 		</component>
 	</node>
@@ -107,5 +107,385 @@
 			<attribute name="Material" value="Material;Materials/Skybox.xml" />
 			<attribute name="Can Be Occluded" value="false" />
 		</component>
+	</node>
+	<node id="97">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ChairProOffice01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="0.117861 0 -3.36275" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="171">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_ChairProOffice01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_ChairProOffice01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="98">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Chair01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-2.84994 0 -5.62656" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="172">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Chair01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Chair01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="99">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Cooker01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="2.95315 6.07838e-08 -6.32109" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="173">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Cooker01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Cooker01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="100">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_DecoTable01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="5.38956 -1.11311e-07 -4.65452" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="174">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_DecoTable01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_DecoTable01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="101">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Fridge01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-4.85796 -6.68681e-07 -2.22992" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="175">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Fridge01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="102">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Fridge01_L_Door" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-3.76075 0.0120728 -2.9449" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="176">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Fridge01_L_Door.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="103">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Fridge01_R_Door" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-5.87922 -0.0133893 -2.85925" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="177">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Fridge01_R_Door.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="104">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Living01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-13.7889 3.37579e-08 -2.22417" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="178">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Living01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Living01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="105">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Mirror01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-18.3173 -5.21199e-07 -9.02697" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="179">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Mirror01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Mirror01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Mirror01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="106">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Trashcan02" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-16.5237 0.00679636 -9.23246" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="180">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Trashcan02.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Trashcan02.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="108">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_ScienceDesk01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-15.5829 1.78311e-07 -16.5852" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="182">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_ScienceDesk01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_ScienceDesk01.xml;Materials/LIS/OB_Furnitures/MT_Furn_ScienceDesk01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="109">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Lockers01B" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-23.4673 -3.40028e-08 -6.63955" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="183">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Lockers01B.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Lockers01B.xml;Materials/LIS/OB_Furnitures/MT_Furn_Lockers01B.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="110">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Sofa04" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-26.4038 0 -16.642" />
+		<attribute name="Rotation" value="0.707107 0 -0.707107 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="184">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures02/ST_Furn_Sofa04.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/MT_Furn_Sofa04.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="111">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Furn_Armchair01" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-25.204 -0.00191901 -24.4788" />
+		<attribute name="Rotation" value="0.707107 0 0.707107 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="185">
+			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures02/ST_Furn_Armchair01.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/MT_Furn_Armchair01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="112">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Eng_Bike03" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-9.07479 0.00257033 -15.3618" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="186">
+			<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_Bike03.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_bike03_purple01.xml;Materials/LIS/OB_Engines/mt_eng_bike03_purple01.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="113">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Eng_Car02" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="2.34434 0.0309165 -26.6284" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="187">
+			<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_Car02.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_car02.xml;Materials/LIS/OB_Engines/mt_eng_car02.xml;Materials/LIS/OB_Engines/mt_eng_car02.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="119">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="SK_Eng_ChloePickup" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-14.2455 -0.000954714 -38.189" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="RigidBody" id="203">
+			<attribute name="Physics Rotation" value="1 0 0 0" />
+			<attribute name="Physics Position" value="-14.2455 -0.000954628 -38.189" />
+		</component>
+		<component type="CollisionShape" id="204">
+			<attribute name="Size" value="6.35572 4.67246 14.0198" />
+			<attribute name="Offset Position" value="0 2.33623 0" />
+		</component>
+		<node id="120">
+			<attribute name="Is Enabled" value="true" />
+			<attribute name="Name" value="RenderNode" />
+			<attribute name="Tags" />
+			<attribute name="Position" value="0 0 0" />
+			<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
+			<attribute name="Scale" value="1 1 1" />
+			<attribute name="Variables" />
+			<component type="AnimatedModel" id="205">
+				<attribute name="Model" value="Model;Models/LIS/OB_Engines/SK_Eng_ChloePickup.mdl" />
+				<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml" />
+				<attribute name="Cast Shadows" value="true" />
+				<attribute name="Bone Animation Enabled">
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+					<variant type="Bool" value="true" />
+				</attribute>
+				<attribute name="Animation States">
+					<variant type="Int" value="0" />
+				</attribute>
+			</component>
+			<node id="16780725">
+				<attribute name="Is Enabled" value="true" />
+				<attribute name="Name" value="RootNode" />
+				<attribute name="Tags" />
+				<attribute name="Position" value="0 0 -0" />
+				<attribute name="Rotation" value="1 0 0 0" />
+				<attribute name="Scale" value="1 1 1" />
+				<attribute name="Variables" />
+				<node id="16780726">
+					<attribute name="Is Enabled" value="true" />
+					<attribute name="Name" value="Root_$AssimpFbx$_PreRotation" />
+					<attribute name="Tags" />
+					<attribute name="Position" value="0 0 -0" />
+					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
+					<attribute name="Scale" value="1 1 1" />
+					<attribute name="Variables" />
+					<node id="16780727">
+						<attribute name="Is Enabled" value="true" />
+						<attribute name="Name" value="Root_$AssimpFbx$_Rotation" />
+						<attribute name="Tags" />
+						<attribute name="Position" value="0 0 -0" />
+						<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
+						<attribute name="Scale" value="1 1 1" />
+						<attribute name="Variables" />
+						<node id="16780728">
+							<attribute name="Is Enabled" value="true" />
+							<attribute name="Name" value="Root_$AssimpFbx$_Scaling" />
+							<attribute name="Tags" />
+							<attribute name="Position" value="0 0 -0" />
+							<attribute name="Rotation" value="1 0 0 0" />
+							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
+							<attribute name="Variables" />
+							<node id="16780729">
+								<attribute name="Is Enabled" value="true" />
+								<attribute name="Name" value="Root" />
+								<attribute name="Tags" />
+								<attribute name="Position" value="0 0 -0" />
+								<attribute name="Rotation" value="1 0 0 0" />
+								<attribute name="Scale" value="1 1 1" />
+								<attribute name="Variables" />
+								<node id="16780730">
+									<attribute name="Is Enabled" value="true" />
+									<attribute name="Name" value="BodyCar" />
+									<attribute name="Tags" />
+									<attribute name="Position" value="0 0 -0" />
+									<attribute name="Rotation" value="1 0 0 0" />
+									<attribute name="Scale" value="1 1 1" />
+									<attribute name="Variables" />
+									<node id="16780731">
+										<attribute name="Is Enabled" value="true" />
+										<attribute name="Name" value="DoorFL" />
+										<attribute name="Tags" />
+										<attribute name="Position" value="-97.2157 91.4149 121.643" />
+										<attribute name="Rotation" value="1 0 0 0" />
+										<attribute name="Scale" value="1 1 1" />
+										<attribute name="Variables" />
+									</node>
+									<node id="16780732">
+										<attribute name="Is Enabled" value="true" />
+										<attribute name="Name" value="DoorFR" />
+										<attribute name="Tags" />
+										<attribute name="Position" value="97.2157 91.4149 121.643" />
+										<attribute name="Rotation" value="1 0 0 0" />
+										<attribute name="Scale" value="1 1 1" />
+										<attribute name="Variables" />
+									</node>
+									<node id="16780733">
+										<attribute name="Is Enabled" value="true" />
+										<attribute name="Name" value="SteeringWheel" />
+										<attribute name="Tags" />
+										<attribute name="Position" value="-49.7731 120.632 74.723" />
+										<attribute name="Rotation" value="0.989487 0.144624 0 0" />
+										<attribute name="Scale" value="1 1 1" />
+										<attribute name="Variables" />
+									</node>
+								</node>
+								<node id="16780734">
+									<attribute name="Is Enabled" value="true" />
+									<attribute name="Name" value="WheelsFL" />
+									<attribute name="Tags" />
+									<attribute name="Position" value="-82.3668 42.6797 188.695" />
+									<attribute name="Rotation" value="1 0 0 0" />
+									<attribute name="Scale" value="1 1 1" />
+									<attribute name="Variables" />
+								</node>
+								<node id="16780735">
+									<attribute name="Is Enabled" value="true" />
+									<attribute name="Name" value="WheelsFR" />
+									<attribute name="Tags" />
+									<attribute name="Position" value="85.4348 42.6797 188.695" />
+									<attribute name="Rotation" value="1 0 0 0" />
+									<attribute name="Scale" value="1 1 1" />
+									<attribute name="Variables" />
+								</node>
+								<node id="16780736">
+									<attribute name="Is Enabled" value="true" />
+									<attribute name="Name" value="WheelsBack" />
+									<attribute name="Tags" />
+									<attribute name="Position" value="1.19056 42.6162 -147.939" />
+									<attribute name="Rotation" value="1 0 0 0" />
+									<attribute name="Scale" value="1 1 1" />
+									<attribute name="Variables" />
+								</node>
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</node>
 	</node>
 </scene>

@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="81">
 			<attribute name="Model" value="Model;Models/LIS/EN_Doors/SK_Doors_InteriorWood02B.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/EN_Doors/MT_Doors_InteriorWood01B.xml;Materials/LIS/EN_Doors/MT_Doors_InteriorWood01B.xml;Materials/LIS/EN_Doors/MT_Doors_InteriorWood01B.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/EN_Doors/mt_doors_interiorwood01b.xml;Materials/LIS/EN_Doors/mt_doors_interiorwood01b.xml;Materials/LIS/EN_Doors/mt_doors_interiorwood01b.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

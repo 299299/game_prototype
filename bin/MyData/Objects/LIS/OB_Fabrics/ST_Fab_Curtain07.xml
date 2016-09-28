@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="796">
+<node id="317">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Fab_Curtain07" />
 	<attribute name="Tags" />
@@ -7,9 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="760">
+	<component type="StaticModel" id="310">
 		<attribute name="Model" value="Model;Models/LIS/OB_Fabrics/ST_Fab_Curtain07.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/MT_Fab_Curtain07.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/mt_fab_curtain07.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

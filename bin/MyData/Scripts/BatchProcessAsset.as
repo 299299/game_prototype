@@ -136,7 +136,7 @@ void ProcessObjects()
     for (uint i=0; i<materialFiles.length; ++i)
     {
         // Print("Add Material " + materialFiles[i]);
-        materials.Push(GetFileName(materialFiles[i]));
+        materials.Push(GetFileName(materialFiles[i]).ToLower());
         materialFolders.Push(materialFiles[i].Substring(0, materialFiles[i].FindLast('/') + 1));
     }
 
@@ -158,14 +158,13 @@ void ProcessObjects()
 
         if (fileSystem.FileExists(objectFile))
         {
-            //Print("fileSystem Exist " + objectFile);
             continue;
         }
 
         String subFolder = object.Substring(0, object.FindLast('/') + 1);
         String objectFolder = "MyData/Objects/" + subFolder;
         String assetFolder = ASSET_DIR + "Objects/" + subFolder;
-        // Print("ObjectFile: " + objectFile + " objectName: " + objectName + " objectFolder: " + objectFolder);
+        // Print("ObjectFile: " + objectFile + " objectName: " + objectName + " subFolder: " + subFolder);
         fileSystem.CreateDir(objectFolder);
 
         Node@ node = processScene.CreateChild(objectName);
@@ -181,8 +180,7 @@ void ProcessObjects()
         String matName = objectName;
         matName.Replace("SK_", "MT_");
         matName.Replace("ST_", "MT_");
-        String m = FindMaterial(matName);
-
+        String m = FindMaterial(matName.ToLower());
         if (m == "")
         {
             Print("Warning, objectFile=" + objectFile + " no material find!!");
@@ -206,6 +204,20 @@ void ProcessObjects()
             sm.castShadows = true;
             if (m != "")
                 sm.material =  cache.GetResource("Material", "Materials/" + m + ".xml");
+        }
+
+        bool createPhysics = false;
+        if (subFolder == "LIS/OB_Engines/" || subFolder == "LIS/OB_Engines02/" ||
+            subFolder == "LIS/OB_Furnitures/" || subFolder == "LIS/OB_Furnitures02/")
+        {
+            createPhysics = true;
+        }
+
+        if (createPhysics)
+        {
+            RigidBody@ body = node.CreateComponent("RigidBody");
+            CollisionShape@ shape = node.CreateComponent("CollisionShape");
+            shape.SetBox(model.boundingBox.size, Vector3(0, model.boundingBox.halfSize.y, 0));
         }
 
         File outFile(objectFile, FILE_WRITE);

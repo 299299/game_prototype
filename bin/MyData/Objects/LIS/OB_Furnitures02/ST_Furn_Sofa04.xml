@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1057">
+<node id="216">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_Sofa04" />
 	<attribute name="Tags" />
@@ -7,9 +7,16 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1019">
+	<component type="StaticModel" id="633">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures02/ST_Furn_Sofa04.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/MT_Furn_Sofa04.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/mt_furn_sofa04.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="634">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+	</component>
+	<component type="CollisionShape" id="635">
+		<attribute name="Size" value="6.00201 2.02777 2.07822" />
+		<attribute name="Offset Position" value="0 1.01389 0" />
 	</component>
 </node>

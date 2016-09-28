@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="736">
+<node id="19">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Eng_ChloePickup" />
 	<attribute name="Tags" />
@@ -7,9 +7,16 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="702">
+	<component type="StaticModel" id="45">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_ChloePickup.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_ChloePickupExt.xml;Materials/LIS/OB_Engines/MT_Eng_ChloePickupExt.xml;Materials/LIS/OB_Engines/MT_Eng_ChloePickupExt.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="46">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+	</component>
+	<component type="CollisionShape" id="47">
+		<attribute name="Size" value="6.35572 4.67246 14.0198" />
+		<attribute name="Offset Position" value="0 2.33623 0" />
 	</component>
 </node>

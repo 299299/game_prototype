@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="939">
+<node id="98">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_KitchenSink01" />
 	<attribute name="Tags" />
@@ -7,9 +7,16 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="901">
+	<component type="StaticModel" id="279">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_KitchenSink01.mdl" />
 		<attribute name="Material" value="Material;;" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="280">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+	</component>
+	<component type="CollisionShape" id="281">
+		<attribute name="Size" value="2.6416 2.2352 1.65942" />
+		<attribute name="Offset Position" value="0 1.1176 0" />
 	</component>
 </node>

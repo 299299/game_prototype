@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<node id="1123">
+<node id="644">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Nat_FirTree01B_2D" />
 	<attribute name="Tags" />
@@ -7,9 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1083">
+	<component type="StaticModel" id="994">
 		<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_FirTree01B_2D.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_FirTree01_Storm.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Nature/mt_nat_firtree01_storm.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

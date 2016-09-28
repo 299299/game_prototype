@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="88">
 		<attribute name="Model" value="Model;Models/LIS/EN_Doors/ST_Doors_Interior01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/EN_Doors/MT_Doors_Interior01.xml;Materials/LIS/EN_Doors/MT_Doors_Interior01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Doors/mt_doors_interior01.xml;Materials/LIS/EN_Doors/mt_doors_interior01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>
