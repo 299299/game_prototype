@@ -12,6 +12,7 @@ String exportFolder;
 Scene@ processScene;
 Array<String> materials;
 Array<String> materialFolders;
+Array<String> textures;
 
 String FindMaterial(const String&in name)
 {
@@ -227,6 +228,22 @@ void ProcessObjects()
     Print("Total objects num=" + objects.length + " missing material object num=" + numObjectsMissingMaterials);
 }
 
+Texture@ FindTexture(const String&in texFolder, const String&in name)
+{
+    Texture@ tex = cache.GetResource("Texture2D", texFolder + name + ".tga");
+    if (tex is null)
+    {
+        for (uint i=0; i<textures.length; ++i)
+        {
+            if (textures[i].Contains(name, false))
+            {
+                tex = cache.GetResource("Texture2D", "BIG_Textures/" + textures[i]);
+            }
+        }
+    }
+    return tex;
+}
+
 void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const String& texFolder)
 {
     if (!exportFolder.empty)
@@ -289,27 +306,19 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
 
     if (!diffuse.empty)
     {
-        m.textures[TU_DIFFUSE] = cache.GetResource("Texture2D", texFolder + diffuse + ".tga");
-        if (m.textures[TU_DIFFUSE] is null)
-            m.textures[TU_DIFFUSE] = cache.GetResource("Texture2D", "BIG_Textures/common/" + diffuse + ".tga");
+        m.textures[TU_DIFFUSE] = FindTexture(texFolder, diffuse);
     }
     if (!normal.empty)
     {
-        m.textures[TU_NORMAL] = cache.GetResource("Texture2D", texFolder + normal + ".tga");
-        if (m.textures[TU_NORMAL] is null)
-            m.textures[TU_NORMAL] = cache.GetResource("Texture2D", "BIG_Textures/common/" + normal + ".tga");
+        m.textures[TU_NORMAL] = FindTexture(texFolder, normal);
     }
     if (!spec.empty)
     {
-        m.textures[TU_SPECULAR] = cache.GetResource("Texture2D", texFolder + spec + ".tga");
-        if (m.textures[TU_SPECULAR] is null)
-            m.textures[TU_SPECULAR] = cache.GetResource("Texture2D", "BIG_Textures/common/" + spec + ".tga");
+        m.textures[TU_SPECULAR] = FindTexture(texFolder, spec);
     }
     if (!emissive.empty)
     {
-        m.textures[TU_EMISSIVE] = cache.GetResource("Texture2D", texFolder + emissive + ".tga");
-        if (m.textures[TU_EMISSIVE] is null)
-            m.textures[TU_EMISSIVE] = cache.GetResource("Texture2D", "BIG_Textures/common/" + emissive + ".tga");
+        m.textures[TU_EMISSIVE] = FindTexture(texFolder, emissive);
     }
 
     Variant diffColor = Vector4(1, 1, 1, 1);
@@ -324,6 +333,8 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
 
 void ProcessMatFiles()
 {
+    textures = fileSystem.ScanDir(OUT_DIR + "BIG_Textures", "*.tga", SCAN_FILES, true);
+
     Array<String> matFiles = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.mat", SCAN_FILES, true);
     for (uint i=0; i<matFiles.length; ++i)
     {
