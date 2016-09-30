@@ -13,6 +13,7 @@ Scene@ processScene;
 Array<String> materials;
 Array<String> materialFolders;
 Array<String> textures;
+bool forceCompile = false;
 
 String FindMaterial(const String&in name)
 {
@@ -54,8 +55,10 @@ void PreProcess()
     Array<String>@ arguments = GetArguments();
     for (uint i=0; i<arguments.length; ++i)
     {
-        if (arguments[i] == "-folder")
+        if (arguments[i] == "-f")
             exportFolder = arguments[i + 1];
+        else if (arguments[i] == "-b")
+            forceCompile = true;
     }
 
     Print("exportFolder=" + exportFolder);
@@ -77,7 +80,7 @@ String DoProcess(const String&in inName, const String&in outName, const String&i
     String iname = inName; //"Asset/" + folderName + name;
     String oname = outName; //OUT_DIR + folderName + GetFileName(name) + ".mdl";
 
-    if (fileSystem.FileExists(oname))
+    if (fileSystem.FileExists(oname) && !forceCompile)
     {
         // Print(oname + " exist ...");
         return oname;
@@ -157,7 +160,7 @@ void ProcessObjects()
         String objectName = GetFileName(object);
         objectFile += "/" + objectName + ".xml";
 
-        if (fileSystem.FileExists(objectFile))
+        if (fileSystem.FileExists(objectFile) && !forceCompile)
         {
             continue;
         }
@@ -353,7 +356,7 @@ void ProcessMatFiles()
 
         String matName = GetFileName(matFile);
         String outMatFile = outFolder + "LIS/" + temp + "/" + matName + ".xml";
-        if (fileSystem.FileExists(outMatFile))
+        if (fileSystem.FileExists(outMatFile) && !forceCompile)
         {
             continue;
         }
