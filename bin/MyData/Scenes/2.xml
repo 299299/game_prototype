@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="261.483" />
 	<attribute name="Next Replicated Node ID" value="121" />
 	<attribute name="Next Replicated Component ID" value="206" />
-	<attribute name="Next Local Node ID" value="16780737" />
-	<attribute name="Next Local Component ID" value="16778771" />
+	<attribute name="Next Local Node ID" value="16780738" />
+	<attribute name="Next Local Component ID" value="16778783" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -83,6 +83,7 @@
 			<attribute name="Model" value="Model;Models/LIS/CH_Max/CH_S_Max01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/CH_Max/MT_CH_MAX.xml;Materials/LIS/CH_Max/MT_CH_Max_Bag.xml;Materials/LIS/CH_Max/MT_CH_Max_Head.xml;Materials/LIS/CH_Max/MT_Max_Eyelashes.xml;Materials/LIS/CH_Max/MT_CH_Max_Head.xml;Materials/LIS/CH_Max/MT_CH_Max_Hair.xml;" />
 			<attribute name="Can Be Occluded" value="false" />
+			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
 	<node id="16780720">
