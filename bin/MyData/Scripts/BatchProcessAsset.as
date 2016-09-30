@@ -238,6 +238,7 @@ Texture@ FindTexture(const String&in texFolder, const String&in name)
             if (textures[i].Contains(name, false))
             {
                 tex = cache.GetResource("Texture2D", "BIG_Textures/" + textures[i]);
+                break;
             }
         }
     }
