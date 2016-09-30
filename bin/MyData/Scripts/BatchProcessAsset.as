@@ -208,10 +208,14 @@ void ProcessObjects()
         }
 
         bool createPhysics = false;
-        if (subFolder == "LIS/OB_Engines/" || subFolder == "LIS/OB_Engines02/" ||
-            subFolder == "LIS/OB_Furnitures/" || subFolder == "LIS/OB_Furnitures02/")
+        Array<String> physics_sub_folders = {
+            "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02"
+        };
+
+        for (uint i=0; i<physics_sub_folders.length; ++i)
         {
-            createPhysics = true;
+            if (subFolder == "LIS/" + physics_sub_folders[i] + "/")
+                createPhysics = true;
         }
 
         if (createPhysics)
