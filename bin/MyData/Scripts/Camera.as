@@ -36,7 +36,7 @@ class CameraController
 
     void Enter()
     {
-
+        renderer.viewports[0].camera = camera;
     }
 
     void Exit()
@@ -111,8 +111,13 @@ class DebugFPSCameraController: CameraController
     DebugFPSCameraController(Node@ n, const String&in name)
     {
         super(n, name);
-        yaw = n.worldRotation.eulerAngles.y;
-        pitch = n.worldRotation.eulerAngles.x;
+    }
+
+    void Enter()
+    {
+        yaw = cameraNode.worldRotation.eulerAngles.y;
+        pitch = cameraNode.worldRotation.eulerAngles.x;
+        CameraController::Enter();
     }
 
     void Update(float dt)
@@ -186,8 +191,16 @@ class ThirdPersonCameraController : CameraController
         Vector3 v = gInput.GetRightAxis();
         float pitch = v.y;
         float yaw = v.x;
-        pitch = Clamp(pitch, -20.0f, 35.0f);
-        gInput.m_rightStickY = pitch;
+
+        if (gCameraMgr.debugCameraController !is null)
+        {
+            yaw = GetPlayer().GetCharacterAngle();
+        }
+        else
+        {
+            pitch = Clamp(pitch, -20.0f, 35.0f);
+            gInput.m_rightStickY = pitch;
+        }
 
         Quaternion q(pitch, yaw, 0);
         from = q * Vector3(0, 0, -cameraDistance) + target_pos;
@@ -217,11 +230,16 @@ class ThirdPersonCameraController : CameraController
     void Enter()
     {
         Reset();
+        CameraController::Enter();
     }
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        // debug.AddCross(gCameraMgr.cameraTarget, 0.1, RED, true);
+        //debug.AddCross(gCameraMgr.cameraTarget, 0.1, RED, true);
+        //debug.AddCross(cameraNode.worldPosition, 0.1, BLUE, true);
+
+        debug.AddSphere(Sphere(gCameraMgr.cameraTarget, CAMERA_RADIUS), RED, true);
+        debug.AddSphere(Sphere(cameraNode.worldPosition, CAMERA_RADIUS), BLUE, true);
     }
 };
 
@@ -252,6 +270,7 @@ class TransitionCameraController : CameraController
     void Enter()
     {
         curTime = 0.0f;
+        CameraController::Enter();
     }
 
     void OnCameraEvent(VariantMap& eventData)
@@ -280,6 +299,7 @@ class AnimationCameraController : CameraController
     void Enter()
     {
         CreateAnimationNode();
+        CameraController::Enter();
     }
 
     void Update(float dt)
@@ -359,7 +379,9 @@ class CameraManager
     CameraController@           currentController;
     Node@                       cameraNode;
     Vector3                     cameraTarget;
-    Array<StringHash>           cameraAnimations;
+
+    Node@                       debugCameraNode;
+    CameraController@           debugCameraController;
 
     CameraController@ FindCameraController(const StringHash&in nameHash)
     {
@@ -390,38 +412,33 @@ class CameraManager
             currentController.Enter();
     }
 
-    void Start(Node@ n)
+    void Start(Scene@ scene_)
     {
-        cameraNode = n;
+        cameraNode = scene_.CreateChild(CAMERA_NAME);
+        Camera@ cam = cameraNode.CreateComponent("Camera");
+        cam.fov = BASE_FOV;
+        cameraNode.worldPosition = Vector3(0, 10, -5);
+
         cameraControllers.Clear();
-        cameraControllers.Push(DebugFPSCameraController(n, "Debug"));
-        cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
-        cameraControllers.Push(TransitionCameraController(n, "Transition"));
-        cameraControllers.Push(AnimationCameraController(n, "Animation"));
+        cameraControllers.Push(ThirdPersonCameraController(cameraNode, "ThirdPerson"));
+        cameraControllers.Push(TransitionCameraController(cameraNode, "Transition"));
+        cameraControllers.Push(AnimationCameraController(cameraNode, "Animation"));
 
         CollisionShape@ cameraSphere = cameraNode.CreateComponent("CollisionShape");
         cameraSphere.SetSphere(CAMERA_RADIUS);
 
-        /*
-        cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));
-        cameraAnimations.Push(StringHash("Counter_Arm_Back_06"));
-        cameraAnimations.Push(StringHash("Counter_Arm_Front_07"));
-        cameraAnimations.Push(StringHash("Counter_Arm_Front_09"));
-        cameraAnimations.Push(StringHash("Counter_Arm_Front_13"));
-        cameraAnimations.Push(StringHash("Counter_Arm_Front_14"));
-        cameraAnimations.Push(StringHash("Counter_Leg_Back_04"));
-        cameraAnimations.Push(StringHash("Counter_Leg_Front_07"));
-        cameraAnimations.Push(StringHash("Double_Counter_2ThugsA"));
-        cameraAnimations.Push(StringHash("Double_Counter_2ThugsB"));
-        cameraAnimations.Push(StringHash("Double_Counter_2ThugsG"));
-        cameraAnimations.Push(StringHash("Double_Counter_2ThugsH"));
-        cameraAnimations.Push(StringHash("Double_Counter_3ThugsB"));
-        */
+        debugCameraNode = scene_.CreateChild(CAMERA_NAME + "_Debug");
+        debugCameraNode.CreateComponent("Camera");
+        debugCameraNode.worldPosition = cameraNode.worldPosition;
+        cameraControllers.Push(DebugFPSCameraController(debugCameraNode, "Debug"));
     }
 
     void Stop()
     {
+        cameraNode.Remove();
         @cameraNode = null;
+        debugCameraNode.Remove();
+        @debugCameraNode = null;
         cameraControllers.Clear();
     }
 
@@ -429,23 +446,23 @@ class CameraManager
     {
         if (currentController !is null)
             currentController.Update(dt);
+        if (debugCameraController !is null)
+            debugCameraController.Update(dt);
     }
 
     Node@ GetCameraNode()
     {
-        return cameraNode;
+        return (debugCameraController is null) ? cameraNode : debugCameraNode;
     }
 
     Camera@ GetCamera()
     {
-        if (cameraNode is null)
-            return null;
-        return cameraNode.GetComponent("Camera");
+        return GetCameraNode().GetComponent("Camera");
     }
 
     Vector3 GetCameraForwardDirection()
     {
-        return cameraNode.worldRotation * Vector3(0, 0, 1);
+        return GetCameraNode().worldRotation * Vector3(0, 0, 1);
     }
 
     float GetCameraAngle()
@@ -456,9 +473,10 @@ class CameraManager
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        //debug.AddCross(cameraTarget, 1.0f, RED, false);
         if (currentController !is null)
             currentController.DebugDraw(debug);
+        if (debugCameraController !is null)
+            debugCameraController.DebugDraw(debug);
     }
 
     void OnCameraEvent(VariantMap& eventData)
@@ -473,36 +491,51 @@ class CameraManager
 
     void CheckCameraAnimation(const String&in anim)
     {
-        uint pos = anim.FindLast('/');
-        String name = anim.Substring(pos + 1);
-        //Print("CheckCameraAnimation, name=" + name);
-        StringHash nameHash(name);
-        int k = -1;
-        for (uint i=0; i<cameraAnimations.length; ++i)
-        {
-            if (nameHash == cameraAnimations[i])
-            {
-                k = int(i);
-                break;
-            }
-        }
-
-        if (k < 0)
-            return;
-
-        String camAnim = GetAnimationName("BM_Combat_Cameras/" + name);
         VariantMap eventData;
         eventData[NAME] = CHANGE_STATE;
         eventData[VALUE] = StringHash("Animation");
-        eventData[ANIMATION] = camAnim;
-        Print("camAnim=" + camAnim);
+        eventData[ANIMATION] = anim;
+        Print("Play cam animation =" + anim);
 
         OnCameraEvent(eventData);
     }
 
     String GetDebugText()
     {
-        return (currentController !is null) ? currentController.GetDebugText() : "";
+        String ret = (currentController !is null) ? currentController.GetDebugText() : "";
+        if (debugCameraController !is null)
+            ret += "Debug: " + debugCameraController.GetDebugText();
+        return ret;
+    }
+
+    void SetDebugCamera(bool bFlag)
+    {
+        if (bFlag)
+        {
+            @debugCameraController = FindCameraController(StringHash("Debug"));
+            if (debugCameraController !is null)
+            {
+                if (currentController !is null)
+                {
+                    // debugCameraController.cameraNode.worldPosition = currentController.cameraNode.worldPosition;
+                    debugCameraController.cameraNode.LookAt(cameraTarget);
+                }
+                debugCameraController.Enter();
+            }
+        }
+        else
+        {
+            if (debugCameraController !is null)
+            {
+                debugCameraController.Exit();
+                @debugCameraController = null;
+            }
+
+            if (currentController !is null)
+            {
+                currentController.Enter();
+            }
+        }
     }
 };
 

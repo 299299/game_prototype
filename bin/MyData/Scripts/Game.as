@@ -238,12 +238,16 @@ class TestGameState : GameState
     {
         state = -1;
         State::Enter(lastState);
+
+        if (!engine.headless)
+        {
+            CreateViewPort();
+            CreateUI();
+        }
+
         CreateScene();
-        if (engine.headless)
-            return;
-        CreateViewPort();
-        CreateUI();
         PostCreate();
+
         ChangeSubState(GAME_FADING);
     }
 
@@ -366,7 +370,7 @@ class TestGameState : GameState
 
     void CreateViewPort()
     {
-        Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
+        Viewport@ viewport = Viewport(null, null);
         renderer.viewports[0] = viewport;
         RenderPath@ renderpath = viewport.renderPath.Clone();
         if (render_features & RF_HDR != 0)
@@ -394,12 +398,6 @@ class TestGameState : GameState
     void OnSceneLoaded(Scene@ scene_)
     {
         uint t = time.systemTime;
-
-        Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
-        Camera@ cam = cameraNode.CreateComponent("Camera");
-        cam.fov = BASE_FOV;
-        cameraId = cameraNode.id;
-        cameraNode.worldPosition = Vector3(0, 10, -5);
 
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;
@@ -430,7 +428,7 @@ class TestGameState : GameState
             }
         }
 
-        gCameraMgr.Start(cameraNode);
+        gCameraMgr.Start(scene_);
         gCameraMgr.SetCameraController("ThirdPerson");
         gameScene = scene_;
 
@@ -443,6 +441,8 @@ class TestGameState : GameState
         }
 
         //DumpSkeletonNames(playerNode);
+        renderer.viewports[0].scene = scene_;
+
         Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms.");
     }
 
@@ -450,8 +450,7 @@ class TestGameState : GameState
     {
         Scene@ scene_ = Scene();
         script.defaultScene = scene_;
-        String scnFile = "Scenes/2.xml";
-        scene_.LoadXML(cache.GetFile(scnFile));
+        scene_.LoadXML(cache.GetFile("Scenes/2.xml"));
         OnSceneLoaded(scene_);
     }
 

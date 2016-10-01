@@ -45,6 +45,7 @@ const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 20;
 
 GameInput@ gInput = GameInput();
+bool debugCamera = false;
 
 void Start()
 {
@@ -224,17 +225,6 @@ Player@ GetPlayer()
     return cast<Player>(characterNode.scriptObject);
 }
 
-Camera@ GetCamera()
-{
-    Scene@ scene_ = script.defaultScene;
-    if (scene_ is null)
-        return null;
-    Node@ cameraNode = scene_.GetNode(cameraId);
-    if (cameraNode is null)
-        return null;
-    return cameraNode.GetComponent("Camera");
-}
-
 void SubscribeToEvents()
 {
     SubscribeToEvent("Update", "HandleUpdate");
@@ -327,7 +317,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         console.Toggle();
     else if (key == KEY_F4)
     {
-        Camera@ cam = GetCamera();
+        Camera@ cam = gCameraMgr.GetCamera();
         if (cam !is null)
             cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
     }
@@ -339,17 +329,9 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         ShootBox(scene_);
     else if (key == KEY_3)
     {
-        CameraController@ cc = gCameraMgr.currentController;
-        if (cc.nameHash == StringHash("Debug"))
-        {
-            ui.cursor.visible = false;
-            gCameraMgr.SetCameraController("ThirdPerson");
-        }
-        else
-        {
-            ui.cursor.visible = true;
-            gCameraMgr.SetCameraController("Debug");
-        }
+        debugCamera = !debugCamera;
+        gCameraMgr.SetDebugCamera(debugCamera);
+        ui.cursor.visible = !debugCamera;
     }
     else if (key == KEY_4)
     {
