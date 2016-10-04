@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1731">
+	<component type="StaticModel" id="692">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_Car02_Low.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_car02.xml;Materials/LIS/OB_Engines/mt_eng_car02.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="1732">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1733">
-		<attribute name="Size" value="3.79559 3.42794 9.16157" />
-		<attribute name="Offset Position" value="0 1.71397 0" />
 	</component>
 </node>

@@ -7,15 +7,6 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="RigidBody" id="2884">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="2885">
-		<attribute name="Size" value="6.54811 5.6905 4.64008" />
-		<attribute name="Offset Position" value="0 2.84525 0" />
-	</component>
 	<node id="1373">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
@@ -24,7 +15,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="2883">
+		<component type="AnimatedModel" id="1320">
 			<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/SK_Rub_SwingDestroy01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/mt_rub_swingdestroy01.xml;Materials/LIS/OB_Rubbish/mt_rub_swingdestroy01.xml" />
 			<attribute name="Cast Shadows" value="true" />

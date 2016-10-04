@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="258">
+	<component type="StaticModel" id="133">
 		<attribute name="Model" value="Model;Models/LIS/EN_Grounds/ST_Ground_ChloesHouseKitchen01.mdl" />
 		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="259">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="260">
-		<attribute name="Size" value="9.75361 5.32913e-07 8.9408" />
-		<attribute name="Offset Position" value="0 2.66457e-07 0" />
 	</component>
 </node>

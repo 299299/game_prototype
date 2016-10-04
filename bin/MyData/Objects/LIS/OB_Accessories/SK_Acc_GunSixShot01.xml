@@ -7,15 +7,6 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="RigidBody" id="1020">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1021">
-		<attribute name="Size" value="0.50937 0.299971 0.0716092" />
-		<attribute name="Offset Position" value="0 0.149986 0" />
-	</component>
 	<node id="422">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
@@ -24,7 +15,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="1019">
+		<component type="AnimatedModel" id="410">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/SK_Acc_GunSixShot01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_gunsixshot01.xml" />
 			<attribute name="Cast Shadows" value="true" />

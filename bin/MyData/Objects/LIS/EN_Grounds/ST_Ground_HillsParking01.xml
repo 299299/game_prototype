@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="315">
+	<component type="StaticModel" id="152">
 		<attribute name="Model" value="Model;Models/LIS/EN_Grounds/ST_Ground_HillsParking01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/mt_ground_hillsparking01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="316">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="317">
-		<attribute name="Size" value="2241.26 840.056 1748.67" />
-		<attribute name="Offset Position" value="0 420.028 0" />
 	</component>
 </node>

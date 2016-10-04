@@ -11,6 +11,8 @@
 #include "Scripts/PhysicsSensor.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
+#include "Scripts/Interactable.as"
+#include "Scripts/Door.as"
 #include "Scripts/Character.as"
 #include "Scripts/Max.as"
 #include "Scripts/Player.as"

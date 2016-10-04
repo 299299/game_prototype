@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1944">
+	<component type="StaticModel" id="803">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_PizzaBox01A.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_pizzabox01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="1945">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1946">
-		<attribute name="Size" value="0.969594 0.191155 1.9317" />
-		<attribute name="Offset Position" value="0 0.0955774 0" />
 	</component>
 </node>

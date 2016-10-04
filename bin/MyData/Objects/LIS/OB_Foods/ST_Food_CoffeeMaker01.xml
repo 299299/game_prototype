@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1893">
+	<component type="StaticModel" id="786">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_CoffeeMaker01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_coffeemaker01.xml;Materials/LIS/OB_Foods/mt_food_coffeemaker01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="1894">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1895">
-		<attribute name="Size" value="0.531465 0.808552 0.589185" />
-		<attribute name="Offset Position" value="0 0.404276 0" />
 	</component>
 </node>

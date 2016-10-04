@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1822">
+	<component type="StaticModel" id="741">
 		<attribute name="Model" value="Model;Models/LIS/OB_Fabrics/ST_Fab_Comforter04.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/mt_fab_comforter04.xml" />
 		<attribute name="Cast Shadows" value="true" />

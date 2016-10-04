@@ -150,7 +150,7 @@ class Player : Character
 {
     bool                              applyGravity = true;
     Node@                             objectCollectsNode;
-    Array<Node@>                      objectCollection;
+    Array<Interactable@>              objectCollection;
 
     void ObjectStart()
     {
@@ -161,7 +161,8 @@ class Player : Character
         objectCollectsNode = GetScene().CreateChild("Player_ObjectsCollectsNode");
         CollisionShape@ shape = objectCollectsNode.CreateComponent("CollisionShape");
         float coneHeight = 7.0f;
-        shape.SetCone(5.0f, coneHeight, Vector3(0, 0, coneHeight + 0.5f), Quaternion(-90, 0, 0));
+        float coneRadius = 3.0f;
+        shape.SetCone(coneRadius * 2, coneHeight, Vector3(0, 0, coneHeight + 0.5f), Quaternion(-90, 0, 0));
         RigidBody@ body = objectCollectsNode.CreateComponent("RigidBody");
         body.collisionMask = 0;
 
@@ -226,16 +227,27 @@ class Player : Character
         return false;
     }
 
-    void CollectObjectsInView(Array<Node@>@ outObjects)
+    void CollectObjectsInView(Array<Interactable@>@ outObjects)
     {
+        for (uint i=0; i<outObjects.length; ++i)
+        {
+            outObjects[i].ShowOverlay(false);
+        }
+
+        outObjects.Clear();
         objectCollectsNode.worldPosition = gCameraMgr.cameraNode.worldPosition;
         objectCollectsNode.worldRotation = gCameraMgr.cameraNode.worldRotation;
 
         Array<RigidBody@>@ bodies = physicsWorld.GetRigidBodies(objectCollectsNode.GetComponent("RigidBody"));
         for (uint i=0; i<bodies.length; ++i)
         {
-            outObjects.Push(bodies[i].node);
-            // Print("Found object " + bodies[i].node.name);
+            Interactable@ it = cast<Interactable>(bodies[i].node.scriptObject);
+            if (it !is null)
+            {
+                outObjects.Push(it);
+                it.ShowOverlay(true);
+                // Print("Found object " + bodies[i].node.name);
+            }
         }
     }
 };

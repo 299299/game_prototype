@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1316">
+	<component type="StaticModel" id="509">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_GunSixShot01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_gunsixshot01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="1317">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1318">
-		<attribute name="Size" value="0.50937 0.299971 0.0716092" />
-		<attribute name="Offset Position" value="0 0.149986 0" />
 	</component>
 </node>

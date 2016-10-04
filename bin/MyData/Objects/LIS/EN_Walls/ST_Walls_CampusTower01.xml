@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="473">
+	<component type="StaticModel" id="214">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_CampusTower01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Walls/mt_walls_campustower01.xml;Materials/LIS/EN_Walls/mt_walls_campustower01.xml;Materials/LIS/EN_Walls/mt_walls_campustower01.xml;Materials/LIS/EN_Walls/mt_walls_campustower01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="474">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="475">
-		<attribute name="Size" value="29.5817 16.2905 7.57133" />
-		<attribute name="Offset Position" value="0 8.14524 0" />
 	</component>
 </node>

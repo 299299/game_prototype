@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="183">
+	<component type="StaticModel" id="108">
 		<attribute name="Model" value="Model;Models/LIS/EN_Doors/ST_Doors_SlidingDoors01Handle.mdl" />
 		<attribute name="Material" value="Material;;;" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="184">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="185">
-		<attribute name="Size" value="2.13382 5.53725 0.3302" />
-		<attribute name="Offset Position" value="1.06691 2.76862 0" />
 	</component>
 </node>

@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="387">
+	<component type="StaticModel" id="176">
 		<attribute name="Model" value="Model;Models/LIS/EN_Stairs/ST_Stairs_128x32.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Stairs/mt_stairs_128x32.xml" />
 		<attribute name="Cast Shadows" value="true" />

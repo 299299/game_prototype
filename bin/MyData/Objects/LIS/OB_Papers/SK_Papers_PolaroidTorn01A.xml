@@ -15,7 +15,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="2682">
+		<component type="AnimatedModel" id="1119">
 			<attribute name="Model" value="Model;Models/LIS/OB_Papers/SK_Papers_PolaroidTorn01A.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/mt_papers_polaroidtorn01a.xml" />
 			<attribute name="Cast Shadows" value="true" />

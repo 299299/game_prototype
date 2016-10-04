@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="926">
+	<component type="StaticModel" id="365">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_StreetEdge01A.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Walls/mt_walls_street01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="927">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="928">
-		<attribute name="Size" value="6.5024 0.229111 0.6096" />
-		<attribute name="Offset Position" value="0 0.114555 0" />
 	</component>
 </node>

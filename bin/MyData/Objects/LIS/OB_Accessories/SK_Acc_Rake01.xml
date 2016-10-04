@@ -7,15 +7,6 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="RigidBody" id="1053">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1054">
-		<attribute name="Size" value="1.27044 3.8122 0.450575" />
-		<attribute name="Offset Position" value="0 1.9061 0" />
-	</component>
 	<node id="444">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
@@ -24,7 +15,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="1052">
+		<component type="AnimatedModel" id="421">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/SK_Acc_Rake01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_rake01.xml" />
 			<attribute name="Cast Shadows" value="true" />

@@ -395,6 +395,14 @@ class TestGameState : GameState
         SetColorGrading(colorGradingIndex);
     }
 
+    void OnNodeLoaded(Node@ node_)
+    {
+        if (node_.name.StartsWith("SK_Doors") || node_.name.StartsWith("ST_Doors"))
+        {
+            node_.CreateScriptObject(scriptFile, "Door");
+        }
+    }
+
     void OnSceneLoaded(Scene@ scene_)
     {
         uint t = time.systemTime;
@@ -426,6 +434,7 @@ class TestGameState : GameState
                 light.shadowBias = BiasParameters(0.00025f, 0.5f);
                 light.shadowCascade = CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f);
             }
+            OnNodeLoaded(_node);
         }
 
         gCameraMgr.Start(scene_);

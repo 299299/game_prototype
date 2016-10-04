@@ -15,7 +15,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="2992">
+		<component type="AnimatedModel" id="1385">
 			<attribute name="Model" value="Model;Models/LIS/OB_Tech/SK_Tech_Camera01Broken02.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Tech/mt_tech_camera01.xml" />
 			<attribute name="Cast Shadows" value="true" />

@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="3084">
+	<component type="StaticModel" id="1477">
 		<attribute name="Model" value="Model;Models/LIS/OB_UrbanFurnitures/ST_UFurn_BenchWood.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_UrbanFurnitures/mt_ufurn_benchwood.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="3085">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="3086">
-		<attribute name="Size" value="5.26591 1.12853 1.79635" />
-		<attribute name="Offset Position" value="0 0.564266 0" />
 	</component>
 </node>

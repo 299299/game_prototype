@@ -214,6 +214,7 @@ void ProcessObjects()
                 sm.material =  cache.GetResource("Material", "Materials/" + m + ".xml");
         }
 
+        /*
         bool createPhysics = false;
         Array<String> physics_sub_folders = {
             "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02", "OB_UrbanFurnitures",
@@ -241,6 +242,7 @@ void ProcessObjects()
 
             shape.SetBox(model.boundingBox.size, offset);
         }
+        */
 
         File outFile(objectFile, FILE_WRITE);
         node.SaveXML(outFile);

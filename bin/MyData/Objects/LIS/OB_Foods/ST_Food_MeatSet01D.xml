@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1920">
+	<component type="StaticModel" id="795">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_MeatSet01D.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_meatset01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="1921">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1922">
-		<attribute name="Size" value="0.0711385 0.0632512 0.47349" />
-		<attribute name="Offset Position" value="0 0.0316256 0" />
 	</component>
 </node>

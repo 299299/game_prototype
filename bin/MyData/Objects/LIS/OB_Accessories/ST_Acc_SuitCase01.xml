@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1523">
+	<component type="StaticModel" id="578">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_SuitCase01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_suitcase01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="1524">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="1525">
-		<attribute name="Size" value="1.61406 0.484047 1.3979" />
-		<attribute name="Offset Position" value="0 0.242023 0" />
 	</component>
 </node>

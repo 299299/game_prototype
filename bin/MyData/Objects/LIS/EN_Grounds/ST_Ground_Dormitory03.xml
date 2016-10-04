@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="276">
+	<component type="StaticModel" id="139">
 		<attribute name="Model" value="Model;Models/LIS/EN_Grounds/ST_Ground_Dormitory03.mdl" />
 		<attribute name="Material" value="Material;;" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="277">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="278">
-		<attribute name="Size" value="52.0202 8.36218 52.0192" />
-		<attribute name="Offset Position" value="0 4.18109 0" />
 	</component>
 </node>

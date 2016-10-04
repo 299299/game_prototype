@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="2538">
+	<component type="StaticModel" id="1001">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures02/ST_Furn_FileCabinet01B_Door01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/mt_furn_filecabinet01b.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="2539">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="2540">
-		<attribute name="Size" value="1.12287 1.04697 0.0737944" />
-		<attribute name="Offset Position" value="0 0.523487 0" />
 	</component>
 </node>

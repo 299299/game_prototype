@@ -7,18 +7,9 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="2436">
+	<component type="StaticModel" id="967">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Threshold01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_threshold01.xml" />
 		<attribute name="Cast Shadows" value="true" />
-	</component>
-	<component type="RigidBody" id="2437">
-		<attribute name="Physics Rotation" value="1 0 0 0" />
-		<attribute name="Collision Layer" value="4" />
-		<attribute name="Collision Mask" value="47" />
-	</component>
-	<component type="CollisionShape" id="2438">
-		<attribute name="Size" value="3.2512 0.2032 0.153851" />
-		<attribute name="Offset Position" value="0 0.1016 0" />
 	</component>
 </node>
