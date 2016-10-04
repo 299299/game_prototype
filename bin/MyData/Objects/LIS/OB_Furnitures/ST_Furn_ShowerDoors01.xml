@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="2309">
+	<component type="StaticModel" id="2379">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_ShowerDoors01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_showerdoors01.xml;Materials/LIS/OB_Furnitures/mt_furn_showerdoors01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="2310">
+	<component type="RigidBody" id="2380">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="2311">
+	<component type="CollisionShape" id="2381">
 		<attribute name="Size" value="1.9218 3.81 0.0664707" />
 		<attribute name="Offset Position" value="0 1.905 0" />
 	</component>

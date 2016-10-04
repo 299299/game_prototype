@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1596">
+	<component type="StaticModel" id="1666">
 		<attribute name="Model" value="Model;Models/LIS/OB_Decorations/ST_Deco_Trophies_Footbal.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/mt_deco_trophies01.xml" />
 		<attribute name="Cast Shadows" value="true" />

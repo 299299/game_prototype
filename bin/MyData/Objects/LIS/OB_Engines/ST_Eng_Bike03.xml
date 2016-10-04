@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1640">
+	<component type="StaticModel" id="1710">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_Bike03.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_bike03_purple01.xml;Materials/LIS/OB_Engines/mt_eng_bike03_purple01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1641">
+	<component type="RigidBody" id="1711">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1642">
+	<component type="CollisionShape" id="1712">
 		<attribute name="Size" value="2.00458 2.70439 4.44005" />
 		<attribute name="Offset Position" value="0 1.35219 0" />
 	</component>

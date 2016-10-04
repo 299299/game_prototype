@@ -7,12 +7,12 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="RigidBody" id="980">
+	<component type="RigidBody" id="1050">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="981">
+	<component type="CollisionShape" id="1051">
 		<attribute name="Size" value="0.448915 0.0195784 0.0205183" />
 		<attribute name="Offset Position" value="0 0.00978918 0" />
 	</component>
@@ -24,7 +24,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="979">
+		<component type="AnimatedModel" id="1049">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/SK_Acc_Pencil02.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_pencilcase01.xml" />
 			<attribute name="Cast Shadows" value="true" />

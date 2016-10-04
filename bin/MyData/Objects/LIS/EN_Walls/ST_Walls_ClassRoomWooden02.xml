@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="502">
+	<component type="StaticModel" id="572">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_ClassRoomWooden02.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Walls/mt_walls_classroomwood01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="503">
+	<component type="RigidBody" id="573">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="504">
+	<component type="CollisionShape" id="574">
 		<attribute name="Size" value="2.1336 1.9304 0.0489769" />
 		<attribute name="Offset Position" value="0 0.965201 0" />
 	</component>

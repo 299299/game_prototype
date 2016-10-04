@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="2943">
+	<component type="StaticModel" id="3013">
 		<attribute name="Model" value="Model;Models/LIS/OB_Tech/ST_Tech_CD01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Tech/mt_tech_cd01.xml" />
 		<attribute name="Cast Shadows" value="true" />

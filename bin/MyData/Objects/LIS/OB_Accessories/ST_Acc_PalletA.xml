@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1327">
+	<component type="StaticModel" id="1397">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_PalletA.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_palleta.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1328">
+	<component type="RigidBody" id="1398">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1329">
+	<component type="CollisionShape" id="1399">
 		<attribute name="Size" value="2.53223 0.412838 3.2512" />
 		<attribute name="Offset Position" value="0 0.206419 0" />
 	</component>

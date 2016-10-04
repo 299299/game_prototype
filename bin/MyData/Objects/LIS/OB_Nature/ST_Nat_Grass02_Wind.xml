@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="2574">
+	<component type="StaticModel" id="2644">
 		<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Grass02_Wind.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Nature/mt_nat_grass02_wind.xml" />
 		<attribute name="Cast Shadows" value="true" />

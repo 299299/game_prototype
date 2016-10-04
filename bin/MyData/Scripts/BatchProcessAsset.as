@@ -186,6 +186,8 @@ void ProcessObjects()
         matName.Replace("SK_", "MT_");
         matName.Replace("ST_", "MT_");
         String m = FindMaterial(matName.ToLower());
+        bool hasBone = false;
+
         if (m == "")
         {
             Print("Warning, objectFile=" + objectFile + " no material find!!");
@@ -201,6 +203,7 @@ void ProcessObjects()
             am.castShadows = true;
             if (m != "")
                 am.material =  cache.GetResource("Material", "Materials/" + m + ".xml");
+            hasBone = true;
         }
         else
         {
@@ -213,7 +216,7 @@ void ProcessObjects()
 
         bool createPhysics = false;
         Array<String> physics_sub_folders = {
-            "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02", "OB_UrbanFurnitures"
+            "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02", "OB_UrbanFurnitures",
             "EN_Doors", "OB_Rubbish", "OB_Foods", "OB_Accessories", "EN_Walls", "EN_Grounds", "EN_Ceilings"
         };
 
@@ -229,7 +232,14 @@ void ProcessObjects()
             body.collisionLayer = COLLISION_LAYER_PROP;
             body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_RAYCAST | COLLISION_LAYER_PROP;
             CollisionShape@ shape = node.CreateComponent("CollisionShape");
-            shape.SetBox(model.boundingBox.size, Vector3(0, model.boundingBox.halfSize.y, 0));
+
+            Vector3 offset = Vector3(0, model.boundingBox.halfSize.y, 0);
+            if (subFolder == "LIS/EN_Doors/")
+            {
+                offset = Vector3(hasBone ? -model.boundingBox.halfSize.x : model.boundingBox.halfSize.x, model.boundingBox.halfSize.y, 0);
+            }
+
+            shape.SetBox(model.boundingBox.size, offset);
         }
 
         File outFile(objectFile, FILE_WRITE);

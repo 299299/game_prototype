@@ -7,9 +7,18 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="3030">
+	<component type="StaticModel" id="3132">
 		<attribute name="Model" value="Model;Models/LIS/OB_UrbanFurnitures/ST_UFurn_Scaffolding01B.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_UrbanFurnitures/mt_ufurn_scaffolding01.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="3133">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
+	</component>
+	<component type="CollisionShape" id="3134">
+		<attribute name="Size" value="22.7127 8.9599 5.8787" />
+		<attribute name="Offset Position" value="0 4.47995 0" />
 	</component>
 </node>

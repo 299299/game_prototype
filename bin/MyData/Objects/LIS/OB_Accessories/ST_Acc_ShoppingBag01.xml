@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1432">
+	<component type="StaticModel" id="1502">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_ShoppingBag01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_shoppingbag01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1433">
+	<component type="RigidBody" id="1503">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1434">
+	<component type="CollisionShape" id="1504">
 		<attribute name="Size" value="1.019 1.15433 0.3048" />
 		<attribute name="Offset Position" value="0 0.577163 0" />
 	</component>

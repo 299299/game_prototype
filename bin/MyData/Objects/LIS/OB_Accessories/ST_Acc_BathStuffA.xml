@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1021">
+	<component type="StaticModel" id="1091">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_BathStuffA.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_bathstuff01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1022">
+	<component type="RigidBody" id="1092">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1023">
+	<component type="CollisionShape" id="1093">
 		<attribute name="Size" value="0.863961 0.506491 0.632824" />
 		<attribute name="Offset Position" value="0 0.253246 0" />
 	</component>

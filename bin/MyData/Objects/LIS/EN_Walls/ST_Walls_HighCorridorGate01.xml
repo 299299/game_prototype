@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="694">
+	<component type="StaticModel" id="764">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_HighCorridorGate01.mdl" />
 		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="695">
+	<component type="RigidBody" id="765">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="696">
+	<component type="CollisionShape" id="766">
 		<attribute name="Size" value="13.1065 10.2616 1.82883" />
 		<attribute name="Offset Position" value="0 5.1308 0" />
 	</component>

@@ -35,10 +35,8 @@ float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "Camera";
 
-uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = -1;
 int render_features = RF_FULL;
 
 String LUT = "";
@@ -47,6 +45,37 @@ int UI_FONT_SIZE = 20;
 
 GameInput@ gInput = GameInput();
 bool debugCamera = false;
+
+void LoadGlobalVars()
+{
+    Variant v = GetGlobalVar("Draw_Debug");
+    if (!v.empty)
+    {
+        drawDebug = v.GetInt();
+    }
+
+    v = GetGlobalVar("Color_Grading");
+    if (!v.empty)
+    {
+        colorGradingIndex = v.GetInt();
+    }
+
+    v = GetGlobalVar("Debug_Camera");
+    if (!v.empty)
+    {
+        debugCamera = v.GetBool();
+
+        gCameraMgr.SetDebugCamera(debugCamera);
+        ui.cursor.visible = !debugCamera;
+    }
+}
+
+void SaveGlobalVars()
+{
+    SetGlobalVar("Draw_Debug", Variant(drawDebug));
+    SetGlobalVar("Color_Grading", Variant(colorGradingIndex));
+    SetGlobalVar("Debug_Camera", Variant(debugCamera));
+}
 
 void Start()
 {
@@ -77,6 +106,8 @@ void Start()
     script.defaultScriptFile = scriptFile;
     if (renderer !is null && (render_features & RF_HDR != 0))
         renderer.hdrRendering = true;
+
+    LoadGlobalVars();
 
     SetRandomSeed(time.systemTime);
     @gMotionMgr = LIS_Game_MotionManager();
@@ -311,6 +342,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         Text@ text = ui.root.GetChild("debug", true);
         if (text !is null)
             text.visible = drawDebug != 0;
+
+        SaveGlobalVars();
     }
     else if (key == KEY_F2)
         debugHud.ToggleAll();
@@ -333,16 +366,19 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         debugCamera = !debugCamera;
         gCameraMgr.SetDebugCamera(debugCamera);
         ui.cursor.visible = !debugCamera;
+        SaveGlobalVars();
     }
     else if (key == KEY_4)
     {
         colorGradingIndex ++;
         SetColorGrading(colorGradingIndex);
+        SaveGlobalVars();
     }
     else if (key == KEY_5)
     {
         colorGradingIndex --;
         SetColorGrading(colorGradingIndex);
+        SaveGlobalVars();
     }
     else if (key == 'R')
         scene_.updateEnabled = !scene_.updateEnabled;

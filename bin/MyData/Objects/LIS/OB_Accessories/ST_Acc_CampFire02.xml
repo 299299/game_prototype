@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1114">
+	<component type="StaticModel" id="1184">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_CampFire02.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_campfire01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1115">
+	<component type="RigidBody" id="1185">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1116">
+	<component type="CollisionShape" id="1186">
 		<attribute name="Size" value="2.34536 0.346184 2.67621" />
 		<attribute name="Offset Position" value="0 0.173092 0" />
 	</component>

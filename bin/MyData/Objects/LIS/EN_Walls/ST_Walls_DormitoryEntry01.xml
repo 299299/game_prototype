@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="586">
+	<component type="StaticModel" id="656">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_DormitoryEntry01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Walls/mt_walls_dormitory01a.xml;Materials/LIS/EN_Walls/mt_walls_dormitory01a.xml;Materials/LIS/EN_Walls/mt_walls_dormitory01a.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="587">
+	<component type="RigidBody" id="657">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="588">
+	<component type="CollisionShape" id="658">
 		<attribute name="Size" value="14.9338 8.15105 2.29348" />
 		<attribute name="Offset Position" value="0 4.07553 0" />
 	</component>

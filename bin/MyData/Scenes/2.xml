@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="261.483" />
-	<attribute name="Next Replicated Node ID" value="129" />
-	<attribute name="Next Replicated Component ID" value="221" />
-	<attribute name="Next Local Node ID" value="16780745" />
-	<attribute name="Next Local Component ID" value="16778795" />
+	<attribute name="Next Replicated Node ID" value="131" />
+	<attribute name="Next Replicated Component ID" value="224" />
+	<attribute name="Next Local Node ID" value="16780754" />
+	<attribute name="Next Local Component ID" value="16778831" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -319,23 +319,6 @@
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="119">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="SK_Eng_ChloePickup" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-14.2455 -0.000954714 -38.189" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="1 1 1" />
-		<attribute name="Variables" />
-		<component type="RigidBody" id="203">
-			<attribute name="Physics Rotation" value="1 0 0 0" />
-			<attribute name="Physics Position" value="-14.2455 -0.000954628 -38.189" />
-		</component>
-		<component type="CollisionShape" id="204">
-			<attribute name="Size" value="6.35572 4.67246 14.0198" />
-			<attribute name="Offset Position" value="0 2.33623 0" />
-		</component>
-	</node>
 	<node id="121">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Rub_CardBox01A" />
@@ -436,15 +419,25 @@
 			<attribute name="Offset Position" value="0 0.426427 0" />
 		</component>
 	</node>
-	<node id="127">
+	<node id="129">
 		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="SK_Doors_Interior01" />
+		<attribute name="Name" value="SK_Doors_Interior03" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-18.9852 -0.0253996 -32.5962" />
+		<attribute name="Position" value="-20.2932 -0.0254 -28.2512" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<node id="128">
+		<component type="RigidBody" id="221">
+			<attribute name="Physics Rotation" value="1 0 0 0" />
+			<attribute name="Physics Position" value="-20.2932 -0.0253999 -28.2512" />
+			<attribute name="Collision Layer" value="4" />
+			<attribute name="Collision Mask" value="47" />
+		</component>
+		<component type="CollisionShape" id="222">
+			<attribute name="Size" value="2.159 5.0546 0.294467" />
+			<attribute name="Offset Position" value="-1.0795 2.5273 0" />
+		</component>
+		<node id="130">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RenderNode" />
 			<attribute name="Tags" />
@@ -452,9 +445,9 @@
 			<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<component type="AnimatedModel" id="220">
-				<attribute name="Model" value="Model;Models/LIS/EN_Doors/SK_Doors_Interior01.mdl" />
-				<attribute name="Material" value="Material;Materials/LIS/EN_Doors/mt_doors_interior01.xml;Materials/LIS/EN_Doors/mt_doors_interior01.xml" />
+			<component type="AnimatedModel" id="223">
+				<attribute name="Model" value="Model;Models/LIS/EN_Doors/SK_Doors_Interior03.mdl" />
+				<attribute name="Material" value="Material;Materials/LIS/EN_Doors/mt_doors_interior03.xml;Materials/LIS/EN_Doors/mt_doors_interior03.xml" />
 				<attribute name="Cast Shadows" value="true" />
 				<attribute name="Bone Animation Enabled">
 					<variant type="Bool" value="true" />
@@ -468,7 +461,7 @@
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<node id="16780739">
+			<node id="16780748">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="RootNode" />
 				<attribute name="Tags" />
@@ -476,7 +469,7 @@
 				<attribute name="Rotation" value="1 0 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16780740">
+				<node id="16780749">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_PreRotation" />
 					<attribute name="Tags" />
@@ -484,15 +477,15 @@
 					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16780741">
+					<node id="16780750">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_Rotation" />
 						<attribute name="Tags" />
 						<attribute name="Position" value="0 0 -0" />
-						<attribute name="Rotation" value="0.707107 -0.707107 1.68587e-07 -1.68587e-07" />
+						<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 						<attribute name="Scale" value="1 1 1" />
 						<attribute name="Variables" />
-						<node id="16780742">
+						<node id="16780751">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_Scaling" />
 							<attribute name="Tags" />
@@ -500,7 +493,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 							<attribute name="Variables" />
-							<node id="16780743">
+							<node id="16780752">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="OB_SK_Door" />
 								<attribute name="Tags" />
@@ -508,7 +501,7 @@
 								<attribute name="Rotation" value="1 0 0 0" />
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
-								<node id="16780744">
+								<node id="16780753">
 									<attribute name="Is Enabled" value="true" />
 									<attribute name="Name" value="OB_SK_Handle" />
 									<attribute name="Tags" />

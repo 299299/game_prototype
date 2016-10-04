@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="2099">
+	<component type="StaticModel" id="2169">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_HallOfFameLetters.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_halloffame.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="2100">
+	<component type="RigidBody" id="2170">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="2101">
+	<component type="CollisionShape" id="2171">
 		<attribute name="Size" value="3.94088 0.265727 0.0254" />
 		<attribute name="Offset Position" value="0 0.132863 0" />
 	</component>

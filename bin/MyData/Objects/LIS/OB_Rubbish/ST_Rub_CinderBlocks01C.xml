@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="2840">
+	<component type="StaticModel" id="2910">
 		<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/ST_Rub_CinderBlocks01C.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/mt_rub_cinderblocks01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="2841">
+	<component type="RigidBody" id="2911">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="2842">
+	<component type="CollisionShape" id="2912">
 		<attribute name="Size" value="0.790674 0.465785 0.403114" />
 		<attribute name="Offset Position" value="0 0.232893 0" />
 	</component>

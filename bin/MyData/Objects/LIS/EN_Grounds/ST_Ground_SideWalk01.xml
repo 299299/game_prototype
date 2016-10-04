@@ -7,17 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="266">
+	<component type="StaticModel" id="336">
 		<attribute name="Model" value="Model;Models/LIS/EN_Grounds/ST_Ground_SideWalk01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/mt_ground_sidewalk01.xml;Materials/LIS/EN_Grounds/mt_ground_sidewalk01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="267">
+	<component type="RigidBody" id="337">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
 		<attribute name="Collision Layer" value="4" />
 		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="268">
+	<component type="CollisionShape" id="338">
 		<attribute name="Size" value="6.5024 0.254 6.5024" />
 		<attribute name="Offset Position" value="0 0.127 0" />
 	</component>
