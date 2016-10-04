@@ -131,7 +131,11 @@ void ProcessAnimations()
         // Print("Found a animation " + animations[i]);
         String anim = animations[i];
         uint pos = anim.FindLast('.');
-        DoProcess(ASSET_DIR + "Animations/" + anim, OUT_DIR + "Animations/" + anim.Substring(0, pos) + "_Take 001.ani", "anim", ANIMATION_ARGS);
+        if (fileSystem.FileExists("Animations/" + anim.Substring(0, pos) + "_Take 001.ani") && !forceCompile)
+        {
+            continue;
+        }
+        DoProcess(ASSET_DIR + "Animations/" + anim, OUT_DIR + "Animations/" + anim.Substring(0, pos) + ".mdl", "anim", ANIMATION_ARGS);
     }
 }
 
@@ -198,6 +202,7 @@ void ProcessObjects()
         {
             Node@ renderNode = node.CreateChild("RenderNode");
             AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
+            renderNode.CreateComponent("AnimationController");
             renderNode.worldRotation = Quaternion(0, 180, 0);
             am.model = model;
             am.castShadows = true;

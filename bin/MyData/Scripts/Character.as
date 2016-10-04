@@ -86,11 +86,6 @@ class CharacterState : State
                 particleName.empty ? "Particle/SnowExplosionFade.xml" : particleName, 5, 5.0f);
     }
 
-    float GetThreatScore()
-    {
-        return 0.0f;
-    }
-
     void Enter(State@ lastState)
     {
         if (flags >= 0)
@@ -548,11 +543,10 @@ class CharacterAlignState : CharacterState
 
 class Character : GameObject
 {
-    FSM@    stateMachine = FSM();
+    FSM@                    stateMachine = FSM();
 
     Character@              target;
 
-    Node@                   sceneNode;
     Node@                   renderNode;
 
     AnimationController@    animCtrl;
@@ -584,7 +578,10 @@ class Character : GameObject
 
     void ObjectStart()
     {
-        sceneNode = node;
+        uint startTime = time.systemTime;
+
+        GameObject::ObjectStart();
+
         renderNode = sceneNode.GetChild("RenderNode", false);
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
@@ -605,25 +602,18 @@ class Character : GameObject
         SetGravity(Vector3(0, -20, 0));
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-    }
 
-    void Start()
-    {
-        //Print("============================== begin Object Start ==============================");
-        uint startTime = time.systemTime;
-        ObjectStart();
         Print(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
-        //Print("============================== end Object Start ==============================");
     }
 
     void Stop()
     {
         Print("Character::Stop " + sceneNode.name);
         @stateMachine = null;
-        @sceneNode = null;
         @animCtrl = null;
         @animModel = null;
         @target = null;
+        GameObject::Stop();
     }
 
     void Remove()
@@ -669,6 +659,9 @@ class Character : GameObject
 
     String GetDebugText()
     {
+        if (sceneNode is null)
+            return "";
+
         String debugText = stateMachine.GetDebugText();
         debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " timeScale:" + timeScale + "\n";
         if (animModel.numAnimationStates > 0)

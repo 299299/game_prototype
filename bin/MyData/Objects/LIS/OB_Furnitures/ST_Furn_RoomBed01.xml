@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="922">
+	<component type="StaticModel" id="960">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_RoomBed01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_roombed01.xml" />
 		<attribute name="Cast Shadows" value="true" />

@@ -15,7 +15,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="612">
+		<component type="AnimatedModel" id="641">
 			<attribute name="Model" value="Model;Models/LIS/OB_Decorations/SK_Deco_ElPresey01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/mt_deco_elpresey01.xml" />
 			<attribute name="Cast Shadows" value="true" />
@@ -28,6 +28,11 @@
 				<variant type="Bool" value="true" />
 			</attribute>
 			<attribute name="Animation States">
+				<variant type="Int" value="0" />
+			</attribute>
+		</component>
+		<component type="AnimationController" id="642">
+			<attribute name="Node Animation States">
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>

@@ -6,10 +6,26 @@
 
 class GameObject : ScriptObject
 {
+    Node@   sceneNode;
     float   duration = -1;
     int     flags = 0;
     int     side = 0;
     float   timeScale = 1.0f;
+
+    void ObjectStart()
+    {
+        @sceneNode = node;
+    }
+
+    void DelayedStart()
+    {
+        ObjectStart();
+    }
+
+    void Stop()
+    {
+        @sceneNode = null;
+    }
 
     void SetTimeScale(float scale)
     {
@@ -101,7 +117,7 @@ class GameObject : ScriptObject
 
     Node@ GetNode()
     {
-        return null;
+        return sceneNode;
     }
 
     Scene@ GetScene()

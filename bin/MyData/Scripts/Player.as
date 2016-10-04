@@ -151,6 +151,7 @@ class Player : Character
     bool                              applyGravity = true;
     Node@                             objectCollectsNode;
     Array<Interactable@>              objectCollection;
+    Interactable@                     currentInteract;
 
     void ObjectStart()
     {
@@ -173,10 +174,15 @@ class Player : Character
         ChangeState("StandState");
     }
 
+    void Stop()
+    {
+        @currentInteract = null;
+        Character::Stop();
+    }
+
     void AddStates()
     {
     }
-
 
     void CommonStateFinishedOnGroud()
     {
@@ -205,7 +211,6 @@ class Player : Character
     void Update(float dt)
     {
         sensor.Update(dt);
-        CollectObjectsInView(objectCollection);
         Character::Update(dt);
     }
 
@@ -229,9 +234,14 @@ class Player : Character
 
     void CollectObjectsInView(Array<Interactable@>@ outObjects)
     {
+        @currentInteract = null;
         for (uint i=0; i<outObjects.length; ++i)
         {
-            outObjects[i].ShowOverlay(false);
+            if (outObjects[i].HasFlag(FLAGS_NO_COLLECTABLE))
+            {
+                continue;
+            }
+            outObjects[i].ChangeState("IdleState");
         }
 
         outObjects.Clear();
@@ -241,13 +251,72 @@ class Player : Character
         Array<RigidBody@>@ bodies = physicsWorld.GetRigidBodies(objectCollectsNode.GetComponent("RigidBody"));
         for (uint i=0; i<bodies.length; ++i)
         {
-            Interactable@ it = cast<Interactable>(bodies[i].node.scriptObject);
-            if (it !is null)
+            Node@ node_ = bodies[i].node;
+            Interactable@ it = cast<Interactable>(node_.scriptObject);
+
+            /*if (it is null)
             {
-                outObjects.Push(it);
-                it.ShowOverlay(true);
-                // Print("Found object " + bodies[i].node.name);
+                if (node_.vars.Contains(ROOT))
+                {
+                    Node@ rootNode = GetScene().GetNode(node_.vars[ROOT].GetUInt());
+                    if (rootNode !is null)
+                    {
+                        @it = cast<Interactable>(rootNode.scriptObject);
+                    }
+                }
+            }*/
+
+            if (it is null)
+                continue;
+            if (it.HasFlag(FLAGS_NO_COLLECTABLE))
+                continue;
+
+            outObjects.Push(it);
+            it.ChangeState("CollectableState");
+        }
+
+        float minDist = 1.5f;
+        float maxDir = 30;
+        float myAngle = GetCharacterAngle();
+        Vector3 myPos = sceneNode.worldPosition;
+        myPos.y += CHARACTER_HEIGHT / 2;
+        Interactable@ best_it = null;
+
+        for (uint i=0; i<outObjects.length; ++i)
+        {
+            Interactable@ it = outObjects[i];
+            Vector3 dir = it.GetPovitPoint() - myPos;
+            float dist = dir.length;
+            float angle = Atan2(dir.x, dir.z);
+            float angle_diff = AngleDiff(angle - myAngle);
+            // Print("angle = " + angle + " myAngle=" + myAngle + " dist=" + dist + " angle_diff=" + angle_diff);
+            if (Abs(angle_diff) > maxDir)
+                continue;
+
+            if (dist < minDist)
+            {
+                minDist = dist;
+                @best_it = it;
             }
         }
+
+        if (best_it !is null)
+        {
+            best_it.ChangeState("InteractableState");
+            @currentInteract = best_it;
+        }
+    }
+
+    void UpdateCollects()
+    {
+        CollectObjectsInView(objectCollection);
+    }
+
+    void DoInteract()
+    {
+        if (currentInteract is null)
+            return;
+
+        currentInteract.DoInteract();
     }
 };

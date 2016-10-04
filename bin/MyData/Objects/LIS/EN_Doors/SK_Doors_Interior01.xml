@@ -31,6 +31,11 @@
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>
+		<component type="AnimationController" id="78">
+			<attribute name="Node Animation States">
+				<variant type="Int" value="0" />
+			</attribute>
+		</component>
 		<node id="16777216">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RootNode" />

@@ -15,7 +15,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="81">
+		<component type="AnimatedModel" id="85">
 			<attribute name="Model" value="Model;Models/LIS/EN_Doors/SK_Doors_InteriorWood02B.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/EN_Doors/mt_doors_interiorwood01b.xml;Materials/LIS/EN_Doors/mt_doors_interiorwood01b.xml;Materials/LIS/EN_Doors/mt_doors_interiorwood01b.xml" />
 			<attribute name="Cast Shadows" value="true" />
@@ -28,6 +28,11 @@
 				<variant type="Bool" value="true" />
 			</attribute>
 			<attribute name="Animation States">
+				<variant type="Int" value="0" />
+			</attribute>
+		</component>
+		<component type="AnimationController" id="86">
+			<attribute name="Node Animation States">
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>

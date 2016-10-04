@@ -11,6 +11,19 @@ class MaxStandState : PlayerStandState
         super(c);
         AddMotion("AS_DIAL_Stand01_SF/A_Dial_Stand01_Base_SF");
     }
+
+    void Update(float dt)
+    {
+        Player@ p = cast<Player>(ownner);
+        p.UpdateCollects();
+
+        if (gInput.IsEnterPressed())
+        {
+            p.DoInteract();
+        }
+
+        PlayerStandState::Update(dt);
+    }
 };
 
 class MaxWalkState : PlayerWalkState
@@ -19,6 +32,19 @@ class MaxWalkState : PlayerWalkState
     {
         super(c);
         SetMotion("AS_Gen_Max/A_GEN_WalkMaxGP_Loop_SF");
+    }
+
+    void Update(float dt)
+    {
+        Player@ p = cast<Player>(ownner);
+        p.UpdateCollects();
+
+        if (gInput.IsEnterPressed())
+        {
+            p.DoInteract();
+        }
+
+        PlayerWalkState::Update(dt);
     }
 };
 
@@ -29,13 +55,18 @@ class MaxRunState : PlayerRunState
         super(c);
         SetMotion("AS_Gen_Body_SF/A_S_Gen_Jog01");
     }
-};
 
-class MaxFallState : PlayerFallState
-{
-    MaxFallState(Character@ c)
+    void Update(float dt)
     {
-        super(c);
+        Player@ p = cast<Player>(ownner);
+        p.UpdateCollects();
+
+        if (gInput.IsEnterPressed())
+        {
+            p.DoInteract();
+        }
+
+        PlayerRunState::Update(dt);
     }
 };
 
@@ -51,7 +82,6 @@ class Max : Player
         stateMachine.AddState(MaxStandState(this));
         stateMachine.AddState(MaxWalkState(this));
         stateMachine.AddState(MaxRunState(this));
-        stateMachine.AddState(MaxFallState(this));
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
     }

@@ -321,9 +321,7 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     {
         gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.DebugDraw(debug);
+        gGame.DebugDraw(debug);
     }
     if (drawDebug > 1)
         scene_.physicsWorld.DrawDebugGeometry(true);

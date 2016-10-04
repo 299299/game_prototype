@@ -209,42 +209,6 @@ class GameInput
         return m_rightStickMagnitude < 0.1;
     }
 
-    bool IsAttackPressed()
-    {
-        if (freezeInput)
-            return false;
-
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[2];
-        else
-            return input.mouseButtonPress[MOUSEB_LEFT];
-    }
-
-    bool IsCounterPressed()
-    {
-        if (freezeInput)
-            return false;
-
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[3];
-        else
-            return input.mouseButtonPress[MOUSEB_RIGHT];
-    }
-
-    bool IsEvadePressed()
-    {
-        if (freezeInput)
-            return false;
-
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[0];
-        else
-            return input.keyPress[KEY_SPACE];
-    }
-
     bool IsEnterPressed()
     {
         JoystickState@ joystick = GetJoystick();
@@ -254,24 +218,6 @@ class GameInput
                 return true;
         }
         return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE] || input.mouseButtonPress[MOUSEB_LEFT];
-    }
-
-    bool IsCrouchPressed()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[1];
-        else
-            return input.keyPress[KEY_LCTRL];
-    }
-
-    bool IsCrouchDown()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonDown[1];
-        else
-            return input.keyDown[KEY_LCTRL];
     }
 
     bool IsActionPressed()

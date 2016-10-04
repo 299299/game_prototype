@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="779">
+	<component type="StaticModel" id="816">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Cake01_E.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_cake01.xml" />
 		<attribute name="Cast Shadows" value="true" />

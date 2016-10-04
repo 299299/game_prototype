@@ -210,6 +210,8 @@ class TestGameState : GameState
 
     bool                postInited = false;
 
+    Array<uint>         gameObjects;
+
     TestGameState()
     {
         SetName("TestGameState");
@@ -269,11 +271,6 @@ class TestGameState : GameState
         messageText.SetPosition(0, -height * 2 + 100);
         messageText.color = Color(1, 0, 0);
         messageText.visible = false;
-    }
-
-    void Exit(State@ nextState)
-    {
-        State::Exit(nextState);
     }
 
     void Update(float dt)
@@ -404,10 +401,12 @@ class TestGameState : GameState
             audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
             playerId = playerNode.id;
             node_.Remove();
+            gameObjects.Push(playerId);
         }
         else if (node_.name.StartsWith("SK_Doors") || node_.name.StartsWith("ST_Doors"))
         {
             node_.CreateScriptObject(scriptFile, "Door");
+            gameObjects.Push(node_.id);
         }
         else if (node_.name.StartsWith("light"))
         {
@@ -423,7 +422,7 @@ class TestGameState : GameState
     {
         uint t = time.systemTime;
 
-        Array<Node@> nodes_to_remove;
+        gameObjects.Clear();
 
         // process current scene
         for (uint i=0; i<scene_.numChildren; ++i)
@@ -447,11 +446,6 @@ class TestGameState : GameState
         script.defaultScene = scene_;
         scene_.LoadXML(cache.GetFile("Scenes/2.xml"));
         OnSceneLoaded(scene_);
-    }
-
-    void OnSceneLoadFinished(Scene@ scene)
-    {
-
     }
 
     void ShowMessage(const String&in msg, bool show)
@@ -485,12 +479,6 @@ class TestGameState : GameState
         GameState::OnKeyDown(key);
     }
 
-    void OnSceneTimeScaleUpdated(Scene@ scene, float newScale)
-    {
-        if (gameScene !is scene)
-            return;
-    }
-
     String GetDebugText()
     {
         return  " name=" + name + " timeInState=" + timeInState + " state=" + state + " pauseState=" + pauseState + "\n";
@@ -500,6 +488,18 @@ class TestGameState : GameState
     {
         if (bHdr && graphics !is null)
             renderer.viewports[0].renderPath.shaderParameters["AutoExposureAdaptRate"] = 0.6f;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        for (uint i=0; i<gameObjects.length; ++i)
+        {
+            Node@ node_ = gameScene.GetNode(gameObjects[i]);
+            if (node_ !is null)
+            {
+                cast<GameObject>(node_.scriptObject).DebugDraw(debug);
+            }
+        }
     }
 };
 
