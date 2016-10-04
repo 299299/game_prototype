@@ -149,6 +149,8 @@ class PlayerFallState : SingleAnimationState
 class Player : Character
 {
     bool                              applyGravity = true;
+    Node@                             objectCollectsNode;
+    Array<Node@>                      objectCollection;
 
     void ObjectStart()
     {
@@ -156,6 +158,15 @@ class Player : Character
 
         side = 1;
         @sensor = PhysicsSensor(sceneNode);
+        objectCollectsNode = GetScene().CreateChild("Player_ObjectsCollectsNode");
+        CollisionShape@ shape = objectCollectsNode.CreateComponent("CollisionShape");
+        float coneHeight = 7.0f;
+        shape.SetCone(5.0f, coneHeight, Vector3(0, 0, coneHeight + 0.5f), Quaternion(-90, 0, 0));
+        RigidBody@ body = objectCollectsNode.CreateComponent("RigidBody");
+        body.collisionMask = 0;
+
+        body.collisionLayer = COLLISION_LAYER_RAYCAST;
+        body.collisionMask = COLLISION_LAYER_PROP;
 
         AddStates();
         ChangeState("StandState");
@@ -193,6 +204,7 @@ class Player : Character
     void Update(float dt)
     {
         sensor.Update(dt);
+        CollectObjectsInView(objectCollection);
         Character::Update(dt);
     }
 
@@ -212,5 +224,18 @@ class Player : Character
             return true;
         }
         return false;
+    }
+
+    void CollectObjectsInView(Array<Node@>@ outObjects)
+    {
+        objectCollectsNode.worldPosition = gCameraMgr.cameraNode.worldPosition;
+        objectCollectsNode.worldRotation = gCameraMgr.cameraNode.worldRotation;
+
+        Array<RigidBody@>@ bodies = physicsWorld.GetRigidBodies(objectCollectsNode.GetComponent("RigidBody"));
+        for (uint i=0; i<bodies.length; ++i)
+        {
+            outObjects.Push(bodies[i].node);
+            Print("Found object " + bodies[i].node.name);
+        }
     }
 };
