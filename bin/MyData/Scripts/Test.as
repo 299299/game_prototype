@@ -1,3 +1,4 @@
+#include "Scripts/Constants.as"
 // ------------------------------------------------
 #include "Scripts/Game.as"
 #include "Scripts/AssetProcess.as"

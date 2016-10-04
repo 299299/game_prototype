@@ -2,7 +2,8 @@
 //
 //    Batch Process Asset Script for automatic pipeline
 //
-// ==================================================================
+// ==================================================================］
+#include "Scripts/Constants.as"
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
@@ -212,7 +213,8 @@ void ProcessObjects()
 
         bool createPhysics = false;
         Array<String> physics_sub_folders = {
-            "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02"
+            "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02", "OB_UrbanFurnitures"
+            "EN_Doors", "OB_Rubbish", "OB_Foods", "OB_Accessories", "EN_Walls", "EN_Grounds", "EN_Ceilings"
         };
 
         for (uint i=0; i<physics_sub_folders.length; ++i)
@@ -224,6 +226,8 @@ void ProcessObjects()
         if (createPhysics)
         {
             RigidBody@ body = node.CreateComponent("RigidBody");
+            body.collisionLayer = COLLISION_LAYER_PROP;
+            body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_RAYCAST | COLLISION_LAYER_PROP;
             CollisionShape@ shape = node.CreateComponent("CollisionShape");
             shape.SetBox(model.boundingBox.size, Vector3(0, model.boundingBox.halfSize.y, 0));
         }

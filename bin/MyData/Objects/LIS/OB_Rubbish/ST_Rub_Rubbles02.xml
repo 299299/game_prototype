@@ -7,9 +7,18 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1767">
+	<component type="StaticModel" id="2867">
 		<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/ST_Rub_Rubbles02.mdl" />
 		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="2868">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
+	</component>
+	<component type="CollisionShape" id="2869">
+		<attribute name="Size" value="5.58957 0.418246 4.8851" />
+		<attribute name="Offset Position" value="0 0.209123 0" />
 	</component>
 </node>

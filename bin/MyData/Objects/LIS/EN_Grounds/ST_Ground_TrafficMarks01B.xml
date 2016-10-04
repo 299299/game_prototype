@@ -7,9 +7,18 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="169">
+	<component type="StaticModel" id="296">
 		<attribute name="Model" value="Model;Models/LIS/EN_Grounds/ST_Ground_TrafficMarks01B.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/mt_ground_trafficmarks01.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="297">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
+	</component>
+	<component type="CollisionShape" id="298">
+		<attribute name="Size" value="12.7 2.42233e-08 0.4064" />
+		<attribute name="Offset Position" value="0 1.21117e-08 0" />
 	</component>
 </node>

@@ -235,7 +235,7 @@ class Player : Character
         for (uint i=0; i<bodies.length; ++i)
         {
             outObjects.Push(bodies[i].node);
-            Print("Found object " + bodies[i].node.name);
+            // Print("Found object " + bodies[i].node.name);
         }
     }
 };

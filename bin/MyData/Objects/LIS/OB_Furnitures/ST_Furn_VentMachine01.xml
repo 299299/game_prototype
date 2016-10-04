@@ -7,15 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1350">
+	<component type="StaticModel" id="2414">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_VentMachine01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_ventmachine01.xml;Materials/LIS/OB_Furnitures/mt_furn_ventmachine01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1351">
+	<component type="RigidBody" id="2415">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1352">
+	<component type="CollisionShape" id="2416">
 		<attribute name="Size" value="6.9088 5.08 2.19549" />
 		<attribute name="Offset Position" value="0 2.54 0" />
 	</component>

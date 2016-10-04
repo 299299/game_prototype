@@ -7,15 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1257">
+	<component type="StaticModel" id="2321">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_SinkCabinet01Hole.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_sink01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1258">
+	<component type="RigidBody" id="2322">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1259">
+	<component type="CollisionShape" id="2323">
 		<attribute name="Size" value="2.54 2.50578 1.3205" />
 		<attribute name="Offset Position" value="0 1.25289 0" />
 	</component>

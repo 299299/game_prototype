@@ -7,9 +7,18 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="870">
+	<component type="StaticModel" id="1868">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_PaperNapkin01C.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_papernapkin01.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="1869">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
+	</component>
+	<component type="CollisionShape" id="1870">
+		<attribute name="Size" value="0.452889 0.153307 0.507229" />
+		<attribute name="Offset Position" value="0 0.0766534 0" />
 	</component>
 </node>

@@ -7,15 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="1050">
+	<component type="StaticModel" id="2114">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_KitchenElements04.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_kitchenelements01.xml;Materials/LIS/OB_Furnitures/mt_furn_kitchenelements01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="1051">
+	<component type="RigidBody" id="2115">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="1052">
+	<component type="CollisionShape" id="2116">
 		<attribute name="Size" value="0.914394 2.2352 1.65942" />
 		<attribute name="Offset Position" value="0 1.1176 0" />
 	</component>

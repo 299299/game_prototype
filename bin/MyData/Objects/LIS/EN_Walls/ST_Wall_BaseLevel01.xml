@@ -7,9 +7,18 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="190">
+	<component type="StaticModel" id="331">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Wall_BaseLevel01.mdl" />
 		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="332">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
+	</component>
+	<component type="CollisionShape" id="333">
+		<attribute name="Size" value="4.6736 1.6256 0.508001" />
+		<attribute name="Offset Position" value="0 0.8128 0" />
 	</component>
 </node>

@@ -7,7 +7,7 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="85">
+	<component type="StaticModel" id="98">
 		<attribute name="Model" value="Model;Models/LIS/EN_Doors/ST_Doors_GarageEntrance01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Doors/mt_doors_garageentrance01.xml;Materials/LIS/EN_Doors/mt_doors_garageentrance01.xml" />
 		<attribute name="Cast Shadows" value="true" />

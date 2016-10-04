@@ -7,15 +7,17 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="779">
+	<component type="StaticModel" id="1721">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines02/ST_Eng_Lawnmower01.mdl" />
 		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
-	<component type="RigidBody" id="780">
+	<component type="RigidBody" id="1722">
 		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
 	</component>
-	<component type="CollisionShape" id="781">
+	<component type="CollisionShape" id="1723">
 		<attribute name="Size" value="1.38331 2.51465 3.69279" />
 		<attribute name="Offset Position" value="0 1.25732 0" />
 	</component>

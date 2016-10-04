@@ -7,9 +7,18 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="845">
+	<component type="StaticModel" id="1793">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_BottleWine01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_bottlewine01.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="1794">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
+	</component>
+	<component type="CollisionShape" id="1795">
+		<attribute name="Size" value="0.238388 0.836018 0.238388" />
+		<attribute name="Offset Position" value="0 0.418009 0" />
 	</component>
 </node>

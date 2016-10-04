@@ -7,9 +7,18 @@
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
 	<attribute name="Variables" />
-	<component type="StaticModel" id="887">
+	<component type="StaticModel" id="1919">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins02.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_tinslabels.xml" />
 		<attribute name="Cast Shadows" value="true" />
+	</component>
+	<component type="RigidBody" id="1920">
+		<attribute name="Physics Rotation" value="1 0 0 0" />
+		<attribute name="Collision Layer" value="4" />
+		<attribute name="Collision Mask" value="47" />
+	</component>
+	<component type="CollisionShape" id="1921">
+		<attribute name="Size" value="0.572059 0.506229 0.578259" />
+		<attribute name="Offset Position" value="0 0.253115 0" />
 	</component>
 </node>
