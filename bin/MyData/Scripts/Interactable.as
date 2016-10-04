@@ -16,7 +16,7 @@ class Interactable : GameObject
         sceneNode = node;
         renderNode = sceneNode.GetChild("RenderNode", false);
         overlayText = ui.root.CreateChild("Text", sceneNode.name + "_Overlay_Text");
-        overlayText.SetFont(cache.GetResource("Font", UI_FONT), 12);
+        overlayText.SetFont(cache.GetResource("Font", UI_FONT), 15);
         overlayText.visible = false;
         overlayText.text = node.name;
     }

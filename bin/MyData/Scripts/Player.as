@@ -160,9 +160,9 @@ class Player : Character
         @sensor = PhysicsSensor(sceneNode);
         objectCollectsNode = GetScene().CreateChild("Player_ObjectsCollectsNode");
         CollisionShape@ shape = objectCollectsNode.CreateComponent("CollisionShape");
-        float coneHeight = 7.0f;
+        float coneHeight = 9.0f;
         float coneRadius = 3.0f;
-        shape.SetCone(coneRadius * 2, coneHeight, Vector3(0, 0, coneHeight + 0.5f), Quaternion(-90, 0, 0));
+        shape.SetCone(coneRadius * 2, coneHeight, Vector3(0, 0, coneHeight/4*3), Quaternion(-90, 0, 0));
         RigidBody@ body = objectCollectsNode.CreateComponent("RigidBody");
         body.collisionMask = 0;
 

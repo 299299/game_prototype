@@ -397,9 +397,25 @@ class TestGameState : GameState
 
     void OnNodeLoaded(Node@ node_)
     {
-        if (node_.name.StartsWith("SK_Doors") || node_.name.StartsWith("ST_Doors"))
+        Print("node.name=" + node_.name);
+        if (node_.name == "player")
+        {
+            Node@ playerNode = CreateCharacter("player_max", "LIS/CH_Max/CH_S_Max01.xml", "Max", node_.worldPosition, node_.worldRotation);
+            audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
+            playerId = playerNode.id;
+            node_.Remove();
+        }
+        else if (node_.name.StartsWith("SK_Doors") || node_.name.StartsWith("ST_Doors"))
         {
             node_.CreateScriptObject(scriptFile, "Door");
+        }
+        else if (node_.name.StartsWith("light"))
+        {
+            Light@ light = node_.GetComponent("Light");
+            if (render_features & RF_SHADOWS == 0)
+                light.castShadows = false;
+            light.shadowBias = BiasParameters(0.00025f, 0.5f);
+            light.shadowCascade = CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f);
         }
     }
 
@@ -407,47 +423,17 @@ class TestGameState : GameState
     {
         uint t = time.systemTime;
 
-        Node@ tmpPlayerNode = scene_.GetChild("player", true);
-        Vector3 playerPos;
-        Quaternion playerRot;
-        if (tmpPlayerNode !is null)
-        {
-            playerPos = tmpPlayerNode.worldPosition;
-            playerRot = tmpPlayerNode.worldRotation;
-            tmpPlayerNode.Remove();
-        }
-
-        Node@ playerNode = CreateCharacter("player", "LIS/CH_Max/CH_S_Max01.xml", "Max", playerPos, playerRot);
-        audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
-        playerId = playerNode.id;
+        Array<Node@> nodes_to_remove;
 
         // process current scene
         for (uint i=0; i<scene_.numChildren; ++i)
         {
-            Node@ _node = scene_.children[i];
-            Print("_node.name=" + _node.name);
-            if (_node.name.StartsWith("light"))
-            {
-                Light@ light = _node.GetComponent("Light");
-                if (render_features & RF_SHADOWS == 0)
-                    light.castShadows = false;
-                light.shadowBias = BiasParameters(0.00025f, 0.5f);
-                light.shadowCascade = CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f);
-            }
-            OnNodeLoaded(_node);
+            OnNodeLoaded(scene_.children[i]);
         }
 
         gCameraMgr.Start(scene_);
         gCameraMgr.SetCameraController("ThirdPerson");
         gameScene = scene_;
-
-        Node@ lightNode = scene_.GetChild("light");
-        if (lightNode !is null)
-        {
-            Follow@ f = cast<Follow>(lightNode.CreateScriptObject(scriptFile, "Follow"));
-            f.toFollow = playerId;
-            f.offset = Vector3(0, 10, 0);
-        }
 
         //DumpSkeletonNames(playerNode);
         renderer.viewports[0].scene = scene_;
