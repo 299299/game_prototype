@@ -162,7 +162,7 @@ class Player : Character
 
         objectCollectsNode = GetScene().CreateChild("Player_ObjectCollects");
         Camera@ cam = objectCollectsNode.CreateComponent("Camera");
-        cam.farClip = 30;
+        cam.farClip = 20;
         cam.fov = 45;
 
         AddStates();
@@ -273,7 +273,7 @@ class Player : Character
             it.ChangeState("CollectableState");
         }
 
-        float minDist = 2.5f;
+        float minDist = 1.0f;
         float maxDir = 30;
         float myAngle = GetCharacterAngle();
         Vector3 myPos = sceneNode.worldPosition;
@@ -286,6 +286,9 @@ class Player : Character
             Vector3 dir = it.GetPovitPoint() - myPos;
             dir.y = 0;
             float dist = dir.length;
+            dist -= it.size.x/2;
+            dist -= COLLISION_RADIUS;
+
             float angle = Atan2(dir.x, dir.z);
             float angle_diff = AngleDiff(angle - myAngle);
             // Print("angle = " + angle + " myAngle=" + myAngle + " dist=" + dist + " angle_diff=" + angle_diff);

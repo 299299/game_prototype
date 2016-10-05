@@ -1,14 +1,20 @@
 // ==============================================
 //
-//    Food Base Class
+//    LightSource Base Class
 //
 // ==============================================
 
-class FoodYummyState : Interactable_InteractivingState
+class LightSourceInteractivingState : Interactable_InteractivingState
 {
-    FoodYummyState(Interactable@ i)
+    LightSourceInteractivingState(Interactable@ i)
     {
         super(i);
+    }
+
+    void Enter(State@ lastState)
+    {
+        cast<LightSource>(ownner).SwitchLight();
+        Interactable_InteractivingState::Enter(lastState);
     }
 
     void Update(float dt)
@@ -18,21 +24,23 @@ class FoodYummyState : Interactable_InteractivingState
             ownner.ChangeState("IdleState");
             return;
         }
-
         Interactable_InteractivingState::Update(dt);
     }
 };
 
 
-class Food : Interactable
+class LightSource : Interactable
 {
     void ObjectStart()
     {
         Interactable::ObjectStart();
 
-        type = kInteract_Food;
+        type = kInteract_Light;
         collectText = FilterName(sceneNode.name);
-        interactText = collectText + " yummy yummy ....";
+
+        Node@ lightNode = sceneNode.GetChild("Light", true);
+        if (lightNode !is null)
+            interactText = collectText + "  ... click to switch";
     }
 
     void CreatePhysics()
@@ -41,20 +49,25 @@ class Food : Interactable
         body.collisionLayer = COLLISION_LAYER_PROP;
         body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_RAYCAST | COLLISION_LAYER_PROP;
         CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
-        if (sceneNode.name.Contains("bottle", false))
-        {
-            body.mass = 1;
-            shape.SetCylinder(size.x, size.y, GetOffset());
-        }
-        else
-        {
-            shape.SetBox(size, GetOffset());
-        }
+        shape.SetBox(size, GetOffset());
     }
 
     void AddStates()
     {
         Interactable::AddStates();
-        stateMachine.AddState(FoodYummyState(this));
+        stateMachine.AddState(LightSourceInteractivingState(this));
+    }
+
+    void SwitchLight()
+    {
+        Node@ lightNode = sceneNode.GetChild("Light", true);
+        if (lightNode is null)
+            return;
+
+        Light@ light = lightNode.GetComponent("Light");
+        if (light is null)
+            return;
+
+        light.enabled = !light.enabled;
     }
 }

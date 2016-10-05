@@ -421,6 +421,31 @@ class TestGameState : GameState
             node_.CreateScriptObject(scriptFile, "Food");
             gameObjects.Push(node_.id);
         }
+        else if (node_.name.StartsWith("ST_Furn") || node_.name.StartsWith("SK_Furn"))
+        {
+            node_.CreateScriptObject(scriptFile, node_.name.Contains("Mirror") ? "Mirror" : "Furniture");
+            gameObjects.Push(node_.id);
+        }
+        else if (node_.name.StartsWith("ST_Eng") || node_.name.StartsWith("SK_Eng"))
+        {
+            node_.CreateScriptObject(scriptFile, "Vehicle");
+            gameObjects.Push(node_.id);
+        }
+        else if (node_.name.StartsWith("ST_Light") || node_.name.StartsWith("SK_Light"))
+        {
+            node_.CreateScriptObject(scriptFile, "LightSource");
+            gameObjects.Push(node_.id);
+        }
+        else if (node_.name.StartsWith("ST_Rub") || node_.name.StartsWith("SK_Rub"))
+        {
+            node_.CreateScriptObject(scriptFile, "Rubbish");
+            gameObjects.Push(node_.id);
+        }
+        /*else if (node_.name.StartsWith("ST_Nat") || node_.name.StartsWith("SK_Nat"))
+        {
+            node_.CreateScriptObject(scriptFile, "Nature");
+            gameObjects.Push(node_.id);
+        }*/
     }
 
     void OnSceneLoaded(Scene@ scene_)
@@ -502,7 +527,9 @@ class TestGameState : GameState
             Node@ node_ = gameScene.GetNode(gameObjects[i]);
             if (node_ !is null)
             {
-                cast<GameObject>(node_.scriptObject).DebugDraw(debug);
+                GameObject@ go = cast<GameObject>(node_.scriptObject);
+                if (go !is null)
+                    go.DebugDraw(debug);
             }
         }
     }

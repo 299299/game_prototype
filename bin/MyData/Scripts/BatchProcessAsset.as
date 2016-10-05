@@ -329,7 +329,7 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
         String line = file.ReadLine();
         if (!line.empty)
         {
-            Print(line);
+            //Print(line);
 
             if (line.StartsWith("Diffuse="))
             {
@@ -354,17 +354,21 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
         }
     }
 
-    String tech = "Techniques/Diff.xml";
+    String tech = "Techniques/Diff";
     if (!diffuse.empty && !normal.empty && !spec.empty && !emissive.empty)
-        tech = "Techniques/DiffNormalSpecEmissive.xml";
+        tech = "Techniques/DiffNormalSpecEmissive";
     else if (!diffuse.empty && !normal.empty && !spec.empty)
-        tech = "Techniques/DiffNormalSpec.xml";
+        tech = "Techniques/DiffNormalSpec";
     else if (!diffuse.empty && !normal.empty)
-        tech = "Techniques/DiffNormal.xml";
+        tech = "Techniques/DiffNormal";
+
+    String name = GetFileName(matTxt);
+    if (name.StartsWith("MT_Nat"))
+        tech += "Alpha";
 
     Material@ m = Material();
-    m.SetTechnique(0, cache.GetResource("Technique", tech));
-    m.name = GetFileName(matTxt);
+    m.SetTechnique(0, cache.GetResource("Technique", tech + ".xml"));
+    m.name = name;
 
     if (!diffuse.empty)
     {

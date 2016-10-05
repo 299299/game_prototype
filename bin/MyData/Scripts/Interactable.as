@@ -10,6 +10,11 @@ enum InteractType
     kInteract_None,
     kInteract_Door,
     kInteract_Food,
+    kInteract_Funiture,
+    kInteract_Vehicle,
+    kInteract_Light,
+    kInteract_Rubbish,
+    kInteract_Nature,
 };
 
 String FilterName(const String&in name)
@@ -49,6 +54,7 @@ class InteractableState : State
     }
 };
 
+const float OPACITY_SPEED = 0.5f;
 
 class Interactable_IdleState : InteractableState
 {
@@ -60,8 +66,25 @@ class Interactable_IdleState : InteractableState
 
     void Enter(State@ lastState)
     {
-        ownner.overlayText.visible = false;
+        // ownner.overlayText.visible = false;
         State::Enter(lastState);
+    }
+
+    void Update(float dt)
+    {
+        float op = ownner.overlayText.opacity;
+        if (ownner.overlayText.visible && op > 0.0f)
+        {
+            op -= OPACITY_SPEED * dt;
+            if (op <= 0.0f)
+            {
+                ownner.overlayText.visible = false;
+                ownner.overlayText.opacity = 0.0f;
+            }
+            else
+                ownner.overlayText.opacity = op;
+        }
+        InteractableState::Update(dt);
     }
 };
 
@@ -83,6 +106,17 @@ class Interactable_CollectableState : InteractableState
         ownner.overlayText.position = IntVector2(v.x * graphics.width, v.y * graphics.height);
         State::Enter(lastState);
     }
+
+    void Update(float dt)
+    {
+        if (ownner.overlayText.opacity < 1.0f)
+        {
+            float op = ownner.overlayText.opacity;
+            op += OPACITY_SPEED * dt;
+            ownner.overlayText.opacity = op;
+        }
+        InteractableState::Update(dt);
+    }
 };
 
 
@@ -103,6 +137,17 @@ class Interactable_InteractableState : InteractableState
         ownner.overlayText.position = IntVector2(v.x * graphics.width, v.y * graphics.height);
         State::Enter(lastState);
     }
+
+    void Update(float dt)
+    {
+        if (ownner.overlayText.opacity < 1.0f)
+        {
+            float op = ownner.overlayText.opacity;
+            op += OPACITY_SPEED * dt;
+            ownner.overlayText.opacity = op;
+        }
+        InteractableState::Update(dt);
+    }
 };
 
 class Interactable_InteractivingState : InteractableState
@@ -116,6 +161,7 @@ class Interactable_InteractivingState : InteractableState
     void Enter(State@ lastState)
     {
         ownner.overlayText.visible = false;
+        ownner.overlayText.opacity = 0.0f;
         ownner.AddFlag(FLAGS_NO_COLLECTABLE);
         InteractableState::Enter(lastState);
     }
@@ -174,6 +220,7 @@ class Interactable : GameObject
         overlayText = ui.root.CreateChild("Text", sceneNode.name + "_Overlay_Text");
         overlayText.SetFont(cache.GetResource("Font", UI_FONT), 15);
         overlayText.visible = false;
+        overlayText.opacity = 0.0f;
 
         CreatePhysics();
 
@@ -239,5 +286,11 @@ class Interactable : GameObject
         ctrl.PlayExclusive(animName, layer, loop, blendTime);
         ctrl.SetSpeed(animName, speed * timeScale);
         ctrl.SetTime(animName, (speed < 0) ? ctrl.GetLength(animName) : startTime);
+    }
+
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddNode(sceneNode, 0.5f, false);
     }
 }

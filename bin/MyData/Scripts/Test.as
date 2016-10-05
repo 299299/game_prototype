@@ -14,6 +14,11 @@
 #include "Scripts/Interactable.as"
 #include "Scripts/Door.as"
 #include "Scripts/Food.as"
+#include "Scripts/Furniture.as"
+#include "Scripts/Vehicle.as"
+#include "Scripts/LightSource.as"
+#include "Scripts/Nature.as"
+#include "Scripts/Rubbish.as"
 #include "Scripts/Character.as"
 #include "Scripts/Max.as"
 #include "Scripts/Player.as"
@@ -27,7 +32,7 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR,
 };
 
-int drawDebug = 1;
+int drawDebug = 0;
 bool bHdr = true;
 bool bigHeadMode = false;
 bool nobgm = true;

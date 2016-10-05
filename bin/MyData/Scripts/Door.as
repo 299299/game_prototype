@@ -103,6 +103,6 @@ class Door : Interactable
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(povitPoint, 0.25f, GREEN, false);
-        debug.AddNode(sceneNode, 0.5f, false);
+        Interactable::DebugDraw(debug);
     }
 }
