@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="727">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_ChloePickup.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_ChloePickupExt.xml;Materials/LIS/OB_Engines/MT_Eng_ChloePickupExt.xml;Materials/LIS/OB_Engines/MT_Eng_ChloePickupExt.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

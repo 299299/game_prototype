@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1163">
 			<attribute name="Model" value="Model;Models/LIS/OB_Papers/SK_Papers_PictureChloeJessie01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/mt_papers_picturechloejessie01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/MT_Papers_PictureChloeJessie01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

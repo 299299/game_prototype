@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="427">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/SK_Acc_MetalBox01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_metalbox01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_MetalBox01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

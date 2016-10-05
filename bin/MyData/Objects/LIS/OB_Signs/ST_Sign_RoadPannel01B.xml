@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1422">
 		<attribute name="Model" value="Model;Models/LIS/OB_Signs/ST_Sign_RoadPannel01B.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Signs/mt_sign_roadpannel01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Signs/MT_Sign_RoadPannel01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1181">
 		<attribute name="Model" value="Model;Models/LIS/OB_Papers/ST_Papers_EmailJuliette01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Papers/mt_papers_emailjuliette01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Papers/MT_Papers_EmailJuliette01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

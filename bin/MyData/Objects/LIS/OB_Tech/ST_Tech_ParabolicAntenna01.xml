@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1510">
 		<attribute name="Model" value="Model;Models/LIS/OB_Tech/ST_Tech_ParabolicAntenna01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Tech/mt_tech_parabolicantenna01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Tech/MT_Tech_ParabolicAntenna01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="744">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines02/ST_Eng_DodgeDart01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_dodgedart01.xml;Materials/LIS/OB_Engines/mt_eng_dodgedart01.xml;Materials/LIS/OB_Engines/mt_eng_dodgedart01.xml;Materials/LIS/OB_Engines/mt_eng_dodgedart01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml;Materials/LIS/OB_Engines/MT_Eng_DodgeDart01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

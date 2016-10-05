@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1093">
 		<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_AshTree02.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Nature/mt_nat_ashtree01_wind.xml;Materials/LIS/OB_Nature/mt_nat_ashtree01_wind.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

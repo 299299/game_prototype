@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1155">
 			<attribute name="Model" value="Model;Models/LIS/OB_Papers/SK_Papers_DanielSketchBook01.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/MT_Paper_DanielSketchBook01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

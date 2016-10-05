@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="218">
 		<attribute name="Model" value="Model;Models/LIS/EN_Walls/ST_Walls_CampusExtWindows04.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/EN_Walls/mt_walls_campusext01b.xml" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

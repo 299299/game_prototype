@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="641">
 			<attribute name="Model" value="Model;Models/LIS/OB_Decorations/SK_Deco_ElPresey01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/mt_deco_elpresey01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/MT_Deco_ElPresey01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

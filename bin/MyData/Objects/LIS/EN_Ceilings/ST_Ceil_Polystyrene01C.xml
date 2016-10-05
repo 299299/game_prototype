@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="75">
 		<attribute name="Model" value="Model;Models/LIS/EN_Ceilings/ST_Ceil_Polystyrene01C.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/EN_Ceilings/mt_ceil_polystyrene01_e.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Ceilings/MT_Ceil_Polystyrene01_E.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

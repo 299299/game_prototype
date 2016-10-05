@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="944">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Lockers01D.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_lockers01d.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Lockers01D.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

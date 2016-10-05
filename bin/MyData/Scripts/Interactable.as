@@ -9,7 +9,30 @@ enum InteractType
 {
     kInteract_None,
     kInteract_Door,
+    kInteract_Food,
 };
+
+String FilterName(const String&in name)
+{
+    Array<String> splits = name.Split('_');
+    if (splits.length < 3)
+        return name;
+    String ret = splits[2];
+    int pos = -1;
+    for (int i=0; i<ret.length; ++i)
+    {
+        if (ret[i] == '0' || ret[i] == '1')
+        {
+            pos = i;
+            break;
+        }
+    }
+
+    if (pos > 0)
+        ret = ret.Substring(0, pos);
+
+    return ret;
+}
 
 class InteractableState : State
 {
@@ -112,11 +135,14 @@ class Interactable : GameObject
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
+    StaticModel@            staticModel;
 
     int                     type;
 
     String                  collectText;
     String                  interactText;
+
+    Vector3                 size;
 
     void AddStates()
     {
@@ -135,13 +161,30 @@ class Interactable : GameObject
         {
             animModel = renderNode.GetComponent("AnimatedModel");
             animCtrl = renderNode.GetComponent("AnimationController");
+            animModel.viewMask = VIEW_MASK_PROP;
+            size = animModel.model.boundingBox.size;
+        }
+        else
+        {
+            staticModel = sceneNode.GetComponent("StaticModel");
+            staticModel.viewMask = VIEW_MASK_PROP;
+            size = staticModel.model.boundingBox.size;
         }
 
         overlayText = ui.root.CreateChild("Text", sceneNode.name + "_Overlay_Text");
         overlayText.SetFont(cache.GetResource("Font", UI_FONT), 15);
         overlayText.visible = false;
+
+        CreatePhysics();
+
         AddStates();
         stateMachine.ChangeState("IdleState");
+    }
+
+    void Stop()
+    {
+        @stateMachine = null;
+        GameObject::Stop();
     }
 
     void ChangeState(const String&in name)
@@ -151,18 +194,26 @@ class Interactable : GameObject
 
     Vector3 GetOverlayPoint()
     {
-        return sceneNode.worldPosition;
+        return sceneNode.worldPosition + Vector3(0, size.y/2, 0);
     }
 
-    void Stop()
+    Vector3 GetOffset()
     {
-        @stateMachine = null;
-        GameObject::Stop();
+        return Vector3(0, size.y/2.0f, 0);
     }
 
     Vector3 GetPovitPoint()
     {
-        return sceneNode.worldPosition;
+        return sceneNode.worldPosition + Vector3(0, size.y/2, 0);
+    }
+
+    void CreatePhysics()
+    {
+        RigidBody@ body = sceneNode.CreateComponent("RigidBody");
+        body.collisionLayer = COLLISION_LAYER_PROP;
+        body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_RAYCAST | COLLISION_LAYER_PROP;
+        CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
+        shape.SetBox(size, GetOffset());
     }
 
     int DoInteract()

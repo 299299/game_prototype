@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1072">
 		<attribute name="Model" value="Model;Models/LIS/OB_LightSource/ST_Light_LampHalogen02.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/mt_light_lamphalogen01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/ST_Light_LampHalogen02B_Em.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

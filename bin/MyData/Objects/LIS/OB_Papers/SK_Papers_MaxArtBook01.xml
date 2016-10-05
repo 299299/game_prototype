@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1159">
 			<attribute name="Model" value="Model;Models/LIS/OB_Papers/SK_Papers_MaxArtBook01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/mt_papers_maxartbook01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/CH_Max/MT_CH_MAX.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

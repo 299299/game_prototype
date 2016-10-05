@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="696">
 		<attribute name="Model" value="Model;Models/LIS/OB_Decorations/ST_Deco_Trophy02D.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/mt_deco_trophy02.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/MT_Deco_Trophy02.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

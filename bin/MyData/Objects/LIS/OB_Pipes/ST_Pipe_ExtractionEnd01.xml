@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1223">
 		<attribute name="Model" value="Model;Models/LIS/OB_Pipes/ST_Pipe_ExtractionEnd01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Pipes/mt_pipe_extraction01.xml" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

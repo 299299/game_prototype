@@ -12,40 +12,71 @@ const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75", "-np"};
 String exportFolder;
 Scene@ processScene;
 Array<String> materials;
-Array<String> materialFolders;
+Array<String> materialFilteredNames1;
+Array<String> materialFilteredNames2;
 Array<String> textures;
 bool forceCompile = false;
 
+String FilterName1(const String&in name)
+{
+    Array<String> splits = name.ToLower().Split('_');
+    if (splits.length < 3)
+        return "";
+    String ret = splits[2];
+    ret.Replace("_Alpha", "");
+
+    //Print("Filter1 from " + name + " to " + ret);
+    return ret;
+}
+
+String FilterName2(const String&in name)
+{
+    if (name.length < 4)
+        return name;
+    String ret = name;
+    if (ret[ret.length-1] == 'A' || ret[ret.length-1] == 'B' ||
+        ret[ret.length-1] == 'C' || ret[ret.length-1] == 'D')
+    {
+        ret = ret.Substring(0, ret.length-1);
+    }
+    if (ret[ret.length-1] == '1' || ret[ret.length-1] == '2' ||
+        ret[ret.length-1] == '3' || ret[ret.length-1] == '4' ||
+        ret[ret.length-1] == '5' || ret[ret.length-1] == '6' ||
+        ret[ret.length-1] == '7' || ret[ret.length-1] == '8' ||
+        ret[ret.length-1] == '9' || ret[ret.length-1] == '0')
+    {
+        ret = ret.Substring(0, ret.length-1);
+    }
+    if (ret[ret.length-1] == '1' || ret[ret.length-1] == '2' ||
+        ret[ret.length-1] == '3' || ret[ret.length-1] == '4' ||
+        ret[ret.length-1] == '5' || ret[ret.length-1] == '6' ||
+        ret[ret.length-1] == '7' || ret[ret.length-1] == '8' ||
+        ret[ret.length-1] == '9' || ret[ret.length-1] == '0')
+    {
+        ret = ret.Substring(0, ret.length-1);
+    }
+
+    //Print("Filter2 from " + name + " to " + ret);
+    return ret;
+}
+
 String FindMaterial(const String&in name)
 {
-    for (uint i=0; i<materials.length; ++i)
+    for (uint i=0; i<materialFilteredNames1.length; ++i)
     {
-        if (materials[i].StartsWith(name))
-            return materialFolders[i] + materials[i];
-        if (name.StartsWith(materials[i]))
-            return materialFolders[i] + materials[i];
+        if (materialFilteredNames1[i].StartsWith(name))
+            return materials[i];
+        if (name.StartsWith(materialFilteredNames1[i]))
+            return materials[i];
     }
 
-    String inName = name.Substring(0, name.FindLast('0')-1);
-    for (uint i=0; i<materials.length; ++i)
+    String inName = FilterName2(name);
+    for (uint i=0; i<materialFilteredNames2.length; ++i)
     {
-        if (materials[i].StartsWith(inName))
-            return materialFolders[i] + materials[i];
-    }
-
-    inName = name.Substring(0, name.length-1);
-    for (uint i=0; i<materials.length; ++i)
-    {
-        if (materials[i].StartsWith(inName))
-            return materialFolders[i] + materials[i];
-    }
-
-    for (uint i=0; i<materials.length; ++i)
-    {
-        uint pos = materials[i].FindLast('0');
-        String matName = materials[i].Substring(0, pos-1);
-        if (name.StartsWith(matName))
-            return materialFolders[i] + materials[i];
+        if (materialFilteredNames2[i].StartsWith(inName))
+            return materials[i];
+        if (inName.StartsWith(materialFilteredNames2[i]))
+            return materials[i];
     }
 
     return "";
@@ -131,7 +162,7 @@ void ProcessAnimations()
         // Print("Found a animation " + animations[i]);
         String anim = animations[i];
         uint pos = anim.FindLast('.');
-        if (fileSystem.FileExists("Animations/" + anim.Substring(0, pos) + "_Take 001.ani") && !forceCompile)
+        if (fileSystem.FileExists(OUT_DIR + "Animations/" + anim.Substring(0, pos) + "_Take 001.ani") && !forceCompile)
         {
             continue;
         }
@@ -141,13 +172,17 @@ void ProcessAnimations()
 
 void ProcessObjects()
 {
+    Print("ProcessObjects finding all materials start");
     Array<String> materialFiles = fileSystem.ScanDir(OUT_DIR + "Materials", "*.xml", SCAN_FILES, true);
     for (uint i=0; i<materialFiles.length; ++i)
     {
         // Print("Add Material " + materialFiles[i]);
-        materials.Push(GetFileName(materialFiles[i]).ToLower());
-        materialFolders.Push(materialFiles[i].Substring(0, materialFiles[i].FindLast('/') + 1));
+        String fileName = GetFileName(materialFiles[i]).ToLower();
+        materials.Push(materialFiles[i]);
+        materialFilteredNames1.Push(FilterName1(fileName));
+        materialFilteredNames2.Push(materialFilteredNames1[i]);
     }
+    Print("ProcessObjects finding all materials end");
 
     Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.FBX", SCAN_FILES, true);
     int numObjectsMissingMaterials = 0;
@@ -187,9 +222,7 @@ void ProcessObjects()
         }
 
         String matName = objectName;
-        matName.Replace("SK_", "MT_");
-        matName.Replace("ST_", "MT_");
-        String m = FindMaterial(matName.ToLower());
+        String m = FindMaterial(FilterName1(matName));
         bool hasBone = false;
 
         if (m == "")
@@ -207,7 +240,7 @@ void ProcessObjects()
             am.model = model;
             am.castShadows = true;
             if (m != "")
-                am.material =  cache.GetResource("Material", "Materials/" + m + ".xml");
+                am.material =  cache.GetResource("Material", "Materials/" + m);
             hasBone = true;
         }
         else
@@ -216,7 +249,7 @@ void ProcessObjects()
             sm.model = model;
             sm.castShadows = true;
             if (m != "")
-                sm.material =  cache.GetResource("Material", "Materials/" + m + ".xml");
+                sm.material =  cache.GetResource("Material", "Materials/" + m);
         }
 
         /*

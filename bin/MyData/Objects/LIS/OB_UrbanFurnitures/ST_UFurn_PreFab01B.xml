@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1551">
 		<attribute name="Model" value="Model;Models/LIS/OB_UrbanFurnitures/ST_UFurn_PreFab01B.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Walls/MT_Walls_PreFab01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

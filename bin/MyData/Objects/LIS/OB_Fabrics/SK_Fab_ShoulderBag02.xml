@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="747">
 			<attribute name="Model" value="Model;Models/LIS/OB_Fabrics/SK_Fab_ShoulderBag02.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/mt_fab_shoulderbag02.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/MT_Fab_ShoulderBag02.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

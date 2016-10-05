@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="262.724" />
-	<attribute name="Next Replicated Node ID" value="137" />
-	<attribute name="Next Replicated Component ID" value="235" />
-	<attribute name="Next Local Node ID" value="16780767" />
-	<attribute name="Next Local Component ID" value="16778843" />
+	<attribute name="Next Replicated Node ID" value="140" />
+	<attribute name="Next Replicated Component ID" value="238" />
+	<attribute name="Next Local Node ID" value="16780768" />
+	<attribute name="Next Local Component ID" value="16778855" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -332,16 +332,6 @@
 			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_car01.xml;Materials/LIS/OB_Engines/mt_eng_car01.xml;Materials/LIS/OB_Engines/mt_eng_car01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
-		<component type="RigidBody" id="209">
-			<attribute name="Physics Rotation" value="1 0 0 0" />
-			<attribute name="Physics Position" value="-11.8605 0.0177664 -37.0962" />
-			<attribute name="Collision Layer" value="4" />
-			<attribute name="Collision Mask" value="47" />
-		</component>
-		<component type="CollisionShape" id="210">
-			<attribute name="Size" value="5.4128 3.6738 13.8619" />
-			<attribute name="Offset Position" value="0 1.8369 0" />
-		</component>
 	</node>
 	<node id="124">
 		<attribute name="Is Enabled" value="true" />
@@ -371,7 +361,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_WaterBottle01" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-10.9395 2.30771 -32.3603" />
+		<attribute name="Position" value="-4.86111 3.87911 -32.3603" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
@@ -380,22 +370,12 @@
 			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_waterbottle01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
-		<component type="RigidBody" id="218">
-			<attribute name="Physics Rotation" value="1 0 0 0" />
-			<attribute name="Physics Position" value="-10.9395 2.30771 -32.3603" />
-			<attribute name="Collision Layer" value="4" />
-			<attribute name="Collision Mask" value="47" />
-		</component>
-		<component type="CollisionShape" id="219">
-			<attribute name="Size" value="0.252242 0.852853 0.246552" />
-			<attribute name="Offset Position" value="0 0.426427 0" />
-		</component>
 	</node>
 	<node id="131">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_CoffeeCup01" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="-13.0454 2.26522 -32.1304" />
+		<attribute name="Position" value="-6.58882 3.97134 -32.1304" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
@@ -619,5 +599,33 @@
 				</node>
 			</node>
 		</node>
+	</node>
+	<node id="137">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Food_Tins10" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-7.21066 7.48304e-05 -43.4142" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="235">
+			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins10.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_tinslabels.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
+	</node>
+	<node id="139">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="ST_Food_Tins16" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="4.68375 -0.116863 -35.8382" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="1 1 1" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="237">
+			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins16.mdl" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_tinslabels.xml;Materials/LIS/OB_Foods/mt_food_tinslabels.xml" />
+			<attribute name="Cast Shadows" value="true" />
+		</component>
 	</node>
 </scene>

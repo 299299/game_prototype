@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="397">
 		<attribute name="Model" value="Model;Models/LIS/EN_Windows/ST_Win_GlassPanel01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/EN_Windows/mt_win_glasspanel01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Windows/MT_Win_Glass_Blurry.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

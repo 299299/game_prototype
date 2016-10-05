@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1483">
 		<attribute name="Model" value="Model;Models/LIS/OB_Tech/ST_Tech_ClimRoofFan01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Tech/mt_tech_cd01.xml" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

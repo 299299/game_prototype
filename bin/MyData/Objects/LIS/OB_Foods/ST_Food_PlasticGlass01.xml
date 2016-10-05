@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="843">
 		<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_PlasticGlass01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_plasticglass01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Foods/MT_Food_PlasticGlass01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

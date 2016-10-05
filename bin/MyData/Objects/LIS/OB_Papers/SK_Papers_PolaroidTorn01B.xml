@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1169">
 			<attribute name="Model" value="Model;Models/LIS/OB_Papers/SK_Papers_PolaroidTorn01B.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/mt_papers_polaroidtorn01b.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/MT_Papers_PolaroidTorn01B.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

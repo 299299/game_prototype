@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="529">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_FluidBottle04.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_fluidbottlestack01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_FluidBottleStack01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

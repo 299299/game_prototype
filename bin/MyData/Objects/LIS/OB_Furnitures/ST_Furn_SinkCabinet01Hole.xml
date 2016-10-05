@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="990">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_SinkCabinet01Hole.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_sink01.xml" />
+		<attribute name="Material" value="Material;" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

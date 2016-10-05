@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1122">
 		<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Grass02C.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/mt_nat_grasstorock01_blend_rain.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/MT_Ground_Grass_Rain_01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -68,20 +68,9 @@ class Door : Interactable
     {
         Interactable::ObjectStart();
 
-        RigidBody@ body = sceneNode.CreateComponent("RigidBody");
-        body.collisionLayer = COLLISION_LAYER_PROP;
-        body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_RAYCAST | COLLISION_LAYER_PROP;
-        CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
-
-        Model@ model = animModel.model;
-
-        Vector3 offset = Vector3(-animModel.boundingBox.halfSize.x, model.boundingBox.halfSize.y, 0);
-        float scale = 1;
-        shape.SetBox(model.boundingBox.size * scale, offset * scale);
-
         doorHandleNode = renderNode.GetChild("OB_SK_Handle", true);
 
-        povitPoint = sceneNode.LocalToWorld(offset);
+        povitPoint = sceneNode.LocalToWorld(GetOffset());
         type = kInteract_Door;
 
         collectText = "Door";
@@ -104,6 +93,11 @@ class Door : Interactable
     Vector3 GetPovitPoint()
     {
         return povitPoint;
+    }
+
+    Vector3 GetOffset()
+    {
+        return Vector3(-size.x/2.0f, size.y/2.0f, 0);
     }
 
     void DebugDraw(DebugRenderer@ debug)

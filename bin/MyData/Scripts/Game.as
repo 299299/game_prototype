@@ -416,6 +416,11 @@ class TestGameState : GameState
             light.shadowBias = BiasParameters(0.00025f, 0.5f);
             light.shadowCascade = CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f);
         }
+        else if (node_.name.StartsWith("ST_Food") || node_.name.StartsWith("SK_Food"))
+        {
+            node_.CreateScriptObject(scriptFile, "Food");
+            gameObjects.Push(node_.id);
+        }
     }
 
     void OnSceneLoaded(Scene@ scene_)

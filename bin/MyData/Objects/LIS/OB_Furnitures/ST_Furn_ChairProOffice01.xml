@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="879">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_ChairProOffice01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/mt_furn_chairprooffice01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_ChairProOffice01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1448">
 			<attribute name="Model" value="Model;Models/LIS/OB_Tech/SK_Tech_Drone01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Tech/mt_tech_drone01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Tech/MT_Tech_Drone01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

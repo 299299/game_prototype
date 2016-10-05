@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1372">
 			<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/SK_Rub_SwingDestroy01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/mt_rub_swingdestroy01.xml;Materials/LIS/OB_Rubbish/mt_rub_swingdestroy01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/MT_Rub_SwingDestroy01.xml;Materials/LIS/OB_Rubbish/MT_Rub_SwingDestroy01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

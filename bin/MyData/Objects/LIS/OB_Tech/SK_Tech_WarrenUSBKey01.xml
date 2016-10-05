@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1452">
 			<attribute name="Model" value="Model;Models/LIS/OB_Tech/SK_Tech_WarrenUSBKey01.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Tech/mt_tech_warrenusbkey01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Tech/MT_Tech_WarrenUSBKey01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

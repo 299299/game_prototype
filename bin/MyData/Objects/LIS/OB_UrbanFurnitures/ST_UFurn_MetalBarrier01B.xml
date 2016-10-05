@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1547">
 		<attribute name="Model" value="Model;Models/LIS/OB_UrbanFurnitures/ST_UFurn_MetalBarrier01B.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_UrbanFurnitures/mt_ufurn_metalbarrier01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_UrbanFurnitures/MT_UFurn_MetalBarrier01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

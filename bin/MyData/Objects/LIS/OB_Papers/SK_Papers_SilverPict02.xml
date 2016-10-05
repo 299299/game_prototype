@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="1173">
 			<attribute name="Model" value="Model;Models/LIS/OB_Papers/SK_Papers_SilverPict02.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/mt_papers_silverpictvictoriapuzzle.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Papers/MT_Papers_SilverPictVictoriaPuzzle.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

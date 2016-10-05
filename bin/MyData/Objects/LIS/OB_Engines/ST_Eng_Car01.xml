@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="722">
 		<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_Car01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_car01.xml;Materials/LIS/OB_Engines/mt_eng_car01.xml;Materials/LIS/OB_Engines/mt_eng_car01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_Car01.xml;Materials/LIS/OB_Engines/MT_Eng_Car01.xml;Materials/LIS/OB_Engines/MT_Eng_Car01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1382">
 		<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/ST_Rub_CinderBlocks01C.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/mt_rub_cinderblocks01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/MT_Rub_CinderBlocks01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

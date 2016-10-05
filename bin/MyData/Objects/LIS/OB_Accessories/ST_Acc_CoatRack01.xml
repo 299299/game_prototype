@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="505">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_CoatRack01.mdl" />
-		<attribute name="Material" value="Material;" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/MT_Furn_CoatRack02.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1399">
 		<attribute name="Model" value="Model;Models/LIS/OB_Signs/ST_Sign_Campus06.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Signs/mt_sign_campus01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/EN_Background/MT_Bckg_CampusTower01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

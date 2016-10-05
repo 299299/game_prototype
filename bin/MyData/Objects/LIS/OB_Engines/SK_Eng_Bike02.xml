@@ -17,7 +17,7 @@
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="710">
 			<attribute name="Model" value="Model;Models/LIS/OB_Engines/SK_Eng_Bike02.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_bike02_alpha.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_Bike02_Alpha.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">
 				<variant type="Bool" value="true" />

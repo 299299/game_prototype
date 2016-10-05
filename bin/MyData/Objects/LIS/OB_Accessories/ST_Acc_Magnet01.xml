@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="550">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_Magnet01.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_magnet01.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_Magnet01.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

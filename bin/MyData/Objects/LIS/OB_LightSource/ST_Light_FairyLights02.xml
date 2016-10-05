@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="1065">
 		<attribute name="Model" value="Model;Models/LIS/OB_LightSource/ST_Light_FairyLights02.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/mt_light_fairylights02_em.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/MT_Light_FairyLights02_Em.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

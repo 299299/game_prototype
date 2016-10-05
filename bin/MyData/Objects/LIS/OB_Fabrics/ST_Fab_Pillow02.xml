@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="793">
 		<attribute name="Model" value="Model;Models/LIS/OB_Fabrics/ST_Fab_Pillow02.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/mt_fab_pillow02.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/MT_Fab_Pillow02.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -9,7 +9,7 @@
 	<attribute name="Variables" />
 	<component type="StaticModel" id="565">
 		<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_PalletA.mdl" />
-		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/mt_acc_palleta.xml" />
+		<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_PalletA.xml" />
 		<attribute name="Cast Shadows" value="true" />
 	</component>
 </node>

@@ -159,16 +159,11 @@ class Player : Character
 
         side = 1;
         @sensor = PhysicsSensor(sceneNode);
-        objectCollectsNode = GetScene().CreateChild("Player_ObjectsCollectsNode");
-        CollisionShape@ shape = objectCollectsNode.CreateComponent("CollisionShape");
-        float coneHeight = 9.0f;
-        float coneRadius = 3.0f;
-        shape.SetCone(coneRadius * 2, coneHeight, Vector3(0, 0, coneHeight/4*3), Quaternion(-90, 0, 0));
-        RigidBody@ body = objectCollectsNode.CreateComponent("RigidBody");
-        body.collisionMask = 0;
 
-        body.collisionLayer = COLLISION_LAYER_RAYCAST;
-        body.collisionMask = COLLISION_LAYER_PROP;
+        objectCollectsNode = GetScene().CreateChild("Player_ObjectCollects");
+        Camera@ cam = objectCollectsNode.CreateComponent("Camera");
+        cam.farClip = 30;
+        cam.fov = 45;
 
         AddStates();
         ChangeState("StandState");
@@ -206,6 +201,11 @@ class Player : Character
         // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
         // sensor.DebugDraw(debug);
         debug.AddNode(sceneNode, 0.5f, false);
+
+        Camera@ cam = objectCollectsNode.GetComponent("Camera");
+        Polyhedron p;
+        p.Define(cam.frustum);
+        debug.AddPolyhedron(p, GREEN, false);
     }
 
     void Update(float dt)
@@ -234,6 +234,10 @@ class Player : Character
 
     void CollectObjectsInView(Array<Interactable@>@ outObjects)
     {
+        objectCollectsNode.worldPosition = gCameraMgr.cameraNode.worldPosition;
+        objectCollectsNode.worldRotation = gCameraMgr.cameraNode.worldRotation;
+        Camera@ cam = objectCollectsNode.GetComponent("Camera");
+
         @currentInteract = null;
         for (uint i=0; i<outObjects.length; ++i)
         {
@@ -245,26 +249,20 @@ class Player : Character
         }
 
         outObjects.Clear();
-        objectCollectsNode.worldPosition = gCameraMgr.cameraNode.worldPosition;
-        objectCollectsNode.worldRotation = gCameraMgr.cameraNode.worldRotation;
-
-        Array<RigidBody@>@ bodies = physicsWorld.GetRigidBodies(objectCollectsNode.GetComponent("RigidBody"));
-        for (uint i=0; i<bodies.length; ++i)
+        Array<Drawable@> drawables = octree.GetDrawables(cam.frustum, DRAWABLE_GEOMETRY, VIEW_MASK_PROP);
+        for (uint i=0; i<drawables.length; ++i)
         {
-            Node@ node_ = bodies[i].node;
+            Node@ node_ = drawables[i].node;
             Interactable@ it = cast<Interactable>(node_.scriptObject);
 
-            /*if (it is null)
+            if (it is null)
             {
-                if (node_.vars.Contains(ROOT))
+                Node@ rootNode = node_.parent;
+                if (rootNode !is null)
                 {
-                    Node@ rootNode = GetScene().GetNode(node_.vars[ROOT].GetUInt());
-                    if (rootNode !is null)
-                    {
-                        @it = cast<Interactable>(rootNode.scriptObject);
-                    }
+                    @it = cast<Interactable>(rootNode.scriptObject);
                 }
-            }*/
+            }
 
             if (it is null)
                 continue;
@@ -286,6 +284,7 @@ class Player : Character
         {
             Interactable@ it = outObjects[i];
             Vector3 dir = it.GetPovitPoint() - myPos;
+            dir.y = 0;
             float dist = dir.length;
             float angle = Atan2(dir.x, dir.z);
             float angle_diff = AngleDiff(angle - myAngle);
