@@ -19,6 +19,8 @@
 #include "Scripts/LightSource.as"
 #include "Scripts/Nature.as"
 #include "Scripts/Rubbish.as"
+#include "Scripts/Accessory.as"
+#include "Scripts/Decoration.as"
 #include "Scripts/Character.as"
 #include "Scripts/Max.as"
 #include "Scripts/Player.as"

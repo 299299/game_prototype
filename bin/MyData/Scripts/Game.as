@@ -441,7 +441,17 @@ class TestGameState : GameState
             node_.CreateScriptObject(scriptFile, "Rubbish");
             gameObjects.Push(node_.id);
         }
-        /*else if (node_.name.StartsWith("ST_Nat") || node_.name.StartsWith("SK_Nat"))
+        else if (node_.name.StartsWith("ST_Acc") || node_.name.StartsWith("SK_Acc"))
+        {
+            node_.CreateScriptObject(scriptFile, "Accessory");
+            gameObjects.Push(node_.id);
+        }
+        /*else if (node_.name.StartsWith("ST_Deco") || node_.name.StartsWith("SK_Deco"))
+        {
+            node_.CreateScriptObject(scriptFile, "Decoration");
+            gameObjects.Push(node_.id);
+        }
+        else if (node_.name.StartsWith("ST_Nat") || node_.name.StartsWith("SK_Nat"))
         {
             node_.CreateScriptObject(scriptFile, "Nature");
             gameObjects.Push(node_.id);

@@ -14,6 +14,8 @@ enum InteractType
     kInteract_Vehicle,
     kInteract_Light,
     kInteract_Rubbish,
+    kInteract_Accessory,
+    kInteract_Decoration,
     kInteract_Nature,
 };
 
