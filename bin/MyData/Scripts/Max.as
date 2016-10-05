@@ -70,6 +70,26 @@ class MaxRunState : PlayerRunState
     }
 };
 
+class MaxOpenDoorState : MultiAnimationState
+{
+    Vector3 velocity = Vector3(0, 0, 1.5f);
+
+    MaxOpenDoorState(Character@ c)
+    {
+        super(c);
+        SetName("OpenDoorState");
+        AddMotion("AS_INTERACT_Interact/A_Max_GP_Interact_Door02_SF");
+        AddMotion("AS_INTERACT_Interact/A_Max_GP_Interact_Door01_SF");
+    }
+
+    void Update(float dt)
+    {
+        if (timeInState >= 48.0f / 30.0f && timeInState <= 105.0f / 30.0f)
+            ownner.SetVelocity(ownner.GetNode().worldRotation * velocity);
+        MultiAnimationState::Update(dt);
+    }
+};
+
 class Max : Player
 {
     Max()
@@ -84,6 +104,7 @@ class Max : Player
         stateMachine.AddState(MaxRunState(this));
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
+        stateMachine.AddState(MaxOpenDoorState(this));
     }
 };
 

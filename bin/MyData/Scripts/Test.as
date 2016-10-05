@@ -333,7 +333,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     int key = eventData["Key"].GetInt();
     gGame.OnKeyDown(key);
 
-    Print("Key Down = " + key);
+    // Print("Key Down = " + key);
 
     if (key == KEY_F1)
     {
@@ -397,7 +397,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
         //testAnimations.Push("BM_Climb/Dangle_Right");
-        // testAnimations.Push(GetAnimationName("BM_Railing/Railing_Run_Forward_Idle"));
+        testAnimations.Push(GetAnimationName("AS_INTERACT_Interact/A_Max_GP_Interact_Door02_SF"));
         if (player !is null)
             player.TestAnimation(testAnimations);
     }
@@ -433,6 +433,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             p.timeScale = 1.0f;
         else
             p.timeScale = 1.25f;
+    }
+    else if (key == 'G' || key == 'g')
+    {
+        GetPlayer().ChangeState("OpenDoorState");
     }
 }
 

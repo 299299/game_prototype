@@ -4,33 +4,40 @@
 //
 // ==============================================
 
+class Door_IdleState : Interactable_IdleState
+{
+    String animation;
+
+    Door_IdleState(Interactable@ i)
+    {
+        super(i);
+        animation = GetAnimationName("AS_INTERACT_Door/A_GEN_Door_Posing");
+    }
+
+    void Enter(State@ lastState)
+    {
+        Interactable_IdleState::Enter(lastState);
+        ownner.PlayAnimation(animation, LAYER_MOVE, true);
+    }
+};
+
 class Door_OpeningState : Interactable_InteractivingState
 {
-    String animation_openning_1;
-    String animation_openning_2;
-
-    String animation_idle;
-
+    Array<String> animations;
     int index;
 
     Door_OpeningState(Interactable@ i)
     {
         super(i);
-        animation_openning_1 = GetAnimationName("AS_INTERACT_Door/A_GP_Interact_Door_YOpen_Door");
-        animation_openning_2 = GetAnimationName("AS_INTERACT_Door/A_GP_Interact_Door_MinusYOpen_Door");
-        animation_idle = GetAnimationName("AS_INTERACT_Door/A_GEN_Door_Posing");
+        animations.Push(GetAnimationName("AS_INTERACT_Door/A_GP_Interact_Door_YOpen_Door"));
+        animations.Push(GetAnimationName("AS_INTERACT_Door/A_GP_Interact_Door_MinusYOpen_Door"));
     }
 
     void Enter(State@ lastState)
     {
         Interactable_InteractivingState::Enter(lastState);
-        Player@ p = GetPlayer();
-        Vector3 iDir = ownner.GetNode().worldRotation  * Vector3(0, 0, 1);
-        float iAngle = Atan2(iDir.x, iDir.z);
-        float angleDiff = Abs(AngleDiff(iAngle - p.GetCharacterAngle()));
-        //Print("AngleDiff = " + angleDiff);
-        index = (angleDiff < 90) ? 1 : 0;
-        ownner.PlayAnimation((index == 0 ? animation_openning_1 : animation_openning_2), LAYER_MOVE, false);
+        index = ownner.GetNode().vars[ANIMATION_INDEX].GetInt();
+        ownner.PlayAnimation(animations[index], LAYER_MOVE, false);
         ownner.sceneNode.GetComponent("RigidBody").enabled = false;
     }
 
@@ -42,10 +49,10 @@ class Door_OpeningState : Interactable_InteractivingState
 
     void Update(float dt)
     {
-        if (ownner.animCtrl.IsAtEnd((index == 0 ? animation_openning_1 : animation_openning_2)))
+        if (ownner.animCtrl.IsAtEnd(animations[index]))
         {
             ownner.stateMachine.ChangeState("IdleState");
-            ownner.PlayAnimation(animation_idle, LAYER_MOVE, true);
+            return;
         }
         Interactable_InteractivingState::Update(dt);
     }
@@ -83,7 +90,9 @@ class Door : Interactable
 
     void AddStates()
     {
-        Interactable::AddStates();
+        stateMachine.AddState(Door_IdleState(this));
+        stateMachine.AddState(Interactable_CollectableState(this));
+        stateMachine.AddState(Interactable_InteractableState(this));
         stateMachine.AddState(Door_OpeningState(this));
     }
 

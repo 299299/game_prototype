@@ -275,7 +275,7 @@ class Player : Character
             it.ChangeState("CollectableState");
         }
 
-        float minDist = 1.5f;
+        float minDist = 2.5f;
         float maxDir = 30;
         float myAngle = GetCharacterAngle();
         Vector3 myPos = sceneNode.worldPosition;
@@ -317,6 +317,19 @@ class Player : Character
         if (currentInteract is null)
             return;
 
+        Vector3 iDir = currentInteract.GetNode().worldRotation  * Vector3(0, 0, 1);
+        float iAngle = Atan2(iDir.x, iDir.z);
+        float angleDiff = Abs(AngleDiff(iAngle - GetCharacterAngle()));
+        int index = (angleDiff < 90) ? 1 : 0;
+
+        currentInteract.GetNode().vars[ANIMATION_INDEX] = index;
+        GetNode().vars[ANIMATION_INDEX] = index;
+
         currentInteract.DoInteract();
+
+        if (currentInteract.type == kInteract_Door)
+        {
+            ChangeState("OpenDoorState");
+        }
     }
 };

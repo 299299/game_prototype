@@ -154,8 +154,6 @@ class Interactable : GameObject
         return sceneNode.worldPosition;
     }
 
-
-
     void Stop()
     {
         @stateMachine = null;
@@ -167,10 +165,11 @@ class Interactable : GameObject
         return sceneNode.worldPosition;
     }
 
-    void DoInteract()
+    int DoInteract()
     {
         Print(GetName() + " DoInteract");
         stateMachine.ChangeState("InteractivingState");
+        return 0;
     }
 
     void Update(float dt)
