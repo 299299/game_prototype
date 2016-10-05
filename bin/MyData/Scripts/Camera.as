@@ -489,17 +489,6 @@ class CameraManager
             currentController.OnCameraEvent(eventData);
     }
 
-    void CheckCameraAnimation(const String&in anim)
-    {
-        VariantMap eventData;
-        eventData[NAME] = CHANGE_STATE;
-        eventData[VALUE] = StringHash("Animation");
-        eventData[ANIMATION] = anim;
-        Print("Play cam animation =" + anim);
-
-        OnCameraEvent(eventData);
-    }
-
     String GetDebugText()
     {
         String ret = (currentController !is null) ? currentController.GetDebugText() : "";

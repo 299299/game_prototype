@@ -33,9 +33,6 @@ enum RootMotionFlag
 bool d_log = false;
 
 const String TITLE = "AssetProcess";
-const String TranslateBoneName = "Bip01_$AssimpFbx$_Translation";
-const String RotateBoneName = "Bip01_$AssimpFbx$_Rotation";
-const String ScaleBoneName = "Bip01_$AssimpFbx$_Scaling";
 
 const String HEAD = "Head";
 const String L_HAND = "Left_Hand";
@@ -70,9 +67,15 @@ class MotionRig
 
     Node@   alignNode;
 
-    MotionRig(const String& rigName)
+    String translateBoneName;
+    String rotateBoneName;
+
+    MotionRig(const String& rigName, const String&in tBone, const String&in rBone)
     {
         rig = rigName;
+        translateBoneName = tBone;
+        rotateBoneName = rBone;
+
         if (bigHeadMode)
         {
             Vector3 v(BIG_HEAD_SCALE, BIG_HEAD_SCALE, BIG_HEAD_SCALE);
@@ -92,15 +95,15 @@ class MotionRig
         am.model = cache.GetResource("Model", rigName);
 
         skeleton = am.skeleton;
-        Bone@ bone = skeleton.GetBone(RotateBoneName);
+        Bone@ bone = skeleton.GetBone(rotateBoneName);
         rotateBoneInitQ = bone.initialRotation;
 
         pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
         pelvisRightAxis.Normalize();
 
-        translateNode = processNode.GetChild(TranslateBoneName, true);
-        rotateNode = processNode.GetChild(RotateBoneName, true);
-        pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
+        translateNode = processNode.GetChild(translateBoneName, true);
+        rotateNode = processNode.GetChild(rotateBoneName, true);
+        pelvisOrign = skeleton.GetBone(translateBoneName).initialPosition;
 
         left_foot_to_ground_height = processNode.GetChild(L_FOOT, true).worldPosition.y;
         right_foot_to_ground_height = processNode.GetChild(R_FOOT, true).worldPosition.y;
@@ -162,9 +165,9 @@ void AssetPreProcess()
     processScene = Scene();
 }
 
-void AssignMotionRig(const String& rigName)
+void AssignMotionRig(const String& rigName, const String&in tBone, const String&in rBone)
 {
-    @curRig = MotionRig(rigName);
+    @curRig = MotionRig(rigName, tBone, rBone);
 }
 
 void RotateAnimation(const String&in animationFile, float rotateAngle)
@@ -179,8 +182,8 @@ void RotateAnimation(const String&in animationFile, float rotateAngle)
         return;
     }
 
-    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
-    AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
+    AnimationTrack@ translateTrack = anim.tracks[curRig.translateBoneName];
+    AnimationTrack@ rotateTrack = anim.tracks[curRig.rotateBoneName];
     Quaternion q(0, rotateAngle, 0);
     Node@ rotateNode = curRig.rotateNode;
 
@@ -220,7 +223,7 @@ void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
         return;
     }
 
-    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    AnimationTrack@ translateTrack = anim.tracks[curRig.translateBoneName];
     if (translateTrack !is null)
     {
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
@@ -293,7 +296,7 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
         return;
     }
 
-    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    AnimationTrack@ translateTrack = anim.tracks[rig.translateBoneName];
     if (translateTrack is null)
     {
         Print(animationFile + " translation track not found!!!");
@@ -359,14 +362,14 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         return 0;
     }
 
-    AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
+    AnimationTrack@ translateTrack = anim.tracks[curRig.translateBoneName];
     if (translateTrack is null)
     {
         Print(animationFile + " translation track not found!!!");
         return 0;
     }
 
-    AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
+    AnimationTrack@ rotateTrack = anim.tracks[curRig.rotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
     Node@ rotateNode = curRig.rotateNode;
     Node@ translateNode = curRig.translateNode;

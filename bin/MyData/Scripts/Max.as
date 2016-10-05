@@ -89,7 +89,9 @@ class Max : Player
 
 void Create_Max_Motions()
 {
-
+    AssignMotionRig("Models/LIS/CH_Max/CH_S_Max01.mdl", "RootNode", "Hips");
+    RotateAnimation(GetAnimationName("AS_INTERACT_Interact/A_Max_GP_Interact_Door01_SF"), 90);
+    RotateAnimation(GetAnimationName("AS_INTERACT_Interact/A_Max_GP_Interact_Door02_SF"), -90);
 }
 
 void Add_Max_AnimationTriggers()

@@ -391,24 +391,16 @@ class AnimationTestState : CharacterState
         Motion@ motion = testMotions[currentIndex];
         blendTime = (currentIndex == 0) ? 0.2f : 0.0f;
         if (motion !is null)
-        {
             motion.Start(ownner, startTime, blendTime, animSpeed);
-            if (ownner.side == 1)
-                gCameraMgr.CheckCameraAnimation(motion.name);
-        }
         else
-        {
             ownner.PlayAnimation(testAnimations[currentIndex], LAYER_MOVE, false, blendTime, startTime, animSpeed);
-            if (ownner.side == 1)
-                gCameraMgr.CheckCameraAnimation(testAnimations[currentIndex]);
-        }
     }
 
     void Update(float dt)
     {
         if (allFinished)
         {
-            if (input.keyDown[KEY_RETURN])
+            //if (input.keyDown[KEY_RETURN])
                 ownner.CommonStateFinishedOnGroud();
             return;
         }
@@ -718,7 +710,10 @@ class Character : GameObject
     {
         AnimationTestState@ state = cast<AnimationTestState>(stateMachine.FindState("AnimationTestState"));
         if (state is null)
+        {
+            Print("Can not find animation test state");
             return;
+        }
         state.Process(animations);
         ChangeState("AnimationTestState");
     }

@@ -333,6 +333,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     int key = eventData["Key"].GetInt();
     gGame.OnKeyDown(key);
 
+    Print("Key Down = " + key);
+
     if (key == KEY_F1)
     {
         ++drawDebug;
@@ -380,20 +382,17 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         SetColorGrading(colorGradingIndex);
         SaveGlobalVars();
     }
-    else if (key == 'R')
+    else if (key == 'R' || key == 'r')
         scene_.updateEnabled = !scene_.updateEnabled;
-    else if (key == 'T')
+    else if (key == 'T'  || key == 't')
     {
-        if (scene_.timeScale >= 0.999f)
-            scene_.timeScale = 0.1f;
-        else
-            scene_.timeScale = 1.0f;
+        scene_.timeScale = (scene_.timeScale >= 0.999f) ? 0.1f : 1.0f;
     }
-    else if (key == 'Q')
+    else if (key == 'Q' || key == 'q')
         engine.Exit();
-    else if (key == 'E')
+    else if (key == 'E' || key == 'e')
     {
-        String testName;
+        String testName = GetAnimationName("AS_INTERACT_Interact/A_Max_GP_Interact_Door01_SF");
         Array<String> testAnimations;
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
@@ -402,18 +401,18 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (player !is null)
             player.TestAnimation(testAnimations);
     }
-    else if (key == 'F')
+    else if (key == 'F' || key == 'f')
     {
         scene_.timeScale = 1.0f;
         // SetWorldTimeScale(scene_, 1);
     }
-    else if (key == 'I')
+    else if (key == 'I' || key == 'i')
     {
         Player@ p = GetPlayer();
         if (p !is null)
             p.SetPhysicsType(1 - p.physicsType);
     }
-    else if (key == 'M')
+    else if (key == 'M' || key == 'm')
     {
         Player@ p = GetPlayer();
         if (p !is null)
@@ -427,7 +426,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             Print("------------------------------------------------------------");
         }
     }
-    else if (key == 'U')
+    else if (key == 'U' || key == 'u')
     {
         Player@ p = GetPlayer();
         if (p.timeScale > 1.0f)
