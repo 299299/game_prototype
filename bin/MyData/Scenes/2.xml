@@ -5,10 +5,10 @@
 	<attribute name="Smoothing Constant" value="50" />
 	<attribute name="Snap Threshold" value="5" />
 	<attribute name="Elapsed Time" value="262.724" />
-	<attribute name="Next Replicated Node ID" value="199" />
-	<attribute name="Next Replicated Component ID" value="297" />
-	<attribute name="Next Local Node ID" value="16780802" />
-	<attribute name="Next Local Component ID" value="16778879" />
+	<attribute name="Next Replicated Node ID" value="394" />
+	<attribute name="Next Replicated Component ID" value="492" />
+	<attribute name="Next Local Node ID" value="16780869" />
+	<attribute name="Next Local Component ID" value="16778891" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -86,15 +86,6 @@
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="16780720">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="0 -3.94427 7.88854" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="1 1 1" />
-		<attribute name="Variables" />
-	</node>
 	<node id="96">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="sky" />
@@ -109,7 +100,20 @@
 			<attribute name="Can Be Occluded" value="false" />
 		</component>
 	</node>
-	<node id="97">
+	<node id="193">
+		<attribute name="Is Enabled" value="true" />
+		<attribute name="Name" value="Box" />
+		<attribute name="Tags" />
+		<attribute name="Position" value="-29.7339 2.5 -40.7823" />
+		<attribute name="Rotation" value="1 0 0 0" />
+		<attribute name="Scale" value="5 5 5" />
+		<attribute name="Variables" />
+		<component type="StaticModel" id="291">
+			<attribute name="Model" value="Model;Models/Box.mdl" />
+			<attribute name="Material" value="Material;Materials/Collision.xml" />
+		</component>
+	</node>
+	<node id="329">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_ChairProOffice01" />
 		<attribute name="Tags" />
@@ -117,13 +121,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="171">
+		<component type="StaticModel" id="427">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_ChairProOffice01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_ChairProOffice01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="98">
+	<node id="330">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Chair01" />
 		<attribute name="Tags" />
@@ -131,13 +135,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="172">
+		<component type="StaticModel" id="428">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Chair01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Chair01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="99">
+	<node id="331">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Cooker01" />
 		<attribute name="Tags" />
@@ -145,13 +149,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="173">
+		<component type="StaticModel" id="429">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Cooker01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Cooker01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="100">
+	<node id="332">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_DecoTable01" />
 		<attribute name="Tags" />
@@ -159,13 +163,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="174">
+		<component type="StaticModel" id="430">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_DecoTable01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_DecoTable01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="101">
+	<node id="333">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Fridge01" />
 		<attribute name="Tags" />
@@ -173,13 +177,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="175">
+		<component type="StaticModel" id="431">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Fridge01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="102">
+	<node id="334">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Fridge01_L_Door" />
 		<attribute name="Tags" />
@@ -187,13 +191,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="176">
+		<component type="StaticModel" id="432">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Fridge01_L_Door.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="103">
+	<node id="335">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Fridge01_R_Door" />
 		<attribute name="Tags" />
@@ -201,13 +205,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="177">
+		<component type="StaticModel" id="433">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Fridge01_R_Door.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Fridge01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="104">
+	<node id="336">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Living01" />
 		<attribute name="Tags" />
@@ -215,13 +219,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="178">
+		<component type="StaticModel" id="434">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Living01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Living01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="105">
+	<node id="337">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Mirror01" />
 		<attribute name="Tags" />
@@ -229,13 +233,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="179">
+		<component type="StaticModel" id="435">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Mirror01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Mirror01.xml;Materials/LIS/OB_Furnitures/MT_Furn_Mirror01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="106">
+	<node id="338">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Trashcan02" />
 		<attribute name="Tags" />
@@ -243,13 +247,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="180">
+		<component type="StaticModel" id="436">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Trashcan02.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Trashcan02.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_Trashcan02.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="108">
+	<node id="339">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_ScienceDesk01" />
 		<attribute name="Tags" />
@@ -257,13 +261,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="182">
+		<component type="StaticModel" id="437">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_ScienceDesk01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_ScienceDesk01.xml;Materials/LIS/OB_Furnitures/MT_Furn_ScienceDesk01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="109">
+	<node id="340">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Lockers01B" />
 		<attribute name="Tags" />
@@ -271,13 +275,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="183">
+		<component type="StaticModel" id="438">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_Lockers01B.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_Lockers01B.xml;Materials/LIS/OB_Furnitures/MT_Furn_Lockers01B.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="110">
+	<node id="341">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Sofa04" />
 		<attribute name="Tags" />
@@ -285,13 +289,13 @@
 		<attribute name="Rotation" value="0.707107 0 -0.707107 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="184">
+		<component type="StaticModel" id="439">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures02/ST_Furn_Sofa04.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/MT_Furn_Sofa04.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="111">
+	<node id="342">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Furn_Armchair01" />
 		<attribute name="Tags" />
@@ -299,13 +303,13 @@
 		<attribute name="Rotation" value="0.707107 0 0.707107 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="185">
+		<component type="StaticModel" id="440">
 			<attribute name="Model" value="Model;Models/LIS/OB_Furnitures02/ST_Furn_Armchair01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures02/MT_Furn_Armchair01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="112">
+	<node id="343">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Eng_Bike03" />
 		<attribute name="Tags" />
@@ -313,13 +317,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="186">
+		<component type="StaticModel" id="441">
 			<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_Bike03.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_bike03_purple01.xml;Materials/LIS/OB_Engines/mt_eng_bike03_purple01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="123">
+	<node id="344">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Eng_Car01" />
 		<attribute name="Tags" />
@@ -327,13 +331,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="208">
+		<component type="StaticModel" id="442">
 			<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_Car01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_car01.xml;Materials/LIS/OB_Engines/mt_eng_car01.xml;Materials/LIS/OB_Engines/mt_eng_car01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="124">
+	<node id="345">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Eng_ChloePickup" />
 		<attribute name="Tags" />
@@ -341,23 +345,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="211">
+		<component type="StaticModel" id="443">
 			<attribute name="Model" value="Model;Models/LIS/OB_Engines/ST_Eng_ChloePickup.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml;Materials/LIS/OB_Engines/mt_eng_chloepickupext.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
-		<component type="RigidBody" id="212">
-			<attribute name="Physics Rotation" value="1 0 0 0" />
-			<attribute name="Physics Position" value="2.85823 0 -17.0614" />
-			<attribute name="Collision Layer" value="4" />
-			<attribute name="Collision Mask" value="47" />
-		</component>
-		<component type="CollisionShape" id="213">
-			<attribute name="Size" value="6.35572 4.67246 14.0198" />
-			<attribute name="Offset Position" value="0 2.33623 0" />
-		</component>
 	</node>
-	<node id="126">
+	<node id="346">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_WaterBottle01" />
 		<attribute name="Tags" />
@@ -365,13 +359,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="217">
+		<component type="StaticModel" id="444">
 			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_WaterBottle01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_waterbottle01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="131">
+	<node id="347">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_CoffeeCup01" />
 		<attribute name="Tags" />
@@ -379,13 +373,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="224">
+		<component type="StaticModel" id="445">
 			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_CoffeeCup01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_coffeecup01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="132">
+	<node id="348">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="SK_Rub_SwingDestroy01" />
 		<attribute name="Tags" />
@@ -393,17 +387,7 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="RigidBody" id="227">
-			<attribute name="Physics Rotation" value="1 0 0 0" />
-			<attribute name="Physics Position" value="0.394455 0.0174501 -42.5759" />
-			<attribute name="Collision Layer" value="4" />
-			<attribute name="Collision Mask" value="47" />
-		</component>
-		<component type="CollisionShape" id="228">
-			<attribute name="Size" value="6.54811 5.6905 4.64008" />
-			<attribute name="Offset Position" value="0 2.84525 0" />
-		</component>
-		<node id="133">
+		<node id="349">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RenderNode" />
 			<attribute name="Tags" />
@@ -411,7 +395,7 @@
 			<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<component type="AnimatedModel" id="229">
+			<component type="AnimatedModel" id="446">
 				<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/SK_Rub_SwingDestroy01.mdl" />
 				<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/mt_rub_swingdestroy01.xml;Materials/LIS/OB_Rubbish/mt_rub_swingdestroy01.xml" />
 				<attribute name="Cast Shadows" value="true" />
@@ -427,7 +411,12 @@
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<node id="16780755">
+			<component type="AnimationController" id="447">
+				<attribute name="Node Animation States">
+					<variant type="Int" value="0" />
+				</attribute>
+			</component>
+			<node id="16780847">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="RootNode" />
 				<attribute name="Tags" />
@@ -435,7 +424,7 @@
 				<attribute name="Rotation" value="1 0 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16780756">
+				<node id="16780848">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01_$AssimpFbx$_PreRotation" />
 					<attribute name="Tags" />
@@ -443,7 +432,7 @@
 					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16780757">
+					<node id="16780849">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01_$AssimpFbx$_Rotation" />
 						<attribute name="Tags" />
@@ -451,7 +440,7 @@
 						<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 						<attribute name="Scale" value="1 1 1" />
 						<attribute name="Variables" />
-						<node id="16780758">
+						<node id="16780850">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01_$AssimpFbx$_Scaling" />
 							<attribute name="Tags" />
@@ -459,7 +448,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 							<attribute name="Variables" />
-							<node id="16780759">
+							<node id="16780851">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01" />
 								<attribute name="Tags" />
@@ -467,7 +456,7 @@
 								<attribute name="Rotation" value="1 0 0 0" />
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
-								<node id="16780760">
+								<node id="16780852">
 									<attribute name="Is Enabled" value="true" />
 									<attribute name="Name" value="B_SK_Rub_SwingDestroyPart02" />
 									<attribute name="Tags" />
@@ -483,7 +472,7 @@
 			</node>
 		</node>
 	</node>
-	<node id="134">
+	<node id="350">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Rub_Cardbox01B" />
 		<attribute name="Tags" />
@@ -491,23 +480,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="230">
+		<component type="StaticModel" id="448">
 			<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/ST_Rub_Cardbox01B.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/mt_rub_cardbox01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_CardBox01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
-		<component type="RigidBody" id="231">
-			<attribute name="Physics Rotation" value="1 0 0 0" />
-			<attribute name="Physics Position" value="-1.62651 0.668538 -30.6098" />
-			<attribute name="Collision Layer" value="4" />
-			<attribute name="Collision Mask" value="47" />
-		</component>
-		<component type="CollisionShape" id="232">
-			<attribute name="Size" value="3.16184 1.77104 2.16784" />
-			<attribute name="Offset Position" value="0 0.885522 0" />
-		</component>
 	</node>
-	<node id="135">
+	<node id="351">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="SK_Doors_Interior03" />
 		<attribute name="Tags" />
@@ -515,7 +494,7 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<node id="136">
+		<node id="352">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RenderNode" />
 			<attribute name="Tags" />
@@ -523,7 +502,7 @@
 			<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<component type="AnimatedModel" id="233">
+			<component type="AnimatedModel" id="449">
 				<attribute name="Model" value="Model;Models/LIS/EN_Doors/SK_Doors_Interior03.mdl" />
 				<attribute name="Material" value="Material;Materials/LIS/EN_Doors/mt_doors_interior03.xml;Materials/LIS/EN_Doors/mt_doors_interior03.xml" />
 				<attribute name="Cast Shadows" value="true" />
@@ -539,12 +518,12 @@
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<component type="AnimationController" id="234">
+			<component type="AnimationController" id="450">
 				<attribute name="Node Animation States">
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<node id="16780761">
+			<node id="16780853">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="RootNode" />
 				<attribute name="Tags" />
@@ -552,7 +531,7 @@
 				<attribute name="Rotation" value="1 0 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16780762">
+				<node id="16780854">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_PreRotation" />
 					<attribute name="Tags" />
@@ -560,7 +539,7 @@
 					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16780763">
+					<node id="16780855">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_Rotation" />
 						<attribute name="Tags" />
@@ -568,7 +547,7 @@
 						<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 						<attribute name="Scale" value="1 1 1" />
 						<attribute name="Variables" />
-						<node id="16780764">
+						<node id="16780856">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="OB_SK_Door_$AssimpFbx$_Scaling" />
 							<attribute name="Tags" />
@@ -576,7 +555,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 							<attribute name="Variables" />
-							<node id="16780765">
+							<node id="16780857">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="OB_SK_Door" />
 								<attribute name="Tags" />
@@ -584,7 +563,7 @@
 								<attribute name="Rotation" value="1 0 0 0" />
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
-								<node id="16780766">
+								<node id="16780858">
 									<attribute name="Is Enabled" value="true" />
 									<attribute name="Name" value="OB_SK_Handle" />
 									<attribute name="Tags" />
@@ -600,7 +579,7 @@
 			</node>
 		</node>
 	</node>
-	<node id="137">
+	<node id="353">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_Tins10" />
 		<attribute name="Tags" />
@@ -608,13 +587,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="235">
+		<component type="StaticModel" id="451">
 			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins10.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_tinslabels.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="139">
+	<node id="354">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_Tins16" />
 		<attribute name="Tags" />
@@ -622,13 +601,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="237">
+		<component type="StaticModel" id="452">
 			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins16.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_tinslabels.xml;Materials/LIS/OB_Foods/mt_food_tinslabels.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="145">
+	<node id="355">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Light_LampDesk01" />
 		<attribute name="Tags" />
@@ -636,12 +615,12 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="243">
+		<component type="StaticModel" id="453">
 			<attribute name="Model" value="Model;Models/LIS/OB_LightSource/ST_Light_LampDesk01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/MT_Light_LampDesk01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
-		<node id="146">
+		<node id="356">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="Light" />
 			<attribute name="Tags" />
@@ -649,13 +628,13 @@
 			<attribute name="Rotation" value="1 0 0 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<component type="Light" id="244">
+			<component type="Light" id="454">
 				<attribute name="Is Enabled" value="false" />
 				<attribute name="Light Shape Texture" value="TextureCube;" />
 			</component>
 		</node>
 	</node>
-	<node id="148">
+	<node id="357">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="SK_Light_Lamphalogen01B" />
 		<attribute name="Tags" />
@@ -663,7 +642,7 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<node id="149">
+		<node id="358">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RenderNode" />
 			<attribute name="Tags" />
@@ -671,7 +650,7 @@
 			<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<component type="AnimatedModel" id="246">
+			<component type="AnimatedModel" id="455">
 				<attribute name="Model" value="Model;Models/LIS/OB_LightSource/SK_Light_Lamphalogen01B.mdl" />
 				<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/MT_Light_LampHalogen01.xml" />
 				<attribute name="Cast Shadows" value="true" />
@@ -686,12 +665,12 @@
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<component type="AnimationController" id="247">
+			<component type="AnimationController" id="456">
 				<attribute name="Node Animation States">
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<node id="16780773">
+			<node id="16780859">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="RootNode" />
 				<attribute name="Tags" />
@@ -699,7 +678,7 @@
 				<attribute name="Rotation" value="1 0 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16780774">
+				<node id="16780860">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="joint1_$AssimpFbx$_PreRotation" />
 					<attribute name="Tags" />
@@ -707,7 +686,7 @@
 					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16780775">
+					<node id="16780861">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="joint1_$AssimpFbx$_Rotation" />
 						<attribute name="Tags" />
@@ -715,7 +694,7 @@
 						<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 						<attribute name="Scale" value="1 1 1" />
 						<attribute name="Variables" />
-						<node id="16780776">
+						<node id="16780862">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="joint1_$AssimpFbx$_Scaling" />
 							<attribute name="Tags" />
@@ -723,7 +702,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 							<attribute name="Variables" />
-							<node id="16780777">
+							<node id="16780863">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="joint1" />
 								<attribute name="Tags" />
@@ -738,7 +717,7 @@
 			</node>
 		</node>
 	</node>
-	<node id="150">
+	<node id="359">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Light_CampusLampPost01B" />
 		<attribute name="Tags" />
@@ -746,13 +725,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="248">
+		<component type="StaticModel" id="457">
 			<attribute name="Model" value="Model;Models/LIS/OB_LightSource/ST_Light_CampusLampPost01B.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_LightSource/MT_Light_CampusLampPost01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="151">
+	<node id="360">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush05B" />
 		<attribute name="Tags" />
@@ -760,13 +739,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="249">
+		<component type="StaticModel" id="458">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush05B.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush05.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="153">
+	<node id="361">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush01" />
 		<attribute name="Tags" />
@@ -774,13 +753,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="251">
+		<component type="StaticModel" id="459">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="154">
+	<node id="362">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush02" />
 		<attribute name="Tags" />
@@ -788,13 +767,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="252">
+		<component type="StaticModel" id="460">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush02.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush02_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="155">
+	<node id="363">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush03" />
 		<attribute name="Tags" />
@@ -802,13 +781,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="253">
+		<component type="StaticModel" id="461">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush03.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush03_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="156">
+	<node id="364">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush06B" />
 		<attribute name="Tags" />
@@ -816,13 +795,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="254">
+		<component type="StaticModel" id="462">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush06B.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush06.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="157">
+	<node id="365">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush06" />
 		<attribute name="Tags" />
@@ -830,13 +809,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="255">
+		<component type="StaticModel" id="463">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush06.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush06.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="158">
+	<node id="366">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush07" />
 		<attribute name="Tags" />
@@ -844,13 +823,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="256">
+		<component type="StaticModel" id="464">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush07.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush07.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="159">
+	<node id="367">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush08A" />
 		<attribute name="Tags" />
@@ -858,13 +837,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="257">
+		<component type="StaticModel" id="465">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush08A.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush08A_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="160">
+	<node id="368">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_AshTree01" />
 		<attribute name="Tags" />
@@ -872,13 +851,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="258">
+		<component type="StaticModel" id="466">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_AshTree01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="161">
+	<node id="369">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_2DPlaneFirTree01" />
 		<attribute name="Tags" />
@@ -886,12 +865,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="259">
+		<component type="StaticModel" id="467">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_2DPlaneFirTree01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_2DPlaneFirTree01.xml" />
+			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="162">
+	<node id="370">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_2DYewTree01" />
 		<attribute name="Tags" />
@@ -899,12 +879,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="260">
+		<component type="StaticModel" id="468">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_2DYewTree01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_2DYewTree01.xml" />
+			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="167">
+	<node id="371">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_YewTree02" />
 		<attribute name="Tags" />
@@ -912,13 +893,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="265">
+		<component type="StaticModel" id="469">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_YewTree02.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_YewTree01.xml;Materials/LIS/OB_Nature/MT_Nat_YewTree01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="168">
+	<node id="372">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_YewTree05" />
 		<attribute name="Tags" />
@@ -926,13 +907,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="266">
+		<component type="StaticModel" id="470">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_YewTree05.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_YewTree01.xml;Materials/LIS/OB_Nature/MT_Nat_YewTree01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="169">
+	<node id="373">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_YewTree03" />
 		<attribute name="Tags" />
@@ -940,13 +921,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="267">
+		<component type="StaticModel" id="471">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_YewTree03.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_YewTree01.xml;Materials/LIS/OB_Nature/MT_Nat_YewTree01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="170">
+	<node id="374">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_SpruceTree01" />
 		<attribute name="Tags" />
@@ -954,13 +935,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="268">
+		<component type="StaticModel" id="472">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_SpruceTree01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_SpruceTree01_Wind.xml;Materials/LIS/OB_Nature/MT_Nat_SpruceTree01_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="171">
+	<node id="375">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_LeavesStack04" />
 		<attribute name="Tags" />
@@ -968,13 +949,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="269">
+		<component type="StaticModel" id="473">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_LeavesStack04.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_LeavesStack01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="172">
+	<node id="376">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Grass02" />
 		<attribute name="Tags" />
@@ -982,13 +963,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="270">
+		<component type="StaticModel" id="474">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Grass02.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/EN_Grounds/MT_Ground_Grass_Rain_01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="173">
+	<node id="377">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_FirTree01C_Storm" />
 		<attribute name="Tags" />
@@ -996,13 +977,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="271">
+		<component type="StaticModel" id="475">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_FirTree01C_Storm.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_FirTree01_Storm.xml;Materials/LIS/OB_Nature/MT_Nat_FirTree01_Storm.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="174">
+	<node id="378">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Bush08A" />
 		<attribute name="Tags" />
@@ -1010,13 +991,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="272">
+		<component type="StaticModel" id="476">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Bush08A.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Bush08A_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="175">
+	<node id="379">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_Shrub01_A" />
 		<attribute name="Tags" />
@@ -1024,13 +1005,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="273">
+		<component type="StaticModel" id="477">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_Shrub01_A.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_Shrubs01B.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="176">
+	<node id="380">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_AshTree01" />
 		<attribute name="Tags" />
@@ -1038,13 +1019,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="274">
+		<component type="StaticModel" id="478">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_AshTree01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="177">
+	<node id="381">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Nat_AshTree02" />
 		<attribute name="Tags" />
@@ -1052,13 +1033,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="275">
+		<component type="StaticModel" id="479">
 			<attribute name="Model" value="Model;Models/LIS/OB_Nature/ST_Nat_AshTree02.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml;Materials/LIS/OB_Nature/MT_Nat_AshTree01_Wind.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="179">
+	<node id="382">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Acc_StandFan01" />
 		<attribute name="Tags" />
@@ -1066,13 +1047,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="277">
+		<component type="StaticModel" id="480">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_StandFan01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_StandFan01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="180">
+	<node id="383">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Acc_TinPaintStack01" />
 		<attribute name="Tags" />
@@ -1080,13 +1061,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="278">
+		<component type="StaticModel" id="481">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_TinPaintStack01.mdl" />
 			<attribute name="Material" value="Material;" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="182">
+	<node id="384">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Acc_TeddyBear01" />
 		<attribute name="Tags" />
@@ -1094,13 +1075,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="280">
+		<component type="StaticModel" id="482">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_TeddyBear01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_TeddyBear01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="183">
+	<node id="385">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Acc_StandFan02" />
 		<attribute name="Tags" />
@@ -1108,13 +1089,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="281">
+		<component type="StaticModel" id="483">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_StandFan02.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_StandFan01.xml;Materials/LIS/OB_Accessories/MT_Acc_StandFan01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="184">
+	<node id="386">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Acc_LaundryBasket01" />
 		<attribute name="Tags" />
@@ -1122,13 +1103,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="282">
+		<component type="StaticModel" id="484">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_LaundryBasket01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_LaundryBasket01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="185">
+	<node id="387">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="SK_Acc_ShoesBox01" />
 		<attribute name="Tags" />
@@ -1136,7 +1117,7 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<node id="186">
+		<node id="388">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RenderNode" />
 			<attribute name="Tags" />
@@ -1144,7 +1125,7 @@
 			<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<component type="AnimatedModel" id="283">
+			<component type="AnimatedModel" id="485">
 				<attribute name="Model" value="Model;Models/LIS/OB_Accessories/SK_Acc_ShoesBox01.mdl" />
 				<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_ShoesBox01.xml" />
 				<attribute name="Cast Shadows" value="true" />
@@ -1159,12 +1140,12 @@
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<component type="AnimationController" id="284">
+			<component type="AnimationController" id="486">
 				<attribute name="Node Animation States">
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>
-			<node id="16780779">
+			<node id="16780864">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="RootNode" />
 				<attribute name="Tags" />
@@ -1172,7 +1153,7 @@
 				<attribute name="Rotation" value="1 0 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16780780">
+				<node id="16780865">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="joint1_$AssimpFbx$_PreRotation" />
 					<attribute name="Tags" />
@@ -1180,7 +1161,7 @@
 					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16780781">
+					<node id="16780866">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="joint1_$AssimpFbx$_Rotation" />
 						<attribute name="Tags" />
@@ -1188,7 +1169,7 @@
 						<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 						<attribute name="Scale" value="1 1 1" />
 						<attribute name="Variables" />
-						<node id="16780782">
+						<node id="16780867">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="joint1_$AssimpFbx$_Scaling" />
 							<attribute name="Tags" />
@@ -1196,7 +1177,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 							<attribute name="Variables" />
-							<node id="16780783">
+							<node id="16780868">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="joint1" />
 								<attribute name="Tags" />
@@ -1211,20 +1192,7 @@
 			</node>
 		</node>
 	</node>
-	<node id="193">
-		<attribute name="Is Enabled" value="true" />
-		<attribute name="Name" value="Box" />
-		<attribute name="Tags" />
-		<attribute name="Position" value="-29.7339 2.5 -40.7823" />
-		<attribute name="Rotation" value="1 0 0 0" />
-		<attribute name="Scale" value="5 5 5" />
-		<attribute name="Variables" />
-		<component type="StaticModel" id="291">
-			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;Materials/Collision.xml" />
-		</component>
-	</node>
-	<node id="194">
+	<node id="389">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Eng_Bus01_Low" />
 		<attribute name="Tags" />
@@ -1232,13 +1200,13 @@
 		<attribute name="Rotation" value="0.759729 0 0.65024 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="292">
+		<component type="StaticModel" id="487">
 			<attribute name="Model" value="Model;Models/LIS/OB_Engines02/ST_Eng_Bus01_Low.mdl" />
-			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_Bus01.xml;Materials/LIS/OB_Engines/MT_Eng_Bus01.xml" />
+			<attribute name="Material" value="Material;Materials/LIS/OB_Engines/MT_Eng_Bus01.xml;Materials/LIS/OB_Engines/MT_Eng_BckgCarWheels01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="195">
+	<node id="390">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_Tins04" />
 		<attribute name="Tags" />
@@ -1246,13 +1214,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="293">
+		<component type="StaticModel" id="488">
 			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_Tins04.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/mt_food_tinslabels.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="196">
+	<node id="391">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Food_CookiesBox01" />
 		<attribute name="Tags" />
@@ -1260,13 +1228,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="294">
+		<component type="StaticModel" id="489">
 			<attribute name="Model" value="Model;Models/LIS/OB_Foods/ST_Food_CookiesBox01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Foods/MT_Food_CookiesBox01.xml" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="197">
+	<node id="392">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Deco_PlantPolt04" />
 		<attribute name="Tags" />
@@ -1274,13 +1242,13 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="295">
+		<component type="StaticModel" id="490">
 			<attribute name="Model" value="Model;Models/LIS/OB_Decorations/ST_Deco_PlantPolt04.mdl" />
 			<attribute name="Material" value="Material;" />
 			<attribute name="Cast Shadows" value="true" />
 		</component>
 	</node>
-	<node id="198">
+	<node id="393">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="ST_Acc_FileMess01" />
 		<attribute name="Tags" />
@@ -1288,7 +1256,7 @@
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="StaticModel" id="296">
+		<component type="StaticModel" id="491">
 			<attribute name="Model" value="Model;Models/LIS/OB_Accessories/ST_Acc_FileMess01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Accessories/MT_Acc_FileMess01.xml" />
 			<attribute name="Cast Shadows" value="true" />
