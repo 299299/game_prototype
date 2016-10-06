@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
-<node id="913">
+<node id="914">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Furn_GarageDrawer01HoleDrA" />
 	<attribute name="Tags" />
 	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
-	<attribute name="Variables" />
+	<attribute name="Variables">
+		<variant hash="2155379460" type="String" value="MyData/Objects/LIS/OB_Furnitures/ST_Furn_GarageDrawer01HoleDrA.xml" />
+	</attribute>
 	<component type="StaticModel" id="913">
 		<attribute name="Model" value="Model;Models/LIS/OB_Furnitures/ST_Furn_GarageDrawer01HoleDrA.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Furnitures/MT_Furn_GarageDrawer01.xml" />

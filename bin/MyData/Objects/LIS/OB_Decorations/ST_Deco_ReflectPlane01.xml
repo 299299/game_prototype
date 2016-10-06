@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
-<node id="678">
+<node id="679">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Deco_ReflectPlane01" />
 	<attribute name="Tags" />
 	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
-	<attribute name="Variables" />
+	<attribute name="Variables">
+		<variant hash="2155379460" type="String" value="MyData/Objects/LIS/OB_Decorations/ST_Deco_ReflectPlane01.xml" />
+	</attribute>
 	<component type="StaticModel" id="678">
 		<attribute name="Model" value="Model;Models/LIS/OB_Decorations/ST_Deco_ReflectPlane01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Decorations/MT_Deco_ReflectPlane01.xml" />

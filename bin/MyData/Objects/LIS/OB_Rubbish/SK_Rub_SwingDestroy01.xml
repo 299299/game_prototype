@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
-<node id="1372">
+<node id="1374">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="SK_Rub_SwingDestroy01" />
 	<attribute name="Tags" />
 	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
-	<attribute name="Variables" />
-	<node id="1373">
+	<attribute name="Variables">
+		<variant hash="2155379460" type="String" value="MyData/Objects/LIS/OB_Rubbish/SK_Rub_SwingDestroy01.xml" />
+	</attribute>
+	<node id="1375">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="RenderNode" />
 		<attribute name="Tags" />
@@ -15,7 +17,7 @@
 		<attribute name="Rotation" value="-4.37114e-08 0 1 0" />
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
-		<component type="AnimatedModel" id="1372">
+		<component type="AnimatedModel" id="1373">
 			<attribute name="Model" value="Model;Models/LIS/OB_Rubbish/SK_Rub_SwingDestroy01.mdl" />
 			<attribute name="Material" value="Material;Materials/LIS/OB_Rubbish/MT_Rub_SwingDestroy01.xml;Materials/LIS/OB_Rubbish/MT_Rub_SwingDestroy01.xml" />
 			<attribute name="Cast Shadows" value="true" />
@@ -31,12 +33,12 @@
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>
-		<component type="AnimationController" id="1373">
+		<component type="AnimationController" id="1374">
 			<attribute name="Node Animation States">
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>
-		<node id="16777533">
+		<node id="16777631">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RootNode" />
 			<attribute name="Tags" />
@@ -44,7 +46,7 @@
 			<attribute name="Rotation" value="1 0 0 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<node id="16777534">
+			<node id="16777632">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01_$AssimpFbx$_PreRotation" />
 				<attribute name="Tags" />
@@ -52,7 +54,7 @@
 				<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16777535">
+				<node id="16777633">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01_$AssimpFbx$_Rotation" />
 					<attribute name="Tags" />
@@ -60,7 +62,7 @@
 					<attribute name="Rotation" value="0.707107 -0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16777536">
+					<node id="16777634">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01_$AssimpFbx$_Scaling" />
 						<attribute name="Tags" />
@@ -68,7 +70,7 @@
 						<attribute name="Rotation" value="1 0 0 0" />
 						<attribute name="Scale" value="0.0254 0.0254 0.0254" />
 						<attribute name="Variables" />
-						<node id="16777537">
+						<node id="16777635">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="B_SK_Rub_SwingDestroyPart01" />
 							<attribute name="Tags" />
@@ -76,7 +78,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
-							<node id="16777538">
+							<node id="16777636">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="B_SK_Rub_SwingDestroyPart02" />
 								<attribute name="Tags" />

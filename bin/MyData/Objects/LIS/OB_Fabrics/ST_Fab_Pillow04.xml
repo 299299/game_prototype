@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
-<node id="795">
+<node id="796">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Fab_Pillow04" />
 	<attribute name="Tags" />
 	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
-	<attribute name="Variables" />
+	<attribute name="Variables">
+		<variant hash="2155379460" type="String" value="MyData/Objects/LIS/OB_Fabrics/ST_Fab_Pillow04.xml" />
+	</attribute>
 	<component type="StaticModel" id="795">
 		<attribute name="Model" value="Model;Models/LIS/OB_Fabrics/ST_Fab_Pillow04.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Fabrics/MT_Fab_Pillow04.xml" />

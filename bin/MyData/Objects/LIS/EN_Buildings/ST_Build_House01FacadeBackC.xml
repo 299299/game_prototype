@@ -1,12 +1,14 @@
 <?xml version="1.0"?>
-<node id="51">
+<node id="52">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Build_House01FacadeBackC" />
 	<attribute name="Tags" />
 	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
-	<attribute name="Variables" />
+	<attribute name="Variables">
+		<variant hash="2155379460" type="String" value="MyData/Objects/LIS/EN_Buildings/ST_Build_House01FacadeBackC.xml" />
+	</attribute>
 	<component type="StaticModel" id="51">
 		<attribute name="Model" value="Model;Models/LIS/EN_Buildings/ST_Build_House01FacadeBackC.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/EN_Background/MT_Bckg_House01.xml;Materials/LIS/EN_Background/MT_Bckg_House01.xml" />

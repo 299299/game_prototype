@@ -16,8 +16,8 @@ const int COLLISION_LAYER_RAYCAST   = (1 << 5);
 
 const int FLAGS_NO_COLLECTABLE = (1 << 0);
 
-const StringHash ROOT("Tag");
-
 const int VIEW_MASK_LANDSCAPE = (1 << 0);
 const int VIEW_MASK_CHARACTER = (1 << 1);
 const int VIEW_MASK_PROP      = (1 << 2);
+
+const StringHash PREFAB("prefab");

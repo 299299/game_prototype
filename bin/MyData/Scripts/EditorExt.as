@@ -1,9 +1,28 @@
 
 Array<String> cachedFolders;
 bool searched = false;
+bool inited = false;
+
+void InitExt()
+{
+    if (editorScene !is null)
+    {
+        editorScene.RegisterVar("prefab");
+    }
+    else
+    {
+        inited = false;
+    }
+}
 
 void UpdateExt(float dt)
 {
+    if (!inited)
+    {
+        InitExt();
+        inited = true;
+    }
+
     if (input.keyPress['J'] || input.keyPress['j'])
     {
         SaveSelectedPrefab();
@@ -14,7 +33,16 @@ void UpdateExt(float dt)
     }
 }
 
-String FindObjectByName(const String&in name)
+String GetNodePrefab(Node@ _node)
+{
+    if (_node.vars.Contains("prefab"))
+    {
+        return _node.vars["prefab"].GetString();
+    }
+    return FindPrefabByName(_node.name);
+}
+
+String FindPrefabByName(const String&in name)
 {
     if (!searched)
     {
@@ -38,7 +66,7 @@ void SaveSelectedPrefab()
     if (editNode is null)
         return;
 
-    String fileName = FindObjectByName(editNode.name);
+    String fileName = GetNodePrefab(editNode);
     if (!fileName.empty)
     {
         Print("SaveSelectedPrefab " + editNode.name + " found " + fileName);
@@ -56,7 +84,7 @@ void ReloadSceneByPrefab()
     for (uint i=0; i<editorScene.numChildren; ++i)
     {
         Node@ _node = editorScene.children[i];
-        String objectFile = FindObjectByName(_node.name);
+        String objectFile = GetNodePrefab(_node);
         if (objectFile.empty)
             continue;
 
@@ -72,7 +100,6 @@ void ReloadSceneByPrefab()
         newNode.position = oldNode.position;
         newNode.rotation = oldNode.rotation;
         newNode.scale = oldNode.scale;
-        newNode.id = oldNode.id;
         oldNode.Remove();
     }
 

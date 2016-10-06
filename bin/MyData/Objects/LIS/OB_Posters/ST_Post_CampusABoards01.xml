@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
-<node id="1244">
+<node id="1246">
 	<attribute name="Is Enabled" value="true" />
 	<attribute name="Name" value="ST_Post_CampusABoards01" />
 	<attribute name="Tags" />
 	<attribute name="Position" value="0 0 0" />
 	<attribute name="Rotation" value="1 0 0 0" />
 	<attribute name="Scale" value="1 1 1" />
-	<attribute name="Variables" />
-	<component type="StaticModel" id="1244">
+	<attribute name="Variables">
+		<variant hash="2155379460" type="String" value="MyData/Objects/LIS/OB_Posters/ST_Post_CampusABoards01.xml" />
+	</attribute>
+	<component type="StaticModel" id="1245">
 		<attribute name="Model" value="Model;Models/LIS/OB_Posters/ST_Post_CampusABoards01.mdl" />
 		<attribute name="Material" value="Material;Materials/LIS/OB_Posters/MT_Post_CampusABoards01.xml" />
 		<attribute name="Cast Shadows" value="true" />

@@ -5,6 +5,12 @@
 // ==================================================================］
 #include "Scripts/Constants.as"
 
+enum BatchProcessMode
+{
+    kBatchConvert,
+    kBatchFix,
+};
+
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
 const Array<String> MODEL_ARGS = {"-t", "-na", "-cm", "-ct", "-ns", "-nt", "-nm", "-mb", "75", "-np"};//"-l",
@@ -16,6 +22,8 @@ Array<String> materialFilteredNames1;
 Array<String> materialFilteredNames2;
 Array<String> textures;
 bool forceCompile = false;
+int numObjectsMissingMaterials = 0;
+int batchMode = kBatchConvert;
 
 String FilterName1(const String&in name)
 {
@@ -91,6 +99,8 @@ void PreProcess()
             exportFolder = arguments[i + 1];
         else if (arguments[i] == "-b")
             forceCompile = true;
+        else if (arguments[i] == "-fix")
+            batchMode = kBatchFix;
     }
 
     Print("exportFolder=" + exportFolder);
@@ -170,6 +180,104 @@ void ProcessAnimations()
     }
 }
 
+void ProcessObject(const String&in object)
+{
+    uint pos = object.FindLast('.');
+    String outMdlName = DoProcess(ASSET_DIR + "Objects/" + object, OUT_DIR + "Models/" + object.Substring(0, pos) + ".mdl", "model", MODEL_ARGS);
+    if (outMdlName.empty)
+        return;
+
+    String outFolder = OUT_DIR + "Objects/";
+    String oname = outFolder + object;
+    String objectFile = oname.Substring(0, oname.FindLast('/'));
+    String objectName = GetFileName(object);
+    objectFile += "/" + objectName + ".xml";
+
+    if (fileSystem.FileExists(objectFile) && !forceCompile)
+        return;
+
+    String subFolder = object.Substring(0, object.FindLast('/') + 1);
+    String objectFolder = "MyData/Objects/" + subFolder;
+    String assetFolder = ASSET_DIR + "Objects/" + subFolder;
+    // Print("ObjectFile: " + objectFile + " objectName: " + objectName + " subFolder: " + subFolder);
+    fileSystem.CreateDir(objectFolder);
+
+    Node@ node = processScene.CreateChild(objectName);
+    int index = outMdlName.Find('/') + 1;
+    String modelName = outMdlName.Substring(index, outMdlName.length - index);
+    Model@ model = cache.GetResource("Model", modelName);
+    if (model is null)
+    {
+        Print("model " + modelName + " load failed!!");
+        return;
+    }
+
+    String matName = objectName;
+    String m = FindMaterial(FilterName1(matName));
+    bool hasBone = false;
+
+    if (m == "")
+    {
+        Print("Warning, objectFile=" + objectFile + " no material find!!");
+        ++numObjectsMissingMaterials;
+    }
+
+    if (model.skeleton.numBones > 0)
+    {
+        Node@ renderNode = node.CreateChild("RenderNode");
+        AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
+        renderNode.CreateComponent("AnimationController");
+        renderNode.worldRotation = Quaternion(0, 180, 0);
+        am.model = model;
+        am.castShadows = true;
+        if (m != "")
+            am.material =  cache.GetResource("Material", "Materials/" + m);
+        hasBone = true;
+    }
+    else
+    {
+        StaticModel@ sm = node.CreateComponent("StaticModel");
+        sm.model = model;
+        sm.castShadows = true;
+        if (m != "")
+            sm.material =  cache.GetResource("Material", "Materials/" + m);
+    }
+
+    /*
+    bool createPhysics = false;
+    Array<String> physics_sub_folders = {
+        "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02", "OB_UrbanFurnitures",
+        "EN_Doors", "OB_Rubbish", "OB_Foods", "OB_Accessories", "EN_Walls", "EN_Grounds", "EN_Ceilings"
+    };
+
+    for (uint i=0; i<physics_sub_folders.length; ++i)
+    {
+        if (subFolder == "LIS/" + physics_sub_folders[i] + "/")
+            createPhysics = true;
+    }
+
+    if (createPhysics)
+    {
+        RigidBody@ body = node.CreateComponent("RigidBody");
+        body.collisionLayer = COLLISION_LAYER_PROP;
+        body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_RAYCAST | COLLISION_LAYER_PROP;
+        CollisionShape@ shape = node.CreateComponent("CollisionShape");
+
+        Vector3 offset = Vector3(0, model.boundingBox.halfSize.y, 0);
+        if (subFolder == "LIS/EN_Doors/")
+        {
+            offset = Vector3(hasBone ? -model.boundingBox.halfSize.x : model.boundingBox.halfSize.x, model.boundingBox.halfSize.y, 0);
+        }
+
+        shape.SetBox(model.boundingBox.size, offset);
+    }
+    */
+
+    File outFile(objectFile, FILE_WRITE);
+    node.SaveXML(outFile);
+    node.Remove();
+}
+
 void ProcessObjects()
 {
     //Print("ProcessObjects finding all materials start");
@@ -185,105 +293,9 @@ void ProcessObjects()
     //Print("ProcessObjects finding all materials end");
 
     Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.FBX", SCAN_FILES, true);
-    int numObjectsMissingMaterials = 0;
     for (uint i=0; i<objects.length; ++i)
     {
-        String object = objects[i];
-        uint pos = object.FindLast('.');
-        String outMdlName = DoProcess(ASSET_DIR + "Objects/" + object, OUT_DIR + "Models/" + object.Substring(0, pos) + ".mdl", "model", MODEL_ARGS);
-        if (outMdlName.empty)
-            continue;
-
-        String outFolder = OUT_DIR + "Objects/";
-        String oname = outFolder + object;
-        String objectFile = oname.Substring(0, oname.FindLast('/'));
-        String objectName = GetFileName(object);
-        objectFile += "/" + objectName + ".xml";
-
-        if (fileSystem.FileExists(objectFile) && !forceCompile)
-        {
-            continue;
-        }
-
-        String subFolder = object.Substring(0, object.FindLast('/') + 1);
-        String objectFolder = "MyData/Objects/" + subFolder;
-        String assetFolder = ASSET_DIR + "Objects/" + subFolder;
-        // Print("ObjectFile: " + objectFile + " objectName: " + objectName + " subFolder: " + subFolder);
-        fileSystem.CreateDir(objectFolder);
-
-        Node@ node = processScene.CreateChild(objectName);
-        int index = outMdlName.Find('/') + 1;
-        String modelName = outMdlName.Substring(index, outMdlName.length - index);
-        Model@ model = cache.GetResource("Model", modelName);
-        if (model is null)
-        {
-            Print("model " + modelName + " load failed!!");
-            return;
-        }
-
-        String matName = objectName;
-        String m = FindMaterial(FilterName1(matName));
-        bool hasBone = false;
-
-        if (m == "")
-        {
-            Print("Warning, objectFile=" + objectFile + " no material find!!");
-            ++numObjectsMissingMaterials;
-        }
-
-        if (model.skeleton.numBones > 0)
-        {
-            Node@ renderNode = node.CreateChild("RenderNode");
-            AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
-            renderNode.CreateComponent("AnimationController");
-            renderNode.worldRotation = Quaternion(0, 180, 0);
-            am.model = model;
-            am.castShadows = true;
-            if (m != "")
-                am.material =  cache.GetResource("Material", "Materials/" + m);
-            hasBone = true;
-        }
-        else
-        {
-            StaticModel@ sm = node.CreateComponent("StaticModel");
-            sm.model = model;
-            sm.castShadows = true;
-            if (m != "")
-                sm.material =  cache.GetResource("Material", "Materials/" + m);
-        }
-
-        /*
-        bool createPhysics = false;
-        Array<String> physics_sub_folders = {
-            "OB_Engines", "OB_Engines02", "OB_Furnitures", "OB_Furnitures02", "OB_UrbanFurnitures",
-            "EN_Doors", "OB_Rubbish", "OB_Foods", "OB_Accessories", "EN_Walls", "EN_Grounds", "EN_Ceilings"
-        };
-
-        for (uint i=0; i<physics_sub_folders.length; ++i)
-        {
-            if (subFolder == "LIS/" + physics_sub_folders[i] + "/")
-                createPhysics = true;
-        }
-
-        if (createPhysics)
-        {
-            RigidBody@ body = node.CreateComponent("RigidBody");
-            body.collisionLayer = COLLISION_LAYER_PROP;
-            body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_RAYCAST | COLLISION_LAYER_PROP;
-            CollisionShape@ shape = node.CreateComponent("CollisionShape");
-
-            Vector3 offset = Vector3(0, model.boundingBox.halfSize.y, 0);
-            if (subFolder == "LIS/EN_Doors/")
-            {
-                offset = Vector3(hasBone ? -model.boundingBox.halfSize.x : model.boundingBox.halfSize.x, model.boundingBox.halfSize.y, 0);
-            }
-
-            shape.SetBox(model.boundingBox.size, offset);
-        }
-        */
-
-        File outFile(objectFile, FILE_WRITE);
-        node.SaveXML(outFile);
+        ProcessObject(objects[i]);
     }
 
     Print("Total objects num=" + objects.length + " missing material object num=" + numObjectsMissingMaterials);
@@ -427,6 +439,64 @@ void ProcessMatFiles()
     }
 }
 
+void FixObject(const String&in object)
+{
+    XMLFile@ xml = XMLFile();
+    if (!xml.Load(File(object, FILE_READ)))
+    {
+        Print("Load object xml " + object + " failed.");
+        return;
+    }
+
+    bool changed = false;
+    Node@ node = processScene.InstantiateXML(xml, Vector3(), Quaternion());
+
+    // fix vars
+    if (!node.vars.Contains(PREFAB))
+    {
+        node.vars[PREFAB] = object;
+        changed = true;
+    }
+
+    // fix materials
+    Node@ renderNode = node.GetChild("RenderNode", true);
+    if (renderNode is null)
+    {
+        StaticModel@ staticModel = node.GetComponent("StaticModel");
+        if (staticModel !is null && staticModel.materials[0] is null)
+        {
+            Print("Warning prefab " + object + " no material");
+            numObjectsMissingMaterials ++;
+        }
+    }
+    else
+    {
+        AnimatedModel@ animModel = renderNode.GetComponent("AnimatedModel");
+        if (animModel !is null && animModel.materials[0] is null)
+        {
+            Print("Warning prefab " + object + " no material");
+            numObjectsMissingMaterials ++;
+        }
+    }
+
+    // other fix ???
+
+    if (changed)
+        node.SaveXML(File(object, FILE_WRITE));
+
+    node.Remove();
+}
+
+void FixObjects()
+{
+    Array<String> objects = fileSystem.ScanDir(OUT_DIR + "Objects", "*.xml", SCAN_FILES, true);
+    for (uint i=0; i<objects.length; ++i)
+    {
+        FixObject(OUT_DIR + "Objects/" + objects[i]);
+    }
+    Print("Total objects num=" + objects.length + " missing material object num=" + numObjectsMissingMaterials);
+}
+
 void PostProcess()
 {
     if (processScene !is null)
@@ -441,10 +511,19 @@ void Start()
     Print("*************************************************************************");
     uint startTime = time.systemTime;
     PreProcess();
-    ProcessModels();
-    ProcessAnimations();
-    ProcessMatFiles();
-    ProcessObjects();
+
+    if (batchMode == kBatchConvert)
+    {
+        ProcessModels();
+        ProcessAnimations();
+        ProcessMatFiles();
+        ProcessObjects();
+    }
+    else if (batchMode == kBatchFix)
+    {
+        FixObjects();
+    }
+
     PostProcess();
     engine.Exit();
     uint timeSec = (time.systemTime - startTime) / 1000;
