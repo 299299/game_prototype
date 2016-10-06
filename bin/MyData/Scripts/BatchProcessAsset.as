@@ -172,7 +172,7 @@ void ProcessAnimations()
 
 void ProcessObjects()
 {
-    Print("ProcessObjects finding all materials start");
+    //Print("ProcessObjects finding all materials start");
     Array<String> materialFiles = fileSystem.ScanDir(OUT_DIR + "Materials", "*.xml", SCAN_FILES, true);
     for (uint i=0; i<materialFiles.length; ++i)
     {
@@ -182,7 +182,7 @@ void ProcessObjects()
         materialFilteredNames1.Push(FilterName1(fileName));
         materialFilteredNames2.Push(materialFilteredNames1[i]);
     }
-    Print("ProcessObjects finding all materials end");
+    //Print("ProcessObjects finding all materials end");
 
     Array<String> objects = fileSystem.ScanDir(ASSET_DIR + "Objects", "*.FBX", SCAN_FILES, true);
     int numObjectsMissingMaterials = 0;
@@ -364,6 +364,8 @@ void ProcessMaterial(const String&in matTxt, const String&in outMatFile, const S
 
     String name = GetFileName(matTxt);
     if (name.StartsWith("MT_Nat"))
+        tech += "Alpha";
+    if (name.EndsWith("_Alpha"))
         tech += "Alpha";
 
     Material@ m = Material();
