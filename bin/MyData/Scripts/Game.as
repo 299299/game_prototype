@@ -388,6 +388,7 @@ class TestGameState : GameState
         }
         renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
+        renderpath.Append(cache.GetResource("XMLFile", "PostProcess/GammaCorrection.xml"));
         viewport.renderPath = renderpath;
         SetColorGrading(colorGradingIndex);
     }
