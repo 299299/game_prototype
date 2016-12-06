@@ -18,3 +18,11 @@ batman in Urho3D
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=zdj2sudU4jE
 " target="_blank"><img src="http://img.youtube.com/vi/zdj2sudU4jE/0.jpg"
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=xgiY7e7Rldc
+" target="_blank"><img src="http://img.youtube.com/vi/xgiY7e7Rldc/0.jpg"
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=RbymrZ5mAuM
+" target="_blank"><img src="http://img.youtube.com/vi/RbymrZ5mAuM/0.jpg"
+alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
