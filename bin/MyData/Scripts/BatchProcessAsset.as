@@ -3,13 +3,6 @@
 //    Batch Process Asset Script for automatic pipeline
 //
 // ==================================================================］
-#include "Scripts/Constants.as"
-
-enum BatchProcessMode
-{
-    kBatchConvert,
-    kBatchFix,
-};
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
@@ -23,7 +16,6 @@ Array<String> materialFilteredNames2;
 Array<String> textures;
 bool forceCompile = false;
 int numObjectsMissingMaterials = 0;
-int batchMode = kBatchConvert;
 
 String FilterName1(const String&in name)
 {
@@ -99,8 +91,6 @@ void PreProcess()
             exportFolder = arguments[i + 1];
         else if (arguments[i] == "-b")
             forceCompile = true;
-        else if (arguments[i] == "-fix")
-            batchMode = kBatchFix;
     }
 
     Print("exportFolder=" + exportFolder);
@@ -439,64 +429,6 @@ void ProcessMatFiles()
     }
 }
 
-void FixObject(const String&in object)
-{
-    XMLFile@ xml = XMLFile();
-    if (!xml.Load(File(object, FILE_READ)))
-    {
-        Print("Load object xml " + object + " failed.");
-        return;
-    }
-
-    bool changed = false;
-    Node@ node = processScene.InstantiateXML(xml, Vector3(), Quaternion());
-
-    // fix vars
-    if (!node.vars.Contains(PREFAB))
-    {
-        node.vars[PREFAB] = object;
-        changed = true;
-    }
-
-    // fix materials
-    Node@ renderNode = node.GetChild("RenderNode", true);
-    if (renderNode is null)
-    {
-        StaticModel@ staticModel = node.GetComponent("StaticModel");
-        if (staticModel !is null && staticModel.materials[0] is null)
-        {
-            Print("Warning prefab " + object + " no material");
-            numObjectsMissingMaterials ++;
-        }
-    }
-    else
-    {
-        AnimatedModel@ animModel = renderNode.GetComponent("AnimatedModel");
-        if (animModel !is null && animModel.materials[0] is null)
-        {
-            Print("Warning prefab " + object + " no material");
-            numObjectsMissingMaterials ++;
-        }
-    }
-
-    // other fix ???
-
-    if (changed)
-        node.SaveXML(File(object, FILE_WRITE));
-
-    node.Remove();
-}
-
-void FixObjects()
-{
-    Array<String> objects = fileSystem.ScanDir(OUT_DIR + "Objects", "*.xml", SCAN_FILES, true);
-    for (uint i=0; i<objects.length; ++i)
-    {
-        FixObject(OUT_DIR + "Objects/" + objects[i]);
-    }
-    Print("Total objects num=" + objects.length + " missing material object num=" + numObjectsMissingMaterials);
-}
-
 void PostProcess()
 {
     if (processScene !is null)
@@ -512,17 +444,10 @@ void Start()
     uint startTime = time.systemTime;
     PreProcess();
 
-    if (batchMode == kBatchConvert)
-    {
-        ProcessModels();
-        ProcessAnimations();
-        ProcessMatFiles();
-        ProcessObjects();
-    }
-    else if (batchMode == kBatchFix)
-    {
-        FixObjects();
-    }
+    ProcessModels();
+    ProcessAnimations();
+    ProcessMatFiles();
+    ProcessObjects();
 
     PostProcess();
     engine.Exit();
