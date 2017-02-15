@@ -6,7 +6,14 @@ Array<Vector2> points;
 
 Array<Vector2> ReadPoints(const String&in txt)
 {
-
+    Array<Vector2> ret;
+    Vector2 i;
+    int state = 0;
+    for (uint i=0; i<txt.length; ++i)
+    {
+        uint8 c = txt[i];
+        if (c == '')
+    }
 }
 
 void Start()
