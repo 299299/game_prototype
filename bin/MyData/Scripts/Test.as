@@ -141,15 +141,14 @@ void SetupViewport()
 
 void SubscribeToEvents()
 {
-    // Subscribe HandleUpdate() function for camera motion
     SubscribeToEvent("Update", "HandleUpdate");
+    SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
 {
     // Take the frame time step, which is stored as a float
     float timeStep = eventData["TimeStep"].GetFloat();
-
     // Move the camera, scale movement with time step
     MoveCamera(timeStep);
 }
@@ -196,6 +195,11 @@ void MoveCamera(float timeStep)
         cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
     if (input.keyDown[KEY_D])
         cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
+}
+
+void HandlePostRenderUpdate()
+{
+    DebugRenderer@ debug = editorScene.debugRenderer;
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
