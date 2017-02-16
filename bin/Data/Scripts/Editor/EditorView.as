@@ -481,7 +481,7 @@ void SetRenderPath(const String&in newRenderPathName)
 
     if (materialPreview !is null && materialPreview.viewport !is null)
         materialPreview.viewport.renderPath = renderPath;
-        
+
     if (particleEffectPreview !is null && particleEffectPreview.viewport !is null)
         particleEffectPreview.viewport.renderPath = renderPath;
 }
@@ -515,7 +515,7 @@ void CreateCamera()
     {
         SetViewportMode(viewportMode);
     }
-    
+
     SetActiveViewport(viewports[0]);
 
     // Note: the camera is not inside the scene, so that it is not listed, and does not get deleted
@@ -663,13 +663,13 @@ void SetViewportMode(uint mode = VIEWPORT_SINGLE)
             oldHierarchyWindowHeight = hierarchyWindow.height;
             oldInspectorWindowPosition = attributeInspectorWindow.position;
             oldInspectorWindowHeight = attributeInspectorWindow.height;
-        }    
-    
+        }
+
         // Move and scale hierarchy window to left of screen
         ShowHierarchyWindow();
         hierarchyWindow.position = IntVector2(secondaryToolBar.width,toolBar.height + uiMenuBar.height);
         hierarchyWindow.height = viewportArea.height-(toolBar.height + uiMenuBar.height);
-        
+
         // Move and scale inspector window to left of screen
         ShowAttributeInspectorWindow();
         attributeInspectorWindow.position = IntVector2(viewportArea.width-attributeInspectorWindow.width,toolBar.height + uiMenuBar.height);
@@ -712,7 +712,7 @@ void SetViewportMode(uint mode = VIEWPORT_SINGLE)
                 attributeInspectorWindow.position = oldInspectorWindowPosition;
                 attributeInspectorWindow.height = oldInspectorWindowHeight;
             }
-	    
+
             // Show close button and enable resize/movement of inspector/hierarchy windows
             attributeInspectorWindow.GetChild("CloseButton",true).visible = true;
             attributeInspectorWindow.resizable = true;
@@ -723,7 +723,7 @@ void SetViewportMode(uint mode = VIEWPORT_SINGLE)
         }
 
         viewportMode = mode;
-        
+
         // Always have quad a
         {
             uint viewport = 0;
@@ -1263,7 +1263,7 @@ void UpdateStats(float timeStep)
 
     // Relayout stats bar
     Font@ font = cache.GetResource("Font", "Fonts/Anonymous Pro.ttf");
-    
+
     if(viewportMode != VIEWPORT_COMPACT)
     {
 	if (graphics.width >= editorModeText.size.x + renderStatsText.size.x + 45)
@@ -1283,7 +1283,7 @@ void UpdateStats(float timeStep)
     {
         SetupStatsBarText(editorModeText, font, secondaryToolBar.width + hierarchyWindow.width + 10 , 64, HA_LEFT, VA_TOP);
         SetupStatsBarText(renderStatsText, font, secondaryToolBar.width + hierarchyWindow.width + 10 , 84, HA_LEFT, VA_TOP);
-        SetupStatsBarText(modelInfoText, font, secondaryToolBar.width + hierarchyWindow.width + 10, 104, HA_LEFT, VA_TOP);	
+        SetupStatsBarText(modelInfoText, font, secondaryToolBar.width + hierarchyWindow.width + 10, 104, HA_LEFT, VA_TOP);
     }
 }
 
@@ -1338,7 +1338,7 @@ void UpdateView(float timeStep)
         ReleaseMouseLock();
         return;
     }
-    
+
     // Check for camara fly mode
     if (hotKeyMode == HOTKEYS_MODE_BLENDER)
     {
@@ -1349,13 +1349,13 @@ void UpdateView(float timeStep)
     }
 
     // Move camera
-    float speedMultiplier = 1.0;
+    float speedMultiplier = 0.25;
     if (input.keyDown[KEY_LSHIFT])
         speedMultiplier = cameraShiftSpeedMultiplier;
-    
+
     if (!input.keyDown[KEY_LCTRL] && !input.keyDown[KEY_LALT])
     {
-        if (hotKeyMode == HOTKEYS_MODE_STANDARD || (hotKeyMode == HOTKEYS_MODE_BLENDER && cameraFlyMode && !input.keyDown[KEY_LSHIFT])) 
+        if (hotKeyMode == HOTKEYS_MODE_STANDARD || (hotKeyMode == HOTKEYS_MODE_BLENDER && cameraFlyMode && !input.keyDown[KEY_LSHIFT]))
         {
             if (input.keyDown[KEY_W] || input.keyDown[KEY_UP])
             {
@@ -1387,9 +1387,9 @@ void UpdateView(float timeStep)
                 cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * timeStep * speedMultiplier, TS_WORLD);
                 FadeUI();
             }
-        } 
+        }
     }
-    
+
     if (input.mouseMoveWheel != 0 && ui.GetElementAt(ui.cursor.position) is null)
     {
         if (hotKeyMode == HOTKEYS_MODE_STANDARD)
@@ -1405,10 +1405,10 @@ void UpdateView(float timeStep)
                 camera.zoom = Clamp(zoom, .1, 30);
             }
         }
-        else if (hotKeyMode == HOTKEYS_MODE_BLENDER) 
+        else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
         {
             if (mouseWheelCameraPosition && !camera.orthographic)
-            {   
+            {
                 if (input.keyDown[KEY_LSHIFT])
                     cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * -input.mouseMoveWheel*20* timeStep * speedMultiplier);
                 else if (input.keyDown[KEY_LCTRL])
@@ -1423,7 +1423,7 @@ void UpdateView(float timeStep)
                 }
             }
             else
-            {   
+            {
                 if (input.keyDown[KEY_LSHIFT])
                 {
                     cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * -input.mouseMoveWheel*20* timeStep * speedMultiplier);
@@ -1432,14 +1432,14 @@ void UpdateView(float timeStep)
                 {
                     cameraNode.Translate(Vector3(-cameraBaseSpeed,0, 0) * -input.mouseMoveWheel*20 * timeStep * speedMultiplier);
                 }
-                else 
+                else
                 {
                     if (input.qualifierDown[QUAL_ALT])
                     {
                         float zoom = camera.zoom + -input.mouseMoveWheel *.1 * speedMultiplier;
                         camera.zoom = Clamp(zoom, .1, 30);
                     }
-                    else 
+                    else
                     {
                         cameraNode.Translate(Vector3(0, 0, -cameraBaseSpeed) * -input.mouseMoveWheel*20 * timeStep * speedMultiplier);
                     }
@@ -1458,11 +1458,11 @@ void UpdateView(float timeStep)
             cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0,10);
         }
     }
-    
+
     // Rotate/orbit/pan camera
     bool changeCamViewButton = false;
 
-    if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
+    if (hotKeyMode == HOTKEYS_MODE_STANDARD)
         changeCamViewButton = input.mouseButtonDown[MOUSEB_RIGHT] || input.mouseButtonDown[MOUSEB_MIDDLE];
     else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
     {
@@ -1518,19 +1518,19 @@ void UpdateView(float timeStep)
                         Vector3 d = cameraNode.worldPosition - centerPoint;
                         cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0, d.length);
                         orbiting = true;
-                    }    
+                    }
                 }
                 else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
                 {
                     if (input.mouseButtonDown[MOUSEB_MIDDLE])
                     {
                         Vector3 centerPoint = Vector3(0,0,0);
-                        
+
                         if ((selectedNodes.length > 0 || selectedComponents.length > 0))
                             centerPoint = SelectedNodesCenterPoint();
                         else
                             centerPoint = lastSelectedNodesCenterPoint;
-                            
+
                         Vector3 d = cameraNode.worldPosition - centerPoint;
                         cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0, d.length);
                         orbiting = true;
@@ -1556,7 +1556,7 @@ void UpdateView(float timeStep)
             if (selectedNodes.length <= 1)
             {
                 Drawable@ drawable = lastSelectedDrawable.Get();
-                if (drawable !is null) 
+                if (drawable !is null)
                 {
                     bb = drawable.boundingBox;
                     centerPoint = drawable.node.worldPosition;
@@ -1582,7 +1582,7 @@ void UpdateView(float timeStep)
             // ReacquireCameraYawPitch();
             viewCloser =  false;
         }
-        else 
+        else
             viewCloser =  false;
     }
 
@@ -1764,7 +1764,7 @@ void HandlePostRenderUpdate()
 
         Array<Component@>@ dynNavMeshes = editorScene.GetComponents("DynamicNavigationMesh", true);
         for (uint i = 0; i < dynNavMeshes.length; ++i)
-            cast<DynamicNavigationMesh>(dynNavMeshes[i]).DrawDebugGeometry(true);        
+            cast<DynamicNavigationMesh>(dynNavMeshes[i]).DrawDebugGeometry(true);
     }
 
     if (setViewportCursor | resizingBorder > 0)
@@ -1907,31 +1907,31 @@ void ViewRaycast(bool mouseClick)
 
         RayQueryResult result = editorScene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, camera.farClip,
             pickModeDrawableFlags[pickMode], 0x7fffffff);
-        
+
         if (result.drawable !is null)
-        {            
+        {
             Drawable@ drawable = result.drawable;
-            
+
             // for actual last selected node or component in both modes
-            if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
+            if (hotKeyMode == HOTKEYS_MODE_STANDARD)
             {
-                if (input.mouseButtonDown[MOUSEB_LEFT]) 
+                if (input.mouseButtonDown[MOUSEB_LEFT])
                 {
                     lastSelectedNode = drawable.node;
                     lastSelectedDrawable = drawable;
                     lastSelectedComponent = drawable;
                 }
             }
-            else if (hotKeyMode == HOTKEYS_MODE_BLENDER) 
+            else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
             {
-                if (input.mouseButtonDown[MOUSEB_RIGHT]) 
+                if (input.mouseButtonDown[MOUSEB_RIGHT])
                 {
                     lastSelectedNode = drawable.node;
                     lastSelectedDrawable = drawable;
                     lastSelectedComponent = drawable;
                 }
             }
-             
+
             // If selecting a terrain patch, select the parent terrain instead
             if (drawable.typeName != "TerrainPatch")
             {
@@ -1967,12 +1967,12 @@ void ViewRaycast(bool mouseClick)
             selectedComponent = body;
         }
     }
-    
+
     bool multiselect = false;
     bool componentSelectQualifier = false;
     bool mouseButtonPressRL = false;
-    
-    if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
+
+    if (hotKeyMode == HOTKEYS_MODE_STANDARD)
     {
         mouseButtonPressRL = input.mouseButtonPress[MOUSEB_LEFT];
         componentSelectQualifier = input.qualifierDown[QUAL_SHIFT];
@@ -1984,7 +1984,7 @@ void ViewRaycast(bool mouseClick)
         componentSelectQualifier = input.qualifierDown[QUAL_CTRL];
         multiselect = input.qualifierDown[QUAL_SHIFT];
     }
-    
+
     if (mouseClick && mouseButtonPressRL)
     {
         if (selectedComponent !is null)
@@ -2129,12 +2129,12 @@ Vector3 SelectedNodesCenterPoint()
             centerPoint += selectedComponents[i].node.worldPosition;
     }
 
-    if (count > 0) 
+    if (count > 0)
     {
         lastSelectedNodesCenterPoint = centerPoint / count;
         return centerPoint / count;
     }
-    else 
+    else
     {
         lastSelectedNodesCenterPoint = centerPoint;
         return centerPoint;
