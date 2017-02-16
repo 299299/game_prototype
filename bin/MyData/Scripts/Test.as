@@ -199,7 +199,7 @@ void MoveCamera(float timeStep)
 
 void HandlePostRenderUpdate()
 {
-    DebugRenderer@ debug = editorScene.debugRenderer;
+    DebugRenderer@ debug = scene_.debugRenderer;
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
