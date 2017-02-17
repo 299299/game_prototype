@@ -87,12 +87,10 @@ Thumbs.db
 /bin/tool/AssetImporter
 /bin/tool/ScriptCompiler
 /bin/tool/PackageTool
-#/bin/MyData/Animations
+/bin/MyData/Animations
 /bin/MyData/Models
-/bin/Asset/Animations
 /bin/Urho3DPlayer_d.exe
 # /bin/MyData/CharacterTextures
-/bin/Asset/*.zip
 *.asc
 /bin/Release/
 /bin/Release.zip
