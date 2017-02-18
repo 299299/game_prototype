@@ -52,6 +52,61 @@ void CreateUI()
     infoText.horizontalAlignment = HA_LEFT;
     infoText.verticalAlignment = VA_TOP;
     ui.root.AddChild(infoText);
+
+    float y = 50; float h = 60;
+    CreateSlider(10, y, 500, 30, "mouse_open");
+    CreateSlider(10, y + h, 500, 30, "left_eye_open");
+    CreateSlider(10, y + 2*h, 500, 30, "right_eye_open");
+}
+
+Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
+{
+    Font@ font = cache.GetResource("Font", "Fonts/Anonymous Pro.ttf");
+
+    Text@ sliderText = ui.root.CreateChild("Text");
+    sliderText.SetPosition(x, y);
+    sliderText.SetFont(font, 15);
+    sliderText.text = text;
+    sliderText.name = text + "_text";
+
+    Slider@ slider = ui.root.CreateChild("Slider");
+    slider.SetStyleAuto();
+    slider.SetPosition(x, y + 20);
+    slider.SetSize(xSize, ySize);
+    slider.range = 1.0f;
+    slider.name = text;
+
+    SubscribeToEvent(slider, "SliderChanged", "HandleSliderChanged");
+
+    return slider;
+}
+
+void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
+{
+    UIElement@ e = eventData["Element"].GetPtr();
+    float value = eventData["Value"].GetFloat();
+    Node@ face_node = scene_.GetChild("Head", true);
+    AnimationController@ ac = face_node.GetComponent("AnimationController");
+    Text@ sliderText = ui.root.GetChild(e.name + "_text", true);
+
+    if (e.name == "mouse_open")
+    {
+        ac.Play(facial_animations[0], 0, false, 0);
+        ac.SetWeight(facial_animations[0], value);
+        sliderText.text = sliderText.name + " : " + value;
+    }
+    else if (e.name == "left_eye_open")
+    {
+        ac.Play(facial_animations[1], 0, false, 0);
+        ac.SetWeight(facial_animations[1], value);
+        sliderText.text = sliderText.name + " : " + value;
+    }
+    else if (e.name == "right_eye_open")
+    {
+        ac.Play(facial_animations[2], 0, false, 0);
+        ac.SetWeight(facial_animations[2], value);
+        sliderText.text = sliderText.name + " : " + value;
+    }
 }
 
 void SetupViewport()
@@ -65,6 +120,41 @@ void SubscribeToEvents()
 {
     SubscribeToEvent("Update", "HandleUpdate");
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
+    SubscribeToEvent("SceneUpdate", "HandleSceneUpdate_1");
+}
+
+void HandleSceneUpdate_1(StringHash eventType, VariantMap& eventData)
+{
+    // Move the camera by touch, if the camera node is initialized by descendant sample class
+    if (touchEnabled && cameraNode !is null)
+    {
+        for (uint i = 0; i < input.numTouches; ++i)
+        {
+            TouchState@ state = input.touches[i];
+            if (state.touchedElement is null && ui.focusElement is null) // Touch on empty space
+            {
+                if (state.delta.x !=0 || state.delta.y !=0)
+                {
+                    Camera@ camera = cameraNode.GetComponent("Camera");
+                    if (camera is null)
+                        return;
+
+                    yaw += TOUCH_SENSITIVITY * camera.fov / graphics.height * state.delta.x;
+                    pitch += TOUCH_SENSITIVITY * camera.fov / graphics.height * state.delta.y;
+
+                    // Construct new orientation for the camera scene node from yaw and pitch; roll is fixed to zero
+                    // cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
+                }
+                else
+                {
+                    // Move the cursor to the touch position
+                    Cursor@ cursor = ui.cursor;
+                    if (cursor !is null && cursor.visible)
+                        cursor.position = state.position;
+                }
+            }
+        }
+    }
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -92,7 +182,7 @@ void MoveCamera(float timeStep)
         return;
 
     // Movement speed as world units per second
-    const float MOVE_SPEED = 5.0f;
+    const float MOVE_SPEED = 2.5f;
     // Mouse sensitivity as degrees per pixel
     const float MOUSE_SENSITIVITY = 0.1f;
 
@@ -157,7 +247,6 @@ void LoadAnimations()
     facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_L.mdl", leftEyeBones, scene_).name);
     facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_R.mdl", rightEyeBones, scene_).name);
 
-
     AnimationController@ ac = face_node.GetComponent("AnimationController");
     for (uint i=0; i<facial_animations.length; ++i)
     {
@@ -166,46 +255,10 @@ void LoadAnimations()
     }
 }
 
-Array<float> weights= { 0, 0, 0};
-Array<float> speeds = { 1.0, 1.0, 1.0};
-
-void UpdateSpeedAndWeight(float timeStep, int i, AnimationController@ ac)
-{
-    weights[i] += timeStep * speeds[i];
-    if (weights[i] < 0)
-    {
-        weights[i] = 0;
-        speeds[i] *= -1;
-    }
-    else if (weights[i] > 1.0)
-    {
-        weights[i] = 1.0;
-        speeds[i] *= -1;
-    }
-
-    ac.Play(facial_animations[i], 0, false, 0);
-    ac.SetWeight(facial_animations[i], weights[i]);
-}
-
 void UpdateFace(float timeStep)
 {
     Text@ text = ui.root.GetChild("Info");
     text.text = " camera pos: " + cameraNode.worldPosition.ToString();
-
-    Node@ face_node = scene_.GetChild("Head", true);
-    AnimationController@ ac = face_node.GetComponent("AnimationController");
-    if (input.keyDown[KEY_T])
-    {
-        UpdateSpeedAndWeight(timeStep, 0, ac);
-    }
-    if (input.keyDown[KEY_G])
-    {
-        UpdateSpeedAndWeight(timeStep, 1, ac);
-    }
-    if (input.keyDown[KEY_B])
-    {
-        UpdateSpeedAndWeight(timeStep, 2, ac);
-    }
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
