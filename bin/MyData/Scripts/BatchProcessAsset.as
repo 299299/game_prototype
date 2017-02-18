@@ -6,8 +6,8 @@
 
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
-const Array<String> MODEL_ARGS = {"-t", "-na", "-cm", "-ct", "-ns", "-nt", "-nm", "-mb", "75", "-np"};//"-l",
-const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75", "-np"};
+const Array<String> MODEL_ARGS = {"-t", "-na", "-cm", "-ct", "-ns", "-nt", "-nm", "-mb", "75"};//"-l", "-np"
+const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", "75"};
 String exportFolder;
 Scene@ processScene;
 bool forceCompile = false;

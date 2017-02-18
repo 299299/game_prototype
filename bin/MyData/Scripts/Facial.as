@@ -1,15 +1,22 @@
 enum FacialBoneType
 {
     kFacial_Head,
+    kFacial_Nose,
+    kFacial_Nose_Left,
+    kFacial_Node_Right,
     kFacial_Jaw,
     kFacial_Mouth_Bottom,
     kFacial_Mouth_Up,
+    kFacial_Mouth_Left,
+    kFacial_Mouth_Right,
     kFacial_EyeBall_Left,
     kFacial_EyeBall_Right,
     kFacial_EyeTop_Left,
     kFacial_EyeTop_Right,
     kFacial_EyeBottom_Left,
     kFacial_EyeBottom_Right,
+    kFacial_EyeLeft,
+    kFacial_EyeRight,
 };
 
 class FacialBone
@@ -19,6 +26,22 @@ class FacialBone
         facial_bone_type = b_type;
         facial_index = b_index;
         bone_name = name;
+    }
+
+    void LoadNode(Node@ node)
+    {
+        if (!bone_name.empty)
+        {
+            bone_node = node.GetChild(bone_name, true);
+        }
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        if (bone_node !is null)
+        {
+            debug.AddCross(bone_node.worldPosition, 0.01, GREEN, false);
+        }
     }
 
     int facial_bone_type;
@@ -35,23 +58,30 @@ class FacialBoneManager
     {
         facial_bones.Push(FacialBone(kFacial_Head, 43, "Bip01_Head"));
         facial_bones.Push(FacialBone(kFacial_Jaw, 16, "FcFX_Jaw"));
+        facial_bones.Push(FacialBone(kFacial_Nose, 46, ""));
+        facial_bones.Push(FacialBone(kFacial_Nose_Left, 83, "FcFX_Nose_L"));
+        facial_bones.Push(FacialBone(kFacial_Node_Right, 82, "FcFX_Nose_R"));
+
         facial_bones.Push(FacialBone(kFacial_Mouth_Bottom, 102, "FcFX_Mouth_07"));
         facial_bones.Push(FacialBone(kFacial_Mouth_Up, 98, "FcFX_Mouth_03"));
+        facial_bones.Push(FacialBone(kFacial_Mouth_Left, 90, "FcFX_Mouth_05"));
+        facial_bones.Push(FacialBone(kFacial_Mouth_Right, 84, "FcFX_Mouth_01"));
 
         facial_bones.Push(FacialBone(kFacial_EyeBall_Left, 105, "FcFX_Eye_L"));
         facial_bones.Push(FacialBone(kFacial_EyeBall_Right, 104, "FcFX_Eye_R"));
-
         facial_bones.Push(FacialBone(kFacial_EyeTop_Left, 75, "FcFX_EyLd_Top_L"));
         facial_bones.Push(FacialBone(kFacial_EyeTop_Right, 72, "FcFX_EyLd_Top_R"));
         facial_bones.Push(FacialBone(kFacial_EyeBottom_Left, 76, "FcFX_EyLd_Bottom_L"));
         facial_bones.Push(FacialBone(kFacial_EyeBottom_Right, 73, "FcFX_EyLd_Bottom_R"));
+        facial_bones.Push(FacialBone(kFacial_EyeLeft, 61, ""));
+        facial_bones.Push(FacialBone(kFacial_EyeRight, 52, ""));
     }
 
     void LoadNode(Node@ node)
     {
         for (uint i=0; i<facial_bones.length; ++i)
         {
-            facial_bones[i].bone_node = node.GetChild(facial_bones[i].bone_name, true);
+            facial_bones[i].LoadNode(node);
         }
     }
 
@@ -59,7 +89,7 @@ class FacialBoneManager
     {
         for (uint i=0; i<facial_bones.length; ++i)
         {
-            debug.AddCross(facial_bones[i].bone_node.worldPosition, 0.05, GREEN, false);
+            facial_bones[i].DebugDraw(debug);
         }
     }
 };
@@ -116,3 +146,58 @@ Array<Vector2> ReadPoints(const String&in txt)
 
     return ret;
 }
+
+void FillAnimationWithCurrentPose(Animation@ anim, Node@ _node, const Array<String>& in boneNames)
+{
+    anim.RemoveAllTracks();
+    for (uint i=0; i<boneNames.length; ++i)
+    {
+        Node@ n = _node.GetChild(boneNames[i], true);
+        if (n is null)
+        {
+            log.Error("FillAnimationWithCurrentPose can not find bone " + boneNames[i]);
+            continue;
+        }
+        AnimationTrack@ track = anim.CreateTrack(boneNames[i]);
+        track.channelMask = CHANNEL_POSITION | CHANNEL_ROTATION;
+        AnimationKeyFrame kf;
+        kf.time = 0.0f;
+        kf.position = n.position;
+        kf.rotation = n.rotation;
+        track.AddKeyFrame(kf);
+    }
+}
+
+Animation@ CreatePoseAnimation(const String&in modelName, const Array<String>&in boneNames, Scene@ scene)
+{
+    Model@ model = cache.GetResource("Model", modelName);
+    if (model is null)
+        return null;
+
+    Node@ n = scene.CreateChild("Temp_Node");
+    AnimatedModel@ am = n.CreateComponent("AnimatedModel");
+    am.model = model;
+
+    Animation@ anim = Animation();
+    anim.name = modelName + "_ani";
+    FillAnimationWithCurrentPose(anim, n, boneNames);
+    cache.AddManualResource(anim);
+    n.Remove();
+
+    return anim;
+}
+
+Array<String> GetChildNodeNames(Node@ node)
+{
+    Array<String> nodeNames;
+    nodeNames.Push(node.name);
+
+    Array<Node@> children = node.GetChildren(true);
+    for (uint i=0; i<children.length; ++i)
+    {
+        nodeNames.Push(children[i].name);
+    }
+
+    return nodeNames;
+}
+

@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="3" />
 	<attribute name="Next Replicated Component ID" value="5" />
-	<attribute name="Next Local Node ID" value="16777421" />
-	<attribute name="Next Local Component ID" value="16777279" />
+	<attribute name="Next Local Node ID" value="16777456" />
+	<attribute name="Next Local Component ID" value="16777291" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -92,7 +92,7 @@
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>
-		<node id="16777385">
+		<node id="16777422">
 			<attribute name="Is Enabled" value="true" />
 			<attribute name="Name" value="RootNode" />
 			<attribute name="Tags" />
@@ -100,7 +100,7 @@
 			<attribute name="Rotation" value="1 0 0 0" />
 			<attribute name="Scale" value="1 1 1" />
 			<attribute name="Variables" />
-			<node id="16777386">
+			<node id="16777423">
 				<attribute name="Is Enabled" value="true" />
 				<attribute name="Name" value="Bip01_Spine3_$AssimpFbx$_Translation" />
 				<attribute name="Tags" />
@@ -108,7 +108,7 @@
 				<attribute name="Rotation" value="1 0 0 0" />
 				<attribute name="Scale" value="1 1 1" />
 				<attribute name="Variables" />
-				<node id="16777387">
+				<node id="16777424">
 					<attribute name="Is Enabled" value="true" />
 					<attribute name="Name" value="Bip01_Spine3_$AssimpFbx$_PreRotation" />
 					<attribute name="Tags" />
@@ -116,7 +116,7 @@
 					<attribute name="Rotation" value="0.707107 0.707107 0 0" />
 					<attribute name="Scale" value="1 1 1" />
 					<attribute name="Variables" />
-					<node id="16777388">
+					<node id="16777425">
 						<attribute name="Is Enabled" value="true" />
 						<attribute name="Name" value="Bip01_Spine3_$AssimpFbx$_Rotation" />
 						<attribute name="Tags" />
@@ -124,7 +124,7 @@
 						<attribute name="Rotation" value="0.0499717 -0.705339 -0.0499717 0.705339" />
 						<attribute name="Scale" value="1 1 1" />
 						<attribute name="Variables" />
-						<node id="16777389">
+						<node id="16777426">
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="Bip01_Spine3" />
 							<attribute name="Tags" />
@@ -132,7 +132,7 @@
 							<attribute name="Rotation" value="1 0 0 0" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
-							<node id="16777390">
+							<node id="16777427">
 								<attribute name="Is Enabled" value="true" />
 								<attribute name="Name" value="Bip01_Neck" />
 								<attribute name="Tags" />
@@ -140,7 +140,7 @@
 								<attribute name="Rotation" value="0.979469 4.61464e-07 3.6397e-07 0.201595" />
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
-								<node id="16777391">
+								<node id="16777428">
 									<attribute name="Is Enabled" value="true" />
 									<attribute name="Name" value="Bip01_Head" />
 									<attribute name="Tags" />
@@ -148,24 +148,24 @@
 									<attribute name="Rotation" value="0.991231 0.000853076 -0.000113721 -0.132138" />
 									<attribute name="Scale" value="1 1 1" />
 									<attribute name="Variables" />
-									<node id="16777392">
+									<node id="16777429">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Jaw" />
 										<attribute name="Tags" />
 										<attribute name="Position" value="1.83553 2.41759 -0.0143007" />
-										<attribute name="Rotation" value="0.186469 0.682077 0.185295 -0.682396" />
+										<attribute name="Rotation" value="0.000782326 0.707107 -0.000435688 -0.707107" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
-										<node id="16777393">
+										<node id="16777430">
 											<attribute name="Is Enabled" value="true" />
 											<attribute name="Name" value="FcFX_Mouth_07" />
 											<attribute name="Tags" />
-											<attribute name="Position" value="-0.0101192 -10.2394 5.66214" />
-											<attribute name="Rotation" value="0.982305 0.187215 -3.03456e-08 -2.58637e-07" />
+											<attribute name="Position" value="-0.0101193 -10.2395 5.6622" />
+											<attribute name="Rotation" value="0.991152 0.132731 -1.6469e-08 -2.43022e-07" />
 											<attribute name="Scale" value="1 1 1" />
 											<attribute name="Variables" />
 										</node>
-										<node id="16777394">
+										<node id="16777431">
 											<attribute name="Is Enabled" value="true" />
 											<attribute name="Name" value="FcFX_Mouth_06" />
 											<attribute name="Tags" />
@@ -174,7 +174,7 @@
 											<attribute name="Scale" value="1 1 1" />
 											<attribute name="Variables" />
 										</node>
-										<node id="16777395">
+										<node id="16777432">
 											<attribute name="Is Enabled" value="true" />
 											<attribute name="Name" value="FcFX_Mouth_08" />
 											<attribute name="Tags" />
@@ -183,35 +183,35 @@
 											<attribute name="Scale" value="1 1 1" />
 											<attribute name="Variables" />
 										</node>
-										<node id="16777396">
+										<node id="16777433">
 											<attribute name="Is Enabled" value="true" />
 											<attribute name="Name" value="FcFX_Tongue_01" />
 											<attribute name="Tags" />
-											<attribute name="Position" value="-0.0101302 -4.44992 5.60828" />
-											<attribute name="Rotation" value="0.998147 0.0608202 7.14336e-08 -1.99848e-07" />
+											<attribute name="Position" value="-0.0101303 -4.44992 5.60828" />
+											<attribute name="Rotation" value="0.999718 0.0237502 1.64901e-08 -2.46332e-07" />
 											<attribute name="Scale" value="1 1 1" />
 											<attribute name="Variables" />
-											<node id="16777397">
+											<node id="16777434">
 												<attribute name="Is Enabled" value="true" />
 												<attribute name="Name" value="FcFX_Tongue_02" />
 												<attribute name="Tags" />
-												<attribute name="Position" value="1.75714e-07 -2.22094 -0.0343491" />
-												<attribute name="Rotation" value="0.978497 -0.206254 -2.0007e-07 -1.54358e-07" />
+												<attribute name="Position" value="1.75507e-07 -2.22094 -0.0343475" />
+												<attribute name="Rotation" value="0.99669 -0.0813016 -9.53931e-09 -7.78137e-10" />
 												<attribute name="Scale" value="1 1 1" />
 												<attribute name="Variables" />
 											</node>
 										</node>
 									</node>
-									<node id="16777398">
+									<node id="16777435">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyBrw_Mid_R" />
 										<attribute name="Tags" />
-										<attribute name="Position" value="6.08116 10.8956 4.26906" />
-										<attribute name="Rotation" value="0.00455909 -0.665447 -0.115713 0.737391" />
+										<attribute name="Position" value="6.08105 11.0472 3.69717" />
+										<attribute name="Rotation" value="0.153755 -0.662414 -0.136622 0.720348" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777399">
+									<node id="16777436">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyLd_Top_R" />
 										<attribute name="Tags" />
@@ -220,25 +220,25 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777400">
+									<node id="16777437">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFx_Eye_L" />
 										<attribute name="Tags" />
-										<attribute name="Position" value="4.88384 8.73335 -3.50332" />
-										<attribute name="Rotation" value="0.515825 0.483675 0.483909 -0.515571" />
+										<attribute name="Position" value="4.88385 8.73335 -3.50332" />
+										<attribute name="Rotation" value="0.500553 0.499447 0.499691 -0.500308" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777401">
+									<node id="16777438">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyLd_Top_L" />
 										<attribute name="Tags" />
-										<attribute name="Position" value="4.88384 8.73336 -3.50331" />
-										<attribute name="Rotation" value="0.50959 0.462277 0.395304 -0.608554" />
+										<attribute name="Position" value="4.88385 8.73336 -3.50331" />
+										<attribute name="Rotation" value="0.577157 0.412778 0.446734 -0.544916" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777402">
+									<node id="16777439">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyBrw_End_L" />
 										<attribute name="Tags" />
@@ -247,7 +247,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777403">
+									<node id="16777440">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFx_Eye_R" />
 										<attribute name="Tags" />
@@ -256,16 +256,16 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777404">
+									<node id="16777441">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyBrw_End_R" />
 										<attribute name="Tags" />
-										<attribute name="Position" value="6.71632 9.90414 5.49614" />
-										<attribute name="Rotation" value="0.244361 -0.666933 -0.255047 0.656074" />
+										<attribute name="Position" value="6.38379 9.90395 5.49614" />
+										<attribute name="Rotation" value="0.209835 -0.652667 -0.28946 0.667987" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777405">
+									<node id="16777442">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyLd_Bottom_L" />
 										<attribute name="Tags" />
@@ -274,7 +274,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777406">
+									<node id="16777443">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyBrw_Start_L" />
 										<attribute name="Tags" />
@@ -283,7 +283,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777407">
+									<node id="16777444">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyBrw_Start_R" />
 										<attribute name="Tags" />
@@ -292,7 +292,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777408">
+									<node id="16777445">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyBrw_Mid_L" />
 										<attribute name="Tags" />
@@ -301,34 +301,34 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777409">
+									<node id="16777446">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_EyLd_Bottom_R" />
 										<attribute name="Tags" />
 										<attribute name="Position" value="4.88387 8.74537 3.47317" />
-										<attribute name="Rotation" value="0.565873 0.387539 0.683182 -0.250682" />
+										<attribute name="Rotation" value="0.561203 0.400033 0.675935 -0.26103" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777410">
+									<node id="16777447">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Cheek_L" />
 										<attribute name="Tags" />
 										<attribute name="Position" value="1.67673 10.4284 -4.26049" />
-										<attribute name="Rotation" value="-0.29623 -0.52136 0.0593421 0.798051" />
+										<attribute name="Rotation" value="-0.120858 -0.691686 0.147093 0.696654" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777411">
+									<node id="16777448">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Nose_R" />
 										<attribute name="Tags" />
-										<attribute name="Position" value="0.833127 11.7656 2.02756" />
-										<attribute name="Rotation" value="0.314948 -0.70027 -0.408478 0.493516" />
+										<attribute name="Position" value="0.83313 11.7656 2.02756" />
+										<attribute name="Rotation" value="0.398372 -0.514463 -0.438691 0.619821" />
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777412">
+									<node id="16777449">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Nose_L" />
 										<attribute name="Tags" />
@@ -337,7 +337,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777413">
+									<node id="16777450">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Cheek_R" />
 										<attribute name="Tags" />
@@ -346,7 +346,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777414">
+									<node id="16777451">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Mouth_01" />
 										<attribute name="Tags" />
@@ -355,7 +355,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777415">
+									<node id="16777452">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Mouth_02" />
 										<attribute name="Tags" />
@@ -364,7 +364,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777416">
+									<node id="16777453">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Mouth_03" />
 										<attribute name="Tags" />
@@ -373,7 +373,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777417">
+									<node id="16777454">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Mouth_04" />
 										<attribute name="Tags" />
@@ -382,7 +382,7 @@
 										<attribute name="Scale" value="1 1 1" />
 										<attribute name="Variables" />
 									</node>
-									<node id="16777418">
+									<node id="16777455">
 										<attribute name="Is Enabled" value="true" />
 										<attribute name="Name" value="FcFX_Mouth_05" />
 										<attribute name="Tags" />

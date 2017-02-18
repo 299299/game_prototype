@@ -2,26 +2,18 @@
 #include "Facial.as"
 
 FacialBoneManager@ g_facial_mgr = FacialBoneManager();
+Array<String> facial_animations;
 
 void Start()
 {
-    // Execute the common startup for samples
     SampleStart();
-
-    // Create the scene content
     CreateScene();
-
-    // Create the UI content and subscribe to UI events
     CreateUI();
-
-    // Setup the viewport for displaying the scene
     SetupViewport();
-
-    // Set the mouse mode to use in the sample
     SampleInitMouseMode(MM_RELATIVE);
-
-    // Subscribe to global events for camera movement
     SubscribeToEvents();
+
+    LoadAnimations();
 }
 
 void CreateScene()
@@ -37,50 +29,29 @@ void CreateScene()
     cameraNode.CreateComponent("Camera");
 
     // Set an initial position for the camera scene node above the plane
-    cameraNode.position = Vector3(0.0f, 0.5f, -1.0f);
+    cameraNode.position = Vector3(0.0f, 0.5f, -0.5f);
 
     g_facial_mgr.LoadNode(scene_.GetChild("Head", true));
 }
 
 void CreateUI()
 {
-    // Set up global UI style into the root UI element
     XMLFile@ style = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
     ui.root.defaultStyle = style;
 
-    // Create a Cursor UI element because we want to be able to hide and show it at will. When hidden, the mouse cursor will
-    // control the camera, and when visible, it will interact with the UI
     Cursor@ cursor = Cursor();
     cursor.SetStyleAuto();
     ui.cursor = cursor;
-    // Set starting position of the cursor at the rendering window center
     cursor.SetPosition(graphics.width / 2, graphics.height / 2);
 
-    // Load UI content prepared in the editor and add to the UI hierarchy
-    UIElement@ layoutRoot = ui.LoadLayout(cache.GetResource("XMLFile", "UI/UILoadExample.xml"));
-    ui.root.AddChild(layoutRoot);
-
-    // Subscribe to button actions (toggle scene lights when pressed then released)
-    Button@ button = layoutRoot.GetChild("ToggleLight1", true);
-    if (button !is null)
-        SubscribeToEvent(button, "Released", "ToggleLight1");
-    button = layoutRoot.GetChild("ToggleLight2", true);
-    if (button !is null)
-        SubscribeToEvent(button, "Released", "ToggleLight2");
-}
-
-void ToggleLight1()
-{
-    Node@ lightNode = scene_.GetChild("Light1", true);
-    if (lightNode !is null)
-        lightNode.enabled = !lightNode.enabled;
-}
-
-void ToggleLight2()
-{
-    Node@ lightNode = scene_.GetChild("Light2", true);
-    if (lightNode !is null)
-        lightNode.enabled = !lightNode.enabled;
+    Text@ infoText = Text();
+    infoText.name = "Info";
+    infoText.text = "Hello World from Urho3D!";
+    infoText.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 20);
+    infoText.color = Color(0.0f, 1.0f, 0.0f);
+    infoText.horizontalAlignment = HA_LEFT;
+    infoText.verticalAlignment = VA_TOP;
+    ui.root.AddChild(infoText);
 }
 
 void SetupViewport()
@@ -102,6 +73,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     float timeStep = eventData["TimeStep"].GetFloat();
     // Move the camera, scale movement with time step
     MoveCamera(timeStep);
+    UpdateFace(timeStep);
 }
 
 void MoveCamera(float timeStep)
@@ -157,6 +129,83 @@ void HandlePostRenderUpdate()
 void LoadFacialBones()
 {
 
+}
+
+void LoadAnimations()
+{
+    Node@ face_node = scene_.GetChild("Head", true);
+    Array<String> jawBones = GetChildNodeNames(face_node.GetChild("FcFX_Jaw", true));
+    Array<String> mouseBones;
+    for (uint i=0; i<jawBones.length; ++i)
+        mouseBones.Push(jawBones[i]);
+    Array<String> boneNames = GetChildNodeNames(face_node);
+    Array<String> leftEyeBones;
+    Array<String> rightEyeBones;
+    for (uint i=0; i<boneNames.length; ++i)
+    {
+        if (boneNames[i].EndsWith("_L"))
+        {
+            leftEyeBones.Push(boneNames[i]);
+        }
+        if (boneNames[i].EndsWith("_R"))
+        {
+            rightEyeBones.Push(boneNames[i]);
+        }
+    }
+
+    facial_animations.Push(CreatePoseAnimation("Models/head_mouse_open.mdl", mouseBones, scene_).name);
+    facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_L.mdl", leftEyeBones, scene_).name);
+    facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_R.mdl", rightEyeBones, scene_).name);
+
+
+    AnimationController@ ac = face_node.GetComponent("AnimationController");
+    for (uint i=0; i<facial_animations.length; ++i)
+    {
+        ac.Play(facial_animations[i], 0, false, 0);
+        ac.SetWeight(facial_animations[i], 0);
+    }
+}
+
+Array<float> weights= { 0, 0, 0};
+Array<float> speeds = { 1.0, 1.0, 1.0};
+
+void UpdateSpeedAndWeight(float timeStep, int i, AnimationController@ ac)
+{
+    weights[i] += timeStep * speeds[i];
+    if (weights[i] < 0)
+    {
+        weights[i] = 0;
+        speeds[i] *= -1;
+    }
+    else if (weights[i] > 1.0)
+    {
+        weights[i] = 1.0;
+        speeds[i] *= -1;
+    }
+
+    ac.Play(facial_animations[i], 0, false, 0);
+    ac.SetWeight(facial_animations[i], weights[i]);
+}
+
+void UpdateFace(float timeStep)
+{
+    Text@ text = ui.root.GetChild("Info");
+    text.text = " camera pos: " + cameraNode.worldPosition.ToString();
+
+    Node@ face_node = scene_.GetChild("Head", true);
+    AnimationController@ ac = face_node.GetComponent("AnimationController");
+    if (input.keyDown[KEY_T])
+    {
+        UpdateSpeedAndWeight(timeStep, 0, ac);
+    }
+    if (input.keyDown[KEY_G])
+    {
+        UpdateSpeedAndWeight(timeStep, 1, ac);
+    }
+    if (input.keyDown[KEY_B])
+    {
+        UpdateSpeedAndWeight(timeStep, 2, ac);
+    }
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app
