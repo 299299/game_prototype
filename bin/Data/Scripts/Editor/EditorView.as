@@ -1349,7 +1349,7 @@ void UpdateView(float timeStep)
     }
 
     // Move camera
-    float speedMultiplier = 0.25;
+    float speedMultiplier = 1.0;
     if (input.keyDown[KEY_LSHIFT])
         speedMultiplier = cameraShiftSpeedMultiplier;
 
@@ -1747,8 +1747,26 @@ void HandlePostRenderUpdate()
 
     if (renderingDebug)
         renderer.DrawDebugGeometry(false);
+
     if (physicsDebug && editorScene.physicsWorld !is null)
         editorScene.physicsWorld.DrawDebugGeometry(true);
+
+    if (physicsDebug && editorScene.physicsWorld2D !is null)
+    {
+        bool needDraw = true;
+        for (uint i = 0; i < selectedComponents.length; ++i)
+        {
+            if (cast<PhysicsWorld2D>(selectedComponents[i]) !is null)
+            {
+                needDraw = false; // Already drawed
+                break;
+            }
+        }
+
+        if (needDraw)
+            physicsWorld2D.DrawDebugGeometry();
+    }
+
     if (octreeDebug && editorScene.octree !is null)
         editorScene.octree.DrawDebugGeometry(true);
 
@@ -1798,6 +1816,24 @@ void DrawNodeDebug(Node@ node, DebugRenderer@ debug, bool drawNode = true)
 
 void ViewMouseMove()
 {
+    Ray cameraRay = GetActiveViewportCameraRay();
+    Component@ selectedComponent;
+
+    if (pickMode < PICK_RIGIDBODIES && editorScene.octree !is null)
+    {
+        RayQueryResult result = editorScene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, camera.farClip,
+            pickModeDrawableFlags[pickMode], 0x7fffffff);
+
+        if (result.drawable !is null && result.drawable.typeName == "TerrainPatch" && result.drawable.node.parent !is null)
+        {
+            Terrain@ terrainComponent = result.drawable.node.parent.GetComponent("Terrain");
+            terrainEditor.UpdateBrushVisualizer(terrainComponent, result.position);
+        }
+        else {
+            terrainEditor.HideBrushVisualizer();
+        }
+    }
+
     // setting mouse position based on mouse position
     if (ui.IsDragging()) { }
     else if (ui.focusElement !is null || input.mouseButtonDown[MOUSEB_LEFT|MOUSEB_MIDDLE|MOUSEB_RIGHT])
@@ -1942,8 +1978,19 @@ void ViewRaycast(bool mouseClick)
                     drawable.DrawDebugGeometry(debug, false);
                 }
             }
-            else if (drawable.node.parent !is null)
-                selectedComponent = drawable.node.parent.GetComponent("Terrain");
+            else if (drawable.node.parent !is null){
+                Terrain@ terrainComponent = drawable.node.parent.GetComponent("Terrain");
+                selectedComponent = terrainComponent;
+                if (selectedComponent is terrainComponent && input.mouseButtonDown[MOUSEB_LEFT])
+                {
+                    selectedComponent = terrainComponent;
+                    terrainEditor.Work(terrainComponent, result.position);
+                }
+                else
+                {
+                    terrainEditor.targetColorSelected = false;
+                }
+            }
         }
     }
     else
