@@ -109,17 +109,17 @@ class FacialBoneManager
         Array<String> rightEyeBones;
         for (uint i=0; i<boneNames.length; ++i)
         {
-            if (boneNames[i].EndsWith("_L") && boneNames[i] != "FcFX_Eye_L")
+            if (boneNames[i].EndsWith("_L") && boneNames[i] != "FcFx_Eye_L")
             {
                 leftEyeBones.Push(boneNames[i]);
             }
-            if (boneNames[i].EndsWith("_R") && boneNames[i] != "FcFX_Eye_R")
+            if (boneNames[i].EndsWith("_R") && boneNames[i] != "FcFx_Eye_R")
             {
                 rightEyeBones.Push(boneNames[i]);
             }
         }
-        Array<String> leftEyeBalls = { "FcFX_Eye_L"};
-        Array<String> rightEyeBalls = { "FcFX_Eye_R"};
+        Array<String> leftEyeBalls = { "FcFx_Eye_L"};
+        Array<String> rightEyeBalls = { "FcFx_Eye_R"};
 
         facial_animations.Push(CreatePoseAnimation("Models/head_mouse_open.mdl", mouseBones, scene).name);
         facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_L.mdl", leftEyeBones, scene).name);
