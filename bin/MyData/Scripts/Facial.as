@@ -1,6 +1,6 @@
 enum FacialBoneType
 {
-    kFacial_Head,
+    kFacial_ForeHead,
     kFacial_Nose,
     kFacial_Nose_Left,
     kFacial_Node_Right,
@@ -56,7 +56,6 @@ class FacialBoneManager
 
     FacialBoneManager()
     {
-        facial_bones.Push(FacialBone(kFacial_Head, 43, "Bip01_Head"));
         facial_bones.Push(FacialBone(kFacial_Jaw, 16, "FcFX_Jaw"));
         facial_bones.Push(FacialBone(kFacial_Nose, 46, ""));
         facial_bones.Push(FacialBone(kFacial_Nose_Left, 83, "FcFX_Nose_L"));
@@ -75,6 +74,8 @@ class FacialBoneManager
         facial_bones.Push(FacialBone(kFacial_EyeBottom_Right, 73, "FcFX_EyLd_Bottom_R"));
         facial_bones.Push(FacialBone(kFacial_EyeLeft, 61, ""));
         facial_bones.Push(FacialBone(kFacial_EyeRight, 52, ""));
+
+        facial_bones.Push(FacialBone(kFacial_ForeHead, 43, ""));
     }
 
     void LoadNode(Node@ node)
