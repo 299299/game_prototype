@@ -19,6 +19,17 @@ enum FacialBoneType
     kFacial_EyeRight,
 };
 
+enum FacialAttributeType
+{
+    kFacial_MouseOpenness,
+    kFacial_EyeOpenness_Left,
+    kFacial_EyeOpenness_Right,
+    kFacial_EyePositionLeft_Left,
+    kFacial_EyePositionRight_Left,
+    kFacial_EyePositionLeft_Right,
+    kFacial_EyePositionRight_Right,
+};
+
 class FacialBone
 {
     FacialBone(int b_type, int b_index, const String&in name)
@@ -53,6 +64,9 @@ class FacialBone
 class FacialBoneManager
 {
     Array<FacialBone@> facial_bones;
+    Array<String> facial_animations;
+    Array<float>  facial_attributes;
+    Node@ face_node;
 
     FacialBoneManager()
     {
@@ -78,12 +92,39 @@ class FacialBoneManager
         facial_bones.Push(FacialBone(kFacial_ForeHead, 43, ""));
     }
 
-    void LoadNode(Node@ node)
+    void Init(Scene@ scene)
     {
+        face_node = scene.GetChild("Head", true);
         for (uint i=0; i<facial_bones.length; ++i)
         {
-            facial_bones[i].LoadNode(node);
+            facial_bones[i].LoadNode(face_node);
         }
+
+        Array<String> jawBones = GetChildNodeNames(face_node.GetChild("FcFX_Jaw", true));
+        Array<String> mouseBones;
+        for (uint i=0; i<jawBones.length; ++i)
+            mouseBones.Push(jawBones[i]);
+        Array<String> boneNames = GetChildNodeNames(face_node);
+        Array<String> leftEyeBones;
+        Array<String> rightEyeBones;
+        for (uint i=0; i<boneNames.length; ++i)
+        {
+            if (boneNames[i].EndsWith("_L"))
+            {
+                leftEyeBones.Push(boneNames[i]);
+            }
+            if (boneNames[i].EndsWith("_R"))
+            {
+                rightEyeBones.Push(boneNames[i]);
+            }
+        }
+
+        facial_animations.Push(CreatePoseAnimation("Models/head_mouse_open.mdl", mouseBones, scene).name);
+        facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_L.mdl", leftEyeBones, scene).name);
+        facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_R.mdl", rightEyeBones, scene).name);
+        facial_attributes.Push(0);
+        facial_attributes.Push(0);
+        facial_attributes.Push(0);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -91,6 +132,16 @@ class FacialBoneManager
         for (uint i=0; i<facial_bones.length; ++i)
         {
             facial_bones[i].DebugDraw(debug);
+        }
+    }
+
+    void Update(float dt)
+    {
+        AnimationController@ ac = face_node.GetComponent("AnimationController");
+        for (uint i=0; i<facial_animations.length; ++i)
+        {
+            ac.Play(facial_animations[i], 0, false, 0);
+            ac.SetWeight(facial_animations[i], facial_attributes[i]);
         }
     }
 };
