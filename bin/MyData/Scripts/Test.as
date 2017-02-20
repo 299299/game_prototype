@@ -46,6 +46,11 @@ void CreateUI()
     CreateSlider(10, y, 500, 30, "mouse_open");
     CreateSlider(10, y + h, 500, 30, "left_eye_open");
     CreateSlider(10, y + 2*h, 500, 30, "right_eye_open");
+
+    Slider@ s = CreateSlider(10, y + 3*h, 500, 30, "left_eye_ball");
+    s.value = 0.5;
+    @s = CreateSlider(10, y + 4*h, 500, 30, "right_eye_ball");
+    s.value = 0.5;
 }
 
 Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
@@ -90,9 +95,17 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
     {
         index = kFacial_EyeOpenness_Right;
     }
+    else if (e.name == "left_eye_ball")
+    {
+        index = kFacial_EyePositionLeft_Left;
+    }
+    else if (e.name == "right_eye_ball")
+    {
+        index = kFacial_EyePositionLeft_Right;
+    }
 
     g_facial_mgr.facial_attributes[index] = value;
-    sliderText.text = sliderText.name + " : " + value;
+    sliderText.text = e.name + " : " + value;
 }
 
 void SetupViewport()

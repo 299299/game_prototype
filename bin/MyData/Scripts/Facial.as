@@ -51,7 +51,7 @@ class FacialBone
     {
         if (bone_node !is null)
         {
-            debug.AddCross(bone_node.worldPosition, 0.01, GREEN, false);
+            // debug.AddCross(bone_node.worldPosition, 0.01, GREEN, false);
         }
     }
 
@@ -109,22 +109,32 @@ class FacialBoneManager
         Array<String> rightEyeBones;
         for (uint i=0; i<boneNames.length; ++i)
         {
-            if (boneNames[i].EndsWith("_L"))
+            if (boneNames[i].EndsWith("_L") && boneNames[i] != "FcFX_Eye_L")
             {
                 leftEyeBones.Push(boneNames[i]);
             }
-            if (boneNames[i].EndsWith("_R"))
+            if (boneNames[i].EndsWith("_R") && boneNames[i] != "FcFX_Eye_R")
             {
                 rightEyeBones.Push(boneNames[i]);
             }
         }
+        Array<String> leftEyeBalls = { "FcFX_Eye_L"};
+        Array<String> rightEyeBalls = { "FcFX_Eye_R"};
 
         facial_animations.Push(CreatePoseAnimation("Models/head_mouse_open.mdl", mouseBones, scene).name);
         facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_L.mdl", leftEyeBones, scene).name);
         facial_animations.Push(CreatePoseAnimation("Models/head_eye_close_R.mdl", rightEyeBones, scene).name);
+        facial_animations.Push(CreatePoseAnimation("Models/head_eyeball_L_L.mdl", leftEyeBalls, scene).name);
+        facial_animations.Push(CreatePoseAnimation("Models/head_eyeball_L_R.mdl", leftEyeBalls, scene).name);
+        facial_animations.Push(CreatePoseAnimation("Models/head_eyeball_R_L.mdl", rightEyeBalls, scene).name);
+        facial_animations.Push(CreatePoseAnimation("Models/head_eyeball_R_R.mdl", rightEyeBalls, scene).name);
         facial_attributes.Push(0);
         facial_attributes.Push(0);
         facial_attributes.Push(0);
+        facial_attributes.Push(0.5);
+        facial_attributes.Push(0.5);
+        facial_attributes.Push(0.5);
+        facial_attributes.Push(0.5);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -138,6 +148,10 @@ class FacialBoneManager
     void Update(float dt)
     {
         AnimationController@ ac = face_node.GetComponent("AnimationController");
+
+        facial_attributes[kFacial_EyePositionRight_Left] = 1.0 - facial_attributes[kFacial_EyePositionLeft_Left];
+        facial_attributes[kFacial_EyePositionRight_Right] = 1.0 - facial_attributes[kFacial_EyePositionLeft_Right];
+
         for (uint i=0; i<facial_animations.length; ++i)
         {
             ac.Play(facial_animations[i], 0, false, 0);
