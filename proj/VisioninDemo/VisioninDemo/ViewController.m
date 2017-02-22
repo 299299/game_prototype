@@ -11,6 +11,7 @@
 #import "VSVideoCamera.h"
 #import "VSProps.h"
 #import "VSFacer.h"
+#import "Facer.h"
 
 @interface ViewController (){
     VSVideoCamera*  videoCamera;
@@ -91,6 +92,9 @@ BOOL canRotateToAllOrientations;
     //            });
     //        }
     //    }];
+    
+    GetFacerAction();
+    TestFUCK();
     
 }
 

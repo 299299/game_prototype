@@ -7,7 +7,6 @@
 //
 
 #import "VSVideoCamera.h"
-#import "Facer.h"
 
 #pragma mark - "VSVideoCamera"
 @interface VSVideoCamera(){

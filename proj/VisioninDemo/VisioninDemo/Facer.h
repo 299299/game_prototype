@@ -45,13 +45,15 @@ typedef struct vs_models_human_action_t {
     int face_count;                                                         /// 检测到的人脸数目
 } vs_models_human_action_t;
 
-#ifdef __cplusplus
-{
-extern "C"
+#if __cplusplus
+extern "C" {
 #endif
-vs_models_human_action_t* GetFacerAction();
-#ifdef __cplusplus
-}
+
+    vs_models_human_action_t* GetFacerAction();
+    void TestFUCK();
+    
+#if __cplusplus
+}   // Extern C
 #endif
 
 #endif /* Facer_h */
