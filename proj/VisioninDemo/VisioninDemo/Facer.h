@@ -44,6 +44,14 @@ typedef struct vs_models_human_action_t {
     vs_models_face_action_t faces[10];   /// 检测到的人脸及动作数组
     int face_count;                                                         /// 检测到的人脸数目
 } vs_models_human_action_t;
-extern "C" vs_models_human_action_t* GetFacerAction();
+
+#ifdef __cplusplus
+{
+extern "C"
+#endif
+vs_models_human_action_t* GetFacerAction();
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* Facer_h */
