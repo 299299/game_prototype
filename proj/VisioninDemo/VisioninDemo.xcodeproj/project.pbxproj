@@ -7,17 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		04AA55471E5DBC7100CEEE41 /* libFreeType.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55401E5DBC7100CEEE41 /* libFreeType.a */; };
-		04AA55481E5DBC7100CEEE41 /* libJO.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55411E5DBC7100CEEE41 /* libJO.a */; };
-		04AA55491E5DBC7100CEEE41 /* libLZ4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55421E5DBC7100CEEE41 /* libLZ4.a */; };
-		04AA554A1E5DBC7100CEEE41 /* libPugiXml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55431E5DBC7100CEEE41 /* libPugiXml.a */; };
-		04AA554B1E5DBC7100CEEE41 /* libSDL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55441E5DBC7100CEEE41 /* libSDL.a */; };
-		04AA554C1E5DBC7100CEEE41 /* libStanHull.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55451E5DBC7100CEEE41 /* libStanHull.a */; };
-		04AA554D1E5DBC7100CEEE41 /* libUrho3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55461E5DBC7100CEEE41 /* libUrho3D.a */; };
+		04313A481E5F1C7E00AD8725 /* libFreeType.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04313A411E5F1C7D00AD8725 /* libFreeType.a */; };
+		04313A491E5F1C7E00AD8725 /* libJO.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04313A421E5F1C7D00AD8725 /* libJO.a */; };
+		04313A4A1E5F1C7E00AD8725 /* libLZ4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04313A431E5F1C7D00AD8725 /* libLZ4.a */; };
+		04313A4B1E5F1C7E00AD8725 /* libPugiXml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04313A441E5F1C7D00AD8725 /* libPugiXml.a */; };
+		04313A4C1E5F1C7E00AD8725 /* libSDL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04313A451E5F1C7D00AD8725 /* libSDL.a */; };
+		04313A4D1E5F1C7E00AD8725 /* libStanHull.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04313A461E5F1C7E00AD8725 /* libStanHull.a */; };
+		04313A4E1E5F1C7E00AD8725 /* libUrho3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04313A471E5F1C7E00AD8725 /* libUrho3D.a */; };
+		04313A511E5F1CBD00AD8725 /* CoreData in Resources */ = {isa = PBXBuildFile; fileRef = 04313A4F1E5F1CBD00AD8725 /* CoreData */; };
+		04313A521E5F1CBD00AD8725 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = 04313A501E5F1CBD00AD8725 /* Data */; };
 		04AA554F1E5DC21E00CEEE41 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA554E1E5DC21E00CEEE41 /* GameController.framework */; };
 		04AA55511E5DC25C00CEEE41 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04AA55501E5DC25C00CEEE41 /* CoreMotion.framework */; };
-		04AA55551E5DD39400CEEE41 /* CoreData in Resources */ = {isa = PBXBuildFile; fileRef = 04AA55531E5DD39400CEEE41 /* CoreData */; };
-		04AA55561E5DD39400CEEE41 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = 04AA55541E5DD39400CEEE41 /* Data */; };
 		C8ED52D31E5C30BA00796B4E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C8ED52D21E5C30BA00796B4E /* main.m */; };
 		C8ED52D61E5C30BA00796B4E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C8ED52D51E5C30BA00796B4E /* AppDelegate.m */; };
 		C8ED52D91E5C30BA00796B4E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C8ED52D81E5C30BA00796B4E /* ViewController.m */; };
@@ -51,18 +51,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		04313A411E5F1C7D00AD8725 /* libFreeType.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFreeType.a; sourceTree = "<group>"; };
+		04313A421E5F1C7D00AD8725 /* libJO.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libJO.a; sourceTree = "<group>"; };
+		04313A431E5F1C7D00AD8725 /* libLZ4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libLZ4.a; sourceTree = "<group>"; };
+		04313A441E5F1C7D00AD8725 /* libPugiXml.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPugiXml.a; sourceTree = "<group>"; };
+		04313A451E5F1C7D00AD8725 /* libSDL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libSDL.a; sourceTree = "<group>"; };
+		04313A461E5F1C7E00AD8725 /* libStanHull.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libStanHull.a; sourceTree = "<group>"; };
+		04313A471E5F1C7E00AD8725 /* libUrho3D.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libUrho3D.a; sourceTree = "<group>"; };
+		04313A4F1E5F1CBD00AD8725 /* CoreData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CoreData; sourceTree = "<group>"; };
+		04313A501E5F1CBD00AD8725 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		04504CD91E5C7B3D00D8E5A2 /* Facer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Facer.h; sourceTree = "<group>"; };
-		04AA55401E5DBC7100CEEE41 /* libFreeType.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libFreeType.a; sourceTree = "<group>"; };
-		04AA55411E5DBC7100CEEE41 /* libJO.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libJO.a; sourceTree = "<group>"; };
-		04AA55421E5DBC7100CEEE41 /* libLZ4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libLZ4.a; sourceTree = "<group>"; };
-		04AA55431E5DBC7100CEEE41 /* libPugiXml.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libPugiXml.a; sourceTree = "<group>"; };
-		04AA55441E5DBC7100CEEE41 /* libSDL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libSDL.a; sourceTree = "<group>"; };
-		04AA55451E5DBC7100CEEE41 /* libStanHull.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libStanHull.a; sourceTree = "<group>"; };
-		04AA55461E5DBC7100CEEE41 /* libUrho3D.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libUrho3D.a; sourceTree = "<group>"; };
 		04AA554E1E5DC21E00CEEE41 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		04AA55501E5DC25C00CEEE41 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
-		04AA55531E5DD39400CEEE41 /* CoreData */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CoreData; path = ../../Urho3D/.build_ios/bin/CoreData; sourceTree = "<group>"; };
-		04AA55541E5DD39400CEEE41 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Data; path = ../../Urho3D/.build_ios/bin/Data; sourceTree = "<group>"; };
 		C8ED52CE1E5C30BA00796B4E /* VisioninDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VisioninDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8ED52D21E5C30BA00796B4E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C8ED52D41E5C30BA00796B4E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -111,33 +111,33 @@
 			files = (
 				04AA55511E5DC25C00CEEE41 /* CoreMotion.framework in Frameworks */,
 				04AA554F1E5DC21E00CEEE41 /* GameController.framework in Frameworks */,
-				04AA554A1E5DBC7100CEEE41 /* libPugiXml.a in Frameworks */,
+				04313A4D1E5F1C7E00AD8725 /* libStanHull.a in Frameworks */,
 				C8ED53301E5C325D00796B4E /* libcrypto.a in Frameworks */,
 				C8ED53551E5C55AD00796B4E /* libsszip.a in Frameworks */,
 				C8ED53311E5C325D00796B4E /* libcurl.a in Frameworks */,
 				C8ED53321E5C325D00796B4E /* libssl.a in Frameworks */,
+				04313A491E5F1C7E00AD8725 /* libJO.a in Frameworks */,
 				C8ED532A1E5C324700796B4E /* libstdc++.6.0.9.dylib in Frameworks */,
 				C8ED53541E5C55AD00796B4E /* libMobileCross.a in Frameworks */,
-				04AA55481E5DBC7100CEEE41 /* libJO.a in Frameworks */,
-				04AA554C1E5DBC7100CEEE41 /* libStanHull.a in Frameworks */,
 				C8ED53281E5C323300796B4E /* libc++.1.dylib in Frameworks */,
 				C8ED53261E5C322500796B4E /* libz.1.dylib in Frameworks */,
 				C8ED53241E5C320600796B4E /* CoreVideo.framework in Frameworks */,
+				04313A4A1E5F1C7E00AD8725 /* libLZ4.a in Frameworks */,
 				C8ED53531E5C55AD00796B4E /* libcjson.a in Frameworks */,
+				04313A4E1E5F1C7E00AD8725 /* libUrho3D.a in Frameworks */,
 				C8ED53221E5C31FF00796B4E /* OpenGLES.framework in Frameworks */,
 				C8ED534C1E5C542B00796B4E /* libVisionin.a in Frameworks */,
 				C8ED53201E5C31F800796B4E /* QuartzCore.framework in Frameworks */,
-				04AA554D1E5DBC7100CEEE41 /* libUrho3D.a in Frameworks */,
-				04AA55491E5DBC7100CEEE41 /* libLZ4.a in Frameworks */,
+				04313A4C1E5F1C7E00AD8725 /* libSDL.a in Frameworks */,
 				C8ED531E1E5C31F200796B4E /* UIKit.framework in Frameworks */,
-				04AA554B1E5DBC7100CEEE41 /* libSDL.a in Frameworks */,
 				C8ED531C1E5C31EB00796B4E /* AVFoundation.framework in Frameworks */,
 				C8ED531A1E5C31E400796B4E /* Foundation.framework in Frameworks */,
+				04313A4B1E5F1C7E00AD8725 /* libPugiXml.a in Frameworks */,
+				04313A481E5F1C7E00AD8725 /* libFreeType.a in Frameworks */,
 				C8ED53181E5C31DE00796B4E /* CoreGraphics.framework in Frameworks */,
 				C8ED53161E5C31D800796B4E /* CoreMedia.framework in Frameworks */,
 				C8ED53141E5C31D000796B4E /* CoreImage.framework in Frameworks */,
 				C8ED53121E5C31B700796B4E /* MediaPlayer.framework in Frameworks */,
-				04AA55471E5DBC7100CEEE41 /* libFreeType.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,8 +147,8 @@
 		04AA55521E5DD38100CEEE41 /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				04AA55531E5DD39400CEEE41 /* CoreData */,
-				04AA55541E5DD39400CEEE41 /* Data */,
+				04313A4F1E5F1CBD00AD8725 /* CoreData */,
+				04313A501E5F1CBD00AD8725 /* Data */,
 			);
 			name = resources;
 			sourceTree = "<group>";
@@ -204,18 +204,18 @@
 		C8ED53101E5C31B700796B4E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				04313A411E5F1C7D00AD8725 /* libFreeType.a */,
+				04313A421E5F1C7D00AD8725 /* libJO.a */,
+				04313A431E5F1C7D00AD8725 /* libLZ4.a */,
+				04313A441E5F1C7D00AD8725 /* libPugiXml.a */,
+				04313A451E5F1C7D00AD8725 /* libSDL.a */,
+				04313A461E5F1C7E00AD8725 /* libStanHull.a */,
+				04313A471E5F1C7E00AD8725 /* libUrho3D.a */,
 				04AA55501E5DC25C00CEEE41 /* CoreMotion.framework */,
 				04AA554E1E5DC21E00CEEE41 /* GameController.framework */,
 				C8ED53501E5C55AD00796B4E /* libcjson.a */,
 				C8ED53511E5C55AD00796B4E /* libMobileCross.a */,
 				C8ED53521E5C55AD00796B4E /* libsszip.a */,
-				04AA55401E5DBC7100CEEE41 /* libFreeType.a */,
-				04AA55411E5DBC7100CEEE41 /* libJO.a */,
-				04AA55421E5DBC7100CEEE41 /* libLZ4.a */,
-				04AA55431E5DBC7100CEEE41 /* libPugiXml.a */,
-				04AA55441E5DBC7100CEEE41 /* libSDL.a */,
-				04AA55451E5DBC7100CEEE41 /* libStanHull.a */,
-				04AA55461E5DBC7100CEEE41 /* libUrho3D.a */,
 				C8ED534B1E5C542B00796B4E /* libVisionin.a */,
 				C8ED532C1E5C325D00796B4E /* libcrypto.a */,
 				C8ED532D1E5C325D00796B4E /* libcurl.a */,
@@ -312,9 +312,9 @@
 				C8ED533F1E5C32B000796B4E /* facer.model in Resources */,
 				C8ED52DE1E5C30BA00796B4E /* Assets.xcassets in Resources */,
 				C8ED53401E5C32B000796B4E /* visionin.res in Resources */,
-				04AA55551E5DD39400CEEE41 /* CoreData in Resources */,
+				04313A511E5F1CBD00AD8725 /* CoreData in Resources */,
 				C8ED52DC1E5C30BA00796B4E /* Main.storyboard in Resources */,
-				04AA55561E5DD39400CEEE41 /* Data in Resources */,
+				04313A521E5F1CBD00AD8725 /* Data in Resources */,
 				C8ED533C1E5C329E00796B4E /* rabbit.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

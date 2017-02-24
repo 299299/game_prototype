@@ -93,8 +93,7 @@ BOOL canRotateToAllOrientations;
     //        }
     //    }];
     
-    GetFacerAction();
-    TestFUCK();
+    Urho3D_Init();
     
 }
 
