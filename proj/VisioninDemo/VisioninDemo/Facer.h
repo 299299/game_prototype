@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
     vs_models_human_action_t* GetFacerAction();
-    void TestFUCK();
+    void Urho3D_Init();
     
 #if __cplusplus
 }   // Extern C
