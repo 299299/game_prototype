@@ -53,7 +53,6 @@
 /* Begin PBXFileReference section */
 		04313A4F1E5F1CBD00AD8725 /* CoreData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CoreData; sourceTree = "<group>"; };
 		04313A501E5F1CBD00AD8725 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
-		04504CD91E5C7B3D00D8E5A2 /* Facer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Facer.h; sourceTree = "<group>"; };
 		04AA554E1E5DC21E00CEEE41 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		04AA55501E5DC25C00CEEE41 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		C8ED52CE1E5C30BA00796B4E /* VisioninDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VisioninDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -188,7 +187,6 @@
 				C8ED52DA1E5C30BA00796B4E /* Main.storyboard */,
 				C8ED52D11E5C30BA00796B4E /* Supporting Files */,
 				C8ED53331E5C326500796B4E /* VisioninSDK */,
-				04504CD91E5C7B3D00D8E5A2 /* Facer.h */,
 			);
 			path = VisioninDemo;
 			sourceTree = "<group>";

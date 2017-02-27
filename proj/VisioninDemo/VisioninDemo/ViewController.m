@@ -11,7 +11,8 @@
 #import "VSVideoCamera.h"
 #import "VSProps.h"
 #import "VSFacer.h"
-#import "Facer.h"
+
+extern void Urho3D_Init();
 
 @interface ViewController (){
     VSVideoCamera*  videoCamera;
@@ -23,6 +24,7 @@
     UIButton*       shaper;
     NSArray*        propses;
     
+    BOOL            marker;
     // 滤镜滑动框
     UICollectionView*   filterScrollView;
     NSMutableArray*     filterButtonArray;
@@ -50,8 +52,8 @@ BOOL canRotateToAllOrientations;
     [Visionin initialize:@"0x75,0x1,0x0,0x0,0x78,0x9c,0x7d,0x8e,0xc1,0x6f,0xc3,0x31,0xd,0x87,0xf0,0x3d,0x46,0xd6,0x74,0x87,0x8a,0xd5,0xd4,0x96,0x39,0x42,0xde,0xbb,0x4e,0x1f,0x8f,0xe6,0x8f,0xb,0x9d,0x47,0x70,0x8d,0x89,0x14,0xf3,0xc2,0xb8,0x34,0xba,0x47,0x39,0x23,0xc3,0x4,0x4,0x71,0xe4,0x1c,0x5e,0x9f,0xe1,0x66,0xd0,0xff,0x2c,0xd1,0xfd,0xbc,0xbd,0xe4,0x5f,0x9d,0x1d,0x56,0x95,0x28,0x73,0xfc,0x1f,0x1f,0x88,0xb1,0x2d,0xb6,0x98,0xb3,0xe2,0x10,0x8e,0x5a,0x9d,0xa8,0x6c,0x32,0x23,0x9b,0x75,0xa9,0xb7,0x8,0x11,0x44,0xc7,0x97,0x10,0x15,0xbd,0xa0,0x94,0x73,0xaf,0x35,0x4a,0x75,0xe1,0xd2,0x95,0xb0,0x2c,0x10,0xd4,0x1e,0x5d,0xa7,0xc3,0x7d,0x28,0xa8,0xca,0xfc,0xff,0x16,0x5,0x83,0x86,0x8a,0xca,0xbd,0xe1,0xe9,0x7,0xac,0x5f,0x4e,0x48,0xf1,0x35,0xd,0xe9,0xef,0xbd,0x6e,0x49,0x2d,0x6,0x8b,0xcf,0xb9,0x78,0x99,0x5b,0x4f,0xa0,0x11,0x2c,0x6e,0xc1,0x29,0x2c,0xd5,0x74,0xb5,0xc,0x4f,0xa2,0x9a,0x7,0xbe,0x8,0x2,0xa5,0x69,0xfd,0x18,0x40,0x90,0xcb,0xc3,0xa9,0xda,0xef,0x1e,0x59,0xad,0xd6,0x10,0x1c,0xd6,0x3f,0xa2,0xa9,0xe1,0x2,0x74,0xf6,0xa3,0xd9,0xf7,0x2f,0xb3,0x31,0x76,0xd1,"];
     videoCamera = [[VSVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetHigh position:AVCaptureDevicePositionFront view:self.view];
     [videoCamera setMirrorFrontFacingCamera:TRUE];
-    [videoCamera setMirrorFrontPreview:FALSE];
-    [videoCamera setOutputSize:CGSizeMake(480, 640)];
+    [videoCamera setMirrorFrontPreview:TRUE];
+    // [videoCamera setOutputSize:CGSizeMake(480, 640)];
     [videoCamera setOutputImageOrientation:UIInterfaceOrientationPortrait];
     // 如果设置了videoConnection.videoOrientation，则调用以下这句
     // [videoCamera setVideoOrientation:AVCaptureVideoOrientationPortrait];
@@ -65,9 +67,10 @@ BOOL canRotateToAllOrientations;
     [facer startFaceTracking];
     // 开启整形，瘦脸大眼睛
     [facer startShaper];
+    marker = NO;
     
     // 加载贴纸
-    // [[VSProps shareInstance] startProps:@"rabbit"];
+    [[VSProps shareInstance] startProps:@"rabbit"];
     
     //    __block typeof(self) parent = self;
     //    [videoCamera setBgraPixelBlock:^(CVPixelBufferRef pixelBuffer, CMTime time) {
@@ -92,9 +95,7 @@ BOOL canRotateToAllOrientations;
     //            });
     //        }
     //    }];
-    
     Urho3D_Init();
-    
 }
 
 - (void)initView{
@@ -108,10 +109,10 @@ BOOL canRotateToAllOrientations;
     [record setTitle:@"开始" forState:UIControlStateNormal];
     [record setBackgroundColor:[UIColor orangeColor]];
     [record addTarget:self action:@selector(startVideo) forControlEvents:UIControlEventTouchUpInside];
-    UIButton* stop = [[UIButton alloc]initWithFrame:CGRectMake(80, 20, 60, 40)];
-    [stop setTitle:@"停止" forState:UIControlStateNormal];
-    [stop setBackgroundColor:[UIColor orangeColor]];
-    [stop addTarget:self action:@selector(stopVideo) forControlEvents:UIControlEventTouchUpInside];
+    UIButton* marker = [[UIButton alloc]initWithFrame:CGRectMake(80, 20, 60, 40)];
+    [marker setTitle:@"标记" forState:UIControlStateNormal];
+    [marker setBackgroundColor:[UIColor orangeColor]];
+    [marker addTarget:self action:@selector(marker) forControlEvents:UIControlEventTouchUpInside];
     UIButton* rotate = [[UIButton alloc]initWithFrame:CGRectMake(150, 20, 60, 40)];
     [rotate setTitle:@"切换" forState:UIControlStateNormal];
     [rotate setBackgroundColor:[UIColor orangeColor]];
@@ -128,7 +129,7 @@ BOOL canRotateToAllOrientations;
     [props addTarget:self action:@selector(rotateProps) forControlEvents:UIControlEventTouchUpInside];
     
     [self.view addSubview:record];
-    [self.view addSubview:stop];
+    [self.view addSubview:marker];
     [self.view addSubview:rotate];
     [self.view addSubview:shaper];
     [self.view addSubview:props];
@@ -191,9 +192,15 @@ BOOL canRotateToAllOrientations;
     [videoCamera startCameraCapture];
 }
 
--(void)stopVideo{
-    [videoCamera stopCameraCapture];
-    videoCamera = nil;
+-(void)marker{
+    if (!marker) {
+        marker = YES;
+        [[VSFacer shareInstance] setMarder:YES];
+    }
+    else{
+        marker = NO;
+        [[VSFacer shareInstance] setMarder:NO];
+    }
 }
 
 - (void)viewDidLayoutSubviews {
