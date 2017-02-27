@@ -30,7 +30,7 @@
 VSVideoCamera* shareInstance = nil;
 +(VSVideoCamera*)shareInstance{
     if (shareInstance==nil) {
-        shareInstance = [[VSVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPreset640x480 position:AVCaptureDevicePositionFront view:nil];
+        shareInstance = [[VSVideoCamera alloc] initWithSessionPreset:AVCaptureSessionPresetHigh position:AVCaptureDevicePositionFront view:nil];
     }
     
     return shareInstance;
@@ -457,7 +457,16 @@ VSVideoCamera* shareInstance = nil;
         if (_isProcessing) {
             return;
         }
-        
+
+//        extern int TrackFacer(const unsigned char* bytes, int width, int height);
+//        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
+//        CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+//        uint8_t *baseAddress = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, 0);
+//        int height = (int)CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
+//        int width = (int)CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
+//        int count = TrackFacer(baseAddress, width, height);
+//        printf("face count: %d\n", count);
+//        CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
         CFRetain(sampleBuffer);
         dispatch_async(sampleProcessingQueue, ^(){
             _isProcessing = YES;
