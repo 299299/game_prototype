@@ -19,7 +19,7 @@ void CreateScene()
     scene_.LoadXML(cache.GetFile("Scenes/Head.xml"));
     cameraNode = scene_.CreateChild("Camera");
     cameraNode.CreateComponent("Camera");
-    cameraNode.position = Vector3(0.0f, 0.5f, -0.5f);
+    cameraNode.position = Vector3(0.0f, 0.55f, -1.5f);
     g_facial_mgr.Init(scene_);
 }
 
