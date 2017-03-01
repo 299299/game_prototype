@@ -141,6 +141,7 @@ class FacialBoneManager
 
         AnimationController@ ac = face_node.GetComponent("AnimationController");
         ac.PlayExclusive("Animations/rabbit_ear_motion_Take 001.ani", 0, true, 0.1);
+        ac.SetSpeed("Animations/rabbit_ear_motion_Take 001.ani", 0.25);
 
         for (uint i=0;i<facial_animations.length; ++i)
         {
