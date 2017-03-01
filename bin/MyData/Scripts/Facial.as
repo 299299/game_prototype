@@ -138,6 +138,15 @@ class FacialBoneManager
         facial_attributes.Push(0.5);
         facial_attributes.Push(0.5);
         facial_attributes.Push(0.5);
+
+        AnimationController@ ac = face_node.GetComponent("AnimationController");
+        ac.PlayExclusive("Animations/rabbit_ear_motion_Take 001.ani", 0, true, 0.1);
+
+        for (uint i=0;i<facial_animations.length; ++i)
+        {
+            ac.Play(facial_animations[i], 1, true, 0);
+            ac.SetWeight(facial_animations[i], facial_attributes[i]);
+        }
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -157,7 +166,7 @@ class FacialBoneManager
 
         for (uint i=0; i<facial_animations.length; ++i)
         {
-            ac.Play(facial_animations[i], 0, false, 0);
+            ac.Play(facial_animations[i], 1, true, 0);
             ac.SetWeight(facial_animations[i], facial_attributes[i]);
         }
     }

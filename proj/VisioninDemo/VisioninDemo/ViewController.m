@@ -252,7 +252,7 @@ BOOL canRotateToAllOrientations;
         [[VSProps shareInstance] stopProps];
     }
     else{
-        [[VSProps shareInstance] startProps:@"rabbit"];
+        //[[VSProps shareInstance] startProps:@"rabbit"];
     }
 }
 
