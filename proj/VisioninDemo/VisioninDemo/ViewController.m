@@ -23,13 +23,13 @@ extern void Urho3D_Init();
     UIImageView*    videoView;
     UIButton*       shaper;
     NSArray*        propses;
-    
+
     BOOL            marker;
     // 滤镜滑动框
     UICollectionView*   filterScrollView;
     NSMutableArray*     filterButtonArray;
     NSArray*            filterNameArray;
-    
+
     UIInterfaceOrientation old_orientation;
 }
 
@@ -57,21 +57,21 @@ BOOL canRotateToAllOrientations;
     [videoCamera setOutputImageOrientation:UIInterfaceOrientationPortrait];
     // 如果设置了videoConnection.videoOrientation，则调用以下这句
     // [videoCamera setVideoOrientation:AVCaptureVideoOrientationPortrait];
-    
+
     [videoCamera setSmoothStrength:0.9];
     // 设置滤镜，类型有origin、valencia、brannan、inkwell、pink、grass、beach、nature、sweety、clean、fresh、coral、sunset、vivid、lolita、crisp、rosy、urban、vintage
     [videoCamera setExtraFilter:@"origin"];
-    
+
     // 开启人脸追踪
     VSFacer* facer = [VSFacer shareInstance];
     [facer startFaceTracking];
     // 开启整形，瘦脸大眼睛
-    [facer startShaper];
+    // [facer startShaper];
     marker = NO;
-    
+
     // 加载贴纸
-    [[VSProps shareInstance] startProps:@"rabbit"];
-    
+    // [[VSProps shareInstance] startProps:@"rabbit"];
+
     //    __block typeof(self) parent = self;
     //    [videoCamera setBgraPixelBlock:^(CVPixelBufferRef pixelBuffer, CMTime time) {
     //        // 获取处理后视频帧
@@ -85,7 +85,7 @@ BOOL canRotateToAllOrientations;
     //            });
     //        }
     //    }];
-    
+
     // 以下是查看nv12格式的视频流
     //    [videoCamera setYuv420pPixelBlock:^(unsigned char * buffer, CMTime time) {
     //        if (parent->videoView!=nil && buffer!=NULL) {
@@ -104,7 +104,7 @@ BOOL canRotateToAllOrientations;
     videoView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 150, 135, 240)];
     [videoView setBackgroundColor:[UIColor whiteColor]];
     // [self.view addSubview:videoView];
-    
+
     UIButton* record = [[UIButton alloc]initWithFrame:CGRectMake(10, 20, 60, 40)];
     [record setTitle:@"开始" forState:UIControlStateNormal];
     [record setBackgroundColor:[UIColor orangeColor]];
@@ -117,23 +117,23 @@ BOOL canRotateToAllOrientations;
     [rotate setTitle:@"切换" forState:UIControlStateNormal];
     [rotate setBackgroundColor:[UIColor orangeColor]];
     [rotate addTarget:videoCamera action:@selector(rotateCamera) forControlEvents:UIControlEventTouchUpInside];
-    
+
     shaper = [[UIButton alloc]initWithFrame:CGRectMake(220, 20, 60, 40)];
     [shaper setTitle:@"关整形" forState:UIControlStateNormal];
     [shaper setBackgroundColor:[UIColor orangeColor]];
     [shaper addTarget:self action:@selector(faceShaper) forControlEvents:UIControlEventTouchUpInside];
-    
+
     UIButton* props = [[UIButton alloc]initWithFrame:CGRectMake(290, 20, 60, 40)];
     [props setTitle:@"贴纸" forState:UIControlStateNormal];
     [props setBackgroundColor:[UIColor orangeColor]];
     [props addTarget:self action:@selector(rotateProps) forControlEvents:UIControlEventTouchUpInside];
-    
+
     [self.view addSubview:record];
     [self.view addSubview:marker];
     [self.view addSubview:rotate];
     [self.view addSubview:shaper];
     [self.view addSubview:props];
-    
+
     UILabel* smoothLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 480, 40, 20)];
     [smoothLabel setText:@"美颜"];
     [self.view addSubview:smoothLabel];
@@ -144,7 +144,7 @@ BOOL canRotateToAllOrientations;
     smooth.continuous = NO;
     [smooth addTarget:self action:@selector(smoothValueChanged:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:smooth];
-    
+
     UILabel* shaperLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 510, 40, 20)];
     [shaperLabel setText:@"整形"];
     [self.view addSubview:shaperLabel];
@@ -155,19 +155,19 @@ BOOL canRotateToAllOrientations;
     shaperSlider.continuous = NO;
     [shaperSlider addTarget:self action:@selector(shaperValueChanged:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:shaperSlider];
-    
+
     smoothView = [[UITextView alloc] initWithFrame:CGRectMake(10, 80, 100, 30)];
     [smoothView setBackgroundColor:[UIColor clearColor]];
     NSString* text = [[NSString alloc] initWithFormat:@"磨皮:%0.2f", 0.5];
     [smoothView setText:text];
     [self.view addSubview:smoothView];
-    
+
     shaperView = [[UITextView alloc] initWithFrame:CGRectMake(100, 80, 100, 30)];
     [shaperView setBackgroundColor:[UIColor clearColor]];
     text = [[NSString alloc] initWithFormat:@"整形:%0.2f", 0.9];
     [shaperView setText:text];
     [self.view addSubview:shaperView];
-    
+
     // 滤镜滑动窗口
     filterNameArray = [NSArray arrayWithObjects:@"origin", @"nature", @"clean", @"vivid", @"fresh", @"sweety", @"rosy", @"lolita", @"sunset", @"grass", @"coral",
                        @"pink",@"urban", @"crisp", @"valencia", @"beach", @"vintage", @"rococo", @"walden", @"brannan", @"inkwell", nil];
@@ -179,9 +179,9 @@ BOOL canRotateToAllOrientations;
     [self.view addSubview:filterScrollView];
     filterScrollView.delegate = self;
     filterScrollView.dataSource = self;
-    
+
     [filterScrollView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:@"myCell"];
-    
+
     // 屏幕旋转
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChanged:) name:UIDeviceOrientationDidChangeNotification object:nil];
@@ -259,7 +259,7 @@ BOOL canRotateToAllOrientations;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
     //	We're going onto the screen, enable auto rotations
     canRotateToAllOrientations = YES;
     [videoCamera startCameraCapture];
@@ -268,7 +268,7 @@ BOOL canRotateToAllOrientations;
 - (void) viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+
     //	We're now on the screen, disable auto rotations
     canRotateToAllOrientations = YES;
 }
@@ -298,11 +298,11 @@ BOOL canRotateToAllOrientations;
     if (old_orientation == orientation) {
         return;
     }
-    
+
     [videoCamera setPreview:self.view];
-    
+
     old_orientation = orientation;
-    
+
     switch (orientation) {
         case UIInterfaceOrientationPortraitUpsideDown:
             [videoCamera setOutputImageOrientation:UIInterfaceOrientationPortraitUpsideDown];
@@ -349,7 +349,7 @@ BOOL canRotateToAllOrientations;
         [button setTitle:[filterNameArray objectAtIndex:indexPath.item] forState:UIControlStateNormal];
         [button setTag:indexPath.item];
     }
-    
+
     return cell;
 }
 
