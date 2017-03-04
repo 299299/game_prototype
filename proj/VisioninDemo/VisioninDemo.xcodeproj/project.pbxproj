@@ -48,11 +48,18 @@
 		D9ABA9B91E6123B100196B4E /* libSDL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9B21E6123B000196B4E /* libSDL.a */; };
 		D9ABA9BA1E6123B100196B4E /* libStanHull.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9B31E6123B000196B4E /* libStanHull.a */; };
 		D9ABA9BB1E6123B100196B4E /* libUrho3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9B41E6123B000196B4E /* libUrho3D.a */; };
+		D9ABA9C41E69BB0500196B4E /* libFreeType.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9BD1E69BB0500196B4E /* libFreeType.a */; };
+		D9ABA9C51E69BB0500196B4E /* libJO.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9BE1E69BB0500196B4E /* libJO.a */; };
+		D9ABA9C61E69BB0500196B4E /* libLZ4.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9BF1E69BB0500196B4E /* libLZ4.a */; };
+		D9ABA9C71E69BB0500196B4E /* libPugiXml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9C01E69BB0500196B4E /* libPugiXml.a */; };
+		D9ABA9C81E69BB0500196B4E /* libSDL.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9C11E69BB0500196B4E /* libSDL.a */; };
+		D9ABA9C91E69BB0500196B4E /* libStanHull.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9C21E69BB0500196B4E /* libStanHull.a */; };
+		D9ABA9CA1E69BB0500196B4E /* libUrho3D.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9ABA9C31E69BB0500196B4E /* libUrho3D.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		04313A4F1E5F1CBD00AD8725 /* CoreData */ = {isa = PBXFileReference; lastKnownFileType = folder; path = CoreData; sourceTree = "<group>"; };
-		04313A501E5F1CBD00AD8725 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
+		04313A4F1E5F1CBD00AD8725 /* CoreData */ = {isa = PBXFileReference; lastKnownFileType = folder; name = CoreData; path = urho3d/CoreData; sourceTree = "<group>"; };
+		04313A501E5F1CBD00AD8725 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Data; path = urho3d/Data; sourceTree = "<group>"; };
 		04AA554E1E5DC21E00CEEE41 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 		04AA55501E5DC25C00CEEE41 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		C8ED52CE1E5C30BA00796B4E /* VisioninDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VisioninDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,6 +108,13 @@
 		D9ABA9B21E6123B000196B4E /* libSDL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libSDL.a; sourceTree = "<group>"; };
 		D9ABA9B31E6123B000196B4E /* libStanHull.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libStanHull.a; sourceTree = "<group>"; };
 		D9ABA9B41E6123B000196B4E /* libUrho3D.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libUrho3D.a; sourceTree = "<group>"; };
+		D9ABA9BD1E69BB0500196B4E /* libFreeType.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFreeType.a; path = urho3d/libFreeType.a; sourceTree = "<group>"; };
+		D9ABA9BE1E69BB0500196B4E /* libJO.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libJO.a; path = urho3d/libJO.a; sourceTree = "<group>"; };
+		D9ABA9BF1E69BB0500196B4E /* libLZ4.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLZ4.a; path = urho3d/libLZ4.a; sourceTree = "<group>"; };
+		D9ABA9C01E69BB0500196B4E /* libPugiXml.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPugiXml.a; path = urho3d/libPugiXml.a; sourceTree = "<group>"; };
+		D9ABA9C11E69BB0500196B4E /* libSDL.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libSDL.a; path = urho3d/libSDL.a; sourceTree = "<group>"; };
+		D9ABA9C21E69BB0500196B4E /* libStanHull.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libStanHull.a; path = urho3d/libStanHull.a; sourceTree = "<group>"; };
+		D9ABA9C31E69BB0500196B4E /* libUrho3D.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libUrho3D.a; path = urho3d/libUrho3D.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,14 +125,20 @@
 				04AA55511E5DC25C00CEEE41 /* CoreMotion.framework in Frameworks */,
 				04AA554F1E5DC21E00CEEE41 /* GameController.framework in Frameworks */,
 				D9ABA9BA1E6123B100196B4E /* libStanHull.a in Frameworks */,
+				D9ABA9C71E69BB0500196B4E /* libPugiXml.a in Frameworks */,
 				C8ED53301E5C325D00796B4E /* libcrypto.a in Frameworks */,
 				C8ED53551E5C55AD00796B4E /* libsszip.a in Frameworks */,
 				C8ED53311E5C325D00796B4E /* libcurl.a in Frameworks */,
 				C8ED53321E5C325D00796B4E /* libssl.a in Frameworks */,
 				D9ABA9B61E6123B100196B4E /* libJO.a in Frameworks */,
+				D9ABA9C61E69BB0500196B4E /* libLZ4.a in Frameworks */,
 				C8ED532A1E5C324700796B4E /* libstdc++.6.0.9.dylib in Frameworks */,
 				C8ED53541E5C55AD00796B4E /* libMobileCross.a in Frameworks */,
 				C8ED53281E5C323300796B4E /* libc++.1.dylib in Frameworks */,
+				D9ABA9C41E69BB0500196B4E /* libFreeType.a in Frameworks */,
+				D9ABA9C51E69BB0500196B4E /* libJO.a in Frameworks */,
+				D9ABA9C81E69BB0500196B4E /* libSDL.a in Frameworks */,
+				D9ABA9C91E69BB0500196B4E /* libStanHull.a in Frameworks */,
 				C8ED53261E5C322500796B4E /* libz.1.dylib in Frameworks */,
 				C8ED53241E5C320600796B4E /* CoreVideo.framework in Frameworks */,
 				D9ABA9B71E6123B100196B4E /* libLZ4.a in Frameworks */,
@@ -136,6 +156,7 @@
 				C8ED53181E5C31DE00796B4E /* CoreGraphics.framework in Frameworks */,
 				C8ED53161E5C31D800796B4E /* CoreMedia.framework in Frameworks */,
 				C8ED53141E5C31D000796B4E /* CoreImage.framework in Frameworks */,
+				D9ABA9CA1E69BB0500196B4E /* libUrho3D.a in Frameworks */,
 				C8ED53121E5C31B700796B4E /* MediaPlayer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -172,7 +193,7 @@
 		C8ED52D01E5C30BA00796B4E /* VisioninDemo */ = {
 			isa = PBXGroup;
 			children = (
-				04AA55521E5DD38100CEEE41 /* resources */,
+				D9ABA9BC1E69B89400196B4E /* urho3d */,
 				C8ED533D1E5C32B000796B4E /* facer.model */,
 				C8ED533E1E5C32B000796B4E /* visionin.res */,
 				C8ED533B1E5C329E00796B4E /* rabbit.zip */,
@@ -245,6 +266,21 @@
 				C8ED53381E5C327E00796B4E /* VSVideoCamera.h */,
 			);
 			name = VisioninSDK;
+			sourceTree = "<group>";
+		};
+		D9ABA9BC1E69B89400196B4E /* urho3d */ = {
+			isa = PBXGroup;
+			children = (
+				D9ABA9BD1E69BB0500196B4E /* libFreeType.a */,
+				D9ABA9BE1E69BB0500196B4E /* libJO.a */,
+				D9ABA9BF1E69BB0500196B4E /* libLZ4.a */,
+				D9ABA9C01E69BB0500196B4E /* libPugiXml.a */,
+				D9ABA9C11E69BB0500196B4E /* libSDL.a */,
+				D9ABA9C21E69BB0500196B4E /* libStanHull.a */,
+				D9ABA9C31E69BB0500196B4E /* libUrho3D.a */,
+				04AA55521E5DD38100CEEE41 /* resources */,
+			);
+			name = urho3d;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -463,6 +499,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/VisioninDemo/VisioninSDK",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/VisioninDemo/urho3d",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.visionin.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -483,6 +520,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/VisioninDemo/VisioninSDK",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/VisioninDemo/urho3d",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.visionin.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
