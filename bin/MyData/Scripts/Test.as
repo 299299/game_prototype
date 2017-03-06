@@ -44,13 +44,25 @@ void CreateUI()
 
     float y = 50; float h = 60;
     CreateSlider(10, y, 500, 30, "mouse_open");
-    CreateSlider(10, y + h, 500, 30, "left_eye_open");
-    CreateSlider(10, y + 2*h, 500, 30, "right_eye_open");
-
-    Slider@ s = CreateSlider(10, y + 3*h, 500, 30, "left_eye_ball");
+    y += h;
+    CreateSlider(10, y, 500, 30, "left_eye_open");
+    y += h;
+    CreateSlider(10, y, 500, 30, "right_eye_open");
+    y += h;
+    Slider@ s = CreateSlider(10, y, 500, 30, "left_eye_ball");
     s.value = 0.5;
-    @s = CreateSlider(10, y + 4*h, 500, 30, "right_eye_ball");
+    y += h;
+    @s = CreateSlider(10, y, 500, 30, "right_eye_ball");
     s.value = 0.5;
+    @s = CreateSlider(10, y, 500, 30, "yaw");
+    s.range = 360.0;
+    y += h;
+    @s = CreateSlider(10, y, 500, 30, "pitch");
+    s.range = 360.0;
+    y += h;
+    @s = CreateSlider(10, y, 500, 30, "roll");
+    s.range = 360.0;
+    y += h;
 }
 
 Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
@@ -103,8 +115,24 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
     {
         index = kFacial_EyePositionLeft_Right;
     }
+    else if (e.name == "yaw")
+    {
+        yaw = value;
+    }
+    else if (e.name == "pitch")
+    {
+        pitch = value;
+    }
+    else if (e.name == "roll")
+    {
+        roll = value;
+    }
 
-    g_facial_mgr.facial_attributes[index] = value;
+    if (index >= 0)
+    {
+        g_facial_mgr.facial_attributes[index] = value;
+    }
+
     sliderText.text = e.name + " : " + value;
 }
 
@@ -205,6 +233,11 @@ void UpdateFace(float timeStep)
     Text@ text = ui.root.GetChild("Info");
     text.text = " camera pos: " + cameraNode.worldPosition.ToString();
     g_facial_mgr.Update(timeStep);
+
+    Node@ rotate_bone_node = g_facial_mgr.
+    const float z_offset = -15.0F;
+    Quaternion q(-yaw, roll, pitch + z_offset);
+    rotate_bone_node.SetRotation(q);
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app

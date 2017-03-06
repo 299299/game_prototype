@@ -68,6 +68,10 @@ class FacialBoneManager
     Array<float>  facial_attributes;
     Node@ face_node;
 
+    float yaw = 0;
+    float pitch = 0;
+    float roll = 0;
+
     FacialBoneManager()
     {
         facial_bones.Push(FacialBone(kFacial_Jaw, 16, "rabbit2:FcFX_Jaw"));
