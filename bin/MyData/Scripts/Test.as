@@ -54,6 +54,7 @@ void CreateUI()
     y += h;
     @s = CreateSlider(10, y, 500, 30, "right_eye_ball");
     s.value = 0.5;
+    y += h;
     @s = CreateSlider(10, y, 500, 30, "yaw");
     s.range = 360.0;
     y += h;
