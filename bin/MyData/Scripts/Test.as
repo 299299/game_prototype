@@ -117,15 +117,15 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
     }
     else if (e.name == "yaw")
     {
-        yaw = value;
+        g_facial_mgr.yaw = value;
     }
     else if (e.name == "pitch")
     {
-        pitch = value;
+        g_facial_mgr.pitch = value;
     }
     else if (e.name == "roll")
     {
-        roll = value;
+        g_facial_mgr.roll = value;
     }
 
     if (index >= 0)
@@ -233,11 +233,6 @@ void UpdateFace(float timeStep)
     Text@ text = ui.root.GetChild("Info");
     text.text = " camera pos: " + cameraNode.worldPosition.ToString();
     g_facial_mgr.Update(timeStep);
-
-    Node@ rotate_bone_node = g_facial_mgr.
-    const float z_offset = -15.0F;
-    Quaternion q(-yaw, roll, pitch + z_offset);
-    rotate_bone_node.SetRotation(q);
 }
 
 // Create XML patch instructions for screen joystick layout specific to this sample app

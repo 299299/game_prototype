@@ -67,6 +67,7 @@ class FacialBoneManager
     Array<String> facial_animations;
     Array<float>  facial_attributes;
     Node@ face_node;
+    Node@ rotate_bone_node;
 
     float yaw = 0;
     float pitch = 0;
@@ -99,6 +100,12 @@ class FacialBoneManager
     void Init(Scene@ scene)
     {
         face_node = scene.GetChild("Head", true);
+        String rotate_bone_name = "rabbit2:Bip01_Head";
+        rotate_bone_node = face_node.GetChild(rotate_bone_name, true);
+        AnimatedModel@ am = face_node.GetComponent("AnimatedModel");
+        Bone@ b = am.skeleton.GetBone(rotate_bone_name);
+        b.animated = false;
+
         for (uint i=0; i<facial_bones.length; ++i)
         {
             facial_bones[i].LoadNode(face_node);
@@ -174,6 +181,10 @@ class FacialBoneManager
             ac.Play(facial_animations[i], 1, true, 0);
             ac.SetWeight(facial_animations[i], facial_attributes[i]);
         }
+
+        const float z_offset = -15.0F;
+        Quaternion q(-yaw, roll, pitch + z_offset);
+        rotate_bone_node.rotation = q;
     }
 };
 
