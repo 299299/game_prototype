@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="0" />
 	<attribute name="Next Replicated Node ID" value="3" />
 	<attribute name="Next Replicated Component ID" value="5" />
-	<attribute name="Next Local Node ID" value="16777720" />
-	<attribute name="Next Local Component ID" value="16777328" />
+	<attribute name="Next Local Node ID" value="16777721" />
+	<attribute name="Next Local Component ID" value="16777340" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -140,8 +140,8 @@
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="rabbit2:FcFX_Jaw" />
 							<attribute name="Tags" />
-							<attribute name="Position" value="1.83553 2.41759 -0.0143007" />
-							<attribute name="Rotation" value="0.000782326 0.707107 -0.000435688 -0.707107" />
+							<attribute name="Position" value="1.83553 2.41758 -0.0143007" />
+							<attribute name="Rotation" value="0.000782283 0.707107 -0.000435645 -0.707107" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
 							<node id="16777646">
@@ -167,7 +167,7 @@
 								<attribute name="Name" value="rabbit2:FcFX_Mouth_06" />
 								<attribute name="Tags" />
 								<attribute name="Position" value="4.36492 -10.0876 4.1019" />
-								<attribute name="Rotation" value="0.951124 0.17669 -0.00222034 0.253256" />
+								<attribute name="Rotation" value="0.951124 0.17669 -0.00222033 0.253256" />
 								<attribute name="Scale" value="1 1 1" />
 								<attribute name="Variables" />
 							</node>
@@ -258,7 +258,7 @@
 							<attribute name="Name" value="rabbit2:FcFx_Eye_R" />
 							<attribute name="Tags" />
 							<attribute name="Position" value="5.74732 9.94247 5.78157" />
-							<attribute name="Rotation" value="-0.499448 0.500553 -0.500308 -0.499691" />
+							<attribute name="Rotation" value="-0.499448 0.500552 -0.500308 -0.499691" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
 						</node>
@@ -267,7 +267,7 @@
 							<attribute name="Name" value="rabbit2:FcFx_Eye_L" />
 							<attribute name="Tags" />
 							<attribute name="Position" value="5.74742 9.92249 -5.81579" />
-							<attribute name="Rotation" value="0.500553 0.499447 0.499691 -0.500308" />
+							<attribute name="Rotation" value="0.500553 0.499447 0.499691 -0.500309" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
 						</node>
@@ -275,7 +275,7 @@
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="rabbit2:FcFX_EyLd_Top_L" />
 							<attribute name="Tags" />
-							<attribute name="Position" value="7.51211 9.77916 -6.58588" />
+							<attribute name="Position" value="7.51211 9.77916 -6.58589" />
 							<attribute name="Rotation" value="0.577157 0.412778 0.446734 -0.544916" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
@@ -302,7 +302,7 @@
 							<attribute name="Is Enabled" value="true" />
 							<attribute name="Name" value="rabbit2:FcFX_EyBrw_Start_L" />
 							<attribute name="Tags" />
-							<attribute name="Position" value="7.78887 11.9752 -2.9833" />
+							<attribute name="Position" value="7.78887 11.9753 -2.9833" />
 							<attribute name="Rotation" value="0.173626 0.741047 -0.0379478 -0.647505" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
@@ -366,7 +366,7 @@
 							<attribute name="Name" value="rabbit2:FcFX_Mouth_04" />
 							<attribute name="Tags" />
 							<attribute name="Position" value="-1.13565 13.3472 -3.40844" />
-							<attribute name="Rotation" value="-0.301154 -0.467711 0.0261687 0.830583" />
+							<attribute name="Rotation" value="-0.301154 -0.467711 0.0261688 0.830583" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
 						</node>
@@ -375,7 +375,7 @@
 							<attribute name="Name" value="rabbit2:FcFX_Mouth_05" />
 							<attribute name="Tags" />
 							<attribute name="Position" value="-1.39765 12.2824 -5.95709" />
-							<attribute name="Rotation" value="-0.265742 -0.584811 0.168032 0.747758" />
+							<attribute name="Rotation" value="-0.265742 -0.584811 0.168033 0.747758" />
 							<attribute name="Scale" value="1 1 1" />
 							<attribute name="Variables" />
 						</node>
@@ -400,7 +400,7 @@
 									<attribute name="Name" value="rabbit2:ear_R" />
 									<attribute name="Tags" />
 									<attribute name="Position" value="-5.8256 -10.962 5.20162" />
-									<attribute name="Rotation" value="0.99995 0.00267481 -0.0060805 -0.00741442" />
+									<attribute name="Rotation" value="0.99995 0.00267478 -0.00608044 -0.00741434" />
 									<attribute name="Scale" value="1 1 1" />
 									<attribute name="Variables" />
 									<node id="16777675">
@@ -457,7 +457,7 @@
 		</node>
 	</node>
 	<node id="2">
-		<attribute name="Is Enabled" value="true" />
+		<attribute name="Is Enabled" value="false" />
 		<attribute name="Name" value="Box" />
 		<attribute name="Tags" />
 		<attribute name="Position" value="0 0 0" />

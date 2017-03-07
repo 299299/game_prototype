@@ -103,8 +103,8 @@ class FacialBoneManager
         String rotate_bone_name = "rabbit2:Bip01_Head";
         rotate_bone_node = face_node.GetChild(rotate_bone_name, true);
         AnimatedModel@ am = face_node.GetComponent("AnimatedModel");
-        Bone@ b = am.skeleton.GetBone(rotate_bone_name);
-        b.animated = false;
+        Skeleton@ skel = am.skeleton;
+        skel.GetBone(rotate_bone_name).animated = false;
 
         for (uint i=0; i<facial_bones.length; ++i)
         {
@@ -159,6 +159,30 @@ class FacialBoneManager
             ac.Play(facial_animations[i], 1, true, 0);
             ac.SetWeight(facial_animations[i], facial_attributes[i]);
         }
+
+        Array<String> ear_r = GetChildNodeNames(face_node.GetChild("rabbit2:ear_R_root", true));
+        Array<String> ear_l = GetChildNodeNames(face_node.GetChild("rabbit2:ear_L_root", true));
+        for (uint i=0; i<ear_r.length; ++i)
+        {
+            skel.GetBone(ear_r[i]).animated = false;
+        }
+        for (uint i=0; i<ear_l.length; ++i)
+        {
+            skel.GetBone(ear_l[i]).animated = false;
+        }
+
+        float r_z_offset = 2.5;
+        Quaternion q(-30, 0, -30);
+        float mass = 1.0;
+        CreateRagdollBone("rabbit2:ear_L", SHAPE_CAPSULE, Vector3(0.2, 0.525, 0), Vector3(0, 0, -r_z_offset), q, mass);
+        CreateRagdollBone("rabbit2:ear_R", SHAPE_CAPSULE, Vector3(0.2, 0.525, 0), Vector3(0, 0, r_z_offset), q, mass);
+        CreateRagdollBone("rabbit2:Bip01_Head", SHAPE_SPHERE, Vector3(0.6, 0, 0), Vector3(2.5, 2.5, 0), Quaternion());
+
+        CreateRagdollConstraint("rabbit2:ear_L", "rabbit2:Bip01_Head", CONSTRAINT_CONETWIST, Vector3(1.0f, 0.0f, 0.0f),
+                Vector3(1, 1, 0), Vector2(45.0f, 45.0f), Vector2(0.0f, 0.0f), face_node.GetChild("rabbit2:ear_L_root", true).worldPosition, false);
+        CreateRagdollConstraint("rabbit2:ear_R", "rabbit2:Bip01_Head", CONSTRAINT_CONETWIST, Vector3(1.0f, 0.0f, 0.0f),
+                Vector3(1, 1, 0), Vector2(45.0f, 45.0f), Vector2(0.0f, 0.0f), face_node.GetChild("rabbit2:ear_R_root", true).worldPosition, false);
+        //am.enabled = false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -187,7 +211,7 @@ class FacialBoneManager
         rotate_bone_node.rotation = q;
     }
 
-    void CreateRagdollBone(const String&in boneName, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation)
+    void CreateRagdollBone(const String&in boneName, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation, float mass = 0.0)
     {
         Node@ boneNode = face_node.GetChild(boneName, true);
         if (boneNode is null)
@@ -198,7 +222,7 @@ class FacialBoneManager
 
         RigidBody@ body = boneNode.CreateComponent("RigidBody");
         // Set mass to make movable
-        body.mass = 1.0f;
+        body.mass = mass;
         // Set damping parameters to smooth out the motion
         body.linearDamping = 0.05f;
         body.angularDamping = 0.85f;
@@ -206,16 +230,20 @@ class FacialBoneManager
         body.linearRestThreshold = 1.5f;
         body.angularRestThreshold = 2.5f;
 
+        Vector3 scale = boneNode.worldScale;
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
         // We use either a box or a capsule shape for all of the bones
         if (type == SHAPE_BOX)
-            shape.SetBox(size, position, rotation);
+            shape.SetBox(size / scale, position, rotation);
+        else if (type == SHAPE_SPHERE)
+            shape.SetSphere(size.x/scale.x, position, rotation);
         else
-            shape.SetCapsule(size.x, size.y, position, rotation);
+            shape.SetCapsule(size.x/scale.x, size.y/scale.y, position, rotation);
     }
 
     void CreateRagdollConstraint(const String&in boneName, const String&in parentName, ConstraintType type,
         const Vector3&in axis, const Vector3&in parentAxis, const Vector2&in highLimit, const Vector2&in lowLimit,
+        const Vector3& pos,
         bool disableCollision = true)
     {
         Node@ boneNode = face_node.GetChild(boneName, true);
@@ -238,7 +266,7 @@ class FacialBoneManager
         // The connected body must be specified before setting the world position
         constraint.otherBody = parentNode.GetComponent("RigidBody");
         // Position the constraint at the child bone we are connecting
-        constraint.worldPosition = boneNode.worldPosition;
+        constraint.worldPosition = pos;
         // Configure axes and limits
         constraint.axis = axis;
         constraint.otherAxis = parentAxis;

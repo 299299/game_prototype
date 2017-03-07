@@ -29,6 +29,7 @@ void CreateScene()
 {
     scene_ = Scene();
     scene_.LoadXML(cache.GetFile("Scenes/Head.xml"));
+    scene_.CreateComponent("PhysicsWorld");
     cameraNode = scene_.CreateChild("Camera");
     cameraNode.CreateComponent("Camera");
     cameraNode.position = Vector3(0.0f, 0.55f, -1.5f);
