@@ -3,6 +3,18 @@
 
 FacialBoneManager@ g_facial_mgr = FacialBoneManager();
 
+void DumpSkeleton(AnimatedModel@ am)
+{
+    Print("=============== Dump skeleton " + am.model.name + " ===============");
+    Skeleton@ skel = am.skeleton;
+    for (uint i=0; i<skel.numBones; ++i)
+    {
+        Bone@ b = skel.bones[i];
+        Print(b.name);
+    }
+    Print("================================================");
+}
+
 void Start()
 {
     SampleStart();
@@ -21,6 +33,8 @@ void CreateScene()
     cameraNode.CreateComponent("Camera");
     cameraNode.position = Vector3(0.0f, 0.55f, -1.5f);
     g_facial_mgr.Init(scene_);
+
+    DumpSkeleton(scene_.GetChild("Head", true).GetComponent("AnimatedModel"));
 }
 
 void CreateUI()
@@ -57,13 +71,18 @@ void CreateUI()
     y += h;
     @s = CreateSlider(10, y, 500, 30, "yaw");
     s.range = 360.0;
+    s.value = 180;
     y += h;
     @s = CreateSlider(10, y, 500, 30, "pitch");
     s.range = 360.0;
+    s.value = 180;
     y += h;
     @s = CreateSlider(10, y, 500, 30, "roll");
     s.range = 360.0;
+    s.value = 180;
     y += h;
+
+    SetLogoVisible(false);
 }
 
 Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
@@ -118,14 +137,17 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
     }
     else if (e.name == "yaw")
     {
+        value -= 180;
         g_facial_mgr.yaw = value;
     }
     else if (e.name == "pitch")
     {
+        value -= 180;
         g_facial_mgr.pitch = value;
     }
     else if (e.name == "roll")
     {
+        value -= 180;
         g_facial_mgr.roll = value;
     }
 
@@ -147,40 +169,6 @@ void SubscribeToEvents()
 {
     SubscribeToEvent("Update", "HandleUpdate");
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
-    SubscribeToEvent("SceneUpdate", "HandleSceneUpdate_1");
-}
-
-void HandleSceneUpdate_1(StringHash eventType, VariantMap& eventData)
-{
-    // Move the camera by touch, if the camera node is initialized by descendant sample class
-    if (touchEnabled && cameraNode !is null)
-    {
-        for (uint i = 0; i < input.numTouches; ++i)
-        {
-            TouchState@ state = input.touches[i];
-            if (state.touchedElement is null && ui.focusElement is null) // Touch on empty space
-            {
-                if (state.delta.x !=0 || state.delta.y !=0)
-                {
-                    Camera@ camera = cameraNode.GetComponent("Camera");
-                    if (camera is null)
-                        return;
-
-                    yaw += TOUCH_SENSITIVITY * camera.fov / graphics.height * state.delta.x;
-                    pitch += TOUCH_SENSITIVITY * camera.fov / graphics.height * state.delta.y;
-
-                    // Construct new orientation for the camera scene node from yaw and pitch; roll is fixed to zero
-                    // cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
-                }
-                else
-                {
-                    Cursor@ cursor = ui.cursor;
-                    if (cursor !is null && cursor.visible)
-                        cursor.position = state.position;
-                }
-            }
-        }
-    }
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -227,6 +215,7 @@ void HandlePostRenderUpdate()
 {
     DebugRenderer@ debug = scene_.debugRenderer;
     g_facial_mgr.DebugDraw(debug);
+    scene_.physicsWorld.DrawDebugGeometry(true);
 }
 
 void UpdateFace(float timeStep)

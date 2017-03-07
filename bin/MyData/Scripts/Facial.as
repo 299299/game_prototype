@@ -120,8 +120,8 @@ class FacialBoneManager
         }
         mouthBones.Push("rabbit2:FcFX_Jaw");
 
-        for (uint i=0; i<mouthBones.length; ++i)
-            Print(mouthBones[i]);
+        //for (uint i=0; i<mouthBones.length; ++i)
+        //    Print(mouthBones[i]);
 
         Array<String> leftEyeBones;
         Array<String> rightEyeBones;
@@ -185,6 +185,65 @@ class FacialBoneManager
         const float z_offset = -15.0F;
         Quaternion q(-yaw, roll, pitch + z_offset);
         rotate_bone_node.rotation = q;
+    }
+
+    void CreateRagdollBone(const String&in boneName, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation)
+    {
+        Node@ boneNode = face_node.GetChild(boneName, true);
+        if (boneNode is null)
+        {
+            log.Warning("Could not find bone " + boneName + " for creating ragdoll physics components");
+            return;
+        }
+
+        RigidBody@ body = boneNode.CreateComponent("RigidBody");
+        // Set mass to make movable
+        body.mass = 1.0f;
+        // Set damping parameters to smooth out the motion
+        body.linearDamping = 0.05f;
+        body.angularDamping = 0.85f;
+        // Set rest thresholds to ensure the ragdoll rigid bodies come to rest to not consume CPU endlessly
+        body.linearRestThreshold = 1.5f;
+        body.angularRestThreshold = 2.5f;
+
+        CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
+        // We use either a box or a capsule shape for all of the bones
+        if (type == SHAPE_BOX)
+            shape.SetBox(size, position, rotation);
+        else
+            shape.SetCapsule(size.x, size.y, position, rotation);
+    }
+
+    void CreateRagdollConstraint(const String&in boneName, const String&in parentName, ConstraintType type,
+        const Vector3&in axis, const Vector3&in parentAxis, const Vector2&in highLimit, const Vector2&in lowLimit,
+        bool disableCollision = true)
+    {
+        Node@ boneNode = face_node.GetChild(boneName, true);
+        Node@ parentNode = face_node.GetChild(parentName, true);
+        if (boneNode is null)
+        {
+            log.Warning("Could not find bone " + boneName + " for creating ragdoll constraint");
+            return;
+        }
+        if (parentNode is null)
+        {
+            log.Warning("Could not find bone " + parentName + " for creating ragdoll constraint");
+            return;
+        }
+
+        Constraint@ constraint = boneNode.CreateComponent("Constraint");
+        constraint.constraintType = type;
+        // Most of the constraints in the ragdoll will work better when the connected bodies don't collide against each other
+        constraint.disableCollision = disableCollision;
+        // The connected body must be specified before setting the world position
+        constraint.otherBody = parentNode.GetComponent("RigidBody");
+        // Position the constraint at the child bone we are connecting
+        constraint.worldPosition = boneNode.worldPosition;
+        // Configure axes and limits
+        constraint.axis = axis;
+        constraint.otherAxis = parentAxis;
+        constraint.highLimit = highLimit;
+        constraint.lowLimit = lowLimit;
     }
 };
 
