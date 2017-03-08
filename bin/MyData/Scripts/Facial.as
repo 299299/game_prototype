@@ -175,14 +175,23 @@ class FacialBoneManager
         Quaternion q(-30, 0, -30);
         float mass = 1.0;
         CreateRagdollBone("rabbit2:ear_L", SHAPE_CAPSULE, Vector3(0.2, 0.525, 0), Vector3(0, 0, -r_z_offset), q, mass);
-        CreateRagdollBone("rabbit2:ear_R", SHAPE_CAPSULE, Vector3(0.2, 0.525, 0), Vector3(0, 0, r_z_offset), q, mass);
+        //CreateRagdollBone("rabbit2:ear_R", SHAPE_CAPSULE, Vector3(0.2, 0.525, 0), Vector3(0, 0, r_z_offset), q, mass);
         CreateRagdollBone("rabbit2:Bip01_Head", SHAPE_SPHERE, Vector3(0.6, 0, 0), Vector3(2.5, 2.5, 0), Quaternion());
 
-        CreateRagdollConstraint("rabbit2:ear_L", "rabbit2:Bip01_Head", CONSTRAINT_CONETWIST, Vector3(1.0f, 0.0f, 0.0f),
-                Vector3(1, 1, 0), Vector2(45.0f, 45.0f), Vector2(0.0f, 0.0f), face_node.GetChild("rabbit2:ear_L_root", true).worldPosition, false);
-        CreateRagdollConstraint("rabbit2:ear_R", "rabbit2:Bip01_Head", CONSTRAINT_CONETWIST, Vector3(1.0f, 0.0f, 0.0f),
-                Vector3(1, 1, 0), Vector2(45.0f, 45.0f), Vector2(0.0f, 0.0f), face_node.GetChild("rabbit2:ear_R_root", true).worldPosition, false);
+        Vector3 v1 = face_node.GetChild("rabbit2:ear_L_root", true).worldPosition;
+        Vector3 v2 = face_node.GetChild("rabbit2:ear_R_root", true).worldPosition;
+        Vector3 v3 = face_node.GetChild("rabbit2:ear_L_top", true).worldPosition;
+        Vector3 v4 = face_node.GetChild("rabbit2:ear_R_top", true).worldPosition;
+
+        Vector3 dir1 = (v3 - v1).Normalized();
+        Vector3 dir2 = (v4 - v2).Normalized();
+        CreateRagdollConstraint("rabbit2:ear_L", "rabbit2:Bip01_Head", CONSTRAINT_CONETWIST, Vector3(0, 1, 0),
+                Vector3(1, 0, 0), Vector2(45, 45), Vector2(0, 0), v1);
+        //CreateRagdollConstraint("rabbit2:ear_R", "rabbit2:Bip01_Head", CONSTRAINT_CONETWIST, dir2,
+         //       dir2, Vector2(45.0f, 45.0f), Vector2(0.0f, 0.0f), v2);
         //am.enabled = false;
+
+
     }
 
     void DebugDraw(DebugRenderer@ debug)

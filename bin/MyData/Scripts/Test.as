@@ -35,7 +35,7 @@ void CreateScene()
     cameraNode.position = Vector3(0.0f, 0.55f, -1.5f);
     g_facial_mgr.Init(scene_);
 
-    DumpSkeleton(scene_.GetChild("Head", true).GetComponent("AnimatedModel"));
+    //DumpSkeleton(scene_.GetChild("Head", true).GetComponent("AnimatedModel"));
 }
 
 void CreateUI()
