@@ -23,7 +23,7 @@ class GameState : State
 
     void OnKeyDown(int key)
     {
-        if (key == KEY_ESC)
+        if (key == KEY_ESCAPE)
         {
              if (!console.visible)
                 OnESC();
@@ -629,7 +629,7 @@ class TestGameState : GameState
 
     void OnKeyDown(int key)
     {
-        if (key == KEY_ESC)
+        if (key == KEY_ESCAPE)
         {
             if (game_type == 1)
             {
