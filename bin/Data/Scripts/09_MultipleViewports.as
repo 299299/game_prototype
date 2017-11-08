@@ -102,7 +102,7 @@ void CreateScene()
     // Parent the rear camera node to the front camera node and turn it 180 degrees to face backward
     // Here, we use the angle-axis constructor for Quaternion instead of the usual Euler angles
     rearCameraNode = cameraNode.CreateChild("RearCamera");
-    rearCameraNode.Rotate(Quaternion(180.0f, Vector3(0.0f, 1.0f, 0.0f)));
+    rearCameraNode.Rotate(Quaternion(180.0f, Vector3::UP));
     Camera@ rearCamera = rearCameraNode.CreateComponent("Camera");
     rearCamera.farClip = 300.0f;
     // Because the rear viewport is rather small, disable occlusion culling from it. Use the camera's
@@ -191,20 +191,20 @@ void MoveCamera(float timeStep)
     cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
 
     // Read WASD keys and move the camera scene node to the corresponding direction if they are pressed
-    if (input.keyDown['W'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['S'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, -1.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['A'])
-        cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['D'])
-        cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_W])
+        cameraNode.Translate(Vector3::FORWARD * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_S])
+        cameraNode.Translate(Vector3::BACK * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_A])
+        cameraNode.Translate(Vector3::LEFT * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_D])
+        cameraNode.Translate(Vector3::RIGHT * MOVE_SPEED * timeStep);
 
     // Toggle post processing effects on the front viewport. Note that the rear viewport is unaffected
     RenderPath@ effectRenderPath = renderer.viewports[0].renderPath;
-    if (input.keyPress['B'])
+    if (input.keyPress[KEY_B])
         effectRenderPath.ToggleEnabled("Bloom");
-    if (input.keyPress['F'])
+    if (input.keyPress[KEY_F])
         effectRenderPath.ToggleEnabled("FXAA2");
 
     // Toggle debug geometry with space

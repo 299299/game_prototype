@@ -105,7 +105,8 @@ void CreateColorWheel()
     SubscribeToEvent(okButton, "Pressed", "HandleWheelButtons");
     SubscribeToEvent(cancelButton, "Pressed", "HandleWheelButtons");
 
-    lastColorWheelWindowPosition = IntVector2(300,400);
+    CenterDialog(colorWheelWindow);
+    lastColorWheelWindowPosition = colorWheelWindow.position;
 
     HideColorWheel();
 }
@@ -181,7 +182,7 @@ void HandleColorWheelKeyDown(StringHash eventType, VariantMap& eventData)
 
     int key = eventData["Key"].GetInt();
 
-    if (key == KEY_ESC)
+    if (key == KEY_ESCAPE)
     {
         SendEvent(eventTypeWheelDiscardColor, eventData);
         HideColorWheel();

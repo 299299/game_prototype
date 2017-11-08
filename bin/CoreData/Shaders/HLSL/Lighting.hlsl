@@ -78,18 +78,37 @@ float GetVertexLightVolumetric(int index, float3 worldPos)
     #define NUMCASCADES 1
 #endif
 
-void GetShadowPos(float4 projWorldPos, out float4 shadowPos[NUMCASCADES])
+void GetShadowPos(float4 projWorldPos, float3 normal, out float4 shadowPos[NUMCASCADES])
 {
     // Shadow projection: transform from world space to shadow space
-    #if defined(DIRLIGHT)
-        shadowPos[0] = mul(projWorldPos, cLightMatrices[0]);
-        shadowPos[1] = mul(projWorldPos, cLightMatrices[1]);
-        shadowPos[2] = mul(projWorldPos, cLightMatrices[2]);
-        shadowPos[3] = mul(projWorldPos, cLightMatrices[3]);
-    #elif defined(SPOTLIGHT)
-        shadowPos[0] = mul(projWorldPos, cLightMatrices[1]);
+    #ifdef NORMALOFFSET
+        #ifdef DIRLIGHT
+            float cosAngle = saturate(1.0 - dot(normal, cLightDir));
+        #else
+            float cosAngle = saturate(1.0 - dot(normal, normalize(cLightPos.xyz - projWorldPos.xyz)));
+        #endif
+
+        #if defined(DIRLIGHT)
+            shadowPos[0] = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScale.x * normal, 1.0), cLightMatrices[0]);
+            shadowPos[1] = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScale.y * normal, 1.0), cLightMatrices[1]);
+            shadowPos[2] = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScale.z * normal, 1.0), cLightMatrices[2]);
+            shadowPos[3] = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScale.w * normal, 1.0), cLightMatrices[3]);
+        #elif defined(SPOTLIGHT)
+            shadowPos[0] = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScale.x * normal, 1.0), cLightMatrices[1]);
+        #else
+            shadowPos[0] = float4(projWorldPos.xyz + cosAngle * cNormalOffsetScale.x * normal - cLightPos.xyz, 0.0);
+        #endif
     #else
-        shadowPos[0] = float4(projWorldPos.xyz - cLightPos.xyz, 0.0);
+        #if defined(DIRLIGHT)
+            shadowPos[0] = mul(projWorldPos, cLightMatrices[0]);
+            shadowPos[1] = mul(projWorldPos, cLightMatrices[1]);
+            shadowPos[2] = mul(projWorldPos, cLightMatrices[2]);
+            shadowPos[3] = mul(projWorldPos, cLightMatrices[3]);
+        #elif defined(SPOTLIGHT)
+            shadowPos[0] = mul(projWorldPos, cLightMatrices[1]);
+        #else
+            shadowPos[0] = float4(projWorldPos.xyz - cLightPos.xyz, 0.0);
+        #endif
     #endif
 }
 #endif
@@ -116,6 +135,35 @@ float GetDiffuse(float3 normal, float3 worldPos, out float3 lightDir)
         #endif
     #endif
 }
+
+float GetAtten(float3 normal, float3 worldPos, out float3 lightDir)
+{
+    lightDir = cLightDirPS;
+    return saturate(dot(normal, lightDir));
+    
+}
+
+float GetAttenPoint(float3 normal, float3 worldPos, out float3 lightDir)
+{
+    float3 lightVec = (cLightPosPS.xyz - worldPos) * cLightPosPS.w;
+    float lightDist = length(lightVec);
+    float falloff = pow(saturate(1.0 - pow(lightDist / 1.0, 4.0)), 2.0) * 3.14159265358979323846 / (4 * 3.14159265358979323846)*(pow(lightDist, 2.0) + 1.0);
+    lightDir = lightVec / lightDist;
+    return saturate(dot(normal, lightDir)) * falloff;
+
+}
+
+float GetAttenSpot(float3 normal, float3 worldPos, out float3 lightDir)
+{
+    float3 lightVec = (cLightPosPS.xyz - worldPos) * cLightPosPS.w;
+    float lightDist = length(lightVec);
+    float falloff = pow(saturate(1.0 - pow(lightDist / 1.0, 4.0)), 2.0) / (pow(lightDist, 2.0) + 1.0);
+
+    lightDir = lightVec / lightDist;
+    return saturate(dot(normal, lightDir)) * falloff;
+
+}
+
 
 float GetDiffuseVolumetric(float3 worldPos)
 {
@@ -157,7 +205,7 @@ float Chebyshev(float2 Moments, float depth)
 {  
     //One-tailed inequality valid if depth > Moments.x  
     float p = float(depth <= Moments.x);  
-    //Compute variance.  
+    //Compute variance.
     float Variance = Moments.y - (Moments.x * Moments.x); 
 
     float minVariance = cVSMShadowParams.x;
@@ -271,19 +319,31 @@ float GetDirShadow(const float4 iShadowPos[NUMCASCADES], float depth)
     return GetDirShadowFade(GetShadow(shadowPos), depth);
 }
 
-float GetDirShadowDeferred(float4 projWorldPos, float depth)
+float GetDirShadowDeferred(float4 projWorldPos, float3 normal, float depth)
 {
     float4 shadowPos;
 
-    if (depth < cShadowSplits.x)
-        shadowPos = mul(projWorldPos, cLightMatricesPS[0]);
-    else if (depth < cShadowSplits.y)
-        shadowPos = mul(projWorldPos, cLightMatricesPS[1]);
-    else if (depth < cShadowSplits.z)
-        shadowPos = mul(projWorldPos, cLightMatricesPS[2]);
-    else
-        shadowPos = mul(projWorldPos, cLightMatricesPS[3]);
-
+    #ifdef NORMALOFFSET
+        float cosAngle = saturate(1.0 - dot(normal, cLightDirPS));
+        if (depth < cShadowSplits.x)
+            shadowPos = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScalePS.x * normal, 1.0), cLightMatricesPS[0]);
+        else if (depth < cShadowSplits.y)
+            shadowPos = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScalePS.y * normal, 1.0), cLightMatricesPS[1]);
+        else if (depth < cShadowSplits.z)
+            shadowPos = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScalePS.z * normal, 1.0), cLightMatricesPS[2]);
+        else
+            shadowPos = mul(float4(projWorldPos.xyz + cosAngle * cNormalOffsetScalePS.w * normal, 1.0), cLightMatricesPS[3]);
+    #else
+        if (depth < cShadowSplits.x)
+            shadowPos = mul(projWorldPos, cLightMatricesPS[0]);
+        else if (depth < cShadowSplits.y)
+            shadowPos = mul(projWorldPos, cLightMatricesPS[1]);
+        else if (depth < cShadowSplits.z)
+            shadowPos = mul(projWorldPos, cLightMatricesPS[2]);
+        else
+            shadowPos = mul(projWorldPos, cLightMatricesPS[3]);
+    #endif
+    
     return GetDirShadowFade(GetShadow(shadowPos), depth);
 }
 #endif
@@ -299,16 +359,23 @@ float GetShadow(float4 iShadowPos[NUMCASCADES], float depth)
     #endif
 }
 
-float GetShadowDeferred(float4 projWorldPos, float depth)
+float GetShadowDeferred(float4 projWorldPos, float3 normal, float depth)
 {
-    #if defined(DIRLIGHT)
-        return GetDirShadowDeferred(projWorldPos, depth);
-    #elif defined(SPOTLIGHT)
-        float4 shadowPos = mul(projWorldPos, cLightMatricesPS[1]);
-        return GetShadow(shadowPos);
+    #ifdef DIRLIGHT
+        return GetDirShadowDeferred(projWorldPos, normal, depth);
     #else
-        float3 shadowPos = projWorldPos.xyz - cLightPosPS.xyz;
-        return GetPointShadow(shadowPos);
+        #ifdef NORMALOFFSET
+            float cosAngle = saturate(1.0 - dot(normal, normalize(cLightPosPS.xyz - projWorldPos.xyz)));
+            projWorldPos.xyz += cosAngle * cNormalOffsetScalePS.x * normal;
+        #endif
+
+        #ifdef SPOTLIGHT
+            float4 shadowPos = mul(projWorldPos, cLightMatricesPS[1]);
+            return GetShadow(shadowPos);
+        #else
+            float3 shadowPos = projWorldPos.xyz - cLightPosPS.xyz;
+            return GetPointShadow(shadowPos);
+        #endif
     #endif
 }
 #endif

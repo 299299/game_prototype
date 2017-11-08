@@ -171,21 +171,21 @@ void MoveCamera(float timeStep)
     cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
 
     // Read WASD keys and move the camera scene node to the corresponding direction if they are pressed
-    if (input.keyDown['W'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['S'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, -1.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['A'])
-        cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['D'])
-        cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_W])
+        cameraNode.Translate(Vector3::FORWARD * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_S])
+        cameraNode.Translate(Vector3::BACK * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_A])
+        cameraNode.Translate(Vector3::LEFT * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_D])
+        cameraNode.Translate(Vector3::RIGHT * MOVE_SPEED * timeStep);
 }
 
 void AnimateObjects(float timeStep)
 {
     const float ROTATE_SPEED = 15.0f;
     // Rotate about the Z axis (roll)
-    Quaternion rotateQuat(ROTATE_SPEED * timeStep, Vector3(0.0f, 0.0f, 1.0f));
+    Quaternion rotateQuat(ROTATE_SPEED * timeStep, Vector3::FORWARD);
 
     for (uint i = 0; i < boxNodes.length; ++i)
         boxNodes[i].Rotate(rotateQuat);
@@ -201,7 +201,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         animate = !animate;
 
     // Toggle grouped / ungrouped mode
-    if (input.keyPress['G'])
+    if (input.keyPress[KEY_G])
     {
         useGroups = !useGroups;
         CreateScene();

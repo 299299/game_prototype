@@ -17,6 +17,8 @@ IntRect viewportArea; // the area where the editor viewport is. if we ever want 
 IntRect viewportUIClipBorder = IntRect(27, 60, 0, 0); // used to clip viewport borders, the borders are ugly when going behind the transparent toolbars
 RenderPath@ renderPath; // Renderpath to use on all views
 String renderPathName;
+bool gammaCorrection = false;
+bool HDR = false;
 bool mouseWheelCameraPosition = false;
 bool contextMenuActionWaitFrame = false;
 bool cameraFlyMode = true;
@@ -32,6 +34,11 @@ String coloringPropertyName;
 Color coloringOldColor;
 float coloringOldScalar;
 bool debugRenderDisabled = false;
+bool restoreViewport = false;
+IntVector2 oldHierarchyWindowPosition; // used for restore hierarchy position when switch between viewport modes
+int oldHierarchyWindowHeight;
+IntVector2 oldInspectorWindowPosition; // used for restore inspector position when switch between viewport modes
+int oldInspectorWindowHeight;
 
 const uint VIEWPORT_BORDER_H     = 0x00000001;
 const uint VIEWPORT_BORDER_H1    = 0x00000002;
@@ -41,6 +48,7 @@ const uint VIEWPORT_BORDER_V1    = 0x00000020;
 const uint VIEWPORT_BORDER_V2    = 0x00000040;
 
 const uint VIEWPORT_SINGLE       = 0x00000000;
+const uint VIEWPORT_COMPACT 	 = 0x00009000;
 const uint VIEWPORT_TOP          = 0x00000100;
 const uint VIEWPORT_BOTTOM       = 0x00000200;
 const uint VIEWPORT_LEFT         = 0x00000400;
@@ -346,6 +354,7 @@ ViewportContext@ activeViewport;
 
 Text@ editorModeText;
 Text@ renderStatsText;
+Text@ modelInfoText;
 
 EditMode editMode = EDIT_MOVE;
 AxisMode axisMode = AXIS_WORLD;
@@ -370,6 +379,7 @@ bool scaleSnap = false;
 bool renderingDebug = false;
 bool physicsDebug = false;
 bool octreeDebug = false;
+bool navigationDebug = false;
 int pickMode = PICK_GEOMETRIES;
 bool orbiting = false;
 
@@ -456,16 +466,38 @@ void SetRenderPath(const String&in newRenderPathName)
             }
         }
     }
-    
-    // If renderPath is null, the engine default will be used
+
+    if (renderPath is null)
+        renderPath = renderer.defaultRenderPath.Clone();
+
+    // Append gamma correction postprocess and disable/enable it as requested
+    renderPath.Append(cache.GetResource("XMLFile", "PostProcess/GammaCorrection.xml"));
+    renderPath.SetEnabled("GammaCorrection", gammaCorrection);
+
+    renderer.hdrRendering = HDR;
+
     for (uint i = 0; i < renderer.numViewports; ++i)
         renderer.viewports[i].renderPath = renderPath;
 
     if (materialPreview !is null && materialPreview.viewport !is null)
         materialPreview.viewport.renderPath = renderPath;
-        
+
     if (particleEffectPreview !is null && particleEffectPreview.viewport !is null)
         particleEffectPreview.viewport.renderPath = renderPath;
+}
+
+void SetGammaCorrection(bool enable)
+{
+    gammaCorrection = enable;
+    if (renderPath !is null)
+        renderPath.SetEnabled("GammaCorrection", gammaCorrection);
+}
+
+void SetHDR(bool enable)
+{
+    HDR = enable;
+    if (renderer !is null)
+        renderer.hdrRendering = HDR;
 }
 
 void CreateCamera()
@@ -473,7 +505,17 @@ void CreateCamera()
     // Set the initial viewport rect
     viewportArea = IntRect(0, 0, graphics.width, graphics.height);
 
-    SetViewportMode(viewportMode);
+    // Set viewport single to store default hierarchy/inspector height/positions
+    if(viewportMode == VIEWPORT_COMPACT)
+    {
+        SetViewportMode(VIEWPORT_SINGLE);
+        SetViewportMode(VIEWPORT_COMPACT);
+    }
+    else
+    {
+        SetViewportMode(viewportMode);
+    }
+
     SetActiveViewport(viewports[0]);
 
     // Note: the camera is not inside the scene, so that it is not listed, and does not get deleted
@@ -598,7 +640,6 @@ void SetFillMode(FillMode fillMode_)
         viewports[i].camera.fillMode = fillMode_;
 }
 
-
 // Sets the viewport mode
 void SetViewportMode(uint mode = VIEWPORT_SINGLE)
 {
@@ -612,66 +653,137 @@ void SetViewportMode(uint mode = VIEWPORT_SINGLE)
     }
 
     viewports.Clear();
-    viewportMode = mode;
 
-    // Always have quad a
+    if(mode == VIEWPORT_COMPACT)
     {
-        uint viewport = 0;
-        ViewportContext@ vc = ViewportContext(
-            IntRect(
-                0,
-                0,
-                mode & (VIEWPORT_LEFT|VIEWPORT_TOP_LEFT) > 0 ? viewportArea.width / 2 : viewportArea.width,
-                mode & (VIEWPORT_TOP|VIEWPORT_TOP_LEFT) > 0 ? viewportArea.height / 2 : viewportArea.height),
-            viewports.length + 1,
-            viewportMode & (VIEWPORT_TOP|VIEWPORT_LEFT|VIEWPORT_TOP_LEFT)
-        );
-        viewports.Push(vc);
+        // Remember old hierarchy/inspector height/positions
+        if(viewportMode != VIEWPORT_COMPACT){
+            restoreViewport = true;
+            oldHierarchyWindowPosition = hierarchyWindow.position;
+            oldHierarchyWindowHeight = hierarchyWindow.height;
+            oldInspectorWindowPosition = attributeInspectorWindow.position;
+            oldInspectorWindowHeight = attributeInspectorWindow.height;
+        }
+
+        // Move and scale hierarchy window to left of screen
+        ShowHierarchyWindow();
+        hierarchyWindow.position = IntVector2(secondaryToolBar.width,toolBar.height + uiMenuBar.height);
+        hierarchyWindow.height = viewportArea.height-(toolBar.height + uiMenuBar.height);
+
+        // Move and scale inspector window to left of screen
+        ShowAttributeInspectorWindow();
+        attributeInspectorWindow.position = IntVector2(viewportArea.width-attributeInspectorWindow.width,toolBar.height + uiMenuBar.height);
+        attributeInspectorWindow.height = viewportArea.height-(toolBar.height + uiMenuBar.height);
+
+        // Hide close button and disable resize/movement inspector/hierarchy of windows
+        attributeInspectorWindow.GetChild("CloseButton",true).visible = false;
+        attributeInspectorWindow.resizable = false;
+        attributeInspectorWindow.movable = false;
+        hierarchyWindow.GetChild("CloseButton",true).visible = false;
+        hierarchyWindow.resizable = false;
+        hierarchyWindow.movable = false;
+
+        // Create viewport on center of window
+        {
+            uint viewport = 0;
+            ViewportContext@ vc = ViewportContext(
+                IntRect(
+                    secondaryToolBar.width + hierarchyWindow.width,
+                    toolBar.height + uiMenuBar.height,
+                    viewportArea.width-attributeInspectorWindow.width,
+                    viewportArea.height),
+                viewports.length + 1,
+                viewportMode & (VIEWPORT_TOP|VIEWPORT_LEFT|VIEWPORT_TOP_LEFT)
+            );
+            viewports.Push(vc);
+        }
+        viewportMode = mode;
+
     }
-
-    uint topRight = viewportMode & (VIEWPORT_RIGHT|VIEWPORT_TOP_RIGHT);
-    if (topRight > 0)
+    else
     {
-        ViewportContext@ vc = ViewportContext(
-            IntRect(
-                viewportArea.width/2,
-                0,
-                viewportArea.width,
-                mode & VIEWPORT_TOP_RIGHT > 0 ? viewportArea.height / 2 : viewportArea.height),
-            viewports.length + 1,
-            topRight
-        );
-        viewports.Push(vc);
-    }
+        if(viewportMode == VIEWPORT_COMPACT)
+        {
+            // Restore hierarchy/inspector windows height/positions
+            if(restoreViewport)
+            {
+                hierarchyWindow.position = oldHierarchyWindowPosition;
+                hierarchyWindow.height = oldHierarchyWindowHeight;
+                attributeInspectorWindow.position = oldInspectorWindowPosition;
+                attributeInspectorWindow.height = oldInspectorWindowHeight;
+            }
 
-    uint bottomLeft = viewportMode & (VIEWPORT_BOTTOM|VIEWPORT_BOTTOM_LEFT);
-    if (bottomLeft > 0)
-    {
-        ViewportContext@ vc = ViewportContext(
-            IntRect(
-                0,
-                viewportArea.height / 2,
-                mode & (VIEWPORT_BOTTOM_LEFT) > 0 ? viewportArea.width / 2 : viewportArea.width,
-                viewportArea.height),
-            viewports.length + 1,
-            bottomLeft
-        );
-        viewports.Push(vc);
-    }
+            // Show close button and enable resize/movement of inspector/hierarchy windows
+            attributeInspectorWindow.GetChild("CloseButton",true).visible = true;
+            attributeInspectorWindow.resizable = true;
+            attributeInspectorWindow.movable = true;
+            hierarchyWindow.GetChild("CloseButton",true).visible = true;
+            hierarchyWindow.resizable = true;
+            hierarchyWindow.movable = true;
+        }
 
-    uint bottomRight = viewportMode & (VIEWPORT_BOTTOM_RIGHT);
-    if (bottomRight > 0)
-    {
-        ViewportContext@ vc = ViewportContext(
-            IntRect(
-                viewportArea.width / 2,
-                viewportArea.height / 2,
-                viewportArea.width,
-                viewportArea.height),
-            viewports.length + 1,
-            bottomRight
-        );
-        viewports.Push(vc);
+        viewportMode = mode;
+
+        // Always have quad a
+        {
+            uint viewport = 0;
+            ViewportContext@ vc = ViewportContext(
+                IntRect(
+                    0,
+                    0,
+                    mode & (VIEWPORT_LEFT|VIEWPORT_TOP_LEFT) > 0 ? viewportArea.width / 2 : viewportArea.width,
+                    mode & (VIEWPORT_TOP|VIEWPORT_TOP_LEFT) > 0 ? viewportArea.height / 2 : viewportArea.height),
+                viewports.length + 1,
+                viewportMode & (VIEWPORT_TOP|VIEWPORT_LEFT|VIEWPORT_TOP_LEFT)
+            );
+            viewports.Push(vc);
+        }
+
+        uint topRight = viewportMode & (VIEWPORT_RIGHT|VIEWPORT_TOP_RIGHT);
+        if (topRight > 0)
+        {
+            ViewportContext@ vc = ViewportContext(
+                IntRect(
+                    viewportArea.width/2,
+                    0,
+                    viewportArea.width,
+                    mode & VIEWPORT_TOP_RIGHT > 0 ? viewportArea.height / 2 : viewportArea.height),
+                viewports.length + 1,
+                topRight
+            );
+            viewports.Push(vc);
+        }
+
+        uint bottomLeft = viewportMode & (VIEWPORT_BOTTOM|VIEWPORT_BOTTOM_LEFT);
+        if (bottomLeft > 0)
+        {
+            ViewportContext@ vc = ViewportContext(
+                IntRect(
+                    0,
+                    viewportArea.height / 2,
+                    mode & (VIEWPORT_BOTTOM_LEFT) > 0 ? viewportArea.width / 2 : viewportArea.width,
+                    viewportArea.height),
+                viewports.length + 1,
+                bottomLeft
+            );
+            viewports.Push(vc);
+        }
+
+        uint bottomRight = viewportMode & (VIEWPORT_BOTTOM_RIGHT);
+        if (bottomRight > 0)
+        {
+            ViewportContext@ vc = ViewportContext(
+                IntRect(
+                    viewportArea.width / 2,
+                    viewportArea.height / 2,
+                    viewportArea.width,
+                    viewportArea.height),
+                viewports.length + 1,
+                bottomRight
+            );
+            viewports.Push(vc);
+        }
+
     }
 
     renderer.numViewports = viewports.length;
@@ -1110,6 +1222,8 @@ void CreateStatsBar()
     ui.root.AddChild(editorModeText);
     renderStatsText = Text();
     ui.root.AddChild(renderStatsText);
+    modelInfoText = Text();
+    ui.root.AddChild(modelInfoText);
 }
 
 void SetupStatsBarText(Text@ text, Font@ font, int x, int y, HorizontalAlignment hAlign, VerticalAlignment vAlign)
@@ -1149,15 +1263,27 @@ void UpdateStats(float timeStep)
 
     // Relayout stats bar
     Font@ font = cache.GetResource("Font", "Fonts/Anonymous Pro.ttf");
-    if (graphics.width >= editorModeText.size.x + renderStatsText.size.x + 45)
+
+    if(viewportMode != VIEWPORT_COMPACT)
     {
-        SetupStatsBarText(editorModeText, font, 35, 64, HA_LEFT, VA_TOP);
-        SetupStatsBarText(renderStatsText, font, -4, 64, HA_RIGHT, VA_TOP);
+	if (ui.root.width >= editorModeText.size.x + renderStatsText.size.x + 45)
+	{
+            SetupStatsBarText(editorModeText, font, 35, 64, HA_LEFT, VA_TOP);
+            SetupStatsBarText(renderStatsText, font, -4, 64, HA_RIGHT, VA_TOP);
+            SetupStatsBarText(modelInfoText, font, 35, 88, HA_LEFT, VA_TOP);
+	}
+	else
+	{
+            SetupStatsBarText(editorModeText, font, 35, 64, HA_LEFT, VA_TOP);
+            SetupStatsBarText(renderStatsText, font, 35, 78, HA_LEFT, VA_TOP);
+            SetupStatsBarText(modelInfoText, font, 35, 102, HA_LEFT, VA_TOP);
+	}
     }
     else
     {
-        SetupStatsBarText(editorModeText, font, 35, 64, HA_LEFT, VA_TOP);
-        SetupStatsBarText(renderStatsText, font, 35, 78, HA_LEFT, VA_TOP);
+        SetupStatsBarText(editorModeText, font, secondaryToolBar.width + hierarchyWindow.width + 10 , 64, HA_LEFT, VA_TOP);
+        SetupStatsBarText(renderStatsText, font, secondaryToolBar.width + hierarchyWindow.width + 10 , 84, HA_LEFT, VA_TOP);
+        SetupStatsBarText(modelInfoText, font, secondaryToolBar.width + hierarchyWindow.width + 10, 104, HA_LEFT, VA_TOP);
     }
 }
 
@@ -1212,7 +1338,7 @@ void UpdateView(float timeStep)
         ReleaseMouseLock();
         return;
     }
-    
+
     // Check for camara fly mode
     if (hotKeyMode == HOTKEYS_MODE_BLENDER)
     {
@@ -1226,44 +1352,44 @@ void UpdateView(float timeStep)
     float speedMultiplier = 1.0;
     if (input.keyDown[KEY_LSHIFT])
         speedMultiplier = cameraShiftSpeedMultiplier;
-    
+
     if (!input.keyDown[KEY_LCTRL] && !input.keyDown[KEY_LALT])
     {
-        if (hotKeyMode == HOTKEYS_MODE_STANDARD || (hotKeyMode == HOTKEYS_MODE_BLENDER && cameraFlyMode && !input.keyDown[KEY_LSHIFT])) 
+        if (hotKeyMode == HOTKEYS_MODE_STANDARD || (hotKeyMode == HOTKEYS_MODE_BLENDER && cameraFlyMode && !input.keyDown[KEY_LSHIFT]))
         {
-            if (input.keyDown['W'] || input.keyDown[KEY_UP])
+            if (input.keyDown[KEY_W] || input.keyDown[KEY_UP])
             {
                 cameraNode.Translate(Vector3(0, 0, cameraBaseSpeed) * timeStep * speedMultiplier);
                 FadeUI();
             }
-            if (input.keyDown['S'] || input.keyDown[KEY_DOWN])
+            if (input.keyDown[KEY_S] || input.keyDown[KEY_DOWN])
             {
                 cameraNode.Translate(Vector3(0, 0, -cameraBaseSpeed) * timeStep * speedMultiplier);
                 FadeUI();
             }
-            if (input.keyDown['A'] || input.keyDown[KEY_LEFT])
+            if (input.keyDown[KEY_A] || input.keyDown[KEY_LEFT])
             {
                 cameraNode.Translate(Vector3(-cameraBaseSpeed, 0, 0) * timeStep * speedMultiplier);
                 FadeUI();
             }
-            if (input.keyDown['D'] || input.keyDown[KEY_RIGHT])
+            if (input.keyDown[KEY_D] || input.keyDown[KEY_RIGHT])
             {
                 cameraNode.Translate(Vector3(cameraBaseSpeed, 0, 0) * timeStep * speedMultiplier);
                 FadeUI();
             }
-            if (input.keyDown['E'] || input.keyDown[KEY_PAGEUP])
+            if (input.keyDown[KEY_E] || input.keyDown[KEY_PAGEUP])
             {
                 cameraNode.Translate(Vector3(0, cameraBaseSpeed, 0) * timeStep * speedMultiplier, TS_WORLD);
                 FadeUI();
             }
-            if (input.keyDown['Q'] || input.keyDown[KEY_PAGEDOWN])
+            if (input.keyDown[KEY_Q] || input.keyDown[KEY_PAGEDOWN])
             {
                 cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * timeStep * speedMultiplier, TS_WORLD);
                 FadeUI();
             }
-        } 
+        }
     }
-    
+
     if (input.mouseMoveWheel != 0 && ui.GetElementAt(ui.cursor.position) is null)
     {
         if (hotKeyMode == HOTKEYS_MODE_STANDARD)
@@ -1279,10 +1405,10 @@ void UpdateView(float timeStep)
                 camera.zoom = Clamp(zoom, .1, 30);
             }
         }
-        else if (hotKeyMode == HOTKEYS_MODE_BLENDER) 
+        else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
         {
             if (mouseWheelCameraPosition && !camera.orthographic)
-            {   
+            {
                 if (input.keyDown[KEY_LSHIFT])
                     cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * -input.mouseMoveWheel*20* timeStep * speedMultiplier);
                 else if (input.keyDown[KEY_LCTRL])
@@ -1297,7 +1423,7 @@ void UpdateView(float timeStep)
                 }
             }
             else
-            {   
+            {
                 if (input.keyDown[KEY_LSHIFT])
                 {
                     cameraNode.Translate(Vector3(0, -cameraBaseSpeed, 0) * -input.mouseMoveWheel*20* timeStep * speedMultiplier);
@@ -1306,14 +1432,14 @@ void UpdateView(float timeStep)
                 {
                     cameraNode.Translate(Vector3(-cameraBaseSpeed,0, 0) * -input.mouseMoveWheel*20 * timeStep * speedMultiplier);
                 }
-                else 
+                else
                 {
                     if (input.qualifierDown[QUAL_ALT])
                     {
                         float zoom = camera.zoom + -input.mouseMoveWheel *.1 * speedMultiplier;
                         camera.zoom = Clamp(zoom, .1, 30);
                     }
-                    else 
+                    else
                     {
                         cameraNode.Translate(Vector3(0, 0, -cameraBaseSpeed) * -input.mouseMoveWheel*20 * timeStep * speedMultiplier);
                     }
@@ -1332,17 +1458,17 @@ void UpdateView(float timeStep)
             cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0,10);
         }
     }
-    
+
     // Rotate/orbit/pan camera
     bool changeCamViewButton = false;
 
-    if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
+    if (hotKeyMode == HOTKEYS_MODE_STANDARD)
         changeCamViewButton = input.mouseButtonDown[MOUSEB_RIGHT] || input.mouseButtonDown[MOUSEB_MIDDLE];
     else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
     {
         changeCamViewButton = input.mouseButtonDown[MOUSEB_MIDDLE] || cameraFlyMode;
 
-        if (input.mouseButtonPress[MOUSEB_RIGHT] || input.keyDown[KEY_ESC])
+        if (input.mouseButtonPress[MOUSEB_RIGHT] || input.keyDown[KEY_ESCAPE])
             cameraFlyMode = false;
     }
 
@@ -1392,19 +1518,19 @@ void UpdateView(float timeStep)
                         Vector3 d = cameraNode.worldPosition - centerPoint;
                         cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0, d.length);
                         orbiting = true;
-                    }    
+                    }
                 }
                 else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
                 {
                     if (input.mouseButtonDown[MOUSEB_MIDDLE])
                     {
                         Vector3 centerPoint = Vector3(0,0,0);
-                        
+
                         if ((selectedNodes.length > 0 || selectedComponents.length > 0))
                             centerPoint = SelectedNodesCenterPoint();
                         else
                             centerPoint = lastSelectedNodesCenterPoint;
-                            
+
                         Vector3 d = cameraNode.worldPosition - centerPoint;
                         cameraNode.worldPosition = centerPoint - q * Vector3(0.0, 0.0, d.length);
                         orbiting = true;
@@ -1430,7 +1556,7 @@ void UpdateView(float timeStep)
             if (selectedNodes.length <= 1)
             {
                 Drawable@ drawable = lastSelectedDrawable.Get();
-                if (drawable !is null) 
+                if (drawable !is null)
                 {
                     bb = drawable.boundingBox;
                     centerPoint = drawable.node.worldPosition;
@@ -1456,7 +1582,7 @@ void UpdateView(float timeStep)
             // ReacquireCameraYawPitch();
             viewCloser =  false;
         }
-        else 
+        else
             viewCloser =  false;
     }
 
@@ -1621,10 +1747,43 @@ void HandlePostRenderUpdate()
 
     if (renderingDebug)
         renderer.DrawDebugGeometry(false);
+
     if (physicsDebug && editorScene.physicsWorld !is null)
         editorScene.physicsWorld.DrawDebugGeometry(true);
+
+    if (physicsDebug && editorScene.physicsWorld2D !is null)
+    {
+        bool needDraw = true;
+        for (uint i = 0; i < selectedComponents.length; ++i)
+        {
+            if (cast<PhysicsWorld2D>(selectedComponents[i]) !is null)
+            {
+                needDraw = false; // Already drawed
+                break;
+            }
+        }
+
+        if (needDraw)
+            physicsWorld2D.DrawDebugGeometry();
+    }
+
     if (octreeDebug && editorScene.octree !is null)
         editorScene.octree.DrawDebugGeometry(true);
+
+    if (navigationDebug)
+    {
+        CrowdManager@ crowdManager = editorScene.GetComponent("CrowdManager");
+        if (crowdManager !is null)
+            crowdManager.DrawDebugGeometry(true);
+
+        Array<Component@>@ navMeshes = editorScene.GetComponents("NavigationMesh", true);
+        for (uint i = 0; i < navMeshes.length; ++i)
+            cast<NavigationMesh>(navMeshes[i]).DrawDebugGeometry(true);
+
+        Array<Component@>@ dynNavMeshes = editorScene.GetComponents("DynamicNavigationMesh", true);
+        for (uint i = 0; i < dynNavMeshes.length; ++i)
+            cast<DynamicNavigationMesh>(dynNavMeshes[i]).DrawDebugGeometry(true);
+    }
 
     if (setViewportCursor | resizingBorder > 0)
     {
@@ -1657,6 +1816,24 @@ void DrawNodeDebug(Node@ node, DebugRenderer@ debug, bool drawNode = true)
 
 void ViewMouseMove()
 {
+    Ray cameraRay = GetActiveViewportCameraRay();
+    Component@ selectedComponent;
+
+    if (pickMode < PICK_RIGIDBODIES && editorScene.octree !is null)
+    {
+        RayQueryResult result = editorScene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, camera.farClip,
+            pickModeDrawableFlags[pickMode], 0x7fffffff);
+
+        if (result.drawable !is null && result.drawable.typeName == "TerrainPatch" && result.drawable.node.parent !is null)
+        {
+            Terrain@ terrainComponent = result.drawable.node.parent.GetComponent("Terrain");
+            terrainEditor.UpdateBrushVisualizer(terrainComponent, result.position);
+        }
+        else {
+            terrainEditor.HideBrushVisualizer();
+        }
+    }
+
     // setting mouse position based on mouse position
     if (ui.IsDragging()) { }
     else if (ui.focusElement !is null || input.mouseButtonDown[MOUSEB_LEFT|MOUSEB_MIDDLE|MOUSEB_RIGHT])
@@ -1766,31 +1943,31 @@ void ViewRaycast(bool mouseClick)
 
         RayQueryResult result = editorScene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, camera.farClip,
             pickModeDrawableFlags[pickMode], 0x7fffffff);
-        
+
         if (result.drawable !is null)
-        {            
+        {
             Drawable@ drawable = result.drawable;
-            
+
             // for actual last selected node or component in both modes
-            if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
+            if (hotKeyMode == HOTKEYS_MODE_STANDARD)
             {
-                if (input.mouseButtonDown[MOUSEB_LEFT]) 
+                if (input.mouseButtonDown[MOUSEB_LEFT])
                 {
                     lastSelectedNode = drawable.node;
                     lastSelectedDrawable = drawable;
                     lastSelectedComponent = drawable;
                 }
             }
-            else if (hotKeyMode == HOTKEYS_MODE_BLENDER) 
+            else if (hotKeyMode == HOTKEYS_MODE_BLENDER)
             {
-                if (input.mouseButtonDown[MOUSEB_RIGHT]) 
+                if (input.mouseButtonDown[MOUSEB_RIGHT])
                 {
                     lastSelectedNode = drawable.node;
                     lastSelectedDrawable = drawable;
                     lastSelectedComponent = drawable;
                 }
             }
-             
+
             // If selecting a terrain patch, select the parent terrain instead
             if (drawable.typeName != "TerrainPatch")
             {
@@ -1801,8 +1978,19 @@ void ViewRaycast(bool mouseClick)
                     drawable.DrawDebugGeometry(debug, false);
                 }
             }
-            else if (drawable.node.parent !is null)
-                selectedComponent = drawable.node.parent.GetComponent("Terrain");
+            else if (drawable.node.parent !is null){
+                Terrain@ terrainComponent = drawable.node.parent.GetComponent("Terrain");
+                selectedComponent = terrainComponent;
+                if (selectedComponent is terrainComponent && input.mouseButtonDown[MOUSEB_LEFT])
+                {
+                    selectedComponent = terrainComponent;
+                    terrainEditor.Work(terrainComponent, result.position);
+                }
+                else
+                {
+                    terrainEditor.targetColorSelected = false;
+                }
+            }
         }
     }
     else
@@ -1826,12 +2014,12 @@ void ViewRaycast(bool mouseClick)
             selectedComponent = body;
         }
     }
-    
+
     bool multiselect = false;
     bool componentSelectQualifier = false;
     bool mouseButtonPressRL = false;
-    
-    if (hotKeyMode == HOTKEYS_MODE_STANDARD) 
+
+    if (hotKeyMode == HOTKEYS_MODE_STANDARD)
     {
         mouseButtonPressRL = input.mouseButtonPress[MOUSEB_LEFT];
         componentSelectQualifier = input.qualifierDown[QUAL_SHIFT];
@@ -1843,7 +2031,7 @@ void ViewRaycast(bool mouseClick)
         componentSelectQualifier = input.qualifierDown[QUAL_CTRL];
         multiselect = input.qualifierDown[QUAL_SHIFT];
     }
-    
+
     if (mouseClick && mouseButtonPressRL)
     {
         if (selectedComponent !is null)
@@ -1872,13 +2060,13 @@ void ViewRaycast(bool mouseClick)
     }
 }
 
-Vector3 GetNewNodePosition()
+Vector3 GetNewNodePosition(bool raycastToMouse = false)
 {
     if (newNodeMode == NEW_NODE_IN_CENTER)
         return Vector3(0, 0, 0);
     if (newNodeMode == NEW_NODE_RAYCAST)
     {
-        Ray cameraRay = camera.GetScreenRay(0.5, 0.5);
+        Ray cameraRay = raycastToMouse ? GetActiveViewportCameraRay() : camera.GetScreenRay(0.5, 0.5);
         Vector3 position, normal;
         if (GetSpawnPosition(cameraRay, camera.farClip, position, normal, 0, false))
             return position;
@@ -1932,6 +2120,11 @@ void ToggleOctreeDebug()
     octreeDebug = !octreeDebug;
 }
 
+void ToggleNavigationDebug()
+{
+    navigationDebug = !navigationDebug;
+}
+
 bool StopTestAnimation()
 {
     testAnimState = null;
@@ -1983,54 +2176,16 @@ Vector3 SelectedNodesCenterPoint()
             centerPoint += selectedComponents[i].node.worldPosition;
     }
 
-    if (count > 0) 
+    if (count > 0)
     {
         lastSelectedNodesCenterPoint = centerPoint / count;
         return centerPoint / count;
     }
-    else 
+    else
     {
         lastSelectedNodesCenterPoint = centerPoint;
         return centerPoint;
     }
-}
-
-Vector3 GetScreenCollision(IntVector2 pos)
-{
-    Ray cameraRay = camera.GetScreenRay(float(pos.x) / activeViewport.viewport.rect.width, float(pos.y) / activeViewport.viewport.rect.height);
-    Vector3 res = cameraNode.position + cameraRay.direction * Vector3(0, 0, newNodeDistance);
-
-    bool physicsFound = false;
-    if (editorScene.physicsWorld !is null)
-    {
-        if (!runUpdate)
-            editorScene.physicsWorld.UpdateCollisions();
-
-        PhysicsRaycastResult result = editorScene.physicsWorld.RaycastSingle(cameraRay, camera.farClip);
-
-        if (result.body !is null)
-        {
-            physicsFound = true;
-            result.position;
-        }
-    }
-
-    if (editorScene.octree is null)
-        return res;
-
-    RayQueryResult result = editorScene.octree.RaycastSingle(cameraRay, RAY_TRIANGLE, camera.farClip,
-        DRAWABLE_GEOMETRY, 0x7fffffff);
-
-    if (result.drawable !is null)
-    {
-        // take the closer of the results
-        if (physicsFound && (cameraNode.position - res).length < (cameraNode.position - result.position).length)
-            return res;
-        else
-            return result.position;
-    }
-
-    return res;
 }
 
 Drawable@ GetDrawableAtMousePostion()

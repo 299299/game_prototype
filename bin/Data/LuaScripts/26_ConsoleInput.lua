@@ -3,6 +3,7 @@
 --     - Implementing a crude text adventure game, which accepts input both through the engine console,
 --       and standard input.
 --     - Disabling default execution of console commands as immediate mode Lua script.
+--     - Adding autocomplete options to the engine console.
 
 require "LuaScripts/Utilities/Sample"
 
@@ -53,6 +54,12 @@ function Start()
     console.commandInterpreter = "LuaScriptEventInvoker"
     console.visible = true
     console.closeButton.visible = false
+    console:AddAutoComplete("help")
+    console:AddAutoComplete("eat")
+    console:AddAutoComplete("hide")
+    console:AddAutoComplete("wait")
+    console:AddAutoComplete("score")
+    console:AddAutoComplete("quit")
 
     -- Show OS mouse cursor
     input.mouseVisible = true
@@ -89,7 +96,7 @@ end
 
 function HandleEscKeyDown(eventType, eventData)
     -- Unlike the other samples, exiting the engine when ESC is pressed instead of just closing the console
-    if eventData["Key"]:GetInt() == KEY_ESC then
+    if eventData["Key"]:GetInt() == KEY_ESCAPE then
         engine:Exit()
     end
 end

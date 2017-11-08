@@ -72,7 +72,7 @@ void CreateScene()
         CollisionShape@ shape = floorNode.CreateComponent("CollisionShape");
         // Set a box shape of size 1 x 1 x 1 for collision. The shape will be scaled with the scene node scale, so the
         // rendering and physics representation sizes should match (the box model is also 1 x 1 x 1.)
-        shape.SetBox(Vector3(1.0f, 1.0f, 1.0f));
+        shape.SetBox(Vector3::ONE);
     }
 
     {
@@ -115,7 +115,7 @@ void CreateScene()
             // Disable collision event signaling to reduce CPU load of the physics simulation
             body.collisionEventMode = COLLISION_NEVER;
             CollisionShape@ shape = boxNode.CreateComponent("CollisionShape");
-            shape.SetBox(Vector3(1.0f, 1.0f, 1.0f));
+            shape.SetBox(Vector3::ONE);
         }
     }
 
@@ -186,14 +186,14 @@ void MoveCamera(float timeStep)
     cameraNode.rotation = Quaternion(pitch, yaw, 0.0f);
 
     // Read WASD keys and move the camera scene node to the corresponding direction if they are pressed
-    if (input.keyDown['W'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, 1.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['S'])
-        cameraNode.Translate(Vector3(0.0f, 0.0f, -1.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['A'])
-        cameraNode.Translate(Vector3(-1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
-    if (input.keyDown['D'])
-        cameraNode.Translate(Vector3(1.0f, 0.0f, 0.0f) * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_W])
+        cameraNode.Translate(Vector3::FORWARD * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_S])
+        cameraNode.Translate(Vector3::BACK * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_A])
+        cameraNode.Translate(Vector3::LEFT * MOVE_SPEED * timeStep);
+    if (input.keyDown[KEY_D])
+        cameraNode.Translate(Vector3::RIGHT * MOVE_SPEED * timeStep);
 
     // "Shoot" a physics object with left mousebutton
     if (input.mouseButtonPress[MOUSEB_LEFT])
@@ -233,7 +233,7 @@ void SpawnObject()
     body.mass = 0.25f;
     body.friction = 0.75f;
     CollisionShape@ shape = boxNode.CreateComponent("CollisionShape");
-    shape.SetBox(Vector3(1.0f, 1.0f, 1.0f));
+    shape.SetBox(Vector3::ONE);
 
     const float OBJECT_VELOCITY = 10.0f;
 

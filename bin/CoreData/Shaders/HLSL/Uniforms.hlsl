@@ -18,8 +18,9 @@ uniform float cDeltaTime;
 uniform float cElapsedTime;
 uniform float3 cFrustumSize;
 uniform float4 cGBufferOffsets;
-uniform float3 cLightDir;
 uniform float4 cLightPos;
+uniform float3 cLightDir;
+uniform float4 cNormalOffsetScale;
 uniform float4x3 cModel;
 uniform float4x3 cView;
 uniform float4x3 cViewInv;
@@ -40,7 +41,7 @@ uniform float4x3 cZone;
 #ifdef COMPILEPS
 
 // Pixel shader uniforms
-uniform float3 cAmbientColor;
+uniform float4 cAmbientColor;
 uniform float3 cCameraPosPS;
 uniform float cDeltaTimePS;
 uniform float4 cDepthReconstruct;
@@ -51,14 +52,19 @@ uniform float2 cGBufferInvSize;
 uniform float4 cLightColor;
 uniform float4 cLightPosPS;
 uniform float3 cLightDirPS;
+uniform float4 cNormalOffsetScalePS;
 uniform float4 cMatDiffColor;
 uniform float3 cMatEmissiveColor;
 uniform float3 cMatEnvMapColor;
 uniform float4 cMatSpecColor;
 #ifdef PBR
-    uniform float cRoughnessPS; 
-    uniform float cMetallicPS;
+    uniform float cRoughness;
+    uniform float cMetallic;
+    uniform float cLightRad;
+    uniform float cLightLength;
 #endif
+uniform float3 cZoneMin;
+uniform float3 cZoneMax;
 uniform float cNearClipPS;
 uniform float cFarClipPS;
 uniform float4 cShadowCubeAdjust;
@@ -108,8 +114,9 @@ cbuffer ZoneVS : register(b2)
 
 cbuffer LightVS : register(b3)
 {
-    float3 cLightDir;
     float4 cLightPos;
+    float3 cLightDir;
+    float4 cNormalOffsetScale;
 #ifdef NUMVERTEXLIGHTS
     float4 cVertexLights[4 * 3];
 #else
@@ -157,9 +164,11 @@ cbuffer CameraPS : register(b1)
 
 cbuffer ZonePS : register(b2)
 {
-    float3 cAmbientColor;
+    float4 cAmbientColor;
     float4 cFogParams;
     float3 cFogColor;
+    float3 cZoneMin;
+    float3 cZoneMax;
 }
 
 cbuffer LightPS : register(b3)
@@ -167,6 +176,7 @@ cbuffer LightPS : register(b3)
     float4 cLightColor;
     float4 cLightPosPS;
     float3 cLightDirPS;
+    float4 cNormalOffsetScalePS;
     float4 cShadowCubeAdjust;
     float4 cShadowDepthFade;
     float2 cShadowIntensity;
@@ -174,6 +184,10 @@ cbuffer LightPS : register(b3)
     float4 cShadowSplits;
     float2 cVSMShadowParams;
     float4x4 cLightMatricesPS[4];
+    #ifdef PBR
+        float cLightRad;
+        float cLightLength;
+    #endif
 }
 
 #ifndef CUSTOM_MATERIAL_CBUFFER
@@ -184,8 +198,8 @@ cbuffer MaterialPS : register(b4)
     float3 cMatEnvMapColor;
     float4 cMatSpecColor;
     #ifdef PBR
-        float cRoughnessPS; 
-        float cMetallicPS;
+        float cRoughness;
+        float cMetallic;
     #endif
 }
 #endif

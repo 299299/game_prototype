@@ -21,7 +21,11 @@ varying vec4 vWorldPos;
 #endif
 #ifdef PERPIXEL
     #ifdef SHADOW
-        varying vec4 vShadowPos[NUMCASCADES];
+        #ifndef GL_ES
+            varying vec4 vShadowPos[NUMCASCADES];
+        #else
+            varying highp vec4 vShadowPos[NUMCASCADES];
+        #endif
     #endif
     #ifdef SPOTLIGHT
         varying vec4 vSpotPos;
@@ -44,9 +48,8 @@ void VS()
 {
     mat4 modelMatrix = iModelMatrix;
     vec3 worldPos = GetWorldPos(modelMatrix);
-    float height = worldPos.y - cModel[1][3];
 
-    float windStrength = max(height - cWindHeightPivot, 0.0) * cWindHeightFactor;
+    float windStrength = max(iPos.y - cWindHeightPivot, 0.0) * cWindHeightFactor;
     float windPeriod = cElapsedTime * cWindPeriod + dot(worldPos.xz, cWindWorldSpacing);
     worldPos.x += windStrength * sin(windPeriod);
     worldPos.z -= windStrength * cos(windPeriod);
@@ -60,10 +63,10 @@ void VS()
     #endif
 
     #ifdef NORMALMAP
-        vec3 tangent = GetWorldTangent(modelMatrix);
-        vec3 bitangent = cross(tangent, vNormal) * iTangent.w;
+        vec4 tangent = GetWorldTangent(modelMatrix);
+        vec3 bitangent = cross(tangent.xyz, vNormal) * tangent.w;
         vTexCoord = vec4(GetTexCoord(iTexCoord), bitangent.xy);
-        vTangent = vec4(tangent, bitangent.z);
+        vTangent = vec4(tangent.xyz, bitangent.z);
     #else
         vTexCoord = GetTexCoord(iTexCoord);
     #endif
@@ -75,14 +78,14 @@ void VS()
         #ifdef SHADOW
             // Shadow projection: transform from world space to shadow space
             for (int i = 0; i < NUMCASCADES; i++)
-                vShadowPos[i] = GetShadowPos(i, projWorldPos);
+                vShadowPos[i] = GetShadowPos(i, vNormal, projWorldPos);
         #endif
 
         #ifdef SPOTLIGHT
             // Spotlight projection: transform from world space to projector texture coordinates
             vSpotPos = projWorldPos * cLightMatrices[0];
         #endif
-    
+
         #ifdef POINTLIGHT
             vCubeMaskVec = (worldPos - cLightPos.xyz) * mat3(cLightMatrices[0][0].xyz, cLightMatrices[0][1].xyz, cLightMatrices[0][2].xyz);
         #endif
@@ -96,12 +99,12 @@ void VS()
         #else
             vVertexLight = GetAmbient(GetZonePos(worldPos));
         #endif
-        
+
         #ifdef NUMVERTEXLIGHTS
             for (int i = 0; i < NUMVERTEXLIGHTS; ++i)
                 vVertexLight += GetVertexLight(i, worldPos, vNormal) * cVertexLights[i * 3].rgb;
         #endif
-        
+
         vScreenPos = GetScreenPos(gl_Position);
 
         #ifdef ENVCUBEMAP
