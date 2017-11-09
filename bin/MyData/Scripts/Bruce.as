@@ -193,24 +193,6 @@ class BruceTransitionState : PlayerTransitionState
     }
 };
 
-class BruceFallState : PlayerFallState
-{
-    BruceFallState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Movement/Fall");
-    }
-};
-
-class BruceLandState : PlayerLandState
-{
-    BruceLandState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Movement/Land");
-    }
-};
-
 class Bruce : Player
 {
     Bruce()
@@ -284,25 +266,9 @@ void CreateBruceMotions()
 {
     AssignMotionRig("Models/bruce_w.mdl");
 
-    String preFix = "BW_Movement/";
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 25);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 14);
-    Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
-
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ALL, 21);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ALL, 25);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ALL, 18);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ALL, 25);
-
-    preFix = "BM_Movement/";
+    String preFix = "BM_Movement/";
     Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Stand");
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_ZR, kMotion_ZR, 28);
     Global_AddAnimation(preFix + "Stand_Idle");
-    Global_AddAnimation(preFix + "Fall");
-    Global_AddAnimation(preFix + "Land");
-    Global_CreateMotion(preFix + "Cover_Transition", kMotion_R, kMotion_R);
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");
@@ -538,14 +504,8 @@ void AddBruceAnimationTriggers()
     AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
 
     preFix = "BW_Movement/";
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_90", 15, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_180", 13, FOOT_STEP, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Right_180", 20, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Left_90", 13, FOOT_STEP, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Turn_Left_90", 20, FOOT_STEP, R_FOOT);
+    //AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
+    //AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
 
     AddBruceCombatAnimationTriggers();
 }

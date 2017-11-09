@@ -76,9 +76,6 @@ class Player : Character
         if (health <= 0)
             return;
 
-        if (CheckFalling())
-            return;
-
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
             ChangeState("RunState");
         else
@@ -519,15 +516,5 @@ class Player : Character
             Character::SetVelocity(vel + Vector3(0, -9.8f, 0));
         else
             Character::SetVelocity(vel);
-    }
-
-    bool CheckFalling()
-    {
-        if (!sensor.grounded && sensor.inAirHeight > 1.5f && sensor.inAirFrames > 2 && applyGravity)
-        {
-            ChangeState("FallState");
-            return true;
-        }
-        return false;
     }
 };

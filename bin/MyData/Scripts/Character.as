@@ -1623,11 +1623,6 @@ class Character : GameObject
         }
     }
 
-    bool CheckFalling()
-    {
-        return false;
-    }
-
     void SetPhysicsType(int type)
     {
         if (physicsType == type)

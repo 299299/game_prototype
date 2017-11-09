@@ -24,9 +24,6 @@ class PlayerStandState : MultiAnimationState
             return;
         }
 
-        if (ownner.CheckFalling())
-            return;
-
         if (ownner.ActionCheck(true, true, true, true))
             return;
 
@@ -54,13 +51,14 @@ class PlayerEvadeState : MultiMotionState
     }
 };
 
-class PlayerMoveForwardState : SingleMotionState
+class PlayerRunState : SingleMotionState
 {
-    float turnSpeed = 50.0f;
+    float turnSpeed = 15.0f;
 
-    PlayerMoveForwardState(Character@ c)
+    PlayerRunState(Character@ c)
     {
         super(c);
+        SetName("RunState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
     }
 
@@ -73,7 +71,7 @@ class PlayerMoveForwardState : SingleMotionState
 
     void OnStop()
     {
-
+        ownner.ChangeState("StandState");
     }
 
     void Update(float dt)
@@ -82,73 +80,15 @@ class PlayerMoveForwardState : SingleMotionState
         Node@ _node = ownner.GetNode();
         _node.Yaw(characterDifference * turnSpeed * dt);
 
-        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.5f))
+        if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
         {
             OnStop();
             return;
         }
 
-        if (ownner.CheckFalling())
-            return;
         if (ownner.ActionCheck(true, true, true, true))
             return;
 
         SingleMotionState::Update(dt);
-    }
-};
-
-class PlayerRunState : PlayerMoveForwardState
-{
-    PlayerRunState(Character@ c)
-    {
-        super(c);
-        SetName("RunState");
-        turnSpeed = 7.5f;
-    }
-
-    void OnStop()
-    {
-        ownner.ChangeState("StandState");
-    }
-};
-
-class PlayerFallState : SingleAnimationState
-{
-    PlayerFallState(Character@ c)
-    {
-        super(c);
-        SetName("FallState");
-        flags = FLAGS_ATTACK;
-    }
-
-    void Update(float dt)
-    {
-        Player@ p = cast<Player@>(ownner);
-        if (p.sensor.grounded)
-        {
-            ownner.ChangeState("LandState");
-            return;
-        }
-        SingleAnimationState::Update(dt);
-    }
-
-    void OnMotionFinished()
-    {
-    }
-};
-
-class PlayerLandState : SingleAnimationState
-{
-    PlayerLandState(Character@ c)
-    {
-        super(c);
-        SetName("LandState");
-        flags = FLAGS_ATTACK;
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.SetVelocity(Vector3(0, 0, 0));
-        SingleAnimationState::Enter(lastState);
     }
 };
