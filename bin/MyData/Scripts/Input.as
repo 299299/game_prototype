@@ -309,24 +309,6 @@ class GameInput
             return input.mouseButtonPress[MOUSEB_MIDDLE];
     }
 
-    bool IsCrouchPressed()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[1];
-        else
-            return input.keyPress[KEY_LCTRL];
-    }
-
-    bool IsCrouchDown()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonDown[1];
-        else
-            return input.keyDown[KEY_LCTRL];
-    }
-
     int GetDirectionPressed()
     {
         JoystickState@ joystick = GetJoystick();
@@ -352,16 +334,6 @@ class GameInput
             return 3;
 
         return -1;
-    }
-
-    bool IsRunHolding()
-    {
-        return true;
-
-        /*JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonDown[4];
-        return input.keyDown[KEY_LSHIFT];*/
     }
 
     String GetDebugText()

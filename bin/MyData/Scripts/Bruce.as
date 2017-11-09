@@ -16,72 +16,12 @@ class BruceStandState : PlayerStandState
     }
 };
 
-class BruceTurnState : PlayerTurnState
-{
-    BruceTurnState(Character@ c)
-    {
-        super(c);
-        AddMotion("BW_Movement/Turn_Right_90");
-        AddMotion("BW_Movement/Turn_Right_180");
-        AddMotion("BW_Movement/Turn_Left_90");
-    }
-};
-
-class BruceStandToWalkState : PlayerStandToWalkState
-{
-    BruceStandToWalkState(Character@ c)
-    {
-        super(c);
-        AddMotion("BW_Movement/Stand_To_Walk_Right_90");
-        AddMotion("BW_Movement/Stand_To_Walk_Right_180");
-        AddMotion("BW_Movement/Stand_To_Walk_Right_180");
-    }
-};
-
-class BruceWalkState : PlayerWalkState
-{
-    BruceWalkState(Character@ c)
-    {
-        super(c);
-        SetMotion("BW_Movement/Walk_Forward");
-    }
-};
-
-class BruceStandToRunState : PlayerStandToRunState
-{
-    BruceStandToRunState(Character@ c)
-    {
-        super(c);
-        AddMotion("BW_Movement/Stand_To_Run_Right_90");
-        AddMotion("BW_Movement/Stand_To_Run_Right_180");
-        AddMotion("BW_Movement/Stand_To_Run_Right_180");
-    }
-};
-
 class BruceRunState : PlayerRunState
 {
     BruceRunState(Character@ c)
     {
         super(c);
         SetMotion("BM_Movement/Run_Forward");
-    }
-};
-
-class BruceRunToStandState : PlayerRunToStandState
-{
-    BruceRunToStandState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Movement/Run_Right_Passing_To_Stand");
-    }
-};
-
-class BruceRunTurn180State : PlayerRunTurn180State
-{
-    BruceRunTurn180State(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Movement/Run_Right_Passing_To_Run_Right_180");
     }
 };
 
@@ -253,56 +193,6 @@ class BruceTransitionState : PlayerTransitionState
     }
 };
 
-class BruceSlideInState : PlayerSlideInState
-{
-    BruceSlideInState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Climb/Slide_Floor_In");
-    }
-};
-
-class BruceSlideOutState : PlayerSlideOutState
-{
-    BruceSlideOutState(Character@ c)
-    {
-        super(c);
-        String preFix = "BM_Climb/";
-        AddMotion(preFix + "Slide_Floor_Stop");
-        AddMotion(preFix + "Slide_Floor_Out");
-    }
-};
-
-class BruceCrouchState : PlayerCrouchState
-{
-    BruceCrouchState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Movement/Crouch_Idle");
-    }
-};
-
-class BruceCrouchTurnState : PlayerCrouchTurnState
-{
-    BruceCrouchTurnState(Character@ c)
-    {
-        super(c);
-        AddMotion("BM_Crouch_Turns/Turn_Right_90");
-        AddMotion("BM_Crouch_Turns/Turn_Right_180");
-        AddMotion("BM_Crouch_Turns/Turn_Left_90");
-    }
-};
-
-class BruceCrouchMoveState : PlayerCrouchMoveState
-{
-    BruceCrouchMoveState(Character@ c)
-    {
-        super(c);
-        SetMotion("BM_Movement/Cover_Run");
-        animSpeed = 0.5f;
-    }
-};
-
 class BruceFallState : PlayerFallState
 {
     BruceFallState(Character@ c)
@@ -332,16 +222,10 @@ class Bruce : Player
     void AddStates()
     {
         stateMachine.AddState(BruceStandState(this));
-        stateMachine.AddState(BruceTurnState(this));
-        stateMachine.AddState(BruceWalkState(this));
         stateMachine.AddState(BruceRunState(this));
-        stateMachine.AddState(BruceRunToStandState(this));
-        stateMachine.AddState(BruceRunTurn180State(this));
         stateMachine.AddState(BruceEvadeState(this));
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
-        stateMachine.AddState(BruceStandToWalkState(this));
-        stateMachine.AddState(BruceStandToRunState(this));
 
         stateMachine.AddState(BruceAttackState(this));
         stateMachine.AddState(BruceCounterState(this));
