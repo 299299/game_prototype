@@ -9,6 +9,7 @@
 // ==============================================
 
 bool  freezeInput = false;
+const float GYROSCOPE_THRESHOLD = 0.1;
 
 class GameInput
 {
@@ -37,6 +38,10 @@ class GameInput
 
     bool  flipRightStick = false;
 
+    bool  touchEnabled = false;
+
+    int screenJoystickID = 0;
+
     GameInput()
     {
         JoystickState@ js = GetJoystick();
@@ -48,9 +53,28 @@ class GameInput
         }
     }
 
+    void InitTouch()
+    {
+        input.touchEmulation = true;
+        touchEnabled = true;
+        screenJoystickID = input.AddScreenJoystick(cache.GetResource("XMLFile", "UI/ScreenJoystick_NinjaSnowWar.xml"));
+        input.screenJoystickVisible[0] = true;
+        Print("screenJoystickID=  " + String(screenJoystickID));
+
+        JoystickState@ js = GetJoystick();
+        if (js !is null)
+        {
+            Print("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
+            if (js.numHats == 1)
+                flipRightStick = true;
+
+            Print(" input.numTouches = " + input.numTouches);
+        }
+    }
+
     void Update(float dt)
     {
-        if (input.mouseVisible)
+        if (input.mouseVisible && !touchEnabled)
             return;
 
         m_lastLeftStickX = m_leftStickX;
@@ -86,7 +110,6 @@ class GameInput
 
         if (input.mouseButtonPress[MOUSEB_MIDDLE])
             lastMiddlePressedTime = time.systemTime;
-
         // Print("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
     }
 
@@ -130,6 +153,19 @@ class GameInput
                     ret.x = 0.0f;
                 if (Abs(ret.y) < 0.01)
                     ret.y = 0.0f;
+            }
+
+            if (joystick.numHats > 0)
+            {
+                const float speed = 1.0;
+                if (joystick.hatPosition[0] & HAT_LEFT != 0)
+                    ret.x += -speed;
+                if (joystick.hatPosition[0] & HAT_RIGHT != 0)
+                    ret.x += speed;
+                if (joystick.hatPosition[0] & HAT_UP != 0)
+                    ret.y += speed;
+                if (joystick.hatPosition[0] & HAT_DOWN != 0)
+                    ret.y += -speed;
             }
         }
         else
@@ -185,7 +221,10 @@ class GameInput
     {
         if (input.numJoysticks > 0)
         {
-            return input.joysticksByIndex[0];
+            if (touchEnabled)
+                return input.joysticks[screenJoystickID];
+            else
+                return input.joysticksByIndex[0];
         }
         return null;
     }
@@ -221,7 +260,7 @@ class GameInput
 
         JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
-            return joystick.buttonPress[2];
+            return joystick.buttonPress[1];
         else
             return input.mouseButtonPress[MOUSEB_LEFT];
     }
@@ -317,10 +356,12 @@ class GameInput
 
     bool IsRunHolding()
     {
-        JoystickState@ joystick = GetJoystick();
+        return true;
+
+        /*JoystickState@ joystick = GetJoystick();
         if (joystick !is null)
             return joystick.buttonDown[4];
-        return input.keyDown[KEY_LSHIFT];
+        return input.keyDown[KEY_LSHIFT];*/
     }
 
     String GetDebugText()

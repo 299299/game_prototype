@@ -44,7 +44,7 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = -1;
+int test_enemy_num_override = 3;
 int render_features = RF_FULL;
 
 String LUT = "";
@@ -110,6 +110,8 @@ void Start()
 
     gGame.Start();
     gGame.ChangeState("LoadingState");
+
+    gInput.InitTouch();
 }
 
 void Stop()

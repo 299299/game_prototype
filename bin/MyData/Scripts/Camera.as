@@ -438,6 +438,29 @@ class AnimationCameraController : CameraController
     }
 };
 
+class LookAtCameraController: CameraController
+{
+    Vector3 offset = Vector3(10, 15.0, 10);
+    float cameraSpeed = 4.5;
+
+    LookAtCameraController(Node@ n, const String&in name)
+    {
+        super(n, name);
+    }
+
+    void Update(float dt)
+    {
+        Player@ p = GetPlayer();
+        if (p is null)
+            return;
+        Node@ _node = p.GetNode();
+
+        Vector3 camera_pos = offset + _node.worldPosition;
+        Vector3 target_pos = _node.worldPosition;
+        UpdateView(camera_pos, target_pos, dt * cameraSpeed);
+    }
+};
+
 class CameraManager
 {
     Array<CameraController@>    cameraControllers;
@@ -483,6 +506,7 @@ class CameraManager
         cameraControllers.Push(TransitionCameraController(n, "Transition"));
         cameraControllers.Push(DeathCameraController(n, "Death"));
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
+        cameraControllers.Push(LookAtCameraController(n, "LookAt"));
 
         /*
         cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));

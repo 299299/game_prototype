@@ -183,7 +183,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     // Toggle console with F1
     if (key == KEY_F1)
         console.Toggle();
-        
+
     // Toggle debug HUD with F2
     else if (key == KEY_F2)
         debugHud.ToggleAll();
@@ -192,7 +192,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (ui.focusElement is null)
     {
         // Preferences / Pause
-        if (key == KEY_SELECT && touchEnabled)
+        if (key == '1' && touchEnabled)
         {
             paused = !paused;
 

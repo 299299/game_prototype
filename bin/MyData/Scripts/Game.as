@@ -442,10 +442,7 @@ class TestGameState : GameState
                     player.RemoveFlag(FLAGS_INVINCIBLE);
 
                 freezeInput = false;
-                VariantMap data;
-                data[NAME] = CHANGE_STATE;
-                data[VALUE] = StringHash("ThirdPerson");
-                SendEvent("CameraEvent", data);
+                gCameraMgr.SetCameraController("LookAt");
             }
             break;
 
@@ -618,7 +615,8 @@ class TestGameState : GameState
 
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");
-        gCameraMgr.SetCameraController("ThirdPerson");
+        //gCameraMgr.SetCameraController("ThirdPerson");
+        gCameraMgr.SetCameraController("LookAt");
 
         Node@ floor = scene_.GetChild("floor", true);
         StaticModel@ model = floor.GetComponent("StaticModel");
