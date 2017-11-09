@@ -84,7 +84,7 @@ class Player : Character
 
     float GetTargetAngle()
     {
-        return gInput.GetLeftAxisAngle() + gCameraMgr.GetCameraAngle();
+        return gInput.GetLeftAxisAngle();// + gCameraMgr.GetCameraAngle();
     }
 
     bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
