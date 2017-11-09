@@ -11,7 +11,6 @@
 #include "Scripts/HeadIndicator.as"
 #include "Scripts/Follow.as"
 #include "Scripts/PhysicsSensor.as"
-#include "Scripts/Line.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"
 #include "Scripts/Character.as"
@@ -19,7 +18,6 @@
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
 #include "Scripts/Bruce.as"
-#include "Scripts/Catwoman.as"
 #include "Scripts/PlayerCombat.as"
 #include "Scripts/PlayerMovement.as"
 
@@ -42,7 +40,6 @@ Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
 
 String CAMERA_NAME = "Camera";
-int playerType = 0;
 
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
@@ -63,7 +60,6 @@ int test_triple_counter_index = 0;
 int collision_type = 0;
 
 GameInput@ gInput = GameInput();
-LineWorld@ gLineWorld = LineWorld();
 
 void Start()
 {
@@ -81,14 +77,6 @@ void Start()
                 nobgm = !nobgm;
             else if (argument == "bighead")
                 bigHeadMode = !bigHeadMode;
-            else if (argument == "player")
-            {
-                String name = arguments[i+1];
-                if (name == "bruce")
-                    playerType = 0;
-                else if (name == "catwoman")
-                    playerType = 1;
-            }
             else if (argument == "lowend")
                 render_features = RF_NONE;
             else if (argument == "freezeai")
@@ -376,7 +364,6 @@ void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
     {
         // gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
-        gLineWorld.DebugDraw(debug);
         Player@ player = GetPlayer();
         if (player !is null)
             player.DebugDraw(debug);
@@ -818,8 +805,6 @@ void TestAnimations_Group_3()
         "Double_Counter_2ThugsH"
     };
     String preFix = "BM";
-    if (playerType == 1)
-        preFix = "CW";
     String test = tests[test_double_counter_index];
     test_double_counter_index ++;
     if (test_double_counter_index >= int(tests.length))
@@ -835,8 +820,6 @@ void TestAnimations_Group_3()
 void TestAnimations_Group_4()
 {
     String preFix = "BM";
-    if (playerType == 1)
-        preFix = "CW";
     Array<String> tests =
     {
         "Double_Counter_3ThugsA",

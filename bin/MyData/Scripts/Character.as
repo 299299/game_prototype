@@ -1042,8 +1042,6 @@ class Character : GameObject
 
     RigidBody@              body;
 
-    Line@                   dockLine;
-
     int                     physicsType;
 
     String                  lastAnimation;
@@ -1121,7 +1119,6 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
-        @dockLine = null;
     }
 
     void Remove()
@@ -1629,16 +1626,6 @@ class Character : GameObject
     bool CheckFalling()
     {
         return false;
-    }
-
-    bool CheckDocking(float dist = 3)
-    {
-        return false;
-    }
-
-    void AssignDockLine(Line@ l)
-    {
-        @dockLine = l;
     }
 
     void SetPhysicsType(int type)

@@ -356,10 +356,7 @@ class ThugCounterState : CharacterCounterState
     ThugCounterState(Character@ c)
     {
         super(c);
-        if (playerType == 0)
-            AddBW_Counter_Animations("TG_BW_Counter/", "TG_BM_Counter/",false);
-        else if (playerType == 1)
-            AddCW_Counter_Animations("TG_CW_Counter/", "TG_CW_Counter/",false);
+        AddBW_Counter_Animations("TG_BW_Counter/", "TG_BM_Counter/",false);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -700,26 +697,13 @@ class ThugBeatDownHitState : MultiMotionState
     {
         super(c);
         SetName("BeatDownHitState");
-        if (playerType == 0)
-        {
-            String preFix = "TG_BM_Beatdown/";
-            AddMotion(preFix + "Beatdown_HitReaction_01");
-            AddMotion(preFix + "Beatdown_HitReaction_02");
-            AddMotion(preFix + "Beatdown_HitReaction_03");
-            AddMotion(preFix + "Beatdown_HitReaction_04");
-            AddMotion(preFix + "Beatdown_HitReaction_05");
-            AddMotion(preFix + "Beatdown_HitReaction_06");
-        }
-        else if (playerType == 1)
-        {
-            String preFix = "TG_CW_Beatdown/";
-            AddMotion(preFix + "Beatdown_01");
-            AddMotion(preFix + "Beatdown_02");
-            AddMotion(preFix + "Beatdown_03");
-            AddMotion(preFix + "Beatdown_04");
-            AddMotion(preFix + "Beatdown_05");
-            AddMotion(preFix + "Beatdown_06");
-        }
+        String preFix = "TG_BM_Beatdown/";
+        AddMotion(preFix + "Beatdown_HitReaction_01");
+        AddMotion(preFix + "Beatdown_HitReaction_02");
+        AddMotion(preFix + "Beatdown_HitReaction_03");
+        AddMotion(preFix + "Beatdown_HitReaction_04");
+        AddMotion(preFix + "Beatdown_HitReaction_05");
+        AddMotion(preFix + "Beatdown_HitReaction_06");
 
         flags = FLAGS_STUN | FLAGS_ATTACK;
     }
@@ -747,22 +731,11 @@ class ThugBeatDownEndState : MultiMotionState
     {
         super(c);
         SetName("BeatDownEndState");
-        if (playerType == 0)
-        {
-            String preFix = "TG_BM_Beatdown/";
-            AddMotion(preFix + "Beatdown_Strike_End_01");
-            AddMotion(preFix + "Beatdown_Strike_End_02");
-            AddMotion(preFix + "Beatdown_Strike_End_03");
-            AddMotion(preFix + "Beatdown_Strike_End_04");
-        }
-        else if (playerType == 1)
-        {
-            String preFix = "TG_CW_Beatdown/";
-            AddMotion(preFix + "Beatdown_End_01");
-            AddMotion(preFix + "Beatdown_End_02");
-            AddMotion(preFix + "Beatdown_End_03");
-        }
-
+        String preFix = "TG_BM_Beatdown/";
+        AddMotion(preFix + "Beatdown_Strike_End_01");
+        AddMotion(preFix + "Beatdown_Strike_End_02");
+        AddMotion(preFix + "Beatdown_Strike_End_03");
+        AddMotion(preFix + "Beatdown_Strike_End_04");
         flags = FLAGS_ATTACK;
     }
 
