@@ -56,9 +56,6 @@ class Player : Character
 
     bool Counter()
     {
-        if (game_type != 0)
-            return false;
-
         // Print("Player::Counter");
         PlayerCounterState@ state = cast<PlayerCounterState>(stateMachine.FindState("CounterState"));
         if (state is null)
@@ -479,9 +476,6 @@ class Player : Character
 
     bool Attack()
     {
-        if (game_type != 0)
-            return false;
-
         Print("Do--Attack--->");
         Enemy@ e = CommonPickEnemy(90, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
         SetTarget(e);
@@ -494,9 +488,6 @@ class Player : Character
 
     bool Distract()
     {
-        if (game_type != 0)
-            return false;
-
         Print("Do--Distract--->");
         Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)

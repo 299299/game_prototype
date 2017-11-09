@@ -319,26 +319,23 @@ class TestGameState : GameState
 
     void CreateUI()
     {
-        if (game_type == 0)
-        {
-            int height = graphics.height / 22;
-            if (height > 64)
-                height = 64;
-            Text@ messageText = ui.root.CreateChild("Text", "message");
-            messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-            messageText.SetAlignment(HA_CENTER, VA_CENTER);
-            messageText.SetPosition(0, -height * 2 + 100);
-            messageText.color = Color(1, 0, 0);
-            messageText.visible = false;
+        int height = graphics.height / 22;
+        if (height > 64)
+            height = 64;
+        Text@ messageText = ui.root.CreateChild("Text", "message");
+        messageText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+        messageText.SetAlignment(HA_CENTER, VA_CENTER);
+        messageText.SetPosition(0, -height * 2 + 100);
+        messageText.color = Color(1, 0, 0);
+        messageText.visible = false;
 
-            Text@ statusText = ui.root.CreateChild("Text", "status");
-            statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
-            statusText.SetAlignment(HA_LEFT, VA_TOP);
-            statusText.SetPosition(0, 0);
-            statusText.color = Color(1, 1, 0);
-            statusText.visible = true;
-            OnPlayerStatusUpdate(GetPlayer());
-        }
+        Text@ statusText = ui.root.CreateChild("Text", "status");
+        statusText.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
+        statusText.SetAlignment(HA_LEFT, VA_TOP);
+        statusText.SetPosition(0, 0);
+        statusText.color = Color(1, 1, 0);
+        statusText.visible = true;
+        OnPlayerStatusUpdate(GetPlayer());
     }
 
     void Exit(State@ nextState)
@@ -552,10 +549,7 @@ class TestGameState : GameState
         uint t = time.systemTime;
         Scene@ scene_ = Scene();
         script.defaultScene = scene_;
-        String scnFile = "Scenes/1.xml";
-        if (game_type == 1)
-            scnFile = "Scenes/2.xml";
-        scene_.LoadXML(cache.GetFile(scnFile));
+        scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
         Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
         EnemyManager@ em = cast<EnemyManager>(scene_.CreateScriptObject(scriptFile, "EnemyManager"));
@@ -597,8 +591,6 @@ class TestGameState : GameState
             {
                 nodes_to_remove.Push(_node.id);
                 if (test_enemy_num_override > 0 && enemyNum >= test_enemy_num_override)
-                    continue;
-                if (game_type != 0)
                     continue;
                 Vector3 v = _node.worldPosition;
                 v.y = 0;
@@ -647,9 +639,6 @@ class TestGameState : GameState
             f.offset = Vector3(0, 10, 0);
         }
 
-        if (game_type == 1)
-            gLineWorld.Process(scene_);
-
         //DumpSkeletonNames(playerNode);
         Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + (WORLD_HALF_SIZE * 2).ToString());
     }
@@ -693,11 +682,6 @@ class TestGameState : GameState
     {
         if (key == KEY_ESCAPE)
         {
-            if (game_type == 1)
-            {
-                engine.Exit();
-                return;
-            }
             int oldState = state;
             if (oldState == GAME_PAUSE)
                 ChangeSubState(pauseState);

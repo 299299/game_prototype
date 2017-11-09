@@ -60,7 +60,6 @@ bool base_on_player = false;
 int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
-int game_type = 1;
 int collision_type = 0;
 
 GameInput@ gInput = GameInput();
@@ -96,21 +95,7 @@ void Start()
                 freeze_ai = 1;
             else if (argument == "reflection")
                 reflection = !reflection;
-            else if (argument == "game")
-            {
-                String type = arguments[i+1];
-                if (type == "combat")
-                    game_type = 0;
-                else if (type == "climb")
-                    game_type = 1;
-            }
         }
-    }
-
-    if (game_type == 1)
-    {
-        collision_type = 1;
-        reflection = false;
     }
 
     if (!engine.headless && graphics.width < 640)
@@ -213,7 +198,7 @@ void CreateUI()
     text.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
-    text.SetPosition(5, game_type == 0 ? 50 : 0);
+    text.SetPosition(5, 50);
     text.color = Color(0, 0, 1);
     text.priority = -99999;
     // text.textEffect = TE_SHADOW;
@@ -1074,20 +1059,12 @@ class BM_Game_MotionManager : MotionManager
     void AddMotions()
     {
         CreateBruceMotions();
-        if (game_type == 0)
-        {
-            CreateThugMotions();
-            CreateCatwomanMotions();
-        }
+        CreateThugMotions();
     }
 
     void AddTriggers()
     {
         AddBruceAnimationTriggers();
-        if (game_type == 0)
-        {
-            AddThugAnimationTriggers();
-            AddCatwomanAnimationTriggers();
-        }
+        AddThugAnimationTriggers();
     }
 };

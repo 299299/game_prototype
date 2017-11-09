@@ -815,17 +815,14 @@ class Thug : Enemy
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
 
-        if (game_type == 0)
-        {
-            stateMachine.AddState(ThugCounterState(this));
-            stateMachine.AddState(ThugHitState(this));
-            stateMachine.AddState(ThugAttackState(this));
-            stateMachine.AddState(ThugGetUpState(this));
-            stateMachine.AddState(ThugDeadState(this));
-            stateMachine.AddState(ThugBeatDownHitState(this));
-            stateMachine.AddState(ThugBeatDownEndState(this));
-            stateMachine.AddState(ThugStunState(this));
-        }
+        stateMachine.AddState(ThugCounterState(this));
+        stateMachine.AddState(ThugHitState(this));
+        stateMachine.AddState(ThugAttackState(this));
+        stateMachine.AddState(ThugGetUpState(this));
+        stateMachine.AddState(ThugDeadState(this));
+        stateMachine.AddState(ThugBeatDownHitState(this));
+        stateMachine.AddState(ThugBeatDownEndState(this));
+        stateMachine.AddState(ThugStunState(this));
 
         ChangeState("StandState");
 
@@ -1242,8 +1239,7 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
 
-    if (game_type == 0)
-        CreateThugCombatMotions();
+    CreateThugCombatMotions();
 }
 
 void AddThugCombatAnimationTriggers()
@@ -1417,9 +1413,7 @@ void AddThugAnimationTriggers()
     AddStringAnimationTrigger(preFix + "135_Turn_Right", 24, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "135_Turn_Right", 39, FOOT_STEP, R_FOOT);
 
-    if (game_type == 0)
-        AddThugCombatAnimationTriggers();
-
+    AddThugCombatAnimationTriggers();
 }
 
 
