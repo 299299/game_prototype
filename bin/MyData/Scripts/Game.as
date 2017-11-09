@@ -4,7 +4,7 @@
 //
 // ==============================================
 
-bool reflection = true;
+bool reflection = false;
 
 class GameState : State
 {
@@ -677,6 +677,7 @@ class TestGameState : GameState
     {
         if (key == KEY_ESCAPE)
         {
+            /*
             int oldState = state;
             if (oldState == GAME_PAUSE)
                 ChangeSubState(pauseState);
@@ -686,6 +687,8 @@ class TestGameState : GameState
                 pauseState = oldState;
             }
             return;
+            */
+            engine.Exit();
         }
 
         GameState::OnKeyDown(key);
