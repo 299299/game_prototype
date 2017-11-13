@@ -538,7 +538,6 @@ class TestGameState : GameState
         renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
         viewport.renderPath = renderpath;
-        SetColorGrading(colorGradingIndex);
     }
 
     void CreateScene()
@@ -624,13 +623,13 @@ class TestGameState : GameState
 
         gameScene = scene_;
 
-        Node@ lightNode = scene_.GetChild("light");
+        /*Node@ lightNode = scene_.GetChild("light");
         if (lightNode !is null)
         {
             Follow@ f = cast<Follow>(lightNode.CreateScriptObject(scriptFile, "Follow"));
             f.toFollow = playerId;
             f.offset = Vector3(0, 10, 0);
-        }
+        }*/
 
         //DumpSkeletonNames(playerNode);
         Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + (WORLD_HALF_SIZE * 2).ToString());

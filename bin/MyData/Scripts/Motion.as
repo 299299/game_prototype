@@ -22,16 +22,6 @@ void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer =
     ctrl.SetSpeed(name, speed);
 }
 
-int FindMotionIndex(const Array<Motion@>&in motions, const String&in name)
-{
-    for (uint i=0; i<motions.length; ++i)
-    {
-        if (motions[i].name == name)
-            return i;
-    }
-    return -1;
-}
-
 void FillAnimationWithCurrentPose(Animation@ anim, Node@ _node)
 {
     Array<String> boneNames =
