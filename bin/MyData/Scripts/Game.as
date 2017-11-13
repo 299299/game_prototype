@@ -518,7 +518,7 @@ class TestGameState : GameState
     {
         Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
         renderer.viewports[0] = viewport;
-        RenderPath@ renderpath = viewport.renderPath.Clone();
+        /*RenderPath@ renderpath = viewport.renderPath.Clone();
         if (render_features & RF_HDR != 0)
         {
             // if (reflection)
@@ -538,6 +538,7 @@ class TestGameState : GameState
         renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
         renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
         viewport.renderPath = renderpath;
+        */
     }
 
     void CreateScene()

@@ -655,6 +655,7 @@ MotionManager@ gMotionMgr;
 
 Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_ALL, int endFrame = -1, bool loop = false, float rotateAngle = 361)
 {
+    Print("Global_CreateMotion " + name);
     return gMotionMgr.CreateMotion(name, motionFlag, allowMotion, endFrame, loop, rotateAngle);
 }
 
@@ -665,7 +666,14 @@ void Global_AddAnimation(const String&in name)
 
 void Global_CreateMotion_InFolder(const String&in folder)
 {
-    Array<String> attack_animations = fileSystem.ScanDir("MyData/Animations/" + folder, "*.ani", SCAN_FILES, false);
+    String searchFolder = folder;
+    if (GetPlatform() == "Android")
+    {
+        searchFolder = "/apk/" + folder;
+    }
+    Print(searchFolder);
+    Array<String> attack_animations = fileSystem.ScanDir(searchFolder, "*.ani", SCAN_FILES, false);
+    Print("attack_animations.size=" + String(attack_animations.length));
     for (uint i=0; i<attack_animations.length; ++i)
         Global_CreateMotion(folder + FileNameToMotionName(attack_animations[i]));
 }
