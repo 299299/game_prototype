@@ -110,7 +110,8 @@ class MotionRig
         AnimatedModel@ am2 = alignNode.CreateComponent("AnimatedModel");
         am2.model = am.model;
 
-        Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString());
+        Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString() +
+            " numBones=" + skeleton.numBones);
     }
 
     ~MotionRig()
