@@ -55,7 +55,7 @@ class GameInput
 
     void InitTouch()
     {
-        input.touchEmulation = true;
+        input.touchEmulation = !mobile;
         touchEnabled = true;
         screenJoystickID = input.AddScreenJoystick(cache.GetResource("XMLFile", "UI/ScreenJoystick_NinjaSnowWar.xml"));
         input.screenJoystickVisible[0] = true;
@@ -68,7 +68,7 @@ class GameInput
             if (js.numHats == 1)
                 flipRightStick = true;
 
-            LogPrint(" input.numTouches = " + input.numTouches);
+            LogPrint("##########  input.numTouches = " + input.numTouches);
         }
     }
 
@@ -111,6 +111,17 @@ class GameInput
         if (input.mouseButtonPress[MOUSEB_MIDDLE])
             lastMiddlePressedTime = time.systemTime;
         // LogPrint("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
+
+        if (input.numTouches > 0)
+        {
+            String uiName = "null";
+            if (ts.touchedElement !is null)
+                uiName = ts.touchedElement.name;
+            TouchState@ ts = input.touches[0];
+            Print("TouchState position=" + ts.position.ToString() +
+                  " pressure=" + ts.pressure +
+                  " touchedElement=" + uiName);
+        }
     }
 
     Vector3 GetLeftAxis()

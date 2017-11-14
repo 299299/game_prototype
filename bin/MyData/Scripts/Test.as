@@ -31,7 +31,6 @@ enum RenderFeature
 };
 
 int drawDebug = 0;
-bool bHdr = false;
 bool bigHeadMode = false;
 bool nobgm = true;
 
@@ -46,11 +45,10 @@ uint playerId = M_MAX_UNSIGNED;
 int test_enemy_num_override = 3;
 int render_features = RF_NONE;
 
-String LUT = "";
 const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 40;
 
-int freeze_ai = 0;
+int freeze_ai = 1;
 int test_beat_index = 1;
 bool base_on_player = false;
 int test_counter_index = 0;
@@ -90,8 +88,6 @@ void Start()
     cache.autoReloadResources = !mobile;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
-    if (renderer !is null && (render_features & RF_HDR != 0))
-        renderer.hdrRendering = true;
 
     SetRandomSeed(time.systemTime);
     @gMotionMgr = BM_Game_MotionManager();
@@ -107,6 +103,8 @@ void Start()
     gGame.ChangeState("LoadingState");
 
     gInput.InitTouch();
+
+    CreateConsoleAndDebugHud();
 
     LogPrint("Start Finished !!! ");
 }
@@ -310,8 +308,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     gCameraMgr.Update(timeStep);
     gGame.Update(timeStep);
 
-    ExecuteCommand();
-
     if (script.defaultScene is null)
         return;
 
@@ -321,7 +317,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
         String debugText = seperator;
         debugText += gGame.GetDebugText();
         debugText += seperator;
-        debugText += "current LUT: " + LUT + "\n";
         debugText += gCameraMgr.GetDebugText();
         debugText += gInput.GetDebugText();
         debugText += seperator;
@@ -399,8 +394,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (cam !is null)
             cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
     }
-    else if (key == KEY_F5)
-        ToggleDebugWindow();
     else if (key == KEY_1)
         ShootSphere(scene_);
     else if (key == KEY_2)
@@ -732,204 +725,6 @@ void TestAnimations_Group_4()
     thugAnims.Push(thugAnim + "_02");
     thugAnims.Push(thugAnim + "_03");
     TestAnimation_Group(playerAnim, thugAnims);
-}
-
-void ToggleDebugWindow()
-{
-    Window@ win = ui.root.GetChild("DebugWindow", true);
-    if (win !is null)
-    {
-        win.Remove();
-        input.SetMouseVisible(false);
-        freezeInput = false;
-        return;
-    }
-
-    win = Window();
-    win.name = "DebugWindow";
-    win.movable = true;
-    win.resizable = true;
-    win.opacity = 0.8f;
-    win.SetLayout(LM_VERTICAL, 2, IntRect(2,4,2,4));
-    win.SetAlignment(HA_LEFT, VA_TOP);
-    win.SetStyleAuto();
-    ui.root.AddChild(win);
-
-    Text@ windowTitle = Text();
-    windowTitle.text = "Debug Parameters";
-    windowTitle.SetStyleAuto();
-    win.AddChild(windowTitle);
-
-    IntVector2 scrSize(graphics.width, graphics.height);
-    IntVector2 winSize(scrSize);
-    winSize.x = int(float(winSize.x) * 0.3f);
-    winSize.y = int(float(winSize.y) * 0.5f);
-    win.size = winSize;
-    win.SetPosition(5, (scrSize.y - winSize.y)/3);
-    input.SetMouseVisible(true);
-    freezeInput = true;
-
-    RenderPath@ path = renderer.viewports[0].renderPath;
-    UIElement@ parent = win;
-    CreateDebugSlider(parent, "TonemapMaxWhite", 0, 0.0f, 5.0f, path.shaderParameters["TonemapMaxWhite"].GetFloat());
-    CreateDebugSlider(parent, "TonemapExposureBias", 0, 0.0f, 5.0f, path.shaderParameters["TonemapExposureBias"].GetFloat());
-    //CreateDebugSlider(parent, "BloomHDRBlurRadius", 0, 0.0f, 10.0f, path.shaderParameters["BloomHDRBlurRadius"].GetFloat());
-    CreateDebugSlider(parent, "BloomHDRMix_x", 1, 0.0f, 1.0f, path.shaderParameters["BloomHDRMix"].GetVector2().x);
-    CreateDebugSlider(parent, "BloomHDRMix_y", 2, 0.0f, 5.0f, path.shaderParameters["BloomHDRMix"].GetVector2().y);
-}
-
-void CreateDebugSlider(UIElement@ parent, const String&in label, int tag, float min, float max, float cur)
-{
-    UIElement@ textContainer = UIElement();
-    parent.AddChild(textContainer);
-    textContainer.layoutMode = LM_HORIZONTAL;
-    textContainer.SetStyleAuto();
-
-    Text@ text = Text();
-    textContainer.AddChild(text);
-    text.text = label + ": ";
-    text.SetStyleAuto();
-
-    Text@ valueText = Text();
-    textContainer.AddChild(valueText);
-    valueText.name = label + "_value";
-    valueText.text = String(cur);
-    valueText.SetStyleAuto();
-
-    Slider@ slider = Slider();
-    slider.name = label;
-    slider.SetStyleAuto();
-    slider.range = max - min;
-    slider.value = cur - min;
-    slider.SetMinSize(2, 16);
-    slider.vars[RANGE] = Vector2(min, max);
-    slider.vars[TAG] = tag;
-    parent.AddChild(slider);
-}
-
-void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
-{
-    UIElement@ ui = eventData["Element"].GetPtr();
-    float value = eventData["Value"].GetFloat();
-    if (!ui.vars.Contains(TAG))
-        return;
-
-    Vector2 range = ui.GetVar(RANGE).GetVector2();
-    value += range.x;
-    int tag = ui.GetVar(TAG).GetInt();
-    Text@ valueText = ui.parent.GetChild(ui.name + "_value", true);
-    if (valueText !is null)
-        valueText.text = String(value);
-
-    RenderPath@ path = renderer.viewports[0].renderPath;
-
-    switch (tag)
-    {
-    case 0:
-        path.shaderParameters[ui.name] = value;
-        break;
-    case 1:
-        {
-            Vector2 v = path.shaderParameters["BloomHDRMix"].GetVector2();
-            v.x = value;
-            path.shaderParameters["BloomHDRMix"] = Variant(v);
-        }
-        break;
-    case 2:
-        {
-            Vector2 v = path.shaderParameters["BloomHDRMix"].GetVector2();
-            v.y = value;
-            path.shaderParameters["BloomHDRMix"] = Variant(v);
-        }
-        break;
-    }
-}
-
-void ExecuteCommand()
-{
-    String commands = GetConsoleInput();
-    if(commands.length == 0)
-        return;
-
-    LogPrint("######### Console Input: [" + commands + "] #############");
-    Array<String> command_list = commands.Split(',');
-    String command = command_list.empty ? commands : command_list[0];
-
-    if (command == "dump")
-    {
-        String debugText = "camera position=" + gCameraMgr.GetCameraNode().worldPosition.ToString() + "\n";
-        debugText += gInput.GetDebugText();
-
-        Scene@ scene_ = script.defaultScene;
-        if (scene_ !is null)
-        {
-            Array<Node@> nodes = scene_.GetChildrenWithScript("GameObject", true);
-            for (uint i=0; i<nodes.length; ++i)
-            {
-                GameObject@ object = cast<GameObject@>(nodes[i].scriptObject);
-                if (object !is null)
-                    debugText += object.GetDebugText();
-            }
-        }
-        LogPrint(debugText);
-    }
-    else if (command == "anim")
-    {
-        String testName = "BM_Attack/Attack_Close_Forward_02";
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.TestAnimation(testName);
-    }
-    else if (command == "stop")
-    {
-        gMotionMgr.Stop();
-        Scene@ scene_ = script.defaultScene;
-        if (scene_ is null)
-            return;
-        scene_.Clear();
-    }
-    else if (command == "attack")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Attack();
-    }
-    else if (command == "evade")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Evade();
-    }
-    else if (command == "counter")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Counter();
-    }
-    else if (command == "avoid")
-    {
-        EnemyManager@ em = GetEnemyMgr();
-        if (em is null)
-            return;
-        em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
-        em.CreateEnemy(Vector3(0,0,0), Quaternion(0,0,0), "Thug");
-    }
-    else if (command == "distract")
-    {
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.Distract();
-    }
-    else if (command == "kill")
-    {
-        Node@ _node = script.defaultScene.GetChild(command_list[1]);
-        if (_node !is null)
-        {
-            Character@ c = cast<Character>(_node.scriptObject);
-            if (c !is null)
-                c.ChangeState("DeadState");
-        }
-    }
 }
 
 void LogPrint(const String&in msg)

@@ -514,9 +514,10 @@ class TestGameState : GameState
     {
         Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
         renderer.viewports[0] = viewport;
-        /*RenderPath@ renderpath = viewport.renderPath.Clone();
         if (render_features & RF_HDR != 0)
         {
+            renderer.hdrRendering = true;
+            RenderPath@ renderpath = viewport.renderPath.Clone();
             // if (reflection)
             //    renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
             // else
@@ -530,11 +531,10 @@ class TestGameState : GameState
             renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
             renderpath.shaderParameters["AutoExposureAdaptRate"] = 2.0f;
             renderpath.shaderParameters["BloomHDRMix"] = Variant(Vector2(0.9f, 0.6f));
+            renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
+            renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
+            viewport.renderPath = renderpath;
         }
-        renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
-        renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
-        viewport.renderPath = renderpath;
-        */
     }
 
     void CreateScene()
@@ -726,7 +726,7 @@ class TestGameState : GameState
 
     void postInit()
     {
-        if (bHdr && graphics !is null)
+        if (render_features & RF_HDR != 0)
             renderer.viewports[0].renderPath.shaderParameters["AutoExposureAdaptRate"] = 0.6f;
     }
 };
