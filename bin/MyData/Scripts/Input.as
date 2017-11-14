@@ -9,7 +9,7 @@
 // ==============================================
 
 bool  freezeInput = false;
-const float GYROSCOPE_THRESHOLD = 0.1;
+const float touch_scale_x = 0.2;
 
 class GameInput
 {
@@ -33,14 +33,7 @@ class GameInput
     float joyLookDeadZone = 0.05;
 
     int   m_leftStickHoldFrames = 0;
-
     uint  lastMiddlePressedTime = 0;
-
-    bool  flipRightStick = false;
-
-    bool  touchEnabled = false;
-
-    int screenJoystickID = 0;
 
     GameInput()
     {
@@ -48,35 +41,11 @@ class GameInput
         if (js !is null)
         {
             LogPrint("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
-            if (js.numHats == 1)
-                flipRightStick = true;
-        }
-    }
-
-    void InitTouch()
-    {
-        input.touchEmulation = !mobile;
-        touchEnabled = true;
-        screenJoystickID = input.AddScreenJoystick(cache.GetResource("XMLFile", "UI/ScreenJoystick_NinjaSnowWar.xml"));
-        input.screenJoystickVisible[0] = true;
-        LogPrint("screenJoystickID=  " + String(screenJoystickID));
-
-        JoystickState@ js = GetJoystick();
-        if (js !is null)
-        {
-            LogPrint("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
-            if (js.numHats == 1)
-                flipRightStick = true;
-
-            LogPrint("##########  input.numTouches = " + input.numTouches);
         }
     }
 
     void Update(float dt)
     {
-        if (input.mouseVisible && !touchEnabled)
-            return;
-
         m_lastLeftStickX = m_leftStickX;
         m_lastLeftStickY = m_leftStickY;
 
@@ -114,11 +83,12 @@ class GameInput
 
         if (input.numTouches > 0)
         {
+            TouchState@ ts = input.touches[0];
             String uiName = "null";
             if (ts.touchedElement !is null)
                 uiName = ts.touchedElement.name;
-            TouchState@ ts = input.touches[0];
             Print("TouchState position=" + ts.position.ToString() +
+                  " delta=" + ts.delta.ToString() +
                   " pressure=" + ts.pressure +
                   " touchedElement=" + uiName);
         }
@@ -152,43 +122,21 @@ class GameInput
     Vector2 GetLeftStick()
     {
         Vector2 ret;
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
+        if (input.numTouches > 0)
         {
-            if (joystick.numAxes >= 2)
+            TouchState@ ts = input.touches[0];
+            float x = float(ts.position.x);
+            float y = float(graphics.height) - float(ts.position.y);
+            float w = float(graphics.width) * touch_scale_x;
+            float h = w;
+            if (x < w && y < h)
             {
-                ret.x = joystick.axisPosition[0];
-                ret.y = -joystick.axisPosition[1];
-
-                if (Abs(ret.x) < 0.01)
-                    ret.x = 0.0f;
-                if (Abs(ret.y) < 0.01)
-                    ret.y = 0.0f;
+                float half_w = w / 2.0;
+                float half_h = h / 2.0;
+                ret.x = (x - half_w) / half_w;
+                ret.y = (y - half_h) / half_h;
             }
-
-            if (joystick.numHats > 0)
-            {
-                const float speed = 1.0;
-                if (joystick.hatPosition[0] & HAT_LEFT != 0)
-                    ret.x += -speed;
-                if (joystick.hatPosition[0] & HAT_RIGHT != 0)
-                    ret.x += speed;
-                if (joystick.hatPosition[0] & HAT_UP != 0)
-                    ret.y += speed;
-                if (joystick.hatPosition[0] & HAT_DOWN != 0)
-                    ret.y += -speed;
-            }
-        }
-        else
-        {
-            if (input.keyDown['W'])
-                ret.y += 1.0f;
-            if (input.keyDown['S'])
-                ret.y -= 1.0f;
-            if (input.keyDown['D'])
-                ret.x += 1.0f;
-            if (input.keyDown['A'])
-                ret.x -= 1.0f;
+            Print(" x=" + x + " ,y=" + y + " ret=" + ret.ToString());
         }
         return ret;
     }
@@ -204,12 +152,6 @@ class GameInput
             {
                 float lookX = joystick.axisPosition[2];
                 float lookY = joystick.axisPosition[3];
-                if (flipRightStick)
-                {
-                    lookX = joystick.axisPosition[3];
-                    lookY = joystick.axisPosition[2];
-                }
-
                 if (lookX < -joyLookDeadZone)
                     rightAxis.x -= joySensitivity * lookX * lookX;
                 if (lookX > joyLookDeadZone)
@@ -232,10 +174,7 @@ class GameInput
     {
         if (input.numJoysticks > 0)
         {
-            if (touchEnabled)
-                return input.joysticks[screenJoystickID];
-            else
-                return input.joysticksByIndex[0];
+            return input.joysticksByIndex[0];
         }
         return null;
     }
@@ -361,5 +300,17 @@ class GameInput
         }
 
         return ret;
+    }
+
+    void CreateUI()
+    {
+        Button@ button = Button();
+        button.name = "Button";
+        button.texture = cache.GetResource("Texture2D", "Textures/UrhoIcon.png"); // Set texture
+        // button.blendMode = BLEND_ADD;
+        float w = float(graphics.width) * touch_scale_x;
+        button.SetFixedSize(w, w);
+        button.SetPosition(0, graphics.height - w);
+        ui.root.AddChild(button);
     }
 };

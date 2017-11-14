@@ -102,9 +102,8 @@ void Start()
     gGame.Start();
     gGame.ChangeState("LoadingState");
 
-    gInput.InitTouch();
-
     CreateConsoleAndDebugHud();
+    gInput.CreateUI();
 
     LogPrint("Start Finished !!! ");
 }
@@ -297,7 +296,6 @@ void SubscribeToEvents()
     SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
     SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
     SubscribeToEvent("CameraEvent", "HandleCameraEvent");
-    SubscribeToEvent("SliderChanged", "HandleSliderChanged");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
