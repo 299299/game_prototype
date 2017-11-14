@@ -58,12 +58,14 @@ int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 int collision_type = 0;
 
+bool mobile = false;
+
 GameInput@ gInput = GameInput();
 
 void Start()
 {
     LogPrint("Game Running Platform: " + GetPlatform());
-    // lowend_platform = GetPlatform() != "Windows";
+    mobile = (GetPlatform() == "Android" || GetPlatform() == "iOS");
 
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)
@@ -85,7 +87,7 @@ void Start()
         }
     }
 
-    cache.autoReloadResources = true;
+    cache.autoReloadResources = !mobile;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
     if (renderer !is null && (render_features & RF_HDR != 0))
