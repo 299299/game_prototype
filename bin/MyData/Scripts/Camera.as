@@ -200,7 +200,7 @@ class ThirdPersonCameraController : CameraController
         {
             uint t = time.systemTime;
             uint t_diff = t - gInput.lastMiddlePressedTime;
-            // Print("lastMiddlePressedTime diff = " + t_diff);
+            // LogPrint("lastMiddlePressedTime diff = " + t_diff);
             if (t_diff > 500)
                 cameraDistance +=  float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
         }
@@ -346,7 +346,7 @@ class DeathCameraController : CameraController
         else
             sideAngle = +90.0f;
 
-        Print("DeathCamera sideAngle="+sideAngle);
+        LogPrint("DeathCamera sideAngle="+sideAngle);
     }
 };
 
@@ -587,7 +587,7 @@ class CameraManager
     {
         uint pos = anim.FindLast('/');
         String name = anim.Substring(pos + 1);
-        //Print("CheckCameraAnimation, name=" + name);
+        //LogPrint("CheckCameraAnimation, name=" + name);
         StringHash nameHash(name);
         int k = -1;
         for (uint i=0; i<cameraAnimations.length; ++i)
@@ -607,7 +607,7 @@ class CameraManager
         eventData[NAME] = CHANGE_STATE;
         eventData[VALUE] = StringHash("Animation");
         eventData[ANIMATION] = camAnim;
-        Print("camAnim=" + camAnim);
+        LogPrint("camAnim=" + camAnim);
 
         OnCameraEvent(eventData);
     }

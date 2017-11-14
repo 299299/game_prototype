@@ -74,22 +74,22 @@ class EnemyManager : ScriptObject
 
     EnemyManager()
     {
-        Print("EnemyManager()");
+        LogPrint("EnemyManager()");
     }
 
     ~EnemyManager()
     {
-        Print("~EnemyManager()");
+        LogPrint("~EnemyManager()");
     }
 
     void Start()
     {
-        Print("EnemyManager::Start()");
+        LogPrint("EnemyManager::Start()");
     }
 
     void Stop()
     {
-        Print("EnemyManager::Stop()");
+        LogPrint("EnemyManager::Stop()");
         enemyList.Clear();
     }
 
@@ -107,7 +107,7 @@ class EnemyManager : ScriptObject
 
     void UnRegisterEnemy(Enemy@ e)
     {
-        Print("UnRegisterEnemy");
+        LogPrint("UnRegisterEnemy");
         int i = enemyList.FindByRef(e);
         if (i < 0)
             return;
@@ -236,7 +236,7 @@ class EnemyManager : ScriptObject
                 num_of_near ++;
             if (num_of_near > MAX_NUM_OF_NEAR)
             {
-                // Print(e.GetName() + " too close with player !!!");
+                // LogPrint(e.GetName() + " too close with player !!!");
                 if (e.GetState().nameHash == STAND_STATE || e.GetState().nameHash == TURN_STATE)
                     e.KeepDistanceWithPlayer(0);
             }

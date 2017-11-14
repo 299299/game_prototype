@@ -110,7 +110,7 @@ class MotionRig
         AnimatedModel@ am2 = alignNode.CreateComponent("AnimatedModel");
         am2.model = am.model;
 
-        Print(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString() +
+        LogPrint(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() + " pelvisOrign=" + pelvisOrign.ToString() +
             " numBones=" + skeleton.numBones);
     }
 
@@ -154,7 +154,7 @@ void DumpSkeletonNames(Node@ n)
     Skeleton@ skeleton = model.skeleton;
     for (uint i=0; i<skeleton.numBones; ++i)
     {
-        Print(skeleton.bones[i].name);
+        LogPrint(skeleton.bones[i].name);
     }
 }
 
@@ -171,7 +171,7 @@ void AssignMotionRig(const String& rigName)
 void RotateAnimation(const String&in animationFile, float rotateAngle)
 {
     if (d_log)
-        Print("Rotating animation " + animationFile);
+        LogPrint("Rotating animation " + animationFile);
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
@@ -212,7 +212,7 @@ void RotateAnimation(const String&in animationFile, float rotateAngle)
 void TranslateAnimation(const String&in animationFile, const Vector3&in diff)
 {
     if (d_log)
-        Print("Translating animation " + animationFile);
+        LogPrint("Translating animation " + animationFile);
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
     if (anim is null) {
@@ -261,7 +261,7 @@ void CollectBoneWorldPositions(MotionRig@ rig, const String&in animationFile, co
         state.Apply();
         rig.alignNode.MarkDirty();
         outPositions[i] = boneNode.worldPosition;
-        // Print("out-position=" + outPositions[i].ToString());
+        // LogPrint("out-position=" + outPositions[i].ToString());
     }
 }
 
@@ -297,7 +297,7 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     if (translateTrack is null)
     {
-        Print(animationFile + " translation track not found!!!");
+        LogPrint(animationFile + " translation track not found!!!");
         return;
     }
 
@@ -308,21 +308,21 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
     const float minDist = 0.5f;
     if (Abs(position.x) > minDist) {
         if (d_log)
-            Print(animationFile + " Need reset x position");
+            LogPrint(animationFile + " Need reset x position");
         translateFlag |= kMotion_X;
     }
     if (Abs(position.y) > 2.0f && (motionFlag & kMotion_Ext_Adjust_Y != 0)) {
         if (d_log)
-            Print(animationFile + " Need reset y position");
+            LogPrint(animationFile + " Need reset y position");
         translateFlag |= kMotion_Y;
     }
     if (Abs(position.z) > minDist) {
         if (d_log)
-            Print(animationFile + " Need reset z position");
+            LogPrint(animationFile + " Need reset z position");
         translateFlag |= kMotion_Z;
     }
     if (d_log)
-        Print("t-diff-position=" + position.ToString());
+        LogPrint("t-diff-position=" + position.ToString());
 
     if (translateFlag == 0)
         return;
@@ -349,8 +349,8 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 {
     if (d_log)
     {
-        Print("---------------------------------------------------------------------------------------");
-        Print("Processing animation " + animationFile);
+        LogPrint("---------------------------------------------------------------------------------------");
+        LogPrint("Processing animation " + animationFile);
     }
 
     Animation@ anim = cache.GetResource("Animation", animationFile);
@@ -363,7 +363,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     if (translateTrack is null)
     {
-        Print(animationFile + " translation track not found!!!");
+        LogPrint(animationFile + " translation track not found!!!");
         return 0;
     }
 
@@ -388,7 +388,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         if (Abs(firstRotateFromRoot) > 75)
         {
             if (d_log)
-                Print(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
+                LogPrint(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
             flip = true;
         }
         startFromOrigin.w = firstRotateFromRoot;
@@ -419,7 +419,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
             if (d_log)
             {
                 if (i == 0 || i == rotateTrack.numKeyFrames - 1)
-                    Print("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
+                    LogPrint("frame=" + String(i) + " rotation from identical in xz plane=" + q.eulerAngles.ToString());
             }
             if (i == 0)
                 firstRotateFromRoot = q.eulerAngles.y;
@@ -442,7 +442,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
             rotateFromStart += q.eulerAngles.y;
 
             if (dump)
-                Print("rotation from last frame = " + String(q.eulerAngles.y) + " rotateFromStart=" + String(rotateFromStart));
+                LogPrint("rotation from last frame = " + String(q.eulerAngles.y) + " rotateFromStart=" + String(rotateFromStart));
 
             q = Quaternion(0, rotateFromStart, 0).Inverse();
 
@@ -486,7 +486,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 
             translateNode.worldPosition = t2_ws;
             Vector3 local_pos = translateNode.position;
-            // Print("local position from " + kf.position.ToString() + " to " + local_pos.ToString());
+            // LogPrint("local position from " + kf.position.ToString() + " to " + local_pos.ToString());
             kf.position = local_pos;
             translateTrack.keyFrames[i] = kf;
         }
@@ -541,12 +541,12 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     {
         for (uint i=0; i<outKeys.length; ++i)
         {
-            Print("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
+            LogPrint("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
         }
     }
 
     if (d_log)
-        Print("---------------------------------------------------------------------------------------");
+        LogPrint("---------------------------------------------------------------------------------------");
 
     if (rotateAngle < 360)
         return rotateAngle;

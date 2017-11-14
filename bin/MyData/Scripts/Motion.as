@@ -15,7 +15,7 @@ enum AttackType
 
 void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
 {
-    //Print("PlayAnimation " + name + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+    //LogPrint("PlayAnimation " + name + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
     ctrl.StopLayer(layer, blendTime);
     ctrl.PlayExclusive(name, layer, loop, blendTime);
     ctrl.SetTime(name, startTime);
@@ -108,12 +108,12 @@ Vector4 GetTargetTransform(Node@ baseNode, Motion@ alignMotion, Motion@ baseMoti
 
     if (d_log)
     {
-        Print("------------------------------------------------------------------------------------------------------------------------------------------------");
-        Print("GetTargetTransform align-motion=" + alignMotion.name + " base-motion=" + baseMotion.name);
-        Print("GetTargetTransform base=" + baseNode.name + " align-start-pos=" + s1.ToString() + " base-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
-        Print("baseYaw=" + baseYaw + " targetRotation=" + targetRotation + " align-start-rot=" + r1 + " base-start-rot=" + r2 + " r-diff=" + (r1 - r2));
-        Print("basePosition=" + baseNode.worldPosition.ToString() + " diff_ws=" + diff_ws.ToString() + " targetPosition=" + targetPosition.ToString());
-        Print("------------------------------------------------------------------------------------------------------------------------------------------------");
+        LogPrint("------------------------------------------------------------------------------------------------------------------------------------------------");
+        LogPrint("GetTargetTransform align-motion=" + alignMotion.name + " base-motion=" + baseMotion.name);
+        LogPrint("GetTargetTransform base=" + baseNode.name + " align-start-pos=" + s1.ToString() + " base-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
+        LogPrint("baseYaw=" + baseYaw + " targetRotation=" + targetRotation + " align-start-rot=" + r1 + " base-start-rot=" + r2 + " r-diff=" + (r1 - r2));
+        LogPrint("basePosition=" + baseNode.worldPosition.ToString() + " diff_ws=" + diff_ws.ToString() + " targetPosition=" + targetPosition.ToString());
+        LogPrint("------------------------------------------------------------------------------------------------------------------------------------------------");
     }
 
     return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);
@@ -195,7 +195,7 @@ class Motion
         {
             Vector3 v = GetBoneWorldPosition(curRig, animationName, dockAlignBoneName, dockAlignTime);
             if (d_log)
-                Print(this.name + " bone " + dockAlignBoneName + " world-pos=" + v.ToString() + " at time:" + dockAlignTime);
+                LogPrint(this.name + " bone " + dockAlignBoneName + " world-pos=" + v.ToString() + " at time:" + dockAlignTime);
             dockAlignOffset += v;
         }
 
@@ -216,7 +216,7 @@ class Motion
         processed = true;
 
         if (d_log)
-            Print("Motion " + name + " endDistance="  + endDistance + " startFromOrigin=" + startFromOrigin.ToString()  + " timeCost=" + String(time.systemTime - startTime) + " ms");
+            LogPrint("Motion " + name + " endDistance="  + endDistance + " startFromOrigin=" + startFromOrigin.ToString()  + " timeCost=" + String(time.systemTime - startTime) + " ms");
     }
 
     void SetDockAlign(const String&in boneName, float alignTime, const Vector3&in offset)
@@ -325,7 +325,7 @@ class Motion
         object.motion_velocity = Vector3(0, 0, 0);
         object.motion_translateEnabled = true;
         object.motion_rotateEnabled = true;
-        Print("motion " + animationName + " start start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
+        LogPrint("motion " + animationName + " start start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
     }
 
     int Move(Character@ object, float dt)
@@ -514,12 +514,12 @@ class MotionManager
 
     MotionManager()
     {
-        Print("MotionManager");
+        LogPrint("MotionManager");
     }
 
     ~MotionManager()
     {
-        Print("~MotionManager");
+        LogPrint("~MotionManager");
     }
 
     Motion@ FindMotion(StringHash nameHash)
@@ -559,16 +559,16 @@ class MotionManager
     {
         PostProcess();
         AssetPostProcess();
-        Print("************************************************************************************************");
-        Print("Motion Process time-cost=" + String(time.systemTime - assetProcessTime) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
-        Print("************************************************************************************************");
+        LogPrint("************************************************************************************************");
+        LogPrint("Motion Process time-cost=" + String(time.systemTime - assetProcessTime) + " ms num-of-motions=" + motions.length + " memory-use=" + String(memoryUse/1024) + " KB");
+        LogPrint("************************************************************************************************");
     }
 
     void PostProcess()
     {
         uint t = time.systemTime;
         AddTriggers();
-        Print("MotionManager::PostProcess time-cost=" + (time.systemTime - t) + " ms");
+        LogPrint("MotionManager::PostProcess time-cost=" + (time.systemTime - t) + " ms");
     }
 
     void AddTriggers()
@@ -615,7 +615,7 @@ class MotionManager
                     break;
             }
 
-            Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions);
+            LogPrint("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedMotions=" + processedMotions);
             if (processedMotions >= len)
                 state = MOTION_LOADING_ANIMATIONS;
         }
@@ -632,7 +632,7 @@ class MotionManager
                     break;
             }
 
-            Print("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedAnimations=" + processedAnimations);
+            LogPrint("MotionManager Process this frame time=" + (time.systemTime - t) + " ms " + " processedAnimations=" + processedAnimations);
 
             if (processedAnimations >= len)
             {
@@ -655,7 +655,7 @@ MotionManager@ gMotionMgr;
 
 Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_ALL, int endFrame = -1, bool loop = false, float rotateAngle = 361)
 {
-    Print("Global_CreateMotion " + name);
+    // LogPrint("Global_CreateMotion " + name);
     return gMotionMgr.CreateMotion(name, motionFlag, allowMotion, endFrame, loop, rotateAngle);
 }
 
@@ -666,14 +666,14 @@ void Global_AddAnimation(const String&in name)
 
 void Global_CreateMotion_InFolder(const String&in folder)
 {
-    String searchFolder = folder;
+    String searchFolder = "MyData/Animations/" + folder;
     if (GetPlatform() == "Android")
     {
-        searchFolder = "/apk/" + folder;
+        searchFolder = "/apk/" + searchFolder;
     }
-    Print(searchFolder);
+    LogPrint("Global_CreateMotion_InFolder folder=" + searchFolder);
     Array<String> attack_animations = fileSystem.ScanDir(searchFolder, "*.ani", SCAN_FILES, false);
-    Print("attack_animations.size=" + String(attack_animations.length));
+    LogPrint("attack_animations.size=" + String(attack_animations.length));
     for (uint i=0; i<attack_animations.length; ++i)
         Global_CreateMotion(folder + FileNameToMotionName(attack_animations[i]));
 }

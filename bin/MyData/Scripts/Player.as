@@ -52,7 +52,7 @@ class Player : Character
 
     bool Counter()
     {
-        // Print("Player::Counter");
+        // LogPrint("Player::Counter");
         PlayerCounterState@ state = cast<PlayerCounterState>(stateMachine.FindState("CounterState"));
         if (state is null)
             return false;
@@ -91,7 +91,7 @@ class Player : Character
     {
         if (!CanBeAttacked()) {
             if (d_log)
-                Print("OnDamage failed because I can no be attacked " + GetName());
+                LogPrint("OnDamage failed because I can no be attacked " + GetName());
             return false;
         }
 
@@ -102,7 +102,7 @@ class Player : Character
         SetHealth(health);
 
         int index = RadialSelectAnimation(attacker.GetNode(), 4);
-        Print("Player::OnDamage RadialSelectAnimation index=" + index);
+        LogPrint("Player::OnDamage RadialSelectAnimation index=" + index);
 
         if (health <= 0)
             OnDead();
@@ -120,17 +120,17 @@ class Player : Character
     {
         if (target is null)
         {
-            Print("Player::OnAttackSuccess target is null");
+            LogPrint("Player::OnAttackSuccess target is null");
             return;
         }
 
         combo ++;
-        // Print("OnAttackSuccess combo add to " + combo);
+        // LogPrint("OnAttackSuccess combo add to " + combo);
 
         if (target.health == 0)
         {
             killed ++;
-            Print("killed add to " + killed);
+            LogPrint("killed add to " + killed);
             gGame.OnCharacterKilled(this, target);
         }
 
@@ -140,7 +140,7 @@ class Player : Character
     void OnCounterSuccess()
     {
         combo ++;
-        Print("OnCounterSuccess combo add to " + combo);
+        LogPrint("OnCounterSuccess combo add to " + combo);
         StatusChanged();
     }
 
@@ -187,7 +187,7 @@ class Player : Character
             if (!e.CanBeCountered())
             {
                 if (d_log)
-                    Print(e.GetName() + " can not be countered");
+                    LogPrint(e.GetName() + " can not be countered");
                 continue;
             }
             Vector3 posDiff = e.sceneNode.worldPosition - myPos;
@@ -196,13 +196,13 @@ class Player : Character
             if (distSQR > MAX_COUNTER_DIST * MAX_COUNTER_DIST)
             {
                 if (d_log)
-                    Print(e.GetName() + " counter distance too long" + distSQR);
+                    LogPrint(e.GetName() + " counter distance too long" + distSQR);
                 continue;
             }
             counterEnemies.Push(e);
         }
 
-        Print("PickCounterEnemy ret=" + counterEnemies.length);
+        LogPrint("PickCounterEnemy ret=" + counterEnemies.length);
         return counterEnemies.length;
     }
 
@@ -224,14 +224,14 @@ class Player : Character
         {
             Enemy@ e = em.enemyList[i];
             if (!e.CanBeRedirected()) {
-                Print("Enemy " + e.GetName() + " can not be redirected.");
+                LogPrint("Enemy " + e.GetName() + " can not be redirected.");
                 continue;
             }
 
             float enemyDir = e.GetCharacterAngle();
             float totalDir = Abs(AngleDiff(myDir - enemyDir));
             float dirDiff = Abs(totalDir - 180);
-            Print("Evade-- myDir=" + myDir + " enemyDir=" + enemyDir + " totalDir=" + totalDir + " dirDiff=" + dirDiff);
+            LogPrint("Evade-- myDir=" + myDir + " enemyDir=" + enemyDir + " totalDir=" + totalDir + " dirDiff=" + dirDiff);
             if (dirDiff > maxDirDiff)
                 continue;
 
@@ -272,7 +272,7 @@ class Player : Character
             if (!e.HasFlag(flags))
             {
                 if (d_log)
-                    Print(e.GetName() + " no flag: " + flags);
+                    LogPrint(e.GetName() + " no flag: " + flags);
                 em.scoreCache.Push(-1);
                 continue;
             }
@@ -285,7 +285,7 @@ class Player : Character
             if (dist > maxDiffDist)
             {
                 if (d_log)
-                    Print(e.GetName() + " far way from player");
+                    LogPrint(e.GetName() + " far way from player");
                 em.scoreCache.Push(-1);
                 continue;
             }
@@ -297,13 +297,13 @@ class Player : Character
             if (Abs(diffAngle) > maxDiffAngle)
             {
                 if (d_log)
-                    Print(e.GetName() + " diffAngle=" + diffAngle + " too large");
+                    LogPrint(e.GetName() + " diffAngle=" + diffAngle + " too large");
                 em.scoreCache.Push(-1);
                 continue;
             }
 
             if (d_log)
-                Print("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
+                LogPrint("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             int threatScore = 0;
             if (dist < 1.0f + COLLISION_SAFE_DIST)
@@ -329,7 +329,7 @@ class Player : Character
             em.scoreCache.Push(score);
 
             if (d_log)
-                Print("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
+                LogPrint("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 
         int bestScore = 0;
@@ -344,7 +344,7 @@ class Player : Character
 
         if (attackEnemy !is null && checkBlock)
         {
-            Print("CommonPicKEnemy-> attackEnemy is " + attackEnemy.GetName());
+            LogPrint("CommonPicKEnemy-> attackEnemy is " + attackEnemy.GetName());
             Vector3 v_pos = sceneNode.worldPosition;
             v_pos.y = CHARACTER_HEIGHT / 2;
             Vector3 e_pos = attackEnemy.GetNode().worldPosition;
@@ -361,13 +361,13 @@ class Player : Character
                 Enemy@ e = cast<Enemy>(n.scriptObject);
                 if (e !is null && e !is attackEnemy && e.HasFlag(FLAGS_ATTACK))
                 {
-                    Print("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
+                    LogPrint("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
                     @attackEnemy = e;
                 }
             }
         }
 
-        Print("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms");
+        LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms");
         return attackEnemy;
     }
 
@@ -405,7 +405,7 @@ class Player : Character
             enemies.Push(e);
         }
 
-        Print("CommonCollectEnemies() len=" + enemies.length + " time-cost = " + (time.systemTime - t) + " ms");
+        LogPrint("CommonCollectEnemies() len=" + enemies.length + " time-cost = " + (time.systemTime - t) + " ms");
     }
 
     String GetDebugText()
@@ -446,7 +446,7 @@ class Player : Character
 
     bool Attack()
     {
-        Print("Do--Attack--->");
+        LogPrint("Do--Attack--->");
         Enemy@ e = CommonPickEnemy(90, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
@@ -458,7 +458,7 @@ class Player : Character
 
     bool Distract()
     {
-        Print("Do--Distract--->");
+        LogPrint("Do--Distract--->");
         Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
         if (e is null)
             return false;
@@ -474,7 +474,7 @@ class Player : Character
             return false;
 
         int alive = em.GetNumOfEnemyAlive();
-        Print("CheckLastKill() alive=" + alive);
+        LogPrint("CheckLastKill() alive=" + alive);
         if (alive == 1)
         {
             VariantMap data;

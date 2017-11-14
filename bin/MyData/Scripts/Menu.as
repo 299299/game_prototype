@@ -25,15 +25,12 @@ class TextMenu
             return;
 
         root = ui.root.CreateChild("UIElement");
-        if (!engine.headless)
-        {
-            int height = graphics.height / 22;
-            if (height > 64)
-                height = 64;
+        int height = graphics.height / 22;
+        if (height > 64)
+            height = 64;
 
-            root.SetAlignment(HA_CENTER, VA_CENTER);
-            root.SetPosition(0, -height * 2);
-        }
+        root.SetAlignment(HA_CENTER, VA_CENTER);
+        root.SetPosition(0, -height * 2);
 
         root.SetLayout(LM_VERTICAL, 8);
         root.SetFixedSize(size.x, size.y);

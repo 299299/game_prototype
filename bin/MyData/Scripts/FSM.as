@@ -13,12 +13,12 @@ class State
 
     State()
     {
-        //Print("State()");
+        //LogPrint("State()");
     }
 
     ~State()
     {
-        //Print("~State() " + String(name));
+        //LogPrint("~State() " + String(name));
     }
 
     void Enter(State@ lastState)
@@ -72,16 +72,16 @@ class FSM
 
     FSM()
     {
-        //Print("FSM()");
+        //LogPrint("FSM()");
     }
 
     ~FSM()
     {
         /*
         if (currentState !is null)
-            Print("~FSM() currentState=" + currentState.name);
+            LogPrint("~FSM() currentState=" + currentState.name);
         else
-            Print("~FSM()");
+            LogPrint("~FSM()");
         */
         @currentState = null;
         states.Clear();
@@ -113,12 +113,12 @@ class FSM
 
         if (newState is null)
         {
-            Print("new-state not found " + nameHash.ToString());
+            LogPrint("new-state not found " + nameHash.ToString());
             return false;
         }
 
         if (currentState is newState) {
-            // Print("same state !!!");
+            // LogPrint("same state !!!");
             if (!currentState.CanReEntered())
                 return false;
             currentState.Exit(newState);
@@ -143,7 +143,7 @@ class FSM
             newStateName = newState.name;
 
         if (d_log)
-            Print("FSM Change State " + oldStateName + " -> " + newStateName);
+            LogPrint("FSM Change State " + oldStateName + " -> " + newStateName);
 
         return true;
     }

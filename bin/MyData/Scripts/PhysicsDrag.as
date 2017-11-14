@@ -14,7 +14,7 @@ void CreateDrag(float x, float y)
     PhysicsRaycastResult result = _scene.physicsWorld.RaycastSingle(cameraRay, rayDistance, COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP);
     if (result.body !is null)
     {
-        Print("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
+        LogPrint("RaycastSingle Hit " + result.body.node.name + " distance=" + result.distance);
         Node@ draggingNode = _scene.CreateChild("DraggingNode");
         draggingNode.scale = Vector3(0.1f, 0.1f, 0.1f);
         StaticModel@ sphereObject = draggingNode.CreateComponent("StaticModel");

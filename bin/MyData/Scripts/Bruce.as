@@ -189,7 +189,7 @@ class BruceTransitionState : PlayerTransitionState
         super(c);
         SetMotion("BM_Combat/Into_Takedown");
         BRUCE_TRANSITION_DIST = motion.endDistance;
-        Print("Bruce-Transition Dist=" + BRUCE_TRANSITION_DIST);
+        LogPrint("Bruce-Transition Dist=" + BRUCE_TRANSITION_DIST);
     }
 };
 

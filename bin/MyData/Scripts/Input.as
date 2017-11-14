@@ -47,7 +47,7 @@ class GameInput
         JoystickState@ js = GetJoystick();
         if (js !is null)
         {
-            Print("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
+            LogPrint("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
             if (js.numHats == 1)
                 flipRightStick = true;
         }
@@ -59,16 +59,16 @@ class GameInput
         touchEnabled = true;
         screenJoystickID = input.AddScreenJoystick(cache.GetResource("XMLFile", "UI/ScreenJoystick_NinjaSnowWar.xml"));
         input.screenJoystickVisible[0] = true;
-        Print("screenJoystickID=  " + String(screenJoystickID));
+        LogPrint("screenJoystickID=  " + String(screenJoystickID));
 
         JoystickState@ js = GetJoystick();
         if (js !is null)
         {
-            Print("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
+            LogPrint("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
             if (js.numHats == 1)
                 flipRightStick = true;
 
-            Print(" input.numTouches = " + input.numTouches);
+            LogPrint(" input.numTouches = " + input.numTouches);
         }
     }
 
@@ -110,7 +110,7 @@ class GameInput
 
         if (input.mouseButtonPress[MOUSEB_MIDDLE])
             lastMiddlePressedTime = time.systemTime;
-        // Print("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
+        // LogPrint("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
     }
 
     Vector3 GetLeftAxis()

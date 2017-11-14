@@ -155,7 +155,7 @@ class ThugDistractState : SingleMotionState
 
     void OnMotionFinished()
     {
-        Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        LogPrint(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
         ownner.ChangeState("StunState");
     }
 };
@@ -189,7 +189,7 @@ Animation@ CreateAnimation(const String&in originAnimationName, const String&in 
 
 bool Evade()
 {
-    // Print("Player::Evade()");
+    // LogPrint("Player::Evade()");
 
     Enemy@ redirectEnemy = null;
     if (has_redirect)
@@ -228,7 +228,7 @@ class ThugRedirectState : MultiMotionState
     {
         selectIndex = PickIndex();
         if (d_log)
-            Print(name + " pick " + motions[selectIndex].animationName);
+            LogPrint(name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner, 0.0f, 0.5f);
     }
 

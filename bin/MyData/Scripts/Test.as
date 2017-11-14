@@ -62,7 +62,7 @@ GameInput@ gInput = GameInput();
 
 void Start()
 {
-    Print("Game Running Platform: " + GetPlatform());
+    LogPrint("Game Running Platform: " + GetPlatform());
     // lowend_platform = GetPlatform() != "Windows";
 
     Array<String>@ arguments = GetArguments();
@@ -85,9 +85,6 @@ void Start()
         }
     }
 
-    if (!engine.headless && graphics.width < 640)
-        render_features = RF_NONE;
-
     cache.autoReloadResources = true;
     engine.pauseMinimized = true;
     script.defaultScriptFile = scriptFile;
@@ -97,13 +94,10 @@ void Start()
     SetRandomSeed(time.systemTime);
     @gMotionMgr = BM_Game_MotionManager();
 
-    if (!engine.headless)
-    {
-        SetWindowTitleAndIcon();
-        CreateConsoleAndDebugHud();
-        CreateUI();
-        InitAudio();
-    }
+    SetWindowTitleAndIcon();
+    CreateConsoleAndDebugHud();
+    CreateUI();
+    InitAudio();
 
     SubscribeToEvents();
 
@@ -111,20 +105,19 @@ void Start()
     gGame.ChangeState("LoadingState");
 
     gInput.InitTouch();
+
+    LogPrint("Start Finished !!! ");
 }
 
 void Stop()
 {
-    Print("Test Stop");
+    LogPrint("Test Stop");
     gMotionMgr.Stop();
     ui.Clear();
 }
 
 void InitAudio()
 {
-    if (engine.headless)
-        return;
-
     audio.masterGain[SOUND_MASTER] = 0.5f;
     audio.masterGain[SOUND_MUSIC] = 0.5f;
     audio.masterGain[SOUND_EFFECT] = 1.0f;
@@ -315,8 +308,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     gCameraMgr.Update(timeStep);
     gGame.Update(timeStep);
 
-    if (engine.headless)
-        ExecuteCommand();
+    ExecuteCommand();
 
     if (script.defaultScene is null)
         return;
@@ -501,13 +493,13 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         Player@ p = GetPlayer();
         if (p !is null)
         {
-            Print("------------------------------------------------------------");
+            LogPrint("------------------------------------------------------------");
             for (uint i=0; i<p.stateMachine.states.length; ++i)
             {
                 State@ s = p.stateMachine.states[i];
-                Print("name=" + s.name + " nameHash=" + s.nameHash.ToString());
+                LogPrint("name=" + s.name + " nameHash=" + s.nameHash.ToString());
             }
-            Print("------------------------------------------------------------");
+            LogPrint("------------------------------------------------------------");
         }
     }
     else if (key == 'U')
@@ -556,13 +548,13 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
 
 void HandleSceneLoadFinished(StringHash eventType, VariantMap& eventData)
 {
-    Print("HandleSceneLoadFinished");
+    LogPrint("HandleSceneLoadFinished");
     gGame.OnSceneLoadFinished(eventData["Scene"].GetPtr());
 }
 
 void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
 {
-    Print("HandleAsyncLoadProgress");
+    LogPrint("HandleAsyncLoadProgress");
     Scene@ _scene = eventData["Scene"].GetPtr();
     float progress = eventData["Progress"].GetFloat();
     int loadedNodes = eventData["LoadedNodes"].GetInt();
@@ -589,7 +581,7 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
     if (m_player is null)
         return;
 
-    Print("TestAnimation_Group " + playerAnim);
+    LogPrint("TestAnimation_Group " + playerAnim);
 
     Array<String> testAnims;
 
@@ -689,7 +681,7 @@ void TestAnimations_Group_2()
     player.TestAnimation(m1.name);
     player.SetSceneTimeScale(0.0f);
 
-    Print("TestAnimations_Group_2 -> " + m1.name);
+    LogPrint("TestAnimations_Group_2 -> " + m1.name);
 }
 
 void TestAnimations_Group_3()
@@ -857,7 +849,7 @@ void ExecuteCommand()
     if(commands.length == 0)
         return;
 
-    Print("######### Console Input: [" + commands + "] #############");
+    LogPrint("######### Console Input: [" + commands + "] #############");
     Array<String> command_list = commands.Split(',');
     String command = command_list.empty ? commands : command_list[0];
 
@@ -877,7 +869,7 @@ void ExecuteCommand()
                     debugText += object.GetDebugText();
             }
         }
-        Print(debugText);
+        LogPrint(debugText);
     }
     else if (command == "anim")
     {
@@ -936,6 +928,11 @@ void ExecuteCommand()
                 c.ChangeState("DeadState");
         }
     }
+}
+
+void LogPrint(const String&in msg)
+{
+    log.Debug(msg);
 }
 
 class BM_Game_MotionManager : MotionManager

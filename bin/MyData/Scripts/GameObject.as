@@ -32,7 +32,7 @@ class GameObject : ScriptObject
     void SetTimeScale(float scale)
     {
         timeScale = scale;
-        Print(GetName() + " SetTimeScale:" + scale);
+        LogPrint(GetName() + " SetTimeScale:" + scale);
     }
 
     void FixedUpdate(float timeStep)
@@ -139,7 +139,7 @@ class GameObject : ScriptObject
             return;
         _scene.timeScale = scale;
         gGame.OnSceneTimeScaleUpdated(_scene, scale);
-        Print(GetName() + " SetSceneTimeScale:" + scale);
+        LogPrint(GetName() + " SetSceneTimeScale:" + scale);
     }
 
     void Transform(const Vector3& pos, const Quaternion& qua)
@@ -151,7 +151,7 @@ class GameObject : ScriptObject
 
     void Remove()
     {
-        // Print(node.name + ".Remove()");
+        // LogPrint(node.name + ".Remove()");
         node.Remove();
     }
 
@@ -163,7 +163,7 @@ class GameObject : ScriptObject
 
 void SetWorldTimeScale(Scene@ _scene, float scale)
 {
-    Print("SetWorldTimeScale:" + scale);
+    LogPrint("SetWorldTimeScale:" + scale);
     Array<Node@> nodes = _scene.GetChildrenWithScript(false);
     for (uint i=0; i<nodes.length; ++i)
     {

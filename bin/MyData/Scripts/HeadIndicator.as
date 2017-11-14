@@ -39,8 +39,6 @@ class HeadIndicator : ScriptObject
 
     void Update(float dt)
     {
-        if (engine.headless)
-            return;
         Node@ headNode = node.scene.GetNode(headNodeId);
         if (headNode is null)
             return;

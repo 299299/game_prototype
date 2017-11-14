@@ -49,7 +49,7 @@ class PlayerAttackState : CharacterState
         {
             Motion@ m = attacks[i].motion;
             if (m !is null)
-                Print(m.animationName + " impactDist=" + String(attacks[i].impactDist));
+                LogPrint(m.animationName + " impactDist=" + String(attacks[i].impactDist));
         }
     }
 
@@ -64,13 +64,13 @@ class PlayerAttackState : CharacterState
 
     void Dump()
     {
-        Print("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
+        LogPrint("\n forward attacks(closeNum=" + forwadCloseNum + "): \n");
         DumpAttacks(forwardAttacks);
-        Print("\n right attacks(closeNum=" + rightCloseNum + "): \n");
+        LogPrint("\n right attacks(closeNum=" + rightCloseNum + "): \n");
         DumpAttacks(rightAttacks);
-        Print("\n back attacks(closeNum=" + backCloseNum + "): \n");
+        LogPrint("\n back attacks(closeNum=" + backCloseNum + "): \n");
         DumpAttacks(backAttacks);
-        Print("\n left attacks(closeNum=" + leftCloseNum + "): \n");
+        LogPrint("\n left attacks(closeNum=" + leftCloseNum + "): \n");
         DumpAttacks(leftAttacks);
     }
 
@@ -81,7 +81,7 @@ class PlayerAttackState : CharacterState
 
     void ChangeSubState(int newState)
     {
-        Print("PlayerAttackState changeSubState from " + state + " to " + newState);
+        LogPrint("PlayerAttackState changeSubState from " + state + " to " + newState);
         state = newState;
     }
 
@@ -130,7 +130,7 @@ class PlayerAttackState : CharacterState
 
         bool finished = motion.Move(ownner, dt) == 1;
         if (finished) {
-            Print("Player::Attack finish attack movemont in sub state = " + state);
+            LogPrint("Player::Attack finish attack movemont in sub state = " + state);
             ownner.CommonStateFinishedOnGroud();
             return;
         }
@@ -168,12 +168,12 @@ class PlayerAttackState : CharacterState
 
         float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_RANGE/2.0f);
         float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_RANGE;
-        Print("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
+        LogPrint("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
         for (uint i=0; i<attacks.length; ++i)
         {
             AttackMotion@ am = attacks[i];
-            // Print("am.impactDist=" + am.impactDist);
+            // LogPrint("am.impactDist=" + am.impactDist);
             if (am.impactDist > max_dist)
                 break;
 
@@ -198,20 +198,20 @@ class PlayerAttackState : CharacterState
             bestIndex = index_start + r_n % index_num;
             if (lastAttackDirection == dir && bestIndex == lastAttackIndex)
             {
-                Print("Repeat Attack index index_num=" + index_num);
+                LogPrint("Repeat Attack index index_num=" + index_num);
                 bestIndex = index_start + (r_n + 1) % index_num;
             }
             lastAttackDirection = dir;
             lastAttackIndex = bestIndex;
         }
 
-        Print("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num="+index_num);
+        LogPrint("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num="+index_num);
 
         @currentAttack = attacks[bestIndex];
         alignTime = currentAttack.impactTime;
 
         predictPosition = myPos + diff * toEnenmyDistance;
-        Print("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex + " Pick attack motion = " + currentAttack.motion.animationName);
+        LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex + " Pick attack motion = " + currentAttack.motion.animationName);
     }
 
     void StartAttack()
@@ -224,7 +224,7 @@ class PlayerAttackState : CharacterState
             int r = DirectionMapToIndex(diff, 4);
 
             if (d_log)
-                Print("Attack-align " + " r-index=" + r + " diff=" + diff);
+                LogPrint("Attack-align " + " r-index=" + r + " diff=" + diff);
 
             if (r == 0)
                 PickBestMotion(forwardAttacks, r);
@@ -291,7 +291,7 @@ class PlayerAttackState : CharacterState
 
     void Enter(State@ lastState)
     {
-        Print("################## Player::AttackState Enter from " + lastState.name  + " #####################");
+        LogPrint("################## Player::AttackState Enter from " + lastState.name  + " #####################");
         lastKill = false;
         slowMotion = false;
         @currentAttack = null;
@@ -313,7 +313,7 @@ class PlayerAttackState : CharacterState
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
         @currentAttack = null;
         ownner.SetSceneTimeScale(1.0f);
-        Print("################## Player::AttackState Exit to " + nextState.name  + " #####################");
+        LogPrint("################## Player::AttackState Exit to " + nextState.name  + " #####################");
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -350,7 +350,7 @@ class PlayerAttackState : CharacterState
         Vector3 dir = _node.worldPosition - e.GetNode().worldPosition;
         dir.y = 0;
         dir.Normalize();
-        Print("PlayerAttackState::" +  e.GetName() + " OnDamage!!!!");
+        LogPrint("PlayerAttackState::" +  e.GetName() + " OnDamage!!!!");
 
         Node@ n = _node.GetChild(currentAttack.boneName, true);
         Vector3 position = _node.worldPosition;
@@ -387,7 +387,7 @@ class PlayerAttackState : CharacterState
         dist = UpdateMaxDist(rightAttacks, dist);
         dist = UpdateMaxDist(backAttacks, dist);
 
-        Print(ownner.GetName() + " max attack dist = " + dist);
+        LogPrint(ownner.GetName() + " max attack dist = " + dist);
         dist += 10.0f;
         MAX_ATTACK_DIST = Min(MAX_ATTACK_DIST, dist);
 
@@ -488,7 +488,7 @@ class PlayerCounterState : CharacterCounterState
         Enemy@ e = counterEnemies[possed];
         if (minDistSQR > GOOD_COUNTER_DIST * GOOD_COUNTER_DIST)
         {
-            Print(alignMotion.name + " too far");
+            LogPrint(alignMotion.name + " too far");
             return;
         }
 
@@ -543,7 +543,7 @@ class PlayerCounterState : CharacterCounterState
 
     void Enter(State@ lastState)
     {
-        Print("############# PlayerCounterState::Enter ##################");
+        LogPrint("############# PlayerCounterState::Enter ##################");
         uint t = time.systemTime;
 
         if (lastState.nameHash == ALIGN_STATE)
@@ -552,7 +552,7 @@ class PlayerCounterState : CharacterCounterState
         }
         else
         {
-            Print("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
+            LogPrint("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
             type = counterEnemies.length;
 
             // POST_PROCESS
@@ -651,7 +651,7 @@ class PlayerCounterState : CharacterCounterState
                     intCache.Push(i);
                 }
 
-                Print("CounterState - intCache.length=" + intCache.length);
+                LogPrint("CounterState - intCache.length=" + intCache.length);
                 int cur_direction = GetCounterDirection(attackType, isBack);
                 int idx;
                 if (intCache.empty)
@@ -674,7 +674,7 @@ class PlayerCounterState : CharacterCounterState
 
                 @currentMotion = counterMotions[idx];
                 @s.currentMotion = eCounterMotions[idx];
-                Print("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName);
+                LogPrint("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName);
 
                 s.ChangeSubState(COUNTER_WAITING);
 
@@ -692,13 +692,13 @@ class PlayerCounterState : CharacterCounterState
             }
         }
 
-        Print("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
+        LogPrint("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
         CharacterState::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
-        Print("############# PlayerCounterState::Exit ##################");
+        LogPrint("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
         if (nextState !is this && nextState.nameHash != ALIGN_STATE)
             counterEnemies.Clear();
@@ -787,7 +787,7 @@ class PlayerBeatDownEndState : MultiMotionState
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
-            Print("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
             selectIndex = 0;
         }
 
@@ -807,7 +807,7 @@ class PlayerBeatDownEndState : MultiMotionState
         }
 
         if (d_log)
-            Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
+            LogPrint(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner);
 
         CharacterState::Enter(lastState);
@@ -815,7 +815,7 @@ class PlayerBeatDownEndState : MultiMotionState
 
     void Exit(State@ nextState)
     {
-        Print("BeatDownEndState Exit!!");
+        LogPrint("BeatDownEndState Exit!!");
         ownner.SetSceneTimeScale(1.0f);
         MultiMotionState::Exit(nextState);
     }
@@ -883,7 +883,7 @@ class PlayerBeatDownHitState : MultiMotionState
 
     void Update(float dt)
     {
-        // Print("PlayerBeatDownHitState::Update() " + dt);
+        // LogPrint("PlayerBeatDownHitState::Update() " + dt);
         Character@ target = ownner.target;
         if (target is null)
         {
@@ -971,7 +971,7 @@ class PlayerBeatDownHitState : MultiMotionState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == IMPACT)
         {
-            // Print("BeatDownHitState On Impact");
+            // LogPrint("BeatDownHitState On Impact");
             combatReady = true;
             Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
             Vector3 position = ownner.GetNode().worldPosition;
@@ -1021,7 +1021,7 @@ class PlayerTransitionState : SingleMotionState
 
     void OnMotionFinished()
     {
-        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        // LogPrint(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
         if (!nextStateName.empty)
             ownner.ChangeState(nextStateName);
         else
@@ -1047,7 +1047,7 @@ class PlayerTransitionState : SingleMotionState
         SingleMotionState::Exit(nextState);
         if (ownner.target !is null)
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
-        Print("After Player Transition Target dist = " + ownner.GetTargetDistance());
+        LogPrint("After Player Transition Target dist = " + ownner.GetTargetDistance());
     }
 
     String GetDebugText()

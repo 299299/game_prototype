@@ -277,7 +277,7 @@ class SingleMotionState : CharacterState
 
     void OnMotionFinished()
     {
-        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
+        // LogPrint(ownner.GetName() + " state:" + name + " finshed motion:" + motion.animationName);
         ownner.CommonStateFinishedOnGroud();
     }
 };
@@ -372,12 +372,12 @@ class MultiMotionState : CharacterState
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
-            Print("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
             selectIndex = 0;
         }
 
         if (d_log)
-            Print(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
+            LogPrint(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
         motions[selectIndex].Start(ownner, startTime, blendTime, animSpeed);
     }
 
@@ -406,7 +406,7 @@ class MultiMotionState : CharacterState
 
     void OnMotionFinished()
     {
-        // Print(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
+        // LogPrint(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
         ownner.CommonStateFinishedOnGroud();
     }
 
@@ -513,7 +513,7 @@ class AnimationTestState : CharacterState
         }
 
         if (finished) {
-            Print("AnimationTestState finished, currentIndex=" + currentIndex);
+            LogPrint("AnimationTestState finished, currentIndex=" + currentIndex);
             currentIndex ++;
             if (currentIndex >= int(testAnimations.length))
             {
@@ -604,7 +604,7 @@ class CharacterCounterState : CharacterState
     {
         if (currentMotion is null)
             return;
-        Print(ownner.GetName() + " start counter motion " + currentMotion.animationName);
+        LogPrint(ownner.GetName() + " start counter motion " + currentMotion.animationName);
         ChangeSubState(COUNTER_ANIMATING);
         currentMotion.Start(ownner);
     }
@@ -633,7 +633,7 @@ class CharacterCounterState : CharacterState
             String other_name = motion.name.Replaced("BM_TG_Counter", "TG_BM_Counter");
             Motion@ other_motion = gMotionMgr.FindMotion(other_name);
             Vector3 startDiff = other_motion.GetStartPos() - motion.GetStartPos();
-            Print("couter-motion " + motion.name + " diff-len=" + startDiff.length);
+            LogPrint("couter-motion " + motion.name + " diff-len=" + startDiff.length);
         }
     }
 
@@ -655,7 +655,7 @@ class CharacterCounterState : CharacterState
         if (state == newState)
             return;
 
-        Print(ownner.GetName() + " CounterState ChangeSubState from " + state + " to " + newState);
+        LogPrint(ownner.GetName() + " CounterState ChangeSubState from " + state + " to " + newState);
         state = newState;
     }
 
@@ -918,7 +918,7 @@ class CharacterGetUpState : MultiMotionState
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
-            Print("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
             selectIndex = 0;
         }
 
@@ -972,7 +972,7 @@ class CharacterAlignState : CharacterState
 
     void Start(StringHash nextState, const Vector3&in tPos, float tRot, float duration, int physicsType = 0, const String&in anim = "")
     {
-        Print("CharacterAlign--start duration=" + duration);
+        LogPrint("CharacterAlign--start duration=" + duration);
         nextStateName = nextState;
         targetPosition = tPos;
         targetRotation = tRot;
@@ -987,7 +987,7 @@ class CharacterAlignState : CharacterState
 
         if (anim != "")
         {
-            Print("align-animation : " + anim);
+            LogPrint("align-animation : " + anim);
             ownner.PlayAnimation(anim, LAYER_MOVE, true);
         }
     }
@@ -1012,7 +1012,7 @@ class CharacterAlignState : CharacterState
 
     void OnAlignTimeOut()
     {
-        Print(ownner.GetName() + " On_Align_Finished-- at: " + time.systemTime);
+        LogPrint(ownner.GetName() + " On_Align_Finished-- at: " + time.systemTime);
         ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
         ownner.ChangeState(nextStateName);
     }
@@ -1077,7 +1077,7 @@ class Character : GameObject
         ragdollPoseAnim = cache.GetResource("Animation", name);
         if (ragdollPoseAnim is null)
         {
-            // Print("Creating animation for ragdoll pose " + name);
+            // LogPrint("Creating animation for ragdoll pose " + name);
             ragdollPoseAnim = Animation();
             ragdollPoseAnim.name = name;
             ragdollPoseAnim.animationName = name;
@@ -1104,16 +1104,16 @@ class Character : GameObject
 
     void Start()
     {
-        //Print("============================== begin Object Start ==============================");
+        //LogPrint("============================== begin Object Start ==============================");
         uint startTime = time.systemTime;
         ObjectStart();
-        Print(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
-        //Print("============================== end Object Start ==============================");
+        LogPrint(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
+        //LogPrint("============================== end Object Start ==============================");
     }
 
     void Stop()
     {
-        Print("Character::Stop " + sceneNode.name);
+        LogPrint("Character::Stop " + sceneNode.name);
         @stateMachine = null;
         @sceneNode = null;
         @animCtrl = null;
@@ -1137,7 +1137,7 @@ class Character : GameObject
         {
             AnimationState@ state = animModel.GetAnimationState(i);
             if (d_log)
-                Print("SetSpeed " + state.animation.name + " scale " + scale);
+                LogPrint("SetSpeed " + state.animation.name + " scale " + scale);
             animCtrl.SetSpeed(state.animation.name, scale);
         }
         if (body !is null)
@@ -1149,7 +1149,7 @@ class Character : GameObject
     void PlayAnimation(const String&in animName, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
     {
         if (d_log)
-            Print(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
+            LogPrint(GetName() + " PlayAnimation " + animName + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
 
         if (layer == LAYER_MOVE && lastAnimation == animName && loop)
             return;
@@ -1181,7 +1181,7 @@ class Character : GameObject
 
     void SetVelocity(const Vector3&in vel)
     {
-        // Print("body.linearVelocity = " + vel.ToString());
+        // LogPrint("body.linearVelocity = " + vel.ToString());
         if (body !is null)
             body.linearVelocity = vel;
     }
@@ -1350,7 +1350,7 @@ class Character : GameObject
         Vector3 pt_rf = renderNode.GetChild("Bip01_R_Foot").worldPosition - renderNode.worldPosition;
         float dot_lf = pt_lf.DotProduct(fwd_dir);
         float dot_rf = pt_rf.DotProduct(fwd_dir);
-        Print(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));
+        LogPrint(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));
         return dot_lf - dot_rf;
     }
 
@@ -1375,13 +1375,13 @@ class Character : GameObject
 
     void OnDead()
     {
-        Print(GetName() + " OnDead !!!");
+        LogPrint(GetName() + " OnDead !!!");
         ChangeState("DeadState");
     }
 
     void MakeMeRagdoll(const Vector3&in velocity = Vector3(0, 0, 0), const Vector3&in position = Vector3(0, 0, 0))
     {
-        Print("MakeMeRagdoll -- velocity=" + velocity.ToString() + " position=" + position.ToString());
+        LogPrint("MakeMeRagdoll -- velocity=" + velocity.ToString() + " position=" + position.ToString());
         VariantMap anim_data;
         anim_data[NAME] = RAGDOLL_START;
         anim_data[VELOCITY] = velocity;
@@ -1421,7 +1421,7 @@ class Character : GameObject
         GameObject@ object = cast<GameObject>(newNode.CreateScriptObject(scriptFile, "GameObject", LOCAL));
         object.duration = duration;
 
-        // Print(GetName() + " SpawnParticleEffect pos=" + position.ToString() + " effectName=" + effectName + " duration=" + duration);
+        // LogPrint(GetName() + " SpawnParticleEffect pos=" + position.ToString() + " effectName=" + effectName + " duration=" + duration);
 
         return newNode;
     }
@@ -1485,7 +1485,7 @@ class Character : GameObject
         if (d_log)
         {
             String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-            Print(GetName() + " ChangeState from " + oldStateName + " to " + name);
+            LogPrint(GetName() + " ChangeState from " + oldStateName + " to " + name);
         }
         bool ret = stateMachine.ChangeState(name);
         State@ s = GetState();
@@ -1501,7 +1501,7 @@ class Character : GameObject
         bool ret = stateMachine.ChangeState(nameHash);
         String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
         if (d_log)
-            Print(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
+            LogPrint(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
         sceneNode.vars[STATE] = GetState().nameHash;
         return ret;
     }
@@ -1554,7 +1554,7 @@ class Character : GameObject
         if (t is target)
             return;
         @target = t;
-        // Print(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
+        // LogPrint(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
     }
 
     void SetPhysics(bool b)
@@ -1598,7 +1598,7 @@ class Character : GameObject
             return;
         if (motion_translateEnabled && GetTargetDistance(t.GetNode()) < dist)
         {
-            Print(GetName() + " is too close to " + t.GetName() + " set translateEnabled to false");
+            LogPrint(GetName() + " is too close to " + t.GetName() + " set translateEnabled to false");
             motion_translateEnabled = false;
         }
     }

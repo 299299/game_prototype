@@ -167,7 +167,7 @@ class Ragdoll : ScriptObject
 
         int old_state = state;
         if (d_log)
-            Print(rootNode.name + " Ragdoll ChangeState from " + old_state + " to " + newState);
+            LogPrint(rootNode.name + " Ragdoll ChangeState from " + old_state + " to " + newState);
         state = newState;
 
         if (newState == RAGDOLL_STATIC)
@@ -194,7 +194,7 @@ class Ragdoll : ScriptObject
                         velocity /= timeInState;
                         velocity *= scale;
                         velocity *= 1.5f;
-                        // Print(boneNodes[i].name + " velocity=" + velocity.ToString());
+                        // LogPrint(boneNodes[i].name + " velocity=" + velocity.ToString());
                         // if (i == BONE_PELVIS || i == BONE_SPINE)
                         rb.linearVelocity = velocity;
                     }
@@ -211,7 +211,7 @@ class Ragdoll : ScriptObject
                         Vector3 pos = boneNodes[i].worldPosition;
                         float y_diff = Abs(pos.y - hitPosition.y);
                         if (d_log)
-                            Print("Ragdoll -- " + boneNodes[i].name + " y_diff = " + y_diff);
+                            LogPrint("Ragdoll -- " + boneNodes[i].name + " y_diff = " + y_diff);
                         if (y_diff < 1.0f)
                             rb.linearVelocity = velocityRequest;
                     }
@@ -232,7 +232,7 @@ class Ragdoll : ScriptObject
             {
                 boneLastPositions[i] = boneNodes[i].position;
                 boneLastRotations[i] = boneNodes[i].rotation;
-                Print(boneNodes[i].name + " last-position=" + boneLastPositions[i].ToString() + " last-rotation=" + boneLastRotations[i].eulerAngles.ToString());
+                LogPrint(boneNodes[i].name + " last-position=" + boneLastPositions[i].ToString() + " last-rotation=" + boneLastRotations[i].eulerAngles.ToString());
             }
         }
         else if (newState == RAGDOLL_NONE)
@@ -259,7 +259,7 @@ class Ragdoll : ScriptObject
         }
         else if (state == RAGDOLL_DYNAMIC)
         {
-            // Print("Ragdoll Dynamic time " + timeInState);
+            // LogPrint("Ragdoll Dynamic time " + timeInState);
             timeInState += dt;
 
             uint num_of_freeze_objects = 0;
@@ -275,10 +275,10 @@ class Ragdoll : ScriptObject
                 Vector3 vel = rb.linearVelocity;
                 if (vel.lengthSquared < 0.1f)
                     num_of_freeze_objects ++;
-                //Print(boneNodes[i].name + " vel=" + vel.ToString());
+                //LogPrint(boneNodes[i].name + " vel=" + vel.ToString());
             }
 
-            // Print("num_of_freeze_objects=" + num_of_freeze_objects);
+            // LogPrint("num_of_freeze_objects=" + num_of_freeze_objects);
             if (num_of_freeze_objects == RAGDOLL_BONE_NUM && timeInState >= minRagdollStateTime)
                 ChangeState(blend_to_anim ? RAGDOLL_BLEND_TO_ANIMATION : RAGDOLL_NONE);
             else if (timeInState > maxRagdollStateTime)
@@ -380,7 +380,7 @@ class Ragdoll : ScriptObject
         CreateRagdollConstraint(boneNodes[BONE_R_FOREARM], boneNodes[BONE_R_UPPERARM], CONSTRAINT_HINGE, Vector3(0.0f, 0.0f, -1.0f),
             Vector3(0.0f, 0.0f, -1.0f), Vector2(90.0f, 0.0f), Vector2(0.0f, 0.0f));
 
-        // Print("CreateRagdoll time-cost=" + (time.systemTime - t) + " ms");
+        // LogPrint("CreateRagdoll time-cost=" + (time.systemTime - t) + " ms");
     }
 
     void CreateRagdollBone(RagdollBoneType boneType, ShapeType type, const Vector3&in size, const Vector3&in position, const Quaternion&in rotation)
@@ -518,7 +518,7 @@ class Ragdoll : ScriptObject
             hasVelRequest = true;
             velocityRequest = data[VELOCITY].GetVector3();
             hitPosition = data[POSITION].GetVector3();
-            Print("velocityRequest="+ velocityRequest.ToString() + " hitPosition=" + hitPosition.ToString());
+            LogPrint("velocityRequest="+ velocityRequest.ToString() + " hitPosition=" + hitPosition.ToString());
         }
     }
 
@@ -529,13 +529,13 @@ class Ragdoll : ScriptObject
 
         // determine back or frong get up
         Vector3 pelvis_up = oldRot * Vector3(0, 1, 0);
-        //Print("pelvis_up=" + pelvis_up.ToString());
+        //LogPrint("pelvis_up=" + pelvis_up.ToString());
 
         getUpIndex = 0;
         if (pelvis_up.y < 0)
             getUpIndex = 1;
 
-        //Print("getUpIndex = " + getUpIndex);
+        //LogPrint("getUpIndex = " + getUpIndex);
         rootNode.vars[ANIMATION_INDEX] = getUpIndex;
 
         Vector3 head_pos = boneNodes[BONE_HEAD].worldPosition;
@@ -581,7 +581,7 @@ class Ragdoll : ScriptObject
         q = oldRot * q.Inverse();
         r_node.worldRotation = q;
 
-        // Print("targetRootRot=" + targetRootRot.eulerAngles.ToString());
+        // LogPrint("targetRootRot=" + targetRootRot.eulerAngles.ToString());
         // q = r_node.worldRotation;
         rootNode.worldRotation = targetRootRot;
         r_node.worldRotation = q;

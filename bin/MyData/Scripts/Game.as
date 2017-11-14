@@ -113,8 +113,7 @@ class LoadingState : GameState
     void Enter(State@ lastState)
     {
         State::Enter(lastState);
-        if (!engine.headless)
-            CreateLoadingUI();
+        CreateLoadingUI();
         ChangeSubState(LOADING_RESOURCES);
     }
 
@@ -139,7 +138,7 @@ class LoadingState : GameState
                 text.text = "Loading Motions, loaded = " + gMotionMgr.processedMotions;
 
             if (d_log)
-                Print("============================== Motion Loading start ==============================");
+                LogPrint("============================== Motion Loading start ==============================");
 
             if (gMotionMgr.Update(dt))
             {
@@ -150,7 +149,7 @@ class LoadingState : GameState
             }
 
             if (d_log)
-                Print("============================== Motion Loading end ==============================");
+                LogPrint("============================== Motion Loading end ==============================");
         }
         else if (state == LOADING_FINISHED)
         {
@@ -166,7 +165,7 @@ class LoadingState : GameState
         if (state == newState)
             return;
 
-        Print("LoadingState ChangeSubState from " + state + " to " + newState);
+        LogPrint("LoadingState ChangeSubState from " + state + " to " + newState);
         state = newState;
 
         if (newState == LOADING_RESOURCES)
@@ -182,7 +181,7 @@ class LoadingState : GameState
     {
         if (state == LOADING_RESOURCES)
         {
-            Print("Scene Loading Finished");
+            LogPrint("Scene Loading Finished");
             ChangeSubState(LOADING_MOTIONS);
         }
     }
@@ -238,8 +237,7 @@ class TestGameState : GameState
         fullscreenUI.opacity = 1.0f;
         fullscreenUI.texture = cache.GetResource("Texture2D", "Textures/fade.png");
         fullscreenUI.SetFullImageRect();
-        if (!engine.headless)
-            fullscreenUI.SetFixedSize(graphics.width, graphics.height);
+        fullscreenUI.SetFixedSize(graphics.width, graphics.height);
         ui.root.AddChild(fullscreenUI);
         pauseMenu.texts.Push("RESUME");
         pauseMenu.texts.Push("EXIT");
@@ -257,8 +255,6 @@ class TestGameState : GameState
         state = -1;
         State::Enter(lastState);
         CreateScene();
-        if (engine.headless)
-            return;
         CreateViewPort();
         CreateUI();
         PostCreate();
@@ -419,7 +415,7 @@ class TestGameState : GameState
             return;
 
         int oldState = state;
-        Print("TestGameState ChangeSubState from " + oldState + " to " + newState);
+        LogPrint("TestGameState ChangeSubState from " + oldState + " to " + newState);
         state = newState;
         timeInState = 0.0f;
 
@@ -547,7 +543,7 @@ class TestGameState : GameState
         Scene@ scene_ = Scene();
         script.defaultScene = scene_;
         scene_.LoadXML(cache.GetFile("Scenes/1.xml"));
-        Print("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
+        LogPrint("loading-scene XML --> time-cost " + (time.systemTime - t) + " ms");
 
         EnemyManager@ em = cast<EnemyManager>(scene_.CreateScriptObject(scriptFile, "EnemyManager"));
 
@@ -578,7 +574,7 @@ class TestGameState : GameState
         for (uint i=0; i<scene_.numChildren; ++i)
         {
             Node@ _node = scene_.children[i];
-            Print("_node.name=" + _node.name);
+            LogPrint("_node.name=" + _node.name);
             if (_node.name.StartsWith("thug"))
             {
                 nodes_to_remove.Push(_node.id);
@@ -633,7 +629,7 @@ class TestGameState : GameState
         }*/
 
         //DumpSkeletonNames(playerNode);
-        Print("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + (WORLD_HALF_SIZE * 2).ToString());
+        LogPrint("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + (WORLD_HALF_SIZE * 2).ToString());
     }
 
     void ShowMessage(const String&in msg, bool show)
@@ -650,7 +646,7 @@ class TestGameState : GameState
     {
         if (dead.side == 1)
         {
-            Print("OnPlayerDead!!!!!!!!");
+            LogPrint("OnPlayerDead!!!!!!!!");
             ChangeSubState(GAME_FAIL);
         }
 
@@ -663,7 +659,7 @@ class TestGameState : GameState
                 {
                     if (player.killed >= maxKilled)
                     {
-                        Print("WIN!!!!!!!!");
+                        LogPrint("WIN!!!!!!!!");
                         ChangeSubState(GAME_WIN);
                     }
                 }
@@ -716,7 +712,7 @@ class TestGameState : GameState
     {
         if (musicNode is null)
             return;
-        Print("Game::ApplyBGMScale " + scale);
+        LogPrint("Game::ApplyBGMScale " + scale);
         SoundSource@ s = musicNode.GetComponent("SoundSource");
         if (s is null)
             return;
@@ -741,12 +737,12 @@ class GameFSM : FSM
 
     GameFSM()
     {
-        Print("GameFSM()");
+        LogPrint("GameFSM()");
     }
 
     ~GameFSM()
     {
-        Print("~GameFSM()");
+        LogPrint("~GameFSM()");
     }
 
     void Start()
