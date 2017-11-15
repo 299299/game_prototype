@@ -10,38 +10,18 @@ class GameState : State
 {
     void OnCharacterKilled(Character@ killer, Character@ dead)
     {
-
     }
 
     void OnSceneLoadFinished(Scene@ _scene)
     {
-
     }
 
     void OnAsyncLoadProgress(Scene@ _scene, float progress, int loadedNodes, int totalNodes, int loadedResources, int totalResources)
     {
-
-    }
-
-    void OnKeyDown(int key)
-    {
-        if (key == KEY_ESCAPE)
-        {
-             if (!console.visible)
-                OnESC();
-            else
-                console.visible = false;
-        }
     }
 
     void OnPlayerStatusUpdate(Player@ player)
     {
-
-    }
-
-    void OnESC()
-    {
-        engine.Exit();
     }
 
     void OnSceneTimeScaleUpdated(Scene@ scene, float newScale)
@@ -191,13 +171,6 @@ class LoadingState : GameState
         Text@ text = ui.root.GetChild("loading_text");
         if (text !is null)
             text.text = "Loading scene ressources progress=" + progress + " resources:" + loadedResources + "/" + totalResources;
-    }
-
-    void OnESC()
-    {
-        if (state == LOADING_RESOURCES)
-            preloadScene.StopAsyncLoading();
-        engine.Exit();
     }
 };
 
@@ -359,8 +332,6 @@ class TestGameState : GameState
                 EnemyManager@ em = GetEnemyMgr();
                 if (fullscreenUI.opacity > 0.95f && em.enemyList.empty)
                 {
-                    gInput.m_rightStickX = 20;
-                    gInput.m_rightStickY = 30;
                     em.CreateEnemies();
                 }
 
@@ -376,7 +347,7 @@ class TestGameState : GameState
         case GAME_FAIL:
         case GAME_WIN:
             {
-                if (gInput.IsAttackPressed())
+                if (gInput.IsInputActioned(kInputAttack))
                 {
                     ChangeSubState(GAME_RESTARTING);
                     ShowMessage("", false);
@@ -435,7 +406,7 @@ class TestGameState : GameState
         case GAME_RUNNING:
             {
                 if (player !is null)
-                    player.RemoveFlag(FLAGS_INVINCIBLE);
+                    player.flags = RemoveFlag(player.flags, FLAGS_INVINCIBLE);
 
                 freezeInput = false;
                 gCameraMgr.SetCameraController("LookAt");
@@ -456,7 +427,7 @@ class TestGameState : GameState
 
                 freezeInput = true;
                 if (player !is null)
-                    player.AddFlag(FLAGS_INVINCIBLE);
+                    player.flags = AddFlag(player.flags, FLAGS_INVINCIBLE);
             }
             break;
 
@@ -481,7 +452,7 @@ class TestGameState : GameState
                 if (player !is null)
                 {
                     player.Reset();
-                    player.AddFlag(FLAGS_INVINCIBLE);
+                    player.flags = AddFlag(player.flags, FLAGS_INVINCIBLE);
                 }
             }
             break;
@@ -611,7 +582,6 @@ class TestGameState : GameState
 
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");
-        //gCameraMgr.SetCameraController("ThirdPerson");
         gCameraMgr.SetCameraController("LookAt");
 
         Node@ floor = scene_.GetChild("floor", true);
@@ -665,27 +635,6 @@ class TestGameState : GameState
                 }
             }
         }
-    }
-
-    void OnKeyDown(int key)
-    {
-        if (key == KEY_ESCAPE)
-        {
-            /*
-            int oldState = state;
-            if (oldState == GAME_PAUSE)
-                ChangeSubState(pauseState);
-            else
-            {
-                ChangeSubState(GAME_PAUSE);
-                pauseState = oldState;
-            }
-            return;
-            */
-            engine.Exit();
-        }
-
-        GameState::OnKeyDown(key);
     }
 
     void OnPlayerStatusUpdate(Player@ player)
@@ -775,12 +724,6 @@ class GameFSM : FSM
     {
         if (gameState !is null)
             gameState.OnAsyncLoadProgress(_scene, progress, loadedNodes, totalNodes, loadedResources, totalResources);
-    }
-
-    void OnKeyDown(int key)
-    {
-        if (gameState !is null)
-            gameState.OnKeyDown(key);
     }
 
     void OnPlayerStatusUpdate(Player@ player)

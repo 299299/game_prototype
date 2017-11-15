@@ -148,100 +148,6 @@ class DebugFPSCameraController: CameraController
     }
 };
 
-class ThirdPersonCameraController : CameraController
-{
-    float   cameraSpeed = 4.5f;
-    float   cameraDistance = 14.0f;
-    float   cameraDistSpeed = 100.0f;
-    float   targetFov = BASE_FOV;
-    float   fovSpeed = 1.5f;
-    Vector3 targetOffset = Vector3(2.0f, 3.5f, 0);
-
-    bool    isScrolling = false;
-
-    ThirdPersonCameraController(Node@ n, const String&in name)
-    {
-        super(n, name);
-    }
-
-    void Update(float dt)
-    {
-        Player@ p = GetPlayer();
-        if (p is null)
-            return;
-        Node@ _node = p.GetNode();
-
-        bool blockView = false;
-        Vector3 target_pos = _node.worldPosition;//_node.GetChild(HEAD, true).worldPosition;
-        if (p.target !is null)
-        {
-            if (!p.target.IsVisible())
-            {
-                //target_pos += p.target.GetNode().worldPosition;
-                //target_pos /= 2.0f;
-                //blockView = true;
-            }
-        }
-
-        Vector3 offset = cameraNode.worldRotation * targetOffset;
-        target_pos += offset;
-
-        Vector3 v = gInput.GetRightAxis();
-        float pitch = v.y;
-        float yaw = v.x;
-        pitch = Clamp(pitch, -10.0f, 60.0f);
-
-        float dist = cameraDistance;
-        Quaternion q(pitch, yaw, 0);
-        Vector3 pos = q * Vector3(0, 0, -dist) + target_pos;
-        UpdateView(pos, target_pos, dt * cameraSpeed);
-
-        if (input.mouseMoveWheel != 0)
-        {
-            uint t = time.systemTime;
-            uint t_diff = t - gInput.lastMiddlePressedTime;
-            // LogPrint("lastMiddlePressedTime diff = " + t_diff);
-            if (t_diff > 500)
-                cameraDistance +=  float(input.mouseMoveWheel) * dt * -cameraDistSpeed;
-        }
-        cameraDistance = Clamp(cameraDistance, 9.0f, 50.0f);
-
-        float diff = targetFov - camera.fov;
-        camera.fov += diff * dt * fovSpeed;
-    }
-
-    void OnCameraEvent(VariantMap& eventData)
-    {
-        if (!eventData.Contains(TARGET_FOV))
-            return;
-        targetFov = eventData[TARGET_FOV].GetFloat();
-    }
-
-    void Enter()
-    {
-        targetFov = BASE_FOV;
-    }
-
-    String GetDebugText()
-    {
-        return "camera fov=" + camera.fov + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + " targetFov=" + targetFov + "\n";
-    }
-
-    void Reset()
-    {
-        Player@ p = GetPlayer();
-        Quaternion q = cameraNode.worldRotation;
-        Vector3 offset = q * targetOffset;
-        Vector3 target_pos = p.GetNode().worldPosition + offset;
-        Vector3 dir = target_pos - cameraNode.worldPosition;
-        cameraDistance = dir.length;
-        float h = Abs(dir.y);
-        gInput.m_rightStickY = Asin(h/cameraDistance);
-        gInput.m_rightStickX = Asin(dir.x/cameraDistance);
-        gInput.m_rightStickMagnitude = gInput.m_rightStickX * gInput.m_rightStickX + gInput.m_rightStickY * gInput.m_rightStickY;
-    }
-};
-
 class TransitionCameraController : CameraController
 {
     Vector3     targetPosition;
@@ -308,7 +214,7 @@ class DeathCameraController : CameraController
         Node@ _node = cameraNode.scene.GetNode(nodeId);
         if (_node is null || timeInState > 7.5f)
         {
-            gCameraMgr.SetCameraController("ThirdPerson");
+            gCameraMgr.SetCameraController("LookAt");
             return;
         }
         Node@ playerNode = GetPlayer().GetNode();
@@ -330,11 +236,6 @@ class DeathCameraController : CameraController
             return;
         nodeId = eventData[NODE].GetUInt();
         Node@ _node = cameraNode.scene.GetNode(nodeId);
-        if (_node is null)
-        {
-            gCameraMgr.SetCameraController("ThirdPerson");
-            return;
-        }
         Node@ playerNode = GetPlayer().GetNode();
         Vector3 dir = _node.worldPosition - playerNode.worldPosition;
         float angle = Atan2(dir.x, dir.z);
@@ -383,7 +284,7 @@ class AnimationCameraController : CameraController
         {
             // finished.
             // todo.
-            gCameraMgr.SetCameraController("ThirdPerson");
+            gCameraMgr.SetCameraController("LookAt");
         }
     }
 
@@ -502,7 +403,6 @@ class CameraManager
     {
         cameraNode = n;
         cameraControllers.Push(DebugFPSCameraController(n, "Debug"));
-        cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
         cameraControllers.Push(TransitionCameraController(n, "Transition"));
         cameraControllers.Push(DeathCameraController(n, "Death"));
         cameraControllers.Push(AnimationCameraController(n, "Animation"));

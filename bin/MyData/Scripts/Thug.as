@@ -86,7 +86,7 @@ class ThugStandState : MultiAnimationState
 
     void OnThinkTimeOut()
     {
-        if (ownner.target.HasFlag(FLAGS_INVINCIBLE))
+        if (HasFlag(ownner.target.flags, FLAGS_INVINCIBLE))
             return;
 
         Node@ _node = ownner.GetNode();
@@ -103,7 +103,7 @@ class ThugStandState : MultiAnimationState
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
         //bool can_i_see_player = !ownner.IsTargetSightBlocked();
         int num_of_with_player = em.GetNumOfEnemyWithinDistance(PLAYER_NEAR_DIST);
-        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && num_of_with_player <  MAX_NUM_OF_NEAR && !ownner.HasFlag(FLAGS_NO_MOVE))
+        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && num_of_with_player <  MAX_NUM_OF_NEAR && !HasFlag(ownner.flags, FLAGS_NO_MOVE))
         {
             // try to move to player
             rand_i = RandomInt(6);
@@ -364,7 +364,7 @@ class ThugCounterState : CharacterCounterState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
         {
-            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            ownner.flags = AddFlag(ownner.flags, FLAGS_ATTACK | FLAGS_REDIRECTED);
             return;
         }
         CharacterCounterState::OnAnimationTrigger(animState, eventData);
@@ -372,7 +372,7 @@ class ThugCounterState : CharacterCounterState
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        ownner.flags = RemoveFlag(ownner.flags, FLAGS_ATTACK | FLAGS_REDIRECTED);
         CharacterCounterState::Exit(nextState);
     }
 };
@@ -433,7 +433,7 @@ class ThugAttackState : CharacterState
             return;
         }
 
-        if (!ownner.target.HasFlag(FLAGS_ATTACK))
+        if (!HasFlag(flags, FLAGS_ATTACK))
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -454,7 +454,7 @@ class ThugAttackState : CharacterState
         ownner.GetNode().vars[ATTACK_TYPE] = currentAttack.type;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
-        ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+        ownner.flags = AddFlag(ownner.flags, FLAGS_REDIRECTED | FLAGS_ATTACK);
         doAttackCheck = false;
         CharacterState::Enter(lastState);
         LogPrint("Thug Pick attack motion = " + motion.animationName);
@@ -463,7 +463,7 @@ class ThugAttackState : CharacterState
     void Exit(State@ nextState)
     {
         @currentAttack = null;
-        ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
+        ownner.flags = RemoveFlag(ownner.flags, FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
         ownner.SetTimeScale(1.0f);
         attackCheckNode = null;
         ShowAttackIndicator(false);
@@ -491,9 +491,9 @@ class ThugAttackState : CharacterState
             int value = eventData[VALUE].GetInt();
             ShowAttackIndicator(value == 1);
             if (value == 1)
-                ownner.AddFlag(FLAGS_COUNTER);
+                ownner.flags = AddFlag(ownner.flags, FLAGS_COUNTER);
             else
-                ownner.RemoveFlag(FLAGS_COUNTER);
+                ownner.flags = RemoveFlag(ownner.flags, FLAGS_COUNTER);
             return;
         }
         else if (name == ATTACK_CHECK)
@@ -577,13 +577,13 @@ class ThugHitState : MultiMotionState
     void Update(float dt)
     {
         if (timeInState >= recoverTimer)
-            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            ownner.flags = AddFlag(ownner.flags, FLAGS_ATTACK | FLAGS_REDIRECTED);
         MultiMotionState::Update(dt);
     }
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        ownner.flags = RemoveFlag(ownner.flags, FLAGS_ATTACK | FLAGS_REDIRECTED);
         MultiMotionState::Exit(nextState);
     }
 
@@ -611,7 +611,7 @@ class ThugHitState : MultiMotionState
             Character@ object = cast<Character>(n_node.scriptObject);
             if (object is null)
                 continue;
-            if (object.HasFlag(FLAGS_MOVING))
+            if (HasFlag(object.flags, FLAGS_MOVING))
                 continue;
 
             float dist = ownner.GetTargetDistance(n_node);
@@ -642,7 +642,7 @@ class ThugGetUpState : CharacterGetUpState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
         {
-            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            ownner.flags = AddFlag(ownner.flags, FLAGS_ATTACK | FLAGS_REDIRECTED);
             return;
         }
         CharacterGetUpState::OnAnimationTrigger(animState, eventData);
@@ -656,7 +656,7 @@ class ThugGetUpState : CharacterGetUpState
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        ownner.flags = RemoveFlag(ownner.flags, FLAGS_ATTACK | FLAGS_REDIRECTED);
         CharacterGetUpState::Exit(nextState);
     }
 };
@@ -926,7 +926,7 @@ class Thug : Enemy
     {
         Character::RequestDoNotMove();
         StringHash nameHash = stateMachine.currentState.nameHash;
-        if (HasFlag(FLAGS_MOVING))
+        if (HasFlag(flags, FLAGS_MOVING))
         {
             ChangeState("StandState");
             return;
@@ -967,7 +967,7 @@ class Thug : Enemy
             if (object is null)
                 continue;
 
-            if (object.HasFlag(FLAGS_MOVING))
+            if (HasFlag(object.flags, FLAGS_MOVING))
                 continue;
 
             ++len;
@@ -1011,7 +1011,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithEnemy()
     {
-        if (HasFlag(FLAGS_NO_MOVE))
+        if (HasFlag(flags, FLAGS_NO_MOVE))
             return false;
         int dir = -1;
         if (GetSperateDirection(dir) == 0)
@@ -1035,7 +1035,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
     {
-        if (HasFlag(FLAGS_NO_MOVE))
+        if (HasFlag(flags, FLAGS_NO_MOVE))
             return false;
         float dist = GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist >= max_dist)

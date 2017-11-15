@@ -10,6 +10,17 @@
 
 bool  freezeInput = false;
 const float touch_scale_x = 0.2;
+const float button_scale_x = 0.1;
+const int border_offset = 2;
+const String tag_input = "Tag_Input";
+
+enum InputAction
+{
+    kInputAttack,
+    kInputCounter,
+    kInputEvade,
+    kInputDistract,
+};
 
 class GameInput
 {
@@ -18,30 +29,16 @@ class GameInput
     float m_leftStickMagnitude;
     float m_leftStickAngle;
 
-    float m_rightStickX;
-    float m_rightStickY;
-    float m_rightStickMagnitude;
-
     float m_lastLeftStickX;
     float m_lastLeftStickY;
     float m_leftStickHoldTime;
 
     float m_smooth = 0.9f;
 
-    float mouseSensitivity = 0.125f;
-    float joySensitivity = 0.75;
-    float joyLookDeadZone = 0.05;
-
     int   m_leftStickHoldFrames = 0;
-    uint  lastMiddlePressedTime = 0;
 
     GameInput()
     {
-        JoystickState@ js = GetJoystick();
-        if (js !is null)
-        {
-            LogPrint("found a joystick " + js.name + " numHats=" + js.numHats + " numAxes=" + js.numAxes + " numButtons=" + js.numButtons);
-        }
     }
 
     void Update(float dt)
@@ -50,16 +47,11 @@ class GameInput
         m_lastLeftStickY = m_leftStickY;
 
         Vector2 leftStick = GetLeftStick();
-        Vector2 rightStick = GetRightStick();
 
         m_leftStickX = Lerp(m_leftStickX, leftStick.x, m_smooth);
         m_leftStickY = Lerp(m_leftStickY, leftStick.y, m_smooth);
-        m_rightStickX = rightStick.x; //Lerp(m_rightStickX, rightStick.x, m_smooth);
-        m_rightStickY = rightStick.y; //Lerp(m_rightStickY, rightStick.y, m_smooth);
 
         m_leftStickMagnitude = m_leftStickX * m_leftStickX + m_leftStickY * m_leftStickY;
-        m_rightStickMagnitude = m_rightStickX * m_rightStickX + m_rightStickY * m_rightStickY;
-
         m_leftStickAngle = Atan2(m_leftStickX, m_leftStickY);
 
         float diffX = m_lastLeftStickX - m_leftStickX;
@@ -77,10 +69,6 @@ class GameInput
             m_leftStickHoldFrames = 0;
         }
 
-        if (input.mouseButtonPress[MOUSEB_MIDDLE])
-            lastMiddlePressedTime = time.systemTime;
-        // LogPrint("m_leftStickX=" + String(m_leftStickX) + " m_leftStickY=" + String(m_leftStickY));
-
         if (input.numTouches > 0)
         {
             TouchState@ ts = input.touches[0];
@@ -97,11 +85,6 @@ class GameInput
     Vector3 GetLeftAxis()
     {
         return Vector3(m_leftStickX, m_leftStickY, m_leftStickMagnitude);
-    }
-
-    Vector3 GetRightAxis()
-    {
-        return Vector3(m_rightStickX, m_rightStickY, m_rightStickMagnitude);
     }
 
     float GetLeftAxisAngle()
@@ -141,44 +124,6 @@ class GameInput
         return ret;
     }
 
-    Vector2 GetRightStick()
-    {
-        JoystickState@ joystick = GetJoystick();
-        Vector2 rightAxis = Vector2(m_rightStickX, m_rightStickY);
-
-        if (joystick !is null)
-        {
-            if (joystick.numAxes >= 4)
-            {
-                float lookX = joystick.axisPosition[2];
-                float lookY = joystick.axisPosition[3];
-                if (lookX < -joyLookDeadZone)
-                    rightAxis.x -= joySensitivity * lookX * lookX;
-                if (lookX > joyLookDeadZone)
-                    rightAxis.x += joySensitivity * lookX * lookX;
-                if (lookY < -joyLookDeadZone)
-                    rightAxis.y -= joySensitivity * lookY * lookY;
-                if (lookY > joyLookDeadZone)
-                    rightAxis.y += joySensitivity * lookY * lookY;
-            }
-        }
-        else
-        {
-            rightAxis.x += mouseSensitivity * input.mouseMoveX;
-            rightAxis.y += mouseSensitivity * input.mouseMoveY;
-        }
-        return rightAxis;
-    }
-
-    JoystickState@ GetJoystick()
-    {
-        if (input.numJoysticks > 0)
-        {
-            return input.joysticksByIndex[0];
-        }
-        return null;
-    }
-
     // Returns true if the left game stick hasn't moved in the given time frame
     bool HasLeftStickBeenStationary(float value)
     {
@@ -197,120 +142,63 @@ class GameInput
         return m_leftStickMagnitude < 0.1;
     }
 
-    // Returns true if the right stick is the dead zone, false otherwise
-    bool IsRightStickInDeadZone()
-    {
-        return m_rightStickMagnitude < 0.1;
-    }
-
-    bool IsAttackPressed()
+    bool IsInputActioned(int action)
     {
         if (freezeInput)
             return false;
-
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[1];
-        else
-            return input.mouseButtonPress[MOUSEB_LEFT];
-    }
-
-    bool IsCounterPressed()
-    {
-        if (freezeInput)
-            return false;
-
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[3];
-        else
-            return input.mouseButtonPress[MOUSEB_RIGHT];
-    }
-
-    bool IsEvadePressed()
-    {
-        if (freezeInput)
-            return false;
-
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[0];
-        else
-            return input.keyPress[KEY_SPACE];
-    }
-
-    bool IsEnterPressed()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-        {
-            if (joystick.buttonPress[2])
-                return true;
-        }
-        return input.keyPress[KEY_RETURN] || input.keyPress[KEY_SPACE] || input.mouseButtonPress[MOUSEB_LEFT];
-    }
-
-    bool IsDistractPressed()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-            return joystick.buttonPress[1];
-        else
-            return input.mouseButtonPress[MOUSEB_MIDDLE];
-    }
-
-    int GetDirectionPressed()
-    {
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-        {
-            if (m_lastLeftStickY > 0.333f)
-                return 0;
-            else if (m_lastLeftStickX > 0.333f)
-                return 1;
-            else if (m_lastLeftStickY < -0.333f)
-                return 2;
-            else if (m_lastLeftStickX < -0.333f)
-                return 3;
-        }
-
-        if (input.keyDown[KEY_UP])
-            return 0;
-        else if (input.keyDown[KEY_RIGHT])
-            return 1;
-        else if (input.keyDown[KEY_DOWN])
-            return 2;
-        else if (input.keyDown[KEY_LEFT])
-            return 3;
-
-        return -1;
+        return false;
     }
 
     String GetDebugText()
     {
         String ret =   "leftStick:(" + m_leftStickX + "," + m_leftStickY + ")" +
-                       " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime + " hold-frames=" + m_leftStickHoldFrames + " left-magnitude=" + m_leftStickMagnitude +
-                       " rightStick:(" + m_rightStickX + "," + m_rightStickY + ")\n";
-
-        JoystickState@ joystick = GetJoystick();
-        if (joystick !is null)
-        {
-            ret += "joystick button--> 0=" + joystick.buttonDown[0] + " 1=" + joystick.buttonDown[1] + " 2=" + joystick.buttonDown[2] + " 3=" + joystick.buttonDown[3] + "\n";
-            ret += "joystick axis--> 0=" + joystick.axisPosition[0] + " 1=" + joystick.axisPosition[1] + " 2=" + joystick.axisPosition[2] + " 3=" + joystick.axisPosition[3] + "\n";
-        }
+                       " left-angle=" + m_leftStickAngle + " hold-time=" + m_leftStickHoldTime +
+                       " hold-frames=" + m_leftStickHoldFrames + " left-magnitude=" + m_leftStickMagnitude + "\n";
 
         return ret;
     }
 
-    void CreateUI()
+    void CreateGUI()
+    {
+        CreateHatButton();
+        CreateButton(0, 0);
+    }
+
+    Button@ CreateButton(float x, float y)
     {
         Button@ button = Button();
         button.name = "Button";
-        button.texture = cache.GetResource("Texture2D", "Textures/UrhoIcon.png"); // Set texture
-        // button.blendMode = BLEND_ADD;
+        button.texture = cache.GetResource("Texture2D", "Textures/TouchInput.png");
+        button.imageRect = IntRect(96,0,192,96);
+        float w = float(graphics.width) * button_scale_x;
+        button.SetFixedSize(w, w);
+        button.SetPosition(x, y);
+        button.visible = false;
+        button.AddTag(tag_input);
+        ui.root.AddChild(button);
+        return button;
+    }
+
+    Button@ CreateHatButton()
+    {
+        Button@ button = Button();
+        button.texture = cache.GetResource("Texture2D", "Textures/TouchInput.png");
+        button.imageRect = IntRect(0,0,96,96);
         float w = float(graphics.width) * touch_scale_x;
         button.SetFixedSize(w, w);
-        button.SetPosition(0, graphics.height - w);
+        button.SetPosition(border_offset, graphics.height - w - border_offset);
+        button.visible = false;
+        button.AddTag(tag_input);
         ui.root.AddChild(button);
+        return button;
+    }
+
+    void ShowHideUI(bool bShow)
+    {
+        Array<UIElement@> buttons = ui.root.GetChildrenWithTag(tag_input);
+        for (uint i=0; i<buttons.length; ++i)
+        {
+            buttons[i].visible = bShow;
+        }
     }
 };

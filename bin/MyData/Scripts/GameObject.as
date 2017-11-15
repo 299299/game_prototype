@@ -92,21 +92,6 @@ class GameObject : ScriptObject
         return "";
     }
 
-    void AddFlag(int flag)
-    {
-        flags |= flag;
-    }
-
-    void RemoveFlag(int flag)
-    {
-        flags &= ~flag;
-    }
-
-    bool HasFlag(int flag)
-    {
-        return flags & flag != 0;
-    }
-
     void Reset()
     {
 

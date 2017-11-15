@@ -142,7 +142,7 @@ class EnemyManager : ScriptObject
         int ret = 0;
         for (uint i=0; i<enemyList.length; ++i)
         {
-            if (enemyList[i].HasFlag(flag))
+            if (HasFlag(enemyList[i].flags, flag))
                 ++ret;
         }
         return ret;

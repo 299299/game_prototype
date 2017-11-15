@@ -24,7 +24,7 @@ class PlayerStandState : MultiAnimationState
             return;
         }
 
-        if (ownner.ActionCheck(true, true, true, true))
+        if (ownner.ActionCheck())
             return;
 
         MultiAnimationState::Update(dt);
@@ -86,7 +86,7 @@ class PlayerRunState : SingleMotionState
             return;
         }
 
-        if (ownner.ActionCheck(true, true, true, true))
+        if (ownner.ActionCheck())
             return;
 
         SingleMotionState::Update(dt);

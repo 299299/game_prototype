@@ -151,7 +151,7 @@ class CharacterState : State
     void Enter(State@ lastState)
     {
         if (flags >= 0)
-            ownner.AddFlag(flags);
+            ownner.flags = AddFlag(ownner.flags, flags);
         State::Enter(lastState);
         combatReady = false;
         firstUpdate = true;
@@ -166,7 +166,7 @@ class CharacterState : State
     void Exit(State@ nextState)
     {
         if (flags >= 0)
-            ownner.RemoveFlag(flags);
+            ownner.flags = RemoveFlag(ownner.flags, flags);
         State::Exit(nextState);
         if (physicsType >= 0)
             ownner.SetPhysicsType(lastPhysicsType);
@@ -178,7 +178,7 @@ class CharacterState : State
         {
             if (!ownner.IsInAir())
             {
-                if (ownner.ActionCheck(true, true, true, true))
+                if (ownner.ActionCheck())
                     return;
             }
         }
@@ -1244,19 +1244,19 @@ class Character : GameObject
 
     bool CanBeAttacked()
     {
-        if (HasFlag(FLAGS_INVINCIBLE))
+        if (HasFlag(flags, FLAGS_INVINCIBLE))
             return false;
-        return HasFlag(FLAGS_ATTACK);
+        return HasFlag(flags, FLAGS_ATTACK);
     }
 
     bool CanBeCountered()
     {
-        return HasFlag(FLAGS_COUNTER);
+        return HasFlag(flags, FLAGS_COUNTER);
     }
 
     bool CanBeRedirected()
     {
-        return HasFlag(FLAGS_REDIRECTED);
+        return HasFlag(flags, FLAGS_REDIRECTED);
     }
 
     bool CanAttack()
@@ -1403,7 +1403,7 @@ class Character : GameObject
 
     void RequestDoNotMove()
     {
-        AddFlag(FLAGS_NO_MOVE);
+        flags = AddFlag(flags, FLAGS_NO_MOVE);
     }
 
     Node@ SpawnParticleEffect(const Vector3&in position, const String&in effectName, float duration, float scale = 1.0f)
@@ -1572,7 +1572,7 @@ class Character : GameObject
             PlaySound("Sfx/big_" + (RandomInt(num_of_big_sounds) + 1) + ".ogg");
     }
 
-    bool ActionCheck(bool bAttack, bool bDistract, bool bCounter, bool bEvade)
+    bool ActionCheck(uint actionFlags = 0xFFFF)
     {
         return false;
     }

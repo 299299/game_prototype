@@ -105,7 +105,7 @@ class PlayerAttackState : CharacterState
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
-                ownner.target.RemoveFlag(FLAGS_NO_MOVE);
+                ownner.target.flags = RemoveFlag(ownner.target.flags, FLAGS_NO_MOVE);
             }
         }
         else if (state == ATTACK_STATE_BEFORE_IMPACT)
@@ -148,7 +148,14 @@ class PlayerAttackState : CharacterState
         int addition_frames = slowMotion ? slowMotionFrames : 0;
         bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1 + addition_frames);
         bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME * addition_frames;
-        ownner.ActionCheck(check_attack, check_others, check_others, check_others);
+        uint actionFlags = check_attack ? kInputAttack : 0;
+        if (check_others)
+        {
+            AddFlag(actionFlags, kInputCounter);
+            AddFlag(actionFlags, kInputEvade);
+            AddFlag(actionFlags, kInputDistract);
+        }
+        ownner.ActionCheck(actionFlags);
     }
 
     void PickBestMotion(Array<AttackMotion@>@ attacks, int dir)
@@ -310,7 +317,7 @@ class PlayerAttackState : CharacterState
         //if (nextState !is this)
         //    cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
         if (ownner.target !is null)
-            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
+            ownner.target.flags = RemoveFlag(ownner.target.flags, FLAGS_NO_MOVE);
         @currentAttack = null;
         ownner.SetSceneTimeScale(1.0f);
         LogPrint("################## Player::AttackState Exit to " + nextState.name  + " #####################");
@@ -891,7 +898,7 @@ class PlayerBeatDownHitState : MultiMotionState
             return;
         }
 
-        if (gInput.IsAttackPressed())
+        if (gInput.IsInputActioned(kInputAttack))
             attackPressed = true;
 
         if (combatReady && attackPressed)
@@ -903,7 +910,7 @@ class PlayerBeatDownHitState : MultiMotionState
             return;
         }
 
-        if (gInput.IsCounterPressed())
+        if (gInput.IsInputActioned(kInputCounter))
         {
             ownner.Counter();
             return;
@@ -1046,7 +1053,7 @@ class PlayerTransitionState : SingleMotionState
     {
         SingleMotionState::Exit(nextState);
         if (ownner.target !is null)
-            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
+            ownner.target.flags = RemoveFlag(ownner.target.flags, FLAGS_NO_MOVE);
         LogPrint("After Player Transition Target dist = " + ownner.GetTargetDistance());
     }
 
