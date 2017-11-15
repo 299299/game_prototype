@@ -255,7 +255,6 @@ void SubscribeToEvents()
     SubscribeToEvent("KeyDown", "HandleKeyDown");
     SubscribeToEvent("MouseButtonDown", "HandleMouseButtonDown");
     SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
-    SubscribeToEvent("TouchBegin", "HandleTouchBegin");
     SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
     SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
     SubscribeToEvent("CameraEvent", "HandleCameraEvent");

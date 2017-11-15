@@ -148,12 +148,12 @@ class PlayerAttackState : CharacterState
         int addition_frames = slowMotion ? slowMotionFrames : 0;
         bool check_attack = t > currentAttack.impactTime + SEC_PER_FRAME * ( HIT_WAIT_FRAMES + 1 + addition_frames);
         bool check_others = t > currentAttack.impactTime + SEC_PER_FRAME * addition_frames;
-        uint actionFlags = check_attack ? kInputAttack : 0;
+        uint actionFlags = check_attack ? (1 << kInputAttack) : 0;
         if (check_others)
         {
-            AddFlag(actionFlags, kInputCounter);
-            AddFlag(actionFlags, kInputEvade);
-            AddFlag(actionFlags, kInputDistract);
+            AddFlag(actionFlags, 1 << kInputCounter);
+            AddFlag(actionFlags, 1 << kInputEvade);
+            AddFlag(actionFlags, 1 << kInputDistract);
         }
         ownner.ActionCheck(actionFlags);
     }

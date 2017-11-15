@@ -195,7 +195,7 @@ class TestGameState : GameState
     int                 maxKilled = 5;
 
     float               fadeTime;
-    float               fadeInDuration = 2.0f;
+    float               fadeInDuration = 1.0f;
     float               restartDuration = 5.0f;
 
     bool                postInited = false;

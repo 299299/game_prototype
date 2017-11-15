@@ -126,7 +126,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (cam !is null)
             cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
     }
-    else if (key == KEY_1)
+    /*else if (key == KEY_1)
         ShootSphere(scene_);
     else if (key == KEY_2)
         ShootBox(scene_);
@@ -145,7 +145,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             ui.cursor.visible = true;
             gCameraMgr.SetCameraController("Debug");
         }
-    }
+    }*/
     else if (key == KEY_5)
     {
         VariantMap data;
@@ -253,8 +253,6 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
         SubscribeToEvent("MouseMove", "HandleMouseMove");
         SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
     }
-    else if(button == MOUSEB_LEFT)
-        gInput.Touched();
 }
 
 void HandleMouseButtonUp(StringHash eventType, VariantMap& eventData)
@@ -273,11 +271,6 @@ void HandleMouseMove(StringHash eventType, VariantMap& eventData)
     int x = input.mousePosition.x;
     int y = input.mousePosition.y;
     MoveDrag(float(x), float(y));
-}
-
-void HandleTouchBegin(StringHash eventType, VariantMap& eventData)
-{
-    gInput.Touched();
 }
 
 void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
