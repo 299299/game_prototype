@@ -400,6 +400,7 @@ class TestGameState : GameState
 
         Player@ player = GetPlayer();
         EnemyManager@ em = GetEnemyMgr();
+        gInput.ShowHideUI(false);
 
         switch (newState)
         {
@@ -410,6 +411,7 @@ class TestGameState : GameState
 
                 freezeInput = false;
                 gCameraMgr.SetCameraController("LookAt");
+                gInput.ShowHideUI(true);
             }
             break;
 

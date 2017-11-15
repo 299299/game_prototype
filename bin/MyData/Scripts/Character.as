@@ -1572,7 +1572,7 @@ class Character : GameObject
             PlaySound("Sfx/big_" + (RandomInt(num_of_big_sounds) + 1) + ".ogg");
     }
 
-    bool ActionCheck(uint actionFlags = 0xFFFF)
+    bool ActionCheck(uint actionFlags = 0xFF)
     {
         return false;
     }

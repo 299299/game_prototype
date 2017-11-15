@@ -254,6 +254,8 @@ void SubscribeToEvents()
     SubscribeToEvent("PostRenderUpdate", "HandlePostRenderUpdate");
     SubscribeToEvent("KeyDown", "HandleKeyDown");
     SubscribeToEvent("MouseButtonDown", "HandleMouseButtonDown");
+    SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
+    SubscribeToEvent("TouchBegin", "HandleTouchBegin");
     SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
     SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
     SubscribeToEvent("CameraEvent", "HandleCameraEvent");
@@ -318,7 +320,6 @@ bool HasFlag(uint flags, uint flag)
 {
     return flags & flag != 0;
 }
-
 
 class BM_Game_MotionManager : MotionManager
 {

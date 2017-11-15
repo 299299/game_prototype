@@ -429,16 +429,17 @@ class Player : Character
 
     bool ActionCheck(uint actionFlags)
     {
-        if (HasFlag(actionFlags, kInputAttack) && gInput.IsInputActioned(kInputAttack))
+        // Print("HasFlag = " + HasFlag(actionFlags, 1 << kInputAttack));
+        if (HasFlag(actionFlags, 1 << kInputAttack) && gInput.IsInputActioned(kInputAttack))
             return Attack();
 
-        if (HasFlag(actionFlags, kInputDistract) && gInput.IsInputActioned(kInputDistract))
+        if (HasFlag(actionFlags, 1 << kInputDistract) && gInput.IsInputActioned(kInputDistract))
             return Distract();
 
-        if (HasFlag(actionFlags, kInputCounter) && gInput.IsInputActioned(kInputCounter))
+        if (HasFlag(actionFlags, 1 << kInputCounter) && gInput.IsInputActioned(kInputCounter))
             return Counter();
 
-        if (HasFlag(actionFlags, kInputEvade) && gInput.IsInputActioned(kInputEvade))
+        if (HasFlag(actionFlags, 1 << kInputEvade) && gInput.IsInputActioned(kInputEvade))
             return Evade();
 
         return false;
