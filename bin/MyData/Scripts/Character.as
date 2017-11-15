@@ -18,17 +18,13 @@ const int MAX_NUM_OF_NEAR = 4;
 const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
-const StringHash REDIRECT_STATE("RedirectState");
 const StringHash TURN_STATE("TurnState");
 const StringHash COUNTER_STATE("CounterState");
 const StringHash GETUP_STATE("GetUpState");
-const StringHash STEPMOVE_STATE("StepMoveState");
 const StringHash RUN_STATE("RunState");
 const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
-const StringHash BEATHIT_STATE("BeatDownHitState");
 const StringHash DEAD_STATE("DeadState");
-const StringHash ANIMTEST_STATE("AnimationTestState");
 const StringHash ALIGN_STATE("AlignState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
@@ -44,7 +40,6 @@ const StringHash COUNTER_CHECK("CounterCheck");
 const StringHash ATTACK_CHECK("AttackCheck");
 const StringHash BONE("Bone");
 const StringHash NODE("Node");
-const StringHash RADIUS("Radius");
 const StringHash COMBAT_SOUND("CombatSound");
 const StringHash COMBAT_SOUND_LARGE("CombatSoundLarge");
 const StringHash COMBAT_PARTICLE("CombatParticle");
@@ -56,8 +51,9 @@ const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
 const StringHash HEALTH("Health");
 const StringHash SOUND("Sound");
-const StringHash RANGE("Range");
-const StringHash TAG("Tag");
+
+const String PLAYER_TAG("Tag_Player");
+const String ENEMY_TAG("Tag_Enemy");
 
 Vector3 WORLD_HALF_SIZE(1000, 0, 1000);
 
@@ -111,9 +107,15 @@ class CharacterState : State
         else if (name == HEALTH)
             ownner.SetHealth(eventData[VALUE].GetInt());
         else if (name == IMPACT)
+        {
+            Print("IMPACT");
             combatReady = true;
+        }
         else if (name == READY_TO_FIGHT)
+        {
+            Print("READY_TO_FIGHT");
             combatReady = true;
+        }
     }
 
     void OnFootStep(const String&in boneName)

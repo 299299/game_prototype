@@ -114,17 +114,6 @@ class EnemyManager : ScriptObject
         enemyList.Erase(i);
     }
 
-    int GetNumOfEnemyInState(const StringHash&in nameHash)
-    {
-        int ret = 0;
-        for (uint i=0; i<enemyList.length; ++i)
-        {
-            if (enemyList[i].IsInState(nameHash))
-                ++ret;
-        }
-        return ret;
-    }
-
     int GetNumOfEnemyAttackValid()
     {
         int ret = 0;
@@ -189,7 +178,9 @@ class EnemyManager : ScriptObject
         if (thugName == "")
             thugName = "thug_" + thugId;
         thugId ++;
-        return CreateCharacter(thugName, "thug", "Thug", position, rotation);
+        Node@ node = CreateCharacter(thugName, "thug", "Thug", position, rotation);
+        node.AddTag(ENEMY_TAG);
+        return node;
     }
 
     void RemoveAll()

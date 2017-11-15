@@ -538,6 +538,7 @@ class TestGameState : GameState
         }
 
         Node@ playerNode = CreateCharacter("player", "bruce_w", "Bruce", playerPos, playerRot);
+        playerNode.AddTag(PLAYER_TAG);
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         playerId = playerNode.id;
 
