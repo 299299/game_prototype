@@ -307,7 +307,7 @@ class GameInput
     void UpdateInputUI()
     {
         Button@ icon_btn = ui.root.GetChild(touch_icon_name, false);
-        if (touchedMovingArea && IsTouching())
+        if (IsTouching())
         {
             int x, y;
             if (input.numTouches > 0)
