@@ -319,7 +319,8 @@ class Motion
         object.motion_velocity = Vector3(0, 0, 0);
         object.motion_translateEnabled = true;
         object.motion_rotateEnabled = true;
-        LogPrint("motion " + animationName + " start start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
+        if (d_log)
+            LogPrint("motion " + animationName + " start start-position=" + object.motion_startPosition.ToString() + " start-rotation=" + object.motion_startRotation);
     }
 
     int Move(Character@ object, float dt)

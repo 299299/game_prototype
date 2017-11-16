@@ -43,13 +43,13 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 3;
+int test_enemy_num_override = 1;
 int render_features = RF_NONE;
 
 const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 40;
 
-int freeze_ai = 1;
+int freeze_ai = 0;
 int test_beat_index = 1;
 bool base_on_player = false;
 int test_counter_index = 0;

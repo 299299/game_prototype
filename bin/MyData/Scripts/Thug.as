@@ -24,9 +24,7 @@ float KEEP_DIST_WITH_PLAYER = -0.25f;
 class ThugStandState : MultiAnimationState
 {
     float           thinkTime;
-
     float           attackRange;
-
     bool            firstEnter = true;
 
     ThugStandState(Character@ c)
@@ -94,7 +92,7 @@ class ThugStandState : MultiAnimationState
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
         if (ownner.CanAttack() && dist <= attackRange)
         {
-            LogPrint("do attack because dist <= " + attackRange);
+            LogPrint(ownner.GetName() + " do attack because dist <= " + attackRange);
             if (ownner.Attack())
                 return;
         }
@@ -433,7 +431,7 @@ class ThugAttackState : CharacterState
             return;
         }
 
-        if (!HasFlag(flags, FLAGS_ATTACK))
+        if (!HasFlag(ownner.flags, FLAGS_ATTACK))
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -446,7 +444,7 @@ class ThugAttackState : CharacterState
     {
         float targetDistance = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         float punchDist = attacks[0].motion.endDistance;
-        LogPrint("targetDistance=" + targetDistance + " punchDist=" + punchDist);
+        LogPrint(ownner.GetName() + " targetDistance=" + targetDistance + " punchDist=" + punchDist);
         int index = RandomInt(3);
         if (targetDistance > punchDist + 1.0f)
             index += 3; // a kick attack
@@ -457,7 +455,7 @@ class ThugAttackState : CharacterState
         ownner.flags = AddFlag(ownner.flags, FLAGS_REDIRECTED | FLAGS_ATTACK);
         doAttackCheck = false;
         CharacterState::Enter(lastState);
-        LogPrint("Thug Pick attack motion = " + motion.animationName);
+        LogPrint(ownner.GetName() + " Pick attack motion = " + motion.animationName);
     }
 
     void Exit(State@ nextState)
@@ -818,6 +816,7 @@ class Thug : Enemy
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_SAFE_DIST, YELLOW, 32, false);
     }
 
     bool CanAttack()
