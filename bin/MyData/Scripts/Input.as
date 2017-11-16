@@ -333,10 +333,10 @@ class GameInput
 
     bool IsTouching()
     {
-        if (input.numTouches > 0)
+        for (uint i=0; i<input.numTouches; ++i)
         {
-            TouchState@ ts = input.touches[0];
-            return ts.pressure > 0.9f;
+            if (input.touches[i].pressure > 0.9f)
+                return true;
         }
         return input.mouseButtonDown[MOUSEB_LEFT];
     }
@@ -346,7 +346,7 @@ class GameInput
         touchedPositions.Clear();
         if (input.numTouches > 0)
         {
-            for (uint i=0; i<touchedPositions.length; ++i)
+            for (uint i=0; i<input.numTouches; ++i)
             {
                 touchedPositions.Push(input.touches[i].position);
             }

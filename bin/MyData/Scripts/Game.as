@@ -347,7 +347,7 @@ class TestGameState : GameState
         case GAME_FAIL:
         case GAME_WIN:
             {
-                if (gInput.IsInputActioned(kInputAttack))
+                if (timeInState > 5.0 && gInput.IsTouching())
                 {
                     ChangeSubState(GAME_RESTARTING);
                     ShowMessage("", false);
@@ -400,6 +400,7 @@ class TestGameState : GameState
 
         Player@ player = GetPlayer();
         EnemyManager@ em = GetEnemyMgr();
+
         gInput.ShowHideUI(false);
 
         switch (newState)
