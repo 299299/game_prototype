@@ -114,10 +114,12 @@ class GameInput
 
     Vector2 GetLeftStick()
     {
-        touchMovingArea = false;
         Vector2 ret;
         if (!IsTouching())
+        {
+            touchMovingArea = false;
             return ret;
+        }
 
         GetTouchedPosition();
         for (uint i=0; i<touchedPositions.length; ++i)
@@ -139,6 +141,39 @@ class GameInput
                     return ret;
                 }
             }
+        }
+
+        // if last time we are touch moving
+        if (touchMovingArea)
+        {
+            UIElement@ e1 = ui.root.GetChild(touch_btn_name);
+            float w = float(e1.size.x) / 2.0;
+            float cx = float(e1.position.x) + w;
+            float cy = float(e1.position.y) + w;
+            float min_dist_sqr = 999999;
+            int min_index = 0;
+            for (uint i=0; i<touchedPositions.length; ++i)
+            {
+                float dx = touchedPositions[i].x - cx;
+                float dy = touchedPositions[i].y - cy;
+                float dist_sqr = dx*dx + dy*dy;
+                if (dist_sqr < min_dist_sqr)
+                {
+                    min_index = i;
+                    min_dist_sqr = dist_sqr;
+                }
+            }
+
+            float left = e1.position.x;
+            float right = e1.position.x + e1.size.x;
+            float top = e1.position.y;
+            float bottom = e1.position.y + e1.size.y;
+            touchMovingPosition = touchedPositions[min_index];
+            touchMovingPosition.x = Clamp(touchMovingPosition.x, left, right);
+            touchMovingPosition.y = Clamp(touchMovingPosition.y, top, bottom);
+
+            ret.x = (touchMovingPosition.x - cx) / w;
+            ret.y = -(touchMovingPosition.y - cy) / w;
         }
 
         return ret;
