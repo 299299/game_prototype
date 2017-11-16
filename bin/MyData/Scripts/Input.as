@@ -40,6 +40,8 @@ class GameInput
 
     Array<String> actionNames;
     Array<IntVector2> touchedPositions;
+    bool touchMovingArea = false;
+    IntVector2 touchMovingPosition;
 
     GameInput()
     {
@@ -75,17 +77,17 @@ class GameInput
             m_leftStickHoldFrames = 0;
         }
 
-        if (input.numTouches > 0)
+        /*if (input.numTouches > 0)
         {
             TouchState@ ts = input.touches[0];
             String uiName = "null";
             if (ts.touchedElement !is null)
                 uiName = ts.touchedElement.name;
-            /*Print("TouchState position=" + ts.position.ToString() +
+            Print("TouchState position=" + ts.position.ToString() +
                   " delta=" + ts.delta.ToString() +
                   " pressure=" + ts.pressure +
-                  " touchedElement=" + uiName);*/
-        }
+                  " touchedElement=" + uiName);
+        }*/
 
         UpdateInputUI();
     }
@@ -112,57 +114,33 @@ class GameInput
 
     Vector2 GetLeftStick()
     {
+        touchMovingArea = false;
         Vector2 ret;
-        if (input.numTouches > 0)
+        if (!IsTouching())
+            return ret;
+
+        GetTouchedPosition();
+        for (uint i=0; i<touchedPositions.length; ++i)
         {
-            if (IsTouching())
+            UIElement@ e = ui.GetElementAt(touchedPositions[i]);
+            if (e !is null)
             {
-                GetTouchedPosition();
-
-            }
-
-            TouchState@ ts = input.touches[0];
-            float x = float(ts.position.x);
-            float y = float(graphics.height) - float(ts.position.y);
-            float w = float(graphics.width) * touch_scale_x;
-            float h = w;
-            if (x < w && y < h)
-            {
-                float half_w = w / 2.0;
-                float half_h = h / 2.0;
-                ret.x = (x - half_w) / half_w;
-                ret.y = (y - half_h) / half_h;
-            }
-            /*Print(" x=" + x + " ,y=" + y + " ret=" + ret.ToString());*/
-        }
-        else
-        {
-            if (input.mouseButtonDown[MOUSEB_LEFT])
-            {
-                UIElement@ hat = ui.root.GetChild(touch_btn_name, false);
-                float w = float(hat.size.x) / 2.0;
-                float cx = float(hat.position.x) + w;
-                float cy = float(hat.position.y) + w;
-                float mx = float(input.mousePosition.x);
-                float my = float(input.mousePosition.y);
-                ret.x = (mx - cx) / w;
-                ret.y = - (my - cy) / w;
-
-                /*Print(" ret=" + ret.ToString() +
-                  " hatButton.position=" + Vector2(cx, cy).ToString() +
-                  " w=" + String(w) +
-                  " input.mousePosition=" + input.mousePosition.ToString());*/
-
-                if (input.keyDown[KEY_W])
-                    ret.y += 1.0;
-                if (input.keyDown[KEY_S])
-                    ret.y -= 1.0;
-                if (input.keyDown[KEY_A])
-                    ret.x -= 1.0;
-                if (input.keyDown[KEY_D])
-                    ret.x += 1.0;
+                if (e.name == touch_btn_name)
+                {
+                    float w = float(e.size.x) / 2.0;
+                    float cx = float(e.position.x) + w;
+                    float cy = float(e.position.y) + w;
+                    float mx = float(touchedPositions[i].x);
+                    float my = float(touchedPositions[i].y);
+                    ret.x = (mx - cx) / w;
+                    ret.y = -(my - cy) / w;
+                    touchMovingArea = true;
+                    touchMovingPosition = touchedPositions[i];
+                    return ret;
+                }
             }
         }
+
         return ret;
     }
 
@@ -196,7 +174,7 @@ class GameInput
             for (uint i=0; i<touchedPositions.length; ++i)
             {
                 UIElement@ e = ui.GetElementAt(touchedPositions[i]);
-                if (e.name == actionNames[action])
+                if (e !is null && e.name == actionNames[action])
                 {
                     ret = true;
                     break;
@@ -293,6 +271,7 @@ class GameInput
         button.SetFixedSize(w, w);
         button.visible = false;
         button.AddTag(tag_input);
+        button.enabled = false;
         ui.root.AddChild(button);
         return button;
     }
@@ -307,35 +286,13 @@ class GameInput
     void UpdateInputUI()
     {
         Button@ icon_btn = ui.root.GetChild(touch_icon_name, false);
-        if (IsTouching())
+        if (icon_btn !is null)
         {
-            int x, y;
-            if (input.numTouches > 0)
-            {
-                TouchState@ ts = input.touches[0];
-                x = ts.position.x;
-                y = ts.position.y;
-            }
-            else
-            {
-                x = input.mousePosition.x;
-                y = input.mousePosition.y;
-            }
-
-            Button@ b = ui.root.GetChild(touch_btn_name, false);
-            int left = b.position.x;
-            int right = b.position.x + b.size.x;
-            int top = b.position.y;
-            int bottom = b.position.y + b.size.y;
-            x = Clamp(x, left, right);
-            y = Clamp(y, top, bottom);
-            int half_size = icon_btn.size.x/2;
-            icon_btn.SetPosition(x - half_size, y - half_size);
-            icon_btn.visible = true;
-        }
-        else
-        {
-            icon_btn.visible = false;
+            icon_btn.visible = touchMovingArea;
+            IntVector2 pos = touchMovingPosition;
+            pos.x -= icon_btn.size.x / 2;
+            pos.y -= icon_btn.size.y / 2;
+            icon_btn.position = pos;
         }
     }
 
