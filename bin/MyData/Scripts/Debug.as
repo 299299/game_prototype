@@ -40,34 +40,6 @@ void ShootSphere(Scene@ _scene)
     body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * 10.0f;
 }
 
-void DrawDebugText()
-{
-    String seperator = "-------------------------------------------------------------------------------------------------------\n";
-    String debugText = seperator;
-    debugText += gGame.GetDebugText();
-    debugText += seperator;
-    debugText += gCameraMgr.GetDebugText();
-    debugText += gInput.GetDebugText();
-    debugText += seperator;
-    Player@ player = GetPlayer();
-    if (player !is null)
-        debugText += player.GetDebugText();
-    debugText += seperator;
-    if (drawDebug > 1)
-    {
-        EnemyManager@ em = GetEnemyMgr();
-        if (em !is null && !em.enemyList.empty)
-        {
-            debugText += em.enemyList[0].GetDebugText();
-            debugText += seperator;
-        }
-    }
-
-    Text@ text = ui.root.GetChild("debug", true);
-    if (text !is null)
-        text.text = debugText;
-}
-
 void DrawDebug()
 {
     Scene@ scene_ = script.defaultScene;
@@ -435,3 +407,43 @@ void TestAnimations_Group_4()
     thugAnims.Push(thugAnim + "_03");
     TestAnimation_Group(playerAnim, thugAnims);
 }
+
+/***********************************************
+
+   ##### DEBUG DRAW STUFF
+
+***********************************************/
+void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle, const Color&in color, float radius = 1.0)
+{
+    Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
+    debug.AddLine(start, end, color, false);
+}
+
+void DrawDebugText()
+{
+    String seperator = "-------------------------------------------------------------------------------------------------------\n";
+    String debugText = seperator;
+    debugText += gGame.GetDebugText();
+    debugText += seperator;
+    debugText += gCameraMgr.GetDebugText();
+    debugText += gInput.GetDebugText();
+    debugText += seperator;
+    Player@ player = GetPlayer();
+    if (player !is null)
+        debugText += player.GetDebugText();
+    debugText += seperator;
+    if (drawDebug > 1)
+    {
+        EnemyManager@ em = GetEnemyMgr();
+        if (em !is null && !em.enemyList.empty)
+        {
+            debugText += em.enemyList[0].GetDebugText();
+            debugText += seperator;
+        }
+    }
+
+    Text@ text = ui.root.GetChild("debug", true);
+    if (text !is null)
+        text.text = debugText;
+}
+

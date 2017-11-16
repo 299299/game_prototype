@@ -20,8 +20,7 @@ const float COUNTER_ALIGN_MAX_DIST = 1.5f;
 const float PLAYER_NEAR_DIST = 6.0f;
 const float GOOD_COUNTER_DIST = 3.0f;
 const float ATTACK_DIST_PICK_RANGE = 6.0f;
-float MAX_ATTACK_DIST = 25.0f;
-float MAX_BEAT_DIST = 25.0f;
+float MAX_ATTACK_DIST = 15.0f;
 
 class Player : Character
 {
@@ -500,7 +499,7 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, YELLOW, 32, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), MAX_ATTACK_DIST, YELLOW, 32, false);
         // sensor.DebugDraw(debug);
         debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
     }

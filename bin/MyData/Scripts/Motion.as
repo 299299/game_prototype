@@ -78,12 +78,6 @@ int GetAttackType(const String&in name)
     return ATTACK_PUNCH;
 }
 
-void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle, const Color&in color, float radius = 1.0)
-{
-    Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
-    debug.AddLine(start, end, color, false);
-}
-
 void SendAnimationTriger(Node@ _node, const StringHash&in nameHash, int value = 0)
 {
     VariantMap anim_data;

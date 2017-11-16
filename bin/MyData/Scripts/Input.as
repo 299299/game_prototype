@@ -233,8 +233,8 @@ class GameInput
         button.texture = cache.GetResource("Texture2D", "Textures/TouchInput.png");
         button.imageRect = IntRect(96,0,192,96);
         float w = float(graphics.width) * button_scale_x;
-        button.SetFixedSize(w, w);
-        button.SetPosition(x, y);
+        button.SetFixedSize(int(w), int(w));
+        button.SetPosition(int(x), int(y));
         button.visible = false;
         button.AddTag(tag_input);
         Text@ buttonText = button.CreateChild("Text");
@@ -253,8 +253,8 @@ class GameInput
         button.texture = cache.GetResource("Texture2D", "Textures/TouchInput.png");
         button.imageRect = IntRect(0,0,96,96);
         float w = float(graphics.width) * touch_scale_x;
-        button.SetFixedSize(w, w);
-        button.SetPosition(border_offset, graphics.height - w - border_offset);
+        button.SetFixedSize(int(w), int(w));
+        button.SetPosition(int(border_offset), int(graphics.height - w - border_offset));
         button.visible = false;
         button.AddTag(tag_input);
         ui.root.AddChild(button);
@@ -268,10 +268,10 @@ class GameInput
         button.texture = cache.GetResource("Texture2D", "Textures/TouchInput.png");
         button.imageRect = IntRect(0,0,96,96);
         float w = float(graphics.width) * touch_scale_x / 4.0f;
-        button.SetFixedSize(w, w);
+        button.SetFixedSize(int(w), int(w));
         button.visible = false;
-        button.AddTag(tag_input);
         button.enabled = false;
+        button.AddTag(tag_input);
         ui.root.AddChild(button);
         return button;
     }
