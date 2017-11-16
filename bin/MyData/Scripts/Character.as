@@ -9,7 +9,6 @@ const float COLLISION_RADIUS = 1.5f;
 const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.85f;
 const float START_TO_ATTACK_DIST = 6;
 const float CHARACTER_HEIGHT = 5.0f;
-const float CHARACTER_CROUCH_HEIGHT = 3.0f;
 
 const int MAX_NUM_OF_ATTACK = 3;
 const int MAX_NUM_OF_MOVING = 3;
@@ -19,7 +18,6 @@ const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash TURN_STATE("TurnState");
-const StringHash COUNTER_STATE("CounterState");
 const StringHash GETUP_STATE("GetUpState");
 const StringHash RUN_STATE("RunState");
 const StringHash HIT_STATE("HitState");
@@ -42,7 +40,6 @@ const StringHash BONE("Bone");
 const StringHash NODE("Node");
 const StringHash COMBAT_SOUND("CombatSound");
 const StringHash COMBAT_SOUND_LARGE("CombatSoundLarge");
-const StringHash COMBAT_PARTICLE("CombatParticle");
 const StringHash PARTICLE("Particle");
 const StringHash DURATION("Duration");
 const StringHash READY_TO_FIGHT("ReadyToFight");
@@ -108,12 +105,10 @@ class CharacterState : State
             ownner.SetHealth(eventData[VALUE].GetInt());
         else if (name == IMPACT)
         {
-            Print("IMPACT");
             combatReady = true;
         }
         else if (name == READY_TO_FIGHT)
         {
-            Print("READY_TO_FIGHT");
             combatReady = true;
         }
     }
