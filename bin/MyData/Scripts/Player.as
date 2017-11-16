@@ -475,7 +475,10 @@ class Player : Character
 
         int alive = em.GetNumOfEnemyAlive();
         LogPrint("CheckLastKill() alive=" + alive);
-        if (alive == 1)
+        int max_health = 50;
+        if (test_enemy_num_override == 1)
+            max_health = 20;
+        if (alive == 1 && em.enemyList[0].health < max_health)
         {
             VariantMap data;
             data[NODE] = target.GetNode().id;

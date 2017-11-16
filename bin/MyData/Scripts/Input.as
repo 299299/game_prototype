@@ -194,7 +194,7 @@ class GameInput
     // Returns true if the left stick is the dead zone, false otherwise
     bool IsLeftStickInDeadZone()
     {
-        return m_leftStickMagnitude < 0.025f;
+        return m_leftStickMagnitude < 0.01f;
     }
 
     bool IsInputActioned(int action)
