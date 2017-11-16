@@ -19,9 +19,9 @@ const String touch_icon_name = "touch_move_icon";
 enum InputAction
 {
     kInputAttack = 0,
-    kInputEvade,
     kInputCounter,
     kInputDistract,
+    kInputEvade,
 };
 
 class GameInput
@@ -251,13 +251,13 @@ class GameInput
         Button@ btn = CreateButton(x, y, "attack");
         actionNames.Push(btn.name);
         x += (w + border_offset);
-        btn = CreateButton(x, y, "evade");
-        actionNames.Push(btn.name);
-        x += (w + border_offset);
         btn = CreateButton(x, y, "counter");
         actionNames.Push(btn.name);
         x += (w + border_offset);
         btn = CreateButton(x, y, "distract");
+        actionNames.Push(btn.name);
+        x += (w + border_offset);
+        btn = CreateButton(x, y, "evade");
         actionNames.Push(btn.name);
     }
 
