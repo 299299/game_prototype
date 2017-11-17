@@ -37,9 +37,16 @@ class Player : Character
         @sensor = PhysicsSensor(sceneNode);
 
         Node@ tailNode = sceneNode.CreateChild("TailNode");
-        ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
-        emitter.effect = cache.GetResource("ParticleEffect", "Particle/Tail.xml");
+        //ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
+        //emitter.effect = cache.GetResource("ParticleEffect", "Particle/Tail.xml");
         tailNode.enabled = false;
+        RibbonTrail@ trail = tailNode.CreateComponent("RibbonTrail");
+        trail.material = cache.GetResource("Material", "Materials/RibbonTrail.xml");
+        trail.startColor = Color(1.0f, 1.0f, 0.0f, 1.0f);
+        trail.endColor = Color(1.0f, 0.0f, 0.0f, 0.0f);
+        trail.width = 0.25f;
+        trail.tailColumn = 4;
+        trail.updateInvisible = true;
 
         AddStates();
         ChangeState("StandState");
