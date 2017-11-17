@@ -31,7 +31,7 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR,
 };
 
-int drawDebug = 2;
+int drawDebug = 0;
 bool bigHeadMode = false;
 bool nobgm = true;
 
@@ -43,7 +43,7 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 1;
+int test_enemy_num_override = 5;
 int render_features = RF_NONE;
 
 const String UI_FONT = "Fonts/GAEN.ttf";

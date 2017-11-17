@@ -11,7 +11,7 @@
 bool  freezeInput = false;
 const float touch_scale_x = 0.15;
 const float button_scale_x = 0.1;
-const float border_offset = 2.0;
+const float border_offset = 10.0;
 const String tag_input = "tag_input";
 const String touch_btn_name = "touch_move";
 const String touch_icon_name = "touch_move_icon";
