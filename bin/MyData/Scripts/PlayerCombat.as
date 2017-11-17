@@ -151,9 +151,9 @@ class PlayerAttackState : CharacterState
         uint actionFlags = check_attack ? (1 << kInputAttack) : 0;
         if (check_others)
         {
-            AddFlag(actionFlags, 1 << kInputCounter);
-            AddFlag(actionFlags, 1 << kInputEvade);
-            AddFlag(actionFlags, 1 << kInputDistract);
+            actionFlags = AddFlag(actionFlags, 1 << kInputCounter);
+            actionFlags = AddFlag(actionFlags, 1 << kInputEvade);
+            actionFlags = AddFlag(actionFlags, 1 << kInputDistract);
         }
         ownner.ActionCheck(actionFlags);
     }
