@@ -144,6 +144,27 @@ class GameObject : ScriptObject
     {
         return true;
     }
+
+    bool HasFlag(uint flag)
+    {
+        return Global_HasFlag(flags, flag);
+    }
+
+    void AddFlag(uint flag)
+    {
+        flags = Global_AddFlag(flags, flag);
+        UpdateOnFlagsChanged();
+    }
+
+    void RemoveFlag(uint flag)
+    {
+        flags = Global_RemoveFlag(flags, flag);
+        UpdateOnFlagsChanged();
+    }
+
+    void UpdateOnFlagsChanged()
+    {
+    }
 };
 
 void SetWorldTimeScale(Scene@ _scene, float scale)

@@ -105,7 +105,7 @@ class PlayerAttackState : CharacterState
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
-                ownner.target.flags = RemoveFlag(ownner.target.flags, FLAGS_NO_MOVE);
+                ownner.target.RemoveFlag(FLAGS_NO_MOVE);
             }
         }
         else if (state == ATTACK_STATE_BEFORE_IMPACT)
@@ -151,9 +151,9 @@ class PlayerAttackState : CharacterState
         uint actionFlags = check_attack ? (1 << kInputAttack) : 0;
         if (check_others)
         {
-            actionFlags = AddFlag(actionFlags, 1 << kInputCounter);
-            actionFlags = AddFlag(actionFlags, 1 << kInputEvade);
-            actionFlags = AddFlag(actionFlags, 1 << kInputDistract);
+            actionFlags = Global_AddFlag(actionFlags, 1 << kInputCounter);
+            actionFlags = Global_AddFlag(actionFlags, 1 << kInputEvade);
+            actionFlags = Global_AddFlag(actionFlags, 1 << kInputDistract);
         }
         ownner.ActionCheck(actionFlags);
     }
@@ -317,7 +317,7 @@ class PlayerAttackState : CharacterState
         //if (nextState !is this)
         //    cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
         if (ownner.target !is null)
-            ownner.target.flags = RemoveFlag(ownner.target.flags, FLAGS_NO_MOVE);
+            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
         @currentAttack = null;
         ownner.SetSceneTimeScale(1.0f);
         LogPrint("################## Player::AttackState Exit to " + nextState.name  + " #####################");
@@ -1053,7 +1053,7 @@ class PlayerTransitionState : SingleMotionState
     {
         SingleMotionState::Exit(nextState);
         if (ownner.target !is null)
-            ownner.target.flags = RemoveFlag(ownner.target.flags, FLAGS_NO_MOVE);
+            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
         LogPrint("After Player Transition Target dist = " + ownner.GetTargetDistance());
     }
 

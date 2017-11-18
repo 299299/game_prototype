@@ -275,7 +275,7 @@ class Player : Character
         for (uint i=0; i<em.enemyList.length; ++i)
         {
             Enemy@ e = em.enemyList[i];
-            if (!HasFlag(e.flags, flags))
+            if (!e.HasFlag(flags))
             {
                 if (d_log)
                     LogPrint(e.GetName() + " no flag: " + flags);
@@ -365,7 +365,7 @@ class Player : Character
             {
                 Node@ n = result.body.node.parent;
                 Enemy@ e = cast<Enemy>(n.scriptObject);
-                if (e !is null && e !is attackEnemy && HasFlag(e.flags, FLAGS_ATTACK))
+                if (e !is null && e !is attackEnemy && e.HasFlag(FLAGS_ATTACK))
                 {
                     LogPrint("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
                     @attackEnemy = e;
@@ -395,7 +395,7 @@ class Player : Character
         for (uint i=0; i<em.enemyList.length; ++i)
         {
             Enemy@ e = em.enemyList[i];
-            if (!HasFlag(e.flags, flags))
+            if (!e.HasFlag(flags))
                 continue;
             Vector3 posDiff = e.GetNode().worldPosition - myPos;
             posDiff.y = 0;
@@ -436,16 +436,16 @@ class Player : Character
     bool ActionCheck(uint actionFlags)
     {
         // Print("HasFlag = " + HasFlag(actionFlags, 1 << kInputAttack));
-        if (HasFlag(actionFlags, 1 << kInputAttack) && gInput.IsInputActioned(kInputAttack))
+        if (Global_HasFlag(actionFlags, 1 << kInputAttack) && gInput.IsInputActioned(kInputAttack))
             return Attack();
 
-        if (HasFlag(actionFlags, 1 << kInputDistract) && gInput.IsInputActioned(kInputDistract))
+        if (Global_HasFlag(actionFlags, 1 << kInputDistract) && gInput.IsInputActioned(kInputDistract))
             return Distract();
 
-        if (HasFlag(actionFlags, 1 << kInputCounter) && gInput.IsInputActioned(kInputCounter))
+        if (Global_HasFlag(actionFlags, 1 << kInputCounter) && gInput.IsInputActioned(kInputCounter))
             return Counter();
 
-        if (HasFlag(actionFlags, 1 << kInputEvade) && gInput.IsInputActioned(kInputEvade))
+        if (Global_HasFlag(actionFlags, 1 << kInputEvade) && gInput.IsInputActioned(kInputEvade))
             return Evade();
 
         return false;
@@ -456,7 +456,7 @@ class Player : Character
         LogPrint("Do--Attack--->");
         Enemy@ e = CommonPickEnemy(90, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
         SetTarget(e);
-        if (e !is null && HasFlag(e.flags, FLAGS_STUN))
+        if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");
         else
             ChangeState("AttackState");
@@ -502,7 +502,7 @@ class Player : Character
         if (target is t)
             return;
         if (target !is null)
-            target.flags = RemoveFlag(target.flags, FLAGS_NO_MOVE);
+            target.RemoveFlag(FLAGS_NO_MOVE);
         Character::SetTarget(t);
     }
 

@@ -86,7 +86,7 @@ class PlayerBeatDownStartState : CharacterState
     {
         CharacterState::Exit(nextState);
         if (ownner.target !is null)
-            ownner.target.flags = RemoveFlag(ownner.target.flags, FLAGS_NO_MOVE);
+            ownner.target.RemoveFlag(FLAGS_NO_MOVE);
     }
 
     void Update(float dt)

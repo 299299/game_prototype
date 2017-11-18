@@ -27,8 +27,8 @@ enum RenderFeature
     RF_NONE     = 0,
     RF_SHADOWS  = (1 << 0),
     RF_HDR      = (1 << 1),
-
-    RF_FULL     = RF_SHADOWS | RF_HDR,
+    RF_AA       = (1 << 2),
+    RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
 };
 
 int drawDebug = 0;
@@ -44,7 +44,7 @@ uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
 int test_enemy_num_override = 5;
-int render_features = RF_NONE;
+int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 40;
@@ -305,17 +305,17 @@ void LogPrint(const String&in msg)
     log.Info(msg);
 }
 
-uint AddFlag(uint flags, uint flag)
+uint Global_AddFlag(uint flags, uint flag)
 {
     flags |= flag;
     return flags;
 }
-uint RemoveFlag(uint flags, uint flag)
+uint Global_RemoveFlag(uint flags, uint flag)
 {
     flags &= ~flag;
     return flags;
 }
-bool HasFlag(uint flags, uint flag)
+bool Global_HasFlag(uint flags, uint flag)
 {
     return flags & flag != 0;
 }

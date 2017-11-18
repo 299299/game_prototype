@@ -148,7 +148,7 @@ class CharacterState : State
     void Enter(State@ lastState)
     {
         if (flags >= 0)
-            ownner.flags = AddFlag(ownner.flags, flags);
+            ownner.AddFlag(flags);
         State::Enter(lastState);
         combatReady = false;
         firstUpdate = true;
@@ -163,7 +163,7 @@ class CharacterState : State
     void Exit(State@ nextState)
     {
         if (flags >= 0)
-            ownner.flags = RemoveFlag(ownner.flags, flags);
+            ownner.RemoveFlag(flags);
         State::Exit(nextState);
         if (physicsType >= 0)
             ownner.SetPhysicsType(lastPhysicsType);
@@ -1241,19 +1241,19 @@ class Character : GameObject
 
     bool CanBeAttacked()
     {
-        if (HasFlag(flags, FLAGS_INVINCIBLE))
+        if (HasFlag(FLAGS_INVINCIBLE))
             return false;
-        return HasFlag(flags, FLAGS_ATTACK);
+        return HasFlag(FLAGS_ATTACK);
     }
 
     bool CanBeCountered()
     {
-        return HasFlag(flags, FLAGS_COUNTER);
+        return HasFlag(FLAGS_COUNTER);
     }
 
     bool CanBeRedirected()
     {
-        return HasFlag(flags, FLAGS_REDIRECTED);
+        return HasFlag(FLAGS_REDIRECTED);
     }
 
     bool CanAttack()
@@ -1400,7 +1400,7 @@ class Character : GameObject
 
     void RequestDoNotMove()
     {
-        flags = AddFlag(flags, FLAGS_NO_MOVE);
+        AddFlag(FLAGS_NO_MOVE);
     }
 
     Node@ SpawnParticleEffect(const Vector3&in position, const String&in effectName, float duration, float scale = 1.0f)

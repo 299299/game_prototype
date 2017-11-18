@@ -408,7 +408,7 @@ class TestGameState : GameState
         case GAME_RUNNING:
             {
                 if (player !is null)
-                    player.flags = RemoveFlag(player.flags, FLAGS_INVINCIBLE);
+                    player.RemoveFlag(FLAGS_INVINCIBLE);
 
                 freezeInput = false;
                 gCameraMgr.SetCameraController("LookAt");
@@ -430,7 +430,7 @@ class TestGameState : GameState
 
                 freezeInput = true;
                 if (player !is null)
-                    player.flags = AddFlag(player.flags, FLAGS_INVINCIBLE);
+                    player.AddFlag(FLAGS_INVINCIBLE);
             }
             break;
 
@@ -455,7 +455,7 @@ class TestGameState : GameState
                 if (player !is null)
                 {
                     player.Reset();
-                    player.flags = AddFlag(player.flags, FLAGS_INVINCIBLE);
+                    player.AddFlag(FLAGS_INVINCIBLE);
                 }
             }
             break;
@@ -488,10 +488,10 @@ class TestGameState : GameState
     {
         Viewport@ viewport = Viewport(script.defaultScene, gCameraMgr.GetCamera());
         renderer.viewports[0] = viewport;
+        RenderPath@ renderpath = viewport.renderPath.Clone();
         if (render_features & RF_HDR != 0)
         {
             renderer.hdrRendering = true;
-            RenderPath@ renderpath = viewport.renderPath.Clone();
             // if (reflection)
             //    renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
             // else
@@ -505,10 +505,11 @@ class TestGameState : GameState
             renderpath.shaderParameters["TonemapExposureBias"] = 2.5f;
             renderpath.shaderParameters["AutoExposureAdaptRate"] = 2.0f;
             renderpath.shaderParameters["BloomHDRMix"] = Variant(Vector2(0.9f, 0.6f));
-            renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
-            renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
-            viewport.renderPath = renderpath;
+            // renderpath.Append(cache.GetResource("XMLFile","PostProcess/ColorCorrection.xml"));
         }
+        if (render_features & RF_AA != 0)
+            renderpath.Append(cache.GetResource("XMLFile", "PostProcess/FXAA2.xml"));
+        viewport.renderPath = renderpath;
     }
 
     void CreateScene()
