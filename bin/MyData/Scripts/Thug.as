@@ -811,6 +811,7 @@ class Thug : Enemy
         attackDamage = 20;
 
         walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Step_Forward");
+        animModel.updateInvisible = true;
     }
 
     void DebugDraw(DebugRenderer@ debug)

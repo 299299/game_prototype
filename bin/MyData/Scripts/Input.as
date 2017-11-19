@@ -217,7 +217,7 @@ class GameInput
             }
         }
 
-        if (!mobile && !ret)
+        /*if (!mobile && !ret)
         {
             if (action == kInputAttack)
                 ret = input.keyPress[KEY_1];
@@ -227,7 +227,7 @@ class GameInput
                 ret = input.keyPress[KEY_3];
             else if (action == kInputDistract)
                 ret = input.keyPress[KEY_4];
-        }
+        }*/
 
         return ret;
     }

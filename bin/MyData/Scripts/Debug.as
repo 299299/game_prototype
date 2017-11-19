@@ -98,7 +98,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (cam !is null)
             cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
     }
-    /*else if (key == KEY_1)
+    else if (key == KEY_1)
         ShootSphere(scene_);
     else if (key == KEY_2)
         ShootBox(scene_);
@@ -117,33 +117,33 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             ui.cursor.visible = true;
             gCameraMgr.SetCameraController("Debug");
         }
-    }*/
+    }
     else if (key == KEY_5)
     {
         VariantMap data;
         data[TARGET_FOV] = 60;
         SendEvent("CameraEvent", data);
     }
-    else if (key == 'R')
+    else if (key == KEY_R)
         scene_.updateEnabled = !scene_.updateEnabled;
-    else if (key == 'T')
+    else if (key == KEY_T)
     {
         if (scene_.timeScale >= 0.999f)
             scene_.timeScale = 0.1f;
         else
             scene_.timeScale = 1.0f;
     }
-    else if (key == 'Q')
+    else if (key == KEY_Q)
         engine.Exit();
-    else if (key == 'J')
+    else if (key == KEY_J)
         TestAnimations_Group_2();
-    else if (key == 'K')
+    else if (key == KEY_K)
         TestAnimations_Group_3();
-    else if (key == 'L')
+    else if (key == KEY_L)
         TestAnimations_Group_4();
-    else if (key == 'H')
+    else if (key == KEY_H)
         TestAnimations_Group_Beat();
-    else if (key == 'E')
+    else if (key == KEY_E)
     {
         Array<String> testAnimations;
         //String testName = "TG_Getup/GetUp_Back";
@@ -166,12 +166,12 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (player !is null)
             player.TestAnimation(testAnimations);
     }
-    else if (key == 'F')
+    else if (key == KEY_F)
     {
         scene_.timeScale = 1.0f;
         // SetWorldTimeScale(scene_, 1);
     }
-    else if (key == 'O')
+    else if (key == KEY_O)
     {
         Node@ n = scene_.GetChild("thug2");
         if (n !is null)
@@ -181,13 +181,13 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             thug.ChangeState("HitState");
         }
     }
-    else if (key == 'I')
+    else if (key == KEY_I)
     {
         Player@ p = GetPlayer();
         if (p !is null)
             p.SetPhysicsType(1 - p.physicsType);
     }
-    else if (key == 'M')
+    else if (key == KEY_M)
     {
         Player@ p = GetPlayer();
         if (p !is null)
@@ -201,7 +201,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             LogPrint("------------------------------------------------------------");
         }
     }
-    else if (key == 'U')
+    else if (key == KEY_U)
     {
         Player@ p = GetPlayer();
         if (p.timeScale > 1.0f)
