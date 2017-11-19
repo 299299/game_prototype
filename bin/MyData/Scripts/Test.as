@@ -44,7 +44,7 @@ uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
 int test_enemy_num_override = 1;
-int render_features = RF_FULL;
+int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/GAEN.ttf";
 int UI_FONT_SIZE = 40;
@@ -65,6 +65,9 @@ void Start()
 {
     LogPrint("Game Running Platform: " + GetPlatform());
     mobile = (GetPlatform() == "Android" || GetPlatform() == "iOS");
+
+    if (!mobile)
+        render_features = RF_FULL;
 
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)

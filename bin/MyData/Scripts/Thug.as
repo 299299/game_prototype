@@ -59,6 +59,12 @@ class ThugStandState : MultiAnimationState
         MultiAnimationState::Enter(lastState);
     }
 
+    void Exit(State@ nextState)
+    {
+        MultiAnimationState::Exit(nextState);
+        ownner.animModel.updateInvisible = false;
+    }
+
     void Update(float dt)
     {
         if (freeze_ai != 0)
@@ -811,7 +817,6 @@ class Thug : Enemy
         attackDamage = 20;
 
         walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Step_Forward");
-        animModel.updateInvisible = true;
     }
 
     void DebugDraw(DebugRenderer@ debug)

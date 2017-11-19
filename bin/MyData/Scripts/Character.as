@@ -926,6 +926,12 @@ class CharacterGetUpState : MultiMotionState
         CharacterState::Enter(lastState);
     }
 
+    void Exit(State@ nextState)
+    {
+        MultiMotionState::Exit(nextState);
+        ownner.animModel.updateInvisible = true;
+    }
+
     void Update(float dt)
     {
         Motion@ motion = motions[selectIndex];
