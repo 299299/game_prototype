@@ -73,14 +73,13 @@ class ThugStandState : MultiAnimationState
         if (diff > MIN_TURN_ANGLE)
         {
             // I should always turn to look at player.
-            // ownner.ChangeState("TurnState");
+            ownner.ChangeState("TurnState");
             return;
         }
 
         if (timeInState > thinkTime)
         {
-            // OnThinkTimeOut();
-            ownner.ChangeState("RunState");
+            OnThinkTimeOut();
             timeInState = 0.0f;
             thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
         }
@@ -244,9 +243,9 @@ class ThugStepMoveState : MultiMotionState
     }
 };
 
-class ThugRunState : SingleMotionState
+class ThugRunState : SingleAnimationState
 {
-    float turnSpeed = 5.0f;
+    float turnSpeed = 10.0f;
     float attackRange;
 
     ThugRunState(Character@ c)
@@ -255,22 +254,22 @@ class ThugRunState : SingleMotionState
         SetName("RunState");
         SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
         flags = FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING;
+        looped = true;
     }
 
     void Update(float dt)
     {
-        float characterDifference = ownner.ComputeAngleDiff();
-        // ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
+        //float characterDifference = ownner.ComputeAngleDiff();
+        //ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
 
         // if the difference is large, then turn 180 degrees
-        /*if (Abs(characterDifference) > FULLTURN_THRESHOLD)
-        {
-            ownner.ChangeState("TurnState");
-            return;
-        }
-        */
+        //if (Abs(characterDifference) > FULLTURN_THRESHOLD)
+        //{
+        //    ownner.ChangeState("TurnState");
+        //    return;
+        //}
 
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        float dist = ownner.GetTargetDistance() - 2 * COLLISION_RADIUS;
         if (dist <= attackRange)
         {
             ownner.ChangeState("StandState");
@@ -280,23 +279,34 @@ class ThugRunState : SingleMotionState
             ownner.CommonStateFinishedOnGroud();
             return;
         }
-        // SingleMotionState::Update(dt);
 
-        ownner.MoveTo(ownner.agent.position, dt);
+        Vector3 velocity = ownner.agent.actualVelocity;
+        float speed = velocity.length;
+        float speedRatio = speed / ownner.agent.maxSpeed;
+        Node@ _node = ownner.GetNode();
+        // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
+        _node.worldRotation = _node.worldRotation.Slerp(Quaternion(Vector3::FORWARD, velocity), turnSpeed * dt * speedRatio);
+        // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
+        ownner.animCtrl.SetSpeed(animation, speedRatio * 1.5f);
+
+        ownner.agent.targetPosition = ownner.target.GetNode().worldPosition;
+        // ownner.MoveTo(ownner.agent.position, dt);
+
+        SingleAnimationState::Update(dt);
     }
 
     void Enter(State@ lastState)
     {
-        SingleMotionState::Enter(lastState);
+        SingleAnimationState::Enter(lastState);
         ownner.agent.enabled = true;
-        ownner.agent.targetPosition = ownner.target.GetNode().worldPosition;
-        attackRange = Random(0.0, MAX_ATTACK_RANGE);
+        ownner.agent.updateNodePosition = true;
+        attackRange = Random(0.2f, MAX_ATTACK_RANGE);
     }
 
     void Exit(State@ nextState)
     {
         ownner.agent.enabled = false;
-        SingleMotionState::Exit(nextState);
+        SingleAnimationState::Exit(nextState);
     }
 
     float GetThreatScore()

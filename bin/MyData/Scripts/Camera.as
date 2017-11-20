@@ -341,7 +341,7 @@ class AnimationCameraController : CameraController
 
 class LookAtCameraController: CameraController
 {
-    Vector3 offset = Vector3(15.0, 20.0, 0);
+    Vector3 offset = Vector3(15.0, 40.0, 0);
     float cameraSpeed = 4.5;
 
     LookAtCameraController(Node@ n, const String&in name)

@@ -527,22 +527,26 @@ class TestGameState : GameState
         cam.fov = BASE_FOV;
         cameraId = cameraNode.id;
 
+        Node@ floor = scene_.GetChild("floor", true);
+        StaticModel@ model = floor.GetComponent("StaticModel");
+        // WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
+
         if (!scene_.HasComponent("DynamicNavigationMesh"))
         {
+            LogPrint("Building DynamicNavigationMesh!");
             // Create a DynamicNavigationMesh component to the scene root
             DynamicNavigationMesh@ navMesh = scene_.CreateComponent("DynamicNavigationMesh");
             // Set small tiles to show navigation mesh streaming
-            navMesh.tileSize = 32;
+            navMesh.tileSize = 64;
             // Enable drawing debug geometry for obstacles and off-mesh connections
             navMesh.drawObstacles = true;
             navMesh.drawOffMeshConnections = true;
             // Set the agent height large enough to exclude the layers under boxes
             navMesh.agentHeight = 5.0;
             // Set nav mesh cell height to minimum (allows agents to be grounded)
-            navMesh.cellHeight = 0.05f;
             // Create a Navigable component to the scene root. This tags all of the geometry in the scene as being part of the
             // navigation mesh. By default this is recursive, but the recursion could be turned off from Navigable
-            scene_.CreateComponent("Navigable");
+            floor.CreateComponent("Navigable");
             // Add padding to the navigation mesh in Y-direction so that we can add objects on top of the tallest boxes
             // in the scene and still update the mesh correctly
             // navMesh.padding = Vector3(0.0f, 10.0f, 0.0f);
@@ -624,10 +628,6 @@ class TestGameState : GameState
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");
         gCameraMgr.SetCameraController("LookAt");
-
-        Node@ floor = scene_.GetChild("floor", true);
-        StaticModel@ model = floor.GetComponent("StaticModel");
-        // WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
 
         gameScene = scene_;
 
