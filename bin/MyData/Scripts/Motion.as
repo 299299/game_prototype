@@ -449,6 +449,14 @@ class Motion
     {
         return -rotateAngle;
     }
+
+    Vector3 GetVelocity()
+    {
+        if (motionKeys.empty)
+            return Vector3(0, 0, 0);
+        Vector4 v = motionKeys[motionKeys.length - 1];
+        return  Vector3(v.x, v.y, v.z) / endTime;
+    }
 };
 
 class AttackMotion

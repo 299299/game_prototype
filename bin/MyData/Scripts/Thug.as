@@ -73,13 +73,14 @@ class ThugStandState : MultiAnimationState
         if (diff > MIN_TURN_ANGLE)
         {
             // I should always turn to look at player.
-            ownner.ChangeState("TurnState");
+            // ownner.ChangeState("TurnState");
             return;
         }
 
         if (timeInState > thinkTime)
         {
-            OnThinkTimeOut();
+            // OnThinkTimeOut();
+            ownner.ChangeState("RunState");
             timeInState = 0.0f;
             thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
         }
@@ -259,31 +260,46 @@ class ThugRunState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff();
-        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
+        // ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
 
         // if the difference is large, then turn 180 degrees
-        if (Abs(characterDifference) > FULLTURN_THRESHOLD)
+        /*if (Abs(characterDifference) > FULLTURN_THRESHOLD)
         {
             ownner.ChangeState("TurnState");
             return;
         }
+        */
 
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        /*float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist <= attackRange)
         {
             if (ownner.Attack() && freeze_ai == 0)
                 return;
             ownner.CommonStateFinishedOnGroud();
             return;
+        }*/
+        float speed = ownner.agent.actualVelocity.length;
+        if (speed < ownner.agent.radius)
+        {
+            ownner.ChangeState("StandState");
+            return;
         }
+        // SingleMotionState::Update(dt);
 
-        SingleMotionState::Update(dt);
+        ownner.MoveTo(ownner.agent.position, dt);
     }
 
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
+        ownner.agent.targetPosition = ownner.target.GetNode().worldPosition;
         attackRange = Random(0.0, MAX_ATTACK_RANGE);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.agent.ResetTarget();
+        SingleMotionState::Exit(nextState);
     }
 
     float GetThreatScore()

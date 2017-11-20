@@ -532,7 +532,7 @@ class TestGameState : GameState
             // Create a DynamicNavigationMesh component to the scene root
             DynamicNavigationMesh@ navMesh = scene_.CreateComponent("DynamicNavigationMesh");
             // Set small tiles to show navigation mesh streaming
-            navMesh.tileSize = 1024;
+            navMesh.tileSize = 32;
             // Enable drawing debug geometry for obstacles and off-mesh connections
             navMesh.drawObstacles = true;
             navMesh.drawOffMeshConnections = true;
