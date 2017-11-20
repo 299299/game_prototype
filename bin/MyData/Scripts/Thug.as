@@ -270,18 +270,14 @@ class ThugRunState : SingleMotionState
         }
         */
 
-        /*float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist <= attackRange)
         {
+            ownner.ChangeState("StandState");
+            return;
             if (ownner.Attack() && freeze_ai == 0)
                 return;
             ownner.CommonStateFinishedOnGroud();
-            return;
-        }*/
-        float speed = ownner.agent.actualVelocity.length;
-        if (speed < ownner.agent.radius)
-        {
-            ownner.ChangeState("StandState");
             return;
         }
         // SingleMotionState::Update(dt);
@@ -292,13 +288,14 @@ class ThugRunState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
+        ownner.agent.enabled = true;
         ownner.agent.targetPosition = ownner.target.GetNode().worldPosition;
         attackRange = Random(0.0, MAX_ATTACK_RANGE);
     }
 
     void Exit(State@ nextState)
     {
-        ownner.agent.ResetTarget();
+        ownner.agent.enabled = false;
         SingleMotionState::Exit(nextState);
     }
 
@@ -805,6 +802,7 @@ class Thug : Enemy
         attackDamage = 20;
 
         walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Step_Forward");
+        agent.enabled = false;
     }
 
     void DebugDraw(DebugRenderer@ debug)
