@@ -63,7 +63,19 @@ void DrawDebug()
             em.DebugDraw(debug);
     }
     if (drawDebug > 2)
-        scene_.physicsWorld.DrawDebugGeometry(true);
+    {
+        DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
+        if (dnm !is null)
+            dnm.DrawDebugGeometry(true);
+
+        CrowdManager@ cm = scene_.GetComponent("CrowdManager");
+        if (cm !is null)
+            cm.DrawDebugGeometry(true);
+
+        PhysicsWorld@ pw = scene_.physicsWorld;
+        if (pw !is null)
+            pw.DrawDebugGeometry(true);
+    }
 }
 
 void HandleKeyDown(StringHash eventType, VariantMap& eventData)

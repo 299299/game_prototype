@@ -1032,6 +1032,7 @@ class Character : GameObject
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
+    CrowdAgent@             agent;
 
     Vector3                 startPosition;
     Quaternion              startRotation;
@@ -1101,6 +1102,13 @@ class Character : GameObject
             SetGravity(Vector3(0, -20, 0));
         }
 
+        agent = sceneNode.CreateComponent("CrowdAgent");
+        agent.height = CHARACTER_HEIGHT;
+        agent.maxSpeed = 3.0f;
+        agent.maxAccel = 5.0f;
+        agent.updateNodePosition = false;
+        agent.radius = COLLISION_RADIUS;
+
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
@@ -1121,6 +1129,7 @@ class Character : GameObject
         @sceneNode = null;
         @animCtrl = null;
         @animModel = null;
+        @agent = null;
         @target = null;
     }
 

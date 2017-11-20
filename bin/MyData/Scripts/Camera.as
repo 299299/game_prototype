@@ -122,8 +122,8 @@ class DebugFPSCameraController: CameraController
         const float MOUSE_SENSITIVITY = 0.1f;
 
         float speed = MOVE_SPEED;
-        if (input.keyDown[KEY_LSHIFT])
-            speed *= 2;
+        if (input.keyDown[KEY_LSHIFT] || input.keyDown[KEY_RSHIFT])
+            speed *= 4;
 
         IntVector2 mouseMove = input.mouseMove;
         yaw += MOUSE_SENSITIVITY * mouseMove.x;
