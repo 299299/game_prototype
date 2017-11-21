@@ -887,7 +887,7 @@ class Thug : Enemy
                     decal.viewMask = 0x7fffffff;
                     //decal.material = cache.GetResource("Material", "Materials/UrhoDecalAlpha.xml");
                 }
-                LogPrint("Creating decal");
+                // LogPrint("Creating decal");
                 float size = Random(1.5f, 3.5f);
                 float timeToLive = 5.0f;
                 Vector3 pos = sceneNode.worldPosition + Vector3(0, 0, 0);

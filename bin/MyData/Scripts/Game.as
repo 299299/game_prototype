@@ -531,31 +531,6 @@ class TestGameState : GameState
         StaticModel@ model = floor.GetComponent("StaticModel");
         // WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
 
-        if (!scene_.HasComponent("DynamicNavigationMesh"))
-        {
-            LogPrint("Building DynamicNavigationMesh!");
-            // Create a DynamicNavigationMesh component to the scene root
-            DynamicNavigationMesh@ navMesh = scene_.CreateComponent("DynamicNavigationMesh");
-            // Set small tiles to show navigation mesh streaming
-            navMesh.tileSize = 64;
-            // Enable drawing debug geometry for obstacles and off-mesh connections
-            navMesh.drawObstacles = true;
-            navMesh.drawOffMeshConnections = true;
-            // Set the agent height large enough to exclude the layers under boxes
-            navMesh.agentHeight = 5.0;
-            // Set nav mesh cell height to minimum (allows agents to be grounded)
-            // Create a Navigable component to the scene root. This tags all of the geometry in the scene as being part of the
-            // navigation mesh. By default this is recursive, but the recursion could be turned off from Navigable
-            floor.CreateComponent("Navigable");
-            // Add padding to the navigation mesh in Y-direction so that we can add objects on top of the tallest boxes
-            // in the scene and still update the mesh correctly
-            // navMesh.padding = Vector3(0.0f, 10.0f, 0.0f);
-            // Now build the navigation geometry. This will take some time. Note that the navigation mesh will prefer to use
-            // physics geometry from the scene nodes, as it often is simpler, but if it can not find any (like in this example)
-            // it will use renderable geometry instead
-            navMesh.Build();
-        }
-
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;
         Quaternion playerRot;
