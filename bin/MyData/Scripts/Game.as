@@ -556,17 +556,6 @@ class TestGameState : GameState
             navMesh.Build();
         }
 
-        CrowdManager@ crowdManager = scene_.GetComponent("CrowdManager");
-        if (crowdManager is null)
-            crowdManager = scene_.CreateComponent("CrowdManager");
-        CrowdObstacleAvoidanceParams params = crowdManager.GetObstacleAvoidanceParams(0);
-        // Set the params to "High (66)" setting
-        params.velBias = 0.5f;
-        params.adaptiveDivs = 7;
-        params.adaptiveRings = 3;
-        params.adaptiveDepth = 3;
-        crowdManager.SetObstacleAvoidanceParams(0, params);
-
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;
         Quaternion playerRot;

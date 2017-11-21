@@ -24,16 +24,6 @@
 		<attribute name="Draw NavAreas" value="true" />
 		<attribute name="Draw Obstacles" value="true" />
 	</component>
-	<component type="CrowdManager" id="107">
-		<attribute name="Max Agent Radius" value="1.5" />
-		<attribute name="Navigation Mesh" value="106" />
-		<attribute name="Filter Types">
-			<variant type="Int" value="0" />
-		</attribute>
-		<attribute name="Obstacle Avoidance Types">
-			<variant type="Int" value="0" />
-		</attribute>
-	</component>
 	<node id="2">
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="floor" />
