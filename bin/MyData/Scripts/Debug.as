@@ -9,7 +9,7 @@ void ShootBox(Scene@ _scene)
     boxNode.SetScale(1.0);
     StaticModel@ boxObject = boxNode.CreateComponent("StaticModel");
     boxObject.model = cache.GetResource("Model", "Models/Box.mdl");
-    boxObject.material = cache.GetResource("Material", "Materials/StoneEnvMapSmall.xml");
+    boxObject.material = cache.GetResource("Material", "Materials/StoneSmall.xml");
     boxObject.castShadows = true;
     RigidBody@ body = boxNode.CreateComponent("RigidBody");
     body.mass = 0.25f;

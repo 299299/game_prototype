@@ -46,8 +46,10 @@ uint playerId = M_MAX_UNSIGNED;
 int test_enemy_num_override = 1;
 int render_features = RF_SHADOWS | RF_HDR;
 
-const String UI_FONT = "Fonts/GAEN.ttf";
+const String UI_FONT = "Fonts/unlearn2.ttf";
 int UI_FONT_SIZE = 40;
+const String DEBUG_FONT = "Fonts/seagle.otf";
+int DEBUG_FONT_SIZE = 12;
 
 int freeze_ai = 0;
 int test_beat_index = 1;
@@ -177,9 +179,8 @@ void CreateUI()
 
     // Set starting position of the cursor at the rendering window center
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
-    //input.SetMouseVisible(true);
     Text@ text = ui.root.CreateChild("Text", "debug");
-    text.SetFont(cache.GetResource("Font", "Fonts/Anonymous Pro.ttf"), 12);
+    text.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
     text.horizontalAlignment = HA_LEFT;
     text.verticalAlignment = VA_TOP;
     text.SetPosition(5, 50);
