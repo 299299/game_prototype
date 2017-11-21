@@ -248,18 +248,12 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Death_Side_Right");
 
     preFix = "BM_Attack/";
-    Global_CreateMotion(preFix + "Beatdown_Test_01");
-    Global_CreateMotion(preFix + "Beatdown_Test_02");
-    Global_CreateMotion(preFix + "Beatdown_Test_03");
-    Global_CreateMotion(preFix + "Beatdown_Test_04");
-    Global_CreateMotion(preFix + "Beatdown_Test_05");
-    Global_CreateMotion(preFix + "Beatdown_Test_06");
+    for (uint i=1; i<=6; ++i)
+        Global_CreateMotion(preFix + "Beatdown_Test_0" + i);
 
     preFix = "BM_TG_Beatdown/";
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_01");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_02");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_03");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
+    for (uint i=1; i<=4; ++i)
+        Global_CreateMotion(preFix + "Beatdown_Strike_End_0" + i);
 }
 
 void CreateBruceMotions()

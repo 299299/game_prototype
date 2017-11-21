@@ -31,10 +31,8 @@ class ThugStandState : MultiAnimationState
     {
         super(c);
         SetName("StandState");
-        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_01");
-        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_02");
-        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_03");
-        AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_04");
+        for (uint i=1; i<=4; ++i)
+            AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_0" + i);
         flags = FLAGS_REDIRECTED | FLAGS_ATTACK;
         looped = true;
     }
@@ -200,7 +198,7 @@ class ThugStepMoveState : MultiMotionState
 
             if (dist <= attackRange && dist >= -0.5f)
             {
-                if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE && freeze_ai == 0)
+                if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
                 {
                     if (ownner.Attack())
                         return;
@@ -250,16 +248,14 @@ class ThugStepMoveState : MultiMotionState
     }
 };
 
-class ThugRunState : SingleMotionState
+class ThugMoveState : SingleMotionState
 {
     float turnSpeed = 5.0f;
     float attackRange;
 
-    ThugRunState(Character@ c)
+    ThugMoveState(Character@ c)
     {
         super(c);
-        SetName("RunState");
-        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
         flags = FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING;
     }
 
@@ -278,7 +274,7 @@ class ThugRunState : SingleMotionState
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         if (dist <= attackRange)
         {
-            if (ownner.Attack() && freeze_ai == 0)
+            if (ownner.Attack())
                 return;
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -303,6 +299,26 @@ class ThugRunState : SingleMotionState
     float GetThreatScore()
     {
         return 0.333f;
+    }
+}
+
+class ThugRunState : ThugMoveState
+{
+    ThugRunState(Character@ c)
+    {
+        super(c);
+        SetName("RunState");
+        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
+    }
+};
+
+class ThugWalkState : ThugMoveState
+{
+    ThugWalkState(Character@ c)
+    {
+        super(c);
+        SetName("WalkState");
+        SetMotion(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
     }
 };
 
@@ -702,12 +718,8 @@ class ThugBeatDownHitState : MultiMotionState
         super(c);
         SetName("BeatDownHitState");
         String preFix = "TG_BM_Beatdown/";
-        AddMotion(preFix + "Beatdown_HitReaction_01");
-        AddMotion(preFix + "Beatdown_HitReaction_02");
-        AddMotion(preFix + "Beatdown_HitReaction_03");
-        AddMotion(preFix + "Beatdown_HitReaction_04");
-        AddMotion(preFix + "Beatdown_HitReaction_05");
-        AddMotion(preFix + "Beatdown_HitReaction_06");
+        for (uint i=1; i<=6; ++i)
+            AddMotion(preFix + "Beatdown_HitReaction_0" + i);
 
         flags = FLAGS_STUN | FLAGS_ATTACK;
     }
@@ -736,10 +748,8 @@ class ThugBeatDownEndState : MultiMotionState
         super(c);
         SetName("BeatDownEndState");
         String preFix = "TG_BM_Beatdown/";
-        AddMotion(preFix + "Beatdown_Strike_End_01");
-        AddMotion(preFix + "Beatdown_Strike_End_02");
-        AddMotion(preFix + "Beatdown_Strike_End_03");
-        AddMotion(preFix + "Beatdown_Strike_End_04");
+        for (uint i=1; i<=4; ++i)
+            AddMotion(preFix + "Beatdown_Strike_End_0" + i);
         flags = FLAGS_ATTACK;
     }
 
@@ -775,6 +785,19 @@ class ThugPushBackState : SingleMotionState
     }
 };
 
+class ThugTauntingState : MultiAnimationState
+{
+    ThugTauntingState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("TauntingState");
+        flags = FLAGS_ATTACK;
+
+        for (uint i=1; i<=6; ++i)
+            AddMotion(MOVEMENT_GROUP_THUG + "Taunt_Idle_0" + i);
+    }
+};
+
 class Thug : Enemy
 {
     float           checkAvoidanceTimer = 0.0f;
@@ -787,6 +810,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
         stateMachine.AddState(ThugRunState(this));
+        stateMachine.AddState(ThugWalkState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugPushBackState(this));
         stateMachine.AddState(CharacterAlignState(this));
@@ -800,6 +824,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugBeatDownHitState(this));
         stateMachine.AddState(ThugBeatDownEndState(this));
         stateMachine.AddState(ThugStunState(this));
+        stateMachine.AddState(ThugTauntingState(this));
 
         ChangeState("StandState");
 
@@ -1143,23 +1168,18 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03");
 
     preFix = "TG_BM_Beatdown/";
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_01");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_02");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_03");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_04");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_05");
-    Global_CreateMotion(preFix + "Beatdown_HitReaction_06");
+    for (uint i=1; i<=6; ++i)
+        Global_CreateMotion(preFix + "Beatdown_HitReaction_0" + i);
 
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_01");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_02");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_03");
-    Global_CreateMotion(preFix + "Beatdown_Strike_End_04");
+    for (uint i=1; i<=4; ++i)
+        Global_CreateMotion(preFix + "Beatdown_Strike_End_0" + i);
 
     preFix = "TG_Combat/";
-    Global_AddAnimation(preFix + "Stand_Idle_Additive_01");
-    Global_AddAnimation(preFix + "Stand_Idle_Additive_02");
-    Global_AddAnimation(preFix + "Stand_Idle_Additive_03");
-    Global_AddAnimation(preFix + "Stand_Idle_Additive_04");
+    for (uint i=1; i<=4; ++i)
+        Global_AddAnimation(preFix + "Stand_Idle_Additive_0" + i);
+
+    for (uint i=1; i<=6; ++i)
+        Global_AddAnimation(preFix + "Taunt_Idle_0" + i);
 }
 
 void CreateThugMotions()
