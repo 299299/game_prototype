@@ -55,7 +55,7 @@ class LoadingState : GameState
         alphaAnimation.SetKeyFrame(alphaDuration, Variant(1.0f));
         alphaAnimation.SetKeyFrame(alphaDuration * 2, Variant(0.0f));
 
-        Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/ulogo.jpg");
+        Texture2D@ logoTexture = cache.GetResource("Texture2D", "Textures/LogoLarge.png");
         Sprite@ logoSprite = ui.root.CreateChild("Sprite", "logo");
         logoSprite.texture = logoTexture;
         int textureWidth = logoTexture.width;
