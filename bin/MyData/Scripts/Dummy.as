@@ -397,13 +397,6 @@ String GetAnimationDebugText(Node@ n)
     return debugText;
 }
 
-void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&in color, float size=0.15f)
-{
-    Sphere sp;
-    sp.Define(position, size);
-    debug.AddSphere(sp, color, false);
-}
-
 int DetectWallBlockingFoot()
 {
     int ret = 0;
@@ -467,3 +460,89 @@ Enemy@ PickRedirectEnemy()
 
     return redirectEnemy;
 }
+
+/*======================================= CROWD =======================================*/
+if (use_agent)
+{
+    agent = sceneNode.CreateComponent("CrowdAgent");
+    agent.height = CHARACTER_HEIGHT;
+    agent.maxSpeed = 11.6f;
+    agent.maxAccel = 6.0f;
+    agent.updateNodePosition = false;
+    agent.radius = COLLISION_RADIUS;
+}
+
+
+class ThugCrowdMoveState : SingleAnimationState
+{
+    Vector3 targetPosition;
+    float turnSpeed = 10.0f;
+    float attackRange;
+
+    ThugCrowdMoveState(Character@ c)
+    {
+        super(c);
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        looped = true;
+    }
+
+    void Update(float dt)
+    {
+        Vector3 distV = ownner.GetNode().worldPosition - targetPosition;
+        distV.y = 0;
+        float dist = distV.length;
+        Print(ownner.GetName() + " dist=" + dist);
+        if (dist <= COLLISION_SAFE_DIST)
+        {
+            ownner.ChangeState("StandState");
+            return;
+        }
+
+        Vector3 velocity = ownner.agent.actualVelocity;
+        float speed = velocity.length;
+        float speedRatio = speed / ownner.agent.maxSpeed;
+        Node@ _node = ownner.GetNode();
+        // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
+        _node.worldRotation = _node.worldRotation.Slerp(Quaternion(Vector3::FORWARD, velocity), turnSpeed * dt * speedRatio);
+        // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
+        ownner.animCtrl.SetSpeed(animation, speedRatio * 1.5f);
+
+        SingleAnimationState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleAnimationState::Enter(lastState);
+        ownner.agent.updateNodePosition = true;
+        attackRange = Random(0.2f, MAX_ATTACK_RANGE);
+        targetPosition = ownner.target.GetNode().worldPosition;
+        ownner.agent.targetPosition = targetPosition;
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.agent.updateNodePosition = false;
+        //ownner.agent.enabled = false;
+        //ownner.agent.enabled = true;
+        ownner.agent.ResetTarget();
+        SingleAnimationState::Exit(nextState);
+    }
+
+    float GetThreatScore()
+    {
+        return 0.333f;
+    }
+};
+
+CrowdManager@ crowdManager = scene_.GetComponent("CrowdManager");
+if (crowdManager is null)
+    crowdManager = scene_.CreateComponent("CrowdManager");
+CrowdObstacleAvoidanceParams params = crowdManager.GetObstacleAvoidanceParams(0);
+// Set the params to "High (66)" setting
+params.velBias = 0.5f;
+params.adaptiveDivs = 7;
+params.adaptiveRings = 3;
+params.adaptiveDepth = 3;
+crowdManager.SetObstacleAvoidanceParams(0, params);
+
+/*======================================= CROWD =======================================*/

@@ -51,7 +51,7 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 5;
+int test_enemy_num_override = 20;
 int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/unlearn2.ttf";
@@ -68,7 +68,7 @@ int test_triple_counter_index = 0;
 int collision_type = 0;
 
 bool mobile = false;
-bool use_agent = true;
+bool use_agent = false;
 
 GameInput@ gInput = GameInput();
 

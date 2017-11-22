@@ -179,7 +179,7 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Right_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Back_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_KEEP_DIST;
 
         if (STEP_MAX_DIST != 0.0f)
         {
@@ -243,6 +243,7 @@ class ThugStepMoveState : MultiMotionState
 
 class ThugMoveState : SingleMotionState
 {
+    Vector3 targetPosition;
     float turnSpeed = 5.0f;
     float attackRange;
 
@@ -255,7 +256,7 @@ class ThugMoveState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff();
-        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
+        // ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
 
         // if the difference is large, then turn 180 degrees
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
@@ -273,6 +274,15 @@ class ThugMoveState : SingleMotionState
             return;
         }
 
+        Vector3 distV = targetPosition - ownner.GetNode().worldPosition;
+        distV.y = 0;
+        dist = distV.length - COLLISION_SAFE_DIST;
+        if (dist < 1.0)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
         SingleMotionState::Update(dt);
     }
 
@@ -281,6 +291,7 @@ class ThugMoveState : SingleMotionState
         SingleMotionState::Enter(lastState);
         attackRange = Random(0.0, MAX_ATTACK_RANGE);
         ownner.ClearAvoidance();
+        targetPosition = ownner.target.GetNode().worldPosition;
     }
 
     void FixedUpdate(float dt)
@@ -293,82 +304,16 @@ class ThugMoveState : SingleMotionState
     {
         return 0.333f;
     }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(targetPosition, 0.5f, YELLOW, false);
+    }
 }
-
-class ThugCrowdMoveState : SingleAnimationState
-{
-    float turnSpeed = 10.0f;
-    float attackRange;
-
-    ThugCrowdMoveState(Character@ c)
-    {
-        super(c);
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
-        looped = true;
-    }
-
-    void Update(float dt)
-    {
-        float dist = ownner.GetTargetDistance() - 2 * COLLISION_RADIUS;
-        if (dist <= attackRange)
-        {
-            ownner.ChangeState("StandState");
-            return;
-            if (ownner.Attack() && freeze_ai == 0)
-                return;
-            ownner.CommonStateFinishedOnGroud();
-            return;
-        }
-
-        Vector3 velocity = ownner.agent.actualVelocity;
-        float speed = velocity.length;
-        float speedRatio = speed / ownner.agent.maxSpeed;
-        Node@ _node = ownner.GetNode();
-        // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
-        _node.worldRotation = _node.worldRotation.Slerp(Quaternion(Vector3::FORWARD, velocity), turnSpeed * dt * speedRatio);
-        // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
-        ownner.animCtrl.SetSpeed(animation, speedRatio * 1.5f);
-
-        ownner.agent.targetPosition = ownner.target.GetNode().worldPosition;
-        // ownner.MoveTo(ownner.agent.position, dt);
-
-        SingleAnimationState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        SingleAnimationState::Enter(lastState);
-        ownner.agent.updateNodePosition = true;
-        attackRange = Random(0.2f, MAX_ATTACK_RANGE);
-    }
-
-    void Exit(State@ nextState)
-    {
-        ownner.agent.updateNodePosition = false;
-        ownner.agent.enabled = false;
-        ownner.agent.enabled = true;
-        SingleAnimationState::Exit(nextState);
-    }
-
-    float GetThreatScore()
-    {
-        return 0.333f;
-    }
-};
 
 class ThugRunState : ThugMoveState
 {
     ThugRunState(Character@ c)
-    {
-        super(c);
-        SetName("RunState");
-        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
-    }
-};
-
-class ThugCrowdRunState : ThugCrowdMoveState
-{
-    ThugCrowdRunState(Character@ c)
     {
         super(c);
         SetName("RunState");
@@ -423,6 +368,7 @@ class ThugTurnState : MultiMotionState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         endTime = motions[index].endTime;
         turnSpeed = diff / endTime;
+        LogPrint(ownner.GetName() + " turn speed = " + turnSpeed + " diff=" + diff);
         ownner.ClearAvoidance();
         MultiMotionState::Enter(lastState);
     }
@@ -505,8 +451,12 @@ class ThugAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST);
 
-        float characterDifference = ownner.ComputeAngleDiff();
-        ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
+        if (currentAttack.type == ATTACK_PUNCH)
+        {
+            float characterDifference = ownner.ComputeAngleDiff();
+            ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
+        }
+
 
         if (doAttackCheck)
             AttackCollisionCheck();
@@ -873,10 +823,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugStandState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
-        if (use_agent)
-            stateMachine.AddState(ThugCrowdRunState(this));
-        else
-            stateMachine.AddState(ThugRunState(this));
+        stateMachine.AddState(ThugRunState(this));
         stateMachine.AddState(ThugWalkState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugPushBackState(this));
@@ -914,7 +861,7 @@ class Thug : Enemy
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_SAFE_DIST, YELLOW, 32, false);
+        // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_SAFE_DIST, YELLOW, 32, false);
     }
 
     bool CanAttack()
@@ -1058,13 +1005,13 @@ class Thug : Enemy
             if (n_node is null)
                 continue;
 
-            //LogPrint("neighbors[" + i + "] = " + n_node.name);
+            // LogPrint(_node.name + " neighbors[" + i + "] = " + n_node.name);
 
             Character@ object = cast<Character>(n_node.scriptObject);
             if (object is null)
                 continue;
 
-            if (object.HasFlag(FLAGS_MOVING))
+            if (object.HasFlag(FLAGS_KEEP_DIST))
                 continue;
 
             ++len;
@@ -1263,8 +1210,8 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Step_Back_Long");
     Global_CreateMotion(preFix + "Step_Left_Long");
 
-    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_R, kMotion_R, 32);
-    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_R, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
 
     Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);

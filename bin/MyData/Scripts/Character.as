@@ -1106,16 +1106,6 @@ class Character : GameObject
             renderNode.position = Vector3(0, 0.3f, 0);
         }
 
-        if (use_agent)
-        {
-            agent = sceneNode.CreateComponent("CrowdAgent");
-            agent.height = CHARACTER_HEIGHT;
-            agent.maxSpeed = 11.6f;
-            agent.maxAccel = 6.0f;
-            agent.updateNodePosition = false;
-            agent.radius = COLLISION_RADIUS;
-        }
-
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
@@ -1281,7 +1271,7 @@ class Character : GameObject
     void DebugDraw(DebugRenderer@ debug)
     {
         stateMachine.DebugDraw(debug);
-        debug.AddNode(sceneNode, 0.5f, false);
+        debug.AddNode(sceneNode, 1.5f, false);
     }
 
     void TestAnimation(const Array<String>&in animations)

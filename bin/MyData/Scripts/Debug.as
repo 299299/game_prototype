@@ -431,6 +431,14 @@ void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle,
     debug.AddLine(start, end, color, false);
 }
 
+void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&in color, float size=0.15f)
+{
+    Sphere sp;
+    sp.Define(position, size);
+    debug.AddSphere(sp, color, false);
+}
+
+
 void DrawDebugText()
 {
     String seperator = "-------------------------------------------------------------------------------------------------------\n";
