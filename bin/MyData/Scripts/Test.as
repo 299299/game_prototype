@@ -1,3 +1,11 @@
+
+
+/*           ==============       ==============
+            |               |____|               |
+            \               /    \               /
+              =============        ==============
+                             ●   ●                        */
+
 // ------------------------------------------------
 #include "Scripts/Game.as"
 #include "Scripts/AssetProcess.as"
@@ -31,7 +39,7 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
 };
 
-int drawDebug = 0;
+int drawDebug = 10;
 bool bigHeadMode = false;
 bool nobgm = true;
 

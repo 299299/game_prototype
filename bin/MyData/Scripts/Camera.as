@@ -146,6 +146,16 @@ class DebugFPSCameraController: CameraController
     {
         return true;
     }
+
+    void Enter()
+    {
+        input.mouseMode = MM_RELATIVE;
+    }
+
+    void Exit()
+    {
+        input.mouseMode = MM_FREE;
+    }
 };
 
 class TransitionCameraController : CameraController

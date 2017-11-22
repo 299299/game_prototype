@@ -1100,6 +1100,11 @@ class Character : GameObject
             SetGravity(Vector3(0, -20, 0));
         }
 
+        if (bigHeadMode)
+        {
+            renderNode.position = Vector3(0, 0.3f, 0);
+        }
+
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
     }
