@@ -85,7 +85,7 @@ class ThugStandState : MultiAnimationState
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance();
 
-        if (dist > MAX_ATTACK_RANGE)
+        if (dist > MAX_ATTACK_DIST)
         {
             LogPrint(ownner.GetName() + " far away, tryinng to approach ");
             ownner.ChangeState("RunState");
@@ -295,9 +295,80 @@ class ThugMoveState : SingleMotionState
     }
 }
 
+class ThugCrowdMoveState : SingleAnimationState
+{
+    float turnSpeed = 10.0f;
+    float attackRange;
+
+    ThugCrowdMoveState(Character@ c)
+    {
+        super(c);
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        looped = true;
+    }
+
+    void Update(float dt)
+    {
+        float dist = ownner.GetTargetDistance() - 2 * COLLISION_RADIUS;
+        if (dist <= attackRange)
+        {
+            ownner.ChangeState("StandState");
+            return;
+            if (ownner.Attack() && freeze_ai == 0)
+                return;
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
+        Vector3 velocity = ownner.agent.actualVelocity;
+        float speed = velocity.length;
+        float speedRatio = speed / ownner.agent.maxSpeed;
+        Node@ _node = ownner.GetNode();
+        // Face the direction of its velocity but moderate the turning speed based on the speed ratio and timeStep
+        _node.worldRotation = _node.worldRotation.Slerp(Quaternion(Vector3::FORWARD, velocity), turnSpeed * dt * speedRatio);
+        // Throttle the animation speed based on agent speed ratio (ratio = 1 is full throttle)
+        ownner.animCtrl.SetSpeed(animation, speedRatio * 1.5f);
+
+        ownner.agent.targetPosition = ownner.target.GetNode().worldPosition;
+        // ownner.MoveTo(ownner.agent.position, dt);
+
+        SingleAnimationState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleAnimationState::Enter(lastState);
+        ownner.agent.updateNodePosition = true;
+        attackRange = Random(0.2f, MAX_ATTACK_RANGE);
+    }
+
+    void Exit(State@ nextState)
+    {
+        ownner.agent.updateNodePosition = false;
+        ownner.agent.enabled = false;
+        ownner.agent.enabled = true;
+        SingleAnimationState::Exit(nextState);
+    }
+
+    float GetThreatScore()
+    {
+        return 0.333f;
+    }
+};
+
 class ThugRunState : ThugMoveState
 {
     ThugRunState(Character@ c)
+    {
+        super(c);
+        SetName("RunState");
+        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
+    }
+};
+
+class ThugCrowdRunState : ThugCrowdMoveState
+{
+    ThugCrowdRunState(Character@ c)
     {
         super(c);
         SetName("RunState");
@@ -802,7 +873,10 @@ class Thug : Enemy
         stateMachine.AddState(ThugStandState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
-        stateMachine.AddState(ThugRunState(this));
+        if (use_agent)
+            stateMachine.AddState(ThugCrowdRunState(this));
+        else
+            stateMachine.AddState(ThugRunState(this));
         stateMachine.AddState(ThugWalkState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugPushBackState(this));
