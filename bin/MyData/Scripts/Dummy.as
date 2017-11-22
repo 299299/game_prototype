@@ -423,3 +423,47 @@ int DetectWallBlockingFoot()
         ret ++;
     return ret;
 }
+
+Enemy@ PickRedirectEnemy()
+{
+    EnemyManager@ em = cast<EnemyManager>(GetScene().GetScriptObject("EnemyManager"));
+    if (em is null)
+        return null;
+
+    Enemy@ redirectEnemy = null;
+    const float bestRedirectDist = 5;
+    const float maxRedirectDist = 7;
+    const float maxDirDiff = 45;
+
+    float myDir = GetCharacterAngle();
+    float bestDistDiff = 9999;
+
+    for (uint i=0; i<em.enemyList.length; ++i)
+    {
+        Enemy@ e = em.enemyList[i];
+        if (!e.CanBeRedirected()) {
+            LogPrint("Enemy " + e.GetName() + " can not be redirected.");
+            continue;
+        }
+
+        float enemyDir = e.GetCharacterAngle();
+        float totalDir = Abs(AngleDiff(myDir - enemyDir));
+        float dirDiff = Abs(totalDir - 180);
+        LogPrint("Evade-- myDir=" + myDir + " enemyDir=" + enemyDir + " totalDir=" + totalDir + " dirDiff=" + dirDiff);
+        if (dirDiff > maxDirDiff)
+            continue;
+
+        float dist = GetTargetDistance(e.sceneNode);
+        if (dist > maxRedirectDist)
+            continue;
+
+        dist = Abs(dist - bestRedirectDist);
+        if (dist < bestDistDiff)
+        {
+            @redirectEnemy = e;
+            dist = bestDistDiff;
+        }
+    }
+
+    return redirectEnemy;
+}

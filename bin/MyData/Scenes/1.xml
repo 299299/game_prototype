@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="1366.13" />
 	<attribute name="Next Replicated Node ID" value="59" />
 	<attribute name="Next Replicated Component ID" value="108" />
-	<attribute name="Next Local Node ID" value="16780682" />
-	<attribute name="Next Local Component ID" value="16778311" />
+	<attribute name="Next Local Node ID" value="16780683" />
+	<attribute name="Next Local Component ID" value="16778323" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -216,7 +216,7 @@
 		<attribute name="Is Enabled" value="true" />
 		<attribute name="Name" value="player" />
 		<attribute name="Tags" />
-		<attribute name="Position" value="0 2.5 -20" />
+		<attribute name="Position" value="0 2.5 -27.2799" />
 		<attribute name="Rotation" value="1 0 0 0" />
 		<attribute name="Scale" value="1 5 1" />
 		<attribute name="Variables" />

@@ -1261,11 +1261,6 @@ class Character : GameObject
         return HasFlag(FLAGS_COUNTER);
     }
 
-    bool CanBeRedirected()
-    {
-        return HasFlag(FLAGS_REDIRECTED);
-    }
-
     bool CanAttack()
     {
         return false;

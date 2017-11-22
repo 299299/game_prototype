@@ -32,7 +32,7 @@ class ThugStandState : MultiAnimationState
         SetName("StandState");
         for (uint i=1; i<=4; ++i)
             AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_0" + i);
-        flags = FLAGS_REDIRECTED | FLAGS_ATTACK;
+        flags = FLAGS_ATTACK;
         looped = true;
     }
 
@@ -83,8 +83,16 @@ class ThugStandState : MultiAnimationState
 
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
-        float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
+        float dist = ownner.GetTargetDistance();
 
+        if (dist > MAX_ATTACK_RANGE)
+        {
+            LogPrint(ownner.GetName() + " far away, tryinng to approach ");
+            ownner.ChangeState("RunState");
+            return;
+        }
+
+        dist -= COLLISION_SAFE_DIST;
 
         if (ownner.CanAttack() && dist <= attackRange)
         {
@@ -171,7 +179,7 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Right_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Back_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
-        flags = FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING;
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
 
         if (STEP_MAX_DIST != 0.0f)
         {
@@ -241,7 +249,7 @@ class ThugMoveState : SingleMotionState
     ThugMoveState(Character@ c)
     {
         super(c);
-        flags = FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_MOVING;
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
     }
 
     void Update(float dt)
@@ -318,7 +326,7 @@ class ThugTurnState : MultiMotionState
         SetName("TurnState");
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Right");
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
-        flags = FLAGS_REDIRECTED | FLAGS_ATTACK;
+        flags = FLAGS_ATTACK;
     }
 
     void Update(float dt)
@@ -369,7 +377,7 @@ class ThugCounterState : CharacterCounterState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
         {
-            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            ownner.AddFlag(FLAGS_ATTACK);
             return;
         }
         CharacterCounterState::OnAnimationTrigger(animState, eventData);
@@ -377,7 +385,7 @@ class ThugCounterState : CharacterCounterState
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        ownner.RemoveFlag(FLAGS_ATTACK);
         CharacterCounterState::Exit(nextState);
     }
 };
@@ -459,7 +467,7 @@ class ThugAttackState : CharacterState
         ownner.GetNode().vars[ATTACK_TYPE] = currentAttack.type;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
-        ownner.AddFlag(FLAGS_REDIRECTED | FLAGS_ATTACK);
+        ownner.AddFlag(FLAGS_ATTACK);
         doAttackCheck = false;
         CharacterState::Enter(lastState);
         LogPrint(ownner.GetName() + " Pick attack motion = " + motion.animationName);
@@ -468,7 +476,7 @@ class ThugAttackState : CharacterState
     void Exit(State@ nextState)
     {
         @currentAttack = null;
-        ownner.RemoveFlag(FLAGS_REDIRECTED | FLAGS_ATTACK | FLAGS_COUNTER);
+        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_COUNTER);
         ownner.SetTimeScale(1.0f);
         attackCheckNode = null;
         ShowAttackIndicator(false);
@@ -582,13 +590,13 @@ class ThugHitState : MultiMotionState
     void Update(float dt)
     {
         if (timeInState >= recoverTimer)
-            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            ownner.AddFlag(FLAGS_ATTACK);
         MultiMotionState::Update(dt);
     }
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        ownner.RemoveFlag(FLAGS_ATTACK);
         MultiMotionState::Exit(nextState);
     }
 
@@ -647,7 +655,7 @@ class ThugGetUpState : CharacterGetUpState
         StringHash name = eventData[NAME].GetStringHash();
         if (name == READY_TO_FIGHT)
         {
-            ownner.AddFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+            ownner.AddFlag(FLAGS_ATTACK);
             return;
         }
         CharacterGetUpState::OnAnimationTrigger(animState, eventData);
@@ -661,7 +669,7 @@ class ThugGetUpState : CharacterGetUpState
 
     void Exit(State@ nextState)
     {
-        ownner.RemoveFlag(FLAGS_ATTACK | FLAGS_REDIRECTED);
+        ownner.RemoveFlag(FLAGS_ATTACK);
         CharacterGetUpState::Exit(nextState);
     }
 };
