@@ -68,6 +68,7 @@ int test_triple_counter_index = 0;
 int collision_type = 0;
 
 bool mobile = false;
+bool use_agent = true;
 
 GameInput@ gInput = GameInput();
 
