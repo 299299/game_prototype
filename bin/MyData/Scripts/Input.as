@@ -118,6 +118,19 @@ class GameInput
         if (!IsTouching())
         {
             touchMovingArea = false;
+
+            if (!mobile)
+            {
+                if (input.keyDown[KEY_W])
+                    ret.y += 1.0f;
+                if (input.keyDown[KEY_S])
+                    ret.y -= 1.0f;
+                if (input.keyDown[KEY_A])
+                    ret.x -= 1.0f;
+                if (input.keyDown[KEY_D])
+                    ret.x += 1.0f;
+            }
+
             return ret;
         }
 

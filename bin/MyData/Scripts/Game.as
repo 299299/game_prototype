@@ -335,8 +335,22 @@ class TestGameState : GameState
                     em.CreateEnemies();
                 }
 
-                float t = fullscreenUI.GetAttributeAnimationTime("Opacity");
-                if (t + 0.05f >= fadeTime)
+                // Print("fullscreenUI.opacity=" + fullscreenUI.opacity);
+
+                if (fullscreenUI.opacity > 0.99f)
+                {
+                    Player@ player = GetPlayer();
+                    freezeInput = true;
+                    em.RemoveAll();
+
+                    if (player !is null)
+                    {
+                        player.Reset();
+                        player.AddFlag(FLAGS_INVINCIBLE);
+                    }
+                }
+
+                if (fullscreenUI.opacity < 0.001f)
                 {
                     fullscreenUI.visible = false;
                     ChangeSubState(GAME_RUNNING);
@@ -402,7 +416,6 @@ class TestGameState : GameState
         EnemyManager@ em = GetEnemyMgr();
 
         gInput.ShowHideUI(false);
-
         switch (newState)
         {
         case GAME_RUNNING:
@@ -446,16 +459,6 @@ class TestGameState : GameState
                     fullscreenUI.opacity = 0.0f;
                     fullscreenUI.visible = true;
                     fullscreenUI.SetAttributeAnimation("Opacity", alphaAnimation, WM_ONCE);
-                }
-
-                freezeInput = true;
-                if (em !is null)
-                    em.RemoveAll();
-
-                if (player !is null)
-                {
-                    player.Reset();
-                    player.AddFlag(FLAGS_INVINCIBLE);
                 }
             }
             break;

@@ -53,13 +53,11 @@ class PlayerAttackState : CharacterState
         }
     }
 
-    float UpdateMaxDist(Array<AttackMotion@>@ attacks, float dist)
+    float GetMaxDist(Array<AttackMotion@>@ attacks, float dist)
     {
         if (attacks.empty)
             return dist;
-
-        float maxDist = attacks[attacks.length-1].motion.endDistance;
-        return (maxDist > dist) ? maxDist : dist;
+        return Max(attacks[attacks.length-1].motion.endDistance, dist);
     }
 
     void Dump()
@@ -126,7 +124,7 @@ class PlayerAttackState : CharacterState
                 ownner.SetSceneTimeScale(1.0f);
         }
 
-        ownner.CheckTargetDistance(ownner.target, PLAYER_COLLISION_DIST);
+        ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST);
 
         bool finished = motion.Move(ownner, dt) == 1;
         if (finished) {
@@ -164,7 +162,7 @@ class PlayerAttackState : CharacterState
         Vector3 enemyPos = ownner.target.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
-        float toEnenmyDistance = diff.length - PLAYER_COLLISION_DIST;
+        float toEnenmyDistance = diff.length - COLLISION_SAFE_DIST;
         if (toEnenmyDistance < 0.0f)
             toEnenmyDistance = 0.0f;
         int bestIndex = 0;
@@ -174,7 +172,7 @@ class PlayerAttackState : CharacterState
         int index_num = 0;
 
         float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_RANGE/2.0f);
-        float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_RANGE;
+        float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_RANGE/2.0f;
         LogPrint("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
         for (uint i=0; i<attacks.length; ++i)
@@ -389,14 +387,13 @@ class PlayerAttackState : CharacterState
         backAttacks.Sort();
 
         float dist = 0.0f;
-        dist = UpdateMaxDist(forwardAttacks, dist);
-        dist = UpdateMaxDist(leftAttacks, dist);
-        dist = UpdateMaxDist(rightAttacks, dist);
-        dist = UpdateMaxDist(backAttacks, dist);
-
-        LogPrint(ownner.GetName() + " max attack dist = " + dist);
-        dist += 10.0f;
-        MAX_ATTACK_DIST = Min(MAX_ATTACK_DIST, dist);
+        dist = GetMaxDist(forwardAttacks, dist);
+        dist = GetMaxDist(leftAttacks, dist);
+        dist = GetMaxDist(rightAttacks, dist);
+        dist = GetMaxDist(backAttacks, dist);
+        MAX_ATTACK_DIST = Min(MAX_ATTACK_DIST, dist + 5.0f);
+        MAX_ATTACK_DIST += COLLISION_SAFE_DIST;
+        LogPrint(ownner.GetName() + " animation max attack dist = " + dist + " MAX_ATTACK_DIST=" + MAX_ATTACK_DIST);
 
         for (uint i=0; i<forwardAttacks.length; ++i)
         {
@@ -922,7 +919,7 @@ class PlayerBeatDownHitState : MultiMotionState
     void Enter(State@ lastState)
     {
         float curDist = ownner.GetTargetDistance();
-        if (IsTransitionNeeded(curDist - PLAYER_COLLISION_DIST))
+        if (IsTransitionNeeded(curDist - COLLISION_SAFE_DIST))
         {
             ownner.ChangeStateQueue(StringHash("TransitionState"));
             PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.FindState(StringHash("TransitionState")));

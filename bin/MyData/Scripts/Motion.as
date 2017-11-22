@@ -210,7 +210,10 @@ class Motion
         processed = true;
 
         if (d_log)
-            LogPrint("Motion " + name + " endDistance="  + endDistance + " startFromOrigin=" + startFromOrigin.ToString()  + " timeCost=" + String(time.systemTime - startTime) + " ms");
+        LogPrint("Motion " + name + " endDistance="  + endDistance +
+                 " startFromOrigin=" + startFromOrigin.ToString()  +
+                 " maxHeight=" + maxHeight +
+                 " timeCost=" + String(time.systemTime - startTime) + " ms");
     }
 
     void SetDockAlign(const String&in boneName, float alignTime, const Vector3&in offset)
@@ -674,9 +677,8 @@ void Global_CreateMotion_InFolder(const String&in folder)
     {
         searchFolder = "/apk/" + searchFolder;
     }
-    LogPrint("Global_CreateMotion_InFolder folder=" + searchFolder);
-    Array<String> attack_animations = fileSystem.ScanDir(searchFolder, "*.ani", SCAN_FILES, false);
-    LogPrint("attack_animations.size=" + String(attack_animations.length));
-    for (uint i=0; i<attack_animations.length; ++i)
-        Global_CreateMotion(folder + FileNameToMotionName(attack_animations[i]));
+    Array<String> animations = fileSystem.ScanDir(searchFolder, "*.ani", SCAN_FILES, false);
+    LogPrint("Global_CreateMotion_InFolder folder=" + searchFolder + " animations.size=" + animations.length);
+    for (uint i=0; i<animations.length; ++i)
+        Global_CreateMotion(folder + FileNameToMotionName(animations[i]));
 }

@@ -347,7 +347,11 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
 
 float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, float rotateAngle, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
+    bool dump = motionFlag & kMotion_Ext_Debug_Dump != 0;
     if (d_log)
+        dump = true;
+
+    if (dump)
     {
         LogPrint("---------------------------------------------------------------------------------------");
         LogPrint("Processing animation " + animationFile);
@@ -374,7 +378,6 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     MotionRig@ rig = curRig;
 
     bool cutRotation = motionFlag & kMotion_Ext_Rotate_From_Start != 0;
-    bool dump = motionFlag & kMotion_Ext_Debug_Dump != 0;
     float firstRotateFromRoot = 0;
     bool flip = false;
     bool footBased = motionFlag & kMotion_Ext_Foot_Based_Height != 0;
@@ -387,7 +390,7 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         firstRotateFromRoot = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(firstRotateFromRoot) > 75)
         {
-            if (d_log)
+            if (dump)
                 LogPrint(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
             flip = true;
         }
@@ -543,10 +546,8 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         {
             LogPrint("Frame " + String(i) + " motion-key=" + outKeys[i].ToString());
         }
-    }
-
-    if (d_log)
         LogPrint("---------------------------------------------------------------------------------------");
+    }
 
     if (rotateAngle < 360)
         return rotateAngle;

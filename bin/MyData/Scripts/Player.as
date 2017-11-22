@@ -5,7 +5,6 @@
 // ==============================================
 
 const float MAX_COUNTER_DIST = 4.0f;
-const float PLAYER_COLLISION_DIST = COLLISION_RADIUS * 1.8f;
 const float DIST_SCORE = 10.0f;
 const float ANGLE_SCORE = 30.0f;
 const float THREAT_SCORE = 30.0f;
@@ -266,8 +265,6 @@ class Player : Character
 
         // Find the best enemy
         Vector3 myPos = sceneNode.worldPosition;
-        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
-        float myAngle = Atan2(myDir.x, myDir.z);
         float targetAngle = GetTargetAngle();
         em.scoreCache.Clear();
 
@@ -286,8 +283,7 @@ class Player : Character
             Vector3 posDiff = e.GetNode().worldPosition - myPos;
             posDiff.y = 0;
             int score = 0;
-            float dist = posDiff.length - PLAYER_COLLISION_DIST;
-
+            float dist = posDiff.length;
             if (dist > maxDiffDist)
             {
                 if (d_log)
@@ -312,7 +308,7 @@ class Player : Character
                 LogPrint("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             int threatScore = 0;
-            if (dist < 1.0f + COLLISION_SAFE_DIST)
+            if (dist < 2.0f + COLLISION_SAFE_DIST)
             {
                 CharacterState@ state = cast<CharacterState>(e.GetState());
                 threatScore += int(state.GetThreatScore() * THREAT_SCORE);
@@ -388,8 +384,6 @@ class Player : Character
             return;
 
         Vector3 myPos = sceneNode.worldPosition;
-        Vector3 myDir = sceneNode.worldRotation * Vector3(0, 0, 1);
-        float myAngle = Atan2(myDir.x, myDir.z);
         float targetAngle = GetTargetAngle();
 
         for (uint i=0; i<em.enemyList.length; ++i)
@@ -400,7 +394,7 @@ class Player : Character
             Vector3 posDiff = e.GetNode().worldPosition - myPos;
             posDiff.y = 0;
             int score = 0;
-            float dist = posDiff.length - PLAYER_COLLISION_DIST;
+            float dist = posDiff.length;
             if (dist > maxDiffDist)
                 continue;
             float enemyAngle = Atan2(posDiff.x, posDiff.z);

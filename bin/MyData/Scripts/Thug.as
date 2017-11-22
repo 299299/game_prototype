@@ -25,7 +25,6 @@ class ThugStandState : MultiAnimationState
 {
     float           thinkTime;
     float           attackRange;
-    bool            firstEnter = true;
 
     ThugStandState(Character@ c)
     {
@@ -40,16 +39,7 @@ class ThugStandState : MultiAnimationState
     void Enter(State@ lastState)
     {
         ownner.SetVelocity(Vector3(0,0,0));
-
-        float min_think_time = MIN_THINK_TIME;
-        float max_think_time = MAX_THINK_TIME;
-        if (firstEnter)
-        {
-            min_think_time = 2.0f;
-            max_think_time = 3.0f;
-            firstEnter = false;
-        }
-        thinkTime = Random(min_think_time, max_think_time);
+        thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
         if (d_log)
             LogPrint(ownner.GetName() + " thinkTime=" + thinkTime);
         ownner.ClearAvoidance();
@@ -94,6 +84,8 @@ class ThugStandState : MultiAnimationState
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance()  - COLLISION_SAFE_DIST;
+
+
         if (ownner.CanAttack() && dist <= attackRange)
         {
             LogPrint(ownner.GetName() + " do attack because dist <= " + attackRange);
@@ -189,32 +181,25 @@ class ThugStepMoveState : MultiMotionState
         }
     }
 
-    void Update(float dt)
+    void OnMotionFinished()
     {
-        if (motions[selectIndex].Move(ownner, dt) == 1)
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist <= attackRange && dist >= -0.5f)
         {
-            float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-            bool attack = false;
-
-            if (dist <= attackRange && dist >= -0.5f)
+            if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
             {
-                if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
-                {
-                    if (ownner.Attack())
-                        return;
-                }
-                else
-                {
-                    ownner.ChangeState("TurnState");
+                if (ownner.Attack())
                     return;
-                }
             }
-
-            ownner.CommonStateFinishedOnGroud();
-            return;
+            else
+            {
+                ownner.ChangeState("TurnState");
+                return;
+            }
         }
 
-        CharacterState::Update(dt);
+        ownner.CommonStateFinishedOnGroud();
+        return;
     }
 
     int GetStepMoveIndex()
