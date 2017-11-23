@@ -532,7 +532,7 @@ class TestGameState : GameState
 
         Node@ floor = scene_.GetChild("floor", true);
         StaticModel@ model = floor.GetComponent("StaticModel");
-        // WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
+        WORLD_HALF_SIZE = model.boundingBox.halfSize * floor.worldScale;
 
         Node@ tmpPlayerNode = scene_.GetChild("player", true);
         Vector3 playerPos;

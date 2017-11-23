@@ -9,10 +9,11 @@ const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 const float MIN_TURN_ANGLE = 30;
 const float MIN_THINK_TIME = 0.25f;
 const float MAX_THINK_TIME = 1.0f;
-const float KEEP_DIST_WITHIN_PLAYER = 20.0f;
 const float MAX_ATTACK_RANGE = 3.0f;
-const float KEEP_DIST = 1.5f;
 const Vector3 HIT_RAGDOLL_FORCE(25.0f, 10.0f, 0.0f);
+
+const float AI_FAR_DIST = 15.0f;
+const float AI_NEAR_DIST = 6.0f;
 
 // -- NON CONST
 float PUNCH_DIST = 0.0f;
@@ -83,16 +84,22 @@ class ThugStandState : MultiAnimationState
 
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
-        float dist = ownner.GetTargetDistance();
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
 
-        if (dist > MAX_ATTACK_DIST)
+        if (dist >= AI_FAR_DIST)
         {
-            LogPrint(ownner.GetName() + " far away, tryinng to approach ");
-            ownner.ChangeState("RunState");
+            Vector3 v = em.FindGoodTargetPosition(cast<Enemy>(ownner), AI_FAR_DIST);
+            bool can_i_see_target = !ownner.IsTargetSightBlocked(v);
+            LogPrint(ownner.GetName() + " far away, tryinng to approach v=" + v.ToString() + " can_i_see_target=" + can_i_see_target);
+            if (can_i_see_target)
+            {
+                ownner.GetNode().vars[TARGET] = v;
+                ownner.ChangeState("RunToTargetState");
+            }
+            else
+                ownner.ChangeState("TauntingState");
             return;
         }
-
-        dist -= COLLISION_SAFE_DIST;
 
         if (ownner.CanAttack() && dist <= attackRange)
         {
@@ -101,10 +108,22 @@ class ThugStandState : MultiAnimationState
                 return;
         }
 
-        int rand_i = 0;
+        int num_of_with_player = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
+        if (num_of_with_player <  MAX_NUM_OF_NEAR && ownner.HasFlag(FLAGS_NO_MOVE))
+        {
+            int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
+            // bool can_i_see_target = ownner.IsTargetSightBlocked(ownner.target.GetNode().worldPosition);
+            if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK)
+            {
+                ownner.ChangeState("RunToAttackState");
+                return;
+            }
+        }
+
+        /*int rand_i = 0;
         int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
         //bool can_i_see_player = !ownner.IsTargetSightBlocked();
-        int num_of_with_player = em.GetNumOfEnemyWithinDistance(PLAYER_NEAR_DIST);
+        int num_of_with_player = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
         if (num_of_moving_thugs < MAX_NUM_OF_MOVING && num_of_with_player <  MAX_NUM_OF_NEAR && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             // try to move to player
@@ -118,24 +137,24 @@ class ThugStandState : MultiAnimationState
             else
             {
                 ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-                int index = state.GetStepMoveIndex();
-                //LogPrint(ownner.GetName() + " apply animation index for step move in thug stand state: " + index);
-                _node.vars[ANIMATION_INDEX] = index;
+                int index = 0;
+                if (dist < KEEP_DIST_WITH_PLAYER)
+                {
+                    index = ownner.RadialSelectAnimation(4);
+                    index = (index + 2) % 4;
+                }
+                else
+                {
+                    if (dist > state.motions[4].endDistance + 2.0f)
+                        index += 4;
+                }
+
+                ownner.GetNode().vars[ANIMATION_INDEX] = index;
             }
             ownner.ChangeState(nextState);
         }
         else
         {
-            if (dist >= KEEP_DIST_WITHIN_PLAYER)
-            {
-                ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-                int index = state.GetStepMoveIndex();
-                //LogPrint(ownner.GetName() + " apply animation index for keep with with player in stand state: " + index);
-                _node.vars[ANIMATION_INDEX] = index;
-                ownner.ChangeState("StepMoveState");
-                return;
-            }
-
             rand_i = RandomInt(10);
             if (rand_i > 8)
             {
@@ -144,7 +163,7 @@ class ThugStandState : MultiAnimationState
                 //LogPrint(ownner.GetName() + " apply animation index for random move in stand state: " + index);
                 ownner.ChangeState("StepMoveState");
             }
-        }
+        }*/
 
         attackRange = Random(0.0f, MAX_ATTACK_RANGE);
     }
@@ -181,7 +200,7 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
         flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_KEEP_DIST;
 
-        if (STEP_MAX_DIST != 0.0f)
+        if (STEP_MAX_DIST == 0.0f)
         {
             STEP_MIN_DIST = motions[0].endDistance;
             STEP_MAX_DIST = motions[4].endDistance;
@@ -210,25 +229,6 @@ class ThugStepMoveState : MultiMotionState
         return;
     }
 
-    int GetStepMoveIndex()
-    {
-        int index = 0;
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist < KEEP_DIST_WITH_PLAYER)
-        {
-            index = ownner.RadialSelectAnimation(4);
-            index = (index + 2) % 4;
-            // LogPrint("ThugStepMoveState->GetStepMoveIndex() Keep Dist Within Player =->" + index);
-        }
-        else
-        {
-            if (dist > motions[4].endDistance + 2.0f)
-                index += 4;
-            // LogPrint("ThugStepMoveState->GetStepMoveIndex()=->" + index + " dist=" + dist);
-        }
-        return index;
-    }
-
     void Enter(State@ lastState)
     {
         attackRange = Random(0.0, MAX_ATTACK_RANGE);
@@ -241,22 +241,23 @@ class ThugStepMoveState : MultiMotionState
     }
 };
 
-class ThugMoveState : SingleMotionState
+class ThugRunToAttackState : SingleMotionState
 {
-    Vector3 targetPosition;
     float turnSpeed = 5.0f;
     float attackRange;
 
-    ThugMoveState(Character@ c)
+    ThugRunToAttackState(Character@ c)
     {
         super(c);
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        SetName("RunToAttackState");
+        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN_TO_ATTACK;
     }
 
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff();
-        // ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
+        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
 
         // if the difference is large, then turn 180 degrees
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
@@ -274,10 +275,48 @@ class ThugMoveState : SingleMotionState
             return;
         }
 
-        Vector3 distV = targetPosition - ownner.GetNode().worldPosition;
-        distV.y = 0;
-        dist = distV.length - COLLISION_SAFE_DIST;
-        if (dist < 1.0)
+        SingleMotionState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        attackRange = Random(0.0, MAX_ATTACK_RANGE);
+    }
+
+    float GetThreatScore()
+    {
+        return 0.333f;
+    }
+};
+
+class ThugRunToTargetState : SingleMotionState
+{
+    Vector3 targetPosition;
+    float turnSpeed = 5.0f;
+
+    ThugRunToTargetState(Character@ c)
+    {
+        super(c);
+        SetName("RunToTargetState");
+        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+
+    void Update(float dt)
+    {
+        float characterDifference = ownner.ComputeAngleDiff(targetPosition);
+        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
+
+        // if the difference is large, then turn 180 degrees
+        if (Abs(characterDifference) > FULLTURN_THRESHOLD)
+        {
+            ownner.ChangeState("TurnState");
+            return;
+        }
+
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist <= 0.1f)
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -289,9 +328,16 @@ class ThugMoveState : SingleMotionState
     void Enter(State@ lastState)
     {
         SingleMotionState::Enter(lastState);
-        attackRange = Random(0.0, MAX_ATTACK_RANGE);
+        targetPosition = ownner.GetNode().vars[TARGET].GetVector3();
+        cast<Enemy>(ownner).targetZoneToPlayer = GetDirectionZone(ownner.target.GetNode().worldPosition, targetPosition, 4);
+        LogPrint(ownner.GetName() + " targetZoneToPlayer=" + cast<Enemy>(ownner).targetZoneToPlayer);
         ownner.ClearAvoidance();
-        targetPosition = ownner.target.GetNode().worldPosition;
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        cast<Enemy>(ownner).targetZoneToPlayer = -1;
     }
 
     void FixedUpdate(float dt)
@@ -307,21 +353,11 @@ class ThugMoveState : SingleMotionState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(targetPosition, 0.5f, YELLOW, false);
-    }
-}
-
-class ThugRunState : ThugMoveState
-{
-    ThugRunState(Character@ c)
-    {
-        super(c);
-        SetName("RunState");
-        SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
+        AddDebugMark(debug, targetPosition, Color(1, 0, 0), 1.0);
     }
 };
 
-class ThugWalkState : ThugMoveState
+class ThugWalkState : SingleMotionState
 {
     ThugWalkState(Character@ c)
     {
@@ -368,9 +404,10 @@ class ThugTurnState : MultiMotionState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         endTime = motions[index].endTime;
         turnSpeed = diff / endTime;
-        LogPrint(ownner.GetName() + " turn speed = " + turnSpeed + " diff=" + diff);
         ownner.ClearAvoidance();
         MultiMotionState::Enter(lastState);
+        if (d_log)
+            LogPrint(ownner.GetName() + " turn speed = " + turnSpeed + " diff=" + diff);
     }
 
     void FixedUpdate(float dt)
@@ -451,11 +488,8 @@ class ThugAttackState : CharacterState
         Motion@ motion = currentAttack.motion;
         ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST);
 
-        if (currentAttack.type == ATTACK_PUNCH)
-        {
-            float characterDifference = ownner.ComputeAngleDiff();
-            ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
-        }
+        float characterDifference = ownner.ComputeAngleDiff();
+        ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
 
 
         if (doAttackCheck)
@@ -490,6 +524,7 @@ class ThugAttackState : CharacterState
         motion.Start(ownner);
         ownner.AddFlag(FLAGS_ATTACK);
         doAttackCheck = false;
+        turnSpeed = (currentAttack.type == ATTACK_PUNCH) ? 1.25f : 0.75f;
         CharacterState::Enter(lastState);
         LogPrint(ownner.GetName() + " Pick attack motion = " + motion.animationName);
     }
@@ -652,7 +687,7 @@ class ThugHitState : MultiMotionState
             if (dist < 1.0f)
             {
                 State@ state = ownner.GetState();
-                if (state.nameHash == RUN_STATE || state.nameHash == STAND_STATE)
+                if (state.nameHash == RUN_TO_TARGET_STATE || state.nameHash == STAND_STATE)
                 {
                     object.ChangeState("PushBack");
                 }
@@ -807,8 +842,13 @@ class ThugTauntingState : MultiAnimationState
         SetName("TauntingState");
         flags = FLAGS_ATTACK;
 
-        for (uint i=1; i<=6; ++i)
-            AddMotion(MOVEMENT_GROUP_THUG + "Taunt_Idle_0" + i);
+        for (uint i=1; i<=5; ++i)
+            AddMotion(MOVEMENT_GROUP_THUG + "Taunting_0" + i);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(animations.length);
     }
 };
 
@@ -823,7 +863,8 @@ class Thug : Enemy
         stateMachine.AddState(ThugStandState(this));
         stateMachine.AddState(ThugStepMoveState(this));
         stateMachine.AddState(ThugTurnState(this));
-        stateMachine.AddState(ThugRunState(this));
+        stateMachine.AddState(ThugRunToAttackState(this));
+        stateMachine.AddState(ThugRunToTargetState(this));
         stateMachine.AddState(ThugWalkState(this));
         stateMachine.AddState(CharacterRagdollState(this));
         stateMachine.AddState(ThugPushBackState(this));
@@ -844,7 +885,7 @@ class Thug : Enemy
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(KEEP_DIST*2, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
+        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
         RigidBody@ body = collisionNode.CreateComponent("RigidBody");
         body.mass = 10;
         body.collisionLayer = COLLISION_LAYER_AI;
@@ -854,8 +895,12 @@ class Thug : Enemy
         body.collisionEventMode = COLLISION_ALWAYS;
 
         attackDamage = 20;
+        dirCache.Resize(4);
 
-        walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Step_Forward");
+        walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
+
+        UpdateZone();
+        LogPrint(GetName() + " start, zoneToPlayer = " + zoneToPlayer);
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -984,20 +1029,21 @@ class Thug : Enemy
         }
     }
 
-    int GetSperateDirection(int& outDir)
+    int GetSperateDirection()
     {
         Node@ _node = sceneNode.GetChild("Collision");
         if (_node is null)
-            return 0;
+            return -1;
 
         RigidBody@ body = _node.GetComponent("RigidBody");
         if (body is null)
-            return 0;
+            return -1;
 
-        int len = 0;
+        int ret = -1;
         Vector3 myPos = sceneNode.worldPosition;
         Array<RigidBody@>@ neighbors = body.collidingBodies;
-        float totalAngle = 0;
+        for (uint i=0; i<dirCache.length; ++i)
+            dirCache[i] = 0;
 
         for (uint i=0; i<neighbors.length; ++i)
         {
@@ -1006,7 +1052,6 @@ class Thug : Enemy
                 continue;
 
             // LogPrint(_node.name + " neighbors[" + i + "] = " + n_node.name);
-
             Character@ object = cast<Character>(n_node.scriptObject);
             if (object is null)
                 continue;
@@ -1014,27 +1059,26 @@ class Thug : Enemy
             if (object.HasFlag(FLAGS_KEEP_DIST))
                 continue;
 
-            ++len;
-
-            float angle = ComputeAngleDiff(object.sceneNode);
-            if (angle < 0)
-                angle += 180;
-            else
-                angle = 180 - angle;
-
-            //LogPrint("neighbors angle=" + angle);
-            totalAngle += angle;
+            int dir_map = GetDirectionZone(myPos, object.GetNode().worldPosition, 4);
+            dirCache[dir_map] = dirCache[dir_map] + 1;
         }
 
-        if (len == 0)
-            return 0;
-
-        outDir = DirectionMapToIndex(totalAngle / len, 4);
+        int max_dir_num = 0;
+        for (uint i=0; i<dirCache.length; ++i)
+        {
+            if (dirCache[i] > max_dir_num)
+            {
+                max_dir_num = dirCache[i];
+                ret = int(i);
+            }
+        }
 
         if (d_log)
-            LogPrint("GetSperateDirection() totalAngle=" + totalAngle + " outDir=" + outDir + " len=" + len);
+        {
+            LogPrint(GetName() + "GetSperateDirection, dir_0=" + dirCache[0] + " dir_1=" + dirCache[1] + " dir_2=" + dirCache[2] + " dir_3=" + dirCache[3]);
+        }
 
-        return len;
+        return ret;
     }
 
     void CheckAvoidance(float dt)
@@ -1057,17 +1101,23 @@ class Thug : Enemy
     {
         if (HasFlag(FLAGS_NO_MOVE))
             return false;
-        int dir = -1;
-        if (GetSperateDirection(dir) == 0)
+        int dir = GetSperateDirection();
+        if (dir < 0)
             return false;
-        // LogPrint(GetName() + " CollisionAvoidance index=" + dir);
+        dir = (dir + 2) % 4;
+        int n = RandomInt(2);
+        if (n == 1)
+            dir += 4;
+
+        if (d_log)
+            LogPrint(GetName() + " KeepDistanceWithEnemy dir=" + dir);
         MultiMotionState@ state = cast<MultiMotionState>(FindState("StepMoveState"));
         Motion@ motion = state.motions[dir];
         Vector4 motionOut = motion.GetKey(motion.endTime);
         Vector3 endPos = sceneNode.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + sceneNode.worldPosition;
         Vector3 diff = endPos - target.sceneNode.worldPosition;
         diff.y = 0;
-        if((diff.length - COLLISION_SAFE_DIST) < -0.25f)
+        if((diff.length - COLLISION_SAFE_DIST) < KEEP_DIST_WITH_PLAYER)
         {
             LogPrint("can not avoid collision because player is in front of me.");
             return false;
@@ -1086,7 +1136,12 @@ class Thug : Enemy
             return false;
         int index = RadialSelectAnimation(4);
         index = (index + 2) % 4;
-        // LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " max_dist=" + max_dist);
+        int n = RandomInt(2);
+        if (n == 1)
+            index += 4;
+
+        if (d_log)
+            LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " max_dist=" + max_dist);
         sceneNode.vars[ANIMATION_INDEX] = index;
         ChangeState("StepMoveState");
         return true;
@@ -1192,8 +1247,8 @@ void CreateThugCombatMotions()
     for (uint i=1; i<=4; ++i)
         Global_AddAnimation(preFix + "Stand_Idle_Additive_0" + i);
 
-    for (uint i=1; i<=6; ++i)
-        Global_AddAnimation(preFix + "Taunt_Idle_0" + i);
+    for (uint i=1; i<=5; ++i)
+        Global_AddAnimation(preFix + "Taunting_0" + i);
 }
 
 void CreateThugMotions()

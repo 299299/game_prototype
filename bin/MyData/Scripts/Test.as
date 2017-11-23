@@ -66,9 +66,9 @@ int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 int collision_type = 0;
+Array<int> dirCache;
 
 bool mobile = false;
-bool use_agent = false;
 
 GameInput@ gInput = GameInput();
 

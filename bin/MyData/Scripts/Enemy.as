@@ -6,11 +6,12 @@
 
 class Enemy : Character
 {
-    float requiredDistanceFromNeighbors = 1.25f;
+    int zoneToPlayer = -1;
+    int targetZoneToPlayer = -1;
 
-    void Start()
+    void ObjectStart()
     {
-        Character::Start();
+        Character::ObjectStart();
         EnemyManager@ em = cast<EnemyManager>(scene.GetScriptObject("EnemyManager"));
         if (em !is null)
             em.RegisterEnemy(this);
@@ -30,23 +31,6 @@ class Enemy : Character
         return Character::GetDebugText() + "health=" + health +  " flags=" + flags + " distToPlayer=" + GetTargetDistance() + " timeScale=" + timeScale + "\n";
     }
 
-    bool IsTargetSightBlocked()
-    {
-        Vector3 my_mid_pos = sceneNode.worldPosition;
-        my_mid_pos.y += CHARACTER_HEIGHT/2;
-        Vector3 target_mid_pos = target.sceneNode.worldPosition;
-        target_mid_pos.y += CHARACTER_HEIGHT/2;
-        Vector3 dir = target_mid_pos - my_mid_pos;
-        float rayDistance = dir.length;
-        Ray sightRay;
-        sightRay.origin = my_mid_pos;
-        sightRay.direction = dir.Normalized();
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(sightRay, rayDistance, COLLISION_LAYER_CHARACTER);
-        if (result.body is null)
-            return false;
-        return true;
-    }
-
     bool KeepDistanceWithEnemy()
     {
         return false;
@@ -55,6 +39,12 @@ class Enemy : Character
     bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
     {
         return false;
+    }
+
+    void UpdateZone()
+    {
+        zoneToPlayer = GetDirectionZone(target.GetNode().worldPosition, sceneNode.worldPosition, 4);
+        // Print(GetName() + " zoneToPlayer = " + zoneToPlayer);
     }
 };
 
@@ -222,8 +212,9 @@ class EnemyManager : ScriptObject
         for (uint i=0; i<enemyList.length; ++i)
         {
             Enemy@ e = enemyList[i];
+            e.UpdateZone();
             float dis = e.GetTargetDistance();
-            if (dis <= PLAYER_NEAR_DIST)
+            if (dis <= AI_NEAR_DIST)
                 num_of_near ++;
             if (num_of_near > MAX_NUM_OF_NEAR)
             {
@@ -232,5 +223,42 @@ class EnemyManager : ScriptObject
                     e.KeepDistanceWithPlayer(0);
             }
         }
+    }
+
+    Vector3 FindGoodTargetPosition(Enemy@ self, float radius)
+    {
+        for (uint i=0; i<dirCache.length; ++i)
+            dirCache[i] = 0;
+
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            Enemy@ e = enemyList[i];
+            if (e is self)
+                continue;
+
+            if (e.zoneToPlayer >= 0)
+                dirCache[e.zoneToPlayer] = dirCache[e.zoneToPlayer] + 1;
+            if (e.targetZoneToPlayer >= 0)
+                dirCache[e.targetZoneToPlayer] = dirCache[e.targetZoneToPlayer] + 1;
+        }
+
+        uint least_num = enemyList.length + 1;
+        int best_dir = -1;
+        for (uint i=0; i<4; ++i)
+        {
+            if (dirCache[i] < least_num)
+            {
+                best_dir = int(i);
+                least_num = dirCache[i];
+            }
+        }
+
+        float degree_min = best_dir * 90 - 45 - 10;
+        float degree_max = best_dir * 90 + 45 - 10;
+        float degree = Random(degree_min, degree_max);
+        Vector3 v(radius * Sin(degree), 0, radius * Cos(degree));
+        v += self.target.GetNode().worldPosition;
+        Print(self.GetName() + " FindGoodTargetPosition best_dir=" + best_dir + " degree=" + degree + " v=" + v.ToString());
+        return v;
     }
 };

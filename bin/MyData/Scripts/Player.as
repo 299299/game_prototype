@@ -16,7 +16,6 @@ const float MAX_DISTRACT_DIR = 90.0f;
 const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.5f;
-const float PLAYER_NEAR_DIST = 6.0f;
 const float GOOD_COUNTER_DIST = 3.0f;
 const float ATTACK_DIST_PICK_RANGE = 6.0f;
 float MAX_ATTACK_DIST = 15.0f;
@@ -312,7 +311,7 @@ class Player : Character
             dir.Normalize();
             Ray ray;
             ray.Define(v_pos, dir);
-            PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_CHARACTER);
+            PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_CHARACTER | COLLISION_LAYER_AI);
             if (result.body !is null)
             {
                 Node@ n = result.body.node.parent;

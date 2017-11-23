@@ -292,6 +292,15 @@ else if (key == 'F')
     ctl.SetSpeed(GetAnimationName(name1), 1.0);
 }
 
+float FaceAngleDiff(Node@ thisNode, Node@ targetNode)
+{
+    Vector3 posDiff = targetNode.worldPosition - thisNode.worldPosition;
+    Vector3 thisDir = thisNode.worldRotation * Vector3(0, 0, 1);
+    float thisAngle = Atan2(thisDir.x, thisDir.z);
+    float targetAngle = Atan2(posDiff.x, posDiff.y);
+    return AngleDiff(targetAngle - thisAngle);
+}
+
 class PlayerSlideIdleState : CharacterState
 {
     String animation;

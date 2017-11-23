@@ -12,17 +12,16 @@ const float CHARACTER_HEIGHT = 5.0f;
 const int MAX_NUM_OF_ATTACK = 3;
 const int MAX_NUM_OF_MOVING = 3;
 const int MAX_NUM_OF_NEAR = 4;
+const int MAX_NUM_OF_RUN_ATTACK = 2;
 
 const int INITIAL_HEALTH = 100;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash TURN_STATE("TurnState");
-const StringHash GETUP_STATE("GetUpState");
-const StringHash RUN_STATE("RunState");
 const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
-const StringHash DEAD_STATE("DeadState");
 const StringHash ALIGN_STATE("AlignState");
+const StringHash RUN_TO_TARGET_STATE("RunToTargetState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
@@ -47,6 +46,7 @@ const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
 const StringHash HEALTH("Health");
 const StringHash SOUND("Sound");
+const StringHash TARGET("Target");
 
 const String PLAYER_TAG("Tag_Player");
 const String ENEMY_TAG("Tag_Enemy");
@@ -1312,23 +1312,34 @@ class Character : GameObject
 
     float GetTargetAngle(Node@ _node)
     {
-        Vector3 targetPos = _node.worldPosition;
-        Vector3 myPos = sceneNode.worldPosition;
-        Vector3 diff = targetPos - myPos;
-        return Atan2(diff.x, diff.z);
+        return GetTargetAngle(_node.worldPosition);
     }
 
     float GetTargetDistance(Node@ _node)
     {
-        Vector3 targetPos = _node.worldPosition;
-        Vector3 myPos = sceneNode.worldPosition;
-        Vector3 diff = targetPos - myPos;
-        return diff.length;
+        return GetTargetDistance(_node.worldPosition);
     }
 
     float ComputeAngleDiff(Node@ _node)
     {
         return AngleDiff(GetTargetAngle(_node) - GetCharacterAngle());
+    }
+
+    float GetTargetAngle(Vector3 targetPos)
+    {
+        Vector3 diff = targetPos - sceneNode.worldPosition;
+        return Atan2(diff.x, diff.z);
+    }
+
+    float GetTargetDistance(Vector3 targetPos)
+    {
+        Vector3 diff = targetPos - sceneNode.worldPosition;
+        return diff.length;
+    }
+
+    float ComputeAngleDiff(Vector3 targetPos)
+    {
+        return AngleDiff(GetTargetAngle(targetPos) - GetCharacterAngle());
     }
 
     int RadialSelectAnimation(Node@ _node, int numDirections)
@@ -1543,11 +1554,6 @@ class Character : GameObject
             stateMachine.Update(timeStep);
     }
 
-    bool IsTargetSightBlocked()
-    {
-        return false;
-    }
-
     void CheckCollision()
     {
 
@@ -1645,6 +1651,24 @@ class Character : GameObject
             body.gravityOverride = gravity;
     }
 
+    bool IsTargetSightBlocked(const Vector3&in targetPos)
+    {
+        Vector3 my_mid_pos = sceneNode.worldPosition;
+        my_mid_pos.y += CHARACTER_HEIGHT/2;
+        Vector3 target_mid_pos = targetPos;
+        target_mid_pos.y += CHARACTER_HEIGHT/2;
+        Vector3 dir = target_mid_pos - my_mid_pos;
+        my_mid_pos += dir * (COLLISION_RADIUS + 0.01f);
+        float rayDistance = dir.length;
+        Ray sightRay;
+        sightRay.origin = my_mid_pos;
+        sightRay.direction = dir.Normalized();
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(sightRay, rayDistance, COLLISION_LAYER_CHARACTER | COLLISION_LAYER_AI);
+        if (result.body is null)
+            return false;
+        return true;
+    }
+
     // ===============================================================================================
     //  EVENT HANDLERS
     // ===============================================================================================
@@ -1667,13 +1691,11 @@ int DirectionMapToIndex(float directionDifference, int numDirections)
     return int(directionVariable);
 }
 
-float FaceAngleDiff(Node@ thisNode, Node@ targetNode)
+int GetDirectionZone(const Vector3&in from, const Vector3& to, int numDirections)
 {
-    Vector3 posDiff = targetNode.worldPosition - thisNode.worldPosition;
-    Vector3 thisDir = thisNode.worldRotation * Vector3(0, 0, 1);
-    float thisAngle = Atan2(thisDir.x, thisDir.z);
-    float targetAngle = Atan2(posDiff.x, posDiff.y);
-    return AngleDiff(targetAngle - thisAngle);
+    Vector3 dir = to - from;
+    float angle = Atan2(dir.x, dir.z);
+    return DirectionMapToIndex(angle, numDirections);
 }
 
 Node@ CreateCharacter(const String&in name, const String&in objectName, const String&in scriptClass, const Vector3&in position, const Quaternion& rotation)

@@ -578,7 +578,7 @@ String FileNameToMotionName(const String&in name)
     return name.Substring(0, name.length - 13);
 }
 
-// clamps an angle to the rangle of [-2PI, 2PI]
+// clamps an angle to the rangle of [-PI, PI]
 float AngleDiff( float diff )
 {
     if (diff > 180)
