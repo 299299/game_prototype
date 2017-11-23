@@ -242,23 +242,30 @@ class EnemyManager : ScriptObject
                 zoneDirCache[e.targetZoneToPlayer] = zoneDirCache[e.targetZoneToPlayer] + 1;
         }
 
+        scoreCache.Clear();
         uint least_num = enemyList.length + 1;
         int best_dir = -1;
-        for (uint i=0; i<4; ++i)
+        for (uint i=0; i<NUM_ZONE_DIRECTIONS; ++i)
         {
             if (zoneDirCache[i] < least_num)
             {
                 best_dir = int(i);
                 least_num = zoneDirCache[i];
             }
+
+            if (zoneDirCache[i] == 0)
+                scoreCache.Push(i);
         }
 
+        if (!scoreCache.empty)
+            best_dir = scoreCache[RandomInt(scoreCache.length)];
         float zone_degree = 360 / NUM_ZONE_DIRECTIONS;
         float degree_min = best_dir * zone_degree - zone_degree/2 - 10;
         float degree_max = best_dir * zone_degree + zone_degree/2 - 10;
         float degree = Random(degree_min, degree_max);
         Vector3 v(radius * Sin(degree), 0, radius * Cos(degree));
         v += self.target.GetNode().worldPosition;
+        v = FilterPosition(v);
         Print(self.GetName() + " FindGoodTargetPosition best_dir=" + best_dir + " degree=" + degree + " v=" + v.ToString());
         return v;
     }

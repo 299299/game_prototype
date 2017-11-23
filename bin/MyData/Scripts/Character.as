@@ -12,7 +12,7 @@ const float CHARACTER_HEIGHT = 5.0f;
 const int MAX_NUM_OF_ATTACK = 3;
 const int MAX_NUM_OF_MOVING = 3;
 const int MAX_NUM_OF_NEAR = 4;
-const int MAX_NUM_OF_RUN_ATTACK = 2;
+const int MAX_NUM_OF_RUN_ATTACK = 3;
 
 const int INITIAL_HEALTH = 100;
 const int NUM_ZONE_DIRECTIONS = 8;

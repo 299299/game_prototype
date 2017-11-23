@@ -25,7 +25,6 @@ float KEEP_DIST_WITH_PLAYER = -0.25f;
 class ThugStandState : MultiAnimationState
 {
     float           thinkTime;
-    float           attackRange;
 
     ThugStandState(Character@ c)
     {
@@ -44,7 +43,6 @@ class ThugStandState : MultiAnimationState
         if (d_log)
             LogPrint(ownner.GetName() + " thinkTime=" + thinkTime);
         ownner.ClearAvoidance();
-        attackRange = Random(0.0f, MAX_ATTACK_RANGE);
         MultiAnimationState::Enter(lastState);
     }
 
@@ -58,14 +56,6 @@ class ThugStandState : MultiAnimationState
     {
         if (freeze_ai != 0)
            return;
-
-        float diff = Abs(ownner.ComputeAngleDiff());
-        if (diff > MIN_TURN_ANGLE)
-        {
-            // I should always turn to look at player.
-            ownner.ChangeState("TurnState");
-            return;
-        }
 
         if (timeInState > thinkTime)
         {
@@ -82,20 +72,34 @@ class ThugStandState : MultiAnimationState
         if (ownner.target.HasFlag(FLAGS_INVINCIBLE))
             return;
 
-        if (ownner.HasFlag(FLAGS_NO_MOVE))
+        float characterDifference = ownner.ComputeAngleDiff();
+        if (Abs(characterDifference) > MIN_TURN_ANGLE)
         {
-            ownner.ChangeState("TauntingState");
+            ownner.ChangeState("TurnState");
             return;
         }
+
+        if (ownner.HasFlag(FLAGS_NO_MOVE))
+        {
+            ownner.ChangeState("TauntIdleState");
+            return;
+        }
+
+        if (ownner.ActionCheck())
+            return;
 
         Node@ _node = ownner.GetNode();
         EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
         float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        int num_near_thugs = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
 
         if (dist >= AI_FAR_DIST)
         {
-            Vector3 v = em.FindGoodTargetPosition(cast<Enemy>(ownner), AI_FAR_DIST - 2.0f);
-            v = FilterPosition(v);
+            float range = AI_FAR_DIST;
+            if (num_near_thugs < MAX_NUM_OF_NEAR)
+                range = AI_NEAR_DIST;
+
+            Vector3 v = em.FindGoodTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST - 1.0f);
             bool can_i_see_target = !ownner.IsTargetSightBlocked(v);
             LogPrint(ownner.GetName() + " far away, tryinng to approach v=" + v.ToString() + " can_i_see_target=" + can_i_see_target);
             if (can_i_see_target)
@@ -106,27 +110,17 @@ class ThugStandState : MultiAnimationState
             return;
         }
 
-        if (ownner.CanAttack() && dist <= attackRange)
+        int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
+        bool can_i_see_target = !ownner.IsTargetSightBlocked(ownner.target.GetNode().worldPosition);
+        // Print(ownner.GetName() + " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs + " can_i_see_target=" + can_i_see_target);
+        if (can_i_see_target && num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK)
         {
-            LogPrint(ownner.GetName() + " do attack because dist <= " + attackRange);
-            if (ownner.Attack())
-                return;
-        }
-
-        int num_of_with_player = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
-        if (num_of_with_player <  MAX_NUM_OF_NEAR && !ownner.HasFlag(FLAGS_NO_MOVE))
-        {
-            int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
-            // bool can_i_see_target = ownner.IsTargetSightBlocked(ownner.target.GetNode().worldPosition);
-            if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK)
-            {
-                ownner.ChangeState("RunToAttackState");
-                return;
-            }
+            ownner.ChangeState("RunToAttackState");
+            return;
         }
 
         int rand_i = RandomInt(2);
-        if (rand_i == 0)
+        if (dist > AI_NEAR_DIST)
         {
             ownner.ChangeState("TauntingState");
         }
@@ -137,53 +131,6 @@ class ThugStandState : MultiAnimationState
         }
 
         return;
-
-
-        /*int num_of_moving_thugs = em.GetNumOfEnemyHasFlag(FLAGS_MOVING);
-        //bool can_i_see_player = !ownner.IsTargetSightBlocked();
-        int num_of_with_player = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
-        if (num_of_moving_thugs < MAX_NUM_OF_MOVING && num_of_with_player <  MAX_NUM_OF_NEAR && !ownner.HasFlag(FLAGS_NO_MOVE))
-        {
-            // try to move to player
-            rand_i = RandomInt(6);
-            String nextState = "StepMoveState";
-            float run_dist = STEP_MAX_DIST + 1.0f;
-            if (dist >= run_dist || rand_i == 1)
-            {
-                nextState = "RunState";
-            }
-            else
-            {
-                ThugStepMoveState@ state = cast<ThugStepMoveState>(ownner.FindState("StepMoveState"));
-                int index = 0;
-                if (dist < KEEP_DIST_WITH_PLAYER)
-                {
-                    index = ownner.RadialSelectAnimation(4);
-                    index = (index + 2) % 4;
-                }
-                else
-                {
-                    if (dist > state.motions[4].endDistance + 2.0f)
-                        index += 4;
-                }
-
-                ownner.GetNode().vars[ANIMATION_INDEX] = index;
-            }
-            ownner.ChangeState(nextState);
-        }
-        else
-        {
-            rand_i = RandomInt(10);
-            if (rand_i > 8)
-            {
-                int index = RandomInt(4);
-                _node.vars[ANIMATION_INDEX] = index;
-                //LogPrint(ownner.GetName() + " apply animation index for random move in stand state: " + index);
-                ownner.ChangeState("StepMoveState");
-            }
-        }*/
-
-        attackRange = Random(0.0f, MAX_ATTACK_RANGE);
     }
 
     void FixedUpdate(float dt)
@@ -200,8 +147,6 @@ class ThugStandState : MultiAnimationState
 
 class ThugStepMoveState : MultiMotionState
 {
-    float attackRange;
-
     ThugStepMoveState(Character@ c)
     {
         super(c);
@@ -226,33 +171,6 @@ class ThugStepMoveState : MultiMotionState
         }
     }
 
-    void OnMotionFinished()
-    {
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist <= attackRange && dist >= -0.5f)
-        {
-            if (Abs(ownner.ComputeAngleDiff()) < MIN_TURN_ANGLE)
-            {
-                if (ownner.Attack())
-                    return;
-            }
-            else
-            {
-                ownner.ChangeState("TurnState");
-                return;
-            }
-        }
-
-        ownner.CommonStateFinishedOnGroud();
-        return;
-    }
-
-    void Enter(State@ lastState)
-    {
-        attackRange = Random(0.0, MAX_ATTACK_RANGE);
-        MultiMotionState::Enter(lastState);
-    }
-
     float GetThreatScore()
     {
         return 0.333f;
@@ -262,7 +180,6 @@ class ThugStepMoveState : MultiMotionState
 class ThugRunToAttackState : SingleMotionState
 {
     float turnSpeed = 5.0f;
-    float attackRange;
 
     ThugRunToAttackState(Character@ c)
     {
@@ -284,22 +201,10 @@ class ThugRunToAttackState : SingleMotionState
             return;
         }
 
-        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        if (dist <= attackRange)
-        {
-            if (ownner.Attack())
-                return;
-            ownner.CommonStateFinishedOnGroud();
+        if (ownner.ActionCheck())
             return;
-        }
 
         SingleMotionState::Update(dt);
-    }
-
-    void Enter(State@ lastState)
-    {
-        SingleMotionState::Enter(lastState);
-        attackRange = Random(0.0, MAX_ATTACK_RANGE);
     }
 
     float GetThreatScore()
@@ -324,13 +229,13 @@ class ThugRunToTargetState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff(targetPosition);
+        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
         {
             ownner.ChangeState("TurnState");
             return;
         }
 
-        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
         Vector3 distV = targetPosition - ownner.GetNode().worldPosition;
         distV.y = 0;
         float dist = distV.length - COLLISION_SAFE_DIST;
@@ -704,11 +609,13 @@ class ThugHitState : MultiMotionState
             float dist = ownner.GetTargetDistance(n_node);
             if (dist < 1.0f)
             {
-                State@ state = ownner.GetState();
-                if (state.nameHash == RUN_TO_TARGET_STATE || state.nameHash == STAND_STATE)
+                /*State@ state = ownner.GetState();
+                if (state.nameHash == RUN_TO_TARGET_STATE ||
+                    state.nameHash == STAND_STATE)
                 {
                     object.ChangeState("PushBack");
-                }
+                }*/
+                object.ChangeState("PushBack");
             }
         }
     }
@@ -882,6 +789,36 @@ class ThugTauntingState : MultiMotionState
     }
 };
 
+class ThugTauntIdleState : MultiAnimationState
+{
+    ThugTauntIdleState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("TauntIdleState");
+        flags = FLAGS_ATTACK;
+
+        for (uint i=1; i<=6; ++i)
+            AddMotion(MOVEMENT_GROUP_THUG + "Taunt_Idle_0" + i);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(animations.length);
+    }
+
+    void Enter(State@ lastState)
+    {
+        MultiAnimationState::Enter(lastState);
+        ownner.ClearAvoidance();
+    }
+
+    void FixedUpdate(float dt)
+    {
+        ownner.CheckAvoidance(dt);
+        MultiAnimationState::FixedUpdate(dt);
+    }
+};
+
 class Thug : Enemy
 {
     float           checkAvoidanceTimer = 0.0f;
@@ -910,6 +847,7 @@ class Thug : Enemy
         stateMachine.AddState(ThugBeatDownEndState(this));
         stateMachine.AddState(ThugStunState(this));
         stateMachine.AddState(ThugTauntingState(this));
+        stateMachine.AddState(ThugTauntIdleState(this));
 
         ChangeState("StandState");
 
@@ -951,14 +889,30 @@ class Thug : Enemy
         return true;
     }
 
+    bool ActionCheck(uint actionFlags = 0xFF)
+    {
+        if (actionFlags & FLAGS_ATTACK != 0)
+        {
+            return Attack();
+        }
+        return false;
+    }
+
     bool Attack()
     {
         if (!CanAttack())
             return false;
         if (KeepDistanceWithEnemy())
             return false;
-        ChangeState("AttackState");
-        return true;
+
+        float attackRange = Random(0.0, MAX_ATTACK_RANGE);
+        float dist = GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist <= attackRange && Abs(ComputeAngleDiff()) < MIN_TURN_ANGLE)
+        {
+            ChangeState("AttackState");
+            return true;
+        }
+        return false;
     }
 
     bool Redirect()
@@ -969,6 +923,8 @@ class Thug : Enemy
 
     void CommonStateFinishedOnGroud()
     {
+        if (ActionCheck())
+            return;
         ChangeState("StandState");
     }
 
@@ -1278,6 +1234,9 @@ void CreateThugCombatMotions()
 
     for (uint i=1; i<=5; ++i)
         Global_CreateMotion(preFix + "Taunting_0" + i);
+
+    for (uint i=1; i<=6; ++i)
+        Global_AddAnimation(preFix + "Taunt_Idle_0" + i);
 }
 
 void CreateThugMotions()
