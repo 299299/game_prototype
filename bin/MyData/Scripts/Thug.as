@@ -109,7 +109,7 @@ class ThugStandState : MultiAnimationState
         }
 
         int num_of_with_player = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
-        if (num_of_with_player <  MAX_NUM_OF_NEAR && ownner.HasFlag(FLAGS_NO_MOVE))
+        if (num_of_with_player <  MAX_NUM_OF_NEAR && !ownner.HasFlag(FLAGS_NO_MOVE))
         {
             int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
             // bool can_i_see_target = ownner.IsTargetSightBlocked(ownner.target.GetNode().worldPosition);
@@ -306,7 +306,7 @@ class ThugRunToTargetState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff(targetPosition);
-        ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
+        // ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
 
         // if the difference is large, then turn 180 degrees
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
@@ -834,7 +834,7 @@ class ThugPushBackState : SingleMotionState
     }
 };
 
-class ThugTauntingState : MultiAnimationState
+class ThugTauntingState : MultiMotionState
 {
     ThugTauntingState(Character@ ownner)
     {
@@ -848,7 +848,7 @@ class ThugTauntingState : MultiAnimationState
 
     int PickIndex()
     {
-        return RandomInt(animations.length);
+        return RandomInt(motions.length);
     }
 };
 
@@ -1248,7 +1248,7 @@ void CreateThugCombatMotions()
         Global_AddAnimation(preFix + "Stand_Idle_Additive_0" + i);
 
     for (uint i=1; i<=5; ++i)
-        Global_AddAnimation(preFix + "Taunting_0" + i);
+        Global_CreateMotion(preFix + "Taunting_0" + i);
 }
 
 void CreateThugMotions()
