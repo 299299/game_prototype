@@ -67,6 +67,7 @@ int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 int collision_type = 0;
 Array<int> dirCache;
+Array<int> zoneDirCache;
 
 bool mobile = false;
 
@@ -76,6 +77,9 @@ void Start()
 {
     LogPrint("Game Running Platform: " + GetPlatform());
     mobile = (GetPlatform() == "Android" || GetPlatform() == "iOS");
+
+    dirCache.Resize(4);
+    zoneDirCache.Resize(NUM_ZONE_DIRECTIONS);
 
     if (!mobile)
         render_features = RF_FULL;

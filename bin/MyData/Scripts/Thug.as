@@ -347,7 +347,7 @@ class ThugRunToTargetState : SingleMotionState
     {
         SingleMotionState::Enter(lastState);
         targetPosition = ownner.GetNode().vars[TARGET].GetVector3();
-        cast<Enemy>(ownner).targetZoneToPlayer = GetDirectionZone(ownner.target.GetNode().worldPosition, targetPosition, 4);
+        cast<Enemy>(ownner).targetZoneToPlayer = GetDirectionZone(ownner.target.GetNode().worldPosition, targetPosition, NUM_ZONE_DIRECTIONS);
         LogPrint(ownner.GetName() + " targetZoneToPlayer=" + cast<Enemy>(ownner).targetZoneToPlayer);
         ownner.ClearAvoidance();
     }
@@ -925,7 +925,6 @@ class Thug : Enemy
         body.collisionEventMode = COLLISION_ALWAYS;
 
         attackDamage = 20;
-        dirCache.Resize(4);
 
         walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
 

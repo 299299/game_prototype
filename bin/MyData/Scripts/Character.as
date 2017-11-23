@@ -15,6 +15,7 @@ const int MAX_NUM_OF_NEAR = 4;
 const int MAX_NUM_OF_RUN_ATTACK = 2;
 
 const int INITIAL_HEALTH = 100;
+const int NUM_ZONE_DIRECTIONS = 8;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash TURN_STATE("TurnState");

@@ -43,7 +43,7 @@ class Enemy : Character
 
     void UpdateZone()
     {
-        zoneToPlayer = GetDirectionZone(target.GetNode().worldPosition, sceneNode.worldPosition, 4);
+        zoneToPlayer = GetDirectionZone(target.GetNode().worldPosition, sceneNode.worldPosition, NUM_ZONE_DIRECTIONS);
         // Print(GetName() + " zoneToPlayer = " + zoneToPlayer);
     }
 };
@@ -227,8 +227,8 @@ class EnemyManager : ScriptObject
 
     Vector3 FindGoodTargetPosition(Enemy@ self, float radius)
     {
-        for (uint i=0; i<dirCache.length; ++i)
-            dirCache[i] = 0;
+        for (uint i=0; i<zoneDirCache.length; ++i)
+            zoneDirCache[i] = 0;
 
         for (uint i=0; i<enemyList.length; ++i)
         {
@@ -237,24 +237,25 @@ class EnemyManager : ScriptObject
                 continue;
 
             if (e.zoneToPlayer >= 0)
-                dirCache[e.zoneToPlayer] = dirCache[e.zoneToPlayer] + 1;
+                zoneDirCache[e.zoneToPlayer] = zoneDirCache[e.zoneToPlayer] + 1;
             if (e.targetZoneToPlayer >= 0)
-                dirCache[e.targetZoneToPlayer] = dirCache[e.targetZoneToPlayer] + 1;
+                zoneDirCache[e.targetZoneToPlayer] = zoneDirCache[e.targetZoneToPlayer] + 1;
         }
 
         uint least_num = enemyList.length + 1;
         int best_dir = -1;
         for (uint i=0; i<4; ++i)
         {
-            if (dirCache[i] < least_num)
+            if (zoneDirCache[i] < least_num)
             {
                 best_dir = int(i);
-                least_num = dirCache[i];
+                least_num = zoneDirCache[i];
             }
         }
 
-        float degree_min = best_dir * 90 - 45 - 10;
-        float degree_max = best_dir * 90 + 45 - 10;
+        float zone_degree = 360 / NUM_ZONE_DIRECTIONS;
+        float degree_min = best_dir * zone_degree - zone_degree/2 - 10;
+        float degree_max = best_dir * zone_degree + zone_degree/2 - 10;
         float degree = Random(degree_min, degree_max);
         Vector3 v(radius * Sin(degree), 0, radius * Cos(degree));
         v += self.target.GetNode().worldPosition;
