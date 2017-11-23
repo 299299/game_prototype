@@ -230,17 +230,13 @@ class GameInput
             }
         }
 
-        /*if (!mobile && !ret)
+        if (!mobile && !ret)
         {
             if (action == kInputAttack)
-                ret = input.keyPress[KEY_1];
-            else if (action == kInputEvade)
-                ret = input.keyPress[KEY_2];
+                ret = input.mouseButtonPress[MOUSEB_LEFT];
             else if (action == kInputCounter)
-                ret = input.keyPress[KEY_3];
-            else if (action == kInputDistract)
-                ret = input.keyPress[KEY_4];
-        }*/
+                ret = input.mouseButtonPress[MOUSEB_RIGHT];
+        }
 
         return ret;
     }

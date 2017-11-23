@@ -126,8 +126,8 @@ class ThugStandState : MultiAnimationState
         }
         else
         {
-            _node.vars[ANIMATION_INDEX] = RandomInt(8);
-            ownner.ChangeState("StepMoveState");
+            //_node.vars[ANIMATION_INDEX] = RandomInt(8);
+            //ownner.ChangeState("StepMoveState");
         }
 
         return;

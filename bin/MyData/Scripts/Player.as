@@ -458,7 +458,8 @@ class Player : Character
     void DebugDraw(DebugRenderer@ debug)
     {
         Character::DebugDraw(debug);
-        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), MAX_ATTACK_DIST, YELLOW, 32, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), AI_FAR_DIST, YELLOW, 32, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), AI_NEAR_DIST, RED, 32, false);
         // sensor.DebugDraw(debug);
         // debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
     }
