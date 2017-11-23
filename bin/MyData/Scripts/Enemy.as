@@ -219,8 +219,8 @@ class EnemyManager : ScriptObject
             if (num_of_near > MAX_NUM_OF_NEAR)
             {
                 // LogPrint(e.GetName() + " too close with player !!!");
-                if (e.GetState().nameHash == STAND_STATE || e.GetState().nameHash == TURN_STATE)
-                    e.KeepDistanceWithPlayer(0);
+                if (e.GetState().nameHash != COUNTER_STATE)
+                    e.KeepDistanceWithPlayer(AI_NEAR_DIST);
             }
         }
     }

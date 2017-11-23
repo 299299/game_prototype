@@ -20,7 +20,7 @@ float PUNCH_DIST = 0.0f;
 float KICK_DIST = 0.0f;
 float STEP_MAX_DIST = 0.0f;
 float STEP_MIN_DIST = 0.0f;
-float KEEP_DIST_WITH_PLAYER = -0.25f;
+float KEEP_DIST_WITH_PLAYER = 0.05f;
 
 class ThugStandState : MultiAnimationState
 {
@@ -203,6 +203,13 @@ class ThugRunToAttackState : SingleMotionState
 
         if (ownner.ActionCheck())
             return;
+
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
+        if (dist < 0.1f)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
 
         SingleMotionState::Update(dt);
     }
