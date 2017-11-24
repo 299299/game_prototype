@@ -100,7 +100,7 @@ class ThugStandState : MultiAnimationState
                 range = AI_NEAR_DIST;
 
             Vector3 v = em.FindGoodTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST - 1.0f);
-            bool can_i_see_target = !ownner.IsTargetSightBlocked(v);
+            bool can_i_see_target = (ownner.GetTargetSightBlockedNode(v) is null);
             LogPrint(ownner.GetName() + " far away, tryinng to approach v=" + v.ToString() + " can_i_see_target=" + can_i_see_target);
             if (can_i_see_target)
             {
@@ -111,7 +111,7 @@ class ThugStandState : MultiAnimationState
         }
 
         int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
-        bool can_i_see_target = !ownner.IsTargetSightBlocked(ownner.target.GetNode().worldPosition);
+        bool can_i_see_target = (ownner.GetTargetSightBlockedNode(ownner.target.GetNode().worldPosition) is null);
         // Print(ownner.GetName() + " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs + " can_i_see_target=" + can_i_see_target);
         if (can_i_see_target && num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK)
         {

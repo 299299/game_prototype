@@ -8,6 +8,7 @@ const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
 const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.8f;
 const float CHARACTER_HEIGHT = 5.0f;
+const float SPHERE_CAST_RADIUS = 0.25f;
 
 const int MAX_NUM_OF_ATTACK = 3;
 const int MAX_NUM_OF_MOVING = 3;
@@ -1653,22 +1654,29 @@ class Character : GameObject
             body.gravityOverride = gravity;
     }
 
-    bool IsTargetSightBlocked(const Vector3&in targetPos)
+    Node@ GetTargetSightBlockedNode(const Vector3&in targetPos)
     {
         Vector3 my_mid_pos = sceneNode.worldPosition;
         my_mid_pos.y += CHARACTER_HEIGHT/2;
         Vector3 target_mid_pos = targetPos;
         target_mid_pos.y += CHARACTER_HEIGHT/2;
         Vector3 dir = target_mid_pos - my_mid_pos;
-        my_mid_pos += dir * (COLLISION_RADIUS + 0.01f);
-        float rayDistance = dir.length;
+        Vector3 dir_normalized = dir.Normalized();
+        float offset = (COLLISION_RADIUS + 0.01f + SPHERE_CAST_RADIUS);
+        if (offset < 0)
+            return null;
+        my_mid_pos += dir_normalized * offset;
+        float rayDistance = dir.length - offset;
         Ray sightRay;
         sightRay.origin = my_mid_pos;
-        sightRay.direction = dir.Normalized();
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(sightRay, rayDistance, COLLISION_LAYER_CHARACTER | COLLISION_LAYER_AI);
+        sightRay.direction = dir_normalized;
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.SphereCast(sightRay, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER | COLLISION_LAYER_AI);
         if (result.body is null)
-            return false;
-        return true;
+            return null;
+        Node@ node = result.body.node;
+        if (node.scriptObject is null)
+            return node.parent;
+        return node;
     }
 
     // ===============================================================================================

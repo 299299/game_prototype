@@ -302,19 +302,9 @@ class Player : Character
         if (attackEnemy !is null && checkBlock)
         {
             LogPrint("CommonPicKEnemy-> attackEnemy is " + attackEnemy.GetName());
-            Vector3 v_pos = sceneNode.worldPosition;
-            v_pos.y = CHARACTER_HEIGHT / 2;
-            Vector3 e_pos = attackEnemy.GetNode().worldPosition;
-            e_pos.y = v_pos.y;
-            Vector3 dir = e_pos - v_pos;
-            float len = dir.length;
-            dir.Normalize();
-            Ray ray;
-            ray.Define(v_pos, dir);
-            PhysicsRaycastResult result = sceneNode.scene.physicsWorld.RaycastSingle(ray, len, COLLISION_LAYER_CHARACTER | COLLISION_LAYER_AI);
-            if (result.body !is null)
+            Node@ n = GetTargetSightBlockedNode(attackEnemy.GetNode().worldPosition);
+            if (n !is null)
             {
-                Node@ n = result.body.node.parent;
                 Enemy@ e = cast<Enemy>(n.scriptObject);
                 if (e !is null && e !is attackEnemy && e.HasFlag(FLAGS_ATTACK))
                 {
