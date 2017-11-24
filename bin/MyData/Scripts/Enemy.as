@@ -218,9 +218,7 @@ class EnemyManager : ScriptObject
                 num_of_near ++;
             if (num_of_near > MAX_NUM_OF_NEAR)
             {
-                // LogPrint(e.GetName() + " too close with player !!!");
-                if (e.GetState().nameHash != COUNTER_STATE)
-                    e.KeepDistanceWithPlayer(AI_NEAR_DIST);
+                e.KeepDistanceWithPlayer(AI_NEAR_DIST);
             }
         }
     }
@@ -266,7 +264,7 @@ class EnemyManager : ScriptObject
         Vector3 v(radius * Sin(degree), 0, radius * Cos(degree));
         v += self.target.GetNode().worldPosition;
         v = FilterPosition(v);
-        Print(self.GetName() + " FindGoodTargetPosition best_dir=" + best_dir + " degree=" + degree + " v=" + v.ToString());
+        LogPrint(self.GetName() + " FindGoodTargetPosition best_dir=" + best_dir + " degree=" + degree + " v=" + v.ToString());
         return v;
     }
 };

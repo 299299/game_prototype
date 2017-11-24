@@ -24,7 +24,6 @@ const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
 const StringHash ALIGN_STATE("AlignState");
 const StringHash RUN_TO_TARGET_STATE("RunToTargetState");
-const StringHash COUNTER_STATE("CounterState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
@@ -32,7 +31,6 @@ const StringHash TIME_SCALE("TimeScale");
 const StringHash DATA("Data");
 const StringHash NAME("Name");
 const StringHash ANIMATION("Animation");
-const StringHash SPEED("Speed");
 const StringHash STATE("State");
 const StringHash VALUE("Value");
 const StringHash COUNTER_CHECK("CounterCheck");

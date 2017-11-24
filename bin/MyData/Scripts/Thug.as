@@ -75,6 +75,7 @@ class ThugStandState : MultiAnimationState
         float characterDifference = ownner.ComputeAngleDiff();
         if (Abs(characterDifference) > MIN_TURN_ANGLE)
         {
+            ownner.GetNode().vars[TARGET] = ownner.GetNode().worldPosition;
             ownner.ChangeState("TurnState");
             return;
         }
@@ -126,8 +127,8 @@ class ThugStandState : MultiAnimationState
         }
         else
         {
-            //_node.vars[ANIMATION_INDEX] = RandomInt(8);
-            //ownner.ChangeState("StepMoveState");
+            _node.vars[ANIMATION_INDEX] = RandomInt(8);
+            ownner.ChangeState("StepMoveState");
         }
 
         return;
@@ -197,6 +198,7 @@ class ThugRunToAttackState : SingleMotionState
         // if the difference is large, then turn 180 degrees
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
         {
+            ownner.GetNode().vars[TARGET] = ownner.GetNode().worldPosition;
             ownner.ChangeState("TurnState");
             return;
         }
@@ -239,6 +241,7 @@ class ThugRunToTargetState : SingleMotionState
         ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
         if (Abs(characterDifference) > FULLTURN_THRESHOLD)
         {
+            ownner.GetNode().vars[TARGET] = targetPosition;
             ownner.ChangeState("TurnState");
             return;
         }
@@ -297,10 +300,10 @@ class ThugWalkState : SingleMotionState
     }
 };
 
-class ThugTurnState : MultiMotionState
+class ThugTurnState : MultiAnimationState
 {
+    Vector3 targetPoint;
     float turnSpeed;
-    float endTime;
 
     ThugTurnState(Character@ c)
     {
@@ -308,34 +311,35 @@ class ThugTurnState : MultiMotionState
         SetName("TurnState");
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Right");
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
+        AddMotion(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
         flags = FLAGS_ATTACK;
     }
 
     void Update(float dt)
     {
-        Motion@ motion = motions[selectIndex];
-        float t = ownner.animCtrl.GetTime(motion.animationName);
-        float characterDifference = Abs(ownner.ComputeAngleDiff());
-        if (t >= endTime || characterDifference < 5)
+        float characterDifference = Abs(ownner.ComputeAngleDiff(targetPoint));
+        if (ownner.animCtrl.IsAtEnd(animations[selectIndex]) || characterDifference < 5)
         {
             ownner.CommonStateFinishedOnGroud();
             return;
         }
         ownner.GetNode().Yaw(turnSpeed * dt);
-        CharacterState::Update(dt);
+        MultiAnimationState::Update(dt);
     }
 
     void Enter(State@ lastState)
     {
+        targetPoint = ownner.GetNode().vars[TARGET].GetVector3();
         float diff = ownner.ComputeAngleDiff();
         int index = 0;
         if (diff < 0)
             index = 1;
+        if (Abs(diff) <= 120)
+            index = 2;
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
-        endTime = motions[index].endTime;
-        turnSpeed = diff / endTime;
         ownner.ClearAvoidance();
-        MultiMotionState::Enter(lastState);
+        MultiAnimationState::Enter(lastState);
+        turnSpeed = diff / ownner.animCtrl.GetLength(animations[selectIndex]);
         if (d_log)
             LogPrint(ownner.GetName() + " turn speed = " + turnSpeed + " diff=" + diff);
     }
@@ -343,7 +347,7 @@ class ThugTurnState : MultiMotionState
     void FixedUpdate(float dt)
     {
         ownner.CheckAvoidance(dt);
-        MultiMotionState::FixedUpdate(dt);
+        MultiAnimationState::FixedUpdate(dt);
     }
 };
 
@@ -354,6 +358,7 @@ class ThugCounterState : CharacterCounterState
     {
         super(c);
         AddBW_Counter_Animations("TG_BW_Counter/", "TG_BM_Counter/",false);
+        flags = FLAGS_NO_MOVE;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -393,6 +398,7 @@ class ThugAttackState : CharacterState
         AddAttackMotion("Attack_Kick", 24, ATTACK_KICK, "Bip01_L_Foot");
         AddAttackMotion("Attack_Kick_01", 24, ATTACK_KICK, "Bip01_L_Foot");
         AddAttackMotion("Attack_Kick_02", 24, ATTACK_KICK, "Bip01_L_Foot");
+        flags = FLAGS_NO_MOVE;
 
         if (PUNCH_DIST != 0.0f)
         {
@@ -506,7 +512,7 @@ class ThugAttackState : CharacterState
             if (value == 1)
             {
                 attackCheckNode = ownner.GetNode().GetChild(eventData[BONE].GetString(), true);
-                LogPrint("Thug AttackCheck bone=" + attackCheckNode.name);
+                LogPrint(ownner.GetName() + " AttackCheck bone=" + attackCheckNode.name);
                 AttackCollisionCheck();
             }
 
@@ -622,6 +628,7 @@ class ThugHitState : MultiMotionState
                 {
                     object.ChangeState("PushBack");
                 }*/
+                LogPrint(ownner.GetName() + " DoPushBack !! \n");
                 object.ChangeState("PushBack");
             }
         }
@@ -1107,11 +1114,16 @@ class Thug : Enemy
         Motion@ motion = state.motions[dir];
         Vector4 motionOut = motion.GetKey(motion.endTime);
         Vector3 endPos = sceneNode.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + sceneNode.worldPosition;
-        Vector3 diff = endPos - target.sceneNode.worldPosition;
+        Vector3 diff = endPos - target.GetNode().worldPosition;
         diff.y = 0;
+
         if((diff.length - COLLISION_SAFE_DIST) < KEEP_DIST_WITH_PLAYER)
         {
-            LogPrint("can not avoid collision because player is in front of me.");
+            if (drawDebug > 0)
+                gDebugMgr.AddSphere(endPos, 0.25f, GREEN, 3.0f);
+
+            LogPrint(GetName() + " can not avoid collision because player is in front of me. dir=" + dir);
+            sceneNode.scene.timeScale = 0.0f;
             return false;
         }
         sceneNode.vars[ANIMATION_INDEX] = dir;
@@ -1263,8 +1275,8 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
     Global_CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
 
-    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
-    Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_Z, -1, true);
 
     CreateThugCombatMotions();
 }

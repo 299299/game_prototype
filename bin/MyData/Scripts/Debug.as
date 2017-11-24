@@ -141,13 +141,19 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         SendEvent("CameraEvent", data);
     }
     else if (key == KEY_R)
-        scene_.updateEnabled = !scene_.updateEnabled;
+    {
+        if (scene_ !is null)
+            scene_.updateEnabled = !scene_.updateEnabled;
+    }
     else if (key == KEY_T)
     {
-        if (scene_.timeScale >= 0.999f)
-            scene_.timeScale = 0.1f;
-        else
-            scene_.timeScale = 1.0f;
+        if (scene_ !is null)
+        {
+            if (scene_.timeScale >= 0.999f)
+                scene_.timeScale = 0.1f;
+            else
+                scene_.timeScale = 1.0f;
+        }
     }
     else if (key == KEY_Q)
         engine.Exit();
@@ -184,17 +190,21 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_F)
     {
-        scene_.timeScale = 1.0f;
+        if (scene_ !is null)
+            scene_.timeScale = 1.0f;
         // SetWorldTimeScale(scene_, 1);
     }
     else if (key == KEY_O)
     {
-        Node@ n = scene_.GetChild("thug2");
-        if (n !is null)
+        if (scene_ !is null)
         {
-            n.vars[ANIMATION_INDEX] = RandomInt(4);
-            Thug@ thug = cast<Thug>(n.scriptObject);
-            thug.ChangeState("HitState");
+            Node@ n = scene_.GetChild("thug2");
+            if (n !is null)
+            {
+                n.vars[ANIMATION_INDEX] = RandomInt(4);
+                Thug@ thug = cast<Thug>(n.scriptObject);
+                thug.ChangeState("HitState");
+            }
         }
     }
     else if (key == KEY_I)
@@ -478,6 +488,7 @@ enum DebugDrawCommandType
     DEBUG_DRAW_NODE,
     DEBUG_DRAW_CROSS,
     DEBUG_DRAW_CIRCLE,
+    DEBUG_DRAW_TEXT, // todo ...
 };
 
 

@@ -72,17 +72,10 @@ class FSM
 
     FSM()
     {
-        //LogPrint("FSM()");
     }
 
     ~FSM()
     {
-        /*
-        if (currentState !is null)
-            LogPrint("~FSM() currentState=" + currentState.name);
-        else
-            LogPrint("~FSM()");
-        */
         @currentState = null;
         states.Clear();
     }

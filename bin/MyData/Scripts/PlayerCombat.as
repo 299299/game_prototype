@@ -715,10 +715,7 @@ class PlayerCounterState : CharacterCounterState
         {
             State@ state = counterEnemies[i].GetState();
             CharacterCounterState@ s = cast<CharacterCounterState>(state);
-            if (s !is null)
-                s.StartCounterMotion();
-            else
-                Print(counterEnemies[i].GetName() + " CounterState Error ! state=" + state.name);
+            s.StartCounterMotion();
         }
     }
 
