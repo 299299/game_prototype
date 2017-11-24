@@ -109,7 +109,10 @@ class Ragdoll : ScriptObject
             boneLastRotations.Resize(maxLen);
 
         for (int i=0; i<maxLen; ++i)
+        {
             boneNodes[i] = node.GetChild(boneNames[i], true);
+            boneNodes[i].vars[NODE] = node.id;
+        }
 
         Node@ renderNode = node;
         AnimatedModel@ model = node.GetComponent("AnimatedModel");

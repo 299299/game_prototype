@@ -1713,11 +1713,11 @@ int DirectionMapToIndex(float directionDifference, int numDirections)
     return int(directionVariable);
 }
 
-int GetDirectionZone(const Vector3&in from, const Vector3& to, int numDirections)
+int GetDirectionZone(const Vector3&in from, const Vector3& to, int numDirections, float fromAngle = 0.0f)
 {
     Vector3 dir = to - from;
-    float angle = Atan2(dir.x, dir.z);
-    return DirectionMapToIndex(angle, numDirections);
+    float angle = Atan2(dir.x, dir.z) - fromAngle;
+    return DirectionMapToIndex(AngleDiff(angle), numDirections);
 }
 
 Node@ CreateCharacter(const String&in name, const String&in objectName, const String&in scriptClass, const Vector3&in position, const Quaternion& rotation)

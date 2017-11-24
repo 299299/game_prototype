@@ -285,6 +285,13 @@ class Motion
             return Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
     }
 
+    Vector3 GetKeyPosition(Character@ object, float t)
+    {
+        Vector4 motionOut = GetKey(t);
+        Node@ _node = object.GetNode();
+        return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition;
+    }
+
     float GetFutureRotation(Character@ object, float t)
     {
         if (looped)

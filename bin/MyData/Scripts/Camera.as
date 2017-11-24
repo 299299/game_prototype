@@ -25,22 +25,18 @@ class CameraController
 
     void Update(float dt)
     {
-
     }
 
     void OnCameraEvent(VariantMap& eventData)
     {
-
     }
 
     void Enter()
     {
-
     }
 
     void Exit()
     {
-
     }
 
     bool IsDebugCamera()
@@ -67,7 +63,6 @@ class CameraController
 
     void Reset()
     {
-
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -150,6 +145,8 @@ class DebugFPSCameraController: CameraController
     void Enter()
     {
         input.mouseMode = MM_RELATIVE;
+        yaw = cameraNode.worldRotation.eulerAngles.y;
+        pitch = cameraNode.worldRotation.eulerAngles.x;
     }
 
     void Exit()
@@ -351,7 +348,7 @@ class AnimationCameraController : CameraController
 
 class LookAtCameraController: CameraController
 {
-    Vector3 offset = Vector3(0.0, 20.0, -20.0);
+    Vector3 offset = Vector3(0.0, 35.0, 0.0);
     float cameraSpeed = 4.5;
 
     LookAtCameraController(Node@ n, const String&in name)

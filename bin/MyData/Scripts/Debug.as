@@ -190,9 +190,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_F)
     {
-        if (scene_ !is null)
-            scene_.timeScale = 1.0f;
-        // SetWorldTimeScale(scene_, 1);
+        Player@ p = GetPlayer();
+        if (p !is null)
+        {
+            if (p.HasFlag(FLAGS_INVINCIBLE))
+                p.RemoveFlag(FLAGS_INVINCIBLE);
+            else
+                p.AddFlag(FLAGS_INVINCIBLE);
+        }
     }
     else if (key == KEY_O)
     {
@@ -556,6 +561,11 @@ class DebugDrawMgr
 
     void Update(DebugRenderer@ debug, float dt)
     {
+        Scene@ s = script.defaultScene;
+        if (!s.updateEnabled)
+            dt = 0;
+        dt *= s.timeScale;
+
         uint processed_num = 0;
         uint cur = 0;
         uint num_time_out = 0;

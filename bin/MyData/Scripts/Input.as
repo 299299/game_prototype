@@ -216,21 +216,29 @@ class GameInput
             return false;
 
         bool ret = false;
+        bool moving = false;
         if (IsTouching())
         {
             GetTouchedPosition();
             for (uint i=0; i<touchedPositions.length; ++i)
             {
                 UIElement@ e = ui.GetElementAt(touchedPositions[i]);
-                if (e !is null && e.name == actionNames[action])
+                if (e !is null)
                 {
-                    ret = true;
-                    break;
+                    if (e.name == actionNames[action])
+                    {
+                        ret = true;
+                        break;
+                    }
+                    else if (e.name == touch_btn_name)
+                    {
+                        moving = true;
+                    }
                 }
             }
         }
 
-        if (!mobile && !ret)
+        if (!mobile && !moving)
         {
             if (action == kInputAttack)
                 ret = input.mouseButtonPress[MOUSEB_LEFT];

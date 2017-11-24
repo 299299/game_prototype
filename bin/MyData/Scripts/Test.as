@@ -51,13 +51,13 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 5;
+int test_enemy_num_override = 50;
 int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/unlearn2.ttf";
 int UI_FONT_SIZE = 40;
 const String DEBUG_FONT = "Fonts/seagle.otf";
-int DEBUG_FONT_SIZE = 12;
+int DEBUG_FONT_SIZE = 16;
 
 int freeze_ai = 0;
 int test_beat_index = 1;
@@ -68,6 +68,7 @@ int test_triple_counter_index = 0;
 int collision_type = 0;
 Array<int> dirCache;
 Array<int> zoneDirCache;
+Array<int> gIntCache;
 
 bool mobile = false;
 
@@ -191,8 +192,6 @@ void CreateUI()
     //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
     Text@ text = ui.root.CreateChild("Text", "debug");
     text.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
-    text.horizontalAlignment = HA_LEFT;
-    text.verticalAlignment = VA_TOP;
     text.SetPosition(5, 50);
     text.color = Color(0, 0, 1);
     text.priority = -99999;
