@@ -627,7 +627,7 @@ class ThugHitState : MultiMotionState
                 {
                     object.ChangeState("PushBack");
                 }*/
-                LogPrint(object.GetName() + " DoPushBack !! \n");
+                LogPrint(object.GetName() + " DoPushBack !!");
                 object.ChangeState("PushBack");
             }
         }
@@ -873,7 +873,7 @@ class Thug : Enemy
         RigidBody@ body = collisionNode.CreateComponent("RigidBody");
         body.mass = 10;
         body.collisionLayer = COLLISION_LAYER_AI;
-        body.collisionMask = COLLISION_LAYER_AI;
+        body.collisionMask = COLLISION_LAYER_AI | COLLISION_LAYER_RAGDOLL;
         body.kinematic = true;
         body.trigger = true;
         body.collisionEventMode = COLLISION_ALWAYS;
@@ -1092,8 +1092,8 @@ class Thug : Enemy
                     gIntCache.Push(candidate1);
                 else
                 {
-                    if (drawDebug > 0)
-                        gDebugMgr.AddSphere(v1, 0.25f, GREEN, 3.0f);
+                    //if (drawDebug > 0)
+                    //    gDebugMgr.AddSphere(v1, 0.25f, GREEN, 3.0f);
                 }
 
                 diff = v2 - targetPos;
@@ -1101,8 +1101,8 @@ class Thug : Enemy
                 if (diff.length >= KEEP_DIST_WITH_PLAYER)
                     gIntCache.Push(candidate2);
                 {
-                    if (drawDebug > 0)
-                        gDebugMgr.AddSphere(v2, 0.25f, GREEN, 3.0f);
+                    //if (drawDebug > 0)
+                    //    gDebugMgr.AddSphere(v2, 0.25f, GREEN, 3.0f);
                 }
             }
         }
@@ -1178,9 +1178,19 @@ class Thug : Enemy
             RigidBody@ rb = neighbors[i];
             if (rb.collisionLayer != COLLISION_LAYER_RAGDOLL)
                 continue;
+            if (rb.node.name != PELVIS)
+                continue;
 
-            bHit = true;
-            Print(GetName() + " hit ragdoll bone " + rb.node.name);
+            float vl = rb.linearVelocity.length;
+            Vector3 vel = rb.linearVelocity;
+            if (vl > 5.0f)
+            {
+                bHit = true;
+                LogPrint(GetName() + " hit ragdoll bone " + rb.node.name + " vel=" + vel.ToString() + " vl=" + vl);
+                // sceneNode.scene.timeScale = 0.0f;
+                MakeMeRagdoll(vel * 1.5f, rb.node.worldPosition);
+                return bHit;
+            }
         }
 
         return false;

@@ -46,6 +46,7 @@ const String L_ARM = "Bip01_L_Forearm";
 const String R_ARM = "Bip01_R_Forearm";
 const String L_CALF = "Bip01_L_Calf";
 const String R_CALF = "Bip01_R_Calf";
+const String PELVIS = "Bip01_Pelvis";
 
 const float FRAME_PER_SEC = 30.0f;
 const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;

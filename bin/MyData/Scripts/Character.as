@@ -1397,7 +1397,7 @@ class Character : GameObject
 
     void MakeMeRagdoll(const Vector3&in velocity = Vector3(0, 0, 0), const Vector3&in position = Vector3(0, 0, 0))
     {
-        LogPrint("MakeMeRagdoll -- velocity=" + velocity.ToString() + " position=" + position.ToString());
+        LogPrint(GetName() + " MakeMeRagdoll -- velocity=" + velocity.ToString() + " position=" + position.ToString());
         VariantMap anim_data;
         anim_data[NAME] = RAGDOLL_START;
         anim_data[VELOCITY] = velocity;
@@ -1671,6 +1671,7 @@ class Character : GameObject
         sightRay.direction = dir_normalized;
         PhysicsRaycastResult result = sceneNode.scene.physicsWorld.SphereCast(sightRay, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER | COLLISION_LAYER_AI);
 
+        /*
         if (drawDebug > 0)
         {
             Vector3 start = my_mid_pos;
@@ -1682,6 +1683,7 @@ class Character : GameObject
             if (result.body !is null)
                 gDebugMgr.AddSphere(result.position, SPHERE_CAST_RADIUS, RED, debugTime);
         }
+        */
 
         if (result.body is null)
             return null;
