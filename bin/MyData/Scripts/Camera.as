@@ -348,7 +348,8 @@ class AnimationCameraController : CameraController
 
 class LookAtCameraController: CameraController
 {
-    Vector3 offset = Vector3(0.0, 35.0, 0.0);
+    Vector3 offset = Vector3(0.0, 15, -15);
+    Vector3 lookAtOffset = Vector3(0, 4, 0);
     float cameraSpeed = 4.5;
 
     LookAtCameraController(Node@ n, const String&in name)
@@ -364,7 +365,7 @@ class LookAtCameraController: CameraController
         Node@ _node = p.GetNode();
 
         Vector3 camera_pos = offset + _node.worldPosition;
-        Vector3 target_pos = _node.worldPosition;
+        Vector3 target_pos = _node.worldPosition + lookAtOffset;
         UpdateView(camera_pos, target_pos, dt * cameraSpeed);
     }
 };

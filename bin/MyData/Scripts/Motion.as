@@ -167,6 +167,7 @@ class Motion
 
     ~Motion()
     {
+        Print("Release animation " + this.name);
         animation = null;
         cache.ReleaseResource("Animation", animationName);
     }
@@ -177,6 +178,9 @@ class Motion
             return;
         uint startTime = time.systemTime;
         this.animationName = GetAnimationName(this.name);
+        if (cache.GetExistingResource("Animation", animationName) !is null)
+            LogPrint("Error " + this.name + " already loaded !!!");
+
         this.animation = cache.GetResource("Animation", animationName);
         if (this.animation is null)
             return;

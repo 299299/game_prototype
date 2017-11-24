@@ -246,6 +246,11 @@ class SingleMotionState : CharacterState
         super(c);
     }
 
+    ~SingleMotionState()
+    {
+        @motion = null;
+    }
+
     void Update(float dt)
     {
         if (motion.Move(ownner, dt) == 1)
@@ -348,6 +353,11 @@ class MultiMotionState : CharacterState
         super(c);
     }
 
+    ~MultiMotionState()
+    {
+        motions.Clear();
+    }
+
     void Update(float dt)
     {
         int ret = motions[selectIndex].Move(ownner, dt);
@@ -424,6 +434,11 @@ class AnimationTestState : CharacterState
         super(c);
         SetName("AnimationTestState");
         physicsType = 0;
+    }
+
+    ~AnimationTestState()
+    {
+        testMotions.Clear();
     }
 
     void Enter(State@ lastState)

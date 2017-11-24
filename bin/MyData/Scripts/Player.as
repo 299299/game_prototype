@@ -6,7 +6,7 @@
 
 const float MAX_COUNTER_DIST = 4.0f;
 const float DIST_SCORE = 10.0f;
-const float ANGLE_SCORE = 30.0f;
+const float ANGLE_SCORE = 60.0f;
 const float THREAT_SCORE = 30.0f;
 const float LAST_ENEMY_ANGLE = 45.0f;
 const int   LAST_ENEMY_SCORE = 5;
@@ -263,7 +263,7 @@ class Player : Character
                 LogPrint("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             int threatScore = 0;
-            if (dist < 2.0f + COLLISION_SAFE_DIST)
+            if (dist < AI_NEAR_DIST)
             {
                 CharacterState@ state = cast<CharacterState>(e.GetState());
                 threatScore += int(state.GetThreatScore() * THREAT_SCORE);
@@ -393,7 +393,7 @@ class Player : Character
     bool Attack()
     {
         LogPrint("Do--Attack--->");
-        Enemy@ e = CommonPickEnemy(90, MAX_ATTACK_DIST, FLAGS_ATTACK, true, true);
+        Enemy@ e = CommonPickEnemy(60, MAX_ATTACK_DIST, FLAGS_ATTACK, true, false);
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");
