@@ -1600,7 +1600,11 @@ class Character : GameObject
 
     void ClearAvoidance()
     {
+    }
 
+    bool CheckRagdollHit()
+    {
+        return false;
     }
 
     void CheckTargetDistance(Character@ t, float dist)

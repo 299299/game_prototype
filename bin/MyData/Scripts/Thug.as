@@ -453,6 +453,12 @@ class ThugAttackState : CharacterState
         CharacterState::Update(dt);
     }
 
+    void FixedUpdate(float dt)
+    {
+        ownner.CheckRagdollHit();
+        CharacterState::FixedUpdate(dt);
+    }
+
     void Enter(State@ lastState)
     {
         float targetDistance = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;

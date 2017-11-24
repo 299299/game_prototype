@@ -78,6 +78,8 @@ void Start()
 {
     LogPrint("Game Running Platform: " + GetPlatform());
     mobile = (GetPlatform() == "Android" || GetPlatform() == "iOS");
+    if (mobile)
+        drawDebug = 0;
 
     dirCache.Resize(4);
     zoneDirCache.Resize(NUM_ZONE_DIRECTIONS);
