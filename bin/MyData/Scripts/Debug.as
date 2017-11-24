@@ -40,7 +40,7 @@ void ShootSphere(Scene@ _scene)
     body.linearVelocity = cameraNode.rotation * Vector3(0.0f, 0.25f, 1.0f) * 10.0f;
 }
 
-void DrawDebug()
+void DrawDebug(float dt)
 {
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
@@ -48,6 +48,9 @@ void DrawDebug()
     DebugRenderer@ debug = scene_.debugRenderer;
     if (drawDebug == 0)
         return;
+
+    gDebugMgr.Update(debug, dt);
+
     if (drawDebug > 0)
     {
         // gCameraMgr.DebugDraw(debug);
@@ -62,6 +65,7 @@ void DrawDebug()
         if (em !is null)
             em.DebugDraw(debug);
     }
+
     if (drawDebug > 2)
     {
         DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
@@ -466,4 +470,146 @@ void DrawDebugText()
     if (text !is null)
         text.text = debugText;
 }
+
+enum DebugDrawCommandType
+{
+    DEBUG_DRAW_LINE,
+    DEBUG_DRAW_SPHERE,
+    DEBUG_DRAW_NODE,
+    DEBUG_DRAW_CROSS,
+    DEBUG_DRAW_CIRCLE,
+};
+
+
+class DebugDrawCommand
+{
+    uint    id;
+
+    int     type;
+    float   time;
+    Color   color;
+    bool    depth;
+
+    Vector3 v1;
+    Vector3 v2;
+    Vector3 v3;
+    uint    data1;
+    float   data2;
+};
+
+void ProcessDebugDrawCommand(DebugRenderer@ debug, const DebugDrawCommand&in cmd)
+{
+    switch (cmd.type)
+    {
+    case DEBUG_DRAW_LINE:
+        debug.AddLine(cmd.v1, cmd.v2, cmd.color, cmd.depth);
+        break;
+    case DEBUG_DRAW_SPHERE:
+        {
+            Sphere sp;
+            sp.Define(cmd.v1, cmd.data2);
+            debug.AddSphere(sp, cmd.color, cmd.depth);
+        }
+        break;
+    case DEBUG_DRAW_NODE:
+        {
+            Node@ node = script.defaultScene.GetNode(cmd.data1);
+            if (node !is null)
+            {
+                debug.AddNode(node, cmd.data2, cmd.depth);
+            }
+        }
+        break;
+    case DEBUG_DRAW_CROSS:
+        debug.AddCross(cmd.v1, cmd.data2, cmd.color, cmd.depth);
+        break;
+    case DEBUG_DRAW_CIRCLE:
+        debug.AddCircle(cmd.v1, cmd.v2, cmd.data2, cmd.color, 32, cmd.depth);
+        break;
+    }
+}
+
+class DebugDrawMgr
+{
+    Array<DebugDrawCommand@> commands;
+
+    void Stop()
+    {
+        commands.Clear();
+    }
+
+    void AddCommand(DebugDrawCommand@ cmd)
+    {
+        commands.Push(cmd);
+    }
+
+    void Update(DebugRenderer@ debug, float dt)
+    {
+        uint processed_num = 0;
+        uint cur = 0;
+        uint num_time_out = 0;
+        while (processed_num != commands.length)
+        {
+            DebugDrawCommand@ cmd = commands[cur];
+            ProcessDebugDrawCommand(debug, cmd);
+            ++ processed_num;
+            if (cmd.time >= 0)
+            {
+                cmd.time -= dt;
+                if (cmd.time > 0)
+                {
+                    cur ++;
+                }
+                else
+                {
+                    // swap to the last element
+                    DebugDrawCommand@ last = commands[commands.length - 1 - num_time_out];
+                    commands[cur] = last;
+                    ++ num_time_out;
+                }
+            }
+        }
+
+        if (num_time_out > 0)
+            commands.Resize(commands.length - num_time_out);
+    }
+
+    void AddLine(const Vector3&in start, const Vector3&in end, const Color& c, float t)
+    {
+        DebugDrawCommand@ cmd = DebugDrawCommand();
+        cmd.type = DEBUG_DRAW_LINE;
+        cmd.v1 = start;
+        cmd.v2 = end;
+        cmd.depth = false;
+        cmd.color = c;
+        cmd.time = t;
+        AddCommand(cmd);
+    }
+
+    void AddSphere(const Vector3&in pos, float radius, const Color& c, float t)
+    {
+        DebugDrawCommand@ cmd = DebugDrawCommand();
+        cmd.type = DEBUG_DRAW_SPHERE;
+        cmd.v1 = pos;
+        cmd.data2 = radius;
+        cmd.depth = false;
+        cmd.color = c;
+        cmd.time = t;
+        AddCommand(cmd);
+    }
+
+    void AddCross(const Vector3&in pos, float size, const Color& c, float t)
+    {
+        DebugDrawCommand@ cmd = DebugDrawCommand();
+        cmd.type = DEBUG_DRAW_CROSS;
+        cmd.v1 = pos;
+        cmd.data2 = size;
+        cmd.depth = false;
+        cmd.color = c;
+        cmd.time = t;
+        AddCommand(cmd);
+    }
+};
+
+DebugDrawMgr@ gDebugMgr = DebugDrawMgr();
 

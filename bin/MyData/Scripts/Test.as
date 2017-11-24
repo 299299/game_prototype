@@ -99,8 +99,6 @@ void Start()
                 render_features = RF_NONE;
             else if (argument == "freezeai")
                 freeze_ai = 1;
-            else if (argument == "reflection")
-                reflection = !reflection;
         }
     }
 
@@ -121,8 +119,6 @@ void Start()
     gGame.Start();
     gGame.ChangeState("LoadingState");
 
-    CreateConsoleAndDebugHud();
-
     LogPrint("Start Finished !!! ");
 }
 
@@ -130,6 +126,7 @@ void Stop()
 {
     LogPrint("Test Stop");
     gMotionMgr.Stop();
+    gDebugMgr.Stop();
     ui.Clear();
 }
 
@@ -292,7 +289,7 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)
 {
-    DrawDebug();
+    DrawDebug(eventData["TimeStep"].GetFloat());
 }
 
 void HandleSceneLoadFinished(StringHash eventType, VariantMap& eventData)

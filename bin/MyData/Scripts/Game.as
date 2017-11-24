@@ -4,8 +4,6 @@
 //
 // ==============================================
 
-bool reflection = false;
-
 class GameState : State
 {
     void OnCharacterKilled(Character@ killer, Character@ dead)
@@ -236,51 +234,6 @@ class TestGameState : GameState
 
     void PostCreate()
     {
-        if (reflection)
-        {
-            Node@ floorNode = gameScene.GetChild("floor", true);
-            StaticModel@ floor = floorNode.GetComponent("StaticModel");
-            String matName = "Materials/FloorPlane.xml";
-            floor.material = cache.GetResource("Material", matName);
-            // Set a different viewmask on the water plane to be able to hide it from the reflection camera
-            floor.viewMask = 0x80000000;
-
-            Camera@ camera = GetCamera();
-            // Create a mathematical plane to represent the water in calculations
-            Plane waterPlane = Plane(floorNode.worldRotation * Vector3(0.0f, 1.0f, 0.0f), floorNode.worldPosition);
-            // Create a downward biased plane for reflection view clipping. Biasing is necessary to avoid too aggressive clipping
-            Plane waterClipPlane = Plane(floorNode.worldRotation * Vector3(0.0f, 1.0f, 0.0f), floorNode.worldPosition - Vector3(0.0f, 0.1f, 0.0f));
-
-            // Create camera for water reflection
-            // It will have the same farclip and position as the main viewport camera, but uses a reflection plane to modify
-            // its position when rendering
-            Node@ reflectionCameraNode = camera.node.CreateChild("reflection");
-            Camera@ reflectionCamera = reflectionCameraNode.CreateComponent("Camera");
-            reflectionCamera.farClip = 750.0;
-            reflectionCamera.viewMask = 0x7fffffff; // Hide objects with only bit 31 in the viewmask (the water plane)
-            reflectionCamera.autoAspectRatio = false;
-            reflectionCamera.useReflection = true;
-            reflectionCamera.reflectionPlane = waterPlane;
-            reflectionCamera.useClipping = true; // Enable clipping of geometry behind water plane
-            reflectionCamera.clipPlane = waterClipPlane;
-            // The water reflection texture is rectangular. Set reflection camera aspect ratio to match
-            reflectionCamera.aspectRatio = float(graphics.width) / float(graphics.height);
-            // View override flags could be used to optimize reflection rendering. For example disable shadows
-            reflectionCamera.viewOverrideFlags = VO_DISABLE_SHADOWS | VO_DISABLE_OCCLUSION | VO_LOW_MATERIAL_QUALITY;
-
-            // Create a texture and setup viewport for water reflection. Assign the reflection texture to the diffuse
-            // texture unit of the water material
-            int texSize = 1024;
-            Texture2D@ renderTexture = Texture2D();
-            renderTexture.SetSize(texSize, texSize, GetRGBFormat(), TEXTURE_RENDERTARGET);
-            renderTexture.filterMode = FILTER_BILINEAR;
-            RenderSurface@ surface = renderTexture.renderSurface;
-            Viewport@ rttViewport = Viewport(gameScene, reflectionCamera);
-            surface.viewports[0] = rttViewport;
-            Material@ waterMat = cache.GetResource("Material", matName);
-            waterMat.textures[TU_DIFFUSE] = renderTexture;
-        }
-
         Node@ zoneNode = gameScene.GetChild("zone", true);
         Zone@ zone = zoneNode.GetComponent("Zone");
         // zone.heightFog = false;
@@ -495,9 +448,6 @@ class TestGameState : GameState
         if (render_features & RF_HDR != 0)
         {
             renderer.hdrRendering = true;
-            // if (reflection)
-            //    renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardHWDepth.xml"));
-            // else
             renderpath.Load(cache.GetResource("XMLFile","RenderPaths/ForwardDepth.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/AutoExposure.xml"));
             renderpath.Append(cache.GetResource("XMLFile","PostProcess/BloomHDR.xml"));

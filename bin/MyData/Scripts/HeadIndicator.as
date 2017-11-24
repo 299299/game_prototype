@@ -13,6 +13,7 @@ class HeadIndicator : ScriptObject
     int state = -1;
     Array<Texture2D@> textures;
     Sprite@ sprite;
+    Text@ text;
 
     HeadIndicator()
     {
@@ -24,6 +25,10 @@ class HeadIndicator : ScriptObject
     {
         sprite = ui.root.CreateChild("Sprite", "Indicator_" + node.name);
         sprite.blendMode = BLEND_ADD;
+        text = ui.root.CreateChild("Text", "NameText_" + node.name);
+        text.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
+        text.color = YELLOW;
+        text.text = node.name;
         ChangeState(0);
     }
 
@@ -35,6 +40,8 @@ class HeadIndicator : ScriptObject
     void Stop()
     {
         sprite.Remove();
+        @sprite = null;
+        textures.Clear();
     }
 
     void Update(float dt)
@@ -45,6 +52,7 @@ class HeadIndicator : ScriptObject
         Vector3 pos = headNode.worldPosition + offset;
         Vector2 pos_2d = GetCamera().WorldToScreenPoint(pos);
         sprite.position = Vector2(pos_2d.x * graphics.width, pos_2d.y * graphics.height);
+        text.SetPosition(sprite.position.x, sprite.position.y);
     }
 
     void ChangeState(int newState)
