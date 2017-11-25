@@ -40,7 +40,9 @@ class HeadIndicator : ScriptObject
     void Stop()
     {
         sprite.Remove();
+        text.Remove();
         @sprite = null;
+        @text = null;
         textures.Clear();
     }
 
