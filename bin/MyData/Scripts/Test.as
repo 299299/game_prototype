@@ -51,13 +51,15 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 5;
+int test_enemy_num_override = 10;
 int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/unlearn2.ttf";
 int UI_FONT_SIZE = 40;
 const String DEBUG_FONT = "Fonts/seagle.otf";
 int DEBUG_FONT_SIZE = 16;
+
+const String GAME_CAMEAR_NAME = "ThirdPerson";
 
 int freeze_ai = 0;
 int test_beat_index = 1;

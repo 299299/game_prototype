@@ -190,7 +190,7 @@ class TestGameState : GameState
 
     int                 state = -1;
     int                 pauseState = -1;
-    int                 maxKilled = 5;
+    int                 maxKilled = 10;
 
     float               fadeTime;
     float               fadeInDuration = 1.0f;
@@ -377,7 +377,7 @@ class TestGameState : GameState
                     player.RemoveFlag(FLAGS_INVINCIBLE);
 
                 freezeInput = false;
-                gCameraMgr.SetCameraController("LookAt");
+                gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
                 gInput.ShowHideUI(true);
             }
             break;
@@ -538,13 +538,15 @@ class TestGameState : GameState
 
         maxKilled = em.enemyResetRotations.length;
 
+        LogPrint("Game maxKilled=" + maxKilled);
+
         Vector3 v_pos = playerNode.worldPosition;
         cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
         cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
 
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");
-        gCameraMgr.SetCameraController("LookAt");
+        gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
 
         gameScene = scene_;
 

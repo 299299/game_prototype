@@ -53,7 +53,7 @@ void DrawDebug(float dt)
 
     if (drawDebug > 0)
     {
-        // gCameraMgr.DebugDraw(debug);
+        gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
         Player@ player = GetPlayer();
         if (player !is null)
@@ -126,7 +126,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (cc.nameHash == StringHash("Debug"))
         {
             ui.cursor.visible = false;
-            gCameraMgr.SetCameraController("LookAt");
+            gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
         }
         else
         {

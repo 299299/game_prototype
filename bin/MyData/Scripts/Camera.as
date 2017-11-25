@@ -221,7 +221,7 @@ class DeathCameraController : CameraController
         Node@ _node = cameraNode.scene.GetNode(nodeId);
         if (_node is null || timeInState > 7.5f)
         {
-            gCameraMgr.SetCameraController("LookAt");
+            gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
             return;
         }
         Node@ playerNode = GetPlayer().GetNode();
@@ -291,7 +291,7 @@ class AnimationCameraController : CameraController
         {
             // finished.
             // todo.
-            gCameraMgr.SetCameraController("LookAt");
+            gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
         }
     }
 
@@ -348,11 +348,45 @@ class AnimationCameraController : CameraController
 
 class LookAtCameraController: CameraController
 {
-    Vector3 offset = Vector3(0.0, 15, -15);
+    Vector3 offset = Vector3(0.0, 15, -30);
     Vector3 lookAtOffset = Vector3(0, 4, 0);
     float cameraSpeed = 4.5;
+    float radius = 10.0f;
 
     LookAtCameraController(Node@ n, const String&in name)
+    {
+        super(n, name);
+
+        Player@ p = GetPlayer();
+        if (p is null)
+            return;
+        Node@ _node = p.GetNode();
+        Vector3 camera_pos = offset + _node.worldPosition;
+        Vector3 target_pos = _node.worldPosition + lookAtOffset;
+        cameraNode.worldPosition = camera_pos;
+        cameraNode.LookAt(target_pos);
+    }
+
+    void Update(float dt)
+    {
+        Player@ p = GetPlayer();
+        if (p is null)
+            return;
+        Node@ _node = p.GetNode();
+    }
+};
+
+class ThirdPersonCameraController : CameraController
+{
+    float   cameraSpeed = 7.5f;
+    float   cameraDistance = 7.5f;
+    float   targetCameraDistance = 30;
+    float   cameraDistSpeed = 10.0f;
+    float   pitch = 45;
+    float   yaw = 0;
+    Vector3 targetOffset = Vector3(0, 2.5, 0);
+
+    ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
     }
@@ -364,9 +398,20 @@ class LookAtCameraController: CameraController
             return;
         Node@ _node = p.GetNode();
 
-        Vector3 camera_pos = offset + _node.worldPosition;
-        Vector3 target_pos = _node.worldPosition + lookAtOffset;
-        UpdateView(camera_pos, target_pos, dt * cameraSpeed);
+        Vector3 target_pos = _node.worldPosition;
+        cameraDistance += (targetCameraDistance - cameraDistance) * dt * cameraDistSpeed;
+
+        Vector3 offset = cameraNode.worldRotation * targetOffset;
+        target_pos += offset;
+
+        Quaternion q(pitch, yaw, 0);
+        Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
+        UpdateView(pos, target_pos, dt * cameraSpeed);
+    }
+
+    String GetDebugText()
+    {
+        return "camera fov=" + camera.fov + " position=" + cameraNode.worldPosition.ToString()  + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + "\n";
     }
 };
 
@@ -415,6 +460,7 @@ class CameraManager
         cameraControllers.Push(DeathCameraController(n, "Death"));
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
         cameraControllers.Push(LookAtCameraController(n, "LookAt"));
+        cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
 
         /*
         cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));

@@ -88,7 +88,7 @@ class ThugStandState : MultiAnimationState
 
         if (ownner.ActionCheck())
         {
-            Print(ownner.GetName() + " ActionCheck success !!");
+            // Print(ownner.GetName() + " ActionCheck success !!");
             return;
         }
 
@@ -311,6 +311,7 @@ class ThugTurnState : MultiAnimationState
 {
     Vector3 targetPoint;
     float turnSpeed;
+    float endTime;
 
     ThugTurnState(Character@ c)
     {
@@ -325,7 +326,7 @@ class ThugTurnState : MultiAnimationState
     void Update(float dt)
     {
         float characterDifference = Abs(ownner.ComputeAngleDiff(targetPoint));
-        if (ownner.animCtrl.IsAtEnd(animations[selectIndex]) || characterDifference < 5)
+        if (timeInState + 0.01f >= endTime || characterDifference < 5)
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -346,7 +347,10 @@ class ThugTurnState : MultiAnimationState
         ownner.GetNode().vars[ANIMATION_INDEX] = index;
         ownner.ClearAvoidance();
         MultiAnimationState::Enter(lastState);
-        turnSpeed = diff / ownner.animCtrl.GetLength(animations[selectIndex]);
+        endTime = ownner.animCtrl.GetLength(animations[selectIndex]);
+        if (index == 2)
+            endTime = 0.4f;
+        turnSpeed = diff / endTime;
         if (d_log)
             LogPrint(ownner.GetName() + " turn speed = " + turnSpeed + " diff=" + diff);
     }
