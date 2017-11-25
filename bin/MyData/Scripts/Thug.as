@@ -686,6 +686,7 @@ class ThugDeadState : CharacterState
     {
         super(c);
         SetName("DeadState");
+        flags = FLAGS_DEAD | FLAGS_NO_MOVE;
     }
 
     void Enter(State@ lastState)

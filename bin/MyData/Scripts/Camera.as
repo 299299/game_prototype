@@ -380,7 +380,7 @@ class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 7.5f;
     float   cameraDistance = 7.5f;
-    float   targetCameraDistance = 30;
+    float   targetCameraDistance = 25;
     float   cameraDistSpeed = 10.0f;
     float   pitch = 45;
     float   yaw = 0;
