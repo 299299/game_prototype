@@ -45,7 +45,6 @@ const StringHash READY_TO_FIGHT("ReadyToFight");
 const StringHash FOOT_STEP("FootStep");
 const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
-const StringHash HEALTH("Health");
 const StringHash SOUND("Sound");
 const StringHash TARGET("Target");
 
@@ -60,7 +59,7 @@ int num_of_big_sounds = 6;
 class CharacterState : State
 {
     Character@                  ownner;
-    int                         flags;
+    uint                        flags = 0;
     float                       animSpeed = 1.0f;
     float                       blendTime = 0.2f;
     float                       startTime = 0.0f;
@@ -101,8 +100,6 @@ class CharacterState : State
             ownner.PlaySound(eventData[VALUE].GetString());
         else if (name == CHANGE_STATE)
             ownner.ChangeState(eventData[VALUE].GetStringHash());
-        else if (name == HEALTH)
-            ownner.SetHealth(eventData[VALUE].GetInt());
         else if (name == IMPACT)
         {
             combatReady = true;
@@ -147,7 +144,7 @@ class CharacterState : State
 
     void Enter(State@ lastState)
     {
-        if (flags >= 0)
+        if (flags > 0)
             ownner.AddFlag(flags);
         State::Enter(lastState);
         combatReady = false;
@@ -162,7 +159,7 @@ class CharacterState : State
 
     void Exit(State@ nextState)
     {
-        if (flags >= 0)
+        if (flags > 0)
             ownner.RemoveFlag(flags);
         State::Exit(nextState);
         if (physicsType >= 0)
@@ -1124,6 +1121,9 @@ class Character : GameObject
 
         SetHealth(INITIAL_HEALTH);
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+
+        if (one_shot_kill)
+            attackDamage = 9999;
     }
 
     void Start()
@@ -1710,6 +1710,11 @@ class Character : GameObject
         if (node.scriptObject is null)
             return node.parent;
         return node;
+    }
+
+    bool IsDead()
+    {
+        return (health == 0);
     }
 
     // ===============================================================================================

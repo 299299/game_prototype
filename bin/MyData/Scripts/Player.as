@@ -301,12 +301,12 @@ class Player : Character
 
         if (attackEnemy !is null && checkBlock)
         {
-            LogPrint("CommonPicKEnemy-> attackEnemy is " + attackEnemy.GetName());
+            LogPrint("CommonPicKEnemy-> attackEnemy is " + attackEnemy.GetName() + " flags=" + attackEnemy.flags);
             Node@ n = GetTargetSightBlockedNode(attackEnemy.GetNode().worldPosition);
             if (n !is null)
             {
                 Enemy@ e = cast<Enemy>(n.scriptObject);
-                if (e !is null && e !is attackEnemy && e.HasFlag(FLAGS_ATTACK))
+                if (e !is null && e !is attackEnemy && e.HasFlag(flags))
                 {
                     LogPrint("Find a block enemy " + e.GetName() + " before " + attackEnemy.GetName());
                     @attackEnemy = e;

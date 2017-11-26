@@ -97,7 +97,7 @@ class EnemyManager : ScriptObject
 
     void UnRegisterEnemy(Enemy@ e)
     {
-        LogPrint("UnRegisterEnemy");
+        LogPrint("UnRegisterEnemy " + e.GetName());
         int i = enemyList.FindByRef(e);
         if (i < 0)
             return;

@@ -72,6 +72,20 @@ class ThugStandState : MultiAnimationState
         if (d_log)
             LogPrint(ownner.GetName() + " OnThinkTimeOut think-time=" + thinkTime);
 
+        if (ownner.target.HasFlag(FLAGS_DEAD))
+        {
+            int rand_i = RandomInt(2);
+            if (rand_i == 0)
+            {
+                ownner.ChangeState("TauntingState");
+            }
+            else if (rand_i == 1)
+            {
+                ownner.ChangeState("TauntIdleState");
+            }
+            return;
+        }
+
         float characterDifference = ownner.ComputeAngleDiff();
         if (Abs(characterDifference) > MIN_TURN_ANGLE)
         {
@@ -696,6 +710,14 @@ class ThugDeadState : CharacterState
         CharacterState::Enter(lastState);
     }
 
+    void Exit(State@ nextState)
+    {
+        LogPrint(ownner.GetName() + " Exit ThugDeadState");
+        if (nextState !is null)
+            LogPrint(ownner.GetName() + " Exit ThugDeadState nextState is " + nextState.name);
+        CharacterState::Exit(nextState);
+    }
+
     void Update(float dt)
     {
         duration -= dt;
@@ -890,7 +912,7 @@ class Thug : Enemy
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
 
-        attackDamage = 20;
+        attackDamage = one_shot_kill ? 9999 : 20;
 
         walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
 
@@ -1145,7 +1167,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithEnemy()
     {
-        if (HasFlag(FLAGS_NO_MOVE))
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD))
             return false;
         int dir = GetSperateDirection();
         if (dir < 0)
@@ -1170,8 +1192,7 @@ class Thug : Enemy
         if (n == 1)
             index += 4;
 
-        if (d_log)
-            LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
+        LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
         sceneNode.vars[ANIMATION_INDEX] = index;
         ChangeState("StepMoveState");
         return true;

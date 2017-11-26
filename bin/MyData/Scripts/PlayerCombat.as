@@ -367,6 +367,7 @@ class PlayerAttackState : CharacterState
             damage = 9999;
         else
             damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
+
         bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
         if (!b)
             return;
@@ -757,6 +758,7 @@ class PlayerDeadState : MultiMotionState
     {
         super(c);
         SetName("DeadState");
+        flags = FLAGS_DEAD;
     }
 
     void Enter(State@ lastState)

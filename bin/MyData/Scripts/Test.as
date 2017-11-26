@@ -73,6 +73,7 @@ Array<int> zoneDirCache;
 Array<int> gIntCache;
 
 bool mobile = false;
+bool one_shot_kill = false;
 
 GameInput@ gInput = GameInput();
 
