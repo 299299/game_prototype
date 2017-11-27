@@ -106,14 +106,9 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     Scene@ scene_ = script.defaultScene;
     int key = eventData["Key"].GetInt();
 
-    if (key == KEY_ESCAPE)
-    {
-         if (!console.visible)
-            engine.Exit();
-        else
-            console.visible = false;
-    }
-    else if (key == KEY_F1)
+    if (key == KEY_ESCAPE || key == KEY_Q)
+         engine.Exit();
+    else if (key == KEY_1)
     {
         ++drawDebug;
         if (drawDebug > 3)
@@ -123,23 +118,21 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (text !is null)
             text.visible = drawDebug != 0;
     }
-    else if (key == KEY_F2)
+    else if (key == KEY_2)
         debugHud.ToggleAll();
-    else if (key == KEY_F3)
-        console.Toggle();
-    else if (key == KEY_F4)
+    else if (key == KEY_3)
     {
         Camera@ cam = GetCamera();
         if (cam !is null)
             cam.fillMode = (cam.fillMode == FILL_SOLID) ? FILL_WIREFRAME : FILL_SOLID;
     }
-    else if (key == KEY_1)
-        ShootSphere(scene_);
-    else if (key == KEY_2)
-        ShootBox(scene_);
-    else if (key == KEY_3)
-        CreateEnemy(scene_);
     else if (key == KEY_4)
+        ShootSphere(scene_);
+    else if (key == KEY_5)
+        ShootBox(scene_);
+    else if (key == KEY_6)
+        CreateEnemy(scene_);
+    else if (key == KEY_7)
     {
         CameraController@ cc = gCameraMgr.currentController;
         if (cc.nameHash == StringHash("Debug"))
@@ -153,7 +146,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             gCameraMgr.SetCameraController("Debug");
         }
     }
-    else if (key == KEY_5)
+    else if (key == KEY_8)
     {
         VariantMap data;
         data[TARGET_FOV] = 60;
@@ -174,8 +167,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
                 scene_.timeScale = 1.0f;
         }
     }
-    else if (key == KEY_Q)
-        engine.Exit();
     else if (key == KEY_J)
         TestAnimations_Group_2();
     else if (key == KEY_K)

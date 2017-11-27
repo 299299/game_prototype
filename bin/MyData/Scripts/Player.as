@@ -48,7 +48,6 @@ class Player : Character
 
         AddStates();
         ChangeState("StandState");
-        SetPhysics(false);
     }
 
     void AddStates()

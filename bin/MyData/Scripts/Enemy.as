@@ -110,7 +110,7 @@ class EnemyManager : ScriptObject
         for (uint i=0; i<enemyList.length; ++i)
         {
             Enemy@ e = enemyList[i];
-            if (e.IsInState(ATTACK_STATE) && e.GetTargetDistance() < attackValidDist)
+            if (e.IsInState(ATTACK_STATE) && e.GetTargetDistance(e.target.GetNode().worldPosition) < attackValidDist)
                 ++ret;
         }
         return ret;
@@ -143,7 +143,8 @@ class EnemyManager : ScriptObject
         int ret = 0;
         for (uint i=0; i<enemyList.length; ++i)
         {
-            if (enemyList[i].GetTargetDistance() < dist)
+            Enemy@ e = enemyList[i];
+            if (enemyList[i].GetTargetDistance(e.target.GetNode().worldPosition) < dist)
                 ++ret;
         }
         return ret;
@@ -213,7 +214,7 @@ class EnemyManager : ScriptObject
         {
             Enemy@ e = enemyList[i];
             e.UpdateZone();
-            float dis = e.GetTargetDistance();
+            float dis = e.GetTargetDistance(e.target.GetNode().worldPosition);
             if (dis <= AI_NEAR_DIST)
                 num_of_near ++;
             if (num_of_near > MAX_NUM_OF_NEAR)

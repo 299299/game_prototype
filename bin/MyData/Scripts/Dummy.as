@@ -484,7 +484,7 @@ Enemy@ PickRedirectEnemy()
         if (dirDiff > maxDirDiff)
             continue;
 
-        float dist = GetTargetDistance(e.sceneNode);
+        float dist = GetTargetDistance(e.sceneNode.worldPosition);
         if (dist > maxRedirectDist)
             continue;
 

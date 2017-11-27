@@ -66,6 +66,7 @@ Array<int> gIntCache;
 
 bool mobile = false;
 bool one_shot_kill = false;
+bool instant_collision = true;
 
 GameInput@ gInput = GameInput();
 
@@ -108,7 +109,7 @@ void Start()
     @gMotionMgr = BM_Game_MotionManager();
 
     SetWindowTitleAndIcon();
-    CreateConsoleAndDebugHud();
+    CreateDebugHud();
     CreateUI();
     InitAudio();
 
@@ -157,21 +158,11 @@ void SetWindowTitleAndIcon()
     graphics.windowIcon = icon;
 }
 
-void CreateConsoleAndDebugHud()
+void CreateDebugHud()
 {
-    // Get default style
-    XMLFile@ xmlFile = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
-    if (xmlFile is null)
-        return;
-
-    // Create consoleui
-    Console@ console = engine.CreateConsole();
-    console.defaultStyle = xmlFile;
-    console.background.opacity = 0.8f;
-
     // Create debug HUD
     DebugHud@ debugHud = engine.CreateDebugHud();
-    debugHud.defaultStyle = xmlFile;
+    debugHud.defaultStyle = cache.GetResource("XMLFile", "UI/DefaultStyle.xml");
 }
 
 void CreateUI()

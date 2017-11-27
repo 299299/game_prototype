@@ -1119,7 +1119,9 @@ class Character : GameObject
         collisionBody = body;
 
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
-        // SubscribeToEvent(collisionNode, "NodeCollision", "HandleNodeCollision");
+
+        if (instant_collision)
+            SubscribeToEvent(collisionNode, "NodeCollision", "HandleNodeCollision");
     }
 
     void Start()
@@ -1345,6 +1347,11 @@ class Character : GameObject
     int RadialSelectAnimation(Node@ _node, int numDirections)
     {
         return DirectionMapToIndex(ComputeAngleDiff(_node), numDirections);
+    }
+
+    int RadialSelectAnimation(const Vector3& targetPos, int numDirections)
+    {
+        return DirectionMapToIndex(ComputeAngleDiff(targetPos), numDirections);
     }
 
     float GetCharacterAngle()
@@ -1653,8 +1660,13 @@ class Character : GameObject
 
     void KeepDistanceWithCharacter(Character@ c)
     {
-        float moveAngle = Atan2(c.moveDir.x, c.moveDir.z);
+    }
 
+    void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
+    {
+        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
+        if (cs !is null)
+            cs.ObjectCollision(otherObject, otherBody, eventData);
     }
 
     // ===============================================================================================

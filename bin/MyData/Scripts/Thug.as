@@ -32,7 +32,7 @@ class ThugStandState : MultiAnimationState
         SetName("StandState");
         for (uint i=1; i<=4; ++i)
             AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_0" + i);
-        flags = FLAGS_ATTACK;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
         looped = true;
     }
 
@@ -128,7 +128,8 @@ class ThugStandState : MultiAnimationState
         }
 
         int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
-        bool can_i_see_target = (ownner.GetTargetSightBlockedNode(ownner.target.GetNode().worldPosition) is null);
+        Node@ target_sight_node = ownner.GetTargetSightBlockedNode(ownner.target.GetNode().worldPosition);
+        bool can_i_see_target = (target_sight_node is null) || (target_sight_node is ownner.target.GetNode());
         // Print(ownner.GetName() + " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs + " can_i_see_target=" + can_i_see_target);
         if (can_i_see_target && num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK)
         {
@@ -253,7 +254,7 @@ class ThugRunToTargetState : SingleMotionState
         super(c);
         SetName("RunToTargetState");
         SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
-        flags = FLAGS_ATTACK | FLAGS_MOVING;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_COLLISION_AVOIDENCE;
     }
 
     void Update(float dt)
@@ -333,7 +334,7 @@ class ThugTurnState : MultiAnimationState
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Right");
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
         AddMotion(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
-        flags = FLAGS_ATTACK;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
     }
 
     void Update(float dt)
@@ -810,7 +811,7 @@ class ThugTauntingState : MultiMotionState
     {
         super(ownner);
         SetName("TauntingState");
-        flags = FLAGS_ATTACK;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
 
         for (uint i=1; i<=5; ++i)
             AddMotion(MOVEMENT_GROUP_THUG + "Taunting_0" + i);
@@ -840,7 +841,7 @@ class ThugTauntIdleState : MultiAnimationState
     {
         super(ownner);
         SetName("TauntIdleState");
-        flags = FLAGS_ATTACK;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
 
         for (uint i=1; i<=6; ++i)
             AddMotion(MOVEMENT_GROUP_THUG + "Taunt_Idle_0" + i);
@@ -1165,25 +1166,6 @@ class Thug : Enemy
         return true;
     }
 
-    bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
-    {
-        if (HasFlag(FLAGS_NO_MOVE))
-            return false;
-        float dist = GetTargetDistance();
-        if (dist >= max_dist)
-            return false;
-        int index = RadialSelectAnimation(4);
-        index = (index + 2) % 4;
-        int n = RandomInt(2);
-        if (n == 1)
-            index += 4;
-
-        LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
-        sceneNode.vars[ANIMATION_INDEX] = index;
-        ChangeState("StepMoveState");
-        return true;
-    }
-
     bool CheckRagdollHit()
     {
         Array<RigidBody@>@ neighbors = collisionBody.collidingBodies;
@@ -1216,6 +1198,8 @@ class Thug : Enemy
 
     void CheckCollision()
     {
+        if (instant_collision)
+            return;
         if (CheckRagdollHit())
             return;
         if (KeepDistanceWithPlayer())
@@ -1250,6 +1234,37 @@ class Thug : Enemy
             animModel.materials[1]= cache.GetResource("Material", "Materials/Thug_Torso_1.xml");
             animModel.materials[2]= cache.GetResource("Material", "Materials/Thug_Hat_1.xml");
         }
+    }
+
+    bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
+    {
+        if (HasFlag(FLAGS_NO_MOVE))
+            return false;
+        float dist = GetTargetDistance();
+        if (dist >= max_dist)
+            return false;
+        int index = RadialSelectAnimation(4);
+        index = (index + 2) % 4;
+        int n = RandomInt(2);
+        if (n == 1)
+            index += 4;
+
+        LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
+        sceneNode.vars[ANIMATION_INDEX] = index;
+        ChangeState("StepMoveState");
+        return true;
+    }
+
+    void KeepDistanceWithCharacter(Character@ c)
+    {
+        int index = RadialSelectAnimation(c.GetNode().worldPosition, 4);
+        index = (index + 1) % 4;
+        int n = RandomInt(2);
+        if (n == 1)
+            index += 4;
+
+        sceneNode.vars[ANIMATION_INDEX] = index;
+        ChangeState("StepMoveState");
     }
 };
 
