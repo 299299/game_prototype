@@ -1128,6 +1128,8 @@ class Character : GameObject
 
         if (instant_collision)
             SubscribeToEvent(collisionNode, "NodeCollision", "HandleNodeCollision");
+
+        animModel.RemoveAllAnimationStates();
     }
 
     void Start()
@@ -1190,8 +1192,8 @@ class Character : GameObject
 
     String GetDebugText()
     {
-        String debugText = stateMachine.GetDebugText();
-        debugText += "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " timeScale:" + timeScale + " health:" + health + "\n";
+        String debugText = "name:" + sceneNode.name + " pos:" + sceneNode.worldPosition.ToString() + " timeScale:" + timeScale + " health:" + health + "\n";
+        debugText += stateMachine.GetDebugText();
         if (animModel.numAnimationStates > 0)
         {
             debugText += "Debug-Animations:\n";

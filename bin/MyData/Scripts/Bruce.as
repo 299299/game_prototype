@@ -30,9 +30,9 @@ class BruceTurnState : PlayerTurnState
     BruceTurnState(Character@ c)
     {
         super(c);
-        AddMotion("BW_Movement/Turn_Right_90");
-        AddMotion("BW_Movement/Turn_Right_180");
-        AddMotion("BW_Movement/Turn_Left_90");
+        AddMotion("BM_Movement/Turn_Right_90");
+        AddMotion("BM_Movement/Turn_Right_180");
+        AddMotion("BM_Movement/Turn_Left_90");
     }
 };
 
@@ -41,18 +41,28 @@ class BruceStandToWalkState : PlayerStandToWalkState
     BruceStandToWalkState(Character@ c)
     {
         super(c);
-        AddMotion("BW_Movement/Stand_To_Walk_Right_90");
-        AddMotion("BW_Movement/Stand_To_Walk_Right_180");
-        AddMotion("BW_Movement/Stand_To_Walk_Right_180");
+        AddMotion("BM_Movement/Stand_To_Walk_Right_90");
+        AddMotion("BM_Movement/Stand_To_Walk_Right_180");
+        AddMotion("BM_Movement/Stand_To_Walk_Right_180");
     }
 };
+
+class BruceStandToRunState : PlayerStandToRunState
+{
+    BruceStandToRunState(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Movement/Stand_To_Run_Right_180");
+    }
+};
+
 
 class BruceWalkState : PlayerWalkState
 {
     BruceWalkState(Character@ c)
     {
         super(c);
-        SetMotion("BW_Movement/Walk_Forward");
+        SetMotion("BM_Movement/Walk_Forward");
     }
 };
 
@@ -260,6 +270,7 @@ class Bruce : Player
         stateMachine.AddState(BruceWalkState(this));
         stateMachine.AddState(BruceTurnState(this));
         stateMachine.AddState(BruceStandToWalkState(this));
+        stateMachine.AddState(BruceStandToRunState(this));
         stateMachine.AddState(BruceRunTurn180State(this));
     }
 };
@@ -310,7 +321,6 @@ void CreateBruceMotions()
     Global_AddAnimation(preFix + "Stand_Idle");
     Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 28);
 
-    preFix = "BW_Movement/";
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
     Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 25);
     Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 14);
@@ -318,8 +328,8 @@ void CreateBruceMotions()
 
     Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ZR, 21);
     Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ZR, 25);
-    // Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ZR, 18);
-    // Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 25);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ZR, 18);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 25);
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");

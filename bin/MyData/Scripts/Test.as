@@ -37,7 +37,7 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
 };
 
-int drawDebug = 3;
+int drawDebug = 2;
 bool bigHeadMode = false;
 bool nobgm = true;
 
@@ -55,11 +55,11 @@ int render_features = RF_SHADOWS | RF_HDR;
 const String UI_FONT = "Fonts/unlearn2.ttf";
 int UI_FONT_SIZE = 40;
 const String DEBUG_FONT = "Fonts/seagle.otf";
-int DEBUG_FONT_SIZE = 16;
+int DEBUG_FONT_SIZE = 20;
 
 const String GAME_CAMEAR_NAME = "ThirdPerson";
 
-int freeze_ai = 0;
+int freeze_ai = 1;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;

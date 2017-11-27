@@ -22,14 +22,13 @@ class PlayerStandState : MultiAnimationState
             if (!player_walk)
             {
                 // ownner.ChangeState("RunState");
-
                 int index = ownner.RadialSelectAnimation(4);
                 ownner.GetNode().vars[ANIMATION_INDEX] = 0;
 
-                if (index == 0)
-                    ownner.ChangeState("WalkState");
+                if (index != 2)
+                    ownner.ChangeState("RunState");
                 else
-                    ownner.ChangeState("RunTurn180State");
+                    ownner.ChangeState("StandToRunState");
             }
             else
             {
@@ -164,8 +163,6 @@ class PlayerMoveForwardState : SingleMotionState
     void Update(float dt)
     {
         float characterDifference = ownner.ComputeAngleDiff();
-        Node@ _node = ownner.GetNode();
-        _node.Yaw(characterDifference * turnSpeed * dt);
         // if the difference is large, then turn 180 degrees
         if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
@@ -173,6 +170,15 @@ class PlayerMoveForwardState : SingleMotionState
             OnTurn180();
             return;
         }
+
+        if (gInput.IsLeftStickStationary())
+        {
+            Node@ _node = ownner.GetNode();
+            _node.Yaw(characterDifference * turnSpeed * dt);
+            //if (Abs(characterDifference * turnSpeed * dt) > 0)
+            //    Print("Yaw=" + (characterDifference * turnSpeed * dt));
+        }
+
 
         if (gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.1f))
         {
@@ -187,6 +193,16 @@ class PlayerMoveForwardState : SingleMotionState
     }
 };
 
+class PlayerStandToRunState : PlayerTurnState
+{
+    PlayerStandToRunState(Character@ c)
+    {
+        super(c);
+        SetName("StandToRunState");
+        flags = FLAGS_ATTACK | FLAGS_MOVING;
+    }
+};
+
 class PlayerRunState : PlayerMoveForwardState
 {
     PlayerRunState(Character@ c)
@@ -198,6 +214,14 @@ class PlayerRunState : PlayerMoveForwardState
 
     void Enter(State@ lastState)
     {
+        if (lastState !is null)
+        {
+            if (lastState.name == "StandToRunState" || lastState.name == "RunTurn180State")
+                blendTime = 0.1f;
+            else
+                blendTime = 0.2f;
+        }
+
         SingleMotionState::Enter(lastState);
         ownner.SetTarget(null);
         combatReady = true;
