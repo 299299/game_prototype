@@ -1,4 +1,23 @@
+/*
 
+
+             ==============       ==============
+            |               |____|               |
+            \               /    \               /
+              =============        ==============
+                             ●   ●
+
+DEBUG Features
+
+*/
+
+
+
+int test_beat_index = 1;
+bool base_on_player = false;
+int test_counter_index = 0;
+int test_double_counter_index = 0;
+int test_triple_counter_index = 0;
 
 void ShootBox(Scene@ _scene)
 {

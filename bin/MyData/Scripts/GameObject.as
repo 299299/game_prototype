@@ -17,6 +17,7 @@ const uint FLAGS_STUN = (1 << 5);
 const uint FLAGS_KEEP_DIST = (1 << 6);
 const uint FLAGS_RUN_TO_ATTACK = (1 << 7);
 const uint FLAGS_DEAD = (1 << 8);
+const uint FLAGS_COLLISION_AVOIDENCE = (1 << 9);
 
 const uint COLLISION_LAYER_LANDSCAPE = (1 << 0);
 const uint COLLISION_LAYER_CHARACTER = (1 << 1);
@@ -164,6 +165,31 @@ class GameObject : ScriptObject
     }
 
     void UpdateOnFlagsChanged()
+    {
+    }
+
+    void HandleNodeCollision(StringHash eventType, VariantMap& eventData)
+    {
+        Node@ otherNode = eventData["OtherNode"].GetPtr();
+        RigidBody@ otherBody = eventData["OtherBody"].GetPtr();
+
+        // If the other collision shape belongs to static geometry, perform world collision
+        if (otherBody.collisionLayer == COLLISION_LAYER_LANDSCAPE)
+            WorldCollision(eventData);
+
+        // If the other node is scripted, perform object-to-object collision
+        GameObject@ otherObject = cast<GameObject>(otherNode.parent.scriptObject);
+        if (otherObject is null)
+            otherObject = cast<GameObject>(otherNode.scriptObject);
+        if (otherObject !is null)
+            ObjectCollision(otherObject, otherBody, eventData);
+    }
+
+    void WorldCollision(VariantMap& eventData)
+    {
+    }
+
+    void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
     {
     }
 };

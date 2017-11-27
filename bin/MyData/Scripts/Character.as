@@ -67,8 +67,6 @@ class CharacterState : State
     bool                        combatReady = false;
     bool                        firstUpdate = true;
 
-    int                         lastPhysicsType = 0;
-
     CharacterState(Character@ c)
     {
         @ownner = c;
@@ -169,6 +167,20 @@ class CharacterState : State
         }
         State::Update(dt);
         firstUpdate = false;
+    }
+
+    void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
+    {
+        if (otherBody.collisionLayer == COLLISION_LAYER_CHARACTER)
+        {
+            Character@ c = cast<Character>(otherObject);
+            if (ownner.HasFlag(FLAGS_NO_MOVE))
+                return;
+            if (ownner.HasFlag(FLAGS_COLLISION_AVOIDENCE))
+            {
+                ownner.KeepDistanceWithCharacter(c);
+            }
+        }
     }
 };
 
@@ -1047,6 +1059,8 @@ class Character : GameObject
 
     PhysicsSensor@          sensor;
 
+    Vector3                 moveDir;
+
     // ==============================================
     //   DYNAMIC VALUES For Motion
     // ==============================================
@@ -1088,7 +1102,6 @@ class Character : GameObject
         }
 
         SetHealth(INITIAL_HEALTH);
-        SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
 
         if (one_shot_kill)
             attackDamage = 9999;
@@ -1104,6 +1117,9 @@ class Character : GameObject
         body.trigger = true;
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
+
+        SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
+        // SubscribeToEvent(collisionNode, "NodeCollision", "HandleNodeCollision");
     }
 
     void Start()
@@ -1183,7 +1199,9 @@ class Character : GameObject
 
     void MoveTo(const Vector3& position, float dt)
     {
+        Vector3 oldPos = sceneNode.worldPosition;
         sceneNode.worldPosition = FilterPosition(position);
+        moveDir = (sceneNode.worldPosition - oldPos).Normalized();
     }
 
     bool Attack()
@@ -1253,6 +1271,8 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 1.5f, false);
+        float moveAngle = Atan2(moveDir.x, moveDir.z);
+        DebugDrawDirection(debug, sceneNode.worldPosition, moveAngle, GREEN, 5.0f);
     }
 
     void TestAnimation(const Array<String>&in animations)
@@ -1269,7 +1289,6 @@ class Character : GameObject
         Array<String> animations = { animation };
         TestAnimation(animations);
     }
-
 
     float GetTargetAngle()
     {
@@ -1339,17 +1358,6 @@ class Character : GameObject
         return sceneNode.name;
     }
 
-    float GetFootFrontDiff()
-    {
-        Vector3 fwd_dir = renderNode.worldRotation * Vector3(0, 0, 1);
-        Vector3 pt_lf = renderNode.GetChild("Bip01_L_Foot").worldPosition - renderNode.worldPosition;
-        Vector3 pt_rf = renderNode.GetChild("Bip01_R_Foot").worldPosition - renderNode.worldPosition;
-        float dot_lf = pt_lf.DotProduct(fwd_dir);
-        float dot_rf = pt_rf.DotProduct(fwd_dir);
-        LogPrint(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));
-        return dot_lf - dot_rf;
-    }
-
     void PlayCurrentPose()
     {
         FillAnimationWithCurrentPose(ragdollPoseAnim, renderNode);
@@ -1389,12 +1397,10 @@ class Character : GameObject
 
     void OnAttackSuccess(Character@ object)
     {
-
     }
 
     void OnCounterSuccess()
     {
-
     }
 
     void RequestDoNotMove()
@@ -1438,17 +1444,6 @@ class Character : GameObject
         object.duration = duration;
 
         return newNode;
-    }
-
-    void SetComponentEnabled(const String&in boneName, const String&in componentName, bool bEnable)
-    {
-        Node@ _node = sceneNode.GetChild(boneName, true);
-        if (_node is null)
-            return;
-        Component@ comp = _node.GetComponent(componentName);
-        if (comp is null)
-            return;
-        comp.enabled = bEnable;
     }
 
     void SetNodeEnabled(const String&in nodeName, bool bEnable)
@@ -1535,11 +1530,6 @@ class Character : GameObject
             stateMachine.Update(timeStep);
     }
 
-    void CheckCollision()
-    {
-
-    }
-
     void SetTarget(Character@ t)
     {
         if (t is target)
@@ -1573,7 +1563,6 @@ class Character : GameObject
 
     void CheckAvoidance(float dt)
     {
-
     }
 
     void ClearAvoidance()
@@ -1660,6 +1649,12 @@ class Character : GameObject
     bool IsDead()
     {
         return (health == 0);
+    }
+
+    void KeepDistanceWithCharacter(Character@ c)
+    {
+        float moveAngle = Atan2(c.moveDir.x, c.moveDir.z);
+
     }
 
     // ===============================================================================================

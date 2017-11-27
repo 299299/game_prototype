@@ -71,13 +71,6 @@ void FillAnimationWithCurrentPose(Animation@ anim, Node@ _node)
     }
 }
 
-int GetAttackType(const String&in name)
-{
-    if (name.Contains("Foot") || name.Contains("Calf"))
-        return ATTACK_KICK;
-    return ATTACK_PUNCH;
-}
-
 void SendAnimationTriger(Node@ _node, const StringHash&in nameHash, int value = 0)
 {
     VariantMap anim_data;
@@ -366,7 +359,6 @@ class Motion
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 // tLocal = tLocal * ctrl.GetWeight(animationName);
-
                 Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_velocity * dt;
                 object.MoveTo(tWorld, dt);
 

@@ -4,6 +4,35 @@
 //
 // ==============================================
 
+void SetComponentEnabled(const String&in boneName, const String&in componentName, bool bEnable)
+{
+    Node@ _node = sceneNode.GetChild(boneName, true);
+    if (_node is null)
+        return;
+    Component@ comp = _node.GetComponent(componentName);
+    if (comp is null)
+        return;
+    comp.enabled = bEnable;
+}
+
+float GetFootFrontDiff()
+{
+    Vector3 fwd_dir = renderNode.worldRotation * Vector3(0, 0, 1);
+    Vector3 pt_lf = renderNode.GetChild("Bip01_L_Foot").worldPosition - renderNode.worldPosition;
+    Vector3 pt_rf = renderNode.GetChild("Bip01_R_Foot").worldPosition - renderNode.worldPosition;
+    float dot_lf = pt_lf.DotProduct(fwd_dir);
+    float dot_rf = pt_rf.DotProduct(fwd_dir);
+    LogPrint(sceneNode.name + " dot_lf=" + dot_lf + " dot_rf=" + dot_rf + " diff=" + (dot_lf - dot_rf));
+    return dot_lf - dot_rf;
+}
+
+int GetAttackType(const String&in name)
+{
+    if (name.Contains("Foot") || name.Contains("Calf"))
+        return ATTACK_KICK;
+    return ATTACK_PUNCH;
+}
+
 class PlayerDistractState : SingleMotionState
 {
     PlayerDistractState(Character@ c)

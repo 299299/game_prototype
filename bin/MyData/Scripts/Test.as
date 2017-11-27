@@ -1,5 +1,3 @@
-
-
 /*           ==============       ==============
             |               |____|               |
             \               /    \               /
@@ -39,7 +37,7 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
 };
 
-int drawDebug = 2;
+int drawDebug = 3;
 bool bigHeadMode = false;
 bool nobgm = true;
 
@@ -62,11 +60,6 @@ int DEBUG_FONT_SIZE = 16;
 const String GAME_CAMEAR_NAME = "ThirdPerson";
 
 int freeze_ai = 0;
-int test_beat_index = 1;
-bool base_on_player = false;
-int test_counter_index = 0;
-int test_double_counter_index = 0;
-int test_triple_counter_index = 0;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
