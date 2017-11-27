@@ -459,12 +459,4 @@ class Player : Character
         sensor.Update(dt);
         Character::Update(dt);
     }
-
-    void SetVelocity(const Vector3&in vel)
-    {
-        if (!sensor.grounded && applyGravity)
-            Character::SetVelocity(vel + Vector3(0, -9.8f, 0));
-        else
-            Character::SetVelocity(vel);
-    }
 };

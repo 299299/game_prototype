@@ -67,7 +67,6 @@ bool base_on_player = false;
 int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
-int collision_type = 0;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
@@ -131,7 +130,6 @@ void Start()
 void Stop()
 {
     LogPrint("================================= Test Stop =================================");
-    script.defaultScene.updateEnabled = true;
     gMotionMgr.Stop();
     gDebugMgr.Stop();
     ui.Clear();
@@ -277,7 +275,6 @@ void SubscribeToEvents()
     SubscribeToEvent("AsyncLoadFinished", "HandleSceneLoadFinished");
     SubscribeToEvent("AsyncLoadProgress", "HandleAsyncLoadProgress");
     SubscribeToEvent("CameraEvent", "HandleCameraEvent");
-    SubscribeToEvent("CrowdAgentFailure", "HandleCrowdAgentFailure");
 }
 
 void HandleUpdate(StringHash eventType, VariantMap& eventData)
@@ -318,25 +315,6 @@ void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
 void HandleCameraEvent(StringHash eventType, VariantMap& eventData)
 {
     gCameraMgr.OnCameraEvent(eventData);
-}
-
-
-void HandleCrowdAgentFailure(StringHash eventType, VariantMap& eventData)
-{
-    Node@ node = eventData["Node"].GetPtr();
-    int state = eventData["CrowdAgentState"].GetInt();
-
-    LogPrint(node.name + " state = " + state);
-
-    // If the agent's state is invalid, likely from spawning on the side of a box, find a point in a larger area
-    if (state == CA_STATE_INVALID)
-    {
-        Scene@ scene_ = script.defaultScene;
-        // Get a point on the navmesh using more generous extents
-        Vector3 newPos = cast<DynamicNavigationMesh>(scene_.GetComponent("DynamicNavigationMesh")).FindNearestPoint(node.position, Vector3(5.0f,5.0f,5.0f));
-        // Set the new node position, CrowdAgent component will automatically reset the state of the agent
-        node.worldPosition = newPos;
-    }
 }
 
 

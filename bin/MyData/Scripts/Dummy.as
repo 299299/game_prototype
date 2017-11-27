@@ -599,4 +599,22 @@ params.adaptiveRings = 3;
 params.adaptiveDepth = 3;
 crowdManager.SetObstacleAvoidanceParams(0, params);
 
+void HandleCrowdAgentFailure(StringHash eventType, VariantMap& eventData)
+{
+    Node@ node = eventData["Node"].GetPtr();
+    int state = eventData["CrowdAgentState"].GetInt();
+
+    LogPrint(node.name + " state = " + state);
+
+    // If the agent's state is invalid, likely from spawning on the side of a box, find a point in a larger area
+    if (state == CA_STATE_INVALID)
+    {
+        Scene@ scene_ = script.defaultScene;
+        // Get a point on the navmesh using more generous extents
+        Vector3 newPos = cast<DynamicNavigationMesh>(scene_.GetComponent("DynamicNavigationMesh")).FindNearestPoint(node.position, Vector3(5.0f,5.0f,5.0f));
+        // Set the new node position, CrowdAgent component will automatically reset the state of the agent
+        node.worldPosition = newPos;
+    }
+}
+
 /*======================================= CROWD =======================================*/

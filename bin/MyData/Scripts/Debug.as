@@ -212,12 +212,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             }
         }
     }
-    else if (key == KEY_I)
-    {
-        Player@ p = GetPlayer();
-        if (p !is null)
-            p.SetPhysicsType(1 - p.physicsType);
-    }
     else if (key == KEY_M)
     {
         Player@ p = GetPlayer();

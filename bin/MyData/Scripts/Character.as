@@ -68,7 +68,6 @@ class CharacterState : State
     bool                        firstUpdate = true;
 
     int                         lastPhysicsType = 0;
-    int                         physicsType = -1;
 
     CharacterState(Character@ c)
     {
@@ -149,12 +148,6 @@ class CharacterState : State
         State::Enter(lastState);
         combatReady = false;
         firstUpdate = true;
-
-        if (physicsType >= 0)
-        {
-            lastPhysicsType = ownner.physicsType;
-            ownner.SetPhysicsType(physicsType);
-        }
     }
 
     void Exit(State@ nextState)
@@ -162,8 +155,6 @@ class CharacterState : State
         if (flags > 0)
             ownner.RemoveFlag(flags);
         State::Exit(nextState);
-        if (physicsType >= 0)
-            ownner.SetPhysicsType(lastPhysicsType);
     }
 
     void Update(float dt)
@@ -430,7 +421,6 @@ class AnimationTestState : CharacterState
     {
         super(c);
         SetName("AnimationTestState");
-        physicsType = 0;
     }
 
     ~AnimationTestState()
@@ -858,7 +848,7 @@ class CharacterCounterState : CharacterState
     void StartAligning()
     {
         CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-        state.Start(this.nameHash, targetPosition, targetRotation, alignTime, 0, ownner.walkAlignAnimation);
+        state.Start(this.nameHash, targetPosition, targetRotation, alignTime, ownner.walkAlignAnimation);
         ownner.ChangeStateQueue(ALIGN_STATE);
     }
 
@@ -985,7 +975,7 @@ class CharacterAlignState : CharacterState
         SetName("AlignState");
     }
 
-    void Start(StringHash nextState, const Vector3&in tPos, float tRot, float duration, int physicsType = 0, const String&in anim = "")
+    void Start(StringHash nextState, const Vector3&in tPos, float tRot, float duration, const String&in anim = "")
     {
         LogPrint("CharacterAlign--start duration=" + duration);
         nextStateName = nextState;
@@ -993,7 +983,6 @@ class CharacterAlignState : CharacterState
         targetRotation = tRot;
         alignTime = duration;
         alignAnimation = anim;
-        ownner.SetPhysicsType(physicsType);
 
         Vector3 curPos = ownner.GetNode().worldPosition;
         float curAngle = ownner.GetCharacterAngle();
@@ -1009,10 +998,7 @@ class CharacterAlignState : CharacterState
 
     void Update(float dt)
     {
-        if (ownner.physicsType == 0)
-            ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
-        else
-            ownner.SetVelocity(movePerSec);
+        ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
         ownner.GetNode().Yaw(rotatePerSec * dt);
         CharacterState::Update(dt);
         if (timeInState >= alignTime)
@@ -1044,7 +1030,6 @@ class Character : GameObject
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
-    CrowdAgent@             agent;
 
     Vector3                 startPosition;
     Quaternion              startRotation;
@@ -1055,10 +1040,6 @@ class Character : GameObject
 
     float                   attackRadius = 0.15f;
     int                     attackDamage = 10;
-
-    RigidBody@              body;
-
-    int                     physicsType;
 
     String                  lastAnimation;
     String                  walkAlignAnimation;
@@ -1100,20 +1081,6 @@ class Character : GameObject
             cache.AddManualResource(ragdollPoseAnim);
         }
 
-        if (collision_type == 1)
-        {
-            body = sceneNode.CreateComponent("RigidBody");
-            body.collisionLayer = COLLISION_LAYER_CHARACTER;
-            body.collisionMask = COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_PROP;
-            body.mass = 1.0f;
-            body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
-            body.collisionEventMode = COLLISION_ALWAYS;
-            CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
-            shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
-            physicsType = 1;
-            SetGravity(Vector3(0, -20, 0));
-        }
-
         if (bigHeadMode)
         {
             renderNode.position = Vector3(0, 0.3f, 0);
@@ -1143,7 +1110,6 @@ class Character : GameObject
         @animCtrl = null;
         @animModel = null;
         @target = null;
-        @agent = null;
     }
 
     void Remove()
@@ -1165,8 +1131,6 @@ class Character : GameObject
                 LogPrint("SetSpeed " + state.animation.name + " scale " + scale);
             animCtrl.SetSpeed(state.animation.name, scale);
         }
-        if (body !is null)
-            body.linearVelocity = body.linearVelocity * scale;
 
         sceneNode.vars[TIME_SCALE] = scale;
     }
@@ -1202,18 +1166,6 @@ class Character : GameObject
             }
         }
         return debugText;
-    }
-
-    void SetVelocity(const Vector3&in vel)
-    {
-        // LogPrint("body.linearVelocity = " + vel.ToString());
-        if (body !is null)
-            body.linearVelocity = vel;
-    }
-
-    Vector3 GetVelocity()
-    {
-        return body !is null ? body.linearVelocity : Vector3(0, 0, 0);
     }
 
     void MoveTo(const Vector3& position, float dt)
@@ -1585,8 +1537,6 @@ class Character : GameObject
 
     void SetPhysics(bool b)
     {
-        if (body !is null)
-            body.enabled = b;
         SetNodeEnabled("Collision", b);
     }
 
@@ -1651,24 +1601,6 @@ class Character : GameObject
             shape.size = Vector3(COLLISION_RADIUS * 2, height, 0);
             shape.SetTransform(Vector3(0.0f, height/2, 0.0f), Quaternion());
         }
-    }
-
-    void SetPhysicsType(int type)
-    {
-        if (physicsType == type)
-            return;
-        physicsType = type;
-        if (body !is null)
-        {
-            body.enabled = (physicsType == 1);
-            body.position = sceneNode.worldPosition;
-        }
-    }
-
-    void SetGravity(const Vector3& gravity)
-    {
-        if (body !is null)
-            body.gravityOverride = gravity;
     }
 
     Node@ GetTargetSightBlockedNode(const Vector3&in targetPos)

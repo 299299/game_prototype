@@ -38,7 +38,6 @@ class ThugStandState : MultiAnimationState
 
     void Enter(State@ lastState)
     {
-        ownner.SetVelocity(Vector3(0,0,0));
         thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
         if (d_log)
             LogPrint(ownner.GetName() + " thinkTime=" + thinkTime);
