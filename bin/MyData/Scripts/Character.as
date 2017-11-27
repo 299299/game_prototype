@@ -181,6 +181,11 @@ class CharacterState : State
                 ownner.KeepDistanceWithCharacter(c);
             }
         }
+        else if (otherBody.collisionLayer == COLLISION_LAYER_PROP || otherBody.collisionLayer == COLLISION_LAYER_RAGDOLL)
+        {
+            if (ownner.HasFlag(FLAGS_HIT_RAGDOLL))
+                ownner.HitRagdoll(otherBody);
+        }
     }
 };
 
@@ -379,7 +384,7 @@ class MultiMotionState : CharacterState
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
-            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName() + " state:" + name);
             selectIndex = 0;
         }
 
@@ -907,6 +912,7 @@ class CharacterRagdollState : CharacterState
 
     void Enter(State@ lastState)
     {
+        LogPrint(ownner.GetName() + " Enter RagdollState");
         CharacterState::Enter(lastState);
         ownner.SetPhysics(false);
     }
@@ -929,7 +935,7 @@ class CharacterGetUpState : MultiMotionState
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
         {
-            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName() + " state:" + name);
             selectIndex = 0;
         }
 
@@ -1658,15 +1664,19 @@ class Character : GameObject
         return (health == 0);
     }
 
-    void KeepDistanceWithCharacter(Character@ c)
-    {
-    }
-
     void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
     {
         CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
         if (cs !is null)
             cs.ObjectCollision(otherObject, otherBody, eventData);
+    }
+
+    void KeepDistanceWithCharacter(Character@ c)
+    {
+    }
+
+    void HitRagdoll(RigidBody@ rb)
+    {
     }
 
     // ===============================================================================================

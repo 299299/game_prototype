@@ -18,6 +18,7 @@ const uint FLAGS_KEEP_DIST = (1 << 6);
 const uint FLAGS_RUN_TO_ATTACK = (1 << 7);
 const uint FLAGS_DEAD = (1 << 8);
 const uint FLAGS_COLLISION_AVOIDENCE = (1 << 9);
+const uint FLAGS_HIT_RAGDOLL = (1 << 10);
 
 const uint COLLISION_LAYER_LANDSCAPE = (1 << 0);
 const uint COLLISION_LAYER_CHARACTER = (1 << 1);
@@ -178,11 +179,13 @@ class GameObject : ScriptObject
             WorldCollision(eventData);
 
         // If the other node is scripted, perform object-to-object collision
-        GameObject@ otherObject = cast<GameObject>(otherNode.parent.scriptObject);
+        GameObject@ otherObject = cast<GameObject>(otherNode.scriptObject);
         if (otherObject is null)
-            otherObject = cast<GameObject>(otherNode.scriptObject);
-        if (otherObject !is null)
-            ObjectCollision(otherObject, otherBody, eventData);
+        {
+            @otherObject = cast<GameObject>(otherNode.parent.scriptObject);
+        }
+
+        ObjectCollision(otherObject, otherBody, eventData);
     }
 
     void WorldCollision(VariantMap& eventData)

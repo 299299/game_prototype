@@ -32,7 +32,7 @@ class ThugStandState : MultiAnimationState
         SetName("StandState");
         for (uint i=1; i<=4; ++i)
             AddMotion(MOVEMENT_GROUP_THUG + "Stand_Idle_Additive_0" + i);
-        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE | FLAGS_HIT_RAGDOLL;
         looped = true;
     }
 
@@ -184,7 +184,7 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Right_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Back_Long");
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
-        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_KEEP_DIST;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_KEEP_DIST | FLAGS_HIT_RAGDOLL;
 
         if (STEP_MAX_DIST == 0.0f)
         {
@@ -209,7 +209,7 @@ class ThugRunToAttackState : SingleMotionState
         super(c);
         SetName("RunToAttackState");
         SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
-        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN_TO_ATTACK;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN_TO_ATTACK | FLAGS_HIT_RAGDOLL;
     }
 
     void Update(float dt)
@@ -254,7 +254,7 @@ class ThugRunToTargetState : SingleMotionState
         super(c);
         SetName("RunToTargetState");
         SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
-        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_COLLISION_AVOIDENCE;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_COLLISION_AVOIDENCE | FLAGS_HIT_RAGDOLL;
     }
 
     void Update(float dt)
@@ -334,7 +334,7 @@ class ThugTurnState : MultiAnimationState
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Right");
         AddMotion(MOVEMENT_GROUP_THUG + "135_Turn_Left");
         AddMotion(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
-        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE | FLAGS_HIT_RAGDOLL;
     }
 
     void Update(float dt)
@@ -423,7 +423,7 @@ class ThugAttackState : CharacterState
         AddAttackMotion("Attack_Kick", 24, ATTACK_KICK, "Bip01_L_Foot");
         AddAttackMotion("Attack_Kick_01", 24, ATTACK_KICK, "Bip01_L_Foot");
         AddAttackMotion("Attack_Kick_02", 24, ATTACK_KICK, "Bip01_L_Foot");
-        flags = FLAGS_NO_MOVE;
+        flags = FLAGS_NO_MOVE | FLAGS_HIT_RAGDOLL;
 
         if (PUNCH_DIST != 0.0f)
         {
@@ -1244,12 +1244,12 @@ class Thug : Enemy
         if (dist >= max_dist)
             return false;
         int index = RadialSelectAnimation(4);
-        index = (index + 2) % 4;
-        int n = RandomInt(2);
-        if (n == 1)
+        index += 2;
+        index = index % 4;
+        if (RandomInt(2) == 1)
             index += 4;
 
-        LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
+        // LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
         sceneNode.vars[ANIMATION_INDEX] = index;
         ChangeState("StepMoveState");
         return true;
@@ -1258,13 +1258,41 @@ class Thug : Enemy
     void KeepDistanceWithCharacter(Character@ c)
     {
         int index = RadialSelectAnimation(c.GetNode().worldPosition, 4);
-        index = (index + 1) % 4;
-        int n = RandomInt(2);
-        if (n == 1)
+        //if (RandomInt(2) == 1)
+        //    index += 3;
+        //else
+        //   index += 1;
+        index += 2;
+        index = index % 4;
+        if (RandomInt(2) == 1)
             index += 4;
 
         sceneNode.vars[ANIMATION_INDEX] = index;
         ChangeState("StepMoveState");
+    }
+
+    void HitRagdoll(RigidBody@ rb)
+    {
+        bool bRagdoll = false;
+        float vl = rb.linearVelocity.length;
+        Vector3 vel = rb.linearVelocity;
+
+        if (rb.collisionLayer == COLLISION_LAYER_RAGDOLL)
+        {
+            if (rb.node.name == PELVIS && vl > 5.0f)
+                bRagdoll = true;
+        }
+        else if (rb.collisionLayer == COLLISION_LAYER_PROP)
+        {
+            if (vl > 10.0f)
+                bRagdoll = true;
+        }
+
+        if (bRagdoll)
+        {
+            LogPrint(GetName() + " hit ragdoll bone " + rb.node.name + " vel=" + vel.ToString() + " vl=" + vl);
+            MakeMeRagdoll(vel * 1.5f, rb.node.worldPosition);
+        }
     }
 };
 

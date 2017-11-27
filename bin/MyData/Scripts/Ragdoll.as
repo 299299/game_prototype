@@ -500,6 +500,14 @@ class Ragdoll : ScriptObject
 
     void HandleAnimationTrigger(StringHash eventType, VariantMap& eventData)
     {
+        if (eventData[DATA].type == VAR_VARIANTMAP)
+        {
+            OnAnimationTrigger(eventData[DATA].GetVariantMap());
+        }
+    }
+
+    void OnAnimationTrigger(const VariantMap&in eventData)
+    {
         StringHash name = eventData[NAME].GetStringHash();
         int new_state = RAGDOLL_NONE;
         if (name == RAGDOLL_PERPARE)
@@ -508,9 +516,10 @@ class Ragdoll : ScriptObject
             new_state = RAGDOLL_DYNAMIC;
         else if (name == RAGDOLL_STOP)
             new_state = RAGDOLL_NONE;
+        else
+            return; // other animation events
 
         stateRequest = new_state;
-
         if (eventData.Contains(VELOCITY))
         {
             hasVelRequest = true;
