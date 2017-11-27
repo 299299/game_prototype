@@ -19,17 +19,22 @@ class PlayerStandState : MultiAnimationState
     {
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
         {
-            // ownner.ChangeState("RunState");
-
-            int index = ownner.RadialSelectAnimation(4);
-            ownner.GetNode().vars[ANIMATION_INDEX] = index -1;
-
-            Print("Stand->Move|Turn index=" + index + " hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
-
-            if (index == 0)
-                ownner.ChangeState("WalkState");
+            if (!player_walk)
+            {
+                ownner.ChangeState("RunState");
+            }
             else
-                ownner.ChangeState("StandToWalkState");
+            {
+                int index = ownner.RadialSelectAnimation(4);
+                ownner.GetNode().vars[ANIMATION_INDEX] = index -1;
+
+                Print("Stand->Move|Turn index=" + index + " hold-frames=" + gInput.GetLeftAxisHoldingFrames() + " hold-time=" + gInput.GetLeftAxisHoldingTime());
+
+                if (index == 0)
+                    ownner.ChangeState("WalkState");
+                else
+                    ownner.ChangeState("StandToWalkState");
+            }
 
             return;
         }
@@ -113,6 +118,7 @@ class PlayerTurnState : MultiMotionState
         super(c);
         SetName("TurnState");
         flags = FLAGS_ATTACK;
+        animSpeed = 1.5f;
     }
 
     void Update(float dt)
@@ -130,9 +136,10 @@ class PlayerTurnState : MultiMotionState
         float alignTime = motion.endTime;
         float motionTargetAngle = motion.GetFutureRotation(ownner, alignTime);
         float diff = AngleDiff(targetRotation - motionTargetAngle);
+        alignTime /= animSpeed;
         turnSpeed = diff / alignTime;
         combatReady = true;
-        LogPrint(this.name + " motionTargetAngle=" + String(motionTargetAngle) + " targetRotation=" + targetRotation + " diff=" + diff + " turnSpeed=" + turnSpeed);
+        LogPrint(this.name + " motionTargetAngle=" + motionTargetAngle + " targetRotation=" + targetRotation + " diff=" + diff + " turnSpeed=" + turnSpeed + " start-Rotation=" + ownner.motion_startRotation);
     }
 
     void OnMotionFinished()
@@ -192,7 +199,7 @@ class PlayerMoveForwardState : SingleMotionState
     {
         float characterDifference = ownner.ComputeAngleDiff();
         Node@ _node = ownner.GetNode();
-        _node.Yaw(characterDifference * turnSpeed * dt);
+        // _node.Yaw(characterDifference * turnSpeed * dt);
         // if the difference is large, then turn 180 degrees
         if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
@@ -233,6 +240,7 @@ class PlayerWalkState : PlayerMoveForwardState
 
     void Update(float dt)
     {
+        // Print("node.rotation=" + ownner.GetNode().worldRotation.eulerAngles.y);
         PlayerMoveForwardState::Update(dt);
     }
 };

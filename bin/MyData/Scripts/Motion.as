@@ -378,7 +378,8 @@ class Motion
             if (object.motion_translateEnabled)
             {
                 object.motion_deltaPosition += object.motion_velocity * dt;
-                Vector3 tWorld = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+                // Vector3 tWorld = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+                Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
                 object.MoveTo(tWorld, dt);
             }
 

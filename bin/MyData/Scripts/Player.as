@@ -81,7 +81,7 @@ class Player : Character
             return;
 
         if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
-            ChangeState("WalkState");
+            ChangeState(player_walk ? " WalkState" : "RunState");
         else
             ChangeState("StandState");
     }

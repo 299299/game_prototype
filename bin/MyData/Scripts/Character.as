@@ -1279,8 +1279,8 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 1.5f, false);
-        float moveAngle = Atan2(moveDir.x, moveDir.z);
-        DebugDrawDirection(debug, sceneNode.worldPosition, moveAngle, GREEN, 5.0f);
+        // float moveAngle = Atan2(moveDir.x, moveDir.z);
+        // DebugDrawDirection(debug, sceneNode.worldPosition, moveAngle, GREEN, 5.0f);
     }
 
     void TestAnimation(const Array<String>&in animations)

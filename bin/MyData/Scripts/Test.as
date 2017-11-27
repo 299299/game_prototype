@@ -67,6 +67,7 @@ Array<int> gIntCache;
 bool mobile = false;
 bool one_shot_kill = false;
 bool instant_collision = true;
+bool player_walk = false;
 
 GameInput@ gInput = GameInput();
 

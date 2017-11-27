@@ -306,9 +306,9 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
 
     Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ALL, 21);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ALL, 25);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ALL, 18);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ALL, 25);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ZR, 25);
+    //Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ALL, 18);
+    //Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ALL, 25);
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");
