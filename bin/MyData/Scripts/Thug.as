@@ -131,14 +131,14 @@ class ThugStandState : MultiAnimationState
         Node@ target_sight_node = ownner.GetTargetSightBlockedNode(ownner.target.GetNode().worldPosition);
         bool can_i_see_target = (target_sight_node is null) || (target_sight_node is ownner.target.GetNode());
         // Print(ownner.GetName() + " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs + " can_i_see_target=" + can_i_see_target);
-        if (can_i_see_target && num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK)
+        if (can_i_see_target && num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && ownner.target.HasFlag(FLAGS_ATTACK))
         {
             ownner.ChangeState("RunToAttackState");
             return;
         }
 
         int rand_i = RandomInt(3);
-        Print(ownner.GetName() + " rand_i=" + rand_i);
+        // Print(ownner.GetName() + " rand_i=" + rand_i);
         if (rand_i == 0)
         {
             ownner.ChangeState("TauntingState");

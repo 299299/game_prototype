@@ -1031,7 +1031,7 @@ class CharacterAlignState : CharacterState
 
     void OnAlignTimeOut()
     {
-        LogPrint(ownner.GetName() + " On_Align_Finished-- at: " + time.systemTime);
+        LogPrint(ownner.GetName() + " On_Align_Finished, ChangeToNextState: " + nextStateName);
         ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
         ownner.ChangeState(nextStateName);
     }
