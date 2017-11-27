@@ -1030,6 +1030,7 @@ class Character : GameObject
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
+    RigidBody@              collisionBody;
 
     Vector3                 startPosition;
     Quaternion              startRotation;
@@ -1091,6 +1092,18 @@ class Character : GameObject
 
         if (one_shot_kill)
             attackDamage = 9999;
+
+        Node@ collisionNode = sceneNode.CreateChild("Collision");
+        CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
+        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
+        RigidBody@ body = collisionNode.CreateComponent("RigidBody");
+        body.mass = 10;
+        body.collisionLayer = COLLISION_LAYER_CHARACTER;
+        body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP;
+        body.kinematic = true;
+        body.trigger = true;
+        body.collisionEventMode = COLLISION_ALWAYS;
+        collisionBody = body;
     }
 
     void Start()
@@ -1620,7 +1633,7 @@ class Character : GameObject
         Ray sightRay;
         sightRay.origin = my_mid_pos;
         sightRay.direction = dir_normalized;
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.SphereCast(sightRay, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER | COLLISION_LAYER_AI);
+        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.SphereCast(sightRay, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER);
 
         /*
         if (drawDebug > 0)

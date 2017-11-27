@@ -705,7 +705,7 @@ class ThugDeadState : CharacterState
     void Enter(State@ lastState)
     {
         LogPrint(ownner.GetName() + " Entering ThugDeadState");
-        ownner.SetNodeEnabled("Collision", false);
+        ownner.SetPhysics(false);
         CharacterState::Enter(lastState);
     }
 
@@ -870,7 +870,6 @@ class Thug : Enemy
 {
     float           checkAvoidanceTimer = 0.0f;
     float           checkAvoidanceTime = 0.1f;
-    RigidBody@      collisionBody;
 
     void ObjectStart()
     {
@@ -898,18 +897,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugTauntIdleState(this));
 
         ChangeState("StandState");
-
-        Node@ collisionNode = sceneNode.CreateChild("Collision");
-        CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
-        RigidBody@ body = collisionNode.CreateComponent("RigidBody");
-        body.mass = 10;
-        body.collisionLayer = COLLISION_LAYER_AI;
-        body.collisionMask = COLLISION_LAYER_AI | COLLISION_LAYER_RAGDOLL;
-        body.kinematic = true;
-        body.trigger = true;
-        body.collisionEventMode = COLLISION_ALWAYS;
-        collisionBody = body;
 
         attackDamage = one_shot_kill ? 9999 : 20;
 

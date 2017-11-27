@@ -22,7 +22,6 @@ const uint COLLISION_LAYER_LANDSCAPE = (1 << 0);
 const uint COLLISION_LAYER_CHARACTER = (1 << 1);
 const uint COLLISION_LAYER_PROP      = (1 << 2);
 const uint COLLISION_LAYER_RAGDOLL   = (1 << 3);
-const uint COLLISION_LAYER_AI        = (1 << 4);
 
 class GameObject : ScriptObject
 {
