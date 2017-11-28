@@ -171,8 +171,8 @@ class PlayerAttackState : CharacterState
         int index_start = -1;
         int index_num = 0;
 
-        float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_RANGE/2.0f);
-        float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_RANGE/2.0f;
+        float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_SHORT_RANGE);
+        float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_LONG_RANGE;
         LogPrint("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
         for (uint i=0; i<attacks.length; ++i)
@@ -241,7 +241,6 @@ class PlayerAttackState : CharacterState
                 PickBestMotion(leftAttacks, r);
 
             ownner.target.RequestDoNotMove();
-            p.lastAttackId = ownner.target.GetNode().id;
         }
         else
         {
@@ -255,7 +254,6 @@ class PlayerAttackState : CharacterState
             else if (index == 3)
                 currentAttack = leftAttacks[RandomInt(leftCloseNum)];
             state = ATTACK_STATE_BEFORE_IMPACT;
-            p.lastAttackId = M_MAX_UNSIGNED;
 
             // lost combo
             p.combo = 0;
@@ -312,8 +310,6 @@ class PlayerAttackState : CharacterState
     {
         CharacterState::Exit(nextState);
         ownner.SetNodeEnabled("TailNode", false);
-        //if (nextState !is this)
-        //    cast<Player>(ownner).lastAttackId = M_MAX_UNSIGNED;
         if (ownner.target !is null)
             ownner.target.RemoveFlag(FLAGS_NO_MOVE);
         @currentAttack = null;

@@ -8,8 +8,6 @@ const float MAX_COUNTER_DIST = 4.0f;
 const float DIST_SCORE = 10.0f;
 const float ANGLE_SCORE = 60.0f;
 const float THREAT_SCORE = 30.0f;
-const float LAST_ENEMY_ANGLE = 45.0f;
-const int   LAST_ENEMY_SCORE = 5;
 const int   MAX_WEAK_ATTACK_COMBO = 3;
 const float MAX_DISTRACT_DIST = 4.0f;
 const float MAX_DISTRACT_DIR = 90.0f;
@@ -17,15 +15,14 @@ const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.5f;
 const float GOOD_COUNTER_DIST = 3.0f;
-const float ATTACK_DIST_PICK_RANGE = 6.0f;
-float MAX_ATTACK_DIST = 15.0f;
+const float ATTACK_DIST_PICK_LONG_RANGE = 7.0f;
+const float ATTACK_DIST_PICK_SHORT_RANGE = 3.0f;
+float MAX_ATTACK_DIST = 20.0f;
 
 class Player : Character
 {
     int             combo;
     int             killed;
-    uint            lastAttackId = M_MAX_UNSIGNED;
-    bool            applyGravity = true;
 
     void ObjectStart()
     {
@@ -210,7 +207,7 @@ class Player : Character
         return counterEnemies.length;
     }
 
-    Enemy@ CommonPickEnemy(float maxDiffAngle, float maxDiffDist, int flags, bool checkBlock, bool checkLastAttack)
+    Enemy@ CommonPickEnemy(float maxDiffAngle, float maxDiffDist, int flags, bool checkBlock)
     {
         uint t = time.systemTime;
         Scene@ _scene = GetScene();
@@ -273,15 +270,6 @@ class Player : Character
             score += distScore;
             score += angleScore;
             score += threatScore;
-
-            if (checkLastAttack)
-            {
-                if (lastAttackId == e.sceneNode.id)
-                {
-                    if (diffAngle <= LAST_ENEMY_ANGLE)
-                        score += LAST_ENEMY_SCORE;
-                }
-            }
 
             em.scoreCache.Push(score);
 
@@ -393,7 +381,7 @@ class Player : Character
     bool Attack()
     {
         LogPrint("Do--Attack--->");
-        Enemy@ e = CommonPickEnemy(60, MAX_ATTACK_DIST, FLAGS_ATTACK, true, false);
+        Enemy@ e = CommonPickEnemy(60, MAX_ATTACK_DIST, FLAGS_ATTACK, true);
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");
@@ -405,7 +393,7 @@ class Player : Character
     bool Distract()
     {
         LogPrint("Do--Distract--->");
-        Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK | FLAGS_STUN, true, true);
+        Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK | FLAGS_STUN, true);
         if (e is null)
             return false;
         SetTarget(e);
