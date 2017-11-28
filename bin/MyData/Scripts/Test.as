@@ -37,7 +37,7 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
 };
 
-int drawDebug = 2;
+int drawDebug = 3;
 bool bigHeadMode = false;
 bool nobgm = true;
 

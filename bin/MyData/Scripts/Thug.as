@@ -1238,7 +1238,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
     {
-        if (HasFlag(FLAGS_NO_MOVE))
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD))
             return false;
         float dist = GetTargetDistance();
         if (dist >= max_dist)

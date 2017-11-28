@@ -209,6 +209,8 @@ class Player : Character
 
     Enemy@ CommonPickEnemy(float maxDiffAngle, float maxDiffDist, int flags, bool checkBlock)
     {
+        LogPrint("CommonPickEnemy Start !!!!!!!!!!!! ");
+
         uint t = time.systemTime;
         Scene@ _scene = GetScene();
         EnemyManager@ em = GetEnemyMgr();
@@ -226,7 +228,7 @@ class Player : Character
             Enemy@ e = em.enemyList[i];
             if (!e.HasFlag(flags))
             {
-                if (d_log)
+                // if (d_log)
                     LogPrint(e.GetName() + " no flag: " + flags);
                 em.scoreCache.Push(-1);
                 continue;
@@ -238,7 +240,7 @@ class Player : Character
             float dist = posDiff.length;
             if (dist > maxDiffDist)
             {
-                if (d_log)
+                //if (d_log)
                     LogPrint(e.GetName() + " far way from player");
                 em.scoreCache.Push(-1);
                 continue;
@@ -248,16 +250,16 @@ class Player : Character
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
 
+            //if (d_log)
+                LogPrint(e.GetName() + " enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
+
             if (Abs(diffAngle) > maxDiffAngle)
             {
-                if (d_log)
+                //if (d_log)
                     LogPrint(e.GetName() + " diffAngle=" + diffAngle + " too large");
                 em.scoreCache.Push(-1);
                 continue;
             }
-
-            if (d_log)
-                LogPrint("enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             int threatScore = 0;
             if (dist < AI_NEAR_DIST)
@@ -273,8 +275,8 @@ class Player : Character
 
             em.scoreCache.Push(score);
 
-            if (d_log)
-                LogPrint("Enemy " + e.sceneNode.name + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
+            //if (d_log)
+                LogPrint("Enemy " + e.GetName() + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 
         int bestScore = 0;
@@ -303,6 +305,7 @@ class Player : Character
         }
 
         LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms");
+        //GetScene().updateEnabled = false;
         return attackEnemy;
     }
 
