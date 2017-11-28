@@ -12,7 +12,7 @@ class Enemy : Character
     void ObjectStart()
     {
         Character::ObjectStart();
-        EnemyManager@ em = cast<EnemyManager>(scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em !is null)
             em.RegisterEnemy(this);
         SetTarget(GetPlayer());
@@ -20,7 +20,7 @@ class Enemy : Character
 
     void Remove()
     {
-        EnemyManager@ em = cast<EnemyManager>(scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em !is null)
             em.UnRegisterEnemy(this);
         Character::Remove();
@@ -267,5 +267,13 @@ class EnemyManager : ScriptObject
         v = FilterPosition(v);
         LogPrint(self.GetName() + " FindGoodTargetPosition best_dir=" + best_dir + " degree=" + degree + " v=" + v.ToString());
         return v;
+    }
+
+    void SendEvent(const String&in eventName, VariantMap& eventData)
+    {
+        for (uint i=0; i<enemyList.length; ++i)
+        {
+            enemyList[i].SendEvent(eventName, eventData);
+        }
     }
 };

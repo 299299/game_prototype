@@ -176,7 +176,7 @@ class Player : Character
     //====================================================================
     int PickCounterEnemy(Array<Enemy@>@ counterEnemies)
     {
-        EnemyManager@ em = cast<EnemyManager>(GetScene().GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em is null)
             return 0;
 
@@ -211,7 +211,7 @@ class Player : Character
     {
         uint t = time.systemTime;
         Scene@ _scene = GetScene();
-        EnemyManager@ em = cast<EnemyManager>(_scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em is null)
             return null;
 
@@ -312,7 +312,7 @@ class Player : Character
 
         uint t = time.systemTime;
         Scene@ _scene = GetScene();
-        EnemyManager@ em = cast<EnemyManager>(_scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em is null)
             return;
 
@@ -403,7 +403,7 @@ class Player : Character
 
     bool CheckLastKill()
     {
-        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em is null)
             return false;
 

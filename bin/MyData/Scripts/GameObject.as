@@ -27,21 +27,38 @@ const uint COLLISION_LAYER_RAGDOLL   = (1 << 3);
 
 class GameObject : ScriptObject
 {
+    FSM@    stateMachine = FSM();
+    Node@   sceneNode;
     float   duration = -1;
     uint    flags = 0;
     int     side = 0;
     float   timeScale = 1.0f;
 
+    void Start()
+    {
+        //LogPrint("============================== begin Object Start ==============================");
+        uint startTime = time.systemTime;
+        ObjectStart();
+        LogPrint(GetName() + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
+        //LogPrint("============================== end Object Start ==============================");
+    }
+
+    void Stop()
+    {
+        LogPrint(GetName() + " Stop.");
+        @stateMachine = null;
+        @sceneNode = null;
+    }
+
+    void ObjectStart()
+    {
+        sceneNode = node;
+    }
+
     void SetTimeScale(float scale)
     {
         timeScale = scale;
         LogPrint(GetName() + " SetTimeScale:" + scale);
-    }
-
-    void FixedUpdate(float timeStep)
-    {
-        timeStep *= timeScale;
-        CheckDuration(timeStep);
     }
 
     void CheckDuration(float timeStep)
@@ -55,9 +72,22 @@ class GameObject : ScriptObject
         }
     }
 
+    void FixedUpdate(float timeStep)
+    {
+        timeStep *= timeScale;
+
+        if (stateMachine !is null)
+            stateMachine.FixedUpdate(timeStep);
+
+        CheckDuration(timeStep);
+    }
+
     void Update(float timeStep)
     {
         timeStep *= timeScale;
+
+        if (stateMachine !is null)
+            stateMachine.Update(timeStep);
     }
 
     void PlaySound(const String&in soundName)
@@ -92,12 +122,11 @@ class GameObject : ScriptObject
 
     String GetName()
     {
-        return "";
+        return sceneNode.name;
     }
 
     void Reset()
     {
-
     }
 
     bool OnDamage(GameObject@ attacker, const Vector3&in position, const Vector3&in direction, int damage, bool weak = false)
@@ -107,7 +136,7 @@ class GameObject : ScriptObject
 
     Node@ GetNode()
     {
-        return null;
+        return sceneNode;
     }
 
     Scene@ GetScene()
@@ -116,6 +145,72 @@ class GameObject : ScriptObject
         if (_node is null)
             return null;
         return _node.scene;
+    }
+
+    void SetNodeEnabled(const String&in nodeName, bool bEnable)
+    {
+        Node@ n = sceneNode.GetChild(nodeName, true);
+        if (n !is null)
+            n.enabled = bEnable;
+    }
+
+    State@ GetState()
+    {
+        return stateMachine.currentState;
+    }
+
+    bool IsInState(const String&in name)
+    {
+        return IsInState(StringHash(name));
+    }
+
+    bool IsInState(const StringHash&in nameHash)
+    {
+        State@ state = stateMachine.currentState;
+        if (state is null)
+            return false;
+        return state.nameHash == nameHash;
+    }
+
+    bool ChangeState(const String&in name)
+    {
+        if (d_log)
+        {
+            String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
+            LogPrint(GetName() + " ChangeState from " + oldStateName + " to " + name);
+        }
+        bool ret = stateMachine.ChangeState(name);
+        State@ s = GetState();
+        if (s is null)
+            return ret;
+        sceneNode.vars[STATE] = s.nameHash;
+        return ret;
+    }
+
+    bool ChangeState(const StringHash&in nameHash)
+    {
+        String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
+        bool ret = stateMachine.ChangeState(nameHash);
+        String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
+        if (d_log)
+            LogPrint(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
+        sceneNode.vars[STATE] = GetState().nameHash;
+        return ret;
+    }
+
+    void ChangeStateQueue(const StringHash&in nameHash)
+    {
+        stateMachine.ChangeStateQueue(nameHash);
+    }
+
+    State@ FindState(const String&in name)
+    {
+        return stateMachine.FindState(name);
+    }
+
+    State@ FindState(const StringHash&in nameHash)
+    {
+        return stateMachine.FindState(nameHash);
     }
 
     void SetSceneTimeScale(float scale)
@@ -139,7 +234,6 @@ class GameObject : ScriptObject
 
     void Remove()
     {
-        // LogPrint(node.name + ".Remove()");
         node.Remove();
     }
 
@@ -194,6 +288,11 @@ class GameObject : ScriptObject
 
     void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
     {
+    }
+
+    void SendEvent(const String&in eventName, VariantMap& eventData)
+    {
+        GetNode().SendEvent(eventName, eventData);
     }
 };
 

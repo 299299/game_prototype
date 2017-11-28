@@ -46,6 +46,7 @@ const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
 const StringHash SOUND("Sound");
 const StringHash TARGET("Target");
+const StringHash FLAGS_UPDATED("FLAGS_UPDATED");
 
 const String PLAYER_TAG("Tag_Player");
 const String ENEMY_TAG("Tag_Enemy");
@@ -127,6 +128,12 @@ class CharacterState : State
         }
     }
 
+    // Logic Events
+    void OnLogicEvent(VariantMap& eventData)
+    {
+    }
+
+    // Event implementation
     void OnFootStep(const String&in boneName)
     {
         Node@ boneNode = ownner.GetNode().GetChild(boneName, true);
@@ -1037,11 +1044,8 @@ class CharacterAlignState : CharacterState
 
 class Character : GameObject
 {
-    FSM@    stateMachine = FSM();
-
     Character@              target;
 
-    Node@                   sceneNode;
     Node@                   renderNode;
 
     AnimationController@    animCtrl;
@@ -1080,7 +1084,7 @@ class Character : GameObject
 
     void ObjectStart()
     {
-        sceneNode = node;
+        GameObject::ObjectStart();
         renderNode = sceneNode.GetChild("RenderNode", false);
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
@@ -1122,6 +1126,7 @@ class Character : GameObject
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
 
+        SubscribeToEvent(sceneNode, "LogicEvent", "HandleLogicEvent");
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
 
         if (instant_collision)
@@ -1130,20 +1135,10 @@ class Character : GameObject
         animModel.RemoveAllAnimationStates();
     }
 
-    void Start()
-    {
-        //LogPrint("============================== begin Object Start ==============================");
-        uint startTime = time.systemTime;
-        ObjectStart();
-        LogPrint(sceneNode.name + " ObjectStart time-cost=" + String(time.systemTime - startTime) + " ms");
-        //LogPrint("============================== end Object Start ==============================");
-    }
 
     void Stop()
     {
-        LogPrint("Character::Stop " + sceneNode.name);
-        @stateMachine = null;
-        @sceneNode = null;
+        GameObject::Stop();
         @animCtrl = null;
         @animModel = null;
         @target = null;
@@ -1366,11 +1361,6 @@ class Character : GameObject
         return Atan2(characterDir.x, characterDir.z);
     }
 
-    String GetName()
-    {
-        return sceneNode.name;
-    }
-
     void PlayCurrentPose()
     {
         FillAnimationWithCurrentPose(ragdollPoseAnim, renderNode);
@@ -1383,11 +1373,6 @@ class Character : GameObject
     {
         ChangeState("HitState");
         return true;
-    }
-
-    Node@ GetNode()
-    {
-        return sceneNode;
     }
 
     void OnDead()
@@ -1457,90 +1442,6 @@ class Character : GameObject
         object.duration = duration;
 
         return newNode;
-    }
-
-    void SetNodeEnabled(const String&in nodeName, bool bEnable)
-    {
-        Node@ n = sceneNode.GetChild(nodeName, true);
-        if (n !is null)
-            n.enabled = bEnable;
-    }
-
-    State@ GetState()
-    {
-        return stateMachine.currentState;
-    }
-
-    bool IsInState(const String&in name)
-    {
-        return IsInState(StringHash(name));
-    }
-
-    bool IsInState(const StringHash&in nameHash)
-    {
-        State@ state = stateMachine.currentState;
-        if (state is null)
-            return false;
-        return state.nameHash == nameHash;
-    }
-
-    bool ChangeState(const String&in name)
-    {
-        if (d_log)
-        {
-            String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-            LogPrint(GetName() + " ChangeState from " + oldStateName + " to " + name);
-        }
-        bool ret = stateMachine.ChangeState(name);
-        State@ s = GetState();
-        if (s is null)
-            return ret;
-        sceneNode.vars[STATE] = s.nameHash;
-        return ret;
-    }
-
-    bool ChangeState(const StringHash&in nameHash)
-    {
-        String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        bool ret = stateMachine.ChangeState(nameHash);
-        String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        if (d_log)
-            LogPrint(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
-        sceneNode.vars[STATE] = GetState().nameHash;
-        return ret;
-    }
-
-    void ChangeStateQueue(const StringHash&in nameHash)
-    {
-        stateMachine.ChangeStateQueue(nameHash);
-    }
-
-    State@ FindState(const String&in name)
-    {
-        return stateMachine.FindState(name);
-    }
-
-    State@ FindState(const StringHash&in nameHash)
-    {
-        return stateMachine.FindState(nameHash);
-    }
-
-    void FixedUpdate(float timeStep)
-    {
-        timeStep *= timeScale;
-
-        if (stateMachine !is null)
-            stateMachine.FixedUpdate(timeStep);
-
-        CheckDuration(timeStep);
-    }
-
-    void Update(float timeStep)
-    {
-        timeStep *= timeScale;
-
-        if (stateMachine !is null)
-            stateMachine.Update(timeStep);
     }
 
     void SetTarget(Character@ t)
@@ -1688,6 +1589,13 @@ class Character : GameObject
         CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
         if (cs !is null)
             cs.OnObjectCollision(otherObject, otherBody, eventData);
+    }
+
+    void HandleLogicEvent(StringHash eventType, VariantMap& eventData)
+    {
+        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
+        if (cs !is null)
+            cs.OnLogicEvent(eventData);
     }
 };
 

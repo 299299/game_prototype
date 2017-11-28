@@ -106,7 +106,7 @@ class ThugStandState : MultiAnimationState
         }
 
         Node@ _node = ownner.GetNode();
-        EnemyManager@ em = cast<EnemyManager>(_node.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         float dist = ownner.GetTargetDistance();
         int num_near_thugs = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
 
@@ -462,7 +462,7 @@ class ThugAttackState : CharacterState
             return;
         }
 
-        if (!ownner.HasFlag(FLAGS_ATTACK))
+        if (!ownner.target.HasFlag(FLAGS_ATTACK))
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -921,7 +921,7 @@ class Thug : Enemy
 
     bool CanAttack()
     {
-        EnemyManager@ em = cast<EnemyManager>(sceneNode.scene.GetScriptObject("EnemyManager"));
+        EnemyManager@ em = GetEnemyMgr();
         if (em is null)
             return false;
         int num = em.GetNumOfEnemyAttackValid();
