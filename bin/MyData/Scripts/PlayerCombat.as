@@ -957,7 +957,7 @@ class PlayerBeatDownHitState : MultiMotionState
         if (lastState !is this && lastState.nameHash != ALIGN_STATE)
         {
             CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-            state.Start(this.nameHash, targetPosition, targetRotation, 0.1f);
+            state.Start(this.name, targetPosition, targetRotation, 0.1f);
             ownner.ChangeStateQueue(ALIGN_STATE);
         }
         else

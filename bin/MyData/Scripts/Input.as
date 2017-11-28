@@ -246,6 +246,8 @@ class GameInput
                 ret = input.mouseButtonPress[MOUSEB_LEFT];
             else if (action == kInputCounter)
                 ret = input.mouseButtonPress[MOUSEB_RIGHT];
+            else if (action == kInputDistract)
+                ret = input.mouseButtonPress[MOUSEB_MIDDLE];
         }
 
         return ret;

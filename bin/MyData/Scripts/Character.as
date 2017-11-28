@@ -19,7 +19,6 @@ const int INITIAL_HEALTH = 100;
 const int NUM_ZONE_DIRECTIONS = 8;
 
 const StringHash ATTACK_STATE("AttackState");
-const StringHash TURN_STATE("TurnState");
 const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
 const StringHash ALIGN_STATE("AlignState");
@@ -77,6 +76,7 @@ class CharacterState : State
         @ownner = null;
     }
 
+    // animation events
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         StringHash name = eventData[NAME].GetStringHash();
@@ -104,6 +104,26 @@ class CharacterState : State
         else if (name == READY_TO_FIGHT)
         {
             combatReady = true;
+        }
+    }
+
+    // collision events
+    void OnObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
+    {
+        if (otherBody.collisionLayer == COLLISION_LAYER_CHARACTER)
+        {
+            Character@ c = cast<Character>(otherObject);
+            if (ownner.HasFlag(FLAGS_NO_MOVE))
+                return;
+            if (ownner.HasFlag(FLAGS_COLLISION_AVOIDENCE))
+            {
+                ownner.KeepDistanceWithCharacter(c);
+            }
+        }
+        else if (otherBody.collisionLayer == COLLISION_LAYER_PROP || otherBody.collisionLayer == COLLISION_LAYER_RAGDOLL)
+        {
+            if (ownner.HasFlag(FLAGS_HIT_RAGDOLL))
+                ownner.HitRagdoll(otherBody);
         }
     }
 
@@ -167,25 +187,6 @@ class CharacterState : State
         }
         State::Update(dt);
         firstUpdate = false;
-    }
-
-    void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
-    {
-        if (otherBody.collisionLayer == COLLISION_LAYER_CHARACTER)
-        {
-            Character@ c = cast<Character>(otherObject);
-            if (ownner.HasFlag(FLAGS_NO_MOVE))
-                return;
-            if (ownner.HasFlag(FLAGS_COLLISION_AVOIDENCE))
-            {
-                ownner.KeepDistanceWithCharacter(c);
-            }
-        }
-        else if (otherBody.collisionLayer == COLLISION_LAYER_PROP || otherBody.collisionLayer == COLLISION_LAYER_RAGDOLL)
-        {
-            if (ownner.HasFlag(FLAGS_HIT_RAGDOLL))
-                ownner.HitRagdoll(otherBody);
-        }
     }
 };
 
@@ -865,7 +866,7 @@ class CharacterCounterState : CharacterState
     void StartAligning()
     {
         CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-        state.Start(this.nameHash, targetPosition, targetRotation, alignTime, ownner.walkAlignAnimation);
+        state.Start(this.name, targetPosition, targetRotation, alignTime, ownner.walkAlignAnimation);
         ownner.ChangeStateQueue(ALIGN_STATE);
     }
 
@@ -979,7 +980,7 @@ class CharacterGetUpState : MultiMotionState
 
 class CharacterAlignState : CharacterState
 {
-    StringHash  nextStateName;
+    String      nextStateName;
     String      alignAnimation;
     Vector3     targetPosition;
     float       targetRotation;
@@ -993,9 +994,9 @@ class CharacterAlignState : CharacterState
         SetName("AlignState");
     }
 
-    void Start(StringHash nextState, const Vector3&in tPos, float tRot, float duration, const String&in anim = "")
+    void Start(String nextState, const Vector3&in tPos, float tRot, float duration, const String&in anim = "")
     {
-        LogPrint("CharacterAlign--start duration=" + duration);
+        LogPrint(ownner.GetName() + " CharacterAlign--start duration=" + duration + " nextState=" + nextState + " tPos=" + tPos.ToString() + " anim=" + anim);
         nextStateName = nextState;
         targetPosition = tPos;
         targetRotation = tRot;
@@ -1007,11 +1008,8 @@ class CharacterAlignState : CharacterState
         movePerSec = (tPos - curPos) / duration;
         rotatePerSec = AngleDiff(tRot - curAngle) / duration;
 
-        if (anim != "")
-        {
-            LogPrint("align-animation : " + anim);
+        if (!anim.empty)
             ownner.PlayAnimation(anim, LAYER_MOVE, true);
-        }
     }
 
     void Update(float dt)
@@ -1666,13 +1664,6 @@ class Character : GameObject
         return (health == 0);
     }
 
-    void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
-    {
-        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
-        if (cs !is null)
-            cs.ObjectCollision(otherObject, otherBody, eventData);
-    }
-
     void KeepDistanceWithCharacter(Character@ c)
     {
     }
@@ -1690,6 +1681,13 @@ class Character : GameObject
         CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
         if (cs !is null)
             cs.OnAnimationTrigger(state, eventData[DATA].GetVariantMap());
+    }
+
+    void ObjectCollision(GameObject@ otherObject, RigidBody@ otherBody, VariantMap& eventData)
+    {
+        CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
+        if (cs !is null)
+            cs.OnObjectCollision(otherObject, otherBody, eventData);
     }
 };
 

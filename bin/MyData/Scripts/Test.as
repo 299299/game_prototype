@@ -68,6 +68,7 @@ bool mobile = false;
 bool one_shot_kill = false;
 bool instant_collision = true;
 bool player_walk = false;
+bool locomotion_turn = false;
 
 GameInput@ gInput = GameInput();
 

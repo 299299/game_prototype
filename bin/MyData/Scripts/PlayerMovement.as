@@ -21,14 +21,18 @@ class PlayerStandState : MultiAnimationState
         {
             if (!player_walk)
             {
-                // ownner.ChangeState("RunState");
-                int index = ownner.RadialSelectAnimation(4);
-                ownner.GetNode().vars[ANIMATION_INDEX] = 0;
+                if (locomotion_turn)
+                {
+                    int index = ownner.RadialSelectAnimation(4);
+                    ownner.GetNode().vars[ANIMATION_INDEX] = 0;
 
-                if (index != 2)
-                    ownner.ChangeState("RunState");
+                    if (index != 2)
+                        ownner.ChangeState("RunState");
+                    else
+                        ownner.ChangeState("StandToRunState");
+                }
                 else
-                    ownner.ChangeState("StandToRunState");
+                    ownner.ChangeState("RunState");
             }
             else
             {
@@ -164,7 +168,7 @@ class PlayerMoveForwardState : SingleMotionState
     {
         float characterDifference = ownner.ComputeAngleDiff();
         // if the difference is large, then turn 180 degrees
-        if ( (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
+        if (locomotion_turn && (Abs(characterDifference) > FULLTURN_THRESHOLD) && gInput.IsLeftStickStationary() )
         {
             LogPrint(this.name + " turn 180!!");
             OnTurn180();
