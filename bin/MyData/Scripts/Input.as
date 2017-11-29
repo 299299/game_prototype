@@ -62,7 +62,7 @@ class GameInput
         m_leftStickMagnitude = m_leftStickX * m_leftStickX + m_leftStickY * m_leftStickY;
         m_leftStickAngle = Atan2(m_leftStickX, m_leftStickY);
 
-        // Print("m_leftStickX=" + m_leftStickX + " m_leftStickY=" + m_leftStickY + " m_leftStickAngle=" + m_leftStickAngle);
+        // Print("m_leftStickX=" + m_leftStickX + " m_leftStickY=" + m_leftStickY + " m_leftStickAngle=" + m_leftStickAngle + " leftStick=" + leftStick.ToString());
 
         float diffX = m_lastLeftStickX - m_leftStickX;
         float diffY = m_lastLeftStickY - m_leftStickY;
