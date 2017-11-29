@@ -64,6 +64,31 @@ void DrawDebug(float dt)
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
         return;
+
+    EnemyManager@ em = GetEnemyMgr();
+    Player@ p = GetPlayer();
+
+    if (!scene_.updateEnabled)
+    {
+
+        if (em !is null)
+        {
+            for (uint i=0; i<em.enemyList.length; ++i)
+            {
+                HeadIndicator@ h = cast<HeadIndicator>(em.enemyList[i].GetNode().GetScriptObject("HeadIndicator"));
+                if (h !is null)
+                    h.Update(0);
+            }
+        }
+
+        if (p !is null)
+        {
+            HeadIndicator@ h = cast<HeadIndicator>(p.GetNode().GetScriptObject("HeadIndicator"));
+            if (h !is null)
+                h.Update(0);
+        }
+    }
+
     DebugRenderer@ debug = scene_.debugRenderer;
     if (drawDebug == 0)
         return;
@@ -72,21 +97,20 @@ void DrawDebug(float dt)
 
     if (drawDebug > 0)
     {
-        gCameraMgr.DebugDraw(debug);
         debug.AddNode(scene_, 1.0f, false);
-        Player@ player = GetPlayer();
-        if (player !is null)
-            player.DebugDraw(debug);
+        if (p !is null)
+            p.DebugDraw(debug);
     }
     if (drawDebug > 1)
     {
-        EnemyManager@ em = GetEnemyMgr();
         if (em !is null)
             em.DebugDraw(debug);
     }
 
     if (drawDebug > 2)
     {
+        gCameraMgr.DebugDraw(debug);
+
         DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
         if (dnm !is null)
             dnm.DrawDebugGeometry(true);
@@ -284,6 +308,9 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
 {
     Player@ player = GetPlayer();
     EnemyManager@ em = GetEnemyMgr();
+
+    if (player is null || em is null)
+        return;
 
     if (em.enemyList.length < thugAnims.length)
         return;

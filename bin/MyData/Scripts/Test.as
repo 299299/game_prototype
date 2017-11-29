@@ -37,7 +37,7 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
 };
 
-int drawDebug = 3;
+int drawDebug = 2;
 bool bigHeadMode = false;
 bool nobgm = true;
 
@@ -69,6 +69,7 @@ bool one_shot_kill = false;
 bool instant_collision = true;
 bool player_walk = false;
 bool locomotion_turn = false;
+bool attack_choose_closest_one = true;
 
 GameInput@ gInput = GameInput();
 

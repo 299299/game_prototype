@@ -461,7 +461,7 @@ class AttackMotion
             return;
         impactTime = impactFrame * SEC_PER_FRAME;
         Vector4 k = motion.motionKeys[impactFrame];
-        impactPosition = Vector3(k.x, k.y, k.z);
+        impactPosition = Vector3(k.x, 0, k.z);
         impactDist = impactPosition.length;
         type = _type;
         boneName = bName;

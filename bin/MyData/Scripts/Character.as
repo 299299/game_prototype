@@ -1273,7 +1273,8 @@ class Character : GameObject
     void DebugDraw(DebugRenderer@ debug)
     {
         stateMachine.DebugDraw(debug);
-        debug.AddNode(sceneNode, 1.5f, false);
+        debug.AddNode(sceneNode, 1.0f, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(0.75f, 0.75f, 0.25f), 32, false);
         // float moveAngle = Atan2(moveDir.x, moveDir.z);
         // DebugDrawDirection(debug, sceneNode.worldPosition, moveAngle, GREEN, 5.0f);
     }

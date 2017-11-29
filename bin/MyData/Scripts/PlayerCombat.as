@@ -112,6 +112,7 @@ class PlayerAttackState : CharacterState
             {
                 ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
                 AttackImpact();
+                // ownner.GetScene().updateEnabled = false;
             }
         }
 
@@ -162,55 +163,75 @@ class PlayerAttackState : CharacterState
         Vector3 enemyPos = ownner.target.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
-        float toEnenmyDistance = diff.length - COLLISION_SAFE_DIST;
-        if (toEnenmyDistance < 0.0f)
-            toEnenmyDistance = 0.0f;
+        float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST);
+        float fuck = diff.length;
         int bestIndex = 0;
         diff.Normalize();
 
-        int index_start = -1;
-        int index_num = 0;
-
-        float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_SHORT_RANGE);
-        float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_LONG_RANGE;
-        LogPrint("Player attack toEnenmyDistance = " + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
-
-        for (uint i=0; i<attacks.length; ++i)
+        if (attack_choose_closest_one)
         {
-            AttackMotion@ am = attacks[i];
-            // LogPrint("am.impactDist=" + am.impactDist);
-            if (am.impactDist > max_dist)
-                break;
-
-            if (am.impactDist > min_dist)
+            LogPrint("Player attack " + ownner.target.GetName() + " toEnenmyDistance = " + toEnenmyDistance);
+            float dist_attack = 99999;
+            for (uint i=0; i<attacks.length; ++i)
             {
-                if (index_start == -1)
-                    index_start = i;
-                index_num ++;
+                AttackMotion@ am = attacks[i];
+                LogPrint("AttackMotion name="  + am.motion.name  + " impactDist="+ am.impactDist);
+                float d = Abs(am.impactDist - toEnenmyDistance);
+                if (d < dist_attack)
+                {
+                    dist_attack = d;
+                    bestIndex = i;
+                }
             }
-        }
 
-        if (index_num == 0)
-        {
-            if (toEnenmyDistance > attacks[attacks.length - 1].impactDist)
-                bestIndex = attacks.length - 1;
-            else
-                bestIndex = 0;
+            LogPrint("Attack bestIndex="+bestIndex + " dist_attack=" + dist_attack);
         }
         else
         {
-            int r_n = RandomInt(index_num);
-            bestIndex = index_start + r_n % index_num;
-            if (lastAttackDirection == dir && bestIndex == lastAttackIndex)
-            {
-                LogPrint("Repeat Attack index index_num=" + index_num);
-                bestIndex = index_start + (r_n + 1) % index_num;
-            }
-            lastAttackDirection = dir;
-            lastAttackIndex = bestIndex;
-        }
+            int index_start = -1;
+            int index_num = 0;
 
-        LogPrint("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num="+index_num);
+            float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_SHORT_RANGE);
+            float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_LONG_RANGE;
+            LogPrint("Player attack " + ownner.target.GetName() + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
+
+            for (uint i=0; i<attacks.length; ++i)
+            {
+                AttackMotion@ am = attacks[i];
+                LogPrint("AttackMotion name="  + am.motion.name  + " impactDist="+ am.impactDist);
+                if (am.impactDist > max_dist)
+                    break;
+
+                if (am.impactDist > min_dist)
+                {
+                    if (index_start == -1)
+                        index_start = i;
+                    index_num ++;
+                }
+            }
+
+            if (index_num == 0)
+            {
+                if (toEnenmyDistance > attacks[attacks.length - 1].impactDist)
+                    bestIndex = attacks.length - 1;
+                else
+                    bestIndex = 0;
+            }
+            else
+            {
+                int r_n = RandomInt(index_num);
+                bestIndex = index_start + r_n % index_num;
+                if (lastAttackDirection == dir && bestIndex == lastAttackIndex)
+                {
+                    LogPrint("Repeat Attack index index_num=" + index_num);
+                    bestIndex = index_start + (r_n + 1) % index_num;
+                }
+                lastAttackDirection = dir;
+                lastAttackIndex = bestIndex;
+            }
+
+            LogPrint("Attack bestIndex="+bestIndex+" index_start="+index_start+" index_num="+index_num);
+        }
 
         @currentAttack = attacks[bestIndex];
         alignTime = currentAttack.impactTime;
@@ -271,6 +292,8 @@ class PlayerAttackState : CharacterState
             movePerSec = ( predictPosition - motionPosition ) / alignTime;
             movePerSec.y = 0;
 
+            LogPrint("PlayerAttack movePerSec=" + movePerSec.ToString());
+
             //if (attackEnemy.HasFlag(FLAGS_COUNTER))
             //    slowMotion = true;
 
@@ -301,9 +324,8 @@ class PlayerAttackState : CharacterState
         state = ATTACK_STATE_ALIGN;
         movePerSec = Vector3(0, 0, 0);
         StartAttack();
-        //ownner.SetSceneTimeScale(0.25f);
-        //ownner.SetTimeScale(1.5f);
         CharacterState::Enter(lastState);
+        // ownner.GetScene().updateEnabled = false;
     }
 
     void Exit(State@ nextState)
@@ -321,9 +343,9 @@ class PlayerAttackState : CharacterState
     {
         if (currentAttack is null || ownner.target is null)
             return;
-        debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, RED, false);
-        debug.AddCross(predictPosition, 0.5f, Color(0.25f, 0.28f, 0.7f), false);
-        debug.AddCross(motionPosition, 0.5f, Color(0.75f, 0.28f, 0.27f), false);
+        // debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, YELLOW, false);
+        AddDebugMark(debug, predictPosition, Color(0.25f, 0.28f, 0.7f));
+        AddDebugMark(debug, motionPosition,  Color(0.75f, 0.28f, 0.27f));
     }
 
     String GetDebugText()

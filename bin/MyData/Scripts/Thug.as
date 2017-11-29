@@ -913,12 +913,6 @@ class Thug : Enemy
         Enemy::Stop();
     }
 
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        Character::DebugDraw(debug);
-        // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_SAFE_DIST, YELLOW, 32, false);
-    }
-
     bool CanAttack()
     {
         EnemyManager@ em = GetEnemyMgr();

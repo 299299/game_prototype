@@ -15,9 +15,9 @@ const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.5f;
 const float GOOD_COUNTER_DIST = 3.0f;
-const float ATTACK_DIST_PICK_LONG_RANGE = 7.0f;
-const float ATTACK_DIST_PICK_SHORT_RANGE = 3.0f;
-float MAX_ATTACK_DIST = 20.0f;
+const float ATTACK_DIST_PICK_LONG_RANGE = 5.0f;
+const float ATTACK_DIST_PICK_SHORT_RANGE = 1.0f;
+float MAX_ATTACK_DIST = 15.0f;
 
 class Player : Character
 {
@@ -209,7 +209,7 @@ class Player : Character
 
     Enemy@ CommonPickEnemy(float maxDiffAngle, float maxDiffDist, int flags, bool checkBlock)
     {
-        LogPrint("CommonPickEnemy Start !!!!!!!!!!!! ");
+        LogPrint("\n CommonPickEnemy Start !!!!!!!!!!!! ");
 
         uint t = time.systemTime;
         Scene@ _scene = GetScene();
@@ -221,6 +221,8 @@ class Player : Character
         Vector3 myPos = sceneNode.worldPosition;
         float targetAngle = GetTargetAngle();
         em.scoreCache.Clear();
+
+        LogPrint(gInput.GetDebugText());
 
         Enemy@ attackEnemy = null;
         for (uint i=0; i<em.enemyList.length; ++i)
@@ -304,8 +306,7 @@ class Player : Character
             }
         }
 
-        LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms");
-        //GetScene().updateEnabled = false;
+        LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms \n");
         return attackEnemy;
     }
 
