@@ -396,6 +396,7 @@ class ThugCounterState : CharacterCounterState
         super(c);
         AddMotions();
         flags = FLAGS_NO_MOVE;
+        alignTime = 0.5f;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)

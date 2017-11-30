@@ -711,8 +711,8 @@ class PlayerCounterState : CharacterCounterState
             }
         }
 
-        if (counterEnemies.length > 1)
-            ownner.GetScene().updateEnabled = false;
+        //if (counterEnemies.length > 1)
+        //    ownner.GetScene().updateEnabled = false;
 
         LogPrint("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
         CharacterState::Enter(lastState);

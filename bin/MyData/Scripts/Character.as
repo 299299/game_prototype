@@ -827,6 +827,7 @@ class CharacterAlignState : CharacterState
     {
         super(c);
         SetName("AlignState");
+        flags = FLAGS_NO_MOVE;
     }
 
     void Start(String nextState, const Vector3&in tPos, float tRot, float duration, const String&in anim = "")
