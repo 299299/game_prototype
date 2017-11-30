@@ -713,13 +713,7 @@ class CharacterCounterState : CharacterState
 
     String GetDebugText()
     {
-        return "current motion=" + currentMotion.animationName;
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        AddDebugMark(debug, targetPosition, TARGET_COLOR);
-        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW);
+        return CharacterState::GetDebugText() + " current motion=" + currentMotion.animationName;
     }
 };
 

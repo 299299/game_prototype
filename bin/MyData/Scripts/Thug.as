@@ -209,7 +209,7 @@ class ThugRunToAttackState : SingleMotionState
         super(c);
         SetName("RunToAttackState");
         SetMotion(MOVEMENT_GROUP_THUG + "Run_Forward_Combat");
-        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN_TO_ATTACK | FLAGS_HIT_RAGDOLL;
+        flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_RUN_TO_ATTACK | FLAGS_HIT_RAGDOLL | FLAGS_COLLISION_AVOIDENCE;
     }
 
     void Update(float dt)
@@ -236,6 +236,18 @@ class ThugRunToAttackState : SingleMotionState
         }
 
         SingleMotionState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        SingleMotionState::Enter(lastState);
+        ownner.ClearAvoidance();
+    }
+
+    void FixedUpdate(float dt)
+    {
+        ownner.CheckAvoidance(dt);
+        CharacterState::FixedUpdate(dt);
     }
 
     float GetThreatScore()
@@ -674,35 +686,6 @@ class ThugHitState : MultiMotionState
     {
         return timeInState >= recoverTimer;
     }
-
-    void FixedUpdate(float dt)
-    {
-        Array<RigidBody@>@ neighbors = cast<Thug>(ownner).collisionBody.collidingBodies;
-        for (uint i=0; i<neighbors.length; ++i)
-        {
-            Node@ n_node = neighbors[i].node.parent;
-            if (n_node is null)
-                continue;
-            Character@ object = cast<Character>(n_node.scriptObject);
-            if (object is null)
-                continue;
-            if (object.HasFlag(FLAGS_MOVING))
-                continue;
-
-            float dist = ownner.GetTargetDistance(n_node);
-            if (dist < 1.0f)
-            {
-                /*State@ state = ownner.GetState();
-                if (state.nameHash == RUN_TO_TARGET_STATE ||
-                    state.nameHash == STAND_STATE)
-                {
-                    object.ChangeState("PushBack");
-                }*/
-                LogPrint(object.GetName() + " DoPushBack !!");
-                object.ChangeState("PushBack");
-            }
-        }
-    }
 };
 
 class ThugGetUpState : CharacterGetUpState
@@ -841,17 +824,6 @@ class ThugStunState : SingleAnimationState
     }
 };
 
-class ThugPushBackState : SingleMotionState
-{
-    ThugPushBackState(Character@ ownner)
-    {
-        super(ownner);
-        SetName("PushBack");
-        flags = FLAGS_ATTACK;
-        SetMotion("TG_HitReaction/HitReaction_Left");
-    }
-};
-
 class ThugTauntingState : MultiMotionState
 {
     ThugTauntingState(Character@ ownner)
@@ -929,7 +901,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugRunToTargetState(this));
         stateMachine.AddState(ThugWalkState(this));
         stateMachine.AddState(CharacterRagdollState(this));
-        stateMachine.AddState(ThugPushBackState(this));
         stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
 

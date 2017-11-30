@@ -647,3 +647,35 @@ void HandleCrowdAgentFailure(StringHash eventType, VariantMap& eventData)
 }
 
 /*======================================= CROWD =======================================*/
+
+
+// HitState
+
+void FixedUpdate(float dt)
+{
+    Array<RigidBody@>@ neighbors = cast<Thug>(ownner).collisionBody.collidingBodies;
+    for (uint i=0; i<neighbors.length; ++i)
+    {
+        Node@ n_node = neighbors[i].node.parent;
+        if (n_node is null)
+            continue;
+        Character@ object = cast<Character>(n_node.scriptObject);
+        if (object is null)
+            continue;
+        if (object.HasFlag(FLAGS_MOVING) || object.HasFlag(FLAGS_NO_MOVE))
+            continue;
+
+        float dist = ownner.GetTargetDistance(n_node);
+        if (dist < 1.0f)
+        {
+            State@ state = ownner.GetState();
+            if (state.nameHash == RUN_TO_TARGET_STATE ||
+                state.nameHash == STAND_STATE)
+            {
+                object.ChangeState("PushBack");
+            }
+            LogPrint(object.GetName() + " DoPushBack !!");
+            object.ChangeState("PushBack");
+        }
+    }
+}

@@ -48,7 +48,7 @@ class State
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) + "\n";
+        return " name=" + name + " timeInState=" + String(timeInState);
     }
 
     void SetName(const String&in s)
@@ -179,7 +179,7 @@ class FSM
     {
         String ret = "current-state: ";
         if (currentState !is null)
-            ret += currentState.GetDebugText();
+            ret += currentState.GetDebugText() + "\n";
         else
             ret += "null\n";
         return ret;

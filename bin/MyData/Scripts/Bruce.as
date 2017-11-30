@@ -280,7 +280,7 @@ class Bruce : Player
     Bruce()
     {
         super();
-        walkAlignAnimation = GetAnimationName("BM_Movement/Run_Forward");
+        walkAlignAnimation = GetAnimationName("BM_Movement/Walk_Forward");
     }
 
     void AddStates()

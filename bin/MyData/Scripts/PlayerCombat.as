@@ -350,11 +350,10 @@ class PlayerAttackState : CharacterState
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) + "\n" +
+        return CharacterState::GetDebugText() +
                 "currentAttack=" + currentAttack.motion.animationName +
                 " weakAttack=" + weakAttack +
-                " slowMotion=" + slowMotion +
-                "\n";
+                " slowMotion=" + slowMotion;
     }
 
     bool CanReEntered()
@@ -672,7 +671,6 @@ class PlayerCounterState : CharacterCounterState
                     gIntCache.Push(i);
                 }
 
-                LogPrint("CounterState - gIntCache.length=" + gIntCache.length);
                 int cur_direction = GetCounterDirection(attackType, isBack);
                 int idx;
                 if (gIntCache.empty)
@@ -695,7 +693,7 @@ class PlayerCounterState : CharacterCounterState
 
                 @currentMotion = counterMotions[idx];
                 @s.currentMotion = eCounterMotions[idx];
-                LogPrint("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName);
+                LogPrint("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName + " gIntCache.length=" + gIntCache.length);
 
                 s.ChangeSubState(COUNTER_WAITING);
 
@@ -712,6 +710,9 @@ class PlayerCounterState : CharacterCounterState
                 }
             }
         }
+
+        if (counterEnemies.length > 1)
+            ownner.GetScene().updateEnabled = false;
 
         LogPrint("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
         CharacterState::Enter(lastState);
@@ -1026,8 +1027,9 @@ class PlayerBeatDownHitState : MultiMotionState
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) + " current motion=" + motions[selectIndex].animationName + "\n" +
-        " combatReady=" + combatReady + " attackPressed=" + attackPressed + "\n";
+        return CharacterState::GetDebugText() +
+        " current motion=" + motions[selectIndex].animationName +
+        " combatReady=" + combatReady + " attackPressed=" + attackPressed;
     }
 };
 
@@ -1075,7 +1077,7 @@ class PlayerTransitionState : SingleMotionState
 
     String GetDebugText()
     {
-        return " name=" + name + " timeInState=" + String(timeInState) + " nextState=" + nextStateName + "\n";
+        return CharacterState::GetDebugText() + " nextState=" + nextStateName;
     }
 };
 
