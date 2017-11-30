@@ -52,9 +52,7 @@ class EnemyManager : ScriptObject
 {
     Array<Vector3>      enemyResetPositions;
     Array<Quaternion>   enemyResetRotations;
-
     Array<Enemy@>       enemyList;
-    Array<int>          scoreCache;
 
     int                 thugId = 0;
     float               updateTimer = 0.0f;
@@ -241,7 +239,7 @@ class EnemyManager : ScriptObject
                 zoneDirCache[e.targetZoneToPlayer] = zoneDirCache[e.targetZoneToPlayer] + 1;
         }
 
-        scoreCache.Clear();
+        gIntCache.Clear();
         uint least_num = enemyList.length + 1;
         int best_dir = -1;
         for (uint i=0; i<NUM_ZONE_DIRECTIONS; ++i)
@@ -253,11 +251,11 @@ class EnemyManager : ScriptObject
             }
 
             if (zoneDirCache[i] == 0)
-                scoreCache.Push(i);
+                gIntCache.Push(i);
         }
 
-        if (!scoreCache.empty)
-            best_dir = scoreCache[RandomInt(scoreCache.length)];
+        if (!gIntCache.empty)
+            best_dir = gIntCache[RandomInt(gIntCache.length)];
         float zone_degree = 360 / NUM_ZONE_DIRECTIONS;
         float degree_min = best_dir * zone_degree - zone_degree/2 - 10;
         float degree_max = best_dir * zone_degree + zone_degree/2 - 10;

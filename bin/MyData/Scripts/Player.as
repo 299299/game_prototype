@@ -220,7 +220,7 @@ class Player : Character
         // Find the best enemy
         Vector3 myPos = sceneNode.worldPosition;
         float targetAngle = GetTargetAngle();
-        em.scoreCache.Clear();
+        gIntCache.Clear();
 
         LogPrint(gInput.GetDebugText());
 
@@ -232,7 +232,7 @@ class Player : Character
             {
                 // if (d_log)
                     LogPrint(e.GetName() + " no flag: " + flags);
-                em.scoreCache.Push(-1);
+                gIntCache.Push(-1);
                 continue;
             }
 
@@ -244,7 +244,7 @@ class Player : Character
             {
                 //if (d_log)
                     LogPrint(e.GetName() + " far way from player");
-                em.scoreCache.Push(-1);
+                gIntCache.Push(-1);
                 continue;
             }
 
@@ -259,7 +259,7 @@ class Player : Character
             {
                 //if (d_log)
                     LogPrint(e.GetName() + " diffAngle=" + diffAngle + " too large");
-                em.scoreCache.Push(-1);
+                gIntCache.Push(-1);
                 continue;
             }
 
@@ -275,16 +275,16 @@ class Player : Character
             score += angleScore;
             score += threatScore;
 
-            em.scoreCache.Push(score);
+            gIntCache.Push(score);
 
             //if (d_log)
                 LogPrint("Enemy " + e.GetName() + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 
         int bestScore = 0;
-        for (uint i=0; i<em.scoreCache.length;++i)
+        for (uint i=0; i<gIntCache.length;++i)
         {
-            int score = em.scoreCache[i];
+            int score = gIntCache[i];
             if (score >= bestScore) {
                 bestScore = score;
                 @attackEnemy = em.enemyList[i];

@@ -71,6 +71,9 @@ bool player_walk = false;
 bool locomotion_turn = true;
 bool attack_choose_closest_one = true;
 
+const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
+const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);
+
 GameInput@ gInput = GameInput();
 
 void Start()

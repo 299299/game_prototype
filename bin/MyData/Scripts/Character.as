@@ -718,7 +718,7 @@ class CharacterCounterState : CharacterState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        AddDebugMark(debug, targetPosition, Color(0.25f, 0.28f, 0.7f));
+        AddDebugMark(debug, targetPosition, TARGET_COLOR);
         DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW);
     }
 };
@@ -865,7 +865,7 @@ class CharacterAlignState : CharacterState
     void DebugDraw(DebugRenderer@ debug)
     {
         DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, RED, 2.0f);
-        debug.AddCross(targetPosition, 0.5f, YELLOW, false);
+        AddDebugMark(debug, targetPosition, TARGET_COLOR);
     }
 
     void OnAlignTimeOut()

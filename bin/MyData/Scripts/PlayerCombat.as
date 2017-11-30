@@ -344,8 +344,8 @@ class PlayerAttackState : CharacterState
         if (currentAttack is null || ownner.target is null)
             return;
         // debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, YELLOW, false);
-        AddDebugMark(debug, predictPosition, Color(0.25f, 0.28f, 0.7f));
-        AddDebugMark(debug, motionPosition,  Color(0.75f, 0.28f, 0.27f));
+        AddDebugMark(debug, predictPosition, TARGET_COLOR);
+        AddDebugMark(debug, motionPosition,  SOURCE_COLOR);
     }
 
     String GetDebugText()
@@ -448,14 +448,12 @@ class PlayerAttackState : CharacterState
 class PlayerCounterState : CharacterCounterState
 {
     Array<Enemy@>   counterEnemies;
-    Array<int>      intCache;
     int             lastCounterIndex = -1;
     int             lastCounterDirection = -1;
 
     PlayerCounterState(Character@ c)
     {
         super(c);
-        intCache.Reserve(50);
     }
 
     void Update(float dt)
@@ -652,7 +650,7 @@ class PlayerCounterState : CharacterCounterState
                 Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
                 Array<Motion@>@ eCounterMotions = s.GetCounterMotions(attackType, isBack);
 
-                intCache.Clear();
+                gIntCache.Clear();
                 float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
                 float bestDistSQR = 999999;
                 int bestIndex = -1;
@@ -671,24 +669,24 @@ class PlayerCounterState : CharacterCounterState
                     }
                     if (distSQR > maxDistSQR)
                         continue;
-                    intCache.Push(i);
+                    gIntCache.Push(i);
                 }
 
-                LogPrint("CounterState - intCache.length=" + intCache.length);
+                LogPrint("CounterState - gIntCache.length=" + gIntCache.length);
                 int cur_direction = GetCounterDirection(attackType, isBack);
                 int idx;
-                if (intCache.empty)
+                if (gIntCache.empty)
                 {
                     idx = bestIndex;
                 }
                 else
                 {
-                    int k = RandomInt(intCache.length);
-                    idx = intCache[k];
+                    int k = RandomInt(gIntCache.length);
+                    idx = gIntCache[k];
                     if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
                     {
-                        k = (k + 1) % intCache.length;
-                        idx = intCache[k];
+                        k = (k + 1) % gIntCache.length;
+                        idx = gIntCache[k];
                     }
                 }
 
@@ -1022,7 +1020,7 @@ class PlayerBeatDownHitState : MultiMotionState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddCross(targetPosition, 1.0f, RED, false);
+        AddDebugMark(debug, targetPosition, TARGET_COLOR);
         DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW);
     }
 
