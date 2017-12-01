@@ -6,13 +6,14 @@
 
 // -- non cost
 float BRUCE_TRANSITION_DIST = 0.0f;
+const String BRUCE_MOVEMENT_GROUP = "BM_Movement/";
 
 class BruceStandState : PlayerStandState
 {
     BruceStandState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Movement/Stand_Idle");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle");
     }
 };
 
@@ -21,7 +22,7 @@ class BruceRunState : PlayerRunState
     BruceRunState(Character@ c)
     {
         super(c);
-        SetMotion("BM_Movement/Run_Forward");
+        SetMotion(BRUCE_MOVEMENT_GROUP + "Run_Forward");
     }
 };
 
@@ -30,9 +31,9 @@ class BruceTurnState : PlayerTurnState
     BruceTurnState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Movement/Turn_Right_90");
-        AddMotion("BM_Movement/Turn_Right_180");
-        AddMotion("BM_Movement/Turn_Left_90");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_90");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_180");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Left_90");
     }
 };
 
@@ -41,9 +42,9 @@ class BruceStandToWalkState : PlayerStandToWalkState
     BruceStandToWalkState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Movement/Stand_To_Walk_Right_90");
-        AddMotion("BM_Movement/Stand_To_Walk_Right_180");
-        AddMotion("BM_Movement/Stand_To_Walk_Right_180");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Walk_Right_90");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Walk_Right_180");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Walk_Right_180");
     }
 };
 
@@ -52,7 +53,7 @@ class BruceStandToRunState : PlayerStandToRunState
     BruceStandToRunState(Character@ c)
     {
         super(c);
-        AddMotion("BM_Movement/Stand_To_Run_Right_180");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Run_Right_180");
     }
 };
 
@@ -62,7 +63,7 @@ class BruceWalkState : PlayerWalkState
     BruceWalkState(Character@ c)
     {
         super(c);
-        SetMotion("BM_Movement/Walk_Forward");
+        SetMotion(BRUCE_MOVEMENT_GROUP + "Walk_Forward");
     }
 };
 
@@ -307,6 +308,35 @@ class Bruce : Player
     }
 };
 
+void CreateBruceMotions()
+{
+    AssignMotionRig("Models/bruce_w.mdl");
+
+    String preFix = BRUCE_MOVEMENT_GROUP;
+    Global_AddAnimation(preFix + "Stand_Idle");
+    Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 28);
+
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 25);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 14);
+    Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
+
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ZR, 21);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ZR, 25);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ZR, 18);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 25);
+
+    preFix = "BM_Combat/";
+    Global_CreateMotion(preFix + "Into_Takedown");
+    Global_CreateMotion(preFix + "Evade_Forward_01");
+    Global_CreateMotion(preFix + "Evade_Back_01");
+    Global_CreateMotion(preFix + "Evade_Left_01");
+    Global_CreateMotion(preFix + "Evade_Right_01");
+
+    CreateBruceCombatMotions();
+}
+
 void CreateBruceCombatMotions()
 {
     String preFix = "BM_HitReaction/";
@@ -315,8 +345,8 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
-    Global_CreateMotion_InFolder("BW_Attack/");
-    Global_CreateMotion_InFolder("BW_TG_Counter/");
+    Global_CreateMotion_InFolder("BM_Attack/");
+    Global_CreateMotion_InFolder("BM_TG_Counter/");
 
     preFix = "BM_TG_Counter/";
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
@@ -342,35 +372,6 @@ void CreateBruceCombatMotions()
     preFix = "BM_TG_Beatdown/";
     for (uint i=1; i<=4; ++i)
         Global_CreateMotion(preFix + "Beatdown_Strike_End_0" + i);
-}
-
-void CreateBruceMotions()
-{
-    AssignMotionRig("Models/bruce_w.mdl");
-
-    String preFix = "BM_Movement/";
-    Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
-    Global_AddAnimation(preFix + "Stand_Idle");
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 28);
-
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 25);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 14);
-    Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
-
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ZR, 21);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ZR, 25);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ZR, 18);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 25);
-
-    preFix = "BM_Combat/";
-    Global_CreateMotion(preFix + "Into_Takedown");
-    Global_CreateMotion(preFix + "Evade_Forward_01");
-    Global_CreateMotion(preFix + "Evade_Back_01");
-    Global_CreateMotion(preFix + "Evade_Left_01");
-    Global_CreateMotion(preFix + "Evade_Right_01");
-
-    CreateBruceCombatMotions();
 }
 
 void AddBruceCombatAnimationTriggers()

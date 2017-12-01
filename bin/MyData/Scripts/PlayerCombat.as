@@ -673,6 +673,10 @@ class PlayerCounterState : CharacterCounterState
 
                 int cur_direction = GetCounterDirection(attackType, isBack);
                 int idx;
+
+                if (counter_choose_closest_one)
+                    gIntCache.Clear();
+
                 if (gIntCache.empty)
                 {
                     idx = bestIndex;
