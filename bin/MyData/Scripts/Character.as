@@ -17,6 +17,7 @@ const int MAX_NUM_OF_RUN_ATTACK = 3;
 
 const int INITIAL_HEALTH = 100;
 const int NUM_ZONE_DIRECTIONS = 8;
+const float IN_AIR_FOOT_HEIGHT = 0.75f;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash HIT_STATE("HitState");
@@ -1336,7 +1337,7 @@ class Character : GameObject
         Vector3 myPos = sceneNode.worldPosition;
         float lf_to_ground = (lf_pos.y - myPos.y);
         float rf_to_graound = (rf_pos.y - myPos.y);
-        return lf_to_ground > 1.0f && rf_to_graound > 1.0f;
+        return lf_to_ground > IN_AIR_FOOT_HEIGHT || rf_to_graound > IN_AIR_FOOT_HEIGHT;
     }
 
     void SetHeight(float height)

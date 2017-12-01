@@ -418,7 +418,7 @@ class ThugCounterState : CharacterCounterState
 
     void AddMotions()
     {
-        String preFix = "TG_BW_Counter/";
+        String preFix = "TG_BM_Counter/";
 
         // Front Arm
         frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
@@ -437,8 +437,6 @@ class ThugCounterState : CharacterCounterState
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
         backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
-
-        preFix = "TG_BM_Counter/";
 
         doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_01"));
         doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA_02"));
@@ -1338,7 +1336,7 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
     Global_CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
-    Global_CreateMotion_InFolder("TG_BW_Counter/");
+    Global_CreateMotion_InFolder("TG_BM_Counter/");
     preFix = "TG_BM_Counter/";
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01");
     Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02");
@@ -1406,7 +1404,7 @@ void CreateThugMotions()
 
 void AddThugCombatAnimationTriggers()
 {
-    String preFix = "TG_BW_Counter/";
+    String preFix = "TG_BM_Counter/";
     AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 25, 39);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 25, 54);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 15, 23);
