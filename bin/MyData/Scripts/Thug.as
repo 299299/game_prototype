@@ -404,12 +404,12 @@ class ThugCounterState : CharacterCounterState
         flags = FLAGS_NO_MOVE;
         alignTime = 0.5f;
 
-        @frontArmMotions = bruce_counter_arm_front_motions;
-        @backArmMotions = bruce_counter_arm_back_motions;
-        @frontLegMotions = bruce_counter_leg_front_motions;
-        @backLegMotions = bruce_counter_leg_back_motions;
-        @doubleMotions = bruce_counter_double_motions;
-        @tripleMotions = bruce_counter_triple_motions;
+        @frontArmMotions = thug_counter_arm_front_motions;
+        @backArmMotions = thug_counter_arm_back_motions;
+        @frontLegMotions = thug_counter_leg_front_motions;
+        @backLegMotions = thug_counter_leg_back_motions;
+        @doubleMotions = thug_counter_double_motions;
+        @tripleMotions = thug_counter_triple_motions;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
