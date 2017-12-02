@@ -583,13 +583,12 @@ enum CounterSubState
 
 class CharacterCounterState : CharacterState
 {
-    Array<Motion@>      doubleCounterMotions;
-    Array<Motion@>      tripleCounterMotions;
-
-    Array<Motion@>      frontArmMotions;
-    Array<Motion@>      frontLegMotions;
-    Array<Motion@>      backArmMotions;
-    Array<Motion@>      backLegMotions;
+    Array<Motion@>@     frontArmMotions;
+    Array<Motion@>@     frontLegMotions;
+    Array<Motion@>@     backArmMotions;
+    Array<Motion@>@     backLegMotions;
+    Array<Motion@>@     doubleMotions;
+    Array<Motion@>@     tripleMotions;
 
     Motion@             currentMotion;
     int                 state; // sub state
@@ -606,7 +605,16 @@ class CharacterCounterState : CharacterState
     {
         super(c);
         SetName("CounterState");
-        AddMotions();
+    }
+
+    ~CharacterCounterState()
+    {
+        @frontArmMotions = null;
+        @frontLegMotions = null;
+        @backArmMotions = null;
+        @backLegMotions = null;
+        @doubleMotions = null;
+        @tripleMotions = null;
     }
 
     void Enter(State@ lastState)
@@ -691,10 +699,8 @@ class CharacterCounterState : CharacterState
         DumpCounterMotions(backArmMotions);
         DumpCounterMotions(frontLegMotions);
         DumpCounterMotions(backLegMotions);
-    }
-
-    void AddMotions()
-    {
+        DumpCounterMotions(doubleMotions);
+        DumpCounterMotions(tripleMotions);
     }
 
     void SetTargetTransform(const Vector3&in pos, float rot)

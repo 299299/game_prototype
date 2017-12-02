@@ -349,4 +349,23 @@ class BM_Game_MotionManager : MotionManager
         AddBruceAnimationTriggers();
         AddThugAnimationTriggers();
     }
+
+    void Stop()
+    {
+        bruce_counter_arm_front_motions.Clear();
+        bruce_counter_arm_back_motions.Clear();
+        bruce_counter_leg_front_motions.Clear();
+        bruce_counter_leg_back_motions.Clear();
+        bruce_counter_double_motions.Clear();
+        bruce_counter_triple_motions.Clear();
+
+        thug_counter_arm_front_motions.Clear();
+        thug_counter_arm_back_motions.Clear();
+        thug_counter_leg_front_motions.Clear();
+        thug_counter_leg_back_motions.Clear();
+        thug_counter_double_motions.Clear();
+        thug_counter_triple_motions.Clear();
+
+        MotionManager::Stop();
+    }
 };

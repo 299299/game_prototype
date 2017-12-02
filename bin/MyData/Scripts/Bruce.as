@@ -7,6 +7,12 @@
 // -- non cost
 float BRUCE_TRANSITION_DIST = 0.0f;
 const String BRUCE_MOVEMENT_GROUP = "BM_Movement/";
+Array<Motion@> bruce_counter_arm_front_motions;
+Array<Motion@> bruce_counter_arm_back_motions;
+Array<Motion@> bruce_counter_leg_front_motions;
+Array<Motion@> bruce_counter_leg_back_motions;
+Array<Motion@> bruce_counter_double_motions;
+Array<Motion@> bruce_counter_triple_motions;
 
 class BruceStandState : PlayerStandState
 {
@@ -195,38 +201,12 @@ class BruceCounterState : PlayerCounterState
     BruceCounterState(Character@ c)
     {
         super(c);
-    }
-
-    void AddMotions()
-    {
-        String preFix = "BM_TG_Counter/";
-        // Front Arm
-        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_Weak_02"));
-        for(int i=1; i<=9; ++i)
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_0" + i));
-        frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Front_10"));
-        // Front Leg
-        frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_Weak"));
-        for(int i=1; i<=6; ++i)
-            frontLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Front_0" + i));
-        // Back Arm
-        backArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_Weak_01"));
-        for(int i=1; i<=4; ++i)
-            frontArmMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Arm_Back_0" + i));
-        // Back Leg
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_Weak_01"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_01"));
-        backLegMotions.Push(gMotionMgr.FindMotion(preFix + "Counter_Leg_Back_02"));
-
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsA"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsB"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsD"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsE"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsF"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsG"));
-        doubleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_2ThugsH"));
-        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsB"));
-        tripleCounterMotions.Push(gMotionMgr.FindMotion(preFix + "Double_Counter_3ThugsC"));
+        @frontArmMotions = bruce_counter_arm_front_motions;
+        @backArmMotions = bruce_counter_arm_back_motions;
+        @frontLegMotions = bruce_counter_leg_front_motions;
+        @backLegMotions = bruce_counter_leg_back_motions;
+        @doubleMotions = bruce_counter_double_motions;
+        @tripleMotions = bruce_counter_triple_motions;
     }
 };
 
@@ -379,18 +359,35 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
     Global_CreateMotion_InFolder("BM_Attack/");
-    Global_CreateMotion_InFolder("BM_TG_Counter/");
 
     preFix = "BM_TG_Counter/";
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsE");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsF");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsG");
-    Global_CreateMotion(preFix + "Double_Counter_2ThugsH");
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90);
-    Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90);
+    Array<Motion@> counter_motions;
+    Global_CreateMotion_InFolder(preFix, "Double_Counter_", counter_motions);
+    const String arm_front_prefx = preFix + "Counter_Arm_Front";
+    const String leg_front_prefx = preFix + "Counter_Leg_Front";
+    const String arm_back_prefx = preFix + "Counter_Arm_Back";
+    const String leg_back_prefx = preFix + "Counter_Leg_Back";
+    for (uint i=0; i<counter_motions.length; ++i)
+    {
+        Motion@ m = counter_motions[i];
+        if (m.name.StartsWith(arm_front_prefx))
+            bruce_counter_arm_front_motions.Push(m);
+        else if (m.name.StartsWith(leg_front_prefx))
+            bruce_counter_leg_front_motions.Push(m);
+        else if (m.name.StartsWith(arm_back_prefx))
+            bruce_counter_arm_back_motions.Push(m);
+        else if (m.name.StartsWith(leg_back_prefx))
+            bruce_counter_leg_back_motions.Push(m);
+    }
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsE"));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsF"));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsG"));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsH"));
+    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90));
+    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90));
 
     preFix = "BM_Death_Primers/";
     Global_CreateMotion(preFix + "Death_Front");
@@ -398,9 +395,9 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Death_Side_Left");
     Global_CreateMotion(preFix + "Death_Side_Right");
 
-    preFix = "BM_Attack/";
-    for (uint i=1; i<=6; ++i)
-        Global_CreateMotion(preFix + "Beatdown_Test_0" + i);
+    //preFix = "BM_Attack/";
+    //for (uint i=1; i<=6; ++i)
+    //    Global_CreateMotion(preFix + "Beatdown_Test_0" + i);
 
     preFix = "BM_TG_Beatdown/";
     for (uint i=1; i<=4; ++i)
@@ -446,15 +443,27 @@ void AddBruceCombatAnimationTriggers()
     AddStringAnimationTrigger(animName, 33, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(animName, 35, READY_TO_FIGHT);
 
-    animName = preFix + "Counter_Arm_Back_04";
-    AddStringAnimationTrigger(animName, 14, COMBAT_SOUND, R_HAND);
-    AddStringAnimationTrigger(animName, 28, COMBAT_SOUND, R_CALF);
-    AddAnimationTrigger(animName, 40, READY_TO_FIGHT);
+    animName = preFix + "Counter_Arm_Back_05";
+    AddStringAnimationTrigger(animName, 30, COMBAT_SOUND, R_ARM);
+    AddAnimationTrigger(animName, 60, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Arm_Back_06";
+    AddStringAnimationTrigger(animName, 50, COMBAT_SOUND, R_HAND);
+    AddAnimationTrigger(animName, 70, READY_TO_FIGHT);
 
     animName = preFix + "Counter_Arm_Back_Weak_01";
     AddStringAnimationTrigger(animName, 11, COMBAT_SOUND, R_ARM);
     AddStringAnimationTrigger(animName, 25, COMBAT_SOUND, R_ARM);
     AddAnimationTrigger(animName, 27, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Arm_Back_Weak_02";
+    AddStringAnimationTrigger(animName, 4, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, L_HAND);
+    AddAnimationTrigger(animName, 45, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Arm_Back_Weak_03";
+    AddStringAnimationTrigger(animName, 27, COMBAT_SOUND, R_HAND);
+    AddAnimationTrigger(animName, 46, READY_TO_FIGHT);
 
     animName = preFix + "Counter_Arm_Front_01";
     AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_HAND);
@@ -512,11 +521,31 @@ void AddBruceCombatAnimationTriggers()
     AddStringAnimationTrigger(animName, 23, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(animName, 25, READY_TO_FIGHT);
 
+    animName = preFix + "Counter_Arm_Front_13";
+    AddStringAnimationTrigger(animName, 17, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 40, COMBAT_SOUND, L_FOOT);
+    AddAnimationTrigger(animName, 60, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Arm_Front_14";
+    AddStringAnimationTrigger(animName, 5, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 22, COMBAT_SOUND, R_HAND);
+    AddStringAnimationTrigger(animName, 50, COMBAT_SOUND, R_FOOT);
+    AddAnimationTrigger(animName, 72, READY_TO_FIGHT);
+
     animName = preFix + "Counter_Arm_Front_Weak_02";
     AddStringAnimationTrigger(animName, 4, COMBAT_SOUND, L_ARM);
     AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_HAND);
     AddStringAnimationTrigger(animName, 21, COMBAT_SOUND, L_HAND);
     AddAnimationTrigger(animName, 23, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Arm_Front_Weak_03";
+    AddStringAnimationTrigger(animName, 6, COMBAT_SOUND, L_ARM);
+    AddStringAnimationTrigger(animName, 26, COMBAT_SOUND, R_HAND);
+    AddAnimationTrigger(animName, 55, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Arm_Front_Weak_04";
+    AddStringAnimationTrigger(animName, 14, COMBAT_SOUND, R_ARM);
+    AddAnimationTrigger(animName, 57, READY_TO_FIGHT);
 
     animName = preFix + "Counter_Leg_Back_01";
     AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, L_HAND);
@@ -530,10 +559,27 @@ void AddBruceCombatAnimationTriggers()
     AddStringAnimationTrigger(animName, 46, COMBAT_SOUND, L_CALF);
     AddAnimationTrigger(animName, 48, READY_TO_FIGHT);
 
+    animName = preFix + "Counter_Leg_Back_03";
+    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 46, COMBAT_SOUND, L_CALF);
+    AddAnimationTrigger(animName, 48, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Leg_Back_04";
+    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 46, COMBAT_SOUND, L_CALF);
+    AddAnimationTrigger(animName, 48, READY_TO_FIGHT);
+
     animName = preFix + "Counter_Leg_Back_Weak_01";
     AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
     AddStringAnimationTrigger(animName, 30, COMBAT_SOUND, R_ARM);
     AddAnimationTrigger(animName, 32, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Leg_Back_Weak_03";
+    AddStringAnimationTrigger(animName, 12, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, R_ARM);
+    AddAnimationTrigger(animName, 64, READY_TO_FIGHT);
 
     animName = preFix + "Counter_Leg_Front_01";
     AddStringAnimationTrigger(animName, 11, COMBAT_SOUND, L_FOOT);
@@ -567,59 +613,87 @@ void AddBruceCombatAnimationTriggers()
     AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, L_HAND);
     AddAnimationTrigger(animName, 20, READY_TO_FIGHT);
 
+    animName = preFix + "Counter_Leg_Front_07";
+    AddStringAnimationTrigger(animName, 12, COMBAT_SOUND, R_HAND);
+    AddStringAnimationTrigger(animName, 42, COMBAT_SOUND, R_FOOT);
+    AddAnimationTrigger(animName, 68, READY_TO_FIGHT);
+
+    animName = preFix + "Counter_Leg_Front_08";
+    AddStringAnimationTrigger(animName, 5, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 20, COMBAT_SOUND, L_ARM);
+    AddAnimationTrigger(animName, 40, READY_TO_FIGHT);
+
     animName = preFix + "Counter_Leg_Front_Weak";
     AddStringAnimationTrigger(animName, 12, COMBAT_SOUND, L_FOOT);
     AddStringAnimationTrigger(animName, 18, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(animName, 20, READY_TO_FIGHT);
 
-    preFix = "BM_TG_Counter/";
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 12, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 12, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 77, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsA", 77, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsA", 79, READY_TO_FIGHT);
+    animName = preFix + "Counter_Leg_Front_Weak_01";
+    AddStringAnimationTrigger(animName, 10, COMBAT_SOUND, R_HAND);
+    AddStringAnimationTrigger(animName, 25, COMBAT_SOUND, R_HAND);
+    AddAnimationTrigger(animName, 65, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsB", 12, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsB", 36, COMBAT_SOUND_LARGE, L_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsB", 60, READY_TO_FIGHT);
+    animName = preFix + "Counter_Leg_Front_Weak_02";
+    AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 19, COMBAT_SOUND, L_ARM);
+    AddAnimationTrigger(animName, 52, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 7, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 7, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 15, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 38, PARTICLE, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsD", 38, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsD", 43, READY_TO_FIGHT);
+    animName = preFix + "Double_Counter_2ThugsA";
+    AddStringAnimationTrigger(animName, 12, PARTICLE, R_HAND);
+    AddStringAnimationTrigger(animName, 12, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 77, PARTICLE, R_HAND);
+    AddStringAnimationTrigger(animName, 77, COMBAT_SOUND_LARGE, R_HAND);
+    AddAnimationTrigger(animName, 79, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 21, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 43, COMBAT_SOUND, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 76, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsE", 83, COMBAT_SOUND_LARGE, L_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsE", 85, READY_TO_FIGHT);
+    animName = preFix + "Double_Counter_2ThugsB";
+    AddStringAnimationTrigger(animName, 12, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 36, COMBAT_SOUND_LARGE, L_HAND);
+    AddAnimationTrigger(animName, 60, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, COMBAT_SOUND_LARGE, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsF", 26, PARTICLE, R_FOOT);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsF", 60, READY_TO_FIGHT);
+    animName = preFix + "Double_Counter_2ThugsD";
+    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 7, PARTICLE, R_HAND);
+    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 38, PARTICLE, L_HAND);
+    AddStringAnimationTrigger(animName, 38, COMBAT_SOUND_LARGE, R_HAND);
+    AddAnimationTrigger(animName, 43, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsG", 23, COMBAT_SOUND_LARGE, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsG", 23, PARTICLE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsG", 25, READY_TO_FIGHT);
+    animName = preFix + "Double_Counter_2ThugsE";
+    AddStringAnimationTrigger(animName, 21, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 43, COMBAT_SOUND, L_FOOT);
+    AddStringAnimationTrigger(animName, 76, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 83, COMBAT_SOUND_LARGE, L_HAND);
+    AddAnimationTrigger(animName, 85, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 21, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 21, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 36, PARTICLE, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_2ThugsH", 36, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_2ThugsH", 65, READY_TO_FIGHT);
+    animName = preFix + "Double_Counter_2ThugsF";
+    AddStringAnimationTrigger(animName, 26, COMBAT_SOUND_LARGE, L_FOOT);
+    AddStringAnimationTrigger(animName, 26, PARTICLE, R_FOOT);
+    AddAnimationTrigger(animName, 60, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, PARTICLE, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, PARTICLE, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsB", 27, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_3ThugsB", 50, READY_TO_FIGHT);
+    animName = preFix + "Double_Counter_2ThugsG";
+    AddStringAnimationTrigger(animName, 23, COMBAT_SOUND_LARGE, L_HAND);
+    AddStringAnimationTrigger(animName, 23, PARTICLE, R_HAND);
+    AddAnimationTrigger(animName, 25, READY_TO_FIGHT);
 
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 5, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 5, PARTICLE, R_HAND);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, PARTICLE, L_FOOT);
-    AddStringAnimationTrigger(preFix + "Double_Counter_3ThugsC", 37, COMBAT_SOUND_LARGE, R_HAND);
-    AddAnimationTrigger(preFix + "Double_Counter_3ThugsC", 52, READY_TO_FIGHT);
+    animName = preFix + "Double_Counter_2ThugsH";
+    AddStringAnimationTrigger(animName, 21, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 21, PARTICLE, R_HAND);
+    AddStringAnimationTrigger(animName, 36, PARTICLE, L_HAND);
+    AddStringAnimationTrigger(animName, 36, COMBAT_SOUND_LARGE, R_HAND);
+    AddAnimationTrigger(animName, 65, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_3ThugsB";
+    AddStringAnimationTrigger(animName, 27, PARTICLE, L_FOOT);
+    AddStringAnimationTrigger(animName, 27, PARTICLE, R_FOOT);
+    AddStringAnimationTrigger(animName, 27, COMBAT_SOUND_LARGE, R_HAND);
+    AddAnimationTrigger(animName, 50, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_3ThugsC";
+    AddStringAnimationTrigger(animName, 5, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 5, PARTICLE, R_HAND);
+    AddStringAnimationTrigger(animName, 37, PARTICLE, L_FOOT);
+    AddStringAnimationTrigger(animName, 37, COMBAT_SOUND_LARGE, R_HAND);
+    AddAnimationTrigger(animName, 52, READY_TO_FIGHT);
 }
 
 void AddBruceAnimationTriggers()
@@ -630,7 +704,7 @@ void AddBruceAnimationTriggers()
     AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
 
-    preFix = "BW_Movement/";
+    preFix = BRUCE_MOVEMENT_GROUP;
     AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);
     AddStringAnimationTrigger(preFix + "Walk_Forward", 24, FOOT_STEP, L_FOOT);
     AddStringAnimationTrigger(preFix + "Turn_Right_90", 11, FOOT_STEP, R_FOOT);

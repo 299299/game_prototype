@@ -537,12 +537,14 @@ class PlayerCounterState : CharacterCounterState
             cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
 
         CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
-        @currentMotion = tripleCounterMotions[i];
-        Motion@ m1 = s.tripleCounterMotions[i * 3 + 0];
+        Array<Motion@>@ motions = tripleMotions;
+        Array<Motion@>@ enemy_motions = s.tripleMotions;
+        @currentMotion = motions[i];
+        Motion@ m1 = enemy_motions[i * 3 + 0];
         ChooseBestIndices(m1, 0);
-        Motion@ m2 = s.tripleCounterMotions[i * 3 + 1];
+        Motion@ m2 = enemy_motions[i * 3 + 1];
         ChooseBestIndices(m2, 1);
-        Motion@ m3 = s.tripleCounterMotions[i * 3 + 2];
+        Motion@ m3 = enemy_motions[i * 3 + 2];
         ChooseBestIndices(m3, 2);
         return GetValidNumOfCounterEnemy();
     }
@@ -553,10 +555,12 @@ class PlayerCounterState : CharacterCounterState
             cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
 
         CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
-        @currentMotion = doubleCounterMotions[i];
-        Motion@ m1 = s.doubleCounterMotions[i * 2 + 0];
+        Array<Motion@>@ motions = doubleMotions;
+        Array<Motion@>@ enemy_motions = s.doubleMotions;
+        @currentMotion = motions[i];
+        Motion@ m1 = enemy_motions[i * 2 + 0];
         ChooseBestIndices(m1, 0);
-        Motion@ m2 = s.doubleCounterMotions[i * 2 + 1];
+        Motion@ m2 = enemy_motions[i * 2 + 1];
         ChooseBestIndices(m2, 1);
         return GetValidNumOfCounterEnemy();
     }
@@ -588,7 +592,8 @@ class PlayerCounterState : CharacterCounterState
 
             if (counterEnemies.length == 3)
             {
-                for (uint i=0; i<tripleCounterMotions.length; ++i)
+                Array<Motion@>@ motions = tripleMotions;
+                for (uint i=0; i<motions.length; ++i)
                 {
                     if (TestTrippleCounterMotions(i) == 3)
                         break;
@@ -610,7 +615,8 @@ class PlayerCounterState : CharacterCounterState
 
             if (counterEnemies.length == 2)
             {
-                for (uint i=0; i<doubleCounterMotions.length; ++i)
+                Array<Motion@>@ motions = doubleMotions;
+                for (uint i=0; i<motions.length; ++i)
                 {
                     if (TestDoubleCounterMotions(i) == 2)
                         break;

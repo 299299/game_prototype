@@ -648,7 +648,7 @@ void Global_AddAnimation(const String&in name)
     gMotionMgr.AddAnimation(name);
 }
 
-void Global_CreateMotion_InFolder(const String&in folder)
+void Global_CreateMotion_InFolder(const String&in folder, const String&in preFixToIgnore = "", Array<Motion@>@ motions = null)
 {
     String searchFolder = "MyData/Animations/" + folder;
     if (GetPlatform() == "Android")
@@ -658,5 +658,14 @@ void Global_CreateMotion_InFolder(const String&in folder)
     Array<String> animations = fileSystem.ScanDir(searchFolder, "*.ani", SCAN_FILES, false);
     LogPrint("Global_CreateMotion_InFolder folder=" + searchFolder + " animations.size=" + animations.length);
     for (uint i=0; i<animations.length; ++i)
-        Global_CreateMotion(folder + FileNameToMotionName(animations[i]));
+    {
+        if (!preFixToIgnore.empty)
+        {
+            if (animations[i].StartsWith(preFixToIgnore))
+                continue;
+        }
+        Motion@ m = Global_CreateMotion(folder + FileNameToMotionName(animations[i]));
+        if (motions !is null)
+            motions.Push(m);
+    }
 }
