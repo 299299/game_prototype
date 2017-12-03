@@ -1286,7 +1286,7 @@ class Character : GameObject
         if (t is target)
             return;
         @target = t;
-        // LogPrint(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
+        LogPrint(GetName() + " SetTarget=" + ((t !is null) ? t.GetName() : "null"));
     }
 
     void SetPhysics(bool b)

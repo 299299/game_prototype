@@ -709,12 +709,14 @@ class PlayerCounterState : CharacterCounterState
                     Motion@ baseMotion = eCounterMotions[i];
                     Vector4 v4 = GetTargetTransform(eNode, alignMotion, baseMotion);
                     Vector3 v3 = Vector3(v4.x, myPos.y, v4.z);
+                    // gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
                     float distSQR = (v3 - myPos).lengthSquared;
                     if (distSQR < bestDistSQR)
                     {
                         bestDistSQR = distSQR;
                         bestIndex = int(i);
                     }
+                    // Print("distSQR=" + distSQR + " maxDistSQR=" + maxDistSQR);
                     if (distSQR > maxDistSQR)
                         continue;
                     gIntCache.Push(i);
@@ -764,10 +766,11 @@ class PlayerCounterState : CharacterCounterState
             }
         }
 
-        //if (counterEnemies.length > 1)
-        //    ownner.GetScene().updateEnabled = false;
-
-        ownner.GetScene().timeScale= 0.1f;
+        if (counterEnemies.length > 1)
+        {
+            //ownner.GetScene().updateEnabled = false;
+            ownner.GetScene().timeScale= 0.1f;
+        }
 
         LogPrint("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));
         CharacterState::Enter(lastState);
@@ -777,9 +780,9 @@ class PlayerCounterState : CharacterCounterState
     {
         LogPrint("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
-        ownner.SetTarget(null);
         if (nextState !is this && nextState.nameHash != ALIGN_STATE)
             counterEnemies.Clear();
+        ownner.GetScene().timeScale= 1.0f;
     }
 
     void StartAnimating()

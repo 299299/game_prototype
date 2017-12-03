@@ -70,7 +70,7 @@ bool instant_collision = true;
 bool player_walk = false;
 bool locomotion_turn = true;
 bool attack_choose_closest_one = true;
-bool counter_choose_closest_one = true;
+bool counter_choose_closest_one = false;
 
 const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
 const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);
