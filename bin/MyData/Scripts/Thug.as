@@ -402,7 +402,7 @@ class ThugCounterState : CharacterCounterState
     {
         super(c);
         flags = FLAGS_NO_MOVE;
-        alignTime = 0.5f;
+        alignTime = 0.3f;
 
         @frontArmMotions = thug_counter_arm_front_motions;
         @backArmMotions = thug_counter_arm_back_motions;
