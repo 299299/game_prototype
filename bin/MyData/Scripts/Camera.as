@@ -463,7 +463,7 @@ class ShakeCameraController : CameraController
 
     void ShakeCamera(float amount, float duration)
     {
-        Print("ShakeCamera amount=" + amount + " duration=" + duration);
+        LogPrint("ShakeCamera amount=" + amount + " duration=" + duration);
         shakeAmount += amount;//Add to the current amount.
         startAmount = shakeAmount;//Reset the start amount, to determine percentage.
         shakeDuration += duration;//Add to the current time.

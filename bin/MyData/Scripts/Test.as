@@ -63,13 +63,14 @@ int freeze_ai = 0;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
+Array<int> gIntCache2;
 
 bool mobile = false;
 bool one_shot_kill = false;
 bool instant_collision = true;
 bool player_walk = false;
 bool locomotion_turn = true;
-bool attack_choose_closest_one = true;
+bool attack_choose_closest_one = false;
 bool counter_choose_closest_one = false;
 
 const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);

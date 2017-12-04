@@ -153,14 +153,14 @@ class CharacterState : State
         if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
 
-        float amount = Random(2.5f, 7.5f);
-        float duration = Random(0.25f, 0.75f);
+        float amount = Random(2.5f, 5.0f);
+        float duration = Random(0.1f, 0.75f);
         VariantMap data;
         data[NAME] = CHANGE_STATE;
         data[DURATION] = duration;
         data[STATE] = StringHash("Shake");
         data[VALUE] = amount;
-        SendEvent("CameraEvent", data);
+        // SendEvent("CameraEvent", data);
     }
 
     void OnCombatParticle(const String& boneName, const String& particleName)
@@ -585,8 +585,7 @@ class AnimationTestState : CharacterState
 
 enum CounterSubState
 {
-    COUNTER_NONE,
-    COUNTER_WAITING,
+    COUNTER_ALIGN,
     COUNTER_ANIMATING,
 };
 
@@ -626,23 +625,6 @@ class CharacterCounterState : CharacterState
         @tripleMotions = null;
     }
 
-    void Enter(State@ lastState)
-    {
-        if (lastState.nameHash != ALIGN_STATE)
-            state = COUNTER_NONE;
-        CharacterState::Enter(lastState);
-    }
-
-    void Exit(State@ nextState)
-    {
-        CharacterState::Exit(nextState);
-        if (nextState.nameHash != ALIGN_STATE)
-        {
-            @currentMotion = null;
-            state = COUNTER_NONE;
-        }
-    }
-
     void StartCounterMotion()
     {
         if (currentMotion is null)
@@ -650,6 +632,22 @@ class CharacterCounterState : CharacterState
         LogPrint(ownner.GetName() + " start counter motion " + currentMotion.animationName);
         ChangeSubState(COUNTER_ANIMATING);
         currentMotion.Start(ownner);
+    }
+
+    void StartAligning()
+    {
+        if (currentMotion is null)
+            return;
+        LogPrint(ownner.GetName() + " start align " + currentMotion.animationName);
+        ChangeSubState(COUNTER_ALIGN);
+        currentMotion.Start(ownner);
+
+        Vector3 diff = targetPosition - ownner.GetNode().worldPosition;
+        diff.y = 0;
+        movePerSec = diff / alignTime;
+
+        float angleDiff = AngleDiff(targetRotation - ownner.GetCharacterAngle());
+        yawPerSec = angleDiff / alignTime;
     }
 
     int GetCounterDirection(int attackType, bool isBack)
@@ -682,14 +680,22 @@ class CharacterCounterState : CharacterState
 
     void Update(float dt)
     {
-        if (state == COUNTER_ANIMATING)
+        ownner.motion_velocity = (state == COUNTER_ALIGN) ? movePerSec : Vector3(0, 0, 0);
+        if (state == COUNTER_ALIGN)
         {
-             if (currentMotion.Move(ownner, dt) == 1)
-             {
-                ownner.CommonStateFinishedOnGroud();
-                return;
-             }
+            ownner.motion_deltaRotation += yawPerSec * dt;
+            if (timeInState >= alignTime)
+            {
+                ChangeSubState(COUNTER_ANIMATING);
+                // ownner.GetScene().updateEnabled =false;
+            }
         }
+
+        if (currentMotion.Move(ownner, dt) == 1)
+         {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+         }
         CharacterState::Update(dt);
     }
 
@@ -720,16 +726,18 @@ class CharacterCounterState : CharacterState
         targetRotation = rot;
     }
 
-    void StartAligning()
-    {
-        CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
-        state.Start(this.name, targetPosition, targetRotation, alignTime, ownner.walkAlignAnimation);
-        ownner.ChangeStateQueue(ALIGN_STATE);
-    }
-
     String GetDebugText()
     {
         return CharacterState::GetDebugText() + " current motion=" + currentMotion.animationName;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        if (state == COUNTER_ALIGN)
+        {
+            DebugDrawDirection(debug, targetPosition, targetRotation, RED, 2.0f);
+            AddDebugMark(debug, targetPosition, TARGET_COLOR);
+        }
     }
 };
 

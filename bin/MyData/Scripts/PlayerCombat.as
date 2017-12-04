@@ -455,28 +455,6 @@ class PlayerCounterState : CharacterCounterState
         super(c);
     }
 
-    void Update(float dt)
-    {
-        if (counterEnemies.empty || currentMotion is null)
-        {
-            ownner.CommonStateFinishedOnGroud(); // Something Error Happened
-            return;
-        }
-        if (state == COUNTER_WAITING)
-        {
-            uint n =0;
-            for (uint i=0; i<counterEnemies.length; ++i)
-            {
-                if (counterEnemies[i].GetState().nameHash == this.nameHash)
-                    n ++;
-            }
-
-            if (n == counterEnemies.length)
-                StartAnimating();
-        }
-        CharacterCounterState::Update(dt);
-    }
-
     float ChooseBestIndices(Motion@ alignMotion, int index)
     {
         Vector4 v4 = GetTargetTransform(ownner.GetNode(), alignMotion, currentMotion);
@@ -519,19 +497,6 @@ class PlayerCounterState : CharacterCounterState
         return minDistSQR;
     }
 
-    int GetValidNumOfCounterEnemy()
-    {
-        int num = 0;
-        for (uint i=0; i<counterEnemies.length; ++i)
-        {
-            Enemy@ e = counterEnemies[i];
-            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-            if (s.index >= 0)
-                num ++;
-        }
-        return num;
-    }
-
     float TestTrippleCounterMotions(int i)
     {
         for (uint k=0; k<counterEnemies.length; ++k)
@@ -571,202 +536,233 @@ class PlayerCounterState : CharacterCounterState
         LogPrint("############# PlayerCounterState::Enter ##################");
         uint t = time.systemTime;
 
-        if (lastState.nameHash == ALIGN_STATE)
+        LogPrint("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
+        type = counterEnemies.length;
+
+        // POST_PROCESS
+        for (int i=0; i<type; ++i)
         {
+            Enemy@ e = counterEnemies[i];
+            e.ChangeState("CounterState");
+            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+            s.index = -1;
+            s.type = type;
+        }
+
+        if (counterEnemies.length == 3)
+        {
+            Array<Motion@>@ motions = tripleMotions;
+            float min_error_sqr = 9999;
+            int s1 = -1, s2 = -1, s3 = -1;
+            int bestIndex = -1;
+            Enemy@ e1 = counterEnemies[0];
+            Enemy@ e2 = counterEnemies[1];
+            Enemy@ e3 = counterEnemies[2];
+
+            for (uint i=0; i<motions.length; ++i)
+            {
+                float error_sum_sqr = TestTrippleCounterMotions(i);
+                if (error_sum_sqr < min_error_sqr)
+                {
+                    s1 = cast<CharacterCounterState>(e1.GetState()).index;
+                    s2 = cast<CharacterCounterState>(e2.GetState()).index;
+                    s3 = cast<CharacterCounterState>(e3.GetState()).index;
+                    min_error_sqr = error_sum_sqr;
+                    bestIndex = i;
+                }
+            }
+
+            if (s1 < 0)
+            {
+                e1.CommonStateFinishedOnGroud();
+                counterEnemies.Erase(0);
+            }
+            if (s2 < 0)
+            {
+                e2.CommonStateFinishedOnGroud();
+                counterEnemies.Erase(1);
+            }
+            if (s3 < 0 && counterEnemies.length > 1)
+            {
+                e3.CommonStateFinishedOnGroud();
+                counterEnemies.Erase(2);
+            }
+
+            if (bestIndex >= 0 && counterEnemies.length == 3)
+            {
+                TestTrippleCounterMotions(bestIndex);
+            }
+
             StartAnimating();
         }
-        else
+
+        if (counterEnemies.length == 2)
         {
-            LogPrint("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
-            type = counterEnemies.length;
+            Array<Motion@>@ motions = doubleMotions;
+            float min_error_sqr = 9999;
+            int s1 = -1, s2 = -2;
+            int bestIndex = -1;
+            Enemy@ e1 = counterEnemies[0];
+            Enemy@ e2 = counterEnemies[1];
 
-            // POST_PROCESS
-            for (int i=0; i<type; ++i)
+            for (uint i=0; i<motions.length; ++i)
             {
-                Enemy@ e = counterEnemies[i];
-                e.ChangeState("CounterState");
-                CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-                s.index = -1;
-                s.type = type;
-                s.ChangeSubState(COUNTER_NONE);
+                float error_sum_sqr = TestDoubleCounterMotions(i);
+                if (error_sum_sqr < min_error_sqr)
+                {
+                    s1 = cast<CharacterCounterState>(e1.GetState()).index;
+                    s2 = cast<CharacterCounterState>(e2.GetState()).index;
+                    min_error_sqr = error_sum_sqr;
+                    bestIndex = i;
+                }
             }
 
-            if (counterEnemies.length == 3)
+            if (s1 < 0)
             {
-                Array<Motion@>@ motions = tripleMotions;
-                float min_error_sqr = 9999;
-                int s1 = -1, s2 = -1, s3 = -1;
-                int bestIndex = -1;
-                Enemy@ e1 = counterEnemies[0];
-                Enemy@ e2 = counterEnemies[1];
-                Enemy@ e3 = counterEnemies[2];
-
-                for (uint i=0; i<motions.length; ++i)
-                {
-                    float error_sum_sqr = TestTrippleCounterMotions(i);
-                    if (error_sum_sqr < min_error_sqr)
-                    {
-                        s1 = cast<CharacterCounterState>(e1.GetState()).index;
-                        s2 = cast<CharacterCounterState>(e2.GetState()).index;
-                        s3 = cast<CharacterCounterState>(e3.GetState()).index;
-                        min_error_sqr = error_sum_sqr;
-                        bestIndex = i;
-                    }
-                }
-
-                if (s1 < 0)
-                {
-                    e1.CommonStateFinishedOnGroud();
-                    counterEnemies.Erase(0);
-                }
-                if (s2 < 0)
-                {
-                    e2.CommonStateFinishedOnGroud();
-                    counterEnemies.Erase(1);
-                }
-                if (s3 < 0 && counterEnemies.length > 1)
-                {
-                    e3.CommonStateFinishedOnGroud();
-                    counterEnemies.Erase(2);
-                }
-
-                if (bestIndex >= 0 && counterEnemies.length == 3)
-                {
-                    TestTrippleCounterMotions(bestIndex);
-                }
-
-                ChangeSubState(COUNTER_WAITING);
+                e1.CommonStateFinishedOnGroud();
+                counterEnemies.Erase(0);
+            }
+            if (s2 < 0 && counterEnemies.length > 1)
+            {
+                e2.CommonStateFinishedOnGroud();
+                counterEnemies.Erase(1);
             }
 
-            if (counterEnemies.length == 2)
+            if (bestIndex >= 0 && counterEnemies.length == 2)
             {
-                Array<Motion@>@ motions = doubleMotions;
-                float min_error_sqr = 9999;
-                int s1 = -1, s2 = -2;
-                int bestIndex = -1;
-                Enemy@ e1 = counterEnemies[0];
-                Enemy@ e2 = counterEnemies[1];
-
-                for (uint i=0; i<motions.length; ++i)
-                {
-                    float error_sum_sqr = TestDoubleCounterMotions(i);
-                    if (error_sum_sqr < min_error_sqr)
-                    {
-                        s1 = cast<CharacterCounterState>(e1.GetState()).index;
-                        s2 = cast<CharacterCounterState>(e2.GetState()).index;
-                        min_error_sqr = error_sum_sqr;
-                        bestIndex = i;
-                    }
-                }
-
-                if (s1 < 0)
-                {
-                    e1.CommonStateFinishedOnGroud();
-                    counterEnemies.Erase(0);
-                }
-                if (s2 < 0 && counterEnemies.length > 1)
-                {
-                    e2.CommonStateFinishedOnGroud();
-                    counterEnemies.Erase(1);
-                }
-
-                if (bestIndex >= 0 && counterEnemies.length == 2)
-                {
-                    TestDoubleCounterMotions(bestIndex);
-                }
-
-                ChangeSubState(COUNTER_WAITING);
+                TestDoubleCounterMotions(bestIndex);
             }
 
-            if (counterEnemies.length == 1)
+            StartAnimating();
+        }
+
+        if (counterEnemies.length == 1)
+        {
+            bool alignPlayer = true;
+            Node@ myNode = ownner.GetNode();
+            Vector3 myPos = myNode.worldPosition;
+
+            Enemy@ e = counterEnemies[0];
+            Node@ eNode = e.GetNode();
+            Vector3 ePos = eNode.worldPosition;
+            float dAngle = ownner.ComputeAngleDiff(eNode);
+            bool isBack = false;
+            if (Abs(dAngle) > 90)
+                isBack = true;
+
+            e.ChangeState("CounterState");
+            ownner.SetTarget(e);
+
+            int attackType = eNode.vars[ATTACK_TYPE].GetInt();
+            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+            Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
+            Array<Motion@>@ eCounterMotions = s.GetCounterMotions(attackType, isBack);
+
+            gIntCache.Clear();
+            gIntCache2.Clear();
+            float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
+            float bestDistSQR = 999999;
+            int bestIndex = -1;
+
+            maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
+            float bestDistSQR2 = 999999;
+            int bestIndex2 = -1;
+
+            for (uint i=0; i<counterMotions.length; ++i)
             {
-                Node@ myNode = ownner.GetNode();
-                Vector3 myPos = myNode.worldPosition;
-
-                Enemy@ e = counterEnemies[0];
-                Node@ eNode = e.GetNode();
-                float dAngle = ownner.ComputeAngleDiff(eNode);
-                bool isBack = false;
-                if (Abs(dAngle) > 90)
-                    isBack = true;
-
-                e.ChangeState("CounterState");
-                ownner.SetTarget(e);
-
-                int attackType = eNode.vars[ATTACK_TYPE].GetInt();
-                CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-                Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
-                Array<Motion@>@ eCounterMotions = s.GetCounterMotions(attackType, isBack);
-
-                gIntCache.Clear();
-                float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
-                float bestDistSQR = 999999;
-                int bestIndex = -1;
-
-                for (uint i=0; i<counterMotions.length; ++i)
+                Motion@ alignMotion = counterMotions[i];
+                Motion@ baseMotion = eCounterMotions[i];
+                Vector4 v4 = GetTargetTransform(eNode, alignMotion, baseMotion);
+                Vector3 v3 = Vector3(v4.x, myPos.y, v4.z);
+                // gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
+                float distSQR = (v3 - myPos).lengthSquared;
+                if (distSQR < bestDistSQR)
                 {
-                    Motion@ alignMotion = counterMotions[i];
-                    Motion@ baseMotion = eCounterMotions[i];
-                    Vector4 v4 = GetTargetTransform(eNode, alignMotion, baseMotion);
-                    Vector3 v3 = Vector3(v4.x, myPos.y, v4.z);
-                    // gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
-                    float distSQR = (v3 - myPos).lengthSquared;
-                    if (distSQR < bestDistSQR)
-                    {
-                        bestDistSQR = distSQR;
-                        bestIndex = int(i);
-                    }
-                    // Print("distSQR=" + distSQR + " maxDistSQR=" + maxDistSQR);
-                    if (distSQR > maxDistSQR)
-                        continue;
-                    gIntCache.Push(i);
+                    bestDistSQR = distSQR;
+                    bestIndex = int(i);
                 }
+                // Print("distSQR=" + distSQR + " maxDistSQR=" + maxDistSQR);
+                if (distSQR > maxDistSQR)
+                    continue;
+                gIntCache.Push(i);
+            }
 
-                int cur_direction = GetCounterDirection(attackType, isBack);
-                int idx;
-
-                if (counter_choose_closest_one)
-                    gIntCache.Clear();
-
-                if (gIntCache.empty)
+            for (uint i=0; i<counterMotions.length; ++i)
+            {
+                Motion@ alignMotion = eCounterMotions[i];
+                Motion@ baseMotion = counterMotions[i];
+                Vector4 v4 = GetTargetTransform(myNode, alignMotion, baseMotion);
+                Vector3 v3 = Vector3(v4.x, ePos.y, v4.z);
+                // gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
+                float distSQR = (v3 - ePos).lengthSquared;
+                if (distSQR < bestDistSQR2)
                 {
-                    idx = bestIndex;
+                    bestDistSQR2 = distSQR;
+                    bestIndex2 = int(i);
                 }
-                else
-                {
-                    int k = RandomInt(gIntCache.length);
-                    idx = gIntCache[k];
-                    if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
-                    {
-                        k = (k + 1) % gIntCache.length;
-                        idx = gIntCache[k];
-                    }
-                }
+                // Print("distSQR=" + distSQR + " maxDistSQR=" + maxDistSQR);
+                if (distSQR > maxDistSQR)
+                    continue;
+                gIntCache2.Push(i);
+            }
 
-                lastCounterDirection = cur_direction;
-                lastCounterIndex = idx;
+            int cur_direction = GetCounterDirection(attackType, isBack);
+            int idx;
+            LogPrint("COUNTER bestDistSQR=" + bestDistSQR + " bestDistSQR2=" + bestDistSQR2);
 
-                @currentMotion = counterMotions[idx];
-                @s.currentMotion = eCounterMotions[idx];
-                LogPrint("Counter-align angle-diff=" + dAngle + " isBack=" + isBack + " name:" + currentMotion.animationName + " gIntCache.length=" + gIntCache.length);
+            if (bestDistSQR > maxDistSQR && bestDistSQR2 <= maxDistSQR)
+            {
+                bestIndex = bestIndex2;
+                alignPlayer = false;
+            }
 
-                s.ChangeSubState(COUNTER_WAITING);
-
-                Vector4 vt = GetTargetTransform(eNode, currentMotion, s.currentMotion);
-                SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
-                // StartAligning();
+            if (counter_choose_closest_one || gIntCache.empty)
+            {
+                idx = bestIndex;
             }
             else
             {
-                for (uint i=0; i<counterEnemies.length; ++i)
+                int k = RandomInt(gIntCache.length);
+                idx = gIntCache[k];
+                if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
                 {
-                    CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
-                    // s.StartAligning();
+                    k = (k + 1) % gIntCache.length;
+                    idx = gIntCache[k];
                 }
             }
-        }
 
-        StartAnimating();
+            lastCounterDirection = cur_direction;
+            lastCounterIndex = idx;
+
+            @currentMotion = counterMotions[idx];
+            @s.currentMotion = eCounterMotions[idx];
+            LogPrint("COUNTER angle-diff=" + dAngle + " isBack=" + isBack + " name:" +
+                currentMotion.animationName + " alignPlayer=" + alignPlayer);
+
+            if (alignPlayer)
+            {
+                s.StartCounterMotion();
+                Vector4 vt = GetTargetTransform(eNode, currentMotion, s.currentMotion);
+                SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
+                StartAligning();
+            }
+            else
+            {
+                StartCounterMotion();
+                Vector4 vt = GetTargetTransform(myNode, s.currentMotion, currentMotion);
+                s.SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
+                s.StartAligning();
+            }
+
+        }
+        else
+        {
+            for (uint i=0; i<counterEnemies.length; ++i)
+            {
+                CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
+                s.StartAligning();
+            }
+        }
 
         if (counterEnemies.length > 1)
         {
@@ -782,26 +778,20 @@ class PlayerCounterState : CharacterCounterState
     {
         LogPrint("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
-        if (nextState !is this && nextState.nameHash != ALIGN_STATE)
-            counterEnemies.Clear();
+        counterEnemies.Clear();
         ownner.GetScene().timeScale= 1.0f;
     }
 
     void StartAnimating()
     {
         StartCounterMotion();
+        gCameraMgr.CheckCameraAnimation(currentMotion.name);
         for (uint i=0; i<counterEnemies.length; ++i)
         {
             State@ state = counterEnemies[i].GetState();
             CharacterCounterState@ s = cast<CharacterCounterState>(state);
-            s.StartCounterMotion();
+            s.StartAligning();
         }
-    }
-
-    void StartCounterMotion()
-    {
-        CharacterCounterState::StartCounterMotion();
-        gCameraMgr.CheckCameraAnimation(currentMotion.name);
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)

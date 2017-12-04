@@ -328,17 +328,17 @@ void CreateBruceMotions()
     String preFix = BRUCE_MOVEMENT_GROUP;
     Global_AddAnimation(preFix + "Stand_Idle");
     Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 28);
+    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 28);
 
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_R, kMotion_R, 16);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_R, kMotion_R, 25);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_R, kMotion_R, 14);
+    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_Turn, kMotion_R, 16);
+    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_Turn, kMotion_R, 25);
+    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_Turn, kMotion_R, 14);
     Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
 
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_XZR, kMotion_ZR, 21);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_XZR, kMotion_ZR, 25);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_XZR, kMotion_ZR, 18);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_XZR, kMotion_ZR, 25);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_Turn, kMotion_ZR, 21);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_Turn, kMotion_ZR, 25);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_Turn, kMotion_ZR, 18);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 25);
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");

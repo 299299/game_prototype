@@ -378,8 +378,10 @@ class Motion
             if (object.motion_translateEnabled)
             {
                 object.motion_deltaPosition += object.motion_velocity * dt;
-                // Vector3 tWorld = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
-                Vector3 tWorld = Quaternion(0, object.motion_startRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+                float yaw = object.motion_startRotation;
+                if (motionFlag & kMotion_Ext_Translate_Ignore_Delta_Rotation == 0)
+                    yaw += object.motion_deltaRotation;
+                Vector3 tWorld = Quaternion(0, yaw, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
                 object.MoveTo(tWorld, dt);
             }
 
@@ -563,7 +565,12 @@ class MotionManager
     {
     }
 
-    Motion@ CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_XZR,  int endFrame = -1, bool loop = false, float rotateAngle = 361)
+    Motion@ CreateMotion(const String&in name,
+        int motionFlag = kMotion_XZR,
+        int allowMotion = kMotion_XZR,
+        int endFrame = -1,
+        bool loop = false,
+        float rotateAngle = 361)
     {
         Motion@ motion = Motion();
         motion.SetName(name);

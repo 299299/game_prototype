@@ -17,6 +17,8 @@ enum RootMotionFlag
     kMotion_Ext_Adjust_Y = (1 << 6),
     kMotion_Ext_Foot_Based_Height = (1 << 7),
 
+    kMotion_Ext_Translate_Ignore_Delta_Rotation = (1 << 8),
+
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_YZR = kMotion_Y | kMotion_Z | kMotion_R,
     kMotion_XYR = kMotion_X | kMotion_Y | kMotion_R,
@@ -28,6 +30,7 @@ enum RootMotionFlag
     kMotion_YZ  = kMotion_Y | kMotion_Z,
     kMotion_XYZ = kMotion_XZ | kMotion_Y,
     kMotion_ALL = kMotion_XZR | kMotion_Y,
+    kMotion_Turn = kMotion_XZR | kMotion_Ext_Translate_Ignore_Delta_Rotation,
 };
 
 bool d_log = false;
