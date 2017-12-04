@@ -421,7 +421,7 @@ class Player : Character
             VariantMap data;
             data[NODE] = target.GetNode().id;
             data[NAME] = CHANGE_STATE;
-            data[VALUE] = StringHash("Death");
+            data[STATE] = StringHash("Death");
             SendEvent("CameraEvent", data);
             return true;
         }

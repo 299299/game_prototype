@@ -176,6 +176,17 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         data[TARGET_FOV] = 60;
         SendEvent("CameraEvent", data);
     }
+    else if (key == KEY_9)
+    {
+        float amount = Random(10.0f);
+        float duration = Random(1.0f);
+        VariantMap data;
+        data[NAME] = CHANGE_STATE;
+        data[DURATION] = duration;
+        data[STATE] = StringHash("Shake");
+        data[VALUE] = amount;
+        SendEvent("CameraEvent", data);
+    }
     else if (key == KEY_R)
     {
         if (scene_ !is null)

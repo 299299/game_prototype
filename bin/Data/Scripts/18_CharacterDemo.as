@@ -41,7 +41,7 @@ void Start()
     CreateInstructions();
 
     // Set the mouse mode to use in the sample
-    // SampleInitMouseMode(MM_RELATIVE);
+    SampleInitMouseMode(MM_RELATIVE);
 
     // Subscribe to necessary events
     SubscribeToEvents();

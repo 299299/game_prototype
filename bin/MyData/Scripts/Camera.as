@@ -277,10 +277,6 @@ class AnimationCameraController : CameraController
 
     void Update(float dt)
     {
-        Player@ p = GetPlayer();
-        if (p is null)
-            return;
-
         Node@ _node = script.defaultScene.GetNode(nodeId);
         Node@ n = _node.GetChild("Camera_ROOT", true);
         Vector3 v = GetTarget();
@@ -415,6 +411,71 @@ class ThirdPersonCameraController : CameraController
     }
 };
 
+class ShakeCameraController : CameraController
+{
+    float shakeAmount;
+    float shakeDuration;
+
+    float startAmount;//The initial shake amount (to determine percentage), set when ShakeCamera is called.
+    float startDuration;//The initial shake duration, set when ShakeCamera is called.
+
+    bool smooth = true;//Smooth rotation?
+    float smoothAmount = 5.0f;//Amount to smooth
+
+    float baseX = 0.0f;
+    float baseY = 0.0f;
+
+    ShakeCameraController(Node@ n, const String&in name)
+    {
+        super(n, name);
+    }
+
+    void Enter()
+    {
+        Vector3 r = cameraNode.rotation.eulerAngles;
+        baseX = r.x;
+        baseY = r.y;
+    }
+
+    void Update(float dt)
+    {
+        int angle = RandomInt(360);
+        float x = Cos(angle) * shakeAmount;
+        float y = Sin(angle) * shakeAmount;
+
+        //A percentage (0-1) representing the amount of shake to be applied when setting rotation.
+        float shakePercentage = shakeDuration / startDuration;//Used to set the amount of shake (% * startAmount).
+        shakeAmount = startAmount * shakePercentage;//Set the amount of shake (% * startAmount).
+        shakeDuration -= dt;//Lerp the time, so it is less and tapers off towards the end.
+        // Print("shakePercentage=" + shakePercentage + " shakeDuration=" + shakeDuration);
+
+        Quaternion targetR(baseX + x, baseY + y, 0);
+        if(smooth)
+            cameraNode.rotation = cameraNode.rotation.Slerp(targetR, dt * smoothAmount);
+        else
+            cameraNode.rotation = targetR;
+
+        if (shakeDuration <= 0.01f)
+        {
+            gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
+        }
+    }
+
+    void ShakeCamera(float amount, float duration)
+    {
+        Print("ShakeCamera amount=" + amount + " duration=" + duration);
+        shakeAmount += amount;//Add to the current amount.
+        startAmount = shakeAmount;//Reset the start amount, to determine percentage.
+        shakeDuration += duration;//Add to the current time.
+        startDuration = shakeDuration;//Reset the start time.
+    }
+
+    void OnCameraEvent(VariantMap& eventData)
+    {
+        ShakeCamera(eventData[VALUE].GetFloat(), eventData[DURATION].GetFloat());
+    }
+};
+
 class CameraManager
 {
     Array<CameraController@>    cameraControllers;
@@ -461,6 +522,7 @@ class CameraManager
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
         cameraControllers.Push(LookAtCameraController(n, "LookAt"));
         cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
+        cameraControllers.Push(ShakeCameraController(n, "Shake"));
 
         /*
         cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));
@@ -531,7 +593,7 @@ class CameraManager
     {
         StringHash name = eventData[NAME].GetStringHash();
         if (name == CHANGE_STATE)
-            SetCameraController(eventData[VALUE].GetStringHash());
+            SetCameraController(eventData[STATE].GetStringHash());
 
         if (currentController !is null)
             currentController.OnCameraEvent(eventData);
@@ -559,7 +621,7 @@ class CameraManager
         String camAnim = GetAnimationName("BM_Combat_Cameras/" + name);
         VariantMap eventData;
         eventData[NAME] = CHANGE_STATE;
-        eventData[VALUE] = StringHash("Animation");
+        eventData[STATE] = StringHash("Animation");
         eventData[ANIMATION] = camAnim;
         LogPrint("camAnim=" + camAnim);
 

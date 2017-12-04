@@ -1244,8 +1244,6 @@ void PickResource(StringHash eventType, VariantMap& eventData)
 
 void PickResourceDone(StringHash eventType, VariantMap& eventData)
 {
-    Print("PickResourceDone");
-
     StoreResourcePickerPath();
     CloseFileSelector();
 
@@ -1327,9 +1325,6 @@ void StoreResourcePickerPath()
 
 Resource@ GetPickedResource(String resourceName)
 {
-    // @FIX by golden
-    // sometimes fileName comes "~/...././Data/.." we should remove ./
-    resourceName.Replace("./", "");
     resourceName = GetResourceNameFromFullName(resourceName);
     String type = resourcePicker.typeName;
     // Cube and 3D textures both use .xml extension. In that case interrogate the proper resource type
@@ -1360,7 +1355,6 @@ String GetResourceNameFromFullName(const String&in resourceName)
 
     for (uint i = 0; i < resourceDirs.length; ++i)
     {
-        Print(resourceDirs[i]);
         if (!resourceName.ToLower().StartsWith(resourceDirs[i].ToLower()))
             continue;
         return resourceName.Substring(resourceDirs[i].length);
