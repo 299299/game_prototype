@@ -754,22 +754,24 @@ class PlayerCounterState : CharacterCounterState
 
                 Vector4 vt = GetTargetTransform(eNode, currentMotion, s.currentMotion);
                 SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
-                StartAligning();
+                // StartAligning();
             }
             else
             {
                 for (uint i=0; i<counterEnemies.length; ++i)
                 {
                     CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[i].GetState());
-                    s.StartAligning();
+                    // s.StartAligning();
                 }
             }
         }
 
+        StartAnimating();
+
         if (counterEnemies.length > 1)
         {
             //ownner.GetScene().updateEnabled = false;
-            ownner.GetScene().timeScale= 0.1f;
+            //ownner.GetScene().timeScale= 0.1f;
         }
 
         LogPrint("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));

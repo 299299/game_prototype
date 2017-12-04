@@ -187,6 +187,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         data[VALUE] = amount;
         SendEvent("CameraEvent", data);
     }
+    else if (key == KEY_0)
+    {
+        TestAnimations_Group_2("Counter_Leg_Front_05");
+    }
     else if (key == KEY_R)
     {
         if (scene_ !is null)
@@ -386,7 +390,7 @@ void TestAnimations_Group_Beat()
     TestAnimation_Group_s(playerAnim, thugAnim, base_on_player);
 }
 
-void TestAnimations_Group_2()
+void TestAnimations_Group_2(const String& counterName = "")
 {
     Player@ player = GetPlayer();
     EnemyManager@ em = GetEnemyMgr();
@@ -397,30 +401,38 @@ void TestAnimations_Group_2()
     CharacterCounterState@ s1 = cast<CharacterCounterState>(player.FindState("CounterState"));
     CharacterCounterState@ s2 = cast<CharacterCounterState>(e.FindState("CounterState"));
     Motion@ m1, m2;
-    int i = RandomInt(4);
-    if (i == 0)
+    if (counterName.empty)
     {
-        int k = RandomInt(s1.frontArmMotions.length);
-        @m1 = s1.frontArmMotions[k];
-        @m2 = s2.frontArmMotions[k];
+        int i = RandomInt(4);
+        if (i == 0)
+        {
+            int k = RandomInt(s1.frontArmMotions.length);
+            @m1 = s1.frontArmMotions[k];
+            @m2 = s2.frontArmMotions[k];
+        }
+        else if (i == 1)
+        {
+            int k = RandomInt(s1.frontLegMotions.length);
+            @m1 = s1.frontLegMotions[k];
+            @m2 = s2.frontLegMotions[k];
+        }
+        else if (i == 2)
+        {
+            int k = RandomInt(s1.backArmMotions.length);
+            @m1 = s1.backArmMotions[k];
+            @m2 = s2.backArmMotions[k];
+        }
+        else if (i == 3)
+        {
+            int k = RandomInt(s1.backLegMotions.length);
+            @m1 = s1.backLegMotions[k];
+            @m2 = s2.backLegMotions[k];
+        }
     }
-    else if (i == 1)
+    else
     {
-        int k = RandomInt(s1.frontLegMotions.length);
-        @m1 = s1.frontLegMotions[k];
-        @m2 = s2.frontLegMotions[k];
-    }
-    else if (i == 2)
-    {
-        int k = RandomInt(s1.backArmMotions.length);
-        @m1 = s1.backArmMotions[k];
-        @m2 = s2.backArmMotions[k];
-    }
-    else if (i == 3)
-    {
-        int k = RandomInt(s1.backLegMotions.length);
-        @m1 = s1.backLegMotions[k];
-        @m2 = s2.backLegMotions[k];
+        @m1 = gMotionMgr.FindMotion("BM_TG_Counter/" + counterName);
+        @m2 = gMotionMgr.FindMotion("TG_BM_Counter/" + counterName);
     }
 
     Vector4 t = GetTargetTransform(e.GetNode(), m1, m2);
@@ -428,7 +440,7 @@ void TestAnimations_Group_2()
 
     e.TestAnimation(m2.name);
     player.TestAnimation(m1.name);
-    player.SetSceneTimeScale(0.0f);
+    player.GetScene().updateEnabled = false;
 
     LogPrint("TestAnimations_Group_2 -> " + m1.name);
 }
