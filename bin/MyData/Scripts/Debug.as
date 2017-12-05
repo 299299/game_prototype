@@ -181,7 +181,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_0)
     {
-        TestAnimations_Group_2("Counter_Arm_Front_10");
+        TestAnimations_Group_2("Counter_Leg_Back_Weak_01");
     }
     else if (key == KEY_R)
     {
