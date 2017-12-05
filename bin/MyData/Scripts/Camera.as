@@ -9,6 +9,15 @@ const StringHash TARGET_CONTROLLER("TargetController");
 const StringHash TARGET_FOV("TargetFOV");
 
 const float BASE_FOV = 45.0f;
+const float SHAKE_MAX_ANGLE = 10.0f;
+
+float DampingCurve(float x, float dampingPercent)
+{
+    x = Clamp(x, 0.0f, 1.0f);
+    float a = Lerp(2, .25f, dampingPercent);
+    float b = 1 - Pow(x, a);
+    return b * b * b;
+}
 
 class CameraController
 {
@@ -382,6 +391,18 @@ class ThirdPersonCameraController : CameraController
     float   yaw = 0;
     Vector3 targetOffset = Vector3(0, 2.5, 0);
 
+    bool shaking = false;
+    // How long the object should shake for.
+    float shakeDuration = 0.0f;
+
+    // Amplitude of the shake. A larger value shakes the camera harder.
+    float shakeAmount = 0.7f;
+    float decreaseFactor = 1.0f;
+
+    float dampingPercent = 0.5f;
+    float completionPercent = 0.0f;
+    float originDuration = 0.0f;
+
     ThirdPersonCameraController(Node@ n, const String&in name)
     {
         super(n, name);
@@ -395,84 +416,49 @@ class ThirdPersonCameraController : CameraController
         Node@ _node = p.GetNode();
 
         Vector3 target_pos = _node.worldPosition;
-        cameraDistance += (targetCameraDistance - cameraDistance) * dt * cameraDistSpeed;
+        this.cameraDistance += (this.targetCameraDistance - this.cameraDistance) * dt * this.cameraDistSpeed;
 
-        Vector3 offset = cameraNode.worldRotation * targetOffset;
+        Vector3 offset = cameraNode.worldRotation * this.targetOffset;
         target_pos += offset;
 
         Quaternion q(pitch, yaw, 0);
-        Vector3 pos = q * Vector3(0, 0, -cameraDistance) + target_pos;
-        UpdateView(pos, target_pos, dt * cameraSpeed);
+        Vector3 pos = q * Vector3(0, 0, -this.cameraDistance) + target_pos;
+
+        if (this.shaking)
+        {
+            this.completionPercent += dt / this.originDuration;
+            float dampingFactor = DampingCurve (completionPercent, this.dampingPercent);
+            pos.y += (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor;
+            // pos.x += (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor;
+            pos.z += (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor;
+            this.shakeDuration -= dt * this.decreaseFactor;
+
+            if (this.shakeDuration <= 0.0f)
+                this.shaking = false;
+        }
+
+        UpdateView(pos, target_pos, dt * this.cameraSpeed);
+    }
+
+    void ShakeCamera(float amount, float duration)
+    {
+        LogPrint("ShakeCamera amount=" + amount + " duration=" + duration + " shaking=" + shaking);
+        this.shakeAmount = amount;
+        this.shakeDuration = duration;
+        this.shaking = true;
+        this.completionPercent = 0.0f;
+        this.originDuration = duration;
     }
 
     String GetDebugText()
     {
         return "camera fov=" + camera.fov + " position=" + cameraNode.worldPosition.ToString()  + " distance=" + cameraDistance + " targetOffset=" + targetOffset.ToString() + "\n";
     }
-};
-
-class ShakeCameraController : CameraController
-{
-    float shakeAmount;
-    float shakeDuration;
-
-    float startAmount;//The initial shake amount (to determine percentage), set when ShakeCamera is called.
-    float startDuration;//The initial shake duration, set when ShakeCamera is called.
-
-    bool smooth = true;//Smooth rotation?
-    float smoothAmount = 5.0f;//Amount to smooth
-
-    float baseX = 0.0f;
-    float baseY = 0.0f;
-
-    ShakeCameraController(Node@ n, const String&in name)
-    {
-        super(n, name);
-    }
-
-    void Enter()
-    {
-        Vector3 r = cameraNode.rotation.eulerAngles;
-        baseX = r.x;
-        baseY = r.y;
-    }
-
-    void Update(float dt)
-    {
-        int angle = RandomInt(360);
-        float x = Cos(angle) * shakeAmount;
-        float y = Sin(angle) * shakeAmount;
-
-        //A percentage (0-1) representing the amount of shake to be applied when setting rotation.
-        float shakePercentage = shakeDuration / startDuration;//Used to set the amount of shake (% * startAmount).
-        shakeAmount = startAmount * shakePercentage;//Set the amount of shake (% * startAmount).
-        shakeDuration -= dt;//Lerp the time, so it is less and tapers off towards the end.
-        // Print("shakePercentage=" + shakePercentage + " shakeDuration=" + shakeDuration);
-
-        Quaternion targetR(baseX + x, baseY + y, 0);
-        if(smooth)
-            cameraNode.rotation = cameraNode.rotation.Slerp(targetR, dt * smoothAmount);
-        else
-            cameraNode.rotation = targetR;
-
-        if (shakeDuration <= 0.01f)
-        {
-            gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
-        }
-    }
-
-    void ShakeCamera(float amount, float duration)
-    {
-        LogPrint("ShakeCamera amount=" + amount + " duration=" + duration);
-        shakeAmount += amount;//Add to the current amount.
-        startAmount = shakeAmount;//Reset the start amount, to determine percentage.
-        shakeDuration += duration;//Add to the current time.
-        startDuration = shakeDuration;//Reset the start time.
-    }
 
     void OnCameraEvent(VariantMap& eventData)
     {
-        ShakeCamera(eventData[VALUE].GetFloat(), eventData[DURATION].GetFloat());
+        if (eventData[NAME].GetStringHash() == StringHash("Shake"))
+            ShakeCamera(eventData[VALUE].GetFloat(), eventData[DURATION].GetFloat());
     }
 };
 
@@ -522,7 +508,6 @@ class CameraManager
         cameraControllers.Push(AnimationCameraController(n, "Animation"));
         cameraControllers.Push(LookAtCameraController(n, "LookAt"));
         cameraControllers.Push(ThirdPersonCameraController(n, "ThirdPerson"));
-        cameraControllers.Push(ShakeCameraController(n, "Shake"));
 
         /*
         cameraAnimations.Push(StringHash("Counter_Arm_Back_05"));

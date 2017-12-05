@@ -63,7 +63,6 @@ int freeze_ai = 0;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
-Array<int> gIntCache2;
 
 bool mobile = false;
 bool one_shot_kill = false;
@@ -333,6 +332,17 @@ uint Global_RemoveFlag(uint flags, uint flag)
 bool Global_HasFlag(uint flags, uint flag)
 {
     return flags & flag != 0;
+}
+
+void CameraShake()
+{
+    float amount = Random(10.0f, 20.0f);
+    float duration = Random(0.75, 1.5f);
+    VariantMap data;
+    data[NAME] = StringHash("Shake");
+    data[VALUE] = amount;
+    data[DURATION] = duration;
+    SendEvent("CameraEvent", data);
 }
 /************************************************
 ************************************************/

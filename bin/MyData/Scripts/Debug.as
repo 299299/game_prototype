@@ -178,14 +178,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_9)
     {
-        float amount = Random(10.0f);
-        float duration = Random(1.0f);
-        VariantMap data;
-        data[NAME] = CHANGE_STATE;
-        data[DURATION] = duration;
-        data[STATE] = StringHash("Shake");
-        data[VALUE] = amount;
-        SendEvent("CameraEvent", data);
+        CameraShake();
     }
     else if (key == KEY_0)
     {
@@ -394,6 +387,9 @@ void TestAnimations_Group_2(const String& counterName = "")
 {
     Player@ player = GetPlayer();
     EnemyManager@ em = GetEnemyMgr();
+    if (player is null or em is null)
+        return;
+
     if (em.enemyList.empty)
         return;
 

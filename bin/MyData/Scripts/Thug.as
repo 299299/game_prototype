@@ -8,7 +8,7 @@
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 const float MIN_TURN_ANGLE = 30;
 const float MIN_THINK_TIME = 0.25f;
-const float MAX_THINK_TIME = 1.0f;
+const float MAX_THINK_TIME = 0.75f;
 const float MAX_ATTACK_RANGE = 3.0f;
 const Vector3 HIT_RAGDOLL_FORCE(25.0f, 10.0f, 0.0f);
 
@@ -1419,6 +1419,7 @@ void AddThugCombatAnimationTriggers()
     AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 50, 60);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 70);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_04", 50, 60);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_05", -1, 40);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 52, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 80, READY_TO_FIGHT);
 

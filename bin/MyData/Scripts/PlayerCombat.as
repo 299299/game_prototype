@@ -658,15 +658,10 @@ class PlayerCounterState : CharacterCounterState
             Array<Motion@>@ counterMotions = GetCounterMotions(attackType, isBack);
             Array<Motion@>@ eCounterMotions = s.GetCounterMotions(attackType, isBack);
 
-            gIntCache.Clear();
-            gIntCache2.Clear();
-            float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
+            const float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
             float bestDistSQR = 999999;
             int bestIndex = -1;
-
-            maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
-            float bestDistSQR2 = 999999;
-            int bestIndex2 = -1;
+            gIntCache.Clear();
 
             for (uint i=0; i<counterMotions.length; ++i)
             {
@@ -687,38 +682,35 @@ class PlayerCounterState : CharacterCounterState
                 gIntCache.Push(i);
             }
 
+            float bestDistSQR2 = 999999;
+            int bestIndex2 = -1;
             for (uint i=0; i<counterMotions.length; ++i)
             {
                 Motion@ alignMotion = eCounterMotions[i];
                 Motion@ baseMotion = counterMotions[i];
                 Vector4 v4 = GetTargetTransform(myNode, alignMotion, baseMotion);
                 Vector3 v3 = Vector3(v4.x, ePos.y, v4.z);
-                // gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
                 float distSQR = (v3 - ePos).lengthSquared;
                 if (distSQR < bestDistSQR2)
                 {
                     bestDistSQR2 = distSQR;
                     bestIndex2 = int(i);
                 }
-                // Print("distSQR=" + distSQR + " maxDistSQR=" + maxDistSQR);
-                if (distSQR > maxDistSQR)
-                    continue;
-                gIntCache2.Push(i);
             }
 
             int cur_direction = GetCounterDirection(attackType, isBack);
             int idx;
-            LogPrint("COUNTER bestDistSQR=" + bestDistSQR + " bestDistSQR2=" + bestDistSQR2);
-
-            if (bestDistSQR > maxDistSQR && bestDistSQR2 <= maxDistSQR)
-            {
-                bestIndex = bestIndex2;
-                alignPlayer = false;
-            }
+            LogPrint("COUNTER bestDistSQR=" + bestDistSQR + " bestDistSQR2=" + bestDistSQR2 + " gIntCache.length=" + gIntCache.length);
 
             if (counter_choose_closest_one || gIntCache.empty)
             {
-                idx = bestIndex;
+                if (bestDistSQR > maxDistSQR && bestDistSQR2 <= bestDistSQR)
+                {
+                    idx = bestIndex2;
+                    alignPlayer = false;
+                }
+                else
+                    idx = bestIndex;
             }
             else
             {

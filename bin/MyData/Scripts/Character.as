@@ -153,14 +153,7 @@ class CharacterState : State
         if (boneNode !is null)
             ownner.SpawnParticleEffect(boneNode.worldPosition, "Particle/SnowExplosionFade.xml", 5, 5.0f);
 
-        float amount = Random(2.5f, 5.0f);
-        float duration = Random(0.1f, 0.75f);
-        VariantMap data;
-        data[NAME] = CHANGE_STATE;
-        data[DURATION] = duration;
-        data[STATE] = StringHash("Shake");
-        data[VALUE] = amount;
-        // SendEvent("CameraEvent", data);
+        CameraShake();
     }
 
     void OnCombatParticle(const String& boneName, const String& particleName)
