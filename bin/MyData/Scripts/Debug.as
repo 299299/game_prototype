@@ -267,6 +267,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             LogPrint("------------------------------------------------------------");
         }
     }
+    else if (key == KEY_C)
+    {
+        TestCounter(6);
+    }
     else if (key == KEY_U)
     {
         Player@ p = GetPlayer();
@@ -492,6 +496,37 @@ void TestAnimations_Group_4()
     thugAnims.Push(thugAnim + "_02");
     thugAnims.Push(thugAnim + "_03");
     TestAnimation_Group(playerAnim, thugAnims);
+}
+
+void TestCounter(float range = MAX_COUNTER_DIST)
+{
+    Player@ player = GetPlayer();
+    EnemyManager@ em = GetEnemyMgr();
+    if (player is null or em is null)
+        return;
+
+    if (em.enemyList.empty)
+        return;
+
+    PlayerCounterState@ state = cast<PlayerCounterState>(player.stateMachine.FindState("CounterState"));
+    if (state is null)
+        return;
+
+    state.counterEnemies.Clear();
+    for (uint i=0; i<em.enemyList.length; ++i)
+    {
+        float d = em.enemyList[i].GetTargetDistance();
+        if (d > MAX_COUNTER_DIST)
+            continue;
+        state.counterEnemies.Push(em.enemyList[i]);
+        if (state.counterEnemies.length >= 3)
+            break;
+    }
+
+    if (state.counterEnemies.empty)
+        return;
+
+    player.ChangeState("CounterState");
 }
 
 /***********************************************

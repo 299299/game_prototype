@@ -59,7 +59,7 @@ int DEBUG_FONT_SIZE = 20;
 
 const String GAME_CAMEAR_NAME = "ThirdPerson";
 
-int freeze_ai = 1;
+int freeze_ai = 0;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;

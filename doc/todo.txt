@@ -1,8 +1,12 @@
-1. big-head mode -- fixed
-2. script reload crash -- fixed
 3. audio
-4. model replacement -- fixed
 5. camera issue
 6. camera shake
-7. camera animation -- fixed
 7. beat down -- fixed
+
+Counter_Arm_Front_10 Error
+Counter_Leg_Front_01 Error
+Counter_Leg_Front_05 Error
+Counter_Leg_Back_05 Error
+Counter_Arm_Front_14 Error
+Counter_Leg_Back_Weak_01 Error
+Double_Counter_3ThugsA Error
