@@ -2,8 +2,3 @@
 5. camera issue
 6. camera shake
 7. beat down -- fixed
-
-Counter_Leg_Front_05 Error
-Counter_Arm_Front_14 Error
-Counter_Leg_Back_Weak_01 Error
-Double_Counter_3ThugsA Error

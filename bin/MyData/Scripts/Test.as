@@ -336,8 +336,8 @@ bool Global_HasFlag(uint flags, uint flag)
 
 void CameraShake()
 {
-    float amount = Random(10.0f, 20.0f);
-    float duration = Random(0.75, 1.5f);
+    float amount = Random(5.0f, 20.0f);
+    float duration = Random(1.0f);
     VariantMap data;
     data[NAME] = StringHash("Shake");
     data[VALUE] = amount;
