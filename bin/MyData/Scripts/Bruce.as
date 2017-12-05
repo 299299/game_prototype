@@ -386,6 +386,7 @@ void CreateBruceCombatMotions()
     bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsF"));
     bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsG"));
     bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsH"));
+    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90));
     bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90));
     bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90));
 
@@ -681,6 +682,12 @@ void AddBruceCombatAnimationTriggers()
     AddStringAnimationTrigger(animName, 36, PARTICLE, L_HAND);
     AddStringAnimationTrigger(animName, 36, COMBAT_SOUND_LARGE, R_HAND);
     AddAnimationTrigger(animName, 65, READY_TO_FIGHT);
+
+    animName = preFix + "Double_Counter_3ThugsA";
+    AddStringAnimationTrigger(animName, 7, PARTICLE, L_HAND);
+    AddStringAnimationTrigger(animName, 7, PARTICLE, R_ARM);
+    AddStringAnimationTrigger(animName, 27, COMBAT_SOUND_LARGE, R_HAND);
+    AddAnimationTrigger(animName, 50, READY_TO_FIGHT);
 
     animName = preFix + "Double_Counter_3ThugsB";
     AddStringAnimationTrigger(animName, 27, PARTICLE, L_FOOT);

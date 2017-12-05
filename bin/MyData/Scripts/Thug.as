@@ -1337,6 +1337,9 @@ void CreateThugCombatMotions()
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsG_02", kMotion_XZR, kMotion_XZR, -1, false, 90));
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01"));
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsH_02", kMotion_XZR, kMotion_XZR, -1, false, 90));
+    thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA_01", kMotion_XZR, kMotion_XZR, -1, false, -90));
+    thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA_02"));
+    thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA_03", kMotion_XZR, kMotion_XZR, -1, false, 90));
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB_01"));
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB_02", kMotion_XZR, kMotion_XZR, -1, false, 90));
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB_03"));
@@ -1410,7 +1413,7 @@ void AddThugCombatAnimationTriggers()
     AddRagdollTrigger(preFix + "Counter_Arm_Front_09", 35, 40);
     AddRagdollTrigger(preFix + "Counter_Arm_Front_10", 20, 32);
     AddRagdollTrigger(preFix + "Counter_Arm_Front_13", 40, 60);
-    AddRagdollTrigger(preFix + "Counter_Arm_Front_14", 50, 70);
+    AddRagdollTrigger(preFix + "Counter_Arm_Front_14", 48, 60);
     AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_02", 45, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_03", 100, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Counter_Arm_Front_Weak_04", 70, READY_TO_FIGHT);
@@ -1420,14 +1423,14 @@ void AddThugCombatAnimationTriggers()
     AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 70);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_04", 50, 60);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_05", -1, 40);
-    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 52, READY_TO_FIGHT);
+    AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 80, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 80, READY_TO_FIGHT);
 
     AddRagdollTrigger(preFix + "Counter_Leg_Front_01", 25, 39);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_02", 25, 54);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_03", 15, 23);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_04", 32, 35);
-    AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 55, 65);
+    AddRagdollTrigger(preFix + "Counter_Leg_Front_05", 38, 42);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_06", -1, 32);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_07", 40, 60);
     AddRagdollTrigger(preFix + "Counter_Leg_Front_08", 20, 40);
@@ -1455,6 +1458,10 @@ void AddThugCombatAnimationTriggers()
 
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_01", -1, 62);
     AddRagdollTrigger(preFix + "Double_Counter_2ThugsH_02", -1, 62);
+
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_01", 20, 32);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_02", 29, 32);
+    AddRagdollTrigger(preFix + "Double_Counter_3ThugsA_03", 27, 32);
 
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_01", 25, 33);
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsB_02", 25, 33);
