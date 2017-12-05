@@ -12,7 +12,6 @@ DEBUG Features
 */
 
 
-
 int test_beat_index = 1;
 bool base_on_player = false;
 int test_counter_index = 0;
@@ -182,7 +181,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_0)
     {
-        TestAnimations_Group_2("Counter_Leg_Front_05");
+        TestAnimations_Group_2("Counter_Arm_Front_10");
     }
     else if (key == KEY_R)
     {
@@ -340,7 +339,7 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
         e.TestAnimation(thugAnims[i]);
     }
     player.TestAnimation(playerAnim);
-    player.SetSceneTimeScale(0.0f);
+    // player.SetSceneTimeScale(0.0f);
 }
 
 void TestAnimation_Group_s(const String&in playerAnim, const String& thugAnim, bool baseOnPlayer = false)
@@ -399,31 +398,38 @@ void TestAnimations_Group_2(const String& counterName = "")
     Motion@ m1, m2;
     if (counterName.empty)
     {
-        int i = RandomInt(4);
-        if (i == 0)
+        int l1 = int(s1.frontArmMotions.length);
+        int l2 = int(s1.frontLegMotions.length);
+        int l3 = int(s1.backArmMotions.length);
+        int l4 = int(s1.backLegMotions.length);
+
+        if (test_counter_index >= l1 + l2 + l3)
         {
-            int k = RandomInt(s1.frontArmMotions.length);
-            @m1 = s1.frontArmMotions[k];
-            @m2 = s2.frontArmMotions[k];
+            int index = test_counter_index - (l1 + l2 + l3);
+            @m1 = s1.backLegMotions[index];
+            @m2 = s2.backLegMotions[index];
         }
-        else if (i == 1)
+        else if (test_counter_index >= l1 + l2)
         {
-            int k = RandomInt(s1.frontLegMotions.length);
-            @m1 = s1.frontLegMotions[k];
-            @m2 = s2.frontLegMotions[k];
+            int index = test_counter_index - (l1 + l2);
+            @m1 = s1.backArmMotions[index];
+            @m2 = s2.backArmMotions[index];
         }
-        else if (i == 2)
+        else if (test_counter_index >= l1)
         {
-            int k = RandomInt(s1.backArmMotions.length);
-            @m1 = s1.backArmMotions[k];
-            @m2 = s2.backArmMotions[k];
+            int index = test_counter_index - l1;
+            @m1 = s1.frontLegMotions[index];
+            @m2 = s2.frontLegMotions[index];
         }
-        else if (i == 3)
+        else
         {
-            int k = RandomInt(s1.backLegMotions.length);
-            @m1 = s1.backLegMotions[k];
-            @m2 = s2.backLegMotions[k];
+            @m1 = s1.frontArmMotions[test_counter_index];
+            @m2 = s2.frontArmMotions[test_counter_index];
         }
+
+        ++ test_counter_index;
+        if (test_counter_index >= l1 + l2 + l3 + l4)
+            test_counter_index = 0;
     }
     else
     {
@@ -436,7 +442,6 @@ void TestAnimations_Group_2(const String& counterName = "")
 
     e.TestAnimation(m2.name);
     player.TestAnimation(m1.name);
-    player.GetScene().updateEnabled = false;
 
     LogPrint("TestAnimations_Group_2 -> " + m1.name);
 }
