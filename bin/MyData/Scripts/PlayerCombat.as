@@ -175,6 +175,8 @@ class PlayerAttackState : CharacterState
         float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST);
         int bestIndex = 0;
         diff.Normalize();
+        int index_start = -1;
+        int index_num = 0;
 
         if (attack_choose_closest_one)
         {
@@ -196,9 +198,6 @@ class PlayerAttackState : CharacterState
         }
         else
         {
-            int index_start = -1;
-            int index_num = 0;
-
             float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_SHORT_RANGE);
             float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_LONG_RANGE;
             LogPrint("Player attack " + ownner.target.GetName() + " dist:" + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
@@ -262,13 +261,31 @@ class PlayerAttackState : CharacterState
                 " yawPerSec=" + yawPerSec);
 
         // yawPerSec = 0;
-        for (uint i=0; i<attacks.length; ++i)
+        if (drawDebug > 0)
         {
-            Vector3 v3 = attacks[i].GetImpactPosition(ownner);
-            gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
+            if (attack_choose_closest_one)
+            {
+                for (uint i=0; i<attacks.length; ++i)
+                {
+                    Vector3 v3 = attacks[i].GetImpactPosition(ownner);
+                    gDebugMgr.AddCross(v3, 0.15f, SOURCE_COLOR, 2.0f);
+                }
+            }
+            else
+            {
+                for (uint i=0; i<attacks.length; ++i)
+                {
+                    Vector3 v3 = attacks[i].GetImpactPosition(ownner);
+
+                    if (i >= index_start && i < index_start + index_num)
+                        gDebugMgr.AddCross(v3, 0.15f, TARGET_COLOR, 2.0f);
+                    else
+                        gDebugMgr.AddCross(v3, 0.15f, SOURCE_COLOR, 2.0f);
+                }
+            }
         }
 
-        ownner.GetScene().updateEnabled = false;
+        //ownner.GetScene().updateEnabled = false;
         // ownner.SetSceneTimeScale(0.1f);
     }
 

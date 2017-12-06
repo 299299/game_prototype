@@ -15,8 +15,8 @@ const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.0f;
 const float GOOD_COUNTER_DIST = 4.0f;
-const float ATTACK_DIST_PICK_LONG_RANGE = 2.0f;
-const float ATTACK_DIST_PICK_SHORT_RANGE = 0.5f;
+const float ATTACK_DIST_PICK_LONG_RANGE = 4.0f;
+const float ATTACK_DIST_PICK_SHORT_RANGE = 1.0f;
 float MAX_ATTACK_DIST = 15.0f;
 
 class Player : Character
@@ -236,7 +236,8 @@ class Player : Character
                 continue;
             }
 
-            Vector3 posDiff = e.GetNode().worldPosition - myPos;
+            Vector3 ePos = e.GetNode().worldPosition;
+            Vector3 posDiff = ePos - myPos;
             posDiff.y = 0;
             int score = 0;
             float dist = posDiff.length;
@@ -255,7 +256,7 @@ class Player : Character
             //if (d_log)
                 LogPrint(e.GetName() + " enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
-            if (Abs(diffAngle) > maxDiffAngle)
+            if (Abs(diffAngle) > maxDiffAngle / 2.0f)
             {
                 //if (d_log)
                     LogPrint(e.GetName() + " diffAngle=" + diffAngle + " too large");
@@ -276,6 +277,11 @@ class Player : Character
             score += threatScore;
 
             gIntCache.Push(score);
+
+            if (drawDebug > 0)
+            {
+                gDebugMgr.AddLine(myPos, ePos, TARGET_COLOR);
+            }
 
             //if (d_log)
                 LogPrint("Enemy " + e.GetName() + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
@@ -304,6 +310,12 @@ class Player : Character
                     @attackEnemy = e;
                 }
             }
+        }
+
+        if (drawDebug > 0)
+        {
+            gDebugMgr.AddDirection(myPos, targetAngle - maxDiffAngle/2.0f, maxDiffDist, TARGET_COLOR);
+            gDebugMgr.AddDirection(myPos, targetAngle + maxDiffAngle/2.0f, maxDiffDist, TARGET_COLOR);
         }
 
         LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms \n");
@@ -350,7 +362,7 @@ class Player : Character
     bool Attack()
     {
         LogPrint("Do--Attack--->");
-        Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK, true);
+        Enemy@ e = CommonPickEnemy(75, MAX_ATTACK_DIST, FLAGS_ATTACK, true);
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");

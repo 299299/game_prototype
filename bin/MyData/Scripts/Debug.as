@@ -733,7 +733,7 @@ class DebugDrawMgr
             commands.Resize(commands.length - num_time_out);
     }
 
-    void AddLine(const Vector3&in start, const Vector3&in end, const Color& c, float t)
+    void AddLine(const Vector3&in start, const Vector3&in end, const Color& c, float t = 1.0f)
     {
         DebugDrawCommand@ cmd = DebugDrawCommand();
         cmd.type = DEBUG_DRAW_LINE;
@@ -745,7 +745,7 @@ class DebugDrawMgr
         AddCommand(cmd);
     }
 
-    void AddSphere(const Vector3&in pos, float radius, const Color& c, float t)
+    void AddSphere(const Vector3&in pos, float radius, const Color& c, float t = 1.0f)
     {
         DebugDrawCommand@ cmd = DebugDrawCommand();
         cmd.type = DEBUG_DRAW_SPHERE;
@@ -757,7 +757,7 @@ class DebugDrawMgr
         AddCommand(cmd);
     }
 
-    void AddCross(const Vector3&in pos, float size, const Color& c, float t)
+    void AddCross(const Vector3&in pos, float size, const Color& c, float t = 1.0f)
     {
         DebugDrawCommand@ cmd = DebugDrawCommand();
         cmd.type = DEBUG_DRAW_CROSS;
@@ -767,6 +767,12 @@ class DebugDrawMgr
         cmd.color = c;
         cmd.time = t;
         AddCommand(cmd);
+    }
+
+    void AddDirection(const Vector3& start, float angle, float radius, const Color&in color, float t = 1.0f)
+    {
+        Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
+        AddLine(start, end, color, t);
     }
 };
 

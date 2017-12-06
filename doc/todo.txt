@@ -2,3 +2,12 @@
 5. camera issue
 6. camera shake
 7. beat down -- fixed
+
+
+# Attack Animation Debug Function
+
+Attack Animation Update
+Double Counter
+Triple Counter
+
+Counter_Leg_Back_04 Fix
