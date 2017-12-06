@@ -478,6 +478,12 @@ class AttackMotion
         else
             return 0;
     }
+
+    Vector3 GetImpactPosition(Character@ mover)
+    {
+        motion.InnerStart(mover);
+        return motion.GetFuturePosition(mover, impactTime);
+    }
 };
 
 enum MotionLoadingState
@@ -655,7 +661,7 @@ void Global_AddAnimation(const String&in name)
     gMotionMgr.AddAnimation(name);
 }
 
-void Global_CreateMotion_InFolder(const String&in folder, const String&in preFixToIgnore = "", Array<Motion@>@ motions = null)
+void Global_CreateMotion_InFolder(const String&in folder, const String&in preFixToIgnore = "", Array<Motion@>@ motions = null, int motionFlag = kMotion_XZR)
 {
     String searchFolder = "MyData/Animations/" + folder;
     if (GetPlatform() == "Android")
@@ -671,7 +677,7 @@ void Global_CreateMotion_InFolder(const String&in folder, const String&in preFix
             if (animations[i].StartsWith(preFixToIgnore))
                 continue;
         }
-        Motion@ m = Global_CreateMotion(folder + FileNameToMotionName(animations[i]));
+        Motion@ m = Global_CreateMotion(folder + FileNameToMotionName(animations[i]), motionFlag);
         if (motions !is null)
             motions.Push(m);
     }

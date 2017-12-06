@@ -728,7 +728,7 @@ class CharacterCounterState : CharacterState
     {
         if (state == COUNTER_ALIGN)
         {
-            DebugDrawDirection(debug, targetPosition, targetRotation, RED, 2.0f);
+            DebugDrawDirection(debug, targetPosition, targetRotation, TARGET_COLOR, 2.0f);
             AddDebugMark(debug, targetPosition, TARGET_COLOR);
         }
     }

@@ -679,3 +679,39 @@ void FixedUpdate(float dt)
         }
     }
 }
+
+void CommonCollectEnemies(Array<Enemy@>@ enemies, float maxDiffAngle, float maxDiffDist, int flags)
+{
+    enemies.Clear();
+
+    uint t = time.systemTime;
+    Scene@ _scene = GetScene();
+    EnemyManager@ em = GetEnemyMgr();
+    if (em is null)
+        return;
+
+    Vector3 myPos = sceneNode.worldPosition;
+    float targetAngle = GetTargetAngle();
+
+    for (uint i=0; i<em.enemyList.length; ++i)
+    {
+        Enemy@ e = em.enemyList[i];
+        if (!e.HasFlag(flags))
+            continue;
+        Vector3 posDiff = e.GetNode().worldPosition - myPos;
+        posDiff.y = 0;
+        int score = 0;
+        float dist = posDiff.length;
+        if (dist > maxDiffDist)
+            continue;
+        float enemyAngle = Atan2(posDiff.x, posDiff.z);
+        float diffAngle = targetAngle - enemyAngle;
+        diffAngle = AngleDiff(diffAngle);
+        if (Abs(diffAngle) > maxDiffAngle)
+            continue;
+        enemies.Push(e);
+    }
+
+    LogPrint("CommonCollectEnemies() len=" + enemies.length + " time-cost = " + (time.systemTime - t) + " ms");
+}
+

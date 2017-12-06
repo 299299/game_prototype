@@ -17,8 +17,9 @@ class PlayerAttackState : CharacterState
 
     int                     state;
     Vector3                 movePerSec;
-    Vector3                 predictPosition;
+    Vector3                 targetPosition;
     Vector3                 motionPosition;
+    float                   yawPerSec;
 
     float                   alignTime = 0.2f;
 
@@ -95,7 +96,15 @@ class PlayerAttackState : CharacterState
             tailNode.worldPosition = attackNode.worldPosition;
         }
 
-        ownner.motion_velocity = (state == ATTACK_STATE_ALIGN) ? movePerSec : Vector3(0, 0, 0);
+        if (state == ATTACK_STATE_ALIGN)
+        {
+            ownner.motion_deltaRotation += yawPerSec * dt;
+            ownner.motion_velocity = movePerSec;
+        }
+        else
+        {
+            ownner.motion_velocity = Vector3();
+        }
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
@@ -164,7 +173,6 @@ class PlayerAttackState : CharacterState
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
         float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST);
-        float fuck = diff.length;
         int bestIndex = 0;
         diff.Normalize();
 
@@ -193,12 +201,11 @@ class PlayerAttackState : CharacterState
 
             float min_dist = Max(0.0f, toEnenmyDistance - ATTACK_DIST_PICK_SHORT_RANGE);
             float max_dist = toEnenmyDistance + ATTACK_DIST_PICK_LONG_RANGE;
-            LogPrint("Player attack " + ownner.target.GetName() + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
+            LogPrint("Player attack " + ownner.target.GetName() + " dist:" + toEnenmyDistance + "(" + min_dist + "," + max_dist + ")");
 
             for (uint i=0; i<attacks.length; ++i)
             {
                 AttackMotion@ am = attacks[i];
-                LogPrint("AttackMotion name="  + am.motion.name  + " impactDist="+ am.impactDist);
                 if (am.impactDist > max_dist)
                     break;
 
@@ -207,6 +214,8 @@ class PlayerAttackState : CharacterState
                     if (index_start == -1)
                         index_start = i;
                     index_num ++;
+
+                    LogPrint("AttackMotion name="  + am.motion.name  + " impactDist="+ am.impactDist);
                 }
             }
 
@@ -236,8 +245,31 @@ class PlayerAttackState : CharacterState
         @currentAttack = attacks[bestIndex];
         alignTime = currentAttack.impactTime;
 
-        predictPosition = myPos + diff * toEnenmyDistance;
-        LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex + " Pick attack motion = " + currentAttack.motion.animationName);
+        targetPosition = myPos + diff * toEnenmyDistance;
+        float currentAngle = ownner.ComputeAngleDiff(enemyPos);
+        float targetAngle = 0;
+        if (dir == 1)
+            targetAngle = 90;
+        else if (dir == 2)
+            targetAngle = 180;
+        else if (dir == 3)
+            targetAngle = -90;
+        yawPerSec = AngleDiff(targetAngle - currentAngle) / alignTime;
+
+        LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex +
+                " Pick attack motion=" + currentAttack.motion.animationName +
+                " currentAngle=" + currentAngle + " targetAngle=" + targetAngle +
+                " yawPerSec=" + yawPerSec);
+
+        // yawPerSec = 0;
+        for (uint i=0; i<attacks.length; ++i)
+        {
+            Vector3 v3 = attacks[i].GetImpactPosition(ownner);
+            gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
+        }
+
+        ownner.GetScene().updateEnabled = false;
+        // ownner.SetSceneTimeScale(0.1f);
     }
 
     void StartAttack()
@@ -288,8 +320,8 @@ class PlayerAttackState : CharacterState
 
         if (ownner.target !is null)
         {
-            motionPosition = motion.GetFuturePosition(ownner, currentAttack.impactTime);
-            movePerSec = ( predictPosition - motionPosition ) / alignTime;
+            motionPosition = currentAttack.GetImpactPosition(ownner);
+            movePerSec = ( targetPosition - motionPosition ) / alignTime;
             movePerSec.y = 0;
 
             LogPrint("PlayerAttack movePerSec=" + movePerSec.ToString());
@@ -337,15 +369,6 @@ class PlayerAttackState : CharacterState
         @currentAttack = null;
         ownner.SetSceneTimeScale(1.0f);
         LogPrint("################## Player::AttackState Exit to " + nextState.name  + " #####################");
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        if (currentAttack is null || ownner.target is null)
-            return;
-        // debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, YELLOW, false);
-        AddDebugMark(debug, predictPosition, TARGET_COLOR);
-        AddDebugMark(debug, motionPosition,  SOURCE_COLOR);
     }
 
     String GetDebugText()
@@ -440,6 +463,15 @@ class PlayerAttackState : CharacterState
 
         if (d_log)
             Dump();
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        if (currentAttack is null || ownner.target is null)
+            return;
+        // debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, YELLOW, false);
+        AddDebugMark(debug, targetPosition, TARGET_COLOR);
+        AddDebugMark(debug, motionPosition,  SOURCE_COLOR);
     }
 };
 

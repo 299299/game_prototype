@@ -17,6 +17,7 @@ bool base_on_player = false;
 int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
+int test_attack_id = 0;
 
 void ShootBox(Scene@ _scene)
 {
@@ -181,7 +182,15 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_0)
     {
-        TestAnimations_Group_2("Counter_Leg_Back_Weak_03");
+        TestAnimations_Group_2("Counter_Leg_Back_04");
+    }
+    else if (key == KEY_MINUS)
+    {
+        TestAttack();
+    }
+    else if (key == KEY_PLUS)
+    {
+        // todo
     }
     else if (key == KEY_R)
     {
@@ -527,6 +536,45 @@ void TestCounter(float range = MAX_COUNTER_DIST)
         return;
 
     player.ChangeState("CounterState");
+}
+
+void TestAttack()
+{
+    Player@ player = GetPlayer();
+    if (player is null)
+        return;
+
+    AttackMotion@ am;
+    PlayerAttackState@ s = cast<PlayerAttackState>(player.stateMachine.FindState("AttackState"));
+    int l1 = s.forwardAttacks.length;
+    int l2 = s.leftAttacks.length;
+    int l3 = s.rightAttacks.length;
+    int l4 = s.backAttacks.length;
+    if (test_attack_id >= l1 + l2 + l3)
+    {
+        int id = test_attack_id - (l1 + l2 + l3);
+        @am = s.backAttacks[id];
+    }
+    else if (test_attack_id >= l1 + l2)
+    {
+        int id = test_attack_id - (l1 + l2);
+        @am = s.rightAttacks[id];
+    }
+    else if (test_attack_id >= l1)
+    {
+        int id = test_attack_id - l1;
+        @am = s.leftAttacks[id];
+    }
+    else
+    {
+        @am = s.forwardAttacks[test_attack_id];
+    }
+
+    Print("TestAttack " + am.motion.name + " impactDist=" + am.impactDist);
+    player.TestAnimation(am.motion.name);
+    test_attack_id ++;
+    if (test_attack_id >=  l1 + l2 + l3 + l4)
+        test_attack_id = 0;
 }
 
 /***********************************************

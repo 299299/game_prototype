@@ -5,8 +5,8 @@
 // ==============================================
 
 const float MAX_COUNTER_DIST = 4.0f;
-const float DIST_SCORE = 10.0f;
-const float ANGLE_SCORE = 60.0f;
+const float DIST_SCORE = 60.0f;
+const float ANGLE_SCORE = 10.0f;
 const float THREAT_SCORE = 30.0f;
 const int   MAX_WEAK_ATTACK_COMBO = 3;
 const float MAX_DISTRACT_DIST = 4.0f;
@@ -15,8 +15,8 @@ const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.0f;
 const float GOOD_COUNTER_DIST = 4.0f;
-const float ATTACK_DIST_PICK_LONG_RANGE = 5.0f;
-const float ATTACK_DIST_PICK_SHORT_RANGE = 1.0f;
+const float ATTACK_DIST_PICK_LONG_RANGE = 2.0f;
+const float ATTACK_DIST_PICK_SHORT_RANGE = 0.5f;
 float MAX_ATTACK_DIST = 15.0f;
 
 class Player : Character
@@ -310,41 +310,6 @@ class Player : Character
         return attackEnemy;
     }
 
-    void CommonCollectEnemies(Array<Enemy@>@ enemies, float maxDiffAngle, float maxDiffDist, int flags)
-    {
-        enemies.Clear();
-
-        uint t = time.systemTime;
-        Scene@ _scene = GetScene();
-        EnemyManager@ em = GetEnemyMgr();
-        if (em is null)
-            return;
-
-        Vector3 myPos = sceneNode.worldPosition;
-        float targetAngle = GetTargetAngle();
-
-        for (uint i=0; i<em.enemyList.length; ++i)
-        {
-            Enemy@ e = em.enemyList[i];
-            if (!e.HasFlag(flags))
-                continue;
-            Vector3 posDiff = e.GetNode().worldPosition - myPos;
-            posDiff.y = 0;
-            int score = 0;
-            float dist = posDiff.length;
-            if (dist > maxDiffDist)
-                continue;
-            float enemyAngle = Atan2(posDiff.x, posDiff.z);
-            float diffAngle = targetAngle - enemyAngle;
-            diffAngle = AngleDiff(diffAngle);
-            if (Abs(diffAngle) > maxDiffAngle)
-                continue;
-            enemies.Push(e);
-        }
-
-        LogPrint("CommonCollectEnemies() len=" + enemies.length + " time-cost = " + (time.systemTime - t) + " ms");
-    }
-
     String GetDebugText()
     {
         return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
@@ -385,7 +350,7 @@ class Player : Character
     bool Attack()
     {
         LogPrint("Do--Attack--->");
-        Enemy@ e = CommonPickEnemy(60, MAX_ATTACK_DIST, FLAGS_ATTACK, true);
+        Enemy@ e = CommonPickEnemy(45, MAX_ATTACK_DIST, FLAGS_ATTACK, true);
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");

@@ -358,7 +358,7 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
-    Global_CreateMotion_InFolder("BM_Attack/");
+    Global_CreateMotion_InFolder("BM_Attack/", "", null, kMotion_Turn);
 
     preFix = "BM_TG_Counter/";
     Array<Motion@> counter_motions;
