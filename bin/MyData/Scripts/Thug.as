@@ -1157,7 +1157,10 @@ class Thug : Enemy
             RigidBody@ rb = neighbors[i];
             if (rb.collisionLayer != COLLISION_LAYER_RAGDOLL)
                 continue;
-            if (rb.node.name != PELVIS)
+            if (rb.node.name == L_CALF ||
+                rb.node.name == R_CALF ||
+                rb.node.name == L_ARM ||
+                rb.node.name == R_ARM)
                 continue;
 
             float vl = rb.linearVelocity.length;
@@ -1258,8 +1261,14 @@ class Thug : Enemy
 
         if (rb.collisionLayer == COLLISION_LAYER_RAGDOLL)
         {
-            if (rb.node.name == PELVIS && vl > 5.0f)
-                bRagdoll = true;
+            if (rb.node.name != L_CALF &&
+                rb.node.name != R_CALF &&
+                rb.node.name != L_ARM &&
+                rb.node.name != R_ARM)
+            {
+                if (vl > 5.0f)
+                    bRagdoll = true;
+            }
         }
         else if (rb.collisionLayer == COLLISION_LAYER_PROP)
         {
@@ -1421,7 +1430,7 @@ void AddThugCombatAnimationTriggers()
     AddRagdollTrigger(preFix + "Counter_Leg_Back_01", 45, 54);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_02", 50, 60);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_03", -1, 70);
-    AddRagdollTrigger(preFix + "Counter_Leg_Back_04", 50, 60);
+    AddRagdollTrigger(preFix + "Counter_Leg_Back_04", -1, 44);
     AddRagdollTrigger(preFix + "Counter_Leg_Back_05", -1, 40);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_01", 80, READY_TO_FIGHT);
     AddAnimationTrigger(preFix + "Counter_Leg_Back_Weak_03", 80, READY_TO_FIGHT);

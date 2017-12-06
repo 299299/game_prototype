@@ -400,7 +400,7 @@ class Ragdoll : ScriptObject
         body.angularRestThreshold = 1.5f;
         body.collisionLayer = COLLISION_LAYER_RAGDOLL;
         body.collisionMask = COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE | COLLISION_LAYER_CHARACTER;
-        body.friction = 1.0f;
+        body.friction = 2.0f;
         body.gravityOverride = Vector3(0, -32, 0);
         body.node.vars[RAGDOLL_ROOT] = rootNode.id;
         // body.kinematic = true;

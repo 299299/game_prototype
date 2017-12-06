@@ -567,9 +567,7 @@ void AddBruceCombatAnimationTriggers()
     AddAnimationTrigger(animName, 48, READY_TO_FIGHT);
 
     animName = preFix + "Counter_Leg_Back_04";
-    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
-    AddStringAnimationTrigger(animName, 15, COMBAT_SOUND, R_ARM);
-    AddStringAnimationTrigger(animName, 46, COMBAT_SOUND, L_CALF);
+    AddStringAnimationTrigger(animName, 30, COMBAT_SOUND, L_FOOT);
     AddAnimationTrigger(animName, 48, READY_TO_FIGHT);
 
     animName = preFix + "Counter_Leg_Back_Weak_01";
