@@ -564,38 +564,19 @@ class PlayerCounterState : CharacterCounterState
         return err1 + err2 + err3;
     }
 
-    float TestDoubleCounterMotions(int i)
-    {
-        for (uint k=0; k<counterEnemies.length; ++k)
-            cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
-
-        CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
-        Array<Motion@>@ motions = doubleMotions;
-        Array<Motion@>@ enemy_motions = s.doubleMotions;
-        @currentMotion = motions[i];
-        Motion@ m1 = enemy_motions[i * 2 + 0];
-        float err1 = ChooseBestIndices(m1, 0);
-        Motion@ m2 = enemy_motions[i * 2 + 1];
-        float err2 = ChooseBestIndices(m2, 1);
-        return err1 + err2;
-    }
-
     void Enter(State@ lastState)
     {
         LogPrint("############# PlayerCounterState::Enter ##################");
         uint t = time.systemTime;
 
         LogPrint("PlayerCounter-> counterEnemies len=" + counterEnemies.length);
-        type = counterEnemies.length;
 
-        // POST_PROCESS
-        for (int i=0; i<type; ++i)
+        for (int i=0; i<counterEnemies.length; ++i)
         {
             Enemy@ e = counterEnemies[i];
             e.ChangeState("CounterState");
             CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
             s.index = -1;
-            s.type = type;
         }
 
         if (counterEnemies.length == 3)
@@ -613,7 +594,7 @@ class PlayerCounterState : CharacterCounterState
             SingleCounter();
         }
 
-        if (counterEnemies.length > 1)
+        // if (counterEnemies.length > 1)
         {
             //ownner.GetScene().updateEnabled = false;
             //ownner.GetScene().timeScale= 0.1f;
@@ -687,10 +668,7 @@ class PlayerCounterState : CharacterCounterState
         {
             Motion@ alignMotion = counterMotions[i];
             Motion@ baseMotion = eCounterMotions[i];
-            Vector4 v4 = GetTargetTransform(eNode, alignMotion, baseMotion);
-            Vector3 v3 = Vector3(v4.x, myPos.y, v4.z);
-            // gDebugMgr.AddCross(v3, 0.15f, RED, 2.0f);
-            float distSQR = (v3 - myPos).lengthSquared;
+            float distSQR = GetTargetTransformErrorSqr(myNode, eNode, alignMotion, baseMotion);
             if (distSQR < bestDistSQR)
             {
                 bestDistSQR = distSQR;
@@ -708,9 +686,7 @@ class PlayerCounterState : CharacterCounterState
         {
             Motion@ alignMotion = eCounterMotions[i];
             Motion@ baseMotion = counterMotions[i];
-            Vector4 v4 = GetTargetTransform(myNode, alignMotion, baseMotion);
-            Vector3 v3 = Vector3(v4.x, ePos.y, v4.z);
-            float distSQR = (v3 - ePos).lengthSquared;
+            float distSQR = GetTargetTransformErrorSqr(eNode, myNode, alignMotion, baseMotion);
             if (distSQR < bestDistSQR2)
             {
                 bestDistSQR2 = distSQR;
@@ -754,110 +730,328 @@ class PlayerCounterState : CharacterCounterState
         if (alignPlayer)
         {
             s.StartCounterMotion();
-            Vector4 vt = GetTargetTransform(eNode, currentMotion, s.currentMotion);
-            SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
+            SetTargetTransform(GetTargetTransform(eNode, currentMotion, s.currentMotion));
             StartAligning();
         }
         else
         {
             StartCounterMotion();
-            Vector4 vt = GetTargetTransform(myNode, s.currentMotion, currentMotion);
-            s.SetTargetTransform(Vector3(vt.x, myPos.y, vt.z), vt.w);
+            s.SetTargetTransform(GetTargetTransform(myNode, s.currentMotion, currentMotion));
             s.StartAligning();
         }
     }
 
-
     void DoubleCounter()
     {
-        Array<Motion@>@ motions = doubleMotions;
+        Node@ myNode = ownner.GetNode();
         float min_error_sqr = 9999;
-        int s1 = -1, s2 = -2;
         int bestIndex = -1;
         Enemy@ e1 = counterEnemies[0];
         Enemy@ e2 = counterEnemies[1];
+        Node@ eNode1 = e1.GetNode();
+        Node@ eNode2 = e2.GetNode();
         Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 dir1 = (e1.GetNode().worldPosition - myPos);
-        Vector3 dir2 = (e2.GetNode().worldPosition - myPos);
-        float angle = dir1.Angle(dir2);
-        Print("angle=" + angle);
+        CharacterCounterState@ s1 = cast<CharacterCounterState>(e1.GetState());
+        CharacterCounterState@ s2 = cast<CharacterCounterState>(e2.GetState());
+        Motion@ eMotion1, eMotion2;
+        Motion@ motion1, motion2;
+        int who_is_reference = -1;
+        Array<Motion@>@ eDoubleMotions = s1.doubleMotions;
 
-        for (uint i=0; i<motions.length; ++i)
+        for (uint i=0; i<doubleMotions.length; ++i)
         {
-            float error_sum_sqr = TestDoubleCounterMotions(i);
-            if (error_sum_sqr < min_error_sqr)
+            Motion@ playerMotion = doubleMotions[i];
+
+            // e1 as reference, e1 motion 0, e2 motion 1
+            @motion1 = eDoubleMotions[i*2 + 0];
+            @motion2 = eDoubleMotions[i*2 + 1];
+            float err_player = GetTargetTransformErrorSqr(myNode, eNode1, playerMotion, motion1);
+            float err_e = GetTargetTransformErrorSqr(eNode2, eNode1, motion2, motion1);
+            float err_sum = err_player + err_e;
+            if (err_sum < min_error_sqr)
             {
-                s1 = cast<CharacterCounterState>(e1.GetState()).index;
-                s2 = cast<CharacterCounterState>(e2.GetState()).index;
-                min_error_sqr = error_sum_sqr;
                 bestIndex = i;
+                who_is_reference = 0;
+                min_error_sqr = err_sum;
+                @eMotion1 = motion1;
+                @eMotion2 = motion2;
+            }
+
+            // e1 as reference, e1 motion 1, e2 motion 0
+            @motion1 = eDoubleMotions[i*2 + 1];
+            @motion2 = eDoubleMotions[i*2 + 0];
+            err_player = GetTargetTransformErrorSqr(myNode, eNode1, playerMotion, motion1);
+            err_e = GetTargetTransformErrorSqr(eNode2, eNode1, motion2, motion1);
+            err_sum = err_player + err_e;
+            if (err_sum < min_error_sqr)
+            {
+                bestIndex = i;
+                who_is_reference = 0;
+                min_error_sqr = err_sum;
+                @eMotion1 = motion1;
+                @eMotion2 = motion2;
+            }
+
+            // e2 as reference, e1 motion 0, e2 motion 1
+            @motion1 = eDoubleMotions[i*2 + 0];
+            @motion2 = eDoubleMotions[i*2 + 1];
+            err_player = GetTargetTransformErrorSqr(myNode, eNode2, playerMotion, motion2);
+            err_e = GetTargetTransformErrorSqr(eNode1, eNode2, motion1, motion2);
+            err_sum = err_player + err_e;
+            if (err_sum < min_error_sqr)
+            {
+                bestIndex = i;
+                who_is_reference = 1;
+                min_error_sqr = err_sum;
+                @eMotion1 = motion1;
+                @eMotion2 = motion2;
+            }
+
+            // e2 as reference, e1 motion 1, e2 motion 0
+            @motion1 = eDoubleMotions[i*2 + 1];
+            @motion2 = eDoubleMotions[i*2 + 0];
+            err_player = GetTargetTransformErrorSqr(myNode, eNode2, playerMotion, motion2);
+            err_e = GetTargetTransformErrorSqr(eNode1, eNode2, motion1, motion2);
+            err_sum = err_player + err_e;
+            if (err_sum < min_error_sqr)
+            {
+                bestIndex = i;
+                who_is_reference = 1;
+                min_error_sqr = err_sum;
+                @eMotion1 = motion1;
+                @eMotion2 = motion2;
             }
         }
 
-        if (s1 < 0)
+        Print("DoubleCounter bestIndex=" + bestIndex);
+
+        if (bestIndex >= 0)
         {
-            e1.CommonStateFinishedOnGroud();
+            Node@ referenceNode = (who_is_reference == 0) ? eNode1 : eNode2;
+            Node@ alignNode = (who_is_reference == 0) ? eNode2 : eNode1;
+            CharacterCounterState@ referenceState = (who_is_reference == 0) ? s1 : s2;
+            CharacterCounterState@ alignState = (who_is_reference == 0) ? s2 : s1;
+
+            @currentMotion = doubleMotions[bestIndex];
+            @s1.currentMotion = eMotion1;
+            @s2.currentMotion = eMotion2;
+            SetTargetTransform(GetTargetTransform(referenceNode, currentMotion, referenceState.currentMotion));
+            StartAligning();
+            referenceState.StartCounterMotion();
+            alignState.SetTargetTransform(GetTargetTransform(referenceNode, alignState.currentMotion, referenceState.currentMotion));
+            alignState.StartAligning();
+        }
+        else
+        {
             counterEnemies.Erase(0);
         }
-        if (s2 < 0 && counterEnemies.length > 1)
+    }
+
+    float TripleCounterTest(int i,
+                            int referenceIdx,
+                            int motionIdx1,
+                            int motionIdx2,
+                            int motionIdx3)
+    {
+        Enemy@ e1 = counterEnemies[0];
+        Enemy@ e2 = counterEnemies[1];
+        Enemy@ e3 = counterEnemies[2];
+        Node@ eNode1 = e1.GetNode();
+        Node@ eNode2 = e2.GetNode();
+        Node@ eNode3 = e3.GetNode();
+        Node@ playerNode = ownner.GetNode();
+        Motion@ playerMotion = tripleMotions[i];
+        CharacterCounterState@ s = cast<CharacterCounterState>(e1.GetState());
+        Array<Motion@>@ eTripleMotions = s.tripleMotions;
+        Motion@ m1 = eTripleMotions[i*3 + motionIdx1];
+        Motion@ m2 = eTripleMotions[i*3 + motionIdx2];
+        Motion@ m3 = eTripleMotions[i*3 + motionIdx3];
+
+        Node@ referenceNode = counterEnemies[referenceIdx].GetNode();
+        float err_player, err_other1, err_other2;
+
+        if (referenceIdx == 0)
         {
-            e2.CommonStateFinishedOnGroud();
-            counterEnemies.Erase(1);
+            err_player = GetTargetTransformErrorSqr(playerNode, referenceNode, playerMotion, m1);
+            err_other1 = GetTargetTransformErrorSqr(eNode2, referenceNode, m2, m1);
+            err_other2 = GetTargetTransformErrorSqr(eNode3, referenceNode, m3, m1);
+        }
+        else if (referenceIdx == 1)
+        {
+            err_player = GetTargetTransformErrorSqr(playerNode, referenceNode, playerMotion, m2);
+            err_other1 = GetTargetTransformErrorSqr(eNode1, referenceNode, m1, m2);
+            err_other2 = GetTargetTransformErrorSqr(eNode3, referenceNode, m3, m2);
+        }
+        else
+        {
+            err_player = GetTargetTransformErrorSqr(playerNode, referenceNode, playerMotion, m3);
+            err_other1 = GetTargetTransformErrorSqr(eNode1, referenceNode, m1, m3);
+            err_other2 = GetTargetTransformErrorSqr(eNode2, referenceNode, m2, m3);
         }
 
-        if (bestIndex >= 0 && counterEnemies.length == 2)
-        {
-            TestDoubleCounterMotions(bestIndex);
-        }
+        return err_player + err_other1 + err_other2;
 
-        StartAnimating();
     }
 
     void TripleCounter()
     {
-        Array<Motion@>@ motions = tripleMotions;
+        Node@ myNode = ownner.GetNode();
         float min_error_sqr = 9999;
-        int s1 = -1, s2 = -1, s3 = -1;
         int bestIndex = -1;
         Enemy@ e1 = counterEnemies[0];
         Enemy@ e2 = counterEnemies[1];
         Enemy@ e3 = counterEnemies[2];
+        Node@ eNode1 = e1.GetNode();
+        Node@ eNode2 = e2.GetNode();
+        Node@ eNode3 = e3.GetNode();
+        CharacterCounterState@ s1 = cast<CharacterCounterState>(e1.GetState());
+        CharacterCounterState@ s2 = cast<CharacterCounterState>(e2.GetState());
+        CharacterCounterState@ s3 = cast<CharacterCounterState>(e3.GetState());
+        Motion@ eMotion1, eMotion2, eMotion3;
+        Motion@ motion1, motion2, motion3;
+        int who_is_reference = -1;
+        Array<Motion@>@ eTripleMotions = s1.tripleMotions;
+        float error;
+        int idx1, idx2, idx3, refIdx;
 
-        for (uint i=0; i<motions.length; ++i)
+        for (uint i=0; i<tripleMotions.length; ++i)
         {
-            float error_sum_sqr = TestTrippleCounterMotions(i);
-            if (error_sum_sqr < min_error_sqr)
+            Motion@ playerMotion = tripleMotions[i];
+
+            for (int j=0; j<3; ++j)
             {
-                s1 = cast<CharacterCounterState>(e1.GetState()).index;
-                s2 = cast<CharacterCounterState>(e2.GetState()).index;
-                s3 = cast<CharacterCounterState>(e3.GetState()).index;
-                min_error_sqr = error_sum_sqr;
-                bestIndex = i;
+                refIdx = j;
+
+                idx1 = 0; idx2 = 1; idx3 = 2;
+                error = TripleCounterTest(i, refIdx, idx1, idx2, idx3);
+                if (error < min_error_sqr)
+                {
+                    bestIndex = i;
+                    who_is_reference = refIdx;
+                    min_error_sqr = error;
+                    @eMotion1 = eTripleMotions[i*3 + idx1];
+                    @eMotion2 = eTripleMotions[i*3 + idx2];
+                    @eMotion3 = eTripleMotions[i*3 + idx3];
+                }
+
+                idx1 = 0; idx2 = 2; idx3 = 1;
+                error = TripleCounterTest(i, refIdx, idx1, idx2, idx3);
+                if (error < min_error_sqr)
+                {
+                    bestIndex = i;
+                    who_is_reference = refIdx;
+                    min_error_sqr = error;
+                    @eMotion1 = eTripleMotions[i*3 + idx1];
+                    @eMotion2 = eTripleMotions[i*3 + idx2];
+                    @eMotion3 = eTripleMotions[i*3 + idx3];
+                }
+
+                idx1 = 1; idx2 = 2; idx3 = 0;
+                error = TripleCounterTest(i, refIdx, idx1, idx2, idx3);
+                if (error < min_error_sqr)
+                {
+                    bestIndex = i;
+                    who_is_reference = refIdx;
+                    min_error_sqr = error;
+                    @eMotion1 = eTripleMotions[i*3 + idx1];
+                    @eMotion2 = eTripleMotions[i*3 + idx2];
+                    @eMotion3 = eTripleMotions[i*3 + idx3];
+                }
+
+                idx1 = 1; idx2 = 0; idx3 = 2;
+                error = TripleCounterTest(i, refIdx, idx1, idx2, idx3);
+                if (error < min_error_sqr)
+                {
+                    bestIndex = i;
+                    who_is_reference = refIdx;
+                    min_error_sqr = error;
+                    @eMotion1 = eTripleMotions[i*3 + idx1];
+                    @eMotion2 = eTripleMotions[i*3 + idx2];
+                    @eMotion3 = eTripleMotions[i*3 + idx3];
+                }
+
+                // e1 as reference, e1 motion 2, e2 motion 1, e3 motion 0
+                idx1 = 2; idx2 = 1; idx3 = 0;
+                error = TripleCounterTest(i, refIdx, idx1, idx2, idx3);
+                if (error < min_error_sqr)
+                {
+                    bestIndex = i;
+                    who_is_reference = refIdx;
+                    min_error_sqr = error;
+                    @eMotion1 = eTripleMotions[i*3 + idx1];
+                    @eMotion2 = eTripleMotions[i*3 + idx2];
+                    @eMotion3 = eTripleMotions[i*3 + idx3];
+                }
+
+                // e1 as reference, e1 motion 2, e2 motion 0, e3 motion 1
+                idx1 = 2; idx2 = 0; idx3 = 1;
+                error = TripleCounterTest(i, refIdx, idx1, idx2, idx3);
+                if (error < min_error_sqr)
+                {
+                    bestIndex = i;
+                    who_is_reference = refIdx;
+                    min_error_sqr = error;
+                    @eMotion1 = eTripleMotions[i*3 + idx1];
+                    @eMotion2 = eTripleMotions[i*3 + idx2];
+                    @eMotion3 = eTripleMotions[i*3 + idx3];
+                }
             }
         }
 
-        if (s1 < 0)
+        if (bestIndex >= 0)
         {
-            e1.CommonStateFinishedOnGroud();
+
+            Print("TripleCounter bestIndex=" + bestIndex +
+                  " who_is_reference=" + who_is_reference +
+                  " eMotion1=" + eMotion1.name +
+                  " eMotion2=" + eMotion2.name +
+                  " eMotion3=" + eMotion3.name);
+
+            @currentMotion = tripleMotions[bestIndex];
+            @s1.currentMotion = eMotion1;
+            @s2.currentMotion = eMotion2;
+            @s3.currentMotion = eMotion3;
+
+            if (who_is_reference == 0)
+            {
+                s1.StartCounterMotion();
+                SetTargetTransform(GetTargetTransform(eNode1, currentMotion, s1.currentMotion));
+                StartAligning();
+                s2.SetTargetTransform(GetTargetTransform(eNode1, s2.currentMotion, s1.currentMotion));
+                s2.StartAligning();
+                s3.SetTargetTransform(GetTargetTransform(eNode1, s3.currentMotion, s1.currentMotion));
+                s3.StartAligning();
+            }
+            else if (who_is_reference == 1)
+            {
+                s2.StartCounterMotion();
+                SetTargetTransform(GetTargetTransform(eNode2, currentMotion, s2.currentMotion));
+                StartAligning();
+                s1.SetTargetTransform(GetTargetTransform(eNode2, s1.currentMotion, s2.currentMotion));
+                s1.StartAligning();
+                s3.SetTargetTransform(GetTargetTransform(eNode2, s3.currentMotion, s2.currentMotion));
+                s3.StartAligning();
+            }
+            else
+            {
+                s3.StartCounterMotion();
+                SetTargetTransform(GetTargetTransform(eNode3, currentMotion, s3.currentMotion));
+                StartAligning();
+                s1.SetTargetTransform(GetTargetTransform(eNode3, s1.currentMotion, s3.currentMotion));
+                s1.StartAligning();
+                s2.SetTargetTransform(GetTargetTransform(eNode3, s2.currentMotion, s3.currentMotion));
+                s2.StartAligning();
+            }
+        }
+        else
+        {
             counterEnemies.Erase(0);
         }
-        if (s2 < 0)
-        {
-            e2.CommonStateFinishedOnGroud();
-            counterEnemies.Erase(1);
-        }
-        if (s3 < 0 && counterEnemies.length > 1)
-        {
-            e3.CommonStateFinishedOnGroud();
-            counterEnemies.Erase(2);
-        }
+    }
 
-        if (bestIndex >= 0 && counterEnemies.length == 3)
-        {
-            TestTrippleCounterMotions(bestIndex);
-        }
+    void EnvironmentalCounter()
+    {
 
-        StartAnimating();
     }
 };
 

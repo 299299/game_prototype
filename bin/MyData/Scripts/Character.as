@@ -593,7 +593,6 @@ class CharacterCounterState : CharacterState
 
     Motion@             currentMotion;
     int                 state; // sub state
-    int                 type;
     int                 index;
 
     float               alignTime = 0.2f;
@@ -631,7 +630,6 @@ class CharacterCounterState : CharacterState
     {
         if (currentMotion is null)
             return;
-        LogPrint(ownner.GetName() + " start align " + currentMotion.animationName);
         ChangeSubState(COUNTER_ALIGN);
         currentMotion.Start(ownner);
 
@@ -641,6 +639,9 @@ class CharacterCounterState : CharacterState
 
         float angleDiff = AngleDiff(targetRotation - ownner.GetCharacterAngle());
         yawPerSec = angleDiff / alignTime;
+
+        LogPrint(ownner.GetName() + " start align " + currentMotion.animationName +
+                 " diff=" + diff.ToString() + " angleDiff=" + angleDiff);
     }
 
     int GetCounterDirection(int attackType, bool isBack)
@@ -717,6 +718,11 @@ class CharacterCounterState : CharacterState
         targetPosition = pos;
         targetPosition.y = pos1.y;
         targetRotation = rot;
+    }
+
+    void SetTargetTransform(const Vector4& vt)
+    {
+        SetTargetTransform(Vector3(vt.x, vt.y, vt.z), vt.w);
     }
 
     String GetDebugText()

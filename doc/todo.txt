@@ -5,9 +5,9 @@
 
 
 # Attack Animation Debug Function
-
-Attack Animation Update
-Double Counter
-Triple Counter
+# Attack Animation Update
+# Double Counter
+# Triple Counter
+Enviromental Counter
 
 Counter_Leg_Back_04 Fix

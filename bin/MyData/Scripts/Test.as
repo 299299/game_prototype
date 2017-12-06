@@ -63,6 +63,8 @@ int freeze_ai = 0;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
+Array<int> gIntCache2;
+Array<float> gFloatCache;
 
 bool mobile = false;
 bool one_shot_kill = false;

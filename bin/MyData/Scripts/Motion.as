@@ -106,6 +106,14 @@ Vector4 GetTargetTransform(Node@ baseNode, Motion@ alignMotion, Motion@ baseMoti
     return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);
 }
 
+float GetTargetTransformErrorSqr(Node@ alignNode, Node@ baseNode, Motion@ alignMotion, Motion@ baseMotion)
+{
+    Vector4 v4 = GetTargetTransform(baseNode, alignMotion, baseMotion);
+    Vector3 v3 = Vector3(v4.x, v4.y, v4.z) - alignNode.worldPosition;
+    v3.y = 0;
+    return v3.lengthSquared;
+}
+
 class Motion
 {
     String                  name;
