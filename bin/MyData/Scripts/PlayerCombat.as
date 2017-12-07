@@ -591,7 +591,8 @@ class PlayerCounterState : CharacterCounterState
 
         if (counterEnemies.length == 1)
         {
-            SingleCounter();
+            if (!EnvironmentCounter())
+                SingleCounter();
         }
 
         // if (counterEnemies.length > 1)
@@ -1049,9 +1050,9 @@ class PlayerCounterState : CharacterCounterState
         }
     }
 
-    void EnvironmentalCounter()
+    bool EnvironmentCounter()
     {
-
+        return false;
     }
 };
 

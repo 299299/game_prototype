@@ -590,6 +590,7 @@ class CharacterCounterState : CharacterState
     Array<Motion@>@     backLegMotions;
     Array<Motion@>@     doubleMotions;
     Array<Motion@>@     tripleMotions;
+    Array<Motion@>@     environmentMotions;
 
     Motion@             currentMotion;
     int                 state; // sub state

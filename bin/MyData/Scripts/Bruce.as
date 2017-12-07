@@ -13,6 +13,7 @@ Array<Motion@> bruce_counter_leg_front_motions;
 Array<Motion@> bruce_counter_leg_back_motions;
 Array<Motion@> bruce_counter_double_motions;
 Array<Motion@> bruce_counter_triple_motions;
+Array<Motion@> bruce_counter_environment_motions;
 
 class BruceStandState : PlayerStandState
 {
@@ -207,6 +208,7 @@ class BruceCounterState : PlayerCounterState
         @backLegMotions = bruce_counter_leg_back_motions;
         @doubleMotions = bruce_counter_double_motions;
         @tripleMotions = bruce_counter_triple_motions;
+        @environmentMotions = bruce_counter_environment_motions;
     }
 };
 

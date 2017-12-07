@@ -28,6 +28,7 @@ Array<Motion@> thug_counter_leg_front_motions;
 Array<Motion@> thug_counter_leg_back_motions;
 Array<Motion@> thug_counter_double_motions;
 Array<Motion@> thug_counter_triple_motions;
+Array<Motion@> thug_counter_environment_motions;
 
 class ThugStandState : MultiAnimationState
 {
@@ -414,6 +415,7 @@ class ThugCounterState : CharacterCounterState
         @backLegMotions = thug_counter_leg_back_motions;
         @doubleMotions = thug_counter_double_motions;
         @tripleMotions = thug_counter_triple_motions;
+        @environmentMotions = thug_counter_environment_motions;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)

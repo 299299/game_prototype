@@ -18,6 +18,7 @@ int test_counter_index = 0;
 int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 int test_attack_id = 0;
+int test_environment_counter_index = 0;
 
 void ShootBox(Scene@ _scene)
 {
@@ -215,6 +216,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         TestAnimations_Group_4();
     else if (key == KEY_H)
         TestAnimations_Group_Beat();
+    else if (key == KEY_V)
+        TestAnimations_Group_5();
     else if (key == KEY_E)
     {
         Array<String> testAnimations;
@@ -505,6 +508,32 @@ void TestAnimations_Group_4()
     thugAnims.Push(thugAnim + "_02");
     thugAnims.Push(thugAnim + "_03");
     TestAnimation_Group(playerAnim, thugAnims);
+}
+
+void TestAnimations_Group_5()
+{
+    String preFix = "BM";
+    Array<String> tests =
+    {
+        "Environment_Counter_128_Back_02",
+        "Environment_Counter_128_Front_01",
+        "Environment_Counter_128_Left_01",
+        "Environment_Counter_128_Right_01",
+        "Environment_Counter_Wall_Back_02",
+        "Environment_Counter_Wall_Front_01",
+        "Environment_Counter_Wall_Front_02",
+        "Environment_Counter_Wall_Left_02",
+        "Environment_Counter_Wall_Right_02",
+        "Environment_Counter_Wall_Right"
+    };
+    String test = tests[test_environment_counter_index];
+    test_environment_counter_index ++;
+    if (test_environment_counter_index >= int(tests.length))
+        test_environment_counter_index = 0;
+    String playerAnim = preFix + "_TG_Counter/" + test;
+    Array<String> thugAnims;
+    String thugAnim = "TG_" + preFix + "_Counter/" + test;
+    TestAnimation_Group_s(playerAnim, thugAnim);
 }
 
 void TestCounter(float range = MAX_COUNTER_DIST)

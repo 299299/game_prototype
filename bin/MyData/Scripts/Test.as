@@ -371,6 +371,7 @@ class BM_Game_MotionManager : MotionManager
         bruce_counter_leg_back_motions.Clear();
         bruce_counter_double_motions.Clear();
         bruce_counter_triple_motions.Clear();
+        bruce_counter_environment_motions.Clear();
 
         thug_counter_arm_front_motions.Clear();
         thug_counter_arm_back_motions.Clear();
@@ -378,6 +379,7 @@ class BM_Game_MotionManager : MotionManager
         thug_counter_leg_back_motions.Clear();
         thug_counter_double_motions.Clear();
         thug_counter_triple_motions.Clear();
+        thug_counter_environment_motions.Clear();
 
         MotionManager::Stop();
     }

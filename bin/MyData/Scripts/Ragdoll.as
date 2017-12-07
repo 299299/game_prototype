@@ -580,7 +580,7 @@ class Ragdoll : ScriptObject
         }
 
         pelvis_bone.position = Vector3(0, 0, 0);
-        rootNode.worldPosition = dest_root_pos;
+        rootNode.worldPosition = FilterPosition(dest_root_pos);
 
         Quaternion q(90, 0, -90);
         pelvis_bone.rotation = q;
