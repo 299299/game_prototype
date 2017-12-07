@@ -185,7 +185,8 @@ class PlayerAttackState : CharacterState
             for (uint i=0; i<attacks.length; ++i)
             {
                 AttackMotion@ am = attacks[i];
-                LogPrint("AttackMotion name="  + am.motion.name  + " impactDist="+ am.impactDist);
+                if (d_log)
+                    LogPrint("AttackMotion name="  + am.motion.name  + " impactDist="+ am.impactDist);
                 float d = Abs(am.impactDist - toEnenmyDistance);
                 if (d < dist_attack)
                 {

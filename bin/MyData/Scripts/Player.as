@@ -230,7 +230,7 @@ class Player : Character
             Enemy@ e = em.enemyList[i];
             if (!e.HasFlag(flags))
             {
-                // if (d_log)
+                if (d_log)
                     LogPrint(e.GetName() + " no flag: " + flags);
                 gIntCache.Push(-1);
                 continue;
@@ -243,7 +243,7 @@ class Player : Character
             float dist = posDiff.length;
             if (dist > maxDiffDist)
             {
-                //if (d_log)
+                if (d_log)
                     LogPrint(e.GetName() + " far way from player");
                 gIntCache.Push(-1);
                 continue;
@@ -253,12 +253,12 @@ class Player : Character
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
 
-            //if (d_log)
+            if (d_log)
                 LogPrint(e.GetName() + " enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             if (Abs(diffAngle) > maxDiffAngle / 2.0f)
             {
-                //if (d_log)
+                if (d_log)
                     LogPrint(e.GetName() + " diffAngle=" + diffAngle + " too large");
                 gIntCache.Push(-1);
                 continue;
@@ -283,7 +283,7 @@ class Player : Character
                 gDebugMgr.AddLine(myPos, ePos, TARGET_COLOR);
             }
 
-            //if (d_log)
+            if (d_log)
                 LogPrint("Enemy " + e.GetName() + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 

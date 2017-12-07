@@ -1223,7 +1223,9 @@ class Thug : Enemy
 
     bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD))
+        if (HasFlag(FLAGS_NO_MOVE))
+            return false;
+        if (!HasFlag(FLAGS_COLLISION_AVOIDENCE))
             return false;
         float dist = GetTargetDistance();
         if (dist >= max_dist)
@@ -1234,7 +1236,7 @@ class Thug : Enemy
         if (RandomInt(2) == 1)
             index += 4;
 
-        // LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
+        LogPrint(GetName() + " KeepDistanceWithPlayer index=" + index + " dist=" + dist);
         sceneNode.vars[ANIMATION_INDEX] = index;
         ChangeState("StepMoveState");
         return true;
@@ -1242,6 +1244,8 @@ class Thug : Enemy
 
     void KeepDistanceWithCharacter(Character@ c)
     {
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD))
+            return;
         int index = RadialSelectAnimation(c.GetNode().worldPosition, 4);
         //if (RandomInt(2) == 1)
         //    index += 3;

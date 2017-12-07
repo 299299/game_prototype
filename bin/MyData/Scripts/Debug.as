@@ -139,9 +139,9 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (drawDebug > 3)
             drawDebug = 0;
 
-        Text@ text = ui.root.GetChild("debug", true);
-        if (text !is null)
-            text.visible = drawDebug != 0;
+        //Text@ text = ui.root.GetChild("debug", true);
+        //if (text !is null)
+        //    text.visible = drawDebug != 0;
     }
     else if (key == KEY_2)
         debugHud.ToggleAll();

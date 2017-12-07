@@ -758,11 +758,13 @@ class CharacterRagdollState : CharacterState
             {
                 if (ownner.health > 0)
                 {
+                    LogPrint(ownner.GetName() + " Finished Ragdoll PlayCurrentPose + getup.");
                     ownner.PlayCurrentPose();
                     ownner.ChangeState("GetUpState");
                 }
                 else
                 {
+                    LogPrint(ownner.GetName() + " Finished Ragdoll dead.");
                     ownner.ChangeState("DeadState");
                 }
             }
@@ -775,6 +777,12 @@ class CharacterRagdollState : CharacterState
         LogPrint(ownner.GetName() + " Enter RagdollState");
         CharacterState::Enter(lastState);
         ownner.SetPhysics(false);
+    }
+
+    void Exit(State@ nextState)
+    {
+        LogPrint(ownner.GetName() + " Exit RagdollState nextState is " + nextState.name);
+        CharacterState::Exit(nextState);
     }
 };
 
@@ -791,6 +799,8 @@ class CharacterGetUpState : MultiMotionState
 
     void Enter(State@ lastState)
     {
+        LogPrint(ownner.GetName() + " get up.");
+
         state = 0;
         selectIndex = PickIndex();
         if (selectIndex >= int(motions.length))
@@ -803,6 +813,7 @@ class CharacterGetUpState : MultiMotionState
         //if (blend_to_anim)
         //    ragdollToAnimTime = 0.2f;
         ownner.PlayAnimation(motion.animationName, LAYER_MOVE, false, ragdollToAnimTime, 0.0f, 0.0f);
+        ownner.SetPhysics(true);
         CharacterState::Enter(lastState);
     }
 
@@ -1317,6 +1328,7 @@ class Character : GameObject
     void SetPhysics(bool b)
     {
         SetNodeEnabled("Collision", b);
+        agent.enabled = b;
     }
 
     void PlayRandomSound(int type)

@@ -190,8 +190,9 @@ void CreateUI()
     Text@ text = ui.root.CreateChild("Text", "debug");
     text.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
     text.SetPosition(5, 50);
-    text.color = Color(0, 0, 1);
+    text.color = YELLOW;
     text.priority = -99999;
+    text.visible = false;
     // text.textEffect = TE_SHADOW;
 
     gInput.CreateGUI();

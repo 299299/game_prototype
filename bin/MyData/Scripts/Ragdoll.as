@@ -169,8 +169,7 @@ class Ragdoll : ScriptObject
             return;
 
         int old_state = state;
-        if (d_log)
-            LogPrint(rootNode.name + " Ragdoll ChangeState from " + old_state + " to " + newState);
+        LogPrint(rootNode.name + " RagdollComponent ChangeState from " + old_state + " to " + newState);
         state = newState;
 
         if (newState == RAGDOLL_STATIC)
