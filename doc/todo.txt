@@ -12,3 +12,5 @@ Enviromental Counter
 
 AI Avoid Out of zone
  -> use CrowdManager
+
+ Attack Thug state bug fix
