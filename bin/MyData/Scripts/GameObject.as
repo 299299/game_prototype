@@ -318,3 +318,17 @@ Vector3 FilterPosition(const Vector3&in position)
     z = Clamp(z, radius - WORLD_HALF_SIZE.z, WORLD_HALF_SIZE.z - radius);
     return Vector3(x, position.y, z);
 }
+
+bool IsOutOfWorld(const Vector3&in position)
+{
+    float x = position.x;
+    float z = position.z;
+    float radius = COLLISION_RADIUS + 1.0f;
+    if (x < (radius - WORLD_HALF_SIZE.x) || x > (WORLD_HALF_SIZE.x - radius))
+        return true;
+    if (z < (radius - WORLD_HALF_SIZE.z) || z > (WORLD_HALF_SIZE.z - radius))
+        return true;
+    return false;
+}
+
+

@@ -903,6 +903,7 @@ class Character : GameObject
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
     RigidBody@              collisionBody;
+    CrowdAgent@             agent;
 
     Vector3                 startPosition;
     Quaternion              startRotation;
@@ -977,6 +978,13 @@ class Character : GameObject
         body.trigger = true;
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
+
+        agent = sceneNode.CreateComponent("CrowdAgent");
+        agent.height = CHARACTER_HEIGHT;
+        agent.maxSpeed = 11.6f;
+        agent.maxAccel = 6.0f;
+        agent.updateNodePosition = false;
+        agent.radius = COLLISION_RADIUS;
 
         SubscribeToEvent(sceneNode, "LogicEvent", "HandleLogicEvent");
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");

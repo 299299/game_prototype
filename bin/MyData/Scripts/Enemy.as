@@ -6,9 +6,6 @@
 
 class Enemy : Character
 {
-    int zoneToPlayer = -1;
-    int targetZoneToPlayer = -1;
-
     void ObjectStart()
     {
         Character::ObjectStart();
@@ -39,12 +36,6 @@ class Enemy : Character
     bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
     {
         return false;
-    }
-
-    void UpdateZone()
-    {
-        zoneToPlayer = GetDirectionZone(target.GetNode().worldPosition, sceneNode.worldPosition, NUM_ZONE_DIRECTIONS);
-        // Print(GetName() + " zoneToPlayer = " + zoneToPlayer);
     }
 };
 
@@ -211,7 +202,6 @@ class EnemyManager : ScriptObject
         for (uint i=0; i<enemyList.length; ++i)
         {
             Enemy@ e = enemyList[i];
-            e.UpdateZone();
             float dis = e.GetTargetDistance(e.target.GetNode().worldPosition);
             if (dis <= AI_NEAR_DIST)
                 num_of_near ++;
@@ -222,49 +212,16 @@ class EnemyManager : ScriptObject
         }
     }
 
-    Vector3 FindGoodTargetPosition(Enemy@ self, float radius)
+    Vector3 FindTargetPosition(Enemy@ self, float radius)
     {
-        for (uint i=0; i<zoneDirCache.length; ++i)
-            zoneDirCache[i] = 0;
-
-        for (uint i=0; i<enemyList.length; ++i)
-        {
-            Enemy@ e = enemyList[i];
-            if (e is self)
-                continue;
-
-            if (e.zoneToPlayer >= 0)
-                zoneDirCache[e.zoneToPlayer] = zoneDirCache[e.zoneToPlayer] + 1;
-            if (e.targetZoneToPlayer >= 0)
-                zoneDirCache[e.targetZoneToPlayer] = zoneDirCache[e.targetZoneToPlayer] + 1;
-        }
-
-        gIntCache.Clear();
-        uint least_num = enemyList.length + 1;
-        int best_dir = -1;
-        for (uint i=0; i<NUM_ZONE_DIRECTIONS; ++i)
-        {
-            if (zoneDirCache[i] < least_num)
-            {
-                best_dir = int(i);
-                least_num = zoneDirCache[i];
-            }
-
-            if (zoneDirCache[i] == 0)
-                gIntCache.Push(i);
-        }
-
-        if (!gIntCache.empty)
-            best_dir = gIntCache[RandomInt(gIntCache.length)];
-        float zone_degree = 360 / NUM_ZONE_DIRECTIONS;
-        float degree_min = best_dir * zone_degree - zone_degree/2 - 10;
-        float degree_max = best_dir * zone_degree + zone_degree/2 - 10;
-        float degree = Random(degree_min, degree_max);
-        Vector3 v(radius * Sin(degree), 0, radius * Cos(degree));
-        v += self.target.GetNode().worldPosition;
-        v = FilterPosition(v);
-        LogPrint(self.GetName() + " FindGoodTargetPosition best_dir=" + best_dir + " degree=" + degree + " v=" + v.ToString());
-        return v;
+        Scene@ scene_ = script.defaultScene;
+        CrowdManager@ crowdManager = scene_.GetComponent("CrowdManager");
+        if (crowdManager is null)
+            return Vector3();
+        Player@ p = GetPlayer();
+        if (p is null)
+            return Vector3();
+        return crowdManager.GetRandomPointInCircle(p.GetNode().worldPosition, self.agent.radius, self.agent.queryFilterType);
     }
 
     void SendEvent(const String&in eventName, VariantMap& eventData)

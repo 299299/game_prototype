@@ -123,7 +123,7 @@ class ThugStandState : MultiAnimationState
             if (num_near_thugs < MAX_NUM_OF_NEAR)
                 range = AI_NEAR_DIST;
 
-            Vector3 v = em.FindGoodTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST - 1.0f);
+            Vector3 v = em.FindTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST - 1.0f);
             // bool can_i_see_target = (ownner.GetTargetSightBlockedNode(v) is null);
             LogPrint(ownner.GetName() + " far away, tryinng to approach v=" + v.ToString());
             // if (can_i_see_target)
@@ -204,6 +204,18 @@ class ThugStepMoveState : MultiMotionState
     float GetThreatScore()
     {
         return 0.333f;
+    }
+
+    void Enter(State@ lastState)
+    {
+        MultiMotionState::Enter(lastState);
+        Motion@ m = motions[PickIndex()];
+        Vector3 futurePos = m.GetFuturePosition(ownner, m.endTime);
+        if (IsOutOfWorld(futurePos))
+        {
+            LogPrint(ownner.GetName() + " step move out of world, break.");
+            ownner.ChangeStateQueue(STAND_STATE);
+        }
     }
 };
 
@@ -302,15 +314,7 @@ class ThugRunToTargetState : SingleMotionState
     {
         SingleMotionState::Enter(lastState);
         targetPosition = ownner.GetNode().vars[TARGET].GetVector3();
-        cast<Enemy>(ownner).targetZoneToPlayer = GetDirectionZone(ownner.target.GetNode().worldPosition, targetPosition, NUM_ZONE_DIRECTIONS);
-        LogPrint(ownner.GetName() + " targetZoneToPlayer=" + cast<Enemy>(ownner).targetZoneToPlayer);
         ownner.ClearAvoidance();
-    }
-
-    void Exit(State@ nextState)
-    {
-        SingleMotionState::Exit(nextState);
-        cast<Enemy>(ownner).targetZoneToPlayer = -1;
     }
 
     void FixedUpdate(float dt)
@@ -887,9 +891,6 @@ class Thug : Enemy
         attackDamage = one_shot_kill ? 9999 : 20;
 
         walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
-
-        UpdateZone();
-        LogPrint(GetName() + " start, zoneToPlayer = " + zoneToPlayer);
     }
 
     void Stop()
