@@ -515,10 +515,10 @@ void TestAnimations_Group_5()
     String preFix = "BM";
     Array<String> tests =
     {
-        "Environment_Counter_128_Back_02",
+        /*"Environment_Counter_128_Back_02",
         "Environment_Counter_128_Front_01",
         "Environment_Counter_128_Left_01",
-        "Environment_Counter_128_Right_01",
+        "Environment_Counter_128_Right_01",*/
         "Environment_Counter_Wall_Back_02",
         "Environment_Counter_Wall_Front_01",
         "Environment_Counter_Wall_Front_02",

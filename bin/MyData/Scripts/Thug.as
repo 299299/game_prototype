@@ -1366,11 +1366,11 @@ void CreateThugCombatMotions()
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02"));
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03"));
 
-    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Back_02"));
+    /*thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Back_02"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Front_01"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Left_01"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_01"));
-    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_02"));
+    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_02"));*/
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Back_02"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02"));

@@ -1055,6 +1055,8 @@ class PlayerCounterState : CharacterCounterState
     bool EnvironmentCounter()
     {
         Enemy@ e = counterEnemies[0];
+        e.ChangeState("CounterState");
+        ownner.SetTarget(e);
         Node@ eNode = e.GetNode();
         Vector3 ePos = eNode.worldPosition;
         Ray r(ePos, Vector3(0, 0, 1));
@@ -1065,6 +1067,44 @@ class PlayerCounterState : CharacterCounterState
         PhysicsRaycastResult back_result = PhysicsRaycast(ePos, Vector3(0, 0, -1), detect_range, COLLISION_LAYER_LANDSCAPE);
         PhysicsRaycastResult left_result = PhysicsRaycast(ePos, Vector3(-1, 0, 0), detect_range, COLLISION_LAYER_LANDSCAPE);
 
+        Vector3 myPos = ownner.GetNode().worldPosition;
+
+        if (front_result.body !is null)
+        {
+            int bestIndex = -1;
+            float min_error_sqr = 99999;
+            Vector3 basePosition = front_result.position;
+            float baseRotation = 180;
+            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
+
+            for (uint i=0; i<environmentMotions.length; ++i)
+            {
+                Motion@ playerMotion = environmentMotions[i];
+                Motion@ enemyMotion = s.environmentMotions[i];
+                Vector4 v = environmentCounterStartOffsets[i];
+                Vector4 vt_player = GetTargetTransform(basePosition, baseRotation, Vector3(v.x, v.y, v.z), v.w, playerMotion);
+                Vector4 vt_enemey = GetTargetTransform(basePosition, baseRotation, Vector3(v.x, v.y, v.z), v.w, enemyMotion);
+                gDebugMgr.AddSphere(Vector3(vt_player.x, vt_player.y, vt_player.z), 0.25f, BLUE, 2);
+                gDebugMgr.AddSphere(Vector3(vt_enemey.x, vt_enemey.y, vt_enemey.z), 0.25f, RED, 2);
+
+                float err_player = (Vector3(vt_player.x, myPos.y, vt_player.z) - myPos).lengthSquared;
+                float err_enemy = (Vector3(vt_enemey.x, vt_enemey.y, vt_enemey.z) - ePos).lengthSquared;
+                float err_sum = err_player + err_enemy;
+                if (err_sum < min_error_sqr)
+                {
+                    bestIndex = int(i);
+                    min_error_sqr = err_sum;
+                }
+            }
+
+            if (bestIndex >= 0)
+            {
+                Print("pick environment motions " + environmentMotions[bestIndex].name);
+            }
+
+            ownner.GetScene().updateEnabled = false;
+            //return true;
+        }
         return false;
     }
 };

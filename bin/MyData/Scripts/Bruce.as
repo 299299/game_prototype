@@ -209,6 +209,13 @@ class BruceCounterState : PlayerCounterState
         @doubleMotions = bruce_counter_double_motions;
         @tripleMotions = bruce_counter_triple_motions;
         @environmentMotions = bruce_counter_environment_motions;
+
+        environmentCounterStartOffsets.Push(Vector4(3.9, 0, 0, -90));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, -3.0, 0));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, -4.21, 0));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, -3.7, 0));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, 0.4052, 180));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, -5.41, 0));
     }
 };
 
@@ -393,17 +400,17 @@ void CreateBruceCombatMotions()
     bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB"));
     bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC"));
 
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Back_02"));
+    /*bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Back_02"));
     bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Front_01"));
     bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Left_01"));
     bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_01"));
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_02"));
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Back_02"));
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_01"));
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_02"));
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Left_02"));
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right"));
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_02"));*/
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Back_02")); // wall (3.9,0,0) -90
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_01")); // wall (0,0,-3) 0
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_02")); // wall (0,0,-4.21) 0
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Left_02")); // wall(0,0,-3.7) 0
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right")); // wall (0,0,0.4052) 180
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02")); // wall (0,0,0-5.41) 0
 
     preFix = "BM_Death_Primers/";
     Global_CreateMotion(preFix + "Death_Front");
