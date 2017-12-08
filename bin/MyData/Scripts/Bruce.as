@@ -360,11 +360,12 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
-    Global_CreateMotion_InFolder("BM_Attack/", "", null, kMotion_Turn);
+    Global_CreateMotion_InFolder("BM_Attack/", null, null, kMotion_Turn);
 
     preFix = "BM_TG_Counter/";
     Array<Motion@> counter_motions;
-    Global_CreateMotion_InFolder(preFix, "Double_Counter_", counter_motions);
+    Array<String> prefixToIgnore = {"Double_Counter_", "Environment_Counter_"};
+    Global_CreateMotion_InFolder(preFix, prefixToIgnore, counter_motions);
     const String arm_front_prefx = preFix + "Counter_Arm_Front";
     const String leg_front_prefx = preFix + "Counter_Leg_Front";
     const String arm_back_prefx = preFix + "Counter_Arm_Back";
@@ -381,16 +382,28 @@ void CreateBruceCombatMotions()
         else if (m.name.StartsWith(leg_back_prefx))
             bruce_counter_leg_back_motions.Push(m);
     }
-    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90));
-    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsB", kMotion_XZR, kMotion_XZR, -1, false, 90));
-    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsD", kMotion_XZR, kMotion_XZR, -1, false, -90));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsA"));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsB"));
+    bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsD"));
     bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsE"));
     bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsF"));
     bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsG"));
     bruce_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsH"));
-    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA", kMotion_XZR, kMotion_XZR, -1, false, 90));
-    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB", kMotion_XZR, kMotion_XZR, -1, false, -90));
-    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC", kMotion_XZR, kMotion_XZR, -1, false, -90));
+    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA"));
+    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsB"));
+    bruce_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC"));
+
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Back_02"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Front_01"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Left_01"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_01"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_02"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Back_02"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_01"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_02"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Left_02"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right"));
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02"));
 
     preFix = "BM_Death_Primers/";
     Global_CreateMotion(preFix + "Death_Front");

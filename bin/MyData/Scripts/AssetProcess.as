@@ -56,6 +56,7 @@ const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 const int   PROCESS_TIME_PER_FRAME = 60; // ms
 const float BONE_SCALE = 100.0f;
 const float BIG_HEAD_SCALE = 2.0f;
+const float ROTATION_FIX_DEGREE = 5.0f;
 
 Scene@  processScene;
 
@@ -352,7 +353,7 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
     TranslateAnimation(animationFile, originDiffLS);
 }
 
-float ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, float rotateAngle, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
+void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
     bool dump = motionFlag & kMotion_Ext_Debug_Dump != 0;
     if (d_log)
@@ -368,14 +369,14 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     if (anim is null) {
         ErrorDialog(TITLE, animationFile + " not found!");
         engine.Exit();
-        return 0;
+        return;
     }
 
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     if (translateTrack is null)
     {
         LogPrint(animationFile + " translation track not found!!!");
-        return 0;
+        return;
     }
 
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
@@ -386,20 +387,21 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
 
     bool cutRotation = motionFlag & kMotion_Ext_Rotate_From_Start != 0;
     float firstRotateFromRoot = 0;
-    bool flip = false;
+    bool rotate = false;
     bool footBased = motionFlag & kMotion_Ext_Foot_Based_Height != 0;
     int translateFlag = 0;
+    bool rotateMotion = motionFlag & kMotion_R != 0;
 
     // ==============================================================
     // pre process key frames
-    if (rotateTrack !is null && rotateAngle > 360)
+    if (rotateTrack !is null && rotateMotion)
     {
         firstRotateFromRoot = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
-        if (Abs(firstRotateFromRoot) > 75)
+        if (Abs(firstRotateFromRoot) >= ROTATION_FIX_DEGREE)
         {
-            if (dump)
-                LogPrint(animationFile + " Need to flip rotate track since object is start opposite, rotation=" + firstRotateFromRoot);
-            flip = true;
+            //if (dump)
+            LogPrint(animationFile + " Need to rotate whole animation since the first rotation key is not zero, rotation=" + firstRotateFromRoot);
+            rotate = true;
         }
         startFromOrigin.w = firstRotateFromRoot;
     }
@@ -414,14 +416,11 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
     startFromOrigin.y = diff.y;
     startFromOrigin.z = diff.z;
 
-    if (rotateAngle < 360)
-        RotateAnimation(animationFile, rotateAngle);
-    else if (flip)
-        RotateAnimation(animationFile, 180);
-
+    if (rotate)
+        RotateAnimation(animationFile, -firstRotateFromRoot);
     FixAnimationOrigin(rig, animationFile, motionFlag);
 
-    if (rotateTrack !is null)
+    /*if (rotateTrack !is null)
     {
         for (uint i=0; i<rotateTrack.numKeyFrames; ++i)
         {
@@ -434,12 +433,12 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
             if (i == 0)
                 firstRotateFromRoot = q.eulerAngles.y;
         }
-    }
+    }*/
 
     outKeys.Resize(translateTrack.numKeyFrames);
 
     // process rotate key frames first
-    if ((motionFlag & kMotion_R != 0) && rotateTrack !is null)
+    if (rotateMotion && rotateTrack !is null)
     {
         Quaternion lastRot = rotateTrack.keyFrames[0].rotation;
         float rotateFromStart = cutRotation ? firstRotateFromRoot : 0;
@@ -465,9 +464,9 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         }
     }
 
-    bool rotateMotion = motionFlag & kMotion_R != 0;
-    motionFlag &= (~kMotion_R);
-    if (motionFlag != 0)
+    if ((motionFlag & kMotion_X) != 0 ||
+        (motionFlag & kMotion_Y) != 0 ||
+        (motionFlag & kMotion_Z) != 0)
     {
         Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
@@ -555,11 +554,6 @@ float ProcessAnimation(const String&in animationFile, int motionFlag, int allowM
         }
         LogPrint("---------------------------------------------------------------------------------------");
     }
-
-    if (rotateAngle < 360)
-        return rotateAngle;
-    else
-        return flip ? 180 : 0;
 }
 
 void AssetPostProcess()

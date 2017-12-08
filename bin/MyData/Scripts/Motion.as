@@ -159,8 +159,6 @@ class Motion
     int                     allowMotion;
 
     float                   maxHeight;
-
-    float                   rotateAngle = 361;
     bool                    processed = false;
 
     float                   dockAlignTime;
@@ -212,7 +210,7 @@ class Motion
             return;
 
         gMotionMgr.memoryUse += this.animation.memoryUse;
-        rotateAngle = ProcessAnimation(animationName, motionFlag, allowMotion, rotateAngle, motionKeys, startFromOrigin);
+        ProcessAnimation(animationName, motionFlag, allowMotion, motionKeys, startFromOrigin);
         SetEndFrame(endFrame);
 
         if (!dockAlignBoneName.empty)
@@ -463,7 +461,7 @@ class Motion
 
     float GetStartRot()
     {
-        return -rotateAngle;
+        return startFromOrigin.w;
     }
 
     Vector3 GetVelocity()
@@ -608,8 +606,7 @@ class MotionManager
         int motionFlag = kMotion_XZR,
         int allowMotion = kMotion_XZR,
         int endFrame = -1,
-        bool loop = false,
-        float rotateAngle = 361)
+        bool loop = false)
     {
         Motion@ motion = Motion();
         motion.SetName(name);
@@ -617,7 +614,6 @@ class MotionManager
         motion.allowMotion = allowMotion;
         motion.looped = loop;
         motion.endFrame = endFrame;
-        motion.rotateAngle = rotateAngle;
         motions.Push(motion);
         return motion;
     }
@@ -683,10 +679,10 @@ class MotionManager
 
 MotionManager@ gMotionMgr;
 
-Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_ALL, int endFrame = -1, bool loop = false, float rotateAngle = 361)
+Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_ALL, int endFrame = -1, bool loop = false)
 {
     // LogPrint("Global_CreateMotion " + name);
-    return gMotionMgr.CreateMotion(name, motionFlag, allowMotion, endFrame, loop, rotateAngle);
+    return gMotionMgr.CreateMotion(name, motionFlag, allowMotion, endFrame, loop);
 }
 
 void Global_AddAnimation(const String&in name)
@@ -694,7 +690,7 @@ void Global_AddAnimation(const String&in name)
     gMotionMgr.AddAnimation(name);
 }
 
-void Global_CreateMotion_InFolder(const String&in folder, const String&in preFixToIgnore = "", Array<Motion@>@ motions = null, int motionFlag = kMotion_XZR)
+void Global_CreateMotion_InFolder(const String&in folder, Array<String>@ preFixToIgnore = null, Array<Motion@>@ motions = null, int motionFlag = kMotion_XZR)
 {
     String searchFolder = "MyData/Animations/" + folder;
     if (GetPlatform() == "Android")
@@ -705,11 +701,21 @@ void Global_CreateMotion_InFolder(const String&in folder, const String&in preFix
     LogPrint("Global_CreateMotion_InFolder folder=" + searchFolder + " animations.size=" + animations.length);
     for (uint i=0; i<animations.length; ++i)
     {
-        if (!preFixToIgnore.empty)
+        bool toIgnore = false;
+        if (preFixToIgnore !is null)
         {
-            if (animations[i].StartsWith(preFixToIgnore))
-                continue;
+            for (uint j=0; j<preFixToIgnore.length; ++j)
+            {
+                if (animations[i].StartsWith(preFixToIgnore[j]))
+                {
+                    toIgnore = true;
+                    break;
+                }
+            }
         }
+        if (toIgnore)
+            continue;
+
         Motion@ m = Global_CreateMotion(folder + FileNameToMotionName(animations[i]), motionFlag);
         if (motions !is null)
             motions.Push(m);

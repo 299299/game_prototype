@@ -421,6 +421,7 @@ class Player : Character
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), AI_NEAR_DIST, RED, 32, false);
         // sensor.DebugDraw(debug);
         // debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
+        debug.AddSkeleton(animModel.skeleton, WHITE, false);
     }
 
     void Update(float dt)
