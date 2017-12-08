@@ -216,8 +216,7 @@ class Motion
         if (!dockAlignBoneName.empty)
         {
             Vector3 v = GetBoneWorldPosition(curRig, animationName, dockAlignBoneName, dockAlignTime);
-            if (d_log)
-                LogPrint(this.name + " bone " + dockAlignBoneName + " world-pos=" + v.ToString() + " at time:" + dockAlignTime);
+            LogPrint(this.name + " bone " + dockAlignBoneName + " world-pos=" + v.ToString() + " at time:" + dockAlignTime);
             dockAlignOffset += v;
         }
 

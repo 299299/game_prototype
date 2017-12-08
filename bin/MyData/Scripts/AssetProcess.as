@@ -282,6 +282,8 @@ Vector3 GetBoneWorldPosition(MotionRig@ rig, const String&in animationFile, cons
         return Vector3();
     }
 
+    rig.alignNode.worldPosition = Vector3();
+    rig.alignNode.worldRotation = Quaternion();
     AnimatedModel@ am = rig.alignNode.GetComponent("AnimatedModel");
     am.RemoveAllAnimationStates();
     AnimationState@ state = am.AddAnimationState(anim);
