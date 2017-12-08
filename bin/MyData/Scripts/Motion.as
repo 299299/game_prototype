@@ -81,6 +81,31 @@ void SendAnimationTriger(Node@ _node, const StringHash&in nameHash, int value = 
     _node.SendEvent("AnimationTrigger", data);
 }
 
+Vector4 GetTargetTransform(Node@ baseNode, float baseRotation, Motion@ alignMotion)
+{
+    float r1 = alignMotion.GetStartRot();
+    float r2 = baseRotation;
+    Vector3 s1 = alignMotion.GetStartPos();
+    Vector3 s2 = baseNode.worldPosition;
+
+    float baseYaw = baseNode.worldRotation.eulerAngles.y;
+    float targetRotation = baseYaw + (r1 - r2);
+    Vector3 diff_ws = Quaternion(0, baseYaw - r2, 0) * (s1 - s2);
+    Vector3 targetPosition = baseNode.worldPosition + diff_ws;
+
+    if (d_log)
+    {
+        LogPrint("------------------------------------------------------------------------------------------------------------------------------------------------");
+        LogPrint("GetTargetTransform align-motion=" + alignMotion.name);
+        LogPrint("GetTargetTransform base=" + baseNode.name + " align-start-pos=" + s1.ToString() + " base-start-pos=" + s2.ToString() + " p-diff=" + (s1 - s2).ToString());
+        LogPrint("baseYaw=" + baseYaw + " targetRotation=" + targetRotation + " align-start-rot=" + r1 + " base-start-rot=" + r2 + " r-diff=" + (r1 - r2));
+        LogPrint("basePosition=" + baseNode.worldPosition.ToString() + " diff_ws=" + diff_ws.ToString() + " targetPosition=" + targetPosition.ToString());
+        LogPrint("------------------------------------------------------------------------------------------------------------------------------------------------");
+    }
+
+    return Vector4(targetPosition.x,  targetPosition.y, targetPosition.z, targetRotation);
+}
+
 Vector4 GetTargetTransform(Node@ baseNode, Motion@ alignMotion, Motion@ baseMotion)
 {
     float r1 = alignMotion.GetStartRot();

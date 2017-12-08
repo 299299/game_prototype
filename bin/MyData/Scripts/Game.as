@@ -517,8 +517,9 @@ class TestGameState : GameState
         for (uint i=0; i<scene_.numChildren; ++i)
         {
             Node@ _node = scene_.children[i];
-            LogPrint("_node.name=" + _node.name);
-            if (_node.name.StartsWith("thug"))
+            String name = _node.name;
+            LogPrint("_node.name=" + name);
+            if (name.StartsWith("thug"))
             {
                 nodes_to_remove.Push(_node.id);
                 if (test_enemy_num_override > 0 && enemyNum >= test_enemy_num_override)
@@ -529,15 +530,25 @@ class TestGameState : GameState
                 em.enemyResetRotations.Push(_node.worldRotation);
                 ++enemyNum;
             }
-            else if (_node.name.StartsWith("preload_"))
+            else if (name.StartsWith("preload_"))
                 nodes_to_remove.Push(_node.id);
-            else if (_node.name.StartsWith("light"))
+            else if (name.StartsWith("light"))
             {
                 Light@ light = _node.GetComponent("Light");
                 if (render_features & RF_SHADOWS == 0)
                     light.castShadows = false;
                 light.shadowBias = BiasParameters(0.00025f, 0.5f);
                 light.shadowCascade = CascadeParameters(10.0f, 50.0f, 200.0f, 0.0f, 0.8f);
+            }
+            else if (name.StartsWith("wall"))
+            {
+                /*
+                RigidBody@ rb = _node.GetComponent("RigidBody");
+                if (rb !is null)
+                {
+                    rb.collisionLayer = COLLISION_LAYER_WALL;
+                }
+                */
             }
         }
 

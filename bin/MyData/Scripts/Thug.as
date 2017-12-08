@@ -124,12 +124,12 @@ class ThugStandState : MultiAnimationState
             if (num_near_thugs < MAX_NUM_OF_NEAR)
                 range = AI_NEAR_DIST;
 
-            Vector3 v = em.FindTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST - 1.0f);
+            Vector3 targetPos = em.FindTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST - 1.0f);
             // bool can_i_see_target = (ownner.GetTargetSightBlockedNode(v) is null);
-            LogPrint(ownner.GetName() + " far away, tryinng to approach v=" + v.ToString());
+            LogPrint(ownner.GetName() + " far away, tryinng to approach targetPos=" + targetPos.ToString());
             // if (can_i_see_target)
             {
-                ownner.GetNode().vars[TARGET] = v;
+                ownner.GetNode().vars[TARGET] = targetPos;
                 ownner.ChangeState("RunToTargetState");
             }
             return;

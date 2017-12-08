@@ -497,6 +497,7 @@ class PlayerAttackState : CharacterState
 class PlayerCounterState : CharacterCounterState
 {
     Array<Enemy@>   counterEnemies;
+    Array<Vector4>  environmentCounterStartOffsets;
     int             lastCounterIndex = -1;
     int             lastCounterDirection = -1;
 
@@ -1053,6 +1054,17 @@ class PlayerCounterState : CharacterCounterState
 
     bool EnvironmentCounter()
     {
+        Enemy@ e = counterEnemies[0];
+        Node@ eNode = e.GetNode();
+        Vector3 ePos = eNode.worldPosition;
+        Ray r(ePos, Vector3(0, 0, 1));
+        const float detect_range = 6.0f;
+        ePos.y += CHARACTER_HEIGHT / 2.0f;
+        PhysicsRaycastResult front_result = PhysicsRaycast(ePos, Vector3(0, 0, 1), detect_range, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult right_result = PhysicsRaycast(ePos, Vector3(1, 0, 0), detect_range, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult back_result = PhysicsRaycast(ePos, Vector3(0, 0, -1), detect_range, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult left_result = PhysicsRaycast(ePos, Vector3(-1, 0, 0), detect_range, COLLISION_LAYER_LANDSCAPE);
+
         return false;
     }
 };
