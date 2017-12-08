@@ -81,12 +81,12 @@ void SendAnimationTriger(Node@ _node, const StringHash&in nameHash, int value = 
     _node.SendEvent("AnimationTrigger", data);
 }
 
-Vector4 GetTargetTransform(Node@ baseNode, float baseRotation, Motion@ alignMotion)
+Vector4 GetTargetTransform(Node@ baseNode, float baseRotation, const Vector3& basePosition, Motion@ alignMotion)
 {
     float r1 = alignMotion.GetStartRot();
     float r2 = baseRotation;
     Vector3 s1 = alignMotion.GetStartPos();
-    Vector3 s2 = baseNode.worldPosition;
+    Vector3 s2 = basePosition;
 
     float baseYaw = baseNode.worldRotation.eulerAngles.y;
     float targetRotation = baseYaw + (r1 - r2);
