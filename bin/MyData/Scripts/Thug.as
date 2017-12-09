@@ -209,14 +209,17 @@ class ThugStepMoveState : MultiMotionState
 
     void Enter(State@ lastState)
     {
-        MultiMotionState::Enter(lastState);
-        Motion@ m = motions[PickIndex()];
+        int index = PickIndex();
+        Motion@ m = motions[index];
         Vector3 futurePos = m.GetFuturePosition(ownner, m.endTime);
         if (IsOutOfWorld(futurePos))
         {
-            LogPrint(ownner.GetName() + " step move out of world, break.");
-            ownner.ChangeStateQueue(STAND_STATE);
+            int newIndex = index + 2;
+            newIndex = newIndex % 8;
+            ownner.GetNode().vars[ANIMATION_INDEX] = newIndex;
+            LogPrint(ownner.GetName() + " step move out of world, change index=" + index + " to " + newIndex);
         }
+        MultiMotionState::Enter(lastState);
     }
 };
 
@@ -1257,6 +1260,7 @@ class Thug : Enemy
             index += 4;
 
         sceneNode.vars[ANIMATION_INDEX] = index;
+        LogPrint(GetName() + " KeepDistanceWithCharacter c=" + c.GetName() + " index=" + index);
         ChangeState("StepMoveState");
     }
 
@@ -1372,12 +1376,11 @@ void CreateThugCombatMotions()
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_01"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Right_02"));*/
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Back_02"));
-    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right"));
-    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02"));
-    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Left_02"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_01"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_02"));
-
+    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Left_02"));
+    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right"));
+    thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02"));
 
     preFix = "TG_BM_Beatdown/";
     for (uint i=1; i<=6; ++i)
@@ -1502,6 +1505,16 @@ void AddThugCombatAnimationTriggers()
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_01", 35, 41);
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_02", 35, 45);
     AddRagdollTrigger(preFix + "Double_Counter_3ThugsC_03", 35, 45);
+
+    AddRagdollTrigger(preFix + "Environment_Counter_Wall_Back_02", -1, 80);
+    AddStringAnimationTrigger(preFix + "Environment_Counter_Wall_Back_02", 7, PARTICLE, HEAD);
+
+
+    AddRagdollTrigger(preFix + "Environment_Counter_Wall_Front_01", -1, 40);
+    AddRagdollTrigger(preFix + "Environment_Counter_Wall_Front_02", -1, 50);
+    AddRagdollTrigger(preFix + "Environment_Counter_Wall_Left_02", 38, 45);
+    AddRagdollTrigger(preFix + "Environment_Counter_Wall_Right", -1, 60);
+    AddRagdollTrigger(preFix + "Environment_Counter_Wall_Right_02", -1, 65);
 
     preFix = "TG_Combat/";
     int frame_fixup = 6;

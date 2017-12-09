@@ -211,11 +211,11 @@ class BruceCounterState : PlayerCounterState
         @environmentMotions = bruce_counter_environment_motions;
 
         environmentCounterStartOffsets.Push(Vector4(3.9, 0, 0, -90));
-        environmentCounterStartOffsets.Push(Vector4(0, 0, -3.0, 0));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, -2.8, 0));
         environmentCounterStartOffsets.Push(Vector4(0, 0, -4.21, 0));
         environmentCounterStartOffsets.Push(Vector4(0, 0, -3.7, 0));
-        environmentCounterStartOffsets.Push(Vector4(0, 0, 0.4052, 180));
-        environmentCounterStartOffsets.Push(Vector4(0, 0, -5.41, 0));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, -5.41, 180));
+        environmentCounterStartOffsets.Push(Vector4(0, 0, 4.05, 0));
     }
 };
 
@@ -409,8 +409,8 @@ void CreateBruceCombatMotions()
     bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_01")); // wall (0,0,-3) 0
     bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Front_02")); // wall (0,0,-4.21) 0
     bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Left_02")); // wall(0,0,-3.7) 0
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right")); // wall (0,0,0.4052) 180
-    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02")); // wall (0,0,0-5.41) 0
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right")); // wall (0,0,-5.41) 180
+    bruce_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_Wall_Right_02")); // wall (0,0,4.05) 0
 
     preFix = "BM_Death_Primers/";
     Global_CreateMotion(preFix + "Death_Front");
@@ -720,6 +720,44 @@ void AddBruceCombatAnimationTriggers()
     AddStringAnimationTrigger(animName, 5, PARTICLE, R_HAND);
     AddStringAnimationTrigger(animName, 37, PARTICLE, L_FOOT);
     AddStringAnimationTrigger(animName, 37, COMBAT_SOUND_LARGE, R_HAND);
+    AddAnimationTrigger(animName, 52, READY_TO_FIGHT);
+
+    animName = preFix + "Environment_Counter_Wall_Back_02";
+    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, R_HAND);
+    AddStringAnimationTrigger(animName, 7, PARTICLE, R_HAND);
+    AddStringAnimationTrigger(animName, 44, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 57, COMBAT_SOUND, R_ARM);
+    AddStringAnimationTrigger(animName, 57, COMBAT_SOUND_LARGE, R_ARM);
+    AddAnimationTrigger(animName, 86, READY_TO_FIGHT);
+
+    animName = preFix + "Environment_Counter_Wall_Front_01";
+    AddStringAnimationTrigger(animName, 8, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 8, PARTICLE, L_HAND);
+    AddStringAnimationTrigger(animName, 25, PARTICLE, L_HAND);
+    AddStringAnimationTrigger(animName, 25, COMBAT_SOUND_LARGE, L_HAND);
+    AddAnimationTrigger(animName, 55, READY_TO_FIGHT);
+
+    animName = preFix + "Environment_Counter_Wall_Front_02";
+    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 7, PARTICLE, L_HAND);
+    AddStringAnimationTrigger(animName, 30, COMBAT_SOUND_LARGE, L_HAND);
+    AddAnimationTrigger(animName, 70, READY_TO_FIGHT);
+
+    animName = preFix + "Environment_Counter_Wall_Left_02";
+    AddStringAnimationTrigger(animName, 25, COMBAT_SOUND_LARGE, R_HAND);
+    AddStringAnimationTrigger(animName, 25, PARTICLE, R_HAND);
+    AddAnimationTrigger(animName, 66, READY_TO_FIGHT);
+
+    animName = preFix + "Environment_Counter_Wall_Right";
+    AddStringAnimationTrigger(animName, 46, COMBAT_SOUND_LARGE, R_HAND);
+    AddStringAnimationTrigger(animName, 46, PARTICLE, R_HAND);
+    AddAnimationTrigger(animName, 62, READY_TO_FIGHT);
+
+    animName = preFix + "Environment_Counter_Wall_Right_02";
+    AddStringAnimationTrigger(animName, 7, COMBAT_SOUND, L_HAND);
+    AddStringAnimationTrigger(animName, 7, PARTICLE, L_HAND);
+    AddStringAnimationTrigger(animName, 39, COMBAT_SOUND_LARGE, L_HAND);
+    AddStringAnimationTrigger(animName, 39, PARTICLE, L_HAND);
     AddAnimationTrigger(animName, 52, READY_TO_FIGHT);
 }
 
