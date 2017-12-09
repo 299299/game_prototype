@@ -506,66 +506,6 @@ class PlayerCounterState : CharacterCounterState
         super(c);
     }
 
-    float ChooseBestIndices(Motion@ alignMotion, int index)
-    {
-        Vector4 v4 = GetTargetTransform(ownner.GetNode(), alignMotion, currentMotion);
-        Vector3 v3 = Vector3(v4.x, 0.0f, v4.z);
-
-        float minDistSQR = 999999;
-        int possed = -1;
-
-        for (uint i=0; i<counterEnemies.length; ++i)
-        {
-            Enemy@ e = counterEnemies[i];
-            CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-
-            if (s.index >= 0)
-                continue;
-
-            Vector3 ePos = e.GetNode().worldPosition;
-            Vector3 diff = v3 - ePos;
-            diff.y = 0;
-
-            float disSQR = diff.lengthSquared;
-            if (disSQR < minDistSQR)
-            {
-                minDistSQR = disSQR;
-                possed = i;
-            }
-        }
-
-        Enemy@ e = counterEnemies[possed];
-        if (minDistSQR > GOOD_COUNTER_DIST * GOOD_COUNTER_DIST)
-        {
-            LogPrint(alignMotion.name + " too far, minDistSQR=" + minDistSQR);
-            return 9999;
-        }
-
-        CharacterCounterState@ s = cast<CharacterCounterState>(e.GetState());
-        @s.currentMotion = alignMotion;
-        s.index = possed;
-        s.SetTargetTransform(Vector3(v4.x, e.GetNode().worldPosition.y, v4.z), v4.w);
-        return minDistSQR;
-    }
-
-    float TestTrippleCounterMotions(int i)
-    {
-        for (uint k=0; k<counterEnemies.length; ++k)
-            cast<CharacterCounterState>(counterEnemies[k].GetState()).index = -1;
-
-        CharacterCounterState@ s = cast<CharacterCounterState>(counterEnemies[0].GetState());
-        Array<Motion@>@ motions = tripleMotions;
-        Array<Motion@>@ enemy_motions = s.tripleMotions;
-        @currentMotion = motions[i];
-        Motion@ m1 = enemy_motions[i * 3 + 0];
-        float err1 = ChooseBestIndices(m1, 0);
-        Motion@ m2 = enemy_motions[i * 3 + 1];
-        float err2 = ChooseBestIndices(m2, 1);
-        Motion@ m3 = enemy_motions[i * 3 + 2];
-        float err3 = ChooseBestIndices(m3, 2);
-        return err1 + err2 + err3;
-    }
-
     void Enter(State@ lastState)
     {
         LogPrint("############# PlayerCounterState::Enter ##################");
@@ -613,18 +553,6 @@ class PlayerCounterState : CharacterCounterState
         CharacterCounterState::Exit(nextState);
         counterEnemies.Clear();
         ownner.GetScene().timeScale= 1.0f;
-    }
-
-    void StartAnimating()
-    {
-        StartCounterMotion();
-        gCameraMgr.CheckCameraAnimation(currentMotion.name);
-        for (uint i=0; i<counterEnemies.length; ++i)
-        {
-            State@ state = counterEnemies[i].GetState();
-            CharacterCounterState@ s = cast<CharacterCounterState>(state);
-            s.StartAligning();
-        }
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1077,6 +1005,12 @@ class PlayerCounterState : CharacterCounterState
 
             float err_player = (Vector3(vt_player.x, myPos.y, vt_player.z) - myPos).lengthSquared;
             float err_enemy = (Vector3(vt_enemey.x, vt_enemey.y, vt_enemey.z) - ePos).lengthSquared;
+            if (err_player > GOOD_COUNTER_DIST * GOOD_COUNTER_DIST ||
+                err_enemy > GOOD_COUNTER_DIST * GOOD_COUNTER_DIST)
+            {
+                continue;
+            }
+
             float err_sum = err_player + err_enemy;
             if (err_sum < min_error_sqr)
             {
