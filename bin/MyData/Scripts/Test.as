@@ -40,6 +40,7 @@ enum RenderFeature
 int drawDebug = 2;
 bool bigHeadMode = false;
 bool nobgm = true;
+bool nosound = true;
 
 Node@ musicNode;
 float BGM_BASE_FREQ = 44100;
@@ -70,7 +71,7 @@ bool mobile = false;
 bool one_shot_kill = false;
 bool instant_collision = true;
 bool player_walk = false;
-bool locomotion_turn = true;
+bool locomotion_turn = false;
 bool attack_choose_closest_one = false;
 bool counter_choose_closest_one = false;
 
@@ -84,7 +85,10 @@ void Start()
     LogPrint("Game Running Platform: " + GetPlatform());
     mobile = (GetPlatform() == "Android" || GetPlatform() == "iOS");
     if (mobile)
+    {
         drawDebug = 0;
+    }
+    nosound = !mobile;
 
     dirCache.Resize(4);
     zoneDirCache.Resize(NUM_ZONE_DIRECTIONS);
@@ -126,6 +130,11 @@ void Start()
 
     gGame.Start();
     gGame.ChangeState("LoadingState");
+
+    if (nosound)
+    {
+        audio.masterGain[SOUND_EFFECT] = 0.0f;
+    }
 
     LogPrint("Start Finished !!! ");
 }

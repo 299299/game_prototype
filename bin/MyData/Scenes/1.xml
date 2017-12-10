@@ -7,8 +7,8 @@
 	<attribute name="Elapsed Time" value="1366.13" />
 	<attribute name="Next Replicated Node ID" value="63" />
 	<attribute name="Next Replicated Component ID" value="120" />
-	<attribute name="Next Local Node ID" value="16780685" />
-	<attribute name="Next Local Component ID" value="16778335" />
+	<attribute name="Next Local Node ID" value="16780686" />
+	<attribute name="Next Local Component ID" value="16778347" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -34,7 +34,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="3">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;Materials/Floor_Tile2.xml" />
+			<attribute name="Material" value="Material;Materials/Floor1.xml" />
 		</component>
 		<component type="CollisionShape" id="20">
 			<attribute name="Shape Type" value="StaticPlane" />
@@ -1498,7 +1498,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="108">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
 		</component>
 		<component type="CollisionShape" id="112" />
 		<component type="RigidBody" id="113">
@@ -1516,7 +1516,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="109">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
 		</component>
 		<component type="CollisionShape" id="114" />
 		<component type="RigidBody" id="115">
@@ -1534,7 +1534,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="110">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
 		</component>
 		<component type="CollisionShape" id="116" />
 		<component type="RigidBody" id="117">
@@ -1552,7 +1552,7 @@
 		<attribute name="Variables" />
 		<component type="StaticModel" id="111">
 			<attribute name="Model" value="Model;Models/Box.mdl" />
-			<attribute name="Material" value="Material;" />
+			<attribute name="Material" value="Material;Materials/Wall.xml" />
 		</component>
 		<component type="CollisionShape" id="118" />
 		<component type="RigidBody" id="119">

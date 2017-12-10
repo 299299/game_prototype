@@ -20,6 +20,7 @@ class PlayerAttackState : CharacterState
     Vector3                 targetPosition;
     Vector3                 motionPosition;
     float                   yawPerSec;
+    float                   yawAlignTime = 0.2f;
 
     float                   alignTime = 0.2f;
 
@@ -96,15 +97,12 @@ class PlayerAttackState : CharacterState
             tailNode.worldPosition = attackNode.worldPosition;
         }
 
-        if (state == ATTACK_STATE_ALIGN)
+        /*if (timeInState <= yawAlignTime)
         {
             ownner.motion_deltaRotation += yawPerSec * dt;
-            ownner.motion_velocity = movePerSec;
-        }
-        else
-        {
-            ownner.motion_velocity = Vector3();
-        }
+        }*/
+
+        ownner.motion_velocity = (state == ATTACK_STATE_ALIGN) ? movePerSec : Vector3();
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
@@ -254,14 +252,13 @@ class PlayerAttackState : CharacterState
             targetAngle = 180;
         else if (dir == 3)
             targetAngle = -90;
-        yawPerSec = AngleDiff(targetAngle - currentAngle) / alignTime;
+        yawPerSec = AngleDiff(targetAngle - currentAngle) / yawAlignTime;
 
         LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex +
                 " Pick attack motion=" + currentAttack.motion.animationName +
                 " currentAngle=" + currentAngle + " targetAngle=" + targetAngle +
                 " yawPerSec=" + yawPerSec);
 
-        // yawPerSec = 0;
         if (drawDebug > 0)
         {
             if (attack_choose_closest_one)
