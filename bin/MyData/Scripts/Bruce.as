@@ -93,7 +93,7 @@ class BruceAttackState : PlayerAttackState
     {
         super(c);
 
-         //========================================================================
+        //========================================================================
         // FORWARD
         //========================================================================
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_02", 14, ATTACK_PUNCH, L_HAND);

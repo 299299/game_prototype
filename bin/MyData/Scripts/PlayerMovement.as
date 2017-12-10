@@ -278,3 +278,174 @@ class PlayerRunTurn180State : PlayerTurnState
         SetName("RunTurn180State");
     }
 }
+
+class PlayerDockAlignState : MultiMotionState
+{
+    Array<Vector3>  targetOffsets;
+    int             motionFlagAfterAlign = 0;
+    int             motionFlagBeforeAlign = kMotion_ALL;
+    float           alignTime = 0.1f;
+
+    float           turnSpeed;
+
+    Vector3         motionPositon;
+    Vector3         targetPosition;
+
+    float           motionRotation;
+    float           targetRotation;
+    float           climbBaseHeight;
+    float           dockInTargetBound = 0.25f;
+
+    bool            dockInCheckThinWall = true;
+
+    bool            debug = false;
+
+    PlayerDockAlignState(Character@ c)
+    {
+        super(c);
+    }
+
+    void Update(float dt)
+    {
+        ownner.motion_deltaRotation += turnSpeed*dt;
+        MultiMotionState::Update(dt);
+    }
+
+    void OnMotionAlignTimeOut()
+    {
+        turnSpeed = 0;
+        ownner.motion_velocity = Vector3(0, 0, 0);
+
+        Motion@ m = motions[selectIndex];
+        if (motionFlagAfterAlign != 0 && !m.dockAlignBoneName.empty)
+        {
+            motionRotation = m.GetFutureRotation(ownner, m.endTime);
+            motionPositon = m.GetFuturePosition(ownner, m.endTime);
+
+            targetRotation = PickDockOutRotation();
+            targetPosition = PickDockOutTarget();
+
+            float t = m.endTime - m.dockAlignTime;
+            Vector3 diff = (targetPosition - motionPositon) / t;
+            Vector3 v(0, 0, 0);
+            if (motionFlagAfterAlign & kMotion_X != 0)
+                v.x = diff.x;
+            if (motionFlagAfterAlign & kMotion_Y != 0)
+                v.y = diff.y;
+            if (motionFlagAfterAlign & kMotion_Z != 0)
+                v.z = diff.z;
+            ownner.motion_velocity = v;
+
+            if (motionFlagAfterAlign & kMotion_R != 0)
+                turnSpeed = AngleDiff(targetRotation - motionRotation) / t;
+
+            Print(this.name + " animation:" + m.name + " OnMotionAlignTimeOut vel=" + v.ToString() + " turnSpeed=" + turnSpeed);
+        }
+
+        if (debug)
+            ownner.SetSceneTimeScale(0.0);
+    }
+
+    Vector3 PickDockOutTarget()
+    {
+        return Vector3();
+        //return ownner.dockLine.Project(ownner.GetNode().worldPosition);
+    }
+
+    Vector3 PickDockInTarget()
+    {
+        /*Line@ l = ownner.dockLine;
+        Motion@ m = motions[selectIndex];
+        float t = m.GetDockAlignTime();
+        Vector3 v = m.GetDockAlignPositionAtTime(ownner, ownner.GetCharacterAngle(), t);
+        v = l.Project(v);
+        v = l.FixProjectPosition(v, dockInTargetBound);
+        if (dockInCheckThinWall && l.HasFlag(LINE_THIN_WALL))
+        {
+            Vector3 dir = Quaternion(0, targetRotation, 0) * Vector3(0, 0, -1);
+            float dist = Min(l.size.x, l.size.z) / 2;
+            v += dir.Normalized() * dist;
+        }
+        return v;*/
+        return Vector3();
+    }
+
+    float PickDockInRotation()
+    {
+        /*Vector3 v = ownner.GetNode().worldPosition;
+        Vector3 proj = ownner.dockLine.Project(v);
+        Vector3 dir = proj - v;
+        float r = Atan2(dir.x, dir.z);
+        if (!ownner.dockLine.IsAngleValid(r))
+            r = AngleDiff(r + 180);
+        return r;*/
+        return 0;
+    }
+
+    float PickDockOutRotation()
+    {
+        return PickDockInRotation();
+    }
+
+    Vector3 GetTargetPosition()
+    {
+        return Vector3();
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        debug.AddCross(targetPosition, 0.5f, BLUE, false);
+        debug.AddCross(motionPositon, 0.5f, RED, false);
+        Motion@ m = motions[selectIndex];
+        if (m !is null)
+        {
+            Vector3 v = m.dockAlignBoneName.empty ? ownner.GetNode().worldPosition : ownner.GetNode().GetChild(m.dockAlignBoneName, true).worldPosition;
+            debug.AddLine(v, targetPosition, Color(0.25, 0.75, 0.75), false);
+        }
+
+        DebugDrawDirection(debug, targetPosition, targetRotation, BLUE, 2.0f);
+        DebugDrawDirection(debug, targetPosition, motionRotation, RED, 2.0f);
+
+        MultiMotionState::DebugDraw(debug);
+    }
+
+    void Enter(State@ lastState)
+    {
+        if (debug)
+            ownner.SetSceneTimeScale(0);
+
+        turnSpeed = 0;
+
+        MultiMotionState::Enter(lastState);
+        Motion@ m = motions[selectIndex];
+        targetPosition = GetTargetPosition();
+
+        float t = m.GetDockAlignTime();
+        motionRotation = ownner.GetCharacterAngle(); //m.GetFutureRotation(ownner, t);
+        targetRotation = (motionFlagBeforeAlign & kMotion_R != 0) ? PickDockInRotation() : motionRotation;
+
+        turnSpeed = AngleDiff(targetRotation - motionRotation) / t;
+        motionPositon = m.GetDockAlignPositionAtTime(ownner, targetRotation, t);
+        targetPosition = PickDockInTarget();
+
+        Vector3 vel = (targetPosition - motionPositon) / t;
+        Vector3 filterV = Vector3(0, 0, 0);
+
+        if (motionFlagBeforeAlign & kMotion_X != 0)
+            filterV.x = vel.x;
+        if (motionFlagBeforeAlign & kMotion_Y != 0)
+            filterV.y = vel.y;
+        if (motionFlagBeforeAlign & kMotion_Z != 0)
+            filterV.z = vel.z;
+
+        ownner.motion_velocity = filterV;
+        Print(this.name + " animation:" + m.name + " vel=" + ownner.motion_velocity.ToString() + " turnSpeed=" + turnSpeed);
+    }
+
+    void Exit(State@ nextState)
+    {
+        if (debug)
+            ownner.SetSceneTimeScale(0);
+        MultiMotionState::Exit(nextState);
+    }
+};
