@@ -112,13 +112,13 @@ void DrawDebug(float dt)
     {
         gCameraMgr.DebugDraw(debug);
 
-        DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
+        /*DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
         if (dnm !is null)
             dnm.DrawDebugGeometry(true);
 
         CrowdManager@ cm = scene_.GetComponent("CrowdManager");
         if (cm !is null)
-            cm.DrawDebugGeometry(true);
+            cm.DrawDebugGeometry(true);*/
 
         PhysicsWorld@ pw = scene_.physicsWorld;
         if (pw !is null)
@@ -233,7 +233,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = GetAnimationName("BM_Railing/Railing_Idle");
         //String testName = ("BM_Railing/Railing_Climb_Down_Forward");
         //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
-        String testName = "BM_Climb/Dangle_To_Hang"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
+        String testName = "BM_Attack/Attack_Far_Back_03"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
         //testAnimations.Push("BM_Climb/Dangle_Right");
@@ -599,7 +599,10 @@ void TestAttack()
         @am = s.forwardAttacks[test_attack_id];
     }
 
-    Print("TestAttack " + am.motion.name + " impactDist=" + am.impactDist);
+    String logMsg = "TestAttack " + am.motion.name + " impactDist=" + am.impactDist;
+    Print(logMsg);
+    gDebugMgr.AddHintText(logMsg, YELLOW, 2.5f);
+
     player.TestAnimation(am.motion.name);
     test_attack_id ++;
     if (test_attack_id >=  l1 + l2 + l3 + l4)
@@ -661,6 +664,7 @@ enum DebugDrawCommandType
     DEBUG_DRAW_CROSS,
     DEBUG_DRAW_CIRCLE,
     DEBUG_DRAW_TEXT, // todo ...
+    DEBUG_DRAW_HINT,
 };
 
 
@@ -678,47 +682,34 @@ class DebugDrawCommand
     Vector3 v3;
     uint    data1;
     float   data2;
+    String  data3;
 };
-
-void ProcessDebugDrawCommand(DebugRenderer@ debug, const DebugDrawCommand&in cmd)
-{
-    switch (cmd.type)
-    {
-    case DEBUG_DRAW_LINE:
-        debug.AddLine(cmd.v1, cmd.v2, cmd.color, cmd.depth);
-        break;
-    case DEBUG_DRAW_SPHERE:
-        {
-            Sphere sp;
-            sp.Define(cmd.v1, cmd.data2);
-            debug.AddSphere(sp, cmd.color, cmd.depth);
-        }
-        break;
-    case DEBUG_DRAW_NODE:
-        {
-            Node@ node = script.defaultScene.GetNode(cmd.data1);
-            if (node !is null)
-            {
-                debug.AddNode(node, cmd.data2, cmd.depth);
-            }
-        }
-        break;
-    case DEBUG_DRAW_CROSS:
-        debug.AddCross(cmd.v1, cmd.data2, cmd.color, cmd.depth);
-        break;
-    case DEBUG_DRAW_CIRCLE:
-        debug.AddCircle(cmd.v1, cmd.v2, cmd.data2, cmd.color, 32, cmd.depth);
-        break;
-    }
-}
 
 class DebugDrawMgr
 {
     Array<DebugDrawCommand@> commands;
 
+    Text@ hintText;
+
+    void Start()
+    {
+        hintText = ui.root.CreateChild("Text", "hint_debug_text");
+        hintText.SetFont(cache.GetResource("Font", "Fonts/GAEN.ttf"), 30);
+        hintText.SetPosition(5, 50);
+        hintText.color = YELLOW;
+        hintText.priority = -99999;
+        hintText.visible = false;
+    }
+
     void Stop()
     {
         commands.Clear();
+
+        if (hintText !is null)
+        {
+            hintText.Remove();
+            hintText = null;
+        }
     }
 
     void AddCommand(DebugDrawCommand@ cmd)
@@ -732,6 +723,7 @@ class DebugDrawMgr
         if (!s.updateEnabled)
             dt = 0;
         dt *= s.timeScale;
+        hintText.visible = false;
 
         uint processed_num = 0;
         uint cur = 0;
@@ -760,6 +752,43 @@ class DebugDrawMgr
 
         if (num_time_out > 0)
             commands.Resize(commands.length - num_time_out);
+    }
+
+    void ProcessDebugDrawCommand(DebugRenderer@ debug, const DebugDrawCommand&in cmd)
+    {
+        switch (cmd.type)
+        {
+        case DEBUG_DRAW_LINE:
+            debug.AddLine(cmd.v1, cmd.v2, cmd.color, cmd.depth);
+            break;
+        case DEBUG_DRAW_SPHERE:
+            {
+                Sphere sp;
+                sp.Define(cmd.v1, cmd.data2);
+                debug.AddSphere(sp, cmd.color, cmd.depth);
+            }
+            break;
+        case DEBUG_DRAW_NODE:
+            {
+                Node@ node = script.defaultScene.GetNode(cmd.data1);
+                if (node !is null)
+                {
+                    debug.AddNode(node, cmd.data2, cmd.depth);
+                }
+            }
+            break;
+        case DEBUG_DRAW_CROSS:
+            debug.AddCross(cmd.v1, cmd.data2, cmd.color, cmd.depth);
+            break;
+        case DEBUG_DRAW_CIRCLE:
+            debug.AddCircle(cmd.v1, cmd.v2, cmd.data2, cmd.color, 32, cmd.depth);
+            break;
+        case DEBUG_DRAW_HINT:
+            hintText.visible = true;
+            hintText.text = cmd.data3;
+            hintText.color = cmd.color;
+            break;
+        }
     }
 
     void AddLine(const Vector3&in start, const Vector3&in end, const Color& c, float t = 1.0f)
@@ -802,6 +831,16 @@ class DebugDrawMgr
     {
         Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
         AddLine(start, end, color, t);
+    }
+
+    void AddHintText(const String&in text, const Color&in color, float t = 1.0f)
+    {
+        DebugDrawCommand@ cmd = DebugDrawCommand();
+        cmd.type = DEBUG_DRAW_HINT;
+        cmd.color = color;
+        cmd.data3 = text;
+        cmd.time = t;
+        AddCommand(cmd);
     }
 };
 

@@ -136,7 +136,7 @@ class BruceAttackState : PlayerAttackState
 
         AddAttackMotion(rightAttacks, "Attack_Far_Right", 27, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(rightAttacks, "Attack_Far_Right_01", 18, ATTACK_KICK, L_CALF);
-        AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH, R_HAND);
+        // AddAttackMotion(rightAttacks, "Attack_Far_Right_02", 21, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(rightAttacks, "Attack_Far_Right_03", 30, ATTACK_KICK, L_FOOT);
         AddAttackMotion(rightAttacks, "Attack_Far_Right_04", 25, ATTACK_KICK, R_FOOT);
 
@@ -160,7 +160,7 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(backAttacks, "Attack_Far_Back", 14, ATTACK_KICK, L_FOOT);
         AddAttackMotion(backAttacks, "Attack_Far_Back_01", 15, ATTACK_KICK, L_FOOT);
         AddAttackMotion(backAttacks, "Attack_Far_Back_02", 20, ATTACK_PUNCH, R_ARM);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_03", 30, ATTACK_PUNCH, L_HAND);
+        // AddAttackMotion(backAttacks, "Attack_Far_Back_03", 30, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(backAttacks, "Attack_Far_Back_04", 33, ATTACK_KICK, L_FOOT);
 
         //========================================================================
@@ -182,7 +182,7 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH, L_HAND);
 
         AddAttackMotion(leftAttacks, "Attack_Far_Left", 22, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 24, ATTACK_KICK, R_FOOT);
+        // AddAttackMotion(leftAttacks, "Attack_Far_Left_01", 24, ATTACK_KICK, R_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 22, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 21, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_04", 30, ATTACK_KICK, L_FOOT);

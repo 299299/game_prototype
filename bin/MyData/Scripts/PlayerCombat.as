@@ -119,7 +119,7 @@ class PlayerAttackState : CharacterState
             {
                 ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
                 AttackImpact();
-                // ownner.GetScene().updateEnabled = false;
+                ownner.GetScene().updateEnabled = false;
             }
         }
 
