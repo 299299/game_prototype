@@ -482,6 +482,7 @@ class AnimationTestState : CharacterState
         {
             testAnimations[i] = animations[i];
             @testMotions[i] = gMotionMgr.FindMotion(animations[i]);
+            LogHint(ownner.GetName() + " test animation: " + animations[i]);
         }
     }
 

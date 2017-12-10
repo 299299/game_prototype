@@ -599,10 +599,6 @@ void TestAttack()
         @am = s.forwardAttacks[test_attack_id];
     }
 
-    String logMsg = "TestAttack " + am.motion.name + " impactDist=" + am.impactDist;
-    Print(logMsg);
-    gDebugMgr.AddHintText(logMsg, YELLOW, 2.5f);
-
     player.TestAnimation(am.motion.name);
     test_attack_id ++;
     if (test_attack_id >=  l1 + l2 + l3 + l4)
@@ -694,7 +690,7 @@ class DebugDrawMgr
     void Start()
     {
         hintText = ui.root.CreateChild("Text", "hint_debug_text");
-        hintText.SetFont(cache.GetResource("Font", "Fonts/GAEN.ttf"), 30);
+        hintText.SetFont(cache.GetResource("Font", DEBUG_FONT), 30);
         hintText.SetPosition(5, 50);
         hintText.color = YELLOW;
         hintText.priority = -99999;
