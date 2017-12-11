@@ -985,7 +985,7 @@ class Character : GameObject
         float z_offset = 0.25f;
         collisionNode.position = Vector3(0, 0, z_offset);
         CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS*2 - 0.75f, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
+        shape.SetCapsule(COLLISION_RADIUS*2 - 0.5f, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
         RigidBody@ body = collisionNode.CreateComponent("RigidBody");
         body.mass = 10;
         body.collisionLayer = COLLISION_LAYER_CHARACTER;

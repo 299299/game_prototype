@@ -16,6 +16,7 @@ const Vector3 HIT_RAGDOLL_FORCE(25.0f, 10.0f, 0.0f);
 
 const float AI_FAR_DIST = 15.0f;
 const float AI_NEAR_DIST = 7.5f;
+const float AI_MAX_STATE_TIME = 10.0f;
 
 Array<Motion@> thug_counter_arm_front_motions;
 Array<Motion@> thug_counter_arm_back_motions;
@@ -121,7 +122,7 @@ class ThugStandState : MultiAnimationState
         int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
         bool target_can_be_attacked = ownner.target.CanBeAttacked();
 
-        Print(ownner.GetName() + " num_near_thugs=" + num_near_thugs +
+        LogPrint(ownner.GetName() + " num_near_thugs=" + num_near_thugs +
               " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs +
               " target_can_be_attacked=" + target_can_be_attacked);
 
@@ -135,10 +136,8 @@ class ThugStandState : MultiAnimationState
 
                 Vector3 targetPos = em.FindTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST);
                 LogPrint(ownner.GetName() + " far away, tryinng to approach targetPos=" + targetPos.ToString());
-                {
-                    ownner.GetNode().vars[TARGET] = targetPos;
-                    ownner.ChangeState("RunToTargetState");
-                }
+                ownner.GetNode().vars[TARGET] = targetPos;
+                ownner.ChangeState("RunToTargetState");
                 return;
             }
             else
@@ -166,7 +165,7 @@ class ThugStandState : MultiAnimationState
         }
         else
         {
-            int rand_i = RandomInt(3);
+            int rand_i = RandomInt(4);
             Print(ownner.GetName() + " rand_i=" + rand_i);
             if (rand_i == 0)
             {
@@ -278,6 +277,13 @@ class ThugRunToAttackState : SingleMotionState
             return;
         }
 
+        if (timeInState > AI_MAX_STATE_TIME)
+        {
+            LogPrint(ownner.GetName() + " there is something wrong with this guy in RunToAttackState, break.");
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
         SingleMotionState::Update(dt);
     }
 
@@ -331,6 +337,13 @@ class ThugRunToTargetState : SingleMotionState
             return;
         }
 
+        if (timeInState > AI_MAX_STATE_TIME)
+        {
+            LogPrint(ownner.GetName() + " there is something wrong with this guy in RunToTargetState, break.");
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
         SingleMotionState::Update(dt);
     }
 
@@ -354,7 +367,8 @@ class ThugRunToTargetState : SingleMotionState
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        AddDebugMark(debug, targetPosition, Color(1, 0, 0), 1.0);
+        AddDebugMark(debug, targetPosition, RED, 0.25f);
+        debug.AddLine(targetPosition, ownner.GetNode().worldPosition, YELLOW, false);
     }
 };
 

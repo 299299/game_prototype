@@ -11,11 +11,12 @@
 # Enviromental Counter
 # !Player turn foot sync ???
 # Player Attack Animations Check
-#  Attack Thug state bug fix ? can not reproduce NOW
+# Attack Thug state bug fix ? can not reproduce NOW
 # AI Avoid Out of zone -> use CrowdManager
+# Thug Attack Rotate to Player
 
  Player Attack Rotation issue
  Rethinking debug text and Log system -> Debug Hint Message ?
  Ragdoll out of world kill
- Thug Attack Rotate to Player
  Camera Collision
+ AssetProess curRig refactor

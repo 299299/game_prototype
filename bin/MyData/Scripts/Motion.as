@@ -243,11 +243,16 @@ class Motion
                  " timeCost=" + String(time.systemTime - startTime) + " ms");
     }
 
-    void SetDockAlign(const String&in boneName, float alignTime, const Vector3&in offset)
+    void SetDockAlign(const String&in boneName, float alignTime, const Vector3&in offset = Vector3::ZERO)
     {
         dockAlignBoneName = boneName;
         dockAlignOffset = offset;
         dockAlignTime = alignTime;
+    }
+
+    void SetDockAlign(const String&in boneName, int alignFrame, const Vector3&in offset = Vector3::ZERO)
+    {
+        SetDockAlign(boneName, float(alignFrame) * SEC_PER_FRAME, offset);
     }
 
     void SetEndFrame(int frame)
@@ -715,7 +720,9 @@ void Global_CreateMotion_InFolder(const String&in folder, Array<String>@ preFixT
         if (toIgnore)
             continue;
 
-        Motion@ m = Global_CreateMotion(folder + FileNameToMotionName(animations[i]), motionFlag);
+        String name = folder + FileNameToMotionName(animations[i]);
+        Print("Global_CreateMotion(\"" + name + "\");");
+        Motion@ m = Global_CreateMotion(name);
         if (motions !is null)
             motions.Push(m);
     }

@@ -278,10 +278,12 @@ class Player : Character
 
             gIntCache.Push(score);
 
+            /*
             if (drawDebug > 0)
             {
                 gDebugMgr.AddLine(myPos, ePos, TARGET_COLOR);
             }
+            */
 
             if (d_log)
                 LogPrint("Enemy " + e.GetName() + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
@@ -316,6 +318,8 @@ class Player : Character
         {
             gDebugMgr.AddDirection(myPos, targetAngle - maxDiffAngle/2.0f, maxDiffDist, TARGET_COLOR);
             gDebugMgr.AddDirection(myPos, targetAngle + maxDiffAngle/2.0f, maxDiffDist, TARGET_COLOR);
+            if (attackEnemy !is null)
+                gDebugMgr.AddLine(myPos, attackEnemy.GetNode().worldPosition, RED);
         }
 
         LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms \n");

@@ -109,6 +109,7 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_02", 12, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_03", 11, ATTACK_PUNCH, L_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_04", 16, ATTACK_PUNCH, R_HAND);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_05", 13, ATTACK_PUNCH, L_HAND);
 
         AddAttackMotion(forwardAttacks, "Attack_Close_Run_Forward", 12, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward", 25, ATTACK_PUNCH, R_HAND);
@@ -367,7 +368,108 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
-    Global_CreateMotion_InFolder("BM_Attack/");
+    // Global_CreateMotion_InFolder("BM_Attack/");
+    //========================================================================
+    // FORWARD
+    //========================================================================
+    int attackMotionFlags = kMotion_Turn;
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_02", attackMotionFlags).SetDockAlign(L_HAND, 14);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_03", attackMotionFlags).SetDockAlign(L_FOOT, 11);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_04", attackMotionFlags).SetDockAlign(R_FOOT, 20);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_05", attackMotionFlags).SetDockAlign(R_ARM, 20);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_06", attackMotionFlags).SetDockAlign(R_HAND, 20);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_07", attackMotionFlags).SetDockAlign(R_HAND, 16);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_08", attackMotionFlags).SetDockAlign(R_ARM, 18);
+
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward", attackMotionFlags).SetDockAlign(R_HAND, 11);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_01", attackMotionFlags).SetDockAlign(L_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_02", attackMotionFlags).SetDockAlign(L_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_03", attackMotionFlags).SetDockAlign(L_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_04", attackMotionFlags).SetDockAlign(R_HAND, 11);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_05", attackMotionFlags).SetDockAlign(L_HAND, 13);
+
+    Global_CreateMotion("BM_Attack/Attack_Close_Run_Forward", attackMotionFlags).SetDockAlign(R_FOOT, 12);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward", attackMotionFlags).SetDockAlign(R_HAND, 25);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_01", attackMotionFlags).SetDockAlign(R_FOOT, 20);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_02", attackMotionFlags).SetDockAlign(L_FOOT, 20);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_03", attackMotionFlags).SetDockAlign(R_HAND, 22);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_04", attackMotionFlags).SetDockAlign(R_FOOT, 22);
+    Global_CreateMotion("BM_Attack/Attack_Run_Far_Forward", attackMotionFlags).SetDockAlign(R_FOOT, 20);
+
+
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_02", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_03", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_04", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_05", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_06", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_07", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back_08", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Back", attackMotionFlags);
+
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_02", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_03", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_04", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_05", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_06", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_07", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left_08", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Left", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right_03", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right_04", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right_05", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right_06", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right_07", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right_08", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Right", attackMotionFlags);
+
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Back_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Back", attackMotionFlags);
+
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Left_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Left_02", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Left", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Right_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Right_02", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Right", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Back_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Back_02", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Back_04", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Back", attackMotionFlags);
+
+    Global_CreateMotion("BM_Attack/Attack_Far_Left_02", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Left_03", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Left_04", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Left", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Right_01", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Right_03", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Right_04", attackMotionFlags);
+    Global_CreateMotion("BM_Attack/Attack_Far_Right", attackMotionFlags);
+
+    Global_CreateMotion("BM_Attack/Beatdown_Strike_Start_01");
+    Global_CreateMotion("BM_Attack/Beatdown_Test_01");
+    Global_CreateMotion("BM_Attack/Beatdown_Test_02");
+    Global_CreateMotion("BM_Attack/Beatdown_Test_03");
+    Global_CreateMotion("BM_Attack/Beatdown_Test_04");
+    Global_CreateMotion("BM_Attack/Beatdown_Test_05");
+    Global_CreateMotion("BM_Attack/Beatdown_Test_06");
+
+
+    /*
+    Global_CreateMotion("BM_Attack/Attack_Far_Back_03");
+    Global_CreateMotion("BM_Attack/Attack_Far_Left_01");
+    Global_CreateMotion("BM_Attack/Attack_Far_Right_02");
+    Global_CreateMotion("BM_Attack/Attack_StunPush");
+    Global_CreateMotion("BM_Attack/Block_Left");
+    Global_CreateMotion("BM_Attack/Block_Right");
+    Global_CreateMotion("BM_Attack/CapeDistract_Close_Forward");
+    Global_CreateMotion("BM_Attack/CapeDistract_Far_Forward");
+    Global_CreateMotion("BM_Attack/Redirect_push_back");
+    Global_CreateMotion("BM_Attack/Super_Stun_01");
+    Global_CreateMotion("BM_Attack/Super_Stun_02");
+    */
 
     preFix = "BM_TG_Counter/";
     Array<Motion@> counter_motions;

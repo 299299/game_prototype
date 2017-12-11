@@ -110,7 +110,7 @@ void DrawDebug(float dt)
 
     if (drawDebug > 2)
     {
-        gCameraMgr.DebugDraw(debug);
+        // gCameraMgr.DebugDraw(debug);
 
         /*DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
         if (dnm !is null)

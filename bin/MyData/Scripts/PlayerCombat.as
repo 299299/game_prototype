@@ -16,7 +16,6 @@ class PlayerAttackState : CharacterState
     AttackMotion@           currentAttack;
 
     int                     state;
-    Vector3                 movePerSec;
     Vector3                 targetPosition;
     Vector3                 motionPosition;
     float                   yawPerSec;
@@ -97,12 +96,10 @@ class PlayerAttackState : CharacterState
             tailNode.worldPosition = attackNode.worldPosition;
         }
 
-        /*if (timeInState <= yawAlignTime)
+        if (timeInState <= yawAlignTime)
         {
             ownner.motion_deltaRotation += yawPerSec * dt;
-        }*/
-
-        ownner.motion_velocity = (state == ATTACK_STATE_ALIGN) ? movePerSec : Vector3();
+        }
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
@@ -111,6 +108,7 @@ class PlayerAttackState : CharacterState
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
                 ownner.target.RemoveFlag(FLAGS_NO_MOVE);
+                ownner.motion_velocity = Vector3::ZERO;
             }
         }
         else if (state == ATTACK_STATE_BEFORE_IMPACT)
@@ -119,7 +117,7 @@ class PlayerAttackState : CharacterState
             {
                 ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
                 AttackImpact();
-                ownner.GetScene().updateEnabled = false;
+                // ownner.GetScene().updateEnabled = false;
             }
         }
 
@@ -253,6 +251,7 @@ class PlayerAttackState : CharacterState
         else if (dir == 3)
             targetAngle = -90;
         yawPerSec = AngleDiff(targetAngle - currentAngle) / yawAlignTime;
+        yawPerSec = AngleDiff(yawPerSec);
 
         LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex +
                 " Pick attack motion=" + currentAttack.motion.animationName +
@@ -284,7 +283,7 @@ class PlayerAttackState : CharacterState
         }
 
         //ownner.GetScene().updateEnabled = false;
-        // ownner.SetSceneTimeScale(0.1f);
+        //ownner.SetSceneTimeScale(0.1f);
     }
 
     void StartAttack()
@@ -336,10 +335,10 @@ class PlayerAttackState : CharacterState
         if (ownner.target !is null)
         {
             motionPosition = currentAttack.GetImpactPosition(ownner);
-            movePerSec = ( targetPosition - motionPosition ) / alignTime;
-            movePerSec.y = 0;
+            ownner.motion_velocity = ( targetPosition - motionPosition ) / alignTime;
+            ownner.motion_velocity.y = 0;
 
-            LogPrint("PlayerAttack movePerSec=" + movePerSec.ToString());
+            LogPrint("PlayerAttack ownner.motion_velocity=" + ownner.motion_velocity.ToString());
 
             //if (attackEnemy.HasFlag(FLAGS_COUNTER))
             //    slowMotion = true;
@@ -369,7 +368,6 @@ class PlayerAttackState : CharacterState
         slowMotion = false;
         @currentAttack = null;
         state = ATTACK_STATE_ALIGN;
-        movePerSec = Vector3(0, 0, 0);
         StartAttack();
         CharacterState::Enter(lastState);
         // ownner.GetScene().updateEnabled = false;

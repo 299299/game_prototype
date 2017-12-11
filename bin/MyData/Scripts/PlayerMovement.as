@@ -281,10 +281,8 @@ class PlayerRunTurn180State : PlayerTurnState
 
 class PlayerDockAlignState : MultiMotionState
 {
-    Array<Vector3>  targetOffsets;
     int             motionFlagAfterAlign = 0;
     int             motionFlagBeforeAlign = kMotion_ALL;
-    float           alignTime = 0.1f;
 
     float           turnSpeed;
 
@@ -293,11 +291,8 @@ class PlayerDockAlignState : MultiMotionState
 
     float           motionRotation;
     float           targetRotation;
-    float           climbBaseHeight;
+
     float           dockInTargetBound = 0.25f;
-
-    bool            dockInCheckThinWall = true;
-
     bool            debug = false;
 
     PlayerDockAlignState(Character@ c)
@@ -387,11 +382,6 @@ class PlayerDockAlignState : MultiMotionState
         return PickDockInRotation();
     }
 
-    Vector3 GetTargetPosition()
-    {
-        return Vector3();
-    }
-
     void DebugDraw(DebugRenderer@ debug)
     {
         debug.AddCross(targetPosition, 0.5f, BLUE, false);
@@ -418,7 +408,6 @@ class PlayerDockAlignState : MultiMotionState
 
         MultiMotionState::Enter(lastState);
         Motion@ m = motions[selectIndex];
-        targetPosition = GetTargetPosition();
 
         float t = m.GetDockAlignTime();
         motionRotation = ownner.GetCharacterAngle(); //m.GetFutureRotation(ownner, t);
