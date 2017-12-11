@@ -50,7 +50,7 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 3;
+int test_enemy_num_override = 5;
 int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/angrybirds-regular.ttf";
@@ -72,6 +72,8 @@ bool player_walk = false;
 bool locomotion_turn = false;
 bool attack_choose_closest_one = false;
 bool counter_choose_closest_one = false;
+
+int game_state = 0;
 
 const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
 const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);

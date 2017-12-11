@@ -7,8 +7,8 @@
 // --- CONST
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
 const float MIN_TURN_ANGLE = 20;
-const float MIN_THINK_TIME = 0.1f;
-const float MAX_THINK_TIME = 0.6f;
+const float MIN_THINK_TIME = 0.25f;
+const float MAX_THINK_TIME = 1.0f;
 const float PUNCH_DIST = 0.0f;
 const float KICK_DIST = 3.8f;
 const float MAX_ATTACK_RANGE = KICK_DIST;
@@ -61,6 +61,9 @@ class ThugStandState : MultiAnimationState
         if (freeze_ai != 0)
            return;
 
+       if (game_state != GAME_RUNNING)
+            return;
+
         if (timeInState > thinkTime)
         {
             OnThinkTimeOut();
@@ -100,6 +103,7 @@ class ThugStandState : MultiAnimationState
 
         if (ownner.HasFlag(FLAGS_NO_MOVE))
         {
+            Print(ownner.GetName() + " no move change to tant idle");
             ownner.ChangeState("TauntIdleState");
             return;
         }
@@ -115,6 +119,11 @@ class ThugStandState : MultiAnimationState
         float dist = ownner.GetTargetDistance();
         int num_near_thugs = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
         int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
+        bool target_can_be_attacked = ownner.target.CanBeAttacked();
+
+        Print(ownner.GetName() + " num_near_thugs=" + num_near_thugs +
+              " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs +
+              " target_can_be_attacked=" + target_can_be_attacked);
 
         if (dist >= AI_FAR_DIST)
         {
@@ -134,7 +143,7 @@ class ThugStandState : MultiAnimationState
             }
             else
             {
-                if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && ownner.target.CanBeAttacked())
+                if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && target_can_be_attacked)
                 {
                     ownner.ChangeState("RunToAttackState");
                     return;
@@ -143,7 +152,7 @@ class ThugStandState : MultiAnimationState
         }
         else
         {
-             if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && ownner.target.CanBeAttacked())
+             if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && target_can_be_attacked)
             {
                 ownner.ChangeState("RunToAttackState");
                 return;
@@ -158,7 +167,7 @@ class ThugStandState : MultiAnimationState
         else
         {
             int rand_i = RandomInt(3);
-            // Print(ownner.GetName() + " rand_i=" + rand_i);
+            Print(ownner.GetName() + " rand_i=" + rand_i);
             if (rand_i == 0)
             {
                 ownner.ChangeState("TauntingState");

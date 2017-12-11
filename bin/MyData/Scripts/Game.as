@@ -356,6 +356,7 @@ class TestGameState : GameState
         LogPrint("TestGameState ChangeSubState from " + oldState + " to " + newState);
         state = newState;
         timeInState = 0.0f;
+        game_state = newState;
 
         script.defaultScene.updateEnabled = !(newState == GAME_PAUSE);
         fullscreenUI.SetAttributeAnimationSpeed("Opacity", newState == GAME_PAUSE ? 0.0f : 1.0f);
