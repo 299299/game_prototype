@@ -401,8 +401,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
         firstRotateFromRoot = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(firstRotateFromRoot) >= ROTATION_FIX_DEGREE)
         {
-            //if (dump)
-            LogPrint(animationFile + " Need to rotate whole animation since the first rotation key is not zero, rotation=" + firstRotateFromRoot);
+            if (dump)
+                LogPrint(animationFile + " Need to rotate whole animation since the first rotation key is not zero, rotation=" + firstRotateFromRoot);
             rotate = true;
         }
         startFromOrigin.w = firstRotateFromRoot;

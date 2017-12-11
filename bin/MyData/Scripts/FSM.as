@@ -76,6 +76,7 @@ class FSM
 
     ~FSM()
     {
+        //LogPrint("~FSM() ");
         @currentState = null;
         states.Clear();
     }

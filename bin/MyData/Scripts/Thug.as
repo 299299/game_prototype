@@ -6,7 +6,7 @@
 
 // --- CONST
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
-const float MIN_TURN_ANGLE = 30;
+const float MIN_TURN_ANGLE = 25;
 const float MIN_THINK_TIME = 0.25f;
 const float MAX_THINK_TIME = 0.75f;
 const float MAX_ATTACK_RANGE = 3.0f;
@@ -934,8 +934,10 @@ class Thug : Enemy
             return false;
 
         float attackRange = Random(0.0, MAX_ATTACK_RANGE);
-        if ((GetTargetDistance() <= (attackRange + COLLISION_SAFE_DIST)) && Abs(ComputeAngleDiff()) < MIN_TURN_ANGLE)
+        float angleDiff = ComputeAngleDiff();
+        if ((GetTargetDistance() <= (attackRange + COLLISION_SAFE_DIST)) && Abs(angleDiff) < MIN_TURN_ANGLE)
         {
+            Print(GetName() + " start to attack angleDiff=" + angleDiff);
             ChangeState("AttackState");
             return true;
         }
@@ -1306,12 +1308,12 @@ void CreateThugCombatMotions()
 {
     String preFix = "TG_Combat/";
 
-    Global_CreateMotion(preFix + "Attack_Kick");
-    Global_CreateMotion(preFix + "Attack_Kick_01");
-    Global_CreateMotion(preFix + "Attack_Kick_02");
-    Global_CreateMotion(preFix + "Attack_Punch");
-    Global_CreateMotion(preFix + "Attack_Punch_01");
-    Global_CreateMotion(preFix + "Attack_Punch_02");
+    Global_CreateMotion(preFix + "Attack_Kick", kMotion_XZR, kMotion_XZ);
+    Global_CreateMotion(preFix + "Attack_Kick_01", kMotion_XZR, kMotion_XZ);
+    Global_CreateMotion(preFix + "Attack_Kick_02", kMotion_XZR, kMotion_XZ);
+    Global_CreateMotion(preFix + "Attack_Punch", kMotion_XZR, kMotion_XZ);
+    Global_CreateMotion(preFix + "Attack_Punch_01", kMotion_XZR, kMotion_XZ);
+    Global_CreateMotion(preFix + "Attack_Punch_02", kMotion_XZR, kMotion_XZ);
 
     preFix = "TG_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Left");

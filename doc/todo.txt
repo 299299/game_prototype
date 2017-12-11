@@ -17,3 +17,4 @@
  Player Attack Rotation issue
  Rethinking debug text and Log system -> Debug Hint Message ?
  Ragdoll out of world kill
+ Thug Attack Rotate to Player

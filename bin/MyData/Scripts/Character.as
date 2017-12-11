@@ -1011,6 +1011,8 @@ class Character : GameObject
 
     void Stop()
     {
+        ChangeState("StandState");
+        animModel.RemoveAllAnimationStates();
         GameObject::Stop();
         @animCtrl = null;
         @animModel = null;
