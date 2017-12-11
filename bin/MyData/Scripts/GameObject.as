@@ -19,6 +19,7 @@ const uint FLAGS_RUN_TO_ATTACK = (1 << 7);
 const uint FLAGS_DEAD = (1 << 8);
 const uint FLAGS_COLLISION_AVOIDENCE = (1 << 9);
 const uint FLAGS_HIT_RAGDOLL = (1 << 10);
+const uint FLAGS_TAUNT = (1 << 11);
 
 const uint COLLISION_LAYER_LANDSCAPE = (1 << 0);
 const uint COLLISION_LAYER_CHARACTER = (1 << 1);
@@ -175,7 +176,7 @@ class GameObject : ScriptObject
 
     bool ChangeState(const String&in name)
     {
-        if (d_log)
+        // if (d_log)
         {
             String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
             LogPrint(GetName() + " ChangeState from " + oldStateName + " to " + name);

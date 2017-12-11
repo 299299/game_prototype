@@ -6,7 +6,7 @@
 
 const float FULLTURN_THRESHOLD = 125;
 const float COLLISION_RADIUS = 1.5f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 1.8f;
+const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2.0f + 0.1f;
 const float CHARACTER_HEIGHT = 5.0f;
 const float SPHERE_CAST_RADIUS = 0.25f;
 
@@ -912,6 +912,7 @@ class Character : GameObject
     Character@              target;
 
     Node@                   renderNode;
+    Node@                   pelvisNode;
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
@@ -981,8 +982,10 @@ class Character : GameObject
             attackDamage = 9999;
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
+        float z_offset = 0.25f;
+        collisionNode.position = Vector3(0, 0, z_offset);
         CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
+        shape.SetCapsule(COLLISION_RADIUS*2 - 0.75f, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
         RigidBody@ body = collisionNode.CreateComponent("RigidBody");
         body.mass = 10;
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
@@ -991,6 +994,7 @@ class Character : GameObject
         body.trigger = true;
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
+        pelvisNode = renderNode.GetChild(PELVIS, true);
 
         agent = sceneNode.CreateComponent("CrowdAgent");
         agent.height = CHARACTER_HEIGHT;
@@ -1011,12 +1015,15 @@ class Character : GameObject
 
     void Stop()
     {
-        ChangeState("StandState");
         animModel.RemoveAllAnimationStates();
-        GameObject::Stop();
         @animCtrl = null;
         @animModel = null;
+        @collisionBody = null;
+        @agent = null;
         @target = null;
+        @pelvisNode = null;
+        @renderNode = null;
+        GameObject::Stop();
     }
 
     void Remove()
@@ -1330,7 +1337,7 @@ class Character : GameObject
 
     void SetPhysics(bool b)
     {
-        SetNodeEnabled("Collision", b);
+        collisionBody.enabled = b;
         agent.enabled = b;
     }
 
@@ -1371,7 +1378,8 @@ class Character : GameObject
             return;
         if (motion_translateEnabled && GetTargetDistance(t.GetNode()) < dist)
         {
-            LogPrint(GetName() + " is too close to " + t.GetName() + " set translateEnabled to false");
+            if (d_log)
+                LogPrint(GetName() + " is too close to " + t.GetName() + " set translateEnabled to false");
             motion_translateEnabled = false;
         }
     }

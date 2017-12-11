@@ -660,16 +660,6 @@ void AddRagdollTrigger(const String&in name, int prepareFrame, int startFrame)
     AddAnimationTrigger(name, startFrame, RAGDOLL_START);
 }
 
-void AddParticleTrigger(const String&in name, int startFrame, const String&in boneName, const String&in effectName, float duration)
-{
-    VariantMap eventData;
-    eventData[NAME] = ATTACK_CHECK;
-    eventData[VALUE] = effectName;
-    eventData[BONE] = boneName;
-    eventData[DURATION] = duration;
-    Animation_AddTrigger(name, startFrame, eventData);
-}
-
 void AddComplexAttackTrigger(const String&in name, int counterStart, int counterEnd, int attackStart, int attackEnd, const String&in attackBone)
 {
     AddFloatAnimationTrigger(name, counterStart, TIME_SCALE, 0.3f);

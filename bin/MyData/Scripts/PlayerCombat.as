@@ -132,7 +132,7 @@ class PlayerAttackState : CharacterState
                 ownner.SetSceneTimeScale(1.0f);
         }
 
-        ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST);
+        ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST - 0.1f);
 
         bool finished = motion.Move(ownner, dt) == 1;
         if (finished) {

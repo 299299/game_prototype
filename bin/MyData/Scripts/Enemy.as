@@ -33,7 +33,7 @@ class Enemy : Character
         return false;
     }
 
-    bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
+    bool KeepDistanceWithPlayer(float max_dist)
     {
         return false;
     }

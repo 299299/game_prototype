@@ -50,7 +50,7 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 10;
+int test_enemy_num_override = 3;
 int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/angrybirds-regular.ttf";

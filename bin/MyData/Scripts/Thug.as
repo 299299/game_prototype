@@ -6,21 +6,16 @@
 
 // --- CONST
 const String MOVEMENT_GROUP_THUG = "TG_Combat/";
-const float MIN_TURN_ANGLE = 25;
-const float MIN_THINK_TIME = 0.25f;
-const float MAX_THINK_TIME = 0.75f;
-const float MAX_ATTACK_RANGE = 3.0f;
+const float MIN_TURN_ANGLE = 20;
+const float MIN_THINK_TIME = 0.1f;
+const float MAX_THINK_TIME = 0.6f;
+const float PUNCH_DIST = 0.0f;
+const float KICK_DIST = 3.8f;
+const float MAX_ATTACK_RANGE = KICK_DIST;
 const Vector3 HIT_RAGDOLL_FORCE(25.0f, 10.0f, 0.0f);
 
 const float AI_FAR_DIST = 15.0f;
 const float AI_NEAR_DIST = 7.5f;
-
-// -- NON CONST
-float PUNCH_DIST = 0.0f;
-float KICK_DIST = 0.0f;
-float STEP_MAX_DIST = 0.0f;
-float STEP_MIN_DIST = 0.0f;
-float KEEP_DIST_WITH_PLAYER = COLLISION_SAFE_DIST + 0.05f;
 
 Array<Motion@> thug_counter_arm_front_motions;
 Array<Motion@> thug_counter_arm_back_motions;
@@ -47,9 +42,11 @@ class ThugStandState : MultiAnimationState
     void Enter(State@ lastState)
     {
         thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
-        if (d_log)
-            LogPrint(ownner.GetName() + " thinkTime=" + thinkTime);
         ownner.ClearAvoidance();
+        int r = 3;
+        int rand_i = RandomInt(r);
+        ownner.GetNode().vars[ATTACK_TYPE] = (rand_i == (r-1)) ? ATTACK_KICK : ATTACK_PUNCH;
+        LogPrint(ownner.GetName() + " Stand Random AttackType rand_i=" + rand_i + " thinkTime=" + thinkTime);
         MultiAnimationState::Enter(lastState);
     }
 
@@ -117,48 +114,64 @@ class ThugStandState : MultiAnimationState
         EnemyManager@ em = GetEnemyMgr();
         float dist = ownner.GetTargetDistance();
         int num_near_thugs = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
+        int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
 
         if (dist >= AI_FAR_DIST)
         {
-            float range = AI_FAR_DIST;
-            if (num_near_thugs < MAX_NUM_OF_NEAR)
-                range = AI_NEAR_DIST;
-
-            Vector3 targetPos = em.FindTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST - 1.0f);
-            // bool can_i_see_target = (ownner.GetTargetSightBlockedNode(v) is null);
-            LogPrint(ownner.GetName() + " far away, tryinng to approach targetPos=" + targetPos.ToString());
-            // if (can_i_see_target)
+            if (RandomInt(2) == 0)
             {
-                ownner.GetNode().vars[TARGET] = targetPos;
-                ownner.ChangeState("RunToTargetState");
+                float range = AI_FAR_DIST;
+                if (num_near_thugs < MAX_NUM_OF_NEAR)
+                    range = AI_NEAR_DIST;
+
+                Vector3 targetPos = em.FindTargetPosition(cast<Enemy>(ownner), range + COLLISION_SAFE_DIST);
+                LogPrint(ownner.GetName() + " far away, tryinng to approach targetPos=" + targetPos.ToString());
+                {
+                    ownner.GetNode().vars[TARGET] = targetPos;
+                    ownner.ChangeState("RunToTargetState");
+                }
+                return;
             }
-            return;
-        }
-
-        int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
-        Node@ target_sight_node = ownner.GetTargetSightBlockedNode(ownner.target.GetNode().worldPosition);
-        bool can_i_see_target = (target_sight_node is null) || (target_sight_node is ownner.target.GetNode());
-        // Print(ownner.GetName() + " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs + " can_i_see_target=" + can_i_see_target);
-        if (can_i_see_target && num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && ownner.target.HasFlag(FLAGS_ATTACK))
-        {
-            ownner.ChangeState("RunToAttackState");
-            return;
-        }
-
-        int rand_i = RandomInt(3);
-        // Print(ownner.GetName() + " rand_i=" + rand_i);
-        if (rand_i == 0)
-        {
-            ownner.ChangeState("TauntingState");
-        }
-        else if (rand_i == 1)
-        {
-            ownner.ChangeState("TauntIdleState");
+            else
+            {
+                if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && ownner.target.CanBeAttacked())
+                {
+                    ownner.ChangeState("RunToAttackState");
+                    return;
+                }
+            }
         }
         else
         {
+             if (num_of_run_to_attack_thugs < MAX_NUM_OF_RUN_ATTACK && ownner.target.CanBeAttacked())
+            {
+                ownner.ChangeState("RunToAttackState");
+                return;
+            }
+        }
+
+        if (dist <= AI_NEAR_DIST)
+        {
             _node.vars[ANIMATION_INDEX] = RandomInt(8);
             ownner.ChangeState("StepMoveState");
+        }
+        else
+        {
+            int rand_i = RandomInt(3);
+            // Print(ownner.GetName() + " rand_i=" + rand_i);
+            if (rand_i == 0)
+            {
+                ownner.ChangeState("TauntingState");
+            }
+            else if (rand_i == 1)
+            {
+                ownner.ChangeState("TauntIdleState");
+            }
+            else
+            {
+                _node.vars[ANIMATION_INDEX] = RandomInt(8);
+                ownner.ChangeState("StepMoveState");
+            }
         }
 
         return;
@@ -194,12 +207,10 @@ class ThugStepMoveState : MultiMotionState
         AddMotion(MOVEMENT_GROUP_THUG + "Step_Left_Long");
         flags = FLAGS_ATTACK | FLAGS_MOVING | FLAGS_KEEP_DIST | FLAGS_HIT_RAGDOLL;
 
-        if (STEP_MAX_DIST == 0.0f)
+        /*for (uint i=0; i<moitons.length; ++i)
         {
-            STEP_MIN_DIST = motions[0].endDistance;
-            STEP_MAX_DIST = motions[4].endDistance;
-            LogPrint("Thug min-step-dist=" + STEP_MIN_DIST + " max-step-dist=" + STEP_MAX_DIST);
-        }
+            Print(motions[i].name + " endDistance=" + motions[i].endDistance);
+        }*/
     }
 
     float GetThreatScore()
@@ -241,7 +252,7 @@ class ThugRunToAttackState : SingleMotionState
         ownner.GetNode().Yaw(characterDifference * turnSpeed * dt);
 
         // if the difference is large, then turn 180 degrees
-        if (Abs(characterDifference) > FULLTURN_THRESHOLD)
+        if (Abs(characterDifference) > MIN_TURN_ANGLE)
         {
             ownner.GetNode().vars[TARGET] = ownner.target.GetNode().worldPosition;
             ownner.ChangeState("TurnState");
@@ -252,7 +263,7 @@ class ThugRunToAttackState : SingleMotionState
             return;
 
         float dist = ownner.GetTargetDistance();
-        if (dist < KEEP_DIST_WITH_PLAYER)
+        if (dist < COLLISION_SAFE_DIST)
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -305,7 +316,7 @@ class ThugRunToTargetState : SingleMotionState
 
         Vector3 distV = targetPosition - ownner.GetNode().worldPosition;
         distV.y = 0;
-        if (distV.length < KEEP_DIST_WITH_PLAYER)
+        if (distV.length < 0.25f)
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -446,6 +457,7 @@ class ThugAttackState : CharacterState
     Array<AttackMotion@>        attacks;
     float                       turnSpeed = 1.25f;
     bool                        doAttackCheck = false;
+    bool                        rotating = false;
     Node@                       attackCheckNode;
 
     ThugAttackState(Character@ c)
@@ -460,12 +472,10 @@ class ThugAttackState : CharacterState
         AddAttackMotion("Attack_Kick_02", 24, ATTACK_KICK, "Bip01_L_Foot");
         flags = FLAGS_NO_MOVE | FLAGS_HIT_RAGDOLL;
 
-        if (PUNCH_DIST != 0.0f)
+        /*for (uint i=0; i<attacks.length; ++i)
         {
-            PUNCH_DIST = attacks[0].motion.endDistance;
-            KICK_DIST = attacks[3].motion.endDistance;
-            LogPrint("Thug kick-dist=" + KICK_DIST + " punch-dist=" + PUNCH_DIST);
-        }
+            LogPrint(attacks[i].motion.name + " dist=" + attacks[i].motion.endDistance);
+        }*/
     }
 
     void AddAttackMotion(const String&in name, int impactFrame, int type, const String&in bName)
@@ -475,31 +485,27 @@ class ThugAttackState : CharacterState
 
     void Update(float dt)
     {
-        if (firstUpdate)
-        {
-            if (cast<Thug>(ownner).KeepDistanceWithEnemy())
-                return;
-        }
-
         Motion@ motion = currentAttack.motion;
-        ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST);
+        ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST - 0.1f);
 
         float characterDifference = ownner.ComputeAngleDiff();
-        ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
-
+        if (rotating)
+            ownner.motion_deltaRotation += characterDifference * turnSpeed * dt;
 
         if (doAttackCheck)
             AttackCollisionCheck();
 
         if (motion.Move(ownner, dt) == 1)
         {
-            ownner.CommonStateFinishedOnGroud();
+            // Print(ownner.GetName() + " move finished ");
+            ownner.ChangeState("StandState");
             return;
         }
 
-        if (!ownner.target.HasFlag(FLAGS_ATTACK))
+        if (!ownner.target.CanBeAttacked())
         {
-            ownner.CommonStateFinishedOnGroud();
+            // Print(ownner.GetName() + " target has no attack flag ");
+            ownner.ChangeState("StandState");
             return;
         }
 
@@ -514,21 +520,22 @@ class ThugAttackState : CharacterState
 
     void Enter(State@ lastState)
     {
-        float targetDistance = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
-        float punchDist = attacks[0].motion.endDistance;
-        LogPrint(ownner.GetName() + " targetDistance=" + targetDistance + " punchDist=" + punchDist);
+        float dist = ownner.GetTargetDistance() - COLLISION_SAFE_DIST;
         int index = RandomInt(3);
-        if (targetDistance > punchDist + 1.0f)
+        int attackType = ownner.GetNode().vars[ATTACK_TYPE].GetInt();
+        if (attackType == ATTACK_KICK && dist > 0.5f)
+        {
             index += 3; // a kick attack
+        }
         @currentAttack = attacks[index];
-        ownner.GetNode().vars[ATTACK_TYPE] = currentAttack.type;
         Motion@ motion = currentAttack.motion;
         motion.Start(ownner);
         ownner.AddFlag(FLAGS_ATTACK);
         doAttackCheck = false;
-        turnSpeed = (currentAttack.type == ATTACK_PUNCH) ? 1.25f : 0.25f;
+        turnSpeed = (currentAttack.type == ATTACK_PUNCH) ? 2.0f : 0.5f;
+        rotating  = true;
         CharacterState::Enter(lastState);
-        LogPrint(ownner.GetName() + " Pick attack motion = " + motion.animationName);
+        LogPrint(ownner.GetName() + " attackType=" + attackType + ", Pick attack motion = " + motion.animationName + " dist=" + dist);
     }
 
     void Exit(State@ nextState)
@@ -580,6 +587,7 @@ class ThugAttackState : CharacterState
                 attackCheckNode = ownner.GetNode().GetChild(eventData[BONE].GetString(), true);
                 LogPrint(ownner.GetName() + " AttackCheck bone=" + attackCheckNode.name);
                 AttackCollisionCheck();
+                rotating = false;
             }
 
             return;
@@ -806,7 +814,7 @@ class ThugTauntingState : MultiMotionState
     {
         super(ownner);
         SetName("TauntingState");
-        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE | FLAGS_TAUNT;
 
         for (uint i=1; i<=5; ++i)
             AddMotion(MOVEMENT_GROUP_THUG + "Taunting_0" + i);
@@ -836,7 +844,7 @@ class ThugTauntIdleState : MultiAnimationState
     {
         super(ownner);
         SetName("TauntIdleState");
-        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE;
+        flags = FLAGS_ATTACK | FLAGS_COLLISION_AVOIDENCE | FLAGS_TAUNT;
 
         for (uint i=1; i<=6; ++i)
             AddMotion(MOVEMENT_GROUP_THUG + "Taunt_Idle_0" + i);
@@ -898,12 +906,6 @@ class Thug : Enemy
         walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
     }
 
-    void Stop()
-    {
-        @collisionBody = null;
-        Enemy::Stop();
-    }
-
     bool CanAttack()
     {
         EnemyManager@ em = GetEnemyMgr();
@@ -919,6 +921,7 @@ class Thug : Enemy
 
     bool ActionCheck(uint actionFlags = 0xFF)
     {
+        // Print(GetName() + " ActionCheck in state:" + stateMachine.currentState.name);
         if (actionFlags & FLAGS_ATTACK != 0)
         {
             return Attack();
@@ -930,14 +933,18 @@ class Thug : Enemy
     {
         if (!CanAttack())
             return false;
-        if (KeepDistanceWithEnemy())
-            return false;
+        if (!instant_collision)
+        {
+            if (KeepDistanceWithCharacters())
+                return false;
+        }
 
-        float attackRange = Random(0.0, MAX_ATTACK_RANGE);
+        int attackType = sceneNode.vars[ATTACK_TYPE].GetInt();
+        float attackRange = (attackType == ATTACK_PUNCH) ? 0.25f : 3.78f;
         float angleDiff = ComputeAngleDiff();
         if ((GetTargetDistance() <= (attackRange + COLLISION_SAFE_DIST)) && Abs(angleDiff) < MIN_TURN_ANGLE)
         {
-            Print(GetName() + " start to attack angleDiff=" + angleDiff);
+            LogPrint(GetName() + " start to attack angleDiff=" + angleDiff + " attackRange=" + attackRange);
             ChangeState("AttackState");
             return true;
         }
@@ -953,6 +960,8 @@ class Thug : Enemy
     void CommonStateFinishedOnGroud()
     {
         if (ActionCheck())
+            return;
+        if (KeepDistanceWithPlayer(COLLISION_SAFE_DIST - 0.25f))
             return;
         ChangeState("StandState");
     }
@@ -1095,7 +1104,7 @@ class Thug : Enemy
                 Vector3 v2 = motion2.GetKeyPosition(this, motion2.endTime);
                 Vector3 diff = v1 - targetPos;
                 diff.y = 0;
-                if (diff.length >= KEEP_DIST_WITH_PLAYER)
+                if (diff.length >= COLLISION_SAFE_DIST)
                     gIntCache.Push(candidate1);
                 else
                 {
@@ -1105,7 +1114,7 @@ class Thug : Enemy
 
                 diff = v2 - targetPos;
                 diff.y = 0;
-                if (diff.length >= KEEP_DIST_WITH_PLAYER)
+                if (diff.length >= COLLISION_SAFE_DIST)
                     gIntCache.Push(candidate2);
                 {
                     //if (drawDebug > 0)
@@ -1139,7 +1148,7 @@ class Thug : Enemy
         checkAvoidanceTime = Random(0.05f, 0.1f);
     }
 
-    bool KeepDistanceWithEnemy()
+    bool KeepDistanceWithCharacters()
     {
         if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD))
             return false;
@@ -1147,7 +1156,7 @@ class Thug : Enemy
         if (dir < 0)
             return false;
         if (d_log)
-            LogPrint(GetName() + " KeepDistanceWithEnemy dir=" + dir);
+            LogPrint(GetName() + " KeepDistanceWithCharacters dir=" + dir);
         sceneNode.vars[ANIMATION_INDEX] = dir;
         ChangeState("StepMoveState");
         return true;
@@ -1192,9 +1201,7 @@ class Thug : Enemy
             return;
         if (CheckRagdollHit())
             return;
-        if (KeepDistanceWithPlayer())
-            return;
-        KeepDistanceWithEnemy();
+        KeepDistanceWithCharacters();
     }
 
     bool Distract()
@@ -1226,7 +1233,7 @@ class Thug : Enemy
         }
     }
 
-    bool KeepDistanceWithPlayer(float max_dist = KEEP_DIST_WITH_PLAYER)
+    bool KeepDistanceWithPlayer(float max_dist = COLLISION_SAFE_DIST)
     {
         if (HasFlag(FLAGS_NO_MOVE))
             return false;
@@ -1308,12 +1315,14 @@ void CreateThugCombatMotions()
 {
     String preFix = "TG_Combat/";
 
-    Global_CreateMotion(preFix + "Attack_Kick", kMotion_XZR, kMotion_XZ);
-    Global_CreateMotion(preFix + "Attack_Kick_01", kMotion_XZR, kMotion_XZ);
-    Global_CreateMotion(preFix + "Attack_Kick_02", kMotion_XZR, kMotion_XZ);
-    Global_CreateMotion(preFix + "Attack_Punch", kMotion_XZR, kMotion_XZ);
-    Global_CreateMotion(preFix + "Attack_Punch_01", kMotion_XZR, kMotion_XZ);
-    Global_CreateMotion(preFix + "Attack_Punch_02", kMotion_XZR, kMotion_XZ);
+    int attackMotionFlag = kMotion_XZ;
+    int attackAllowMotion = kMotion_XZR;
+    Global_CreateMotion(preFix + "Attack_Kick", attackMotionFlag, attackAllowMotion);
+    Global_CreateMotion(preFix + "Attack_Kick_01", attackMotionFlag, attackAllowMotion);
+    Global_CreateMotion(preFix + "Attack_Kick_02", attackMotionFlag, attackAllowMotion);
+    Global_CreateMotion(preFix + "Attack_Punch", attackMotionFlag, attackAllowMotion);
+    Global_CreateMotion(preFix + "Attack_Punch_01", attackMotionFlag, attackAllowMotion);
+    Global_CreateMotion(preFix + "Attack_Punch_02", attackMotionFlag, attackAllowMotion);
 
     preFix = "TG_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Left");
