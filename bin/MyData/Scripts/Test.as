@@ -50,12 +50,12 @@ String CAMERA_NAME = "Camera";
 uint cameraId = M_MAX_UNSIGNED;
 uint playerId = M_MAX_UNSIGNED;
 
-int test_enemy_num_override = 5;
+int test_enemy_num_override = 10;
 int render_features = RF_SHADOWS | RF_HDR;
 
 const String UI_FONT = "Fonts/angrybirds-regular.ttf";
 int UI_FONT_SIZE = 40;
-const String DEBUG_FONT = "Fonts/BlueHighway.ttf";
+const String DEBUG_FONT = "Fonts/Anonymous Pro.ttf";
 int DEBUG_FONT_SIZE = 20;
 
 const String GAME_CAMEAR_NAME = "ThirdPerson";
@@ -334,10 +334,10 @@ void LogPrint(const String&in msg)
     log.Info(msg);
 }
 
-void LogHint(const String&in msg)
+void LogHint(const String&in msg, float t = 2.0f)
 {
     LogPrint(msg);
-    gDebugMgr.AddHintText(msg, YELLOW, 2.0f);
+    gDebugMgr.AddHintText(msg, t);
 }
 
 uint Global_AddFlag(uint flags, uint flag)

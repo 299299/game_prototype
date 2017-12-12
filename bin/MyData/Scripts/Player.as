@@ -230,7 +230,7 @@ class Player : Character
             Enemy@ e = em.enemyList[i];
             if (!e.HasFlag(flags))
             {
-                if (d_log)
+                //if (d_log)
                     LogPrint(e.GetName() + " no flag: " + flags);
                 gIntCache.Push(-1);
                 continue;
@@ -243,7 +243,7 @@ class Player : Character
             float dist = posDiff.length;
             if (dist > maxDiffDist)
             {
-                if (d_log)
+                //if (d_log)
                     LogPrint(e.GetName() + " far way from player");
                 gIntCache.Push(-1);
                 continue;
@@ -253,12 +253,12 @@ class Player : Character
             float diffAngle = targetAngle - enemyAngle;
             diffAngle = AngleDiff(diffAngle);
 
-            if (d_log)
+            //if (d_log)
                 LogPrint(e.GetName() + " enemyAngle="+enemyAngle+" targetAngle="+targetAngle+" diffAngle="+diffAngle);
 
             if (Abs(diffAngle) > maxDiffAngle / 2.0f)
             {
-                if (d_log)
+                // if (d_log)
                     LogPrint(e.GetName() + " diffAngle=" + diffAngle + " too large");
                 gIntCache.Push(-1);
                 continue;
@@ -285,7 +285,7 @@ class Player : Character
             }
             */
 
-            if (d_log)
+            //if (d_log)
                 LogPrint("Enemy " + e.GetName() + " dist=" + dist + " diffAngle=" + diffAngle + " score=" + score);
         }
 
@@ -320,6 +320,7 @@ class Player : Character
             gDebugMgr.AddDirection(myPos, targetAngle + maxDiffAngle/2.0f, maxDiffDist, TARGET_COLOR);
             if (attackEnemy !is null)
                 gDebugMgr.AddLine(myPos, attackEnemy.GetNode().worldPosition, RED);
+            gDebugMgr.AddDirection(myPos, targetAngle, maxDiffDist, BLACK);
         }
 
         LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms \n");
@@ -372,6 +373,8 @@ class Player : Character
             ChangeState("BeatDownHitState");
         else
             ChangeState("AttackState");
+
+        GetScene().updateEnabled = false;
         return true;
     }
 
@@ -423,6 +426,7 @@ class Player : Character
         Character::DebugDraw(debug);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), AI_FAR_DIST, YELLOW, 32, false);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), AI_NEAR_DIST, RED, 32, false);
+        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), MAX_ATTACK_DIST, BLUE, 32, false);
         // sensor.DebugDraw(debug);
         // debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
         debug.AddSkeleton(animModel.skeleton, WHITE, false);

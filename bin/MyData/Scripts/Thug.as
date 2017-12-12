@@ -47,7 +47,8 @@ class ThugStandState : MultiAnimationState
         int r = 3;
         int rand_i = RandomInt(r);
         ownner.GetNode().vars[ATTACK_TYPE] = (rand_i == (r-1)) ? ATTACK_KICK : ATTACK_PUNCH;
-        LogPrint(ownner.GetName() + " Stand Random AttackType rand_i=" + rand_i + " thinkTime=" + thinkTime);
+        if (d_log)
+            LogPrint(ownner.GetName() + " Stand Random AttackType rand_i=" + rand_i + " thinkTime=" + thinkTime);
         MultiAnimationState::Enter(lastState);
     }
 

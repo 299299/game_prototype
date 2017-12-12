@@ -453,7 +453,7 @@ class Motion
             //Vector3 v = _node.LocalToWorld(dockAlignOffset);
             //debug.AddLine(_node.worldPosition, v, BLUE, false);
             //debug.AddCross(v, 0.5f, GREEN, false);
-            debug.AddCross(_node.GetChild(dockAlignBoneName, true).worldPosition, 0.25f, GREEN, false);
+            debug.AddCross(_node.GetChild(dockAlignBoneName, true).worldPosition, 0.5f, GREEN, false);
             //debug.AddNode(_node.GetChild(dockAlignBoneName, true), 0.25f, false);
         }
     }

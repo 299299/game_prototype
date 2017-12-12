@@ -14,11 +14,13 @@
 # Attack Thug state bug fix ? can not reproduce NOW
 # AI Avoid Out of zone -> use CrowdManager
 # Thug Attack Rotate to Player
+# Rethinking debug text and Log system -> Debug Hint Message ?
 
- --> Camera Collision
-
+ --> Camera Collision Better way ?
  Player Attack Rotation issue
- Rethinking debug text and Log system -> Debug Hint Message ?
  Ragdoll out of world kill
  AssetProess curRig refactor
- New model intergration
+ New model intergration --> Wait for ART
+ Player Attack Impact Check
+
+ Attack_Close_Weak_Back_01

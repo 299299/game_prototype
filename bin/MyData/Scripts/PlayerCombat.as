@@ -325,6 +325,7 @@ class PlayerAttackState : CharacterState
             // lost combo
             p.combo = 0;
             p.StatusChanged();
+            LogPrint("PlayerAttack no target pick attack " + currentAttack.motion.name);
         }
 
         Motion@ motion = currentAttack.motion;

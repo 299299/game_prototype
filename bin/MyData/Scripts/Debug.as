@@ -233,7 +233,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         //String testName = GetAnimationName("BM_Railing/Railing_Idle");
         //String testName = ("BM_Railing/Railing_Climb_Down_Forward");
         //String testName = "BM_Climb/Stand_Climb_Up_256_Hang";
-        String testName = "BM_Attack/Attack_Far_Back_03"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
+        String testName = "BM_Attack/Attack_Close_Weak_Forward"; //"BM_Climb/Walk_Climb_Down_128"; //"BM_Climb/Stand_Climb_Up_256_Hang";
         Player@ player = GetPlayer();
         testAnimations.Push(testName);
         //testAnimations.Push("BM_Climb/Dangle_Right");
@@ -688,13 +688,14 @@ class DebugDrawMgr
     Array<Text@>             texts;
     Text@                    hintText;
     uint                     numTexts;
+    String                   hintString;
 
     void Start()
     {
         hintText = ui.root.CreateChild("Text", "hint_debug_text");
-        hintText.SetFont(cache.GetResource("Font", DEBUG_FONT), 30);
-        hintText.SetPosition(5, 50);
-        hintText.color = YELLOW;
+        hintText.SetFont(cache.GetResource("Font", DEBUG_FONT), 20);
+        hintText.SetPosition(5, 100);
+        hintText.color = WHITE;
         hintText.priority = -99999;
         hintText.visible = false;
 
@@ -730,6 +731,7 @@ class DebugDrawMgr
         dt *= s.timeScale;
 
         hintText.visible = false;
+        hintString.Clear();
         for (uint i=0; i<texts.length; ++i)
         {
             texts[i].visible = false;
@@ -764,6 +766,12 @@ class DebugDrawMgr
 
         if (num_time_out > 0)
             commands.Resize(commands.length - num_time_out);
+
+        if (!hintString.empty)
+        {
+            hintText.text = hintString;
+            hintText.visible = true;
+        }
     }
 
     void ProcessDebugDrawCommand(DebugRenderer@ debug, const DebugDrawCommand&in cmd)
@@ -796,10 +804,11 @@ class DebugDrawMgr
             debug.AddCircle(cmd.v1, cmd.v2, cmd.data2, cmd.color, 32, cmd.depth);
             break;
         case DEBUG_DRAW_HINT:
-            hintText.visible = true;
-            hintText.text = cmd.data3;
-            hintText.color = cmd.color;
-            break;
+            {
+                hintString += cmd.data3;
+                hintString += "\n";
+                break;
+            }
         case DEBUG_DRAW_TEXT:
             {
                 if (numTexts < texts.length)
@@ -860,11 +869,10 @@ class DebugDrawMgr
         AddLine(start, end, color, t);
     }
 
-    void AddHintText(const String&in text, const Color&in color, float t = 1.0f)
+    void AddHintText(const String&in text, float t = 1.0f)
     {
         DebugDrawCommand@ cmd = DebugDrawCommand();
         cmd.type = DEBUG_DRAW_HINT;
-        cmd.color = color;
         cmd.data3 = text;
         cmd.time = t;
         AddCommand(cmd);

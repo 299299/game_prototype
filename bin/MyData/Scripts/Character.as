@@ -508,12 +508,13 @@ class AnimationTestState : CharacterState
     {
         if (allFinished)
         {
-            if (input.keyDown[KEY_RETURN])
+            //if (input.keyDown[KEY_RETURN])
                 ownner.CommonStateFinishedOnGroud();
             return;
         }
 
         bool finished = false;
+        bool dockAlignTimeOut = false;
         Motion@ motion = testMotions[currentIndex];
         if (motion !is null)
         {
@@ -526,7 +527,9 @@ class AnimationTestState : CharacterState
                 }
             }
 
-            finished = motion.Move(ownner, dt) == 1;
+            int ret = motion.Move(ownner, dt);
+            dockAlignTimeOut = (ret == 2);
+            finished = (ret == 1);
             if (motion.looped && timeInState > 2.0f)
                 finished = true;
         }
@@ -540,17 +543,10 @@ class AnimationTestState : CharacterState
                 finished = ownner.animCtrl.IsAtEnd(testAnimations[currentIndex]);
         }
 
-        if (finished) {
-            LogPrint("AnimationTestState finished, currentIndex=" + currentIndex);
-            currentIndex ++;
-            if (currentIndex >= int(testAnimations.length))
-            {
-                //ownner.CommonStateFinishedOnGroud();
-                allFinished = true;
-            }
-            else
-                Start();
-        }
+        if (finished)
+            OnAnimationFinished();
+        if (dockAlignTimeOut)
+            OnDockAlignTimeOut();
 
         CharacterState::Update(dt);
     }
@@ -574,6 +570,21 @@ class AnimationTestState : CharacterState
     bool CanReEntered()
     {
         return true;
+    }
+
+    void OnAnimationFinished()
+    {
+        LogPrint("AnimationTestState finished, currentIndex=" + currentIndex);
+        currentIndex ++;
+        if (currentIndex >= int(testAnimations.length))
+            allFinished = true;
+        else
+            Start();
+    }
+
+    void OnDockAlignTimeOut()
+    {
+        ownner.GetScene().updateEnabled = false;
     }
 };
 

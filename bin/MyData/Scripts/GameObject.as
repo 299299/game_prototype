@@ -176,7 +176,7 @@ class GameObject : ScriptObject
 
     bool ChangeState(const String&in name)
     {
-        // if (d_log)
+        if (d_log)
         {
             String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
             LogPrint(GetName() + " ChangeState from " + oldStateName + " to " + name);
