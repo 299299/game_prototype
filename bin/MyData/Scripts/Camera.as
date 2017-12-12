@@ -102,6 +102,22 @@ class CameraController
             x += step;
         }
     }
+
+    bool IsCameraOccluded(const Vector3&in position, const Vector3& lookat, Vector3&out outPos)
+    {
+        Vector3 dir = position - lookat;
+        float rayDistance = dir.length - 0.5f;
+        dir.Normalize();
+        const float CAMERA_SPHERE_RADIUS = 0.25f;
+        PhysicsRaycastResult result = PhysicsSphereCast(lookat, dir, CAMERA_SPHERE_RADIUS, rayDistance, COLLISION_LAYER_LANDSCAPE);
+        if (result.body !is null)
+        {
+            outPos = result.position + result.normal * CAMERA_SPHERE_RADIUS;
+            // Print("IsCameraOccluded by " + result.body.node.name + " lookat=" + lookat.ToString() + " position=" + position.ToString());
+            return true;
+        }
+        return false;
+    }
 };
 
 
@@ -243,6 +259,13 @@ class DeathCameraController : CameraController
         Vector3 v2 = _node.worldPosition + playerNode.worldPosition;
         v2 /= 2;
         v2.y += CHARACTER_HEIGHT;
+
+        Vector3 occlued_pos;
+        if (IsCameraOccluded(v1, v2, occlued_pos))
+        {
+            v1 = occlued_pos;
+        }
+
         UpdateView(v1, v2, dt * cameraSpeed);
     }
 
@@ -416,13 +439,12 @@ class ThirdPersonCameraController : CameraController
         Node@ _node = p.GetNode();
 
         Vector3 target_pos = _node.worldPosition;
+        // Vector3 offset = cameraNode.worldRotation * this.targetOffset;
+        target_pos += this.targetOffset;
+
         this.cameraDistance += (this.targetCameraDistance - this.cameraDistance) * dt * this.cameraDistSpeed;
 
-        Vector3 offset = cameraNode.worldRotation * this.targetOffset;
-        target_pos += offset;
-
-        Quaternion q(pitch, yaw, 0);
-        Vector3 pos = q * Vector3(0, 0, -this.cameraDistance) + target_pos;
+        Vector3 pos = Quaternion(this.pitch, this.yaw, 0) * Vector3(0, 0, -this.cameraDistance) + target_pos;
 
         if (this.shaking)
         {
@@ -437,7 +459,27 @@ class ThirdPersonCameraController : CameraController
                 this.shaking = false;
         }
 
-        UpdateView(pos, target_pos, dt * this.cameraSpeed);
+        Vector3 occlued_pos;
+        if (IsCameraOccluded(pos, target_pos, occlued_pos))
+        {
+            float pitch = this.pitch;
+            for (int i=0; i<20; ++i)
+            {
+                pitch += i * 15;
+                pos = Quaternion(pitch, yaw, 0) * Vector3(0, 0, -this.cameraDistance) + target_pos;
+
+                if (!IsCameraOccluded(pos, target_pos, occlued_pos))
+                    break;
+            }
+
+            // this.yaw = yaw;
+            pos = Quaternion(pitch, this.yaw, 0) * Vector3(0, 0, -this.cameraDistance) + target_pos;
+            UpdateView(pos, target_pos, dt * this.cameraSpeed);
+        }
+        else
+        {
+            UpdateView(pos, target_pos, dt * this.cameraSpeed);
+        }
     }
 
     void ShakeCamera(float amount, float duration)

@@ -4,7 +4,7 @@
 //
 // ==============================================
 
-const float MAX_COUNTER_DIST = 4.0f;
+const float MAX_COUNTER_DIST = 6.0f;
 const float DIST_SCORE = 60.0f;
 const float ANGLE_SCORE = 10.0f;
 const float THREAT_SCORE = 30.0f;

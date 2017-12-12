@@ -364,7 +364,7 @@ void CameraShake()
     SendEvent("CameraEvent", data);
 }
 
-PhysicsRaycastResult PhysicsRaycast(const Vector3&in start, const Vector3&in dir, float range, uint mask)
+PhysicsRaycastResult PhysicsRayCast(const Vector3&in start, const Vector3&in dir, float range, uint mask)
 {
     Scene@ scene_ = script.defaultScene;
     PhysicsWorld@ world = scene_.GetComponent("PhysicsWorld");
@@ -383,6 +383,30 @@ PhysicsRaycastResult PhysicsRaycast(const Vector3&in start, const Vector3&in dir
         {
             gDebugMgr.AddLine(start, dir * range + start, RED);
         }
+    }
+    return result;
+}
+
+PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in dir, float radius, float range, uint mask)
+{
+    Scene@ scene_ = script.defaultScene;
+    PhysicsWorld@ world = scene_.GetComponent("PhysicsWorld");
+    PhysicsRaycastResult result = world.SphereCast(Ray(start, dir), radius, range, mask);
+    if (result.body !is null)
+    {
+        if (drawDebug > 0)
+        {
+            gDebugMgr.AddSphere(result.position, radius, YELLOW);
+            gDebugMgr.AddLine(start, result.position, BLUE);
+            gDebugMgr.AddLine(start, dir * range + start, RED);
+        }
+    }
+    else
+    {
+        /*if (drawDebug > 0)
+        {
+            gDebugMgr.AddLine(start, dir * range + start, RED);
+        }*/
     }
     return result;
 }

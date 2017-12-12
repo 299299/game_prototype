@@ -176,7 +176,7 @@ void AssignMotionRig(const String& rigName)
     @curRig = MotionRig(rigName);
 }
 
-void RotateAnimation(const String&in animationFile, float rotateAngle)
+void RotateAnimation(MotionRig@ rig, const String&in animationFile, float rotateAngle)
 {
     if (d_log)
         LogPrint("Rotating animation " + animationFile);
@@ -191,7 +191,7 @@ void RotateAnimation(const String&in animationFile, float rotateAngle)
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion q(0, rotateAngle, 0);
-    Node@ rotateNode = curRig.rotateNode;
+    Node@ rotateNode = rig.rotateNode;
 
     if (rotateTrack !is null)
     {
@@ -311,7 +311,7 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
         return;
     }
 
-    Node@ translateNode = curRig.translateNode;
+    Node@ translateNode = rig.translateNode;
 
     int translateFlag = 0;
     Vector3 position = translateTrack.keyFrames[0].position - rig.pelvisOrign;
@@ -355,7 +355,7 @@ void FixAnimationOrigin(MotionRig@ rig, const String&in animationFile, int motio
     TranslateAnimation(animationFile, originDiffLS);
 }
 
-void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
+void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionFlag, int allowMotion, Array<Vector4>&out outKeys, Vector4&out startFromOrigin)
 {
     bool dump = motionFlag & kMotion_Ext_Debug_Dump != 0;
     if (d_log)
@@ -383,9 +383,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
 
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
     Quaternion flipZ_Rot(0, 180, 0);
-    Node@ rotateNode = curRig.rotateNode;
-    Node@ translateNode = curRig.translateNode;
-    MotionRig@ rig = curRig;
+    Node@ rotateNode = rig.rotateNode;
+    Node@ translateNode = rig.translateNode;
 
     bool cutRotation = motionFlag & kMotion_Ext_Rotate_From_Start != 0;
     float firstRotateFromRoot = 0;
@@ -419,7 +418,7 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
     startFromOrigin.z = diff.z;
 
     if (rotate)
-        RotateAnimation(animationFile, -firstRotateFromRoot);
+        RotateAnimation(rig, animationFile, -firstRotateFromRoot);
     FixAnimationOrigin(rig, animationFile, motionFlag);
 
     /*if (rotateTrack !is null)
@@ -507,8 +506,8 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
     {
         Array<Vector3> leftFootPositions;
         Array<Vector3> rightFootPositions;
-        CollectBoneWorldPositions(curRig, animationFile, L_FOOT, leftFootPositions);
-        CollectBoneWorldPositions(curRig, animationFile, R_FOOT, rightFootPositions);
+        CollectBoneWorldPositions(rig, animationFile, L_FOOT, leftFootPositions);
+        CollectBoneWorldPositions(rig, animationFile, R_FOOT, rightFootPositions);
         Array<float> ground_heights;
         ground_heights.Resize(leftFootPositions.length);
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
@@ -516,9 +515,9 @@ void ProcessAnimation(const String&in animationFile, int motionFlag, int allowMo
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);
             float ground_y = 0;
             if (rightFootPositions[i].y < leftFootPositions[i].y)
-                ground_y = rightFootPositions[i].y - curRig.right_foot_to_ground_height;
+                ground_y = rightFootPositions[i].y - rig.right_foot_to_ground_height;
             else
-                ground_y = leftFootPositions[i].y - curRig.left_foot_to_ground_height;
+                ground_y = leftFootPositions[i].y - rig.left_foot_to_ground_height;
             kf.position.y -= ground_y;
             translateTrack.keyFrames[i] = kf;
             ground_heights[i] = ground_y;

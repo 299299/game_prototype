@@ -1359,26 +1359,57 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "GetUp_Back", kMotion_XZ);
 
     preFix = "TG_BM_Counter/";
-    Array<Motion@> counter_motions;
-    Array<String> prefixToIgnore = {"Double_Counter_", "Environment_Counter_"};
-    Global_CreateMotion_InFolder(preFix, prefixToIgnore, counter_motions);
-    const String arm_front_prefx = preFix + "Counter_Arm_Front";
-    const String leg_front_prefx = preFix + "Counter_Leg_Front";
-    const String arm_back_prefx = preFix + "Counter_Arm_Back";
-    const String leg_back_prefx = preFix + "Counter_Leg_Back";
-    for (uint i=0; i<counter_motions.length; ++i)
-    {
-        Motion@ m = counter_motions[i];
-        if (m.name.StartsWith(arm_front_prefx))
-            thug_counter_arm_front_motions.Push(m);
-        else if (m.name.StartsWith(leg_front_prefx))
-            thug_counter_leg_front_motions.Push(m);
-        else if (m.name.StartsWith(arm_back_prefx))
-            thug_counter_arm_back_motions.Push(m);
-        else if (m.name.StartsWith(leg_back_prefx))
-            thug_counter_leg_back_motions.Push(m);
-    }
+    // arm front
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_01"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_02"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_03"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_04"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_05"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_06"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_07"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_08"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_09"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_10"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_13"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_14"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_Weak_02"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_Weak_03"));
+    thug_counter_arm_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Front_Weak_04"));
 
+    // leg front
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_01"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_02"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_03"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_04"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_05"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_06"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_07"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_08"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_09"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_Weak_01"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_Weak_02"));
+    thug_counter_leg_front_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Front_Weak"));
+
+    // arm back
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_01"));
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_02"));
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_03"));
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_05"));
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_06"));
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_Weak_01"));
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_Weak_02"));
+    thug_counter_arm_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Arm_Back_Weak_03"));
+
+    // leg back
+    thug_counter_leg_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Back_01"));
+    thug_counter_leg_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Back_02"));
+    thug_counter_leg_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Back_03"));
+    thug_counter_leg_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Back_04"));
+    thug_counter_leg_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Back_05"));
+    thug_counter_leg_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Back_Weak_01"));
+    thug_counter_leg_back_motions.Push(Global_CreateMotion("TG_BM_Counter/Counter_Leg_Back_Weak_03"));
+
+    // double counter
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsA_01"));
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsA_02"));
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsB_01"));
@@ -1394,6 +1425,7 @@ void CreateThugCombatMotions()
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsH_01"));
     thug_counter_double_motions.Push(Global_CreateMotion(preFix + "Double_Counter_2ThugsH_02"));
 
+    // triple counter
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA_01"));
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA_02"));
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsA_03"));
@@ -1404,6 +1436,7 @@ void CreateThugCombatMotions()
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC_02"));
     thug_counter_triple_motions.Push(Global_CreateMotion(preFix + "Double_Counter_3ThugsC_03"));
 
+    // environment counter
     /*thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Back_02"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Front_01"));
     thug_counter_environment_motions.Push(Global_CreateMotion(preFix + "Environment_Counter_128_Left_01"));

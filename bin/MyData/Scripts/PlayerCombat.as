@@ -1035,10 +1035,10 @@ class PlayerCounterState : CharacterCounterState
         Ray r(ePos, Vector3(0, 0, 1));
         const float detect_range = 6.0f;
         ePos.y += CHARACTER_HEIGHT / 2.0f;
-        PhysicsRaycastResult front_result = PhysicsRaycast(ePos, Vector3(0, 0, 1), detect_range, COLLISION_LAYER_LANDSCAPE);
-        PhysicsRaycastResult right_result = PhysicsRaycast(ePos, Vector3(1, 0, 0), detect_range, COLLISION_LAYER_LANDSCAPE);
-        PhysicsRaycastResult back_result = PhysicsRaycast(ePos, Vector3(0, 0, -1), detect_range, COLLISION_LAYER_LANDSCAPE);
-        PhysicsRaycastResult left_result = PhysicsRaycast(ePos, Vector3(-1, 0, 0), detect_range, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult front_result = PhysicsRayCast(ePos, Vector3(0, 0, 1), detect_range, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult right_result = PhysicsRayCast(ePos, Vector3(1, 0, 0), detect_range, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult back_result = PhysicsRayCast(ePos, Vector3(0, 0, -1), detect_range, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult left_result = PhysicsRayCast(ePos, Vector3(-1, 0, 0), detect_range, COLLISION_LAYER_LANDSCAPE);
 
         Vector3 myPos = ownner.GetNode().worldPosition;
         int bestIndex = -1;

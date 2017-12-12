@@ -1006,3 +1006,46 @@ float TestTrippleCounterMotions(int i)
     return err1 + err2 + err3;
 }
 
+// bruce counter
+preFix = "BM_TG_Counter/";
+Array<Motion@> counter_motions;
+Array<String> prefixToIgnore = {"Double_Counter_", "Environment_Counter_"};
+Global_CreateMotion_InFolder(preFix, prefixToIgnore, counter_motions);
+const String arm_front_prefx = preFix + "Counter_Arm_Front";
+const String leg_front_prefx = preFix + "Counter_Leg_Front";
+const String arm_back_prefx = preFix + "Counter_Arm_Back";
+const String leg_back_prefx = preFix + "Counter_Leg_Back";
+for (uint i=0; i<counter_motions.length; ++i)
+{
+    Motion@ m = counter_motions[i];
+    if (m.name.StartsWith(arm_front_prefx))
+        bruce_counter_arm_front_motions.Push(m);
+    else if (m.name.StartsWith(leg_front_prefx))
+        bruce_counter_leg_front_motions.Push(m);
+    else if (m.name.StartsWith(arm_back_prefx))
+        bruce_counter_arm_back_motions.Push(m);
+    else if (m.name.StartsWith(leg_back_prefx))
+        bruce_counter_leg_back_motions.Push(m);
+}
+
+// thug counter
+preFix = "TG_BM_Counter/";
+Array<Motion@> counter_motions;
+Array<String> prefixToIgnore = {"Double_Counter_", "Environment_Counter_"};
+Global_CreateMotion_InFolder(preFix, prefixToIgnore, counter_motions);
+const String arm_front_prefx = preFix + "Counter_Arm_Front";
+const String leg_front_prefx = preFix + "Counter_Leg_Front";
+const String arm_back_prefx = preFix + "Counter_Arm_Back";
+const String leg_back_prefx = preFix + "Counter_Leg_Back";
+for (uint i=0; i<counter_motions.length; ++i)
+{
+    Motion@ m = counter_motions[i];
+    if (m.name.StartsWith(arm_front_prefx))
+        thug_counter_arm_front_motions.Push(m);
+    else if (m.name.StartsWith(leg_front_prefx))
+        thug_counter_leg_front_motions.Push(m);
+    else if (m.name.StartsWith(arm_back_prefx))
+        thug_counter_arm_back_motions.Push(m);
+    else if (m.name.StartsWith(leg_back_prefx))
+        thug_counter_leg_back_motions.Push(m);
+}

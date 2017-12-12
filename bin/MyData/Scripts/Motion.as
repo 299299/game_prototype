@@ -210,7 +210,7 @@ class Motion
             return;
 
         gMotionMgr.memoryUse += this.animation.memoryUse;
-        ProcessAnimation(animationName, motionFlag, allowMotion, motionKeys, startFromOrigin);
+        ProcessAnimation(curRig, animationName, motionFlag, allowMotion, motionKeys, startFromOrigin);
         SetEndFrame(endFrame);
 
         if (!dockAlignBoneName.empty)
