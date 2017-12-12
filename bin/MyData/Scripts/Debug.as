@@ -659,7 +659,7 @@ enum DebugDrawCommandType
     DEBUG_DRAW_NODE,
     DEBUG_DRAW_CROSS,
     DEBUG_DRAW_CIRCLE,
-    DEBUG_DRAW_TEXT, // todo ...
+    DEBUG_DRAW_TEXT,
     DEBUG_DRAW_HINT,
 };
 
@@ -681,11 +681,13 @@ class DebugDrawCommand
     String  data3;
 };
 
+const int MAX_DEBUG_TEXTS = 10;
 class DebugDrawMgr
 {
     Array<DebugDrawCommand@> commands;
-
-    Text@ hintText;
+    Array<Text@>             texts;
+    Text@                    hintText;
+    uint                     numTexts;
 
     void Start()
     {
@@ -695,6 +697,13 @@ class DebugDrawMgr
         hintText.color = YELLOW;
         hintText.priority = -99999;
         hintText.visible = false;
+
+        for (int i=0; i<MAX_DEBUG_TEXTS; ++i)
+        {
+            Text@ text = ui.root.CreateChild("Text", "DebugText_" + i);
+            text.SetFont(cache.GetResource("Font", DEBUG_FONT), 15);
+            text.visible = false;
+        }
     }
 
     void Stop()
@@ -704,7 +713,7 @@ class DebugDrawMgr
         if (hintText !is null)
         {
             hintText.Remove();
-            hintText = null;
+            @hintText = null;
         }
     }
 
@@ -719,11 +728,18 @@ class DebugDrawMgr
         if (!s.updateEnabled)
             dt = 0;
         dt *= s.timeScale;
+
         hintText.visible = false;
+        for (uint i=0; i<texts.length; ++i)
+        {
+            texts[i].visible = false;
+        }
 
         uint processed_num = 0;
         uint cur = 0;
         uint num_time_out = 0;
+        numTexts = 0;
+
         while (processed_num != commands.length)
         {
             DebugDrawCommand@ cmd = commands[cur];
@@ -784,6 +800,21 @@ class DebugDrawMgr
             hintText.text = cmd.data3;
             hintText.color = cmd.color;
             break;
+        case DEBUG_DRAW_TEXT:
+            {
+                if (numTexts < texts.length)
+                {
+                    Text@ text = texts[numTexts];
+                    ++numTexts;
+                    text.visible = true;
+                    text.text = cmd.data3;
+                    text.color = cmd.color;
+                    Vector2 pos_2d = GetCamera().WorldToScreenPoint(cmd.v1);
+                    text.SetPosition(pos_2d.x, pos_2d.y);
+                }
+
+                break;
+            }
         }
     }
 
@@ -835,6 +866,17 @@ class DebugDrawMgr
         cmd.type = DEBUG_DRAW_HINT;
         cmd.color = color;
         cmd.data3 = text;
+        cmd.time = t;
+        AddCommand(cmd);
+    }
+
+    void AddText(const String&in text, const Color& in color, const Vector3&in position, float t = 1.0f)
+    {
+        DebugDrawCommand@ cmd = DebugDrawCommand();
+        cmd.type = DEBUG_DRAW_TEXT;
+        cmd.color = color;
+        cmd.data3 = text;
+        cmd.v1 = position;
         cmd.time = t;
         AddCommand(cmd);
     }

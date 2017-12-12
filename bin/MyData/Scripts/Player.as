@@ -15,8 +15,8 @@ const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.0f;
 const float GOOD_COUNTER_DIST = 4.0f;
-const float ATTACK_DIST_PICK_LONG_RANGE = 4.0f;
-const float ATTACK_DIST_PICK_SHORT_RANGE = 1.0f;
+const float ATTACK_DIST_PICK_LONG_RANGE = 2.5f;
+const float ATTACK_DIST_PICK_SHORT_RANGE = 0.5f;
 float MAX_ATTACK_DIST = 15.0f;
 
 class Player : Character

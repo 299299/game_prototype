@@ -120,7 +120,9 @@ void Start()
 
     SetRandomSeed(time.systemTime);
     @gMotionMgr = BM_Game_MotionManager();
-    gDebugMgr.Start();
+
+    if (!mobile)
+        gDebugMgr.Start();
 
     SetWindowTitleAndIcon();
     CreateDebugHud();

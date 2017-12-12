@@ -15,8 +15,10 @@
 # AI Avoid Out of zone -> use CrowdManager
 # Thug Attack Rotate to Player
 
+ --> Camera Collision
+
  Player Attack Rotation issue
  Rethinking debug text and Log system -> Debug Hint Message ?
  Ragdoll out of world kill
- Camera Collision
  AssetProess curRig refactor
+ New model intergration
