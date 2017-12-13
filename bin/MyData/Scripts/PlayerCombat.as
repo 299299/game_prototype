@@ -18,10 +18,12 @@ class PlayerAttackState : CharacterState
     int                     state;
     Vector3                 targetPosition;
     Vector3                 motionPosition;
-    float                   yawPerSec;
-    float                   yawAlignTime = 0.2f;
 
     float                   alignTime = 0.2f;
+
+    float                   motionRotation;
+    float                   targetRotation;
+    float                   yawPerSec;
 
     int                     forwadCloseNum = 0;
     int                     leftCloseNum = 0;
@@ -94,11 +96,6 @@ class PlayerAttackState : CharacterState
 
         if (tailNode !is null && attackNode !is null) {
             tailNode.worldPosition = attackNode.worldPosition;
-        }
-
-        if (timeInState <= yawAlignTime)
-        {
-            ownner.motion_deltaRotation += yawPerSec * dt;
         }
 
         float t = ownner.animCtrl.GetTime(motion.animationName);
@@ -256,21 +253,8 @@ class PlayerAttackState : CharacterState
         alignTime = currentAttack.impactTime;
 
         targetPosition = myPos + diff * toEnenmyDistance;
-        float currentAngle = ownner.ComputeAngleDiff(enemyPos);
-        float targetAngle = 0;
-        if (dir == 1)
-            targetAngle = 90;
-        else if (dir == 2)
-            targetAngle = 180;
-        else if (dir == 3)
-            targetAngle = -90;
-        yawPerSec = AngleDiff(targetAngle - currentAngle) / yawAlignTime;
-        yawPerSec = AngleDiff(yawPerSec);
-
         LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex +
-                " Pick attack motion=" + currentAttack.motion.animationName +
-                " currentAngle=" + currentAngle + " targetAngle=" + targetAngle +
-                " yawPerSec=" + yawPerSec);
+                " Pick attack motion=" + currentAttack.motion.animationName);
 
         if (drawDebug > 0)
         {
@@ -352,8 +336,19 @@ class PlayerAttackState : CharacterState
             motionPosition = currentAttack.GetImpactPosition(ownner);
             ownner.motion_velocity = ( targetPosition - motionPosition ) / alignTime;
             ownner.motion_velocity.y = 0;
+            float futureRotation = motion.GetFutureRotation(ownner, alignTime);
+            float dockRotation = Atan2(motion.dockAlignOffset.x, motion.dockAlignOffset.z);
+            motionRotation = AngleDiff(dockRotation + futureRotation);
+            // motionRotation = AngleDiff(motionRotation);
+            Vector3 v = ownner.target.GetNode().worldPosition - ownner.GetNode().worldPosition;
+            targetRotation = Atan2(v.x, v.z);
 
-            LogPrint("PlayerAttack ownner.motion_velocity=" + ownner.motion_velocity.ToString());
+            yawPerSec = AngleDiff(targetRotation - motionRotation) / alignTime;
+
+            LogPrint("PlayerAttack ownner.motion_velocity=" + ownner.motion_velocity.ToString() +
+                     " motion.dockAlignOffset=" + motion.dockAlignOffset.ToString() +
+                     " motionRotation=" + motionRotation + " targetRotation=" + targetRotation + " dockRotation=" + dockRotation +
+                     " yawPerSec=" + yawPerSec);
 
             //if (attackEnemy.HasFlag(FLAGS_COUNTER))
             //    slowMotion = true;
@@ -383,6 +378,7 @@ class PlayerAttackState : CharacterState
         slowMotion = false;
         @currentAttack = null;
         state = ATTACK_STATE_ALIGN;
+        yawPerSec = 0;
         StartAttack();
         CharacterState::Enter(lastState);
         // ownner.GetScene().updateEnabled = false;
@@ -506,6 +502,10 @@ class PlayerAttackState : CharacterState
         // debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, YELLOW, false);
         AddDebugMark(debug, targetPosition, TARGET_COLOR);
         AddDebugMark(debug, motionPosition,  SOURCE_COLOR);
+        Vector3 v = ownner.GetNode().worldPosition;
+        DebugDrawDirection(debug, v, motionRotation, SOURCE_COLOR, 5.0f);
+        DebugDrawDirection(debug, v, targetRotation, TARGET_COLOR, 5.0f);
+        // debug.AddLine(v, currentAttack.motion.dockAlignOffset, GREEN, false);
     }
 };
 

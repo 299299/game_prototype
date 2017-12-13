@@ -329,7 +329,7 @@ class Motion
         if (looped)
             return AngleDiff(object.GetNode().worldRotation.eulerAngles.y + object.motion_deltaRotation + GetKey(t).w);
         else
-            return AngleDiff(object.motion_startRotation + + object.motion_deltaRotation + GetKey(t).w);
+            return AngleDiff(object.motion_startRotation + object.motion_deltaRotation + GetKey(t).w);
     }
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)

@@ -365,7 +365,6 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
-    // Global_CreateMotion_InFolder("BM_Attack/");
     //========================================================================
     // FORWARD
     //========================================================================
@@ -468,9 +467,6 @@ void CreateBruceCombatMotions()
     Global_CreateMotion("BM_Attack/Beatdown_Test_06");
 
     /*
-    Global_CreateMotion("BM_Attack/Attack_Far_Back_03");
-    Global_CreateMotion("BM_Attack/Attack_Far_Left_01");
-    Global_CreateMotion("BM_Attack/Attack_Far_Right_02");
     Global_CreateMotion("BM_Attack/Attack_StunPush");
     Global_CreateMotion("BM_Attack/Block_Left");
     Global_CreateMotion("BM_Attack/Block_Right");

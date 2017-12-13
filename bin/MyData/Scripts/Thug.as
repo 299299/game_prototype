@@ -123,7 +123,7 @@ class ThugStandState : MultiAnimationState
         int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
         bool target_can_be_attacked = ownner.target.CanBeAttacked();
         Node@ blocked_node = ownner.GetTargetSightBlockedNode(ownner.target.GetNode().worldPosition);
-        bool can_see_target = (blocked_node == null);
+        bool can_see_target = (blocked_node == null) || (blocked_node is ownner.target.GetNode());
 
         LogPrint(ownner.GetName() + " num_near_thugs=" + num_near_thugs +
               " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs +
@@ -1250,26 +1250,11 @@ class Thug : Enemy
 
     void UpdateOnFlagsChanged()
     {
-        /*
-            Materials/Thug_Leg.xml,
-            Materials/Thug_Torso.xml,
-            Materials/Thug_Hat.xml,
-            Materials/Thug_Head.xml,
-            Materials/Thug_Body.xml
-
-        if (HasFlag(FLAGS_ATTACK))
-        {
-            animModel.materials[0]= cache.GetResource("Material", "Materials/Thug_Leg.xml");
-            animModel.materials[1]= cache.GetResource("Material", "Materials/Thug_Torso.xml");
-            animModel.materials[2]= cache.GetResource("Material", "Materials/Thug_Hat.xml");
-        }
-        else
-        {
-            animModel.materials[0]= cache.GetResource("Material", "Materials/Thug_Leg_1.xml");
-            animModel.materials[1]= cache.GetResource("Material", "Materials/Thug_Torso_1.xml");
-            animModel.materials[2]= cache.GetResource("Material", "Materials/Thug_Hat_1.xml");
-        }
-        */
+        String matName = HasFlag(FLAGS_ATTACK) ? "Materials/Swat.xml" : "Materials/Swat_Red.xml";
+        Material@ m = cache.GetResource("Material", matName);
+        animModel.materials[0]= m;
+        animModel.materials[1]= m;
+        animModel.materials[2]= m;
     }
 
     bool KeepDistanceWithPlayer(float max_dist = COLLISION_SAFE_DIST)

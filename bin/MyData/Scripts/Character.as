@@ -1424,12 +1424,14 @@ class Character : GameObject
         Vector3 target_mid_pos = targetPos;
         target_mid_pos.y += CHARACTER_HEIGHT/2;
         Vector3 dir = target_mid_pos - my_mid_pos;
+        dir.y = 0;
+        float l = dir.length;
         Vector3 dir_normalized = dir.Normalized();
-        float offset = (COLLISION_RADIUS + 0.01f + SPHERE_CAST_RADIUS);
-        if (offset < 0)
-            return null;
+        float offset = (COLLISION_RADIUS + 0.1f + SPHERE_CAST_RADIUS);
         my_mid_pos += dir_normalized * offset;
-        float rayDistance = dir.length - offset;
+        float rayDistance = l - offset;
+        if (rayDistance < 0)
+            return null;
         PhysicsRaycastResult result = PhysicsSphereCast(my_mid_pos, dir_normalized, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER);
         if (result.body is null)
             return null;

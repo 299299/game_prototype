@@ -394,22 +394,24 @@ PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in 
     Scene@ scene_ = script.defaultScene;
     PhysicsWorld@ world = scene_.GetComponent("PhysicsWorld");
     PhysicsRaycastResult result = world.SphereCast(Ray(start, dir), radius, range, mask);
+    /*
     if (result.body !is null)
     {
         if (drawDebug > 0)
         {
             gDebugMgr.AddSphere(result.position, radius, YELLOW);
             gDebugMgr.AddLine(start, result.position, BLUE);
-            gDebugMgr.AddLine(start, dir * range + start, Color(0.1f, 0.25f, 0.7f));
+            gDebugMgr.AddLine(start, dir * range + start, WHITE);
         }
     }
     else
     {
-        /*if (drawDebug > 0)
+        if (drawDebug > 0)
         {
-            gDebugMgr.AddLine(start, dir * range + start, RED);
-        }*/
+        //    gDebugMgr.AddLine(start, dir * range + start, RED);
+        }
     }
+    */
     return result;
 }
 /************************************************

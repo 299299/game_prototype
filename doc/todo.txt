@@ -16,8 +16,9 @@
 # Rethinking debug text and Log system -> Debug Hint Message ?
 # New model intergration --> Wait for ART
 # AssetProess curRig refactor
+? Remove duplicate calculation for character angle (i.e calculate only when rotation changed) --> maybe not needed
+? --> Camera Collision Better way
 
- --> Camera Collision Better way ?
  Player Attack Rotation issue
  Ragdoll out of world kill
  Player Attack Impact Check
