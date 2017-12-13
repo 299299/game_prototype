@@ -18,6 +18,7 @@ class PlayerAttackState : CharacterState
     int                     state;
     Vector3                 targetPosition;
     Vector3                 motionPosition;
+    Vector3                 dockAlignWS;
 
     float                   alignTime = 0.2f;
 
@@ -336,6 +337,13 @@ class PlayerAttackState : CharacterState
             motionPosition = currentAttack.GetImpactPosition(ownner);
             ownner.motion_velocity = ( targetPosition - motionPosition ) / alignTime;
             ownner.motion_velocity.y = 0;
+
+            Vector3 futurePostion = motion.GetFuturePosition(ownner, alignTime);
+            dockAlignWS = ownner.GetNode().rotation * motion.dockAlignOffset;
+            dockAlignWS += futurePostion;
+
+            float curAngle = ownner.GetCharacterAngle();
+            dockAlignWS = motion.GetDockAlignPositionAtTime(ownner, curAngle, alignTime);
             float futureRotation = motion.GetFutureRotation(ownner, alignTime);
             float dockRotation = Atan2(motion.dockAlignOffset.x, motion.dockAlignOffset.z);
             motionRotation = AngleDiff(dockRotation + futureRotation);
@@ -505,6 +513,8 @@ class PlayerAttackState : CharacterState
         Vector3 v = ownner.GetNode().worldPosition;
         DebugDrawDirection(debug, v, motionRotation, SOURCE_COLOR, 5.0f);
         DebugDrawDirection(debug, v, targetRotation, TARGET_COLOR, 5.0f);
+
+        AddDebugMark(debug, dockAlignWS, RED);
         // debug.AddLine(v, currentAttack.motion.dockAlignOffset, GREEN, false);
     }
 };
