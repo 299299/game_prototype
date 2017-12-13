@@ -18,6 +18,7 @@ const int MAX_NUM_OF_RUN_ATTACK = 3;
 const int INITIAL_HEALTH = 100;
 const int NUM_ZONE_DIRECTIONS = 8;
 const float IN_AIR_FOOT_HEIGHT = 0.75f;
+const float KEEP_TARGET_DISTANCE = COLLISION_SAFE_DIST - 1.0f;
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash HIT_STATE("HitState");
@@ -1384,7 +1385,7 @@ class Character : GameObject
         return false;
     }
 
-    void CheckTargetDistance(Character@ t, float dist)
+    void CheckTargetDistance(Character@ t, float dist = KEEP_TARGET_DISTANCE)
     {
         if (t is null)
             return;

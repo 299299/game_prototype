@@ -524,7 +524,7 @@ class ThugAttackState : CharacterState
     void Update(float dt)
     {
         Motion@ motion = currentAttack.motion;
-        ownner.CheckTargetDistance(ownner.target, COLLISION_SAFE_DIST - 0.1f);
+        ownner.CheckTargetDistance(ownner.target);
 
         float characterDifference = ownner.ComputeAngleDiff();
         if (rotating)
