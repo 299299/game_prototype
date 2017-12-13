@@ -408,6 +408,12 @@ class PlayerAttackState : CharacterState
         Node@ _node = ownner.GetNode();
         Vector3 dir = _node.worldPosition - e.GetNode().worldPosition;
         dir.y = 0;
+        if (dir.length > MAX_ATTACK_CHECK_DIST)
+        {
+            LogPrint("PlayerAttack " + e.GetName() + " dist too far way !!");
+            return;
+        }
+
         dir.Normalize();
         LogPrint("PlayerAttackState::" +  e.GetName() + " OnDamage!!!!");
 
@@ -531,12 +537,6 @@ class PlayerCounterState : CharacterCounterState
         {
             if (!EnvironmentCounter())
                 SingleCounter();
-        }
-
-        // if (counterEnemies.length > 1)
-        {
-            //ownner.GetScene().updateEnabled = false;
-            //ownner.GetScene().timeScale= 0.1f;
         }
 
         LogPrint("PlayerCounterState::Enter time-cost=" + (time.systemTime - t));

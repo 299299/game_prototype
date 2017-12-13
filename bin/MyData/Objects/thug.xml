@@ -14,7 +14,7 @@
 		<attribute name="Scale" value="1 1 1" />
 		<attribute name="Variables" />
 		<component type="AnimatedModel" id="16777399">
-			<attribute name="Model" value="Model;Models/thug.mdl" />
+			<attribute name="Model" value="Model;Models/swat.mdl" />
 			<attribute name="Material" value="Material;Materials/Thug_Leg.xml;Materials/Thug_Torso.xml;Materials/Thug_Hat.xml;Materials/Thug_Head.xml;Materials/Thug_Body.xml" />
 			<attribute name="Cast Shadows" value="true" />
 			<attribute name="Bone Animation Enabled">

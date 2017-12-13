@@ -17,6 +17,7 @@ const float COUNTER_ALIGN_MAX_DIST = 1.0f;
 const float GOOD_COUNTER_DIST = 4.0f;
 const float ATTACK_DIST_PICK_LONG_RANGE = 2.5f;
 const float ATTACK_DIST_PICK_SHORT_RANGE = 0.5f;
+const float MAX_ATTACK_CHECK_DIST = 6.0f;
 float MAX_ATTACK_DIST = 15.0f;
 
 class Player : Character
@@ -374,7 +375,8 @@ class Player : Character
         else
             ChangeState("AttackState");
 
-        GetScene().updateEnabled = false;
+        if (drawDebug > 0)
+            GetScene().updateEnabled = false;
         return true;
     }
 

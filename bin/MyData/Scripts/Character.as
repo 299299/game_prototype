@@ -584,7 +584,8 @@ class AnimationTestState : CharacterState
 
     void OnDockAlignTimeOut()
     {
-        ownner.GetScene().updateEnabled = false;
+        if (drawDebug > 0)
+            ownner.GetScene().updateEnabled = false;
     }
 };
 
@@ -1427,27 +1428,8 @@ class Character : GameObject
         if (offset < 0)
             return null;
         my_mid_pos += dir_normalized * offset;
-
         float rayDistance = dir.length - offset;
-        Ray sightRay;
-        sightRay.origin = my_mid_pos;
-        sightRay.direction = dir_normalized;
-        PhysicsRaycastResult result = sceneNode.scene.physicsWorld.SphereCast(sightRay, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER);
-
-        /*
-        if (drawDebug > 0)
-        {
-            Vector3 start = my_mid_pos;
-            Vector3 end = my_mid_pos + sightRay.direction * rayDistance;
-            const float debugTime = 2.5f;
-            gDebugMgr.AddSphere(start, SPHERE_CAST_RADIUS, YELLOW, debugTime);
-            gDebugMgr.AddSphere(end, SPHERE_CAST_RADIUS, YELLOW, debugTime);
-            gDebugMgr.AddLine(start, end, YELLOW, debugTime);
-            if (result.body !is null)
-                gDebugMgr.AddSphere(result.position, SPHERE_CAST_RADIUS, RED, debugTime);
-        }
-        */
-
+        PhysicsRaycastResult result = PhysicsSphereCast(my_mid_pos, dir_normalized, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER);
         if (result.body is null)
             return null;
         Node@ node = result.body.node;

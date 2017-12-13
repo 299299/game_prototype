@@ -3,7 +3,6 @@
 6. camera shake
 7. beat down -- fixed
 
-
 # Attack Animation Debug Function
 # Attack Animation Update
 # Double Counter
@@ -22,5 +21,3 @@
  AssetProess curRig refactor
  New model intergration --> Wait for ART
  Player Attack Impact Check
-
- Attack_Close_Weak_Back_01

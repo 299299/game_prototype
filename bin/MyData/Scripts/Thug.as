@@ -122,10 +122,13 @@ class ThugStandState : MultiAnimationState
         int num_near_thugs = em.GetNumOfEnemyWithinDistance(AI_NEAR_DIST);
         int num_of_run_to_attack_thugs = em.GetNumOfEnemyHasFlag(FLAGS_RUN_TO_ATTACK);
         bool target_can_be_attacked = ownner.target.CanBeAttacked();
+        Node@ blocked_node = ownner.GetTargetSightBlockedNode(ownner.target.GetNode().worldPosition);
+        bool can_see_target = (blocked_node == null);
 
         LogPrint(ownner.GetName() + " num_near_thugs=" + num_near_thugs +
               " num_of_run_to_attack_thugs=" + num_of_run_to_attack_thugs +
-              " target_can_be_attacked=" + target_can_be_attacked);
+              " target_can_be_attacked=" + target_can_be_attacked +
+              " blocked by " + ((blocked_node != null) ? blocked_node.name : "null"));
 
         if (dist >= AI_FAR_DIST)
         {
@@ -166,7 +169,7 @@ class ThugStandState : MultiAnimationState
         }
         else
         {
-            int rand_i = RandomInt(4);
+            int rand_i = RandomInt(5);
             Print(ownner.GetName() + " rand_i=" + rand_i);
             if (rand_i == 0)
             {
@@ -178,7 +181,18 @@ class ThugStandState : MultiAnimationState
             }
             else
             {
-                _node.vars[ANIMATION_INDEX] = RandomInt(8);
+                if (can_see_target)
+                    _node.vars[ANIMATION_INDEX] = RandomInt(8);
+                else
+                {
+                    int r1 = RandomInt(2);
+                    int r2 = RandomInt(2);
+                    int index = (r1 == 0) ? 1 : 3;
+                    if (r2 == 1)
+                        index += 4;
+                    index = index % 4;
+                    _node.vars[ANIMATION_INDEX] = index;
+                }
                 ownner.ChangeState("StepMoveState");
             }
         }
@@ -1242,7 +1256,7 @@ class Thug : Enemy
             Materials/Thug_Hat.xml,
             Materials/Thug_Head.xml,
             Materials/Thug_Body.xml
-        */
+
         if (HasFlag(FLAGS_ATTACK))
         {
             animModel.materials[0]= cache.GetResource("Material", "Materials/Thug_Leg.xml");
@@ -1255,6 +1269,7 @@ class Thug : Enemy
             animModel.materials[1]= cache.GetResource("Material", "Materials/Thug_Torso_1.xml");
             animModel.materials[2]= cache.GetResource("Material", "Materials/Thug_Hat_1.xml");
         }
+        */
     }
 
     bool KeepDistanceWithPlayer(float max_dist = COLLISION_SAFE_DIST)
