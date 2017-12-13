@@ -14,10 +14,11 @@
 # AI Avoid Out of zone -> use CrowdManager
 # Thug Attack Rotate to Player
 # Rethinking debug text and Log system -> Debug Hint Message ?
+# New model intergration --> Wait for ART
+# AssetProess curRig refactor
 
  --> Camera Collision Better way ?
  Player Attack Rotation issue
  Ragdoll out of world kill
- AssetProess curRig refactor
- New model intergration --> Wait for ART
  Player Attack Impact Check
+ Player Attack Particle (Bigger ?)

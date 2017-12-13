@@ -376,7 +376,7 @@ PhysicsRaycastResult PhysicsRayCast(const Vector3&in start, const Vector3&in dir
         if (drawDebug > 0)
         {
             gDebugMgr.AddCross(result.position, 0.25f, YELLOW);
-            gDebugMgr.AddLine(start, result.position, RED);
+            gDebugMgr.AddLine(start, result.position, Color(0.1f, 0.25f, 0.7f));
         }
     }
     else
@@ -400,7 +400,7 @@ PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in 
         {
             gDebugMgr.AddSphere(result.position, radius, YELLOW);
             gDebugMgr.AddLine(start, result.position, BLUE);
-            gDebugMgr.AddLine(start, dir * range + start, RED);
+            gDebugMgr.AddLine(start, dir * range + start, Color(0.1f, 0.25f, 0.7f));
         }
     }
     else

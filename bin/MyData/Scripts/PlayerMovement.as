@@ -17,7 +17,7 @@ class PlayerStandState : MultiAnimationState
 
     void Update(float dt)
     {
-        if (!gInput.IsLeftStickInDeadZone() && gInput.IsLeftStickStationary())
+        if (!gInput.IsLeftStickInDeadZone() && gInput.HasLeftStickBeenStationary(0.05f))
         {
             if (!player_walk)
             {

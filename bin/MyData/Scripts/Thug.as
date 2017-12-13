@@ -105,8 +105,8 @@ class ThugStandState : MultiAnimationState
 
         if (ownner.HasFlag(FLAGS_NO_MOVE))
         {
-            Print(ownner.GetName() + " no move change to tant idle");
-            ownner.ChangeState("TauntIdleState");
+            Print(ownner.GetName() + " no move change to turn state");
+            ownner.ChangeState("TurnState");
             return;
         }
 
@@ -1035,7 +1035,7 @@ class Thug : Enemy
                 // LogPrint("Creating decal");
                 float size = Random(1.5f, 3.5f);
                 float timeToLive = 5.0f;
-                Vector3 pos = sceneNode.worldPosition + Vector3(0, 0, 0);
+                Vector3 pos = sceneNode.worldPosition + Vector3(0, 0.1f, 0);
                 decal.AddDecal(floorNode.GetComponent("StaticModel"), pos, Quaternion(90, Random(360), 0), size, 1.0f, 1.0f, Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), timeToLive);
             }
         }

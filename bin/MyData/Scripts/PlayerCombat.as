@@ -132,17 +132,31 @@ class PlayerAttackState : CharacterState
 
         ownner.CheckTargetDistance(ownner.target);
 
-        bool finished = motion.Move(ownner, dt) == 1;
-        if (finished) {
-            LogPrint("Player::Attack finish attack movemont in sub state = " + state);
-            ownner.CommonStateFinishedOnGroud();
+        int ret = motion.Move(ownner, dt);
+        if (ret == 1) {
+            OnMotionFinished();
             return;
+        }
+        else if (ret == 2)
+        {
+            OnDockAlignTimeOut();
         }
 
         CheckInput(t);
         CharacterState::Update(dt);
     }
 
+    void OnMotionFinished()
+    {
+        LogPrint("Player::Attack finish attack movemont in sub state = " + state);
+        ownner.CommonStateFinishedOnGroud();
+    }
+
+    void OnDockAlignTimeOut()
+    {
+        if (drawDebug > 0)
+            ownner.GetScene().updateEnabled = false;
+    }
 
     void CheckInput(float t)
     {

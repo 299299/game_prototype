@@ -5,8 +5,8 @@
 // ==============================================
 
 const float MAX_COUNTER_DIST = 6.0f;
-const float DIST_SCORE = 60.0f;
-const float ANGLE_SCORE = 10.0f;
+const float DIST_SCORE = 40.0f;
+const float ANGLE_SCORE = 30.0f;
 const float THREAT_SCORE = 30.0f;
 const int   MAX_WEAK_ATTACK_COMBO = 3;
 const float MAX_DISTRACT_DIST = 4.0f;
@@ -317,11 +317,11 @@ class Player : Character
 
         if (drawDebug > 0)
         {
-            gDebugMgr.AddDirection(myPos, targetAngle - maxDiffAngle/2.0f, maxDiffDist, TARGET_COLOR);
-            gDebugMgr.AddDirection(myPos, targetAngle + maxDiffAngle/2.0f, maxDiffDist, TARGET_COLOR);
+            gDebugMgr.AddDirection(myPos, targetAngle - maxDiffAngle/2.0f, maxDiffDist, YELLOW);
+            gDebugMgr.AddDirection(myPos, targetAngle + maxDiffAngle/2.0f, maxDiffDist, YELLOW);
             if (attackEnemy !is null)
                 gDebugMgr.AddLine(myPos, attackEnemy.GetNode().worldPosition, RED);
-            gDebugMgr.AddDirection(myPos, targetAngle, maxDiffDist, BLACK);
+            gDebugMgr.AddDirection(myPos, targetAngle, maxDiffDist, BLUE);
         }
 
         LogPrint("CommonPicKEnemy() time-cost = " + (time.systemTime - t) + " ms \n");
