@@ -57,7 +57,7 @@ const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 const int   PROCESS_TIME_PER_FRAME = 60; // ms
 const float BONE_SCALE = 100.0f;
 const float BIG_HEAD_SCALE = 2.0f;
-const float ROTATION_FIX_DEGREE = 5.0f;
+const float ROTATION_FIX_DEGREE = 45.0f;
 
 Scene@  processScene;
 
@@ -92,9 +92,10 @@ class MotionRig
         }
 
         processNode = processScene.CreateChild(rig + "_Character");
-        processNode.worldRotation = Quaternion(0, 180, 0);
+        Node@ renderNode = processNode.CreateChild("RenderNode");
+        renderNode.rotation = Quaternion(0, -180, 0);
 
-        AnimatedModel@ am = processNode.CreateComponent("AnimatedModel");
+        AnimatedModel@ am = renderNode.CreateComponent("AnimatedModel");
         am.model = cache.GetResource("Model", rigName);
 
         skeleton = am.skeleton;
@@ -104,16 +105,18 @@ class MotionRig
         pelvisRightAxis = rotateBoneInitQ * Vector3(1, 0, 0);
         pelvisRightAxis.Normalize();
 
-        translateNode = processNode.GetChild(TranslateBoneName, true);
-        rotateNode = processNode.GetChild(RotateBoneName, true);
+        translateNode = renderNode.GetChild(TranslateBoneName, true);
+        rotateNode = renderNode.GetChild(RotateBoneName, true);
         pelvisOrign = skeleton.GetBone(TranslateBoneName).initialPosition;
 
-        left_foot_to_ground_height = processNode.GetChild(L_FOOT, true).worldPosition.y;
-        right_foot_to_ground_height = processNode.GetChild(R_FOOT, true).worldPosition.y;
+        left_foot_to_ground_height = renderNode.GetChild(L_FOOT, true).worldPosition.y;
+        right_foot_to_ground_height = renderNode.GetChild(R_FOOT, true).worldPosition.y;
 
         alignNode = processScene.CreateChild(rig + "_Align");
-        alignNode.worldRotation = Quaternion(0, 180, 0);
-        AnimatedModel@ am2 = alignNode.CreateComponent("AnimatedModel");
+        renderNode = alignNode.CreateChild("RenderNode");
+        renderNode.rotation = Quaternion(0, -180, 0);
+
+        AnimatedModel@ am2 = renderNode.CreateComponent("AnimatedModel");
         am2.model = am.model;
 
         LogPrint(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() +
@@ -255,7 +258,7 @@ void CollectBoneWorldPositions(MotionRig@ rig, const String&in animationFile, co
     if (track is null)
         return;
 
-    AnimatedModel@ am = rig.alignNode.GetComponent("AnimatedModel");
+    AnimatedModel@ am = rig.alignNode.children[0].GetComponent("AnimatedModel");
     am.RemoveAllAnimationStates();
     AnimationState@ state = am.AddAnimationState(anim);
     state.weight = 1.0f;
@@ -285,7 +288,7 @@ Vector3 GetBoneWorldPosition(MotionRig@ rig, const String&in animationFile, cons
 
     rig.alignNode.worldPosition = Vector3();
     rig.alignNode.worldRotation = Quaternion();
-    AnimatedModel@ am = rig.alignNode.GetComponent("AnimatedModel");
+    AnimatedModel@ am = rig.alignNode.children[0].GetComponent("AnimatedModel");
     am.RemoveAllAnimationStates();
     AnimationState@ state = am.AddAnimationState(anim);
     state.weight = 1.0f;
@@ -401,8 +404,8 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
         firstRotateFromRoot = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(firstRotateFromRoot) >= ROTATION_FIX_DEGREE)
         {
-            if (dump)
-                LogPrint(animationFile + " Need to rotate whole animation since the first rotation key is not zero, rotation=" + firstRotateFromRoot);
+            //if (dump)
+            LogPrint(animationFile + " Need to rotate whole animation since the first rotation key is not zero, rotation=" + firstRotateFromRoot);
             rotate = true;
         }
         startFromOrigin.w = firstRotateFromRoot;

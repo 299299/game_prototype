@@ -112,7 +112,7 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(forwardAttacks, "Attack_Close_Weak_Forward_05", 13, ATTACK_PUNCH, L_HAND);
 
         AddAttackMotion(forwardAttacks, "Attack_Close_Run_Forward", 12, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Far_Forward", 25, ATTACK_PUNCH, R_HAND);
+        AddAttackMotion(forwardAttacks, "Attack_Far_Forward", 25, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward_01", 20, ATTACK_KICK, R_FOOT);
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward_02", 20, ATTACK_KICK, L_FOOT);
         AddAttackMotion(forwardAttacks, "Attack_Far_Forward_03", 22, ATTACK_PUNCH, R_HAND);
@@ -368,7 +368,7 @@ void CreateBruceCombatMotions()
     //========================================================================
     // FORWARD
     //========================================================================
-    int attackMotionFlags = kMotion_Turn;
+    int attackMotionFlags = kMotion_Turn | kMotion_Ext_DoNotRotateAnimation;
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_02", attackMotionFlags).SetDockAlign(L_HAND, 14);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_03", attackMotionFlags).SetDockAlign(L_FOOT, 11);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_04", attackMotionFlags).SetDockAlign(R_FOOT, 20);
@@ -385,7 +385,7 @@ void CreateBruceCombatMotions()
     Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_05", attackMotionFlags).SetDockAlign(L_HAND, 13);
 
     Global_CreateMotion("BM_Attack/Attack_Close_Run_Forward", attackMotionFlags).SetDockAlign(R_HAND, 12);
-    Global_CreateMotion("BM_Attack/Attack_Far_Forward", attackMotionFlags).SetDockAlign(R_HAND, 25);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward", attackMotionFlags).SetDockAlign(R_ARM, 25);
     Global_CreateMotion("BM_Attack/Attack_Far_Forward_01", attackMotionFlags).SetDockAlign(R_FOOT, 20);
     Global_CreateMotion("BM_Attack/Attack_Far_Forward_02", attackMotionFlags).SetDockAlign(L_FOOT, 20);
     Global_CreateMotion("BM_Attack/Attack_Far_Forward_03", attackMotionFlags).SetDockAlign(R_HAND, 22);

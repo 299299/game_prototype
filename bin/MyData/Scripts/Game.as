@@ -523,7 +523,7 @@ class TestGameState : GameState
             if (name.StartsWith("thug"))
             {
                 nodes_to_remove.Push(_node.id);
-                if (test_enemy_num_override > 0 && enemyNum >= test_enemy_num_override)
+                if (test_enemy_num_override >= 0 && enemyNum >= test_enemy_num_override)
                     continue;
                 Vector3 v = _node.worldPosition;
                 v.y = 0;

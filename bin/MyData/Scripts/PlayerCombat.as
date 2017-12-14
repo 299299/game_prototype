@@ -18,7 +18,6 @@ class PlayerAttackState : CharacterState
     int                     state;
     Vector3                 targetPosition;
     Vector3                 motionPosition;
-    Vector3                 dockAlignWS;
 
     float                   alignTime = 0.2f;
 
@@ -102,6 +101,7 @@ class PlayerAttackState : CharacterState
         float t = ownner.animCtrl.GetTime(motion.animationName);
         if (state == ATTACK_STATE_ALIGN)
         {
+            ownner.motion_deltaRotation += yawPerSec * dt;
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
@@ -152,8 +152,8 @@ class PlayerAttackState : CharacterState
 
     void OnDockAlignTimeOut()
     {
-        if (drawDebug > 0)
-            ownner.GetScene().updateEnabled = false;
+        //if (drawDebug > 0)
+        //    ownner.GetScene().updateEnabled = false;
     }
 
     void CheckInput(float t)
@@ -180,7 +180,8 @@ class PlayerAttackState : CharacterState
         Vector3 enemyPos = ownner.target.GetNode().worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
-        float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST);
+        // float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST + 0.25f);
+        float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_RADIUS);
         int bestIndex = 0;
         diff.Normalize();
         int index_start = -1;
@@ -251,7 +252,6 @@ class PlayerAttackState : CharacterState
         }
 
         @currentAttack = attacks[bestIndex];
-        alignTime = currentAttack.impactTime;
 
         targetPosition = myPos + diff * toEnenmyDistance;
         LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex +
@@ -293,18 +293,33 @@ class PlayerAttackState : CharacterState
             state = ATTACK_STATE_ALIGN;
             float diff = ownner.ComputeAngleDiff(ownner.target.GetNode());
             int r = DirectionMapToIndex(diff, 4);
+            float targetAngle = 0;
 
             if (d_log)
                 LogPrint("Attack-align " + " r-index=" + r + " diff=" + diff);
 
             if (r == 0)
+            {
                 PickBestMotion(forwardAttacks, r);
+                targetAngle = 0;
+            }
             else if (r == 1)
+            {
                 PickBestMotion(rightAttacks, r);
+                targetAngle = 90;
+            }
             else if (r == 2)
+            {
                 PickBestMotion(backAttacks, r);
+                targetAngle = 180;
+            }
             else if (r == 3)
+            {
                 PickBestMotion(leftAttacks, r);
+                targetAngle = -90;
+            }
+
+            // yawPerSec = AngleDiff(AngleDiff(targetAngle - diff) / alignTime);
 
             ownner.target.RequestDoNotMove();
         }
@@ -331,27 +346,25 @@ class PlayerAttackState : CharacterState
         motion.Start(ownner);
         weakAttack = cast<Player>(ownner).combo < MAX_WEAK_ATTACK_COMBO;
         slowMotion = (p.combo >= 3) ? (RandomInt(10) == 1) : false;
+        alignTime = motion.dockAlignTime;
 
         if (ownner.target !is null)
         {
-            motionPosition = currentAttack.GetImpactPosition(ownner);
+            float curAngle = ownner.GetCharacterAngle();
+            motionPosition = motion.GetDockAlignPositionAtTime(ownner, curAngle, alignTime);
+            targetPosition.y = motionPosition.y;
+            // motionPosition = currentAttack.GetImpactPosition(ownner);
             ownner.motion_velocity = ( targetPosition - motionPosition ) / alignTime;
             ownner.motion_velocity.y = 0;
 
-            Vector3 futurePostion = motion.GetFuturePosition(ownner, alignTime);
-            dockAlignWS = ownner.GetNode().rotation * motion.dockAlignOffset;
-            dockAlignWS += futurePostion;
-
-            float curAngle = ownner.GetCharacterAngle();
-            dockAlignWS = motion.GetDockAlignPositionAtTime(ownner, curAngle, alignTime);
             float futureRotation = motion.GetFutureRotation(ownner, alignTime);
             float dockRotation = Atan2(motion.dockAlignOffset.x, motion.dockAlignOffset.z);
-            motionRotation = AngleDiff(dockRotation + futureRotation);
+            motionRotation = futureRotation; //AngleDiff(dockRotation + futureRotation);
             // motionRotation = AngleDiff(motionRotation);
             Vector3 v = ownner.target.GetNode().worldPosition - ownner.GetNode().worldPosition;
             targetRotation = Atan2(v.x, v.z);
 
-            yawPerSec = AngleDiff(targetRotation - motionRotation) / alignTime;
+            // yawPerSec = AngleDiff(targetRotation - motionRotation) / alignTime;
 
             LogPrint("PlayerAttack ownner.motion_velocity=" + ownner.motion_velocity.ToString() +
                      " motion.dockAlignOffset=" + motion.dockAlignOffset.ToString() +
@@ -423,11 +436,14 @@ class PlayerAttackState : CharacterState
         if (e is null)
             return;
 
+        Motion@ m = currentAttack.motion;
         Node@ _node = ownner.GetNode();
-        Vector3 dir = _node.worldPosition - e.GetNode().worldPosition;
+        Vector3 dir = _node.GetChild(m.dockAlignBoneName, true).worldPosition - e.GetNode().worldPosition;
         dir.y = 0;
         if (dir.length > MAX_ATTACK_CHECK_DIST)
         {
+            if (drawDebug > 0)
+                ownner.GetScene().updateEnabled = false;
             LogPrint("PlayerAttack " + e.GetName() + " dist too far way !!");
             return;
         }
@@ -513,9 +529,6 @@ class PlayerAttackState : CharacterState
         Vector3 v = ownner.GetNode().worldPosition;
         DebugDrawDirection(debug, v, motionRotation, SOURCE_COLOR, 5.0f);
         DebugDrawDirection(debug, v, targetRotation, TARGET_COLOR, 5.0f);
-
-        AddDebugMark(debug, dockAlignWS, RED);
-        // debug.AddLine(v, currentAttack.motion.dockAlignOffset, GREEN, false);
     }
 };
 
