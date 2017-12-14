@@ -7,7 +7,7 @@
 const String OUT_DIR = "MyData/";
 const String ASSET_DIR = "Asset/";
 const int MAX_BONES = 64; //75
-const Array<String> MODEL_ARGS = {"-t", "-na", "-l", "-cm", "-ct", "-nm", "-nt", "-mb", String(MAX_BONES), "-np"};
+const Array<String> MODEL_ARGS = {"-na", "-l", "-cm", "-ct", "-nm", "-nt", "-mb", String(MAX_BONES), "-np"}; //"-t",
 const Array<String> ANIMATION_ARGS = {"-nm", "-nt", "-mb", String(MAX_BONES), "-np"};
 String exportFolder;
 
