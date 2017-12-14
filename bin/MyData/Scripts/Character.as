@@ -689,6 +689,14 @@ class CharacterCounterState : CharacterState
 
     void Update(float dt)
     {
+        if (currentMotion is null)
+        {
+            LogPrint("Error !!! ");
+            ownner.GetScene().updateEnabled = false;
+            return;
+        }
+
+
         ownner.motion_velocity = (state == COUNTER_ALIGN) ? movePerSec : Vector3(0, 0, 0);
         if (state == COUNTER_ALIGN)
         {

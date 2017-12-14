@@ -69,7 +69,7 @@ bool mobile = false;
 bool one_shot_kill = false;
 bool instant_collision = true;
 bool player_walk = false;
-bool locomotion_turn = false;
+bool locomotion_turn = true;
 bool attack_choose_closest_one = false;
 bool counter_choose_closest_one = false;
 

@@ -408,11 +408,11 @@ class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 7.5f;
     float   cameraDistance = 7.5f;
-    float   targetCameraDistance = 25;
+    float   targetCameraDistance = 15;
     float   cameraDistSpeed = 10.0f;
-    float   pitch = 45;
+    float   pitch = 30;
     float   yaw = 0;
-    Vector3 targetOffset = Vector3(0, 2.5, 0);
+    Vector3 targetOffset = Vector3(0, 3.5, 0);
 
     bool shaking = false;
     // How long the object should shake for.
