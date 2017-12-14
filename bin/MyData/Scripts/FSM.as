@@ -68,7 +68,7 @@ class FSM
 {
     Array<State@>           states;
     State@                  currentState;
-    StringHash              queueState;
+    String                  queueState;
 
     FSM()
     {
@@ -101,13 +101,13 @@ class FSM
         return null;
     }
 
-    bool ChangeState(const StringHash&in nameHash)
+    bool ChangeState(const String&in name)
     {
-        State@ newState = FindState(nameHash);
+        State@ newState = FindState(StringHash(name));
 
         if (newState is null)
         {
-            LogPrint("new-state not found " + nameHash.ToString());
+            LogPrint("new-state not found " + name);
             return false;
         }
 
@@ -142,12 +142,7 @@ class FSM
         return true;
     }
 
-    bool ChangeState(const String&in name)
-    {
-        return ChangeState(StringHash(name));
-    }
-
-    void ChangeStateQueue(const StringHash&in name)
+    void ChangeStateQueue(const String&in name)
     {
         queueState = name;
     }
@@ -157,10 +152,10 @@ class FSM
         if (currentState !is null)
             currentState.Update(dt);
 
-        if (queueState != 0)
+        if (!queueState.empty)
         {
             ChangeState(queueState);
-            queueState = 0;
+            queueState.Clear();
         }
     }
 

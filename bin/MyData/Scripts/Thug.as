@@ -940,8 +940,6 @@ class Thug : Enemy
         ChangeState("StandState");
 
         attackDamage = one_shot_kill ? 9999 : 20;
-
-        walkAlignAnimation = GetAnimationName(MOVEMENT_GROUP_THUG + "Walk_Forward_Combat");
     }
 
     bool CanAttack()

@@ -68,7 +68,7 @@ Array<int> gIntCache;
 bool mobile = false;
 bool one_shot_kill = false;
 bool instant_collision = true;
-bool player_walk = false;
+bool player_walk = true;
 bool locomotion_turn = true;
 bool attack_choose_closest_one = false;
 bool counter_choose_closest_one = false;

@@ -99,7 +99,10 @@ class CharacterState : State
         else if (name == SOUND)
             ownner.PlaySound(eventData[VALUE].GetString());
         else if (name == CHANGE_STATE)
-            ownner.ChangeState(eventData[VALUE].GetStringHash());
+        {
+            Print("Animation Event ChangeState");
+            ownner.ChangeState(eventData[VALUE].GetString());
+        }
         else if (name == IMPACT)
         {
             combatReady = true;
@@ -951,7 +954,6 @@ class Character : GameObject
     int                     attackDamage = 10;
 
     String                  lastAnimation;
-    String                  walkAlignAnimation;
 
     PhysicsSensor@          sensor;
 

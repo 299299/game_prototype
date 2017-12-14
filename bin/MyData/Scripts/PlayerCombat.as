@@ -1342,7 +1342,7 @@ class PlayerBeatDownHitState : MultiMotionState
         float curDist = ownner.GetTargetDistance();
         if (IsTransitionNeeded(curDist - COLLISION_SAFE_DIST))
         {
-            ownner.ChangeStateQueue(StringHash("TransitionState"));
+            ownner.ChangeStateQueue("TransitionState");
             PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.FindState(StringHash("TransitionState")));
             s.nextStateName = this.name;
             return;
@@ -1376,7 +1376,7 @@ class PlayerBeatDownHitState : MultiMotionState
         {
             CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
             state.Start(this.name, targetPosition, targetRotation, 0.1f);
-            ownner.ChangeStateQueue(ALIGN_STATE);
+            ownner.ChangeStateQueue("AlignState");
         }
         else
         {

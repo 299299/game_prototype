@@ -189,20 +189,10 @@ class GameObject : ScriptObject
         return ret;
     }
 
-    bool ChangeState(const StringHash&in nameHash)
+    void ChangeStateQueue(const String&in name)
     {
-        String oldStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        bool ret = stateMachine.ChangeState(nameHash);
-        String newStateName = stateMachine.currentState !is null ? stateMachine.currentState.name : "null";
-        if (d_log)
-            LogPrint(GetName() + " ChangedState from " + oldStateName + " to " + newStateName);
-        sceneNode.vars[STATE] = GetState().nameHash;
-        return ret;
-    }
-
-    void ChangeStateQueue(const StringHash&in nameHash)
-    {
-        stateMachine.ChangeStateQueue(nameHash);
+        LogPrint(GetName() + " ChangeStateQueue " + name);
+        stateMachine.ChangeStateQueue(name);
     }
 
     State@ FindState(const String&in name)

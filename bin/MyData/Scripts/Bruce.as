@@ -6,7 +6,7 @@
 
 // -- non cost
 float BRUCE_TRANSITION_DIST = 0.0f;
-const String BRUCE_MOVEMENT_GROUP = "BM_Movement/";
+const String BRUCE_MOVEMENT_GROUP = "BM_Combat_Movement/";
 Array<Motion@> bruce_counter_arm_front_motions;
 Array<Motion@> bruce_counter_arm_back_motions;
 Array<Motion@> bruce_counter_leg_front_motions;
@@ -21,6 +21,8 @@ class BruceStandState : PlayerStandState
     {
         super(c);
         AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_01");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_02");
     }
 };
 
@@ -49,9 +51,9 @@ class BruceStandToWalkState : PlayerStandToWalkState
     BruceStandToWalkState(Character@ c)
     {
         super(c);
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Walk_Right_90");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Walk_Right_180");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Walk_Right_180");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_90");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_180");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Left_90");
     }
 };
 
@@ -301,7 +303,6 @@ class Bruce : Player
     Bruce()
     {
         super();
-        walkAlignAnimation = GetAnimationName("BM_Movement/Walk_Forward");
     }
 
     void AddStates()

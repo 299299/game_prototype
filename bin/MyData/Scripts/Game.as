@@ -682,9 +682,9 @@ class GameFSM : FSM
         AddState(TestGameState());
     }
 
-    bool ChangeState(const StringHash&in nameHash)
+    bool ChangeState(const String&in name)
     {
-        bool b = FSM::ChangeState(nameHash);
+        bool b = FSM::ChangeState(name);
         if (b)
             @gameState = cast<GameState>(currentState);
         return b;

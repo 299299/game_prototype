@@ -136,6 +136,7 @@ class PlayerStandToWalkState : PlayerTurnState
         super(c);
         SetName("StandToWalkState");
         flags = FLAGS_ATTACK | FLAGS_MOVING;
+        animSpeed = 2.0f;
     }
 };
 
@@ -249,7 +250,8 @@ class PlayerWalkState : PlayerMoveForwardState
     {
         super(c);
         SetName("WalkState");
-        turnSpeed = 5.0f;
+        turnSpeed = 7.5f;
+        animSpeed = 1.25f;
     }
 
     void OnStop()
