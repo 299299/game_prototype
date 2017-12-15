@@ -17,11 +17,11 @@
 # New model intergration --> Wait for ART
 # AssetProess curRig refactor
 # Resource Clean up
+# Adjust Parameters in Target Platform (SmartPhone)
+# Player Attack Rotation issue
+# Player Attack Impact Check
 ? --> Camera Collision Better way
-? Player Attack Rotation issue
-? Player Attack Impact Check
 
  Ragdoll out of world kill
  Player Attack Particle (Bigger ?)
- Adjust Parameters in Target Platform (SmartPhone)
  Moving collison detection （More Complex Environment)
