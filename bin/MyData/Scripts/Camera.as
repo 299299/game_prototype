@@ -407,10 +407,10 @@ class LookAtCameraController: CameraController
 class ThirdPersonCameraController : CameraController
 {
     float   cameraSpeed = 7.5f;
-    float   cameraDistance = 7.5f;
-    float   targetCameraDistance = 15;
+    float   cameraDistance = 9.0f;
+    float   targetCameraDistance = 20;
     float   cameraDistSpeed = 10.0f;
-    float   pitch = 30;
+    float   pitch = 45;
     float   yaw = 0;
     Vector3 targetOffset = Vector3(0, 3.5, 0);
 
@@ -442,7 +442,7 @@ class ThirdPersonCameraController : CameraController
         // Vector3 offset = cameraNode.worldRotation * this.targetOffset;
         target_pos += this.targetOffset;
 
-        this.cameraDistance += (this.targetCameraDistance - this.cameraDistance) * dt * this.cameraDistSpeed;
+        this.cameraDistance = Lerp(this.cameraDistance, this.targetCameraDistance, dt * this.cameraDistSpeed);
 
         Vector3 pos = Quaternion(this.pitch, this.yaw, 0) * Vector3(0, 0, -this.cameraDistance) + target_pos;
 

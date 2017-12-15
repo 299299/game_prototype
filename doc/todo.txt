@@ -8,7 +8,7 @@
 # Double Counter
 # Triple Counter
 # Enviromental Counter
-# !Player turn foot sync ???
+# Player turn foot sync ???
 # Player Attack Animations Check
 # Attack Thug state bug fix ? can not reproduce NOW
 # AI Avoid Out of zone -> use CrowdManager
@@ -16,10 +16,12 @@
 # Rethinking debug text and Log system -> Debug Hint Message ?
 # New model intergration --> Wait for ART
 # AssetProess curRig refactor
+# Resource Clean up
 ? --> Camera Collision Better way
 ? Player Attack Rotation issue
 ? Player Attack Impact Check
 
  Ragdoll out of world kill
  Player Attack Particle (Bigger ?)
- Resource Clean up
+ Adjust Parameters in Target Platform (SmartPhone)
+ Moving collison detection （More Complex Environment)

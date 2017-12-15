@@ -1,0 +1,1 @@
+Scripts/Test.as -p CoreData;Data;MyData -log DEBUG

@@ -892,3 +892,126 @@ class DebugDrawMgr
 
 DebugDrawMgr@ gDebugMgr = DebugDrawMgr();
 
+
+// ======================================================================
+//
+//  Debug UI Slider Changed
+//
+// ======================================================================
+const float sliderRange = 20.0f;
+const float cameraDistMin = 3.0f;
+const float cameraDistMax = 40.0f;
+const float cameraPitchMin = -60.0f;
+const float cameraPitchMax = 90.0f;
+const String TAG_DEBUG = "TAG_DEBUG";
+
+Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
+{
+    Font@ font = cache.GetResource("Font", DEBUG_FONT);
+    // Create text and slider below it
+    Text@ sliderText = ui.root.CreateChild("Text");
+    sliderText.SetPosition(x, y);
+    sliderText.SetFont(font, 20);
+    sliderText.text = text;
+    sliderText.name = text + "_Text";
+    sliderText.AddTag(TAG_DEBUG);
+    sliderText.visible = false;
+    Slider@ slider = ui.root.CreateChild("Slider");
+    slider.SetStyleAuto();
+    slider.SetPosition(x, y + ySize);
+    slider.SetSize(xSize, ySize);
+    slider.name = text;
+    slider.range = sliderRange;
+    slider.AddTag(TAG_DEBUG);
+    slider.visible = false;
+    return slider;
+}
+
+Button@ CreateButton(int x, int y, int xSize, int ySize, const String& text)
+{
+    Font@ font = cache.GetResource("Font", DEBUG_FONT);
+    Button@ button = ui.root.CreateChild("Button");
+    button.SetStyleAuto();
+    button.SetPosition(x, y);
+    button.SetSize(xSize, ySize);
+    button.name = text;
+    Text@ buttonText = button.CreateChild("Text");
+    buttonText.SetFont(font, 20);
+    buttonText.text = text;
+    return button;
+}
+
+void CreateDebugUI()
+{
+    int gw = graphics.width;
+    int gh = graphics.height;
+    int buttonWidth = gw / 8;
+    int buttonHeight = gw / 40;
+    int y = 30;
+    Button@ b = CreateButton(gw - buttonWidth - 30, y, buttonWidth, buttonHeight, "Debug");
+    int x = gw / 2;
+    int w = gw / 4;
+    int h = gw / 40;
+    int gap = 10;
+    ThirdPersonCameraController@ tpc = cast<ThirdPersonCameraController>(gCameraMgr.FindCameraController(StringHash("ThirdPerson")));
+    if (tpc !is null)
+    {
+        Slider@ s = CreateSlider(x, y, w, h, "Camera_Distance");
+        y += (h*2 + gap);
+        s.value = (tpc.targetCameraDistance - cameraDistMin) / (cameraDistMax - cameraDistMin) * sliderRange;
+
+        s = CreateSlider(x, y, w, h, "Camera_Pitch");
+        y += (h*2 + gap);
+        s.value = (tpc.pitch - cameraPitchMin) / (cameraPitchMax - cameraPitchMin) * sliderRange;
+    }
+
+}
+
+void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
+{
+    UIElement@ e = eventData["Element"].GetPtr();
+    float newValue = eventData["Value"].GetFloat();
+    Print(e.name + " newValue=" + newValue);
+    newValue /= sliderRange;
+    ThirdPersonCameraController@ tpc = cast<ThirdPersonCameraController>(gCameraMgr.FindCameraController(StringHash("ThirdPerson")));
+    if (tpc !is null)
+    {
+        if (e.name == "Camera_Distance")
+        {
+            tpc.targetCameraDistance = Lerp(cameraDistMin, cameraDistMax, newValue);
+            Text@ text = ui.root.GetChild(e.name + "_Text", true);
+            if (text !is null)
+                text.text = "Camera Distance: " + tpc.targetCameraDistance;
+        }
+        else if (e.name == "Camera_Pitch")
+        {
+            tpc.pitch = Lerp(cameraPitchMin, cameraPitchMax, newValue);
+            Text@ text = ui.root.GetChild(e.name + "_Text", true);
+            if (text !is null)
+                text.text = "Camera Pitch: " + tpc.pitch;
+        }
+    }
+}
+
+void HandleButtonPressed(StringHash eventType, VariantMap& eventData)
+{
+    UIElement@ e = eventData["Element"].GetPtr();
+    if (e.name == "Debug")
+    {
+        debug_mode = (debug_mode == 0) ? 1 : 0;
+        if (debug_mode == 1)
+        {
+            freeze_ai = 1;
+            drawDebug = 1;
+        }
+        else
+        {
+            freeze_ai = 0;
+            drawDebug = 0;
+        }
+
+        Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(TAG_DEBUG);
+        for (uint i = 0; i < elements.length; ++i)
+            elements[i].visible = (debug_mode == 1);
+    }
+}

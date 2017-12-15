@@ -3,6 +3,7 @@
 //    GameState Class for Game Manager
 //
 // ==============================================
+const String TAG_LOADING = "TAG_LOADING";
 
 class GameState : State
 {
@@ -65,7 +66,7 @@ class LoadingState : GameState
         logoSprite.SetPosition(graphics.width - textureWidth/2, 0);
         logoSprite.opacity = 0.75f;
         logoSprite.priority = -100;
-        logoSprite.AddTag("TAG_LOADING");
+        logoSprite.AddTag(TAG_LOADING);
 
         Text@ text = ui.root.CreateChild("Text", "loading_text");
         text.SetFont(cache.GetResource("Font", UI_FONT), UI_FONT_SIZE);
@@ -73,7 +74,7 @@ class LoadingState : GameState
         text.SetPosition(2, 0);
         text.color = Color(1, 1, 1);
         text.textEffect = TE_STROKE;
-        text.AddTag("TAG_LOADING");
+        text.AddTag(TAG_LOADING);
 
         Texture2D@ loadingTexture = cache.GetResource("Texture2D", "Textures/Loading.tga");
         Sprite@ loadingSprite = ui.root.CreateChild("Sprite", "loading_bg");
@@ -84,7 +85,7 @@ class LoadingState : GameState
         loadingSprite.SetPosition(graphics.width/2 - textureWidth/2, graphics.height/2 - textureHeight/2);
         loadingSprite.priority = -100;
         loadingSprite.opacity = 0.0f;
-        loadingSprite.AddTag("TAG_LOADING");
+        loadingSprite.AddTag(TAG_LOADING);
         loadingSprite.SetAttributeAnimation("Opacity", alphaAnimation);
     }
 
@@ -98,7 +99,7 @@ class LoadingState : GameState
     void Exit(State@ nextState)
     {
         State::Exit(nextState);
-        Array<UIElement@>@ elements = ui.root.GetChildrenWithTag("TAG_LOADING");
+        Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(TAG_LOADING);
         for (uint i = 0; i < elements.length; ++i)
             elements[i].Remove();
     }
@@ -569,6 +570,8 @@ class TestGameState : GameState
         gCameraMgr.Start(cameraNode);
         //gCameraMgr.SetCameraController("Debug");
         gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
+
+        CreateDebugUI();
 
         gameScene = scene_;
 
