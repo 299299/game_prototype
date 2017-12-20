@@ -1325,9 +1325,6 @@ void StoreResourcePickerPath()
 
 Resource@ GetPickedResource(String resourceName)
 {
-    // @FIX by golden
-    // sometimes fileName comes "~/...././Data/.." we should remove ./
-    resourceName.Replace("./", "");
     resourceName = GetResourceNameFromFullName(resourceName);
     String type = resourcePicker.typeName;
     // Cube and 3D textures both use .xml extension. In that case interrogate the proper resource type
@@ -1476,24 +1473,6 @@ void UpdateTestAnimation(float timeStep)
         }
 
         animState.AddTime(timeStep);
-
-        // @Fix By golden
-        AnimatedModel@ model = animState.model;
-        if (model !is null)
-        {
-            Node@ node = model.node.parent;
-            Node@ sync_node = scene.GetChild(node.name + "_sync");
-            if (sync_node !is null)
-            {
-                AnimatedModel@ am = sync_node.children[0].GetComponent("AnimatedModel");
-                AnimationState@ as = am.GetAnimationState(0);
-                if (am !is null && as !is null)
-                {
-                    as.time = animState.time;
-                    as.Apply();
-                }
-            }
-        }
     }
 }
 
@@ -1524,7 +1503,7 @@ void InitVectorStructs()
         "      Cost"
     };
     vectorStructs.Push(VectorStruct("CrowdManager", "   >AreaCost", crowdManagerAreaCostVariables, 1));
-
+    
     Array<String> categories = GetObjectCategories();
     for (uint categoryIndex = 0; categoryIndex < categories.length; categoryIndex++)
     {
