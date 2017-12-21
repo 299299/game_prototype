@@ -369,7 +369,7 @@ void CreateBruceCombatMotions()
     //========================================================================
     // FORWARD
     //========================================================================
-    int attackMotionFlags = kMotion_Turn | kMotion_Ext_DoNotRotateAnimation;
+    int attackMotionFlags = kMotion_Turn;
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_02", attackMotionFlags).SetDockAlign(L_HAND, 14);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_03", attackMotionFlags).SetDockAlign(L_FOOT, 11);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_04", attackMotionFlags).SetDockAlign(R_FOOT, 20);

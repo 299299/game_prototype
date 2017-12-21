@@ -25,3 +25,5 @@
  Ragdoll out of world kill
  Player Attack Particle (Bigger ?)
  Moving collison detection （More Complex Environment)
+
+ Counter Rotation issue

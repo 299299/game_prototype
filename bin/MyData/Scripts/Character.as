@@ -463,9 +463,6 @@ class AnimationTestState : CharacterState
     void Enter(State@ lastState)
     {
         SendAnimationTriger(ownner.renderNode, RAGDOLL_STOP);
-        currentIndex = 0;
-        allFinished = false;
-        Start();
         CharacterState::Enter(lastState);
     }
 
@@ -510,6 +507,19 @@ class AnimationTestState : CharacterState
 
     void Update(float dt)
     {
+        int ragdoll_state = ownner.GetNode().vars[RAGDOLL_STATE].GetInt();
+        if (ragdoll_state != RAGDOLL_NONE)
+        {
+            return;
+        }
+
+        if (firstUpdate)
+        {
+            currentIndex = 0;
+            allFinished = false;
+            Start();
+        }
+
         if (allFinished)
         {
             //if (input.keyDown[KEY_RETURN])

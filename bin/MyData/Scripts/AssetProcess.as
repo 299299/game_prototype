@@ -18,7 +18,6 @@ enum RootMotionFlag
     kMotion_Ext_Foot_Based_Height = (1 << 7),
 
     kMotion_Ext_Translate_Ignore_Delta_Rotation = (1 << 8),
-    kMotion_Ext_DoNotRotateAnimation = (1 << 9),
 
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_YZR = kMotion_Y | kMotion_Z | kMotion_R,
@@ -57,7 +56,7 @@ const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 const int   PROCESS_TIME_PER_FRAME = 60; // ms
 const float BONE_SCALE = 100.0f;
 const float BIG_HEAD_SCALE = 2.0f;
-const float ROTATION_FIX_DEGREE = 45.0f;
+const float ROTATION_FIX_DEGREE = 15.0f;
 
 Scene@  processScene;
 
@@ -386,11 +385,10 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
     }
 
     AnimationTrack@ rotateTrack = anim.tracks[RotateBoneName];
-    Quaternion flipZ_Rot(0, 180, 0);
     Node@ rotateNode = rig.rotateNode;
     Node@ translateNode = rig.translateNode;
 
-    bool cutRotation = motionFlag & kMotion_Ext_Rotate_From_Start != 0;
+    bool cutRotation = true; // motionFlag & kMotion_Ext_Rotate_From_Start != 0;
     float firstRotateFromRoot = 0;
     bool rotate = false;
     bool footBased = motionFlag & kMotion_Ext_Foot_Based_Height != 0;
@@ -420,9 +418,6 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
     startFromOrigin.x = diff.x;
     startFromOrigin.y = diff.y;
     startFromOrigin.z = diff.z;
-
-    if (motionFlag & kMotion_Ext_DoNotRotateAnimation != 0)
-        rotate = false;
 
     if (rotate)
         RotateAnimation(rig, animationFile, -firstRotateFromRoot);
