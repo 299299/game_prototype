@@ -183,7 +183,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_0)
     {
-        TestAnimations_Group_2("Counter_Leg_Back_04");
+        TestAnimations_Group_2("Counter_Arm_Front_09");
     }
     else if (key == KEY_MINUS)
     {
@@ -345,11 +345,15 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
     LogPrint("TestAnimation_Group " + playerAnim);
 
     Array<String> testAnims;
+    int index = RandomInt(em.enemyList.length);
 
     for (uint i=0; i<thugAnims.length; ++i)
     {
         Motion@ m = gMotionMgr.FindMotion(thugAnims[i]);
-        Enemy@ e = em.enemyList[i];
+        Enemy@ e = em.enemyList[(index + i) % em.enemyList.length];
+        Ragdoll@ rg = cast<Ragdoll>(e.GetNode().GetScriptObject("Ragdoll"));
+        rg.ChangeState(RAGDOLL_NONE);
+
         Vector4 t = GetTargetTransform(player.GetNode(), m, m_player);
         e.Transform(Vector3(t.x, e.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
         e.TestAnimation(thugAnims[i]);
@@ -368,10 +372,13 @@ void TestAnimation_Group_s(const String&in playerAnim, const String& thugAnim, b
 
     Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
     Motion@ m = gMotionMgr.FindMotion(thugAnim);
-    Enemy@ e = em.enemyList[0];
+    Enemy@ e = em.enemyList[RandomInt(em.enemyList.length)];
 
     if (baseOnPlayer)
     {
+        Ragdoll@ rg = cast<Ragdoll>(e.GetNode().GetScriptObject("Ragdoll"));
+        rg.ChangeState(RAGDOLL_NONE);
+
         Vector4 t = GetTargetTransform(player.GetNode(), m, m_player);
         e.Transform(Vector3(t.x, e.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
     }
@@ -408,7 +415,7 @@ void TestAnimations_Group_2(const String& counterName = "")
     if (em.enemyList.empty)
         return;
 
-    Enemy@ e = em.enemyList[0];
+    Enemy@ e = em.enemyList[RandomInt(em.enemyList.length)];
     CharacterCounterState@ s1 = cast<CharacterCounterState>(player.FindState("CounterState"));
     CharacterCounterState@ s2 = cast<CharacterCounterState>(e.FindState("CounterState"));
     Motion@ m1, m2;

@@ -388,7 +388,7 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
     Node@ rotateNode = rig.rotateNode;
     Node@ translateNode = rig.translateNode;
 
-    bool cutRotation = true; // motionFlag & kMotion_Ext_Rotate_From_Start != 0;
+    bool cutRotation = motionFlag & kMotion_Ext_Rotate_From_Start != 0;
     float firstRotateFromRoot = 0;
     bool rotate = false;
     bool footBased = motionFlag & kMotion_Ext_Foot_Based_Height != 0;
