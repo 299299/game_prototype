@@ -18,6 +18,7 @@ enum RootMotionFlag
     kMotion_Ext_Foot_Based_Height = (1 << 7),
 
     kMotion_Ext_Translate_Ignore_Delta_Rotation = (1 << 8),
+    kMotion_Ext_DoNotRotateAnimation = (1 << 9),
 
     kMotion_XZR = kMotion_X | kMotion_Z | kMotion_R,
     kMotion_YZR = kMotion_Y | kMotion_Z | kMotion_R,
@@ -408,6 +409,9 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
         }
         startFromOrigin.w = firstRotateFromRoot;
     }
+
+    if (motionFlag & kMotion_Ext_DoNotRotateAnimation != 0)
+        rotate = false;
 
     // get start offset
     translateNode.position = translateTrack.keyFrames[0].position;
