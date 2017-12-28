@@ -1347,10 +1347,12 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "Attack_Punch_02", attackMotionFlag, attackAllowMotion);
 
     preFix = "TG_HitReaction/";
-    Global_CreateMotion(preFix + "HitReaction_Left");
-    Global_CreateMotion(preFix + "HitReaction_Right");
-    Global_CreateMotion(preFix + "HitReaction_Back_NoTurn");
-    Global_CreateMotion(preFix + "HitReaction_Back");
+    int hitMotionFlag = kMotion_XZR;
+    int hitAllowMotion = kMotion_XZR;
+    Global_CreateMotion(preFix + "HitReaction_Left", hitMotionFlag, hitAllowMotion);
+    Global_CreateMotion(preFix + "HitReaction_Right", hitMotionFlag, hitAllowMotion);
+    Global_CreateMotion(preFix + "HitReaction_Back_NoTurn", hitMotionFlag, hitAllowMotion);
+    Global_CreateMotion(preFix + "HitReaction_Back", hitMotionFlag, hitAllowMotion);
     Global_AddAnimation(preFix + "CapeHitReaction_Idle");
 
     preFix = "TG_Getup/";

@@ -472,6 +472,9 @@ class PlayerAttackState : CharacterState
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
         ownner.OnAttackSuccess(e);
+
+        ownner.GetScene().updateEnabled = false;
+        //ownner.GetScene().timeScale = 0.1f;
     }
 
     void PostInit(float closeDist = 2.5f)

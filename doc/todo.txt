@@ -20,10 +20,12 @@
 # Adjust Parameters in Target Platform (SmartPhone)
 # Player Attack Rotation issue
 # Player Attack Impact Check
-? --> Camera Collision Better way
+# ? --> Camera Collision Better way
+# Counter Rotation issue
 
+
+ Thug Hit rotation fix
  Ragdoll out of world kill
  Player Attack Particle (Bigger ?)
  Moving collison detection （More Complex Environment)
 
- Counter Rotation issue
