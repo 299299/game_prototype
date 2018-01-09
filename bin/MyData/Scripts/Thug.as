@@ -724,7 +724,7 @@ class ThugHitState : MultiMotionState
 
         LogPrint(ownner.GetName() + " HitState angle_diff=" + diff + " target_angle_diff=" + targetDiff);
 
-        turnSpeed = AngleDiff(targetDiff - diff) / alignTime;
+        turnSpeed = AngleDiff(targetDiff - diff) / turnAlignTime;
     }
 
     void Exit(State@ nextState)
