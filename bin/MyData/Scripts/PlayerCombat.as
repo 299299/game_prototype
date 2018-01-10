@@ -389,6 +389,8 @@ class PlayerAttackState : CharacterState
             slowMotion = false;
         }
 
+        // weakAttack = true;
+
         ownner.SetNodeEnabled("TailNode", true);
     }
 
@@ -473,7 +475,7 @@ class PlayerAttackState : CharacterState
         ownner.PlayRandomSound(sound_type);
         ownner.OnAttackSuccess(e);
 
-        ownner.GetScene().updateEnabled = false;
+        // ownner.GetScene().updateEnabled = false;
         //ownner.GetScene().timeScale = 0.1f;
     }
 

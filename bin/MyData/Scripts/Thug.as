@@ -679,8 +679,8 @@ class ThugAttackState : CharacterState
 class ThugHitState : MultiMotionState
 {
     float recoverTimer = 3 * SEC_PER_FRAME;
-    float turnAlignTime = 0.2f;
-    float turnSpeed;
+    //float turnAlignTime = 0.2f;
+    //float turnSpeed;
 
     ThugHitState(Character@ c)
     {
@@ -695,8 +695,8 @@ class ThugHitState : MultiMotionState
 
     void Update(float dt)
     {
-        if (timeInState <= turnAlignTime)
-            ownner.motion_deltaRotation += turnSpeed * dt;
+        //if (timeInState <= turnAlignTime)
+        //    ownner.motion_deltaRotation += turnSpeed * dt;
 
         if (timeInState >= recoverTimer)
             ownner.AddFlag(FLAGS_ATTACK);
@@ -706,25 +706,28 @@ class ThugHitState : MultiMotionState
     void Enter(State@ lastState)
     {
         float diff = ownner.ComputeAngleDiff(ownner.target.GetNode());
-        float targetDiff = 0;
+        float targetAngle = ownner.GetTargetAngle();
+        // float targetDiff = 0;
         int index = 0;
         if (diff < 0)
         {
-            targetDiff = 90;
+            // targetDiff = 0;
             index = 1;
         }
         if (Abs(diff) > 135)
         {
-            targetDiff = diff < 0 ? -180 : 180;
+            // targetDiff = diff < 0 ? -180 : 180;
             index = 2 + RandomInt(2);
+            targetAngle = AngleDiff(targetAngle + 180);
         }
         ownner.sceneNode.vars[ANIMATION_INDEX] = index;
+        // LogPrint(ownner.GetName() + " HitState angle_diff=" + diff + " target_angle_diff=" + targetDiff);
+
+        // turnSpeed = AngleDiff(targetDiff - diff) / turnAlignTime;
+        ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
 
         MultiMotionState::Enter(lastState);
 
-        LogPrint(ownner.GetName() + " HitState angle_diff=" + diff + " target_angle_diff=" + targetDiff);
-
-        turnSpeed = AngleDiff(targetDiff - diff) / turnAlignTime;
     }
 
     void Exit(State@ nextState)
@@ -1369,7 +1372,7 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "Attack_Punch_02", attackMotionFlag, attackAllowMotion);
 
     preFix = "TG_HitReaction/";
-    int hitMotionFlag = kMotion_Turn;
+    int hitMotionFlag = kMotion_XZR;
     int hitAllowMotion = kMotion_XZR;
     Global_CreateMotion(preFix + "HitReaction_Left", hitMotionFlag, hitAllowMotion);
     Global_CreateMotion(preFix + "HitReaction_Right", hitMotionFlag, hitAllowMotion);
