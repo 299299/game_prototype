@@ -55,6 +55,7 @@ class HeadIndicator : ScriptObject
         Vector2 pos_2d = GetCamera().WorldToScreenPoint(pos);
         sprite.position = Vector2(pos_2d.x * graphics.width, pos_2d.y * graphics.height);
         text.SetPosition(sprite.position.x, sprite.position.y);
+        text.visible = drawDebug > 0;
     }
 
     void ChangeState(int newState)

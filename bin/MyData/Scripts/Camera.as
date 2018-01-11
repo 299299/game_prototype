@@ -444,25 +444,14 @@ class ThirdPersonCameraController : CameraController
 
         this.cameraDistance = Lerp(this.cameraDistance, this.targetCameraDistance, dt * this.cameraDistSpeed);
 
-        Vector3 pos = Quaternion(this.pitch, this.yaw, 0) * Vector3(0, 0, -this.cameraDistance) + target_pos;
+        float pitch = this.pitch;
+        float yaw = this.yaw;
 
-        if (this.shaking)
-        {
-            this.completionPercent += dt / this.originDuration;
-            float dampingFactor = DampingCurve (completionPercent, this.dampingPercent);
-            pos.y += (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor;
-            // pos.x += (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor;
-            pos.z += (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor;
-            this.shakeDuration -= dt * this.decreaseFactor;
-
-            if (this.shakeDuration <= 0.0f)
-                this.shaking = false;
-        }
+        Vector3 pos = Quaternion(pitch, yaw, 0) * Vector3(0, 0, -this.cameraDistance) + target_pos;
 
         Vector3 occlued_pos;
         if (IsCameraOccluded(pos, target_pos, occlued_pos))
         {
-            float pitch = this.pitch;
             for (int i=0; i<20; ++i)
             {
                 pitch += i * 15;
@@ -480,6 +469,22 @@ class ThirdPersonCameraController : CameraController
         {
             UpdateView(pos, target_pos, dt * this.cameraSpeed);
         }
+
+        if (this.shaking)
+        {
+            this.completionPercent += dt / this.originDuration;
+            float dampingFactor = DampingCurve (completionPercent, this.dampingPercent);
+            const float max_angle = 15.0f;
+            float x = (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor * max_angle;
+            float y =  (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor * max_angle;
+            float z =  (Random(1.0f) - 0.5f) * this.shakeAmount * dampingFactor * max_angle;
+            this.shakeDuration -= dt * this.decreaseFactor;
+            cameraNode.rotation = cameraNode.rotation * Quaternion(x, y, z);
+
+            if (this.shakeDuration <= 0.0f)
+                this.shaking = false;
+        }
+
     }
 
     void ShakeCamera(float amount, float duration)
