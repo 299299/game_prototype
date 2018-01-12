@@ -71,7 +71,6 @@ void DrawDebug(float dt)
 
     if (!scene_.updateEnabled)
     {
-
         if (em !is null)
         {
             for (uint i=0; i<em.enemyList.length; ++i)
@@ -89,6 +88,8 @@ void DrawDebug(float dt)
                 h.Update(0);
         }
     }
+
+    DrawDebugText();
 
     DebugRenderer@ debug = scene_.debugRenderer;
     if (drawDebug == 0)
@@ -138,10 +139,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         ++drawDebug;
         if (drawDebug > 3)
             drawDebug = 0;
-
-        //Text@ text = ui.root.GetChild("debug", true);
-        //if (text !is null)
-        //    text.visible = drawDebug != 0;
     }
     else if (key == KEY_2)
         debugHud.ToggleAll();
@@ -633,6 +630,17 @@ void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&i
 
 void DrawDebugText()
 {
+    Text@ text = ui.root.GetChild("debug", true);
+    if (text is null)
+        return;
+
+    if (drawDebug == 0)
+    {
+        text.visible = false;
+        return;
+    }
+
+    text.visible = true;
     String seperator = "-------------------------------------------------------------------------------------------------------\n";
     String debugText = seperator;
     debugText += gGame.GetDebugText();
@@ -653,10 +661,7 @@ void DrawDebugText()
             debugText += seperator;
         }
     }
-
-    Text@ text = ui.root.GetChild("debug", true);
-    if (text !is null)
-        text.text = debugText;
+    text.text = debugText;
 }
 
 enum DebugDrawCommandType

@@ -1049,3 +1049,25 @@ for (uint i=0; i<counter_motions.length; ++i)
     else if (m.name.StartsWith(leg_back_prefx))
         thug_counter_leg_back_motions.Push(m);
 }
+
+class ThugStunState : SingleAnimationState
+{
+    ThugStunState(Character@ ownner)
+    {
+        super(ownner);
+        SetName("StunState");
+        flags = FLAGS_STUN | FLAGS_ATTACK;
+        SetMotion("TG_HitReaction/CapeHitReaction_Idle");
+        looped = true;
+        stateTime = 5.0f;
+    }
+};
+
+class BruceRunTurn180State : PlayerRunTurn180State
+{
+    BruceRunTurn180State(Character@ c)
+    {
+        super(c);
+        AddMotion("BM_Movement/Run_Right_Passing_To_Run_Right_180");
+    }
+};

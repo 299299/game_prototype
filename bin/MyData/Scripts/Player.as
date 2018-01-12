@@ -330,9 +330,12 @@ class Player : Character
 
     String GetDebugText()
     {
-        return Character::GetDebugText() +  "health=" + health + " flags=" + flags +
-              " combo=" + combo + " killed=" + killed + " timeScale=" + timeScale + " tAngle=" + GetTargetAngle() +
-              " grounded=" + sensor.grounded + " inAirHeight=" + sensor.inAirHeight + "\n";
+        if (renderNode.GetChild(ScaleBoneName, true).scale.x > 0.03)
+            Print("FUCK !!" + renderNode.GetChild(ScaleBoneName, true).scale.ToString());
+
+        return Character::GetDebugText() +  " flags=" + flags + " combo=" + combo +  "killed=" + killed + " timeScale=" + timeScale + 
+              "\n tAngle=" + GetTargetAngle() +" grounded=" + sensor.grounded + " inAirHeight=" + sensor.inAirHeight + 
+              "scale=" + renderNode.GetChild(ScaleBoneName, true).scale.ToString() + "\n";
     }
 
     void Reset()

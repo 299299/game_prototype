@@ -655,7 +655,11 @@ class MotionManager
             uint t = time.systemTime;
             for (int i=processedAnimations; i<len; ++i)
             {
-                cache.GetResource("Animation", GetAnimationName(animations[i]));
+                Animation@ anim = cache.GetResource("Animation", GetAnimationName(animations[i]));
+                FixAnimation(anim);
+                if (anim is null)
+                    LogPrint("Animation load failed --> " + animations[i]);
+
                 ++processedAnimations;
                 int time_diff = int(time.systemTime - t);
                 if (time_diff >= PROCESS_TIME_PER_FRAME)

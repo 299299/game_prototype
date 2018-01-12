@@ -978,8 +978,13 @@ class Character : GameObject
     {
         GameObject::ObjectStart();
         renderNode = sceneNode.GetChild("RenderNode", false);
+
+        // renderNode.scale = Vector3(BONE_SCALE, BONE_SCALE, BONE_SCALE);
         animCtrl = renderNode.GetComponent("AnimationController");
         animModel = renderNode.GetComponent("AnimatedModel");
+        renderNode.GetChild(ScaleBoneName, true).scale = Vector3(BONE_SCALE, BONE_SCALE, BONE_SCALE);
+        //animModel.skeleton.GetBone(ScaleBoneName).initialScale = Vector3(BONE_SCALE, BONE_SCALE, BONE_SCALE);
+        //animModel.skeleton.GetBone(ScaleBoneName).animated = false;
 
         startPosition = sceneNode.worldPosition;
         startRotation = sceneNode.worldRotation;

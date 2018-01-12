@@ -20,9 +20,9 @@ class BruceStandState : PlayerStandState
     BruceStandState(Character@ c)
     {
         super(c);
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle");
+        //AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle");
         AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_01");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_02");
+        //AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_02");
     }
 };
 
@@ -289,15 +289,6 @@ class BruceTransitionState : PlayerTransitionState
     }
 };
 
-class BruceRunTurn180State : PlayerRunTurn180State
-{
-    BruceRunTurn180State(Character@ c)
-    {
-        super(c);
-        AddMotion("BM_Movement/Run_Right_Passing_To_Run_Right_180");
-    }
-};
-
 class Bruce : Player
 {
     Bruce()
@@ -325,18 +316,19 @@ class Bruce : Player
         stateMachine.AddState(BruceTurnState(this));
         stateMachine.AddState(BruceStandToWalkState(this));
         stateMachine.AddState(BruceStandToRunState(this));
-        stateMachine.AddState(BruceRunTurn180State(this));
     }
 };
 
 void CreateBruceMotions()
 {
-    AssignMotionRig("Models/bruce_w.mdl");
+    AssignMotionRig("Models/elm2.mdl");
 
     String preFix = BRUCE_MOVEMENT_GROUP;
     Global_AddAnimation(preFix + "Stand_Idle");
+    Global_AddAnimation(preFix + "Stand_Idle_01");
+    Global_AddAnimation(preFix + "Stand_Idle_02");
     Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
-    Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 28);
+    // Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 28);
 
     Global_CreateMotion(preFix + "Turn_Right_90", kMotion_Turn, kMotion_R, 16);
     Global_CreateMotion(preFix + "Turn_Right_180", kMotion_Turn, kMotion_R, 25);

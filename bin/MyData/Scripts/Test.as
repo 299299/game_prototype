@@ -206,7 +206,6 @@ void CreateUI()
     text.color = YELLOW;
     text.priority = -99999;
     text.visible = false;
-    // text.textEffect = TE_SHADOW;
 
     gInput.CreateGUI();
 }
@@ -292,10 +291,6 @@ void HandleUpdate(StringHash eventType, VariantMap& eventData)
     gInput.Update(timeStep);
     gCameraMgr.Update(timeStep);
     gGame.Update(timeStep);
-    if (drawDebug > 0)
-    {
-        DrawDebugText();
-    }
 }
 
 void HandlePostRenderUpdate(StringHash eventType, VariantMap& eventData)

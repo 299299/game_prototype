@@ -55,9 +55,9 @@ const String PELVIS = "Bip01_Pelvis";
 const float FRAME_PER_SEC = 30.0f;
 const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
 const int   PROCESS_TIME_PER_FRAME = 60; // ms
-const float BONE_SCALE = 100.0f;
 const float BIG_HEAD_SCALE = 2.0f;
 const float ROTATION_FIX_DEGREE = 15.0f;
+const float BONE_SCALE = 0.0254f;
 
 Scene@  processScene;
 
@@ -79,10 +79,10 @@ class MotionRig
     MotionRig(const String& rigName)
     {
         rig = rigName;
+        Model@ m = cache.GetResource("Model",  rigName);
         if (bigHeadMode)
         {
             Vector3 v(BIG_HEAD_SCALE, BIG_HEAD_SCALE, BIG_HEAD_SCALE);
-            Model@ m = cache.GetResource("Model",  rigName);
             Skeleton@ s = m.skeleton;
             s.GetBone(HEAD).initialScale = v;
             s.GetBone(L_HAND).initialScale = v;
@@ -90,6 +90,11 @@ class MotionRig
             s.GetBone(L_FOOT).initialScale = v;
             s.GetBone(R_FOOT).initialScale = v;
         }
+
+        Bone@ scaleBone = m.skeleton.GetBone(ScaleBoneName);
+        Vector3 originScale = scaleBone.initialScale;
+        if (scaleBone.initialScale.x > 1.0f)
+            scaleBone.initialScale = Vector3(BONE_SCALE, BONE_SCALE, BONE_SCALE);
 
         processNode = processScene.CreateChild(rig + "_Character");
         Node@ renderNode = processNode.CreateChild("RenderNode");
@@ -119,9 +124,11 @@ class MotionRig
         AnimatedModel@ am2 = renderNode.CreateComponent("AnimatedModel");
         am2.model = am.model;
 
-        LogPrint(rigName + " pelvisRightAxis=" + pelvisRightAxis.ToString() +
+        LogPrint(rigName + 
+            " pelvisRightAxis=" + pelvisRightAxis.ToString() +
             " pelvisOrign=" + pelvisOrign.ToString() +
             " numBones=" + skeleton.numBones +
+            " initialScale=" + originScale.ToString() + 
             " left_foot_to_ground_height=" + left_foot_to_ground_height +
             " right_foot_to_ground_height=" + right_foot_to_ground_height);
     }
@@ -378,6 +385,8 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
         return;
     }
 
+    FixAnimation(anim);
+
     AnimationTrack@ translateTrack = anim.tracks[TranslateBoneName];
     if (translateTrack is null)
     {
@@ -403,8 +412,8 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
         firstRotateFromRoot = GetRotationInXZPlane(rig, rig.rotateBoneInitQ, rotateTrack.keyFrames[0].rotation).eulerAngles.y;
         if (Abs(firstRotateFromRoot) >= ROTATION_FIX_DEGREE)
         {
-            //if (dump)
-            LogPrint(animationFile + " Need to rotate whole animation since the first rotation key is not zero, rotation=" + firstRotateFromRoot);
+            if (dump)
+                LogPrint(animationFile + " Need to rotate whole animation since the first rotation key is not zero, rotation=" + firstRotateFromRoot);
             rotate = true;
         }
         startFromOrigin.w = firstRotateFromRoot;
@@ -561,6 +570,65 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
         }
         LogPrint("---------------------------------------------------------------------------------------");
     }
+}
+
+void FixAnimation(const String&in animationFile)
+{
+    if (d_log)
+        LogPrint("Fix animation " + animationFile);
+
+    Animation@ anim = cache.GetResource("Animation", animationFile);
+    if (anim is null) {
+        ErrorDialog(TITLE, animationFile + " not found!");
+        engine.Exit();
+        return;
+    }
+
+   FixAnimation(anim);
+}
+
+void FixAnimation(Animation@ anim)
+{
+    if (anim is null)
+        return;
+    // return;
+    
+    // Print("Fixing animation for " + anim.name);
+    bool fixed = false;
+    AnimationTrack@ scaleTrack = anim.tracks[ScaleBoneName];
+    if (scaleTrack is null)
+    {
+        Print("no scale track + " + ScaleBoneName);
+        AnimationTrack@ track = anim.CreateTrack(ScaleBoneName);
+        AnimationTrack@ t = anim.tracks[TranslateBoneName];
+        for (uint i=0; i<t.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf;
+            track.channelMask = CHANNEL_SCALE;
+            kf.time = t.keyFrames[i].time;
+            kf.scale = Vector3(BONE_SCALE, BONE_SCALE, BONE_SCALE);
+            track.AddKeyFrame(kf);
+        }
+
+        fixed = true;
+    }
+    else
+    {
+        /*Print(anim.name + " has scale track.");
+        for (uint i=0; i<scaleTrack.numKeyFrames; ++i)
+        {
+            AnimationKeyFrame kf(scaleTrack.keyFrames[i]);
+            if (kf.scale.x > 2.0f)
+            {
+                kf.scale = Vector3(BONE_SCALE, BONE_SCALE, BONE_SCALE);
+                fixed = true;
+            }
+            scaleTrack.keyFrames[i] = kf;
+        }*/
+    }
+
+    if (fixed)
+        LogPrint("Fixed animation --> scale bone" + anim.name);
 }
 
 void AssetPostProcess()

@@ -863,20 +863,6 @@ class ThugBeatDownEndState : MultiMotionState
     }
 };
 
-
-class ThugStunState : SingleAnimationState
-{
-    ThugStunState(Character@ ownner)
-    {
-        super(ownner);
-        SetName("StunState");
-        flags = FLAGS_STUN | FLAGS_ATTACK;
-        SetMotion("TG_HitReaction/CapeHitReaction_Idle");
-        looped = true;
-        stateTime = 5.0f;
-    }
-};
-
 class ThugTauntingState : MultiMotionState
 {
     ThugTauntingState(Character@ ownner)
@@ -964,7 +950,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugDeadState(this));
         stateMachine.AddState(ThugBeatDownHitState(this));
         stateMachine.AddState(ThugBeatDownEndState(this));
-        stateMachine.AddState(ThugStunState(this));
         stateMachine.AddState(ThugTauntingState(this));
         stateMachine.AddState(ThugTauntIdleState(this));
 
@@ -1377,7 +1362,7 @@ void CreateThugCombatMotions()
     Global_CreateMotion(preFix + "HitReaction_Right", hitMotionFlag, hitAllowMotion);
     Global_CreateMotion(preFix + "HitReaction_Back_NoTurn", hitMotionFlag, hitAllowMotion);
     Global_CreateMotion(preFix + "HitReaction_Back", hitMotionFlag, hitAllowMotion);
-    Global_AddAnimation(preFix + "CapeHitReaction_Idle");
+    // Global_AddAnimation(preFix + "CapeHitReaction_Idle");
 
     preFix = "TG_Getup/";
     Global_CreateMotion(preFix + "GetUp_Front", kMotion_XZ);
@@ -1496,7 +1481,7 @@ void CreateThugCombatMotions()
 
 void CreateThugMotions()
 {
-    AssignMotionRig("Models/thug.mdl");
+    AssignMotionRig("Models/swat.mdl");
 
     String preFix = "TG_Combat/";
     Global_CreateMotion(preFix + "Step_Forward");
