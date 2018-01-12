@@ -727,7 +727,6 @@ class ThugHitState : MultiMotionState
         ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
 
         MultiMotionState::Enter(lastState);
-
     }
 
     void Exit(State@ nextState)
