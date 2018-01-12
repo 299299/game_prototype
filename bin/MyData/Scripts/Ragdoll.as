@@ -408,13 +408,14 @@ class Ragdoll : ScriptObject
         //    body.angularFactor = Vector3(0, 0, 0);
 
         CollisionShape@ shape = boneNode.CreateComponent("CollisionShape");
+        const float ragdoll_size_scale = 100.0f;
         // We use either a box or a capsule shape for all of the bones
         if (type == SHAPE_BOX)
-            shape.SetBox(size * BONE_SCALE, position * BONE_SCALE, rotation);
+            shape.SetBox(size * ragdoll_size_scale, position * ragdoll_size_scale, rotation);
         else if (type == SHAPE_SPHERE)
-            shape.SetSphere(size.x * BONE_SCALE, position * BONE_SCALE, rotation);
+            shape.SetSphere(size.x * ragdoll_size_scale, position * ragdoll_size_scale, rotation);
         else
-            shape.SetCapsule(size.x * BONE_SCALE, size.y * BONE_SCALE, position * BONE_SCALE, rotation);
+            shape.SetCapsule(size.x * ragdoll_size_scale, size.y * ragdoll_size_scale, position * ragdoll_size_scale, rotation);
     }
 
     void CreateRagdollConstraint(Node@ boneNode, Node@ parentNode, ConstraintType type,
