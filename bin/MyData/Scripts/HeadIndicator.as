@@ -18,13 +18,13 @@ class HeadIndicator : ScriptObject
     HeadIndicator()
     {
         textures.Push(null);
-        textures.Push(cache.GetResource("Texture2D", "Textures/counter.tga"));
+        textures.Push(cache.GetResource("Texture2D", "Textures/counter.png"));
     }
 
     void Start()
     {
         sprite = ui.root.CreateChild("Sprite", "Indicator_" + node.name);
-        sprite.blendMode = BLEND_ADD;
+        sprite.blendMode = BLEND_REPLACE;
         text = ui.root.CreateChild("Text", "NameText_" + node.name);
         text.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
         text.color = YELLOW;
@@ -67,7 +67,7 @@ class HeadIndicator : ScriptObject
 
         sprite.visible = (newState != STATE_INDICATOR_HIDE);
         sprite.texture = textures[newState];
-        sprite.size = IntVector2(64, 64);
+        sprite.size = IntVector2(96, 96);
         sprite.hotSpot = IntVector2(sprite.size.x/2, sprite.size.y/2);
     }
 }
