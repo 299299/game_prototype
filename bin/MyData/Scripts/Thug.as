@@ -1257,7 +1257,7 @@ class Thug : Enemy
 
     void UpdateOnFlagsChanged()
     {
-        String matName = HasFlag(FLAGS_ATTACK) ? "Materials/Swat.xml" : "Materials/Swat_Red.xml";
+        String matName = HasFlag(FLAGS_ATTACK) ? "Materials/Mt.xml" : "Materials/Mt_Red.xml";
         Material@ m = cache.GetResource("Material", matName);
         animModel.materials[0]= m;
         animModel.materials[1]= m;
@@ -1481,7 +1481,7 @@ void CreateThugCombatMotions()
 
 void CreateThugMotions()
 {
-    AssignMotionRig("Models/swat.mdl");
+    // AssignMotionRig("Models/swat.mdl");
 
     String preFix = "TG_Combat/";
     Global_CreateMotion(preFix + "Step_Forward");

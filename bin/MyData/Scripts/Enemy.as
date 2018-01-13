@@ -158,7 +158,7 @@ class EnemyManager : ScriptObject
         if (thugName == "")
             thugName = "thug_" + thugId;
         thugId ++;
-        Node@ node = CreateCharacter(thugName, "swat", "Thug", position, rotation);
+        Node@ node = CreateCharacter(thugName, "elm", "Thug", position, rotation);
         node.AddTag(ENEMY_TAG);
         return node;
     }
