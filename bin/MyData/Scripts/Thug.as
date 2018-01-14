@@ -552,7 +552,10 @@ class ThugAttackState : CharacterState
 
     void FixedUpdate(float dt)
     {
-        ownner.CheckRagdollHit();
+        if (!instant_collision)
+        {
+            ownner.CheckRagdollHit();
+        }
         CharacterState::FixedUpdate(dt);
     }
 
@@ -1213,7 +1216,6 @@ class Thug : Enemy
         if (neighbors.empty)
             return false;
 
-        bool bHit = false;
         for (uint i=0; i<neighbors.length; ++i)
         {
             RigidBody@ rb = neighbors[i];
@@ -1229,11 +1231,9 @@ class Thug : Enemy
             Vector3 vel = rb.linearVelocity;
             if (vl > 5.0f)
             {
-                bHit = true;
                 LogPrint(GetName() + " hit ragdoll bone " + rb.node.name + " vel=" + vel.ToString() + " vl=" + vl);
-                // sceneNode.scene.timeScale = 0.0f;
                 MakeMeRagdoll(vel * 1.5f, rb.node.worldPosition);
-                return bHit;
+                return true;
             }
         }
 
@@ -1330,6 +1330,7 @@ class Thug : Enemy
         if (bRagdoll)
         {
             LogPrint(GetName() + " hit ragdoll bone " + rb.node.name + " vel=" + vel.ToString() + " vl=" + vl);
+            // GetScene().updateEnabled = false;
             MakeMeRagdoll(vel * 1.5f, rb.node.worldPosition);
         }
     }
