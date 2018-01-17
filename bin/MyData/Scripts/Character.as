@@ -69,6 +69,9 @@ class CharacterState : State
     bool                        combatReady = false;
     bool                        firstUpdate = true;
 
+    int                         physicsType = -1;
+    int                         lastPhysicsType = -1;
+
     CharacterState(Character@ c)
     {
         @ownner = c;
@@ -177,15 +180,22 @@ class CharacterState : State
     {
         if (flags > 0)
             ownner.AddFlag(flags);
-        State::Enter(lastState);
+        if (physicsType >= 0)
+        {
+            lastPhysicsType = ownner.physicsType;
+            ownner.SetPhysicsType(physicsType);
+        }
         combatReady = false;
         firstUpdate = true;
+        State::Enter(lastState);
     }
 
     void Exit(State@ nextState)
     {
         if (flags > 0)
             ownner.RemoveFlag(flags);
+         if (physicsType >= 0)
+            ownner.SetPhysicsType(lastPhysicsType);
         State::Exit(nextState);
     }
 
@@ -453,6 +463,7 @@ class AnimationTestState : CharacterState
     {
         super(c);
         SetName("AnimationTestState");
+        physicsType = 0;
     }
 
     ~AnimationTestState()
@@ -875,74 +886,14 @@ class CharacterGetUpState : MultiMotionState
     }
 };
 
-class CharacterAlignState : CharacterState
-{
-    String      nextStateName;
-    String      alignAnimation;
-    Vector3     targetPosition;
-    float       targetRotation;
-    Vector3     movePerSec;
-    float       rotatePerSec;
-    float       alignTime = 0.2f;
-
-    CharacterAlignState(Character@ c)
-    {
-        super(c);
-        SetName("AlignState");
-        flags = FLAGS_NO_MOVE;
-    }
-
-    void Start(String nextState, const Vector3&in tPos, float tRot, float duration, const String&in anim = "")
-    {
-        LogPrint(ownner.GetName() + " CharacterAlign--start duration=" + duration + " nextState=" + nextState + " tPos=" + tPos.ToString() + " anim=" + anim);
-        nextStateName = nextState;
-        targetPosition = tPos;
-        targetRotation = tRot;
-        alignTime = duration;
-        alignAnimation = anim;
-
-        Vector3 curPos = ownner.GetNode().worldPosition;
-        float curAngle = ownner.GetCharacterAngle();
-        movePerSec = (tPos - curPos) / duration;
-        rotatePerSec = AngleDiff(tRot - curAngle) / duration;
-
-        if (!anim.empty)
-            ownner.PlayAnimation(anim, LAYER_MOVE, true);
-    }
-
-    void Update(float dt)
-    {
-        ownner.MoveTo(ownner.GetNode().worldPosition + movePerSec * dt, dt);
-        ownner.GetNode().Yaw(rotatePerSec * dt);
-        CharacterState::Update(dt);
-        if (timeInState >= alignTime)
-            OnAlignTimeOut();
-    }
-
-    void DebugDraw(DebugRenderer@ debug)
-    {
-        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, RED, 2.0f);
-        AddDebugMark(debug, targetPosition, TARGET_COLOR);
-    }
-
-    void OnAlignTimeOut()
-    {
-        LogPrint(ownner.GetName() + " On_Align_Finished, ChangeToNextState: " + nextStateName);
-        ownner.Transform(targetPosition, Quaternion(0, targetRotation, 0));
-        ownner.ChangeState(nextStateName);
-    }
-};
-
 class Character : GameObject
 {
     Character@              target;
 
     Node@                   renderNode;
-    Node@                   pelvisNode;
 
     AnimationController@    animCtrl;
     AnimatedModel@          animModel;
-    RigidBody@              collisionBody;
     CrowdAgent@             agent;
 
     Vector3                 startPosition;
@@ -960,6 +911,12 @@ class Character : GameObject
     PhysicsSensor@          sensor;
 
     Vector3                 moveDir;
+
+    // ==============================================
+    // PHYSICS
+    // ==============================================
+    int                     physicsType;
+    RigidBody@              collisionBody;
 
     // ==============================================
     //   DYNAMIC VALUES For Motion
@@ -1012,19 +969,21 @@ class Character : GameObject
             attackDamage = 9999;
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
-        float z_offset = 0.25f;
-        collisionNode.position = Vector3(0, 0, z_offset);
-        CollisionShape@ shape = collisionNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS*2 - 0.5f, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2, 0));
-        RigidBody@ body = collisionNode.CreateComponent("RigidBody");
-        body.mass = 10;
+        const float z_offset = 0; //0.25f;
+        CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
+        shape.SetCapsule(COLLISION_RADIUS*2 - 0.25f, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2 + z_offset, 0));
+        RigidBody@ body = sceneNode.CreateComponent("RigidBody");
+        body.mass = 1.0f;
+        body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP;
-        body.kinematic = true;
-        body.trigger = true;
+        if (collision_type == 0)
+        {
+            body.kinematic = true;
+            body.trigger = true;
+        }
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
-        pelvisNode = renderNode.GetChild(PELVIS, true);
 
         agent = sceneNode.CreateComponent("CrowdAgent");
         agent.height = CHARACTER_HEIGHT;
@@ -1051,7 +1010,6 @@ class Character : GameObject
         @collisionBody = null;
         @agent = null;
         @target = null;
-        @pelvisNode = null;
         @renderNode = null;
         GameObject::Stop();
     }
@@ -1469,6 +1427,33 @@ class Character : GameObject
 
     void HitRagdoll(RigidBody@ rb)
     {
+    }
+
+    // ===============================================================================================
+    //  PHYSICS
+    // ===============================================================================================
+    void SetPhysicsType(int type)
+    {
+        if (physicsType == type)
+            return;
+        physicsType = type;
+        if (collisionBody !is null)
+        {
+            collisionBody.enabled = (physicsType == 1);
+            collisionBody.position = sceneNode.worldPosition;
+        }
+    }
+
+    void SetVelocity(const Vector3&in vel)
+    {
+        // Print("body.linearVelocity = " + vel.ToString());
+        if (collisionBody !is null)
+            collisionBody.linearVelocity = vel;
+    }
+
+    Vector3 GetVelocity()
+    {
+        return collisionBody!is null ? collisionBody.linearVelocity : Vector3(0, 0, 0);
     }
 
     // ===============================================================================================

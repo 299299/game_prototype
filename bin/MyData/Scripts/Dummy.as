@@ -1071,3 +1071,324 @@ class BruceRunTurn180State : PlayerRunTurn180State
         AddMotion("BM_Movement/Run_Right_Passing_To_Run_Right_180");
     }
 };
+
+
+// --------- BEAT
+
+class ThugBeatDownHitState : MultiMotionState
+{
+    ThugBeatDownHitState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownHitState");
+        String preFix = "TG_BM_Beatdown/";
+        for (uint i=1; i<=6; ++i)
+            AddMotion(preFix + "Beatdown_HitReaction_0" + i);
+
+        flags = FLAGS_STUN | FLAGS_ATTACK;
+    }
+
+    bool CanReEntered()
+    {
+        return true;
+    }
+
+    float GetThreatScore()
+    {
+        return 0.9f;
+    }
+
+    void OnMotionFinished()
+    {
+        // LogPrint(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
+        ownner.ChangeState("StunState");
+    }
+};
+
+class ThugBeatDownEndState : MultiMotionState
+{
+    ThugBeatDownEndState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownEndState");
+        String preFix = "TG_BM_Beatdown/";
+        for (uint i=1; i<=4; ++i)
+            AddMotion(preFix + "Beatdown_Strike_End_0" + i);
+        flags = FLAGS_ATTACK;
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.SetHealth(0);
+        MultiMotionState::Enter(lastState);
+    }
+};
+
+class BruceBeatDownEndState : PlayerBeatDownEndState
+{
+    BruceBeatDownEndState(Character@ c)
+    {
+        super(c);
+        String preFix = "BM_TG_Beatdown/";
+        AddMotion(preFix + "Beatdown_Strike_End_01");
+        AddMotion(preFix + "Beatdown_Strike_End_02");
+        AddMotion(preFix + "Beatdown_Strike_End_03");
+        AddMotion(preFix + "Beatdown_Strike_End_04");
+    }
+};
+
+class BruceBeatDownHitState : PlayerBeatDownHitState
+{
+    BruceBeatDownHitState(Character@ c)
+    {
+        super(c);
+        String preFix = "BM_Attack/";
+        AddMotion(preFix + "Beatdown_Test_01");
+        AddMotion(preFix + "Beatdown_Test_02");
+        AddMotion(preFix + "Beatdown_Test_03");
+        AddMotion(preFix + "Beatdown_Test_04");
+        AddMotion(preFix + "Beatdown_Test_05");
+        AddMotion(preFix + "Beatdown_Test_06");
+    }
+
+    bool IsTransitionNeeded(float curDist)
+    {
+        return curDist > BRUCE_TRANSITION_DIST + 0.5f;
+    }
+};
+
+class PlayerBeatDownHitState : MultiMotionState
+{
+    int beatIndex = 0;
+    int beatNum = 0;
+    int maxBeatNum = 15;
+    int minBeatNum = 7;
+    int beatTotal = 0;
+    bool attackPressed = false;
+
+    Vector3 targetPosition;
+    float targetRotation;
+
+    PlayerBeatDownHitState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownHitState");
+        flags = FLAGS_ATTACK;
+    }
+
+    bool CanReEntered()
+    {
+        return true;
+    }
+
+    bool IsTransitionNeeded(float curDist)
+    {
+        return false;
+    }
+
+    void Update(float dt)
+    {
+        // LogPrint("PlayerBeatDownHitState::Update() " + dt);
+        Character@ target = ownner.target;
+        if (target is null)
+        {
+            ownner.CommonStateFinishedOnGroud();
+            return;
+        }
+
+        if (gInput.IsInputActioned(kInputAttack))
+            attackPressed = true;
+
+        if (combatReady && attackPressed)
+        {
+            ++ beatIndex;
+            ++ beatNum;
+            beatIndex = beatIndex % motions.length;
+            ownner.ChangeState("BeatDownHitState");
+            return;
+        }
+
+        if (gInput.IsInputActioned(kInputCounter))
+        {
+            ownner.Counter();
+            return;
+        }
+
+        MultiMotionState::Update(dt);
+    }
+
+    void Enter(State@ lastState)
+    {
+        float curDist = ownner.GetTargetDistance();
+        if (IsTransitionNeeded(curDist - COLLISION_SAFE_DIST))
+        {
+            ownner.ChangeStateQueue("TransitionState");
+            PlayerTransitionState@ s = cast<PlayerTransitionState>(ownner.FindState(StringHash("TransitionState")));
+            s.nextStateName = this.name;
+            return;
+        }
+
+        attackPressed = false;
+        if (lastState !is this)
+        {
+            beatNum = 0;
+            beatTotal = RandomInt(minBeatNum, maxBeatNum);
+        }
+        int index = beatIndex;
+
+        Character@ target = ownner.target;
+        MultiMotionState@ s = cast<MultiMotionState>(ownner.target.FindState("BeatDownHitState"));
+        Motion@ m1 = motions[index];
+        Motion@ m2 = s.motions[index];
+
+        Vector3 myPos = ownner.GetNode().worldPosition;
+        if (lastState !is this && lastState.nameHash != ALIGN_STATE)
+        {
+            Vector3 dir = myPos - target.GetNode().worldPosition;
+            float e_targetRotation = Atan2(dir.x, dir.z);
+            target.GetNode().worldRotation = Quaternion(0, e_targetRotation, 0);
+        }
+
+        Vector4 t = GetTargetTransform(target.GetNode(), m1, m2);
+        targetRotation = t.w;
+        targetPosition = Vector3(t.x, myPos.y, t.z);
+        if (lastState !is this && lastState.nameHash != ALIGN_STATE)
+        {
+            CharacterAlignState@ state = cast<CharacterAlignState>(ownner.FindState(ALIGN_STATE));
+            state.Start(this.name, targetPosition, targetRotation, 0.1f);
+            ownner.ChangeStateQueue("AlignState");
+        }
+        else
+        {
+            ownner.GetNode().worldRotation = Quaternion(0, targetRotation, 0);
+            ownner.GetNode().worldPosition = targetPosition;
+            target.GetNode().vars[ANIMATION_INDEX] = index;
+            motions[index].Start(ownner);
+            selectIndex = index;
+            target.ChangeState("BeatDownHitState");
+        }
+
+        CharacterState::Enter(lastState);
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == IMPACT)
+        {
+            // LogPrint("BeatDownHitState On Impact");
+            combatReady = true;
+            Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
+            Vector3 position = ownner.GetNode().worldPosition;
+            if (boneNode !is null)
+                position = boneNode.worldPosition;
+            ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 5, 10.0f);
+            ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 0.5f, 0.4f);
+            ownner.PlayRandomSound(0);
+
+            ownner.OnAttackSuccess(ownner.target);
+
+            if (beatNum >= beatTotal)
+                ownner.ChangeState("BeatDownEndState");
+            return;
+        }
+        CharacterState::OnAnimationTrigger(animState, eventData);
+    }
+
+    int PickIndex()
+    {
+        return beatIndex;
+    }
+
+    void DebugDraw(DebugRenderer@ debug)
+    {
+        AddDebugMark(debug, targetPosition, TARGET_COLOR);
+        DebugDrawDirection(debug, ownner.GetNode().worldPosition, targetRotation, YELLOW);
+    }
+
+    String GetDebugText()
+    {
+        return CharacterState::GetDebugText() +
+        " current motion=" + motions[selectIndex].animationName +
+        " combatReady=" + combatReady + " attackPressed=" + attackPressed;
+    }
+};
+
+class PlayerBeatDownEndState : MultiMotionState
+{
+    PlayerBeatDownEndState(Character@ c)
+    {
+        super(c);
+        SetName("BeatDownEndState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        selectIndex = PickIndex();
+        if (selectIndex >= int(motions.length))
+        {
+            LogPrint("ERROR: a large animation index=" + selectIndex + " name:" + ownner.GetName());
+            selectIndex = 0;
+        }
+
+        if (cast<Player>(ownner).CheckLastKill())
+            ownner.SetSceneTimeScale(LAST_KILL_SPEED);
+
+        Character@ target = ownner.target;
+        if (target !is null)
+        {
+            Motion@ m1 = motions[selectIndex];
+            ThugBeatDownEndState@ state = cast<ThugBeatDownEndState>(target.FindState("BeatDownEndState"));
+            Motion@ m2 = state.motions[selectIndex];
+            Vector4 t = GetTargetTransform(target.GetNode(), m1, m2);
+            ownner.Transform(Vector3(t.x, ownner.GetNode().worldPosition.y, t.z), Quaternion(0, t.w, 0));
+            target.GetNode().vars[ANIMATION_INDEX] = selectIndex;
+            target.ChangeState("BeatDownEndState");
+        }
+
+        if (d_log)
+            LogPrint(ownner.GetName() + " state=" + name + " pick " + motions[selectIndex].animationName);
+        motions[selectIndex].Start(ownner);
+
+        CharacterState::Enter(lastState);
+    }
+
+    void Exit(State@ nextState)
+    {
+        LogPrint("BeatDownEndState Exit!!");
+        ownner.SetSceneTimeScale(1.0f);
+        MultiMotionState::Exit(nextState);
+    }
+
+    int PickIndex()
+    {
+        return RandomInt(motions.length);
+    }
+
+    void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
+    {
+        StringHash name = eventData[NAME].GetStringHash();
+        if (name == IMPACT)
+        {
+            Node@ boneNode = ownner.GetNode().GetChild(eventData[VALUE].GetString(), true);
+            Vector3 position = ownner.GetNode().worldPosition;
+            if (boneNode !is null)
+                position = boneNode.worldPosition;
+            ownner.SpawnParticleEffect(position, "Particle/SnowExplosionFade.xml", 5, 10.0f);
+            ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 0.5f, 0.5f);
+            ownner.PlayRandomSound(1);
+            combatReady = true;
+            Character@ target = ownner.target;
+            if (target !is null)
+            {
+                Vector3 dir = ownner.motion_startPosition - target.GetNode().worldPosition;
+                dir.y = 0;
+                target.OnDamage(ownner, position, dir, 9999, false);
+                ownner.OnAttackSuccess(target);
+            }
+            return;
+        }
+        CharacterState::OnAnimationTrigger(animState, eventData);
+    }
+};
+

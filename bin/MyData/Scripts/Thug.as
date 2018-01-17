@@ -817,55 +817,6 @@ class ThugDeadState : CharacterState
     }
 };
 
-class ThugBeatDownHitState : MultiMotionState
-{
-    ThugBeatDownHitState(Character@ c)
-    {
-        super(c);
-        SetName("BeatDownHitState");
-        String preFix = "TG_BM_Beatdown/";
-        for (uint i=1; i<=6; ++i)
-            AddMotion(preFix + "Beatdown_HitReaction_0" + i);
-
-        flags = FLAGS_STUN | FLAGS_ATTACK;
-    }
-
-    bool CanReEntered()
-    {
-        return true;
-    }
-
-    float GetThreatScore()
-    {
-        return 0.9f;
-    }
-
-    void OnMotionFinished()
-    {
-        // LogPrint(ownner.GetName() + " state:" + name + " finshed motion:" + motions[selectIndex].animationName);
-        ownner.ChangeState("StunState");
-    }
-};
-
-class ThugBeatDownEndState : MultiMotionState
-{
-    ThugBeatDownEndState(Character@ c)
-    {
-        super(c);
-        SetName("BeatDownEndState");
-        String preFix = "TG_BM_Beatdown/";
-        for (uint i=1; i<=4; ++i)
-            AddMotion(preFix + "Beatdown_Strike_End_0" + i);
-        flags = FLAGS_ATTACK;
-    }
-
-    void Enter(State@ lastState)
-    {
-        ownner.SetHealth(0);
-        MultiMotionState::Enter(lastState);
-    }
-};
-
 class ThugTauntingState : MultiMotionState
 {
     ThugTauntingState(Character@ ownner)
@@ -943,7 +894,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugRunToTargetState(this));
         stateMachine.AddState(ThugWalkState(this));
         stateMachine.AddState(CharacterRagdollState(this));
-        stateMachine.AddState(CharacterAlignState(this));
         stateMachine.AddState(AnimationTestState(this));
 
         stateMachine.AddState(ThugCounterState(this));
@@ -951,8 +901,6 @@ class Thug : Enemy
         stateMachine.AddState(ThugAttackState(this));
         stateMachine.AddState(ThugGetUpState(this));
         stateMachine.AddState(ThugDeadState(this));
-        stateMachine.AddState(ThugBeatDownHitState(this));
-        stateMachine.AddState(ThugBeatDownEndState(this));
         stateMachine.AddState(ThugTauntingState(this));
         stateMachine.AddState(ThugTauntIdleState(this));
 
