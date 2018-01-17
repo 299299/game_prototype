@@ -976,11 +976,15 @@ class Character : GameObject
         body.mass = 1.0f;
         body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
-        body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP;
         if (collision_type == 0)
         {
             body.kinematic = true;
             body.trigger = true;
+            body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP;
+        }
+        else
+        {
+            body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
         }
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;

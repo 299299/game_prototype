@@ -75,7 +75,7 @@ bool counter_choose_closest_one = false;
 
 int game_state = 0;
 int debug_mode = 0;
-int collision_type = 0;
+int collision_type = 1;
 
 const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
 const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);
