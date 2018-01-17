@@ -89,7 +89,7 @@ void DrawDebug(float dt)
         }
     }
 
-    DrawDebugText();
+    // DrawDebugText();
 
     DebugRenderer@ debug = scene_.debugRenderer;
     if (drawDebug == 0)

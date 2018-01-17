@@ -910,8 +910,6 @@ class Character : GameObject
 
     PhysicsMover@           mover;
 
-    Vector3                 moveDir;
-
     // ==============================================
     // PHYSICS
     // ==============================================
@@ -969,7 +967,7 @@ class Character : GameObject
             attackDamage = 9999;
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
-        const float z_offset = 0; //0.25f;
+        const float z_offset = 0.25f;
         CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
         shape.SetCapsule(COLLISION_RADIUS*2 - 0.25f, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2 + z_offset, 0));
         RigidBody@ body = sceneNode.CreateComponent("RigidBody");
@@ -981,6 +979,7 @@ class Character : GameObject
             body.kinematic = true;
             body.trigger = true;
             body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP;
+            @mover = PhysicsMover(sceneNode);
         }
         else
         {
@@ -1016,6 +1015,8 @@ class Character : GameObject
         @agent = null;
         @target = null;
         @renderNode = null;
+        mover.Remove();
+        @mover = null;
         GameObject::Stop();
     }
 
@@ -1077,9 +1078,7 @@ class Character : GameObject
 
     void MoveTo(const Vector3& position, float dt)
     {
-        Vector3 oldPos = sceneNode.worldPosition;
-        sceneNode.worldPosition = FilterPosition(position);
-        moveDir = (sceneNode.worldPosition - oldPos).Normalized();
+        mover.MoveTo(position);
     }
 
     bool Attack()
@@ -1149,9 +1148,8 @@ class Character : GameObject
     {
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 1.0f, false);
-        debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(0.25f, 0.35f, 0.75f), 32, false);
-        // float moveAngle = Atan2(moveDir.x, moveDir.z);
-        // DebugDrawDirection(debug, sceneNode.worldPosition, moveAngle, GREEN, 5.0f);
+        // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(0.25f, 0.35f, 0.75f), 32, false);
+        mover.DebugDraw(debug);
     }
 
     void TestAnimation(const Array<String>&in animations)

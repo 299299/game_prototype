@@ -33,6 +33,26 @@ int GetAttackType(const String&in name)
     return ATTACK_PUNCH;
 }
 
+int DetectWallBlockingFoot(float dist = 1.5f)
+{
+    int ret = 0;
+    Node@ footLeft = sceneNode.GetChild(L_FOOT, true);
+    Node@ foootRight = sceneNode.GetChild(R_FOOT, true);
+    PhysicsWorld@ world = sceneNode.scene.physicsWorld;
+
+    Vector3 dir = sceneNode.worldRotation * Vector3(0, 0, 1);
+    Ray ray;
+    ray.Define(footLeft.worldPosition, dir);
+    PhysicsRaycastResult result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+    if (result.body !is null)
+        ret ++;
+    ray.Define(foootRight.worldPosition, dir);
+    result = world.RaycastSingle(ray, dist, COLLISION_LAYER_LANDSCAPE);
+    if (result.body !is null)
+        ret ++;
+    return ret;
+}
+
 class PlayerDistractState : SingleMotionState
 {
     PlayerDistractState(Character@ c)
