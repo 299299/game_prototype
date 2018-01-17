@@ -69,7 +69,7 @@ void ProcessModels()
     for (uint i=0; i<models.length; ++i)
     {
         // Print("Found a model " + models[i]);
-        DoProcess(models[i], "Models/", MODEL_ARGS, false);
+        DoProcess(models[i], "Models/", MODEL_ARGS, true);
     }
 }
 
