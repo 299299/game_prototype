@@ -16,7 +16,7 @@
 #include "Scripts/Menu.as"
 #include "Scripts/HeadIndicator.as"
 #include "Scripts/Follow.as"
-#include "Scripts/PhysicsSensor.as"
+#include "Scripts/PhysicsMover.as"
 #include "Scripts/Debug.as"
 // ------------------------------------------------
 #include "Scripts/GameObject.as"

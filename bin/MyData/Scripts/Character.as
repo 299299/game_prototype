@@ -908,7 +908,7 @@ class Character : GameObject
 
     String                  lastAnimation;
 
-    PhysicsSensor@          sensor;
+    PhysicsMover@           mover;
 
     Vector3                 moveDir;
 
@@ -985,6 +985,7 @@ class Character : GameObject
         else
         {
             body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
+            body.gravityOverride = Vector3(0, -20, 0);
         }
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;

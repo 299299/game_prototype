@@ -1,9 +1,9 @@
 
-class PhysicsSensor
+class PhysicsMover
 {
     bool        grounded = true;
     Node@       sceneNode;
-    Node@       sensorNode;
+    Node@       collisionNode;
 
     CollisionShape@  shape;
 
@@ -17,24 +17,34 @@ class PhysicsSensor
 
     float       halfHeight = CHARACTER_HEIGHT / 2;
 
-    PhysicsSensor(Node@ n)
+    PhysicsMover(Node@ n)
     {
         sceneNode = n;
-        sensorNode = sceneNode.CreateChild("SensorNode");
-        shape = sensorNode.CreateComponent("CollisionShape");
+        collisionNode = sceneNode.CreateChild("SensorNode");
+        shape = collisionNode.CreateComponent("CollisionShape");
         shape.SetCapsule(COLLISION_RADIUS, CHARACTER_HEIGHT, Vector3(0.0f, CHARACTER_HEIGHT/2, 0.0f));
-        verticalShape = sensorNode.CreateComponent("CollisionShape");
+        verticalShape = collisionNode.CreateComponent("CollisionShape");
         verticalShape.SetBox(Vector3(0.2f, CHARACTER_HEIGHT, 0));
-        horinzontalShape = sensorNode.CreateComponent("CollisionShape");
+        horinzontalShape = collisionNode.CreateComponent("CollisionShape");
         horinzontalShape.SetBox(Vector3(COLLISION_RADIUS*2, 0.2f, 0));
     }
 
-    ~PhysicsSensor()
+    ~PhysicsMover()
     {
-        sensorNode.Remove();
+        Remove();
     }
 
-    void Update(float dt)
+    void Remove()
+    {
+        if (collisionNode !is null)
+        {
+            collisionNode.Remove();
+            collisionNode = null;
+        }
+        @sceneNode = null;
+    }
+
+    void DetectGound()
     {
         start = sceneNode.worldPosition;
         end = start;

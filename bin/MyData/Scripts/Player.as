@@ -30,7 +30,7 @@ class Player : Character
         Character::ObjectStart();
 
         side = 1;
-        @sensor = PhysicsSensor(sceneNode);
+        @mover = PhysicsMover(sceneNode);
 
         Node@ tailNode = sceneNode.CreateChild("TailNode");
         //ParticleEmitter@ emitter = tailNode.CreateComponent("ParticleEmitter");
@@ -333,8 +333,8 @@ class Player : Character
         if (renderNode.GetChild(ScaleBoneName, true).scale.x > 0.03)
             Print("FUCK !!" + renderNode.GetChild(ScaleBoneName, true).scale.ToString());
 
-        return Character::GetDebugText() +  " flags=" + flags + " combo=" + combo +  "killed=" + killed + " timeScale=" + timeScale + 
-              "\n tAngle=" + GetTargetAngle() +" grounded=" + sensor.grounded + " inAirHeight=" + sensor.inAirHeight + 
+        return Character::GetDebugText() +  " flags=" + flags + " combo=" + combo +  "killed=" + killed + " timeScale=" + timeScale +
+              "\n tAngle=" + GetTargetAngle() +" grounded=" + mover.grounded + " inAirHeight=" + mover.inAirHeight +
               "scale=" + renderNode.GetChild(ScaleBoneName, true).scale.ToString() + "\n";
     }
 
@@ -432,14 +432,14 @@ class Player : Character
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), AI_FAR_DIST, YELLOW, 32, false);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), AI_NEAR_DIST, RED, 32, false);
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), MAX_ATTACK_DIST, BLUE, 32, false);
-        // sensor.DebugDraw(debug);
+        // mover.DebugDraw(debug);
         // debug.AddNode(sceneNode.GetChild(TranslateBoneName, true), 0.5f, false);
         debug.AddSkeleton(animModel.skeleton, WHITE, false);
     }
 
     void Update(float dt)
     {
-        sensor.Update(dt);
+        // mover.DetecGround();
         Character::Update(dt);
     }
 };
