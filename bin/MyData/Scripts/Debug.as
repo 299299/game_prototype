@@ -186,7 +186,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         TestAttack();
     }
-    else if (key == KEY_PLUS)
+    else if (key == KEY_EQUALS)
     {
         RandomEnemyPositions();
     }
@@ -577,6 +577,7 @@ void TestAttack()
     if (player is null)
         return;
 
+    player.GetScene().updateEnabled = true;
     AttackMotion@ am;
     PlayerAttackState@ s = cast<PlayerAttackState>(player.stateMachine.FindState("AttackState"));
     int l1 = s.forwardAttacks.length;
@@ -615,15 +616,20 @@ void RandomEnemyPositions()
     if (em is null)
         return;
 
+    Player@ p = GetPlayer();
+    if (p is null)
+        return;
+
     CrowdManager@ cm = script.defaultScene.GetComponent("CrowdManager");
     if (cm is null)
         return;
 
-    for (uint i=0; i>em.enemyList.length; ++i)
+    Vector3 c = p.GetNode().worldPosition;
+    for (uint i=0; i<em.enemyList.length; ++i)
     {
         Enemy@ e = em.enemyList[i];
-        e.MoveTo(cm.GetRandomPoint(e.agent.queryFilterType), 0.0f);
-    }    
+        e.MoveTo(cm.GetRandomPointInCircle(c, 5.0f, e.agent.queryFilterType), 0.0f);
+    }
 }
 
 /***********************************************

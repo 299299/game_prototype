@@ -367,7 +367,7 @@ class Player : Character
     bool Attack()
     {
         LogPrint("Do--Attack--->");
-        Enemy@ e = null; 
+        Enemy@ e = null;
         if (test_mode == 1)
         {
             EnemyManager@ em = GetEnemyMgr();

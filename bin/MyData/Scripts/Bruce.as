@@ -99,7 +99,7 @@ class BruceAttackState : PlayerAttackState
         // FORWARD
         //========================================================================
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_02", 14, ATTACK_PUNCH, L_HAND);
-        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_03", 11, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(forwardAttacks, "Attack_Close_Forward_03", 12, ATTACK_KICK, L_FOOT);
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_04", 20, ATTACK_KICK, R_FOOT);
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_05", 20, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(forwardAttacks, "Attack_Close_Forward_06", 20, ATTACK_PUNCH, R_HAND);
@@ -157,10 +157,10 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(backAttacks, "Attack_Close_Back_08", 17, ATTACK_KICK, L_FOOT);
 
         AddAttackMotion(backAttacks, "Attack_Close_Weak_Back", 12, ATTACK_PUNCH, L_ARM);
-        AddAttackMotion(backAttacks, "Attack_Close_Weak_Back_01", 12, ATTACK_PUNCH, R_ARM);
+        AddAttackMotion(backAttacks, "Attack_Close_Weak_Back_01", 14, ATTACK_PUNCH, R_HAND);
 
         AddAttackMotion(backAttacks, "Attack_Far_Back", 14, ATTACK_KICK, L_FOOT);
-        AddAttackMotion(backAttacks, "Attack_Far_Back_01", 15, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(backAttacks, "Attack_Far_Back_01", 18, ATTACK_KICK, L_FOOT);
         AddAttackMotion(backAttacks, "Attack_Far_Back_02", 20, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(backAttacks, "Attack_Far_Back_04", 33, ATTACK_KICK, L_FOOT);
 
@@ -179,10 +179,10 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(leftAttacks, "Attack_Close_Left_08", 16, ATTACK_KICK, L_FOOT);
 
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left", 13, ATTACK_PUNCH, R_HAND);
-        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_01", 12, ATTACK_PUNCH, R_HAND);
+        AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_01", 14, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH, L_HAND);
 
-        AddAttackMotion(leftAttacks, "Attack_Far_Left", 22, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left", 29, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 22, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 21, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_04", 30, ATTACK_KICK, L_FOOT);
@@ -327,28 +327,29 @@ void CreateBruceCombatMotions()
     // FORWARD
     //========================================================================
     int attackMotionFlags = kMotion_XZR | kMotion_Ext_DoNotRotateAnimation;
-    Global_CreateMotion("BM_Attack/Attack_Close_Forward_02", attackMotionFlags).SetDockAlign(L_HAND, 14);
-    Global_CreateMotion("BM_Attack/Attack_Close_Forward_03", attackMotionFlags).SetDockAlign(L_FOOT, 11);
-    Global_CreateMotion("BM_Attack/Attack_Close_Forward_04", attackMotionFlags).SetDockAlign(R_FOOT, 20);
-    Global_CreateMotion("BM_Attack/Attack_Close_Forward_05", attackMotionFlags).SetDockAlign(R_ARM, 20);
-    Global_CreateMotion("BM_Attack/Attack_Close_Forward_06", attackMotionFlags).SetDockAlign(R_HAND, 20);
-    Global_CreateMotion("BM_Attack/Attack_Close_Forward_07", attackMotionFlags).SetDockAlign(R_HAND, 16);
-    Global_CreateMotion("BM_Attack/Attack_Close_Forward_08", attackMotionFlags).SetDockAlign(R_ARM, 18);
+    int fwdAttackMotionFlags = kMotion_XZ | kMotion_Ext_DoNotRotateAnimation;
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_02", fwdAttackMotionFlags).SetDockAlign(L_HAND, 14);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_03", fwdAttackMotionFlags).SetDockAlign(L_FOOT, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_04", fwdAttackMotionFlags).SetDockAlign(R_FOOT, 20);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_05", fwdAttackMotionFlags).SetDockAlign(R_ARM, 20);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_06", fwdAttackMotionFlags).SetDockAlign(R_HAND, 20);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_07", fwdAttackMotionFlags).SetDockAlign(R_HAND, 16);
+    Global_CreateMotion("BM_Attack/Attack_Close_Forward_08", fwdAttackMotionFlags).SetDockAlign(R_ARM, 18);
 
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward", attackMotionFlags).SetDockAlign(R_HAND, 11);
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_01", attackMotionFlags).SetDockAlign(L_HAND, 12);
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_02", attackMotionFlags).SetDockAlign(L_HAND, 12);
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_03", attackMotionFlags).SetDockAlign(L_HAND, 12);
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_04", attackMotionFlags).SetDockAlign(R_HAND, 16);
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_05", attackMotionFlags).SetDockAlign(L_HAND, 13);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward", fwdAttackMotionFlags).SetDockAlign(R_HAND, 11);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_01", fwdAttackMotionFlags).SetDockAlign(L_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_02", fwdAttackMotionFlags).SetDockAlign(L_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_03", fwdAttackMotionFlags).SetDockAlign(L_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_04", fwdAttackMotionFlags).SetDockAlign(R_HAND, 16);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Forward_05", fwdAttackMotionFlags).SetDockAlign(L_HAND, 13);
 
-    Global_CreateMotion("BM_Attack/Attack_Close_Run_Forward", attackMotionFlags).SetDockAlign(R_HAND, 12);
-    Global_CreateMotion("BM_Attack/Attack_Far_Forward", attackMotionFlags).SetDockAlign(R_ARM, 25);
-    Global_CreateMotion("BM_Attack/Attack_Far_Forward_01", attackMotionFlags).SetDockAlign(R_FOOT, 20);
-    Global_CreateMotion("BM_Attack/Attack_Far_Forward_02", attackMotionFlags).SetDockAlign(L_FOOT, 20);
-    Global_CreateMotion("BM_Attack/Attack_Far_Forward_03", attackMotionFlags).SetDockAlign(R_HAND, 22);
-    Global_CreateMotion("BM_Attack/Attack_Far_Forward_04", attackMotionFlags).SetDockAlign(R_FOOT, 22);
-    Global_CreateMotion("BM_Attack/Attack_Run_Far_Forward", attackMotionFlags).SetDockAlign(R_FOOT, 20);
+    Global_CreateMotion("BM_Attack/Attack_Close_Run_Forward", fwdAttackMotionFlags).SetDockAlign(R_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward", fwdAttackMotionFlags).SetDockAlign(R_ARM, 25);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_01", fwdAttackMotionFlags).SetDockAlign(R_FOOT, 20);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_02", fwdAttackMotionFlags).SetDockAlign(L_FOOT, 20);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_03", fwdAttackMotionFlags).SetDockAlign(R_HAND, 22);
+    Global_CreateMotion("BM_Attack/Attack_Far_Forward_04", fwdAttackMotionFlags).SetDockAlign(R_FOOT, 22);
+    Global_CreateMotion("BM_Attack/Attack_Run_Far_Forward", fwdAttackMotionFlags).SetDockAlign(R_FOOT, 20);
 
     //========================================================================
     // RIGHT
@@ -386,10 +387,10 @@ void CreateBruceCombatMotions()
     Global_CreateMotion("BM_Attack/Attack_Close_Back_08", attackMotionFlags).SetDockAlign(L_FOOT, 17);
 
     Global_CreateMotion("BM_Attack/Attack_Close_Weak_Back", attackMotionFlags).SetDockAlign(L_ARM, 12);
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Back_01", attackMotionFlags).SetDockAlign(R_ARM, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Back_01", attackMotionFlags).SetDockAlign(R_HAND, 14);
 
     Global_CreateMotion("BM_Attack/Attack_Far_Back", attackMotionFlags).SetDockAlign(L_FOOT, 14);
-    Global_CreateMotion("BM_Attack/Attack_Far_Back_01", attackMotionFlags).SetDockAlign(L_FOOT, 15);
+    Global_CreateMotion("BM_Attack/Attack_Far_Back_01", attackMotionFlags).SetDockAlign(L_FOOT, 18);
     Global_CreateMotion("BM_Attack/Attack_Far_Back_02", attackMotionFlags).SetDockAlign(R_ARM, 20);
     Global_CreateMotion("BM_Attack/Attack_Far_Back_04", attackMotionFlags).SetDockAlign(L_FOOT, 33);
 
@@ -407,11 +408,11 @@ void CreateBruceCombatMotions()
     Global_CreateMotion("BM_Attack/Attack_Close_Left_08", attackMotionFlags).SetDockAlign(L_FOOT, 16);
 
     Global_CreateMotion("BM_Attack/Attack_Close_Weak_Left", attackMotionFlags).SetDockAlign(R_HAND, 13);
-    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Left_01", attackMotionFlags).SetDockAlign(R_HAND, 12);
+    Global_CreateMotion("BM_Attack/Attack_Close_Weak_Left_01", attackMotionFlags).SetDockAlign(R_HAND, 14);
     Global_CreateMotion("BM_Attack/Attack_Close_Weak_Left_02", attackMotionFlags).SetDockAlign(L_HAND, 13);
 
     Global_CreateMotion("BM_Attack/Attack_Far_Left", attackMotionFlags).SetDockAlign(L_FOOT, 22);
-    Global_CreateMotion("BM_Attack/Attack_Far_Left_02", attackMotionFlags).SetDockAlign(R_ARM, 22);
+    Global_CreateMotion("BM_Attack/Attack_Far_Left_02", attackMotionFlags).SetDockAlign(R_ARM, 29);
     Global_CreateMotion("BM_Attack/Attack_Far_Left_03", attackMotionFlags).SetDockAlign(L_FOOT, 21);
     Global_CreateMotion("BM_Attack/Attack_Far_Left_04", attackMotionFlags).SetDockAlign(L_FOOT, 30);
 
