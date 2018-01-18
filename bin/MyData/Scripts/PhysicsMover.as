@@ -79,14 +79,14 @@ class PhysicsMover
         return (result.body !is null) ? result.position : end;
     }
 
-    void MoveTo(const Vector3&in pos)
+    void MoveTo(const Vector3&in pos, float dt)
     {
         Vector3 oldPos = sceneNode.worldPosition;
         oldPos.y += CHARACTER_HEIGHT / 2.0f;
         Vector3 newPos = pos;
         newPos.y += CHARACTER_HEIGHT / 2.0f;
         PhysicsRaycastResult result = PhysicsSphereCast(oldPos, newPos, 0.25f, COLLISION_LAYER_LANDSCAPE, 0.00001f);
-        // Print("oldPos=" + oldPos.ToString() + " newPos=" + newPos.ToString());
+        Print("vel=" + ((pos - sceneNode.worldPosition) / dt).ToString());
         if (result.body is null)
             sceneNode.worldPosition = pos;
         else

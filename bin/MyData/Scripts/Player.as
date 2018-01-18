@@ -438,7 +438,8 @@ class Player : Character
 
     void FixedUpdate(float dt)
     {
-        mover.DetectGround();
+        if (mover !is null)
+            mover.DetectGround();
         Character::FixedUpdate(dt);
     }
 };

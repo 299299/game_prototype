@@ -1078,7 +1078,8 @@ class Character : GameObject
 
     void MoveTo(const Vector3& position, float dt)
     {
-        mover.MoveTo(position);
+        if (mover !is null)
+            mover.MoveTo(position, dt);
     }
 
     bool Attack()
@@ -1149,7 +1150,8 @@ class Character : GameObject
         stateMachine.DebugDraw(debug);
         debug.AddNode(sceneNode, 1.0f, false);
         // debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), COLLISION_RADIUS, Color(0.25f, 0.35f, 0.75f), 32, false);
-        mover.DebugDraw(debug);
+        if (mover !is null)
+            mover.DebugDraw(debug);
     }
 
     void TestAnimation(const Array<String>&in animations)
