@@ -406,7 +406,7 @@ class Motion
             }
             else
             {
-                object.SetVelocity(Vector3(0, 0, 0));
+                object.SetVelocity(Vector3::ZERO);
             }
 
             if (speed < 0 && localTime < 0.001)
@@ -442,7 +442,7 @@ class Motion
             }
             else
             {
-                object.SetVelocity(Vector3(0, 0, 0));
+                object.SetVelocity(Vector3::ZERO);
             }
 
             if (!dockAlignBoneName.empty)

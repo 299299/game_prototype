@@ -54,7 +54,6 @@ const String PELVIS = "Bip01_Pelvis";
 
 const float FRAME_PER_SEC = 30.0f;
 const float SEC_PER_FRAME = 1.0f/FRAME_PER_SEC;
-const int   PROCESS_TIME_PER_FRAME = 60; // ms
 const float BIG_HEAD_SCALE = 2.0f;
 const float ROTATION_FIX_DEGREE = 15.0f;
 const float BONE_SCALE = 0.0254f;

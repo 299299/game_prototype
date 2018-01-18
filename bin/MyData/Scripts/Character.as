@@ -5,7 +5,7 @@
 // ==============================================
 
 const float FULLTURN_THRESHOLD = 125;
-const float COLLISION_RADIUS = 1.5f;
+const float COLLISION_RADIUS = 1.45f;
 const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2.0f + 0.1f;
 const float CHARACTER_HEIGHT = 5.0f;
 const float SPHERE_CAST_RADIUS = 0.25f;
@@ -19,6 +19,7 @@ const int INITIAL_HEALTH = 100;
 const int NUM_ZONE_DIRECTIONS = 8;
 const float IN_AIR_FOOT_HEIGHT = 0.75f;
 const float KEEP_TARGET_DISTANCE = COLLISION_SAFE_DIST - 1.0f;
+const Vector3 COLLISION_OFFSET(0, CHARACTER_HEIGHT/2.0f, 0.55f);
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash HIT_STATE("HitState");
@@ -463,7 +464,7 @@ class AnimationTestState : CharacterState
     {
         super(c);
         SetName("AnimationTestState");
-        physicsType = 0;
+        // physicsType = 0;
     }
 
     ~AnimationTestState()
@@ -967,12 +968,11 @@ class Character : GameObject
             attackDamage = 9999;
 
         Node@ collisionNode = sceneNode.CreateChild("Collision");
-        const float z_offset = 0.25f;
         CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
-        shape.SetCapsule(COLLISION_RADIUS*2 - 0.25f, CHARACTER_HEIGHT, Vector3(0, CHARACTER_HEIGHT/2 + z_offset, 0));
+        shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, COLLISION_OFFSET);
         RigidBody@ body = sceneNode.CreateComponent("RigidBody");
         body.mass = 1.0f;
-        body.angularFactor = Vector3(0.0f, 0.0f, 0.0f);
+        body.angularFactor = Vector3::ZERO;
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
         if (collision_type == 0)
         {
@@ -980,11 +980,13 @@ class Character : GameObject
             body.trigger = true;
             body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP;
             @mover = PhysicsMover(sceneNode);
+            physicsType = 0;
         }
         else
         {
             body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
             body.gravityOverride = Vector3(0, -20, 0);
+            physicsType = 1;
         }
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
@@ -1451,7 +1453,7 @@ class Character : GameObject
 
     void SetVelocity(const Vector3&in vel)
     {
-        // Print("body.linearVelocity = " + vel.ToString());
+        // Print(GetName() + " SetVelocity = " + vel.ToString());
         if (collisionBody !is null)
             collisionBody.linearVelocity = vel;
     }

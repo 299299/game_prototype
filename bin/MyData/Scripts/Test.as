@@ -60,7 +60,6 @@ int DEBUG_FONT_SIZE = 20;
 
 const String GAME_CAMEAR_NAME = "ThirdPerson";
 
-int freeze_ai = 1;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
@@ -73,9 +72,11 @@ bool locomotion_turn = true;
 bool attack_choose_closest_one = false;
 bool counter_choose_closest_one = false;
 
+int freeze_ai = 1;
 int game_state = 0;
 int debug_mode = 0;
 int collision_type = 1;
+int PROCESS_TIME_PER_FRAME = 60; // ms
 bool camera_collison = false;
 
 const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
@@ -97,7 +98,10 @@ void Start()
     zoneDirCache.Resize(NUM_ZONE_DIRECTIONS);
 
     if (!mobile)
+    {
         render_features = RF_FULL;
+        PROCESS_TIME_PER_FRAME = 6000;
+    }
 
     Array<String>@ arguments = GetArguments();
     for (uint i = 0; i < arguments.length; ++i)

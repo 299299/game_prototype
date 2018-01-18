@@ -366,7 +366,7 @@ class PlayerSlideIdleState : CharacterState
     {
         ownner.SetTarget(null);
         ownner.PlayAnimation(animation, LAYER_MOVE, true, 0.0f);
-        ownner.SetVelocity(Vector3(0,0,0));
+        ownner.SetVelocity(Vector3::ZERO);
 
         CharacterState::Enter(lastState);
     }

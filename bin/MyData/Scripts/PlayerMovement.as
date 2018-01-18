@@ -12,6 +12,7 @@ class PlayerStandState : MultiAnimationState
     void Enter(State@ lastState)
     {
         ownner.SetTarget(null);
+        ownner.SetVelocity(Vector3::ZERO);
         MultiAnimationState::Enter(lastState);
     }
 
