@@ -19,7 +19,7 @@ const int INITIAL_HEALTH = 100;
 const int NUM_ZONE_DIRECTIONS = 8;
 const float IN_AIR_FOOT_HEIGHT = 0.75f;
 const float KEEP_TARGET_DISTANCE = COLLISION_SAFE_DIST - 1.0f;
-const Vector3 COLLISION_OFFSET(0, CHARACTER_HEIGHT/2.0f, 0.55f);
+const Vector3 COLLISION_OFFSET(0, CHARACTER_HEIGHT/2.0f, 0.3f);
 
 const StringHash ATTACK_STATE("AttackState");
 const StringHash HIT_STATE("HitState");
@@ -974,7 +974,6 @@ class Character : GameObject
         if (one_shot_kill)
             attackDamage = 9999;
 
-        Node@ collisionNode = sceneNode.CreateChild("Collision");
         CollisionShape@ shape = sceneNode.CreateComponent("CollisionShape");
         shape.SetCapsule(COLLISION_RADIUS*2, CHARACTER_HEIGHT, COLLISION_OFFSET);
         RigidBody@ body = sceneNode.CreateComponent("RigidBody");
@@ -1009,7 +1008,7 @@ class Character : GameObject
         SubscribeToEvent(renderNode, "AnimationTrigger", "HandleAnimationTrigger");
 
         if (instant_collision)
-            SubscribeToEvent(collisionNode, "NodeCollision", "HandleNodeCollision");
+            SubscribeToEvent(sceneNode, "NodeCollision", "HandleNodeCollision");
 
         animModel.RemoveAllAnimationStates();
     }

@@ -270,7 +270,7 @@ class GameObject : ScriptObject
         {
             @otherObject = cast<GameObject>(otherNode.parent.scriptObject);
         }
-
+        
         ObjectCollision(otherObject, otherBody, eventData);
     }
 
