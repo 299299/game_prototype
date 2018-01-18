@@ -18,7 +18,7 @@ const int MAX_NUM_OF_RUN_ATTACK = 3;
 const int INITIAL_HEALTH = 100;
 const int NUM_ZONE_DIRECTIONS = 8;
 const float IN_AIR_FOOT_HEIGHT = 0.75f;
-const float KEEP_TARGET_DISTANCE = COLLISION_SAFE_DIST - 1.0f;
+const float KEEP_TARGET_DISTANCE = COLLISION_SAFE_DIST - 0.5f;
 const Vector3 COLLISION_OFFSET(0, CHARACTER_HEIGHT/2.0f, 0.3f);
 
 const StringHash ATTACK_STATE("AttackState");

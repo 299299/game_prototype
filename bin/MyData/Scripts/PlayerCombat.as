@@ -464,18 +464,24 @@ class PlayerAttackState : CharacterState
         else
             damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
 
-        bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
-        if (!b)
-            return;
 
-        ownner.SpawnParticleEffect(position, "Particle/SnowExplosion.xml", 5.0f, 5.0f);
-        ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 1.0f, 0.6f);
+        if (test_mode != 1)
+        {
+            bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
+            if (!b)
+                return;
+        }
+        
+
+        ownner.SpawnParticleEffect(position, "Particle/SnowExplosionBig.xml", 3.0f, 1.0f);
+        // ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 1.0f, 0.6f);
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
         ownner.OnAttackSuccess(e);
 
-        // ownner.GetScene().updateEnabled = false;
+        if (test_mode == 1)
+            ownner.GetScene().updateEnabled = false;
         //ownner.GetScene().timeScale = 0.1f;
     }
 
@@ -528,7 +534,8 @@ class PlayerAttackState : CharacterState
     {
         if (currentAttack is null || ownner.target is null)
             return;
-        // debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, YELLOW, false);
+
+        debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, GREEN, false);
         AddDebugMark(debug, targetPosition, TARGET_COLOR);
         AddDebugMark(debug, motionPosition,  SOURCE_COLOR);
         Vector3 v = ownner.GetNode().worldPosition;

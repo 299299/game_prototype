@@ -188,7 +188,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_PLUS)
     {
-        // todo
+        RandomEnemyPositions();
     }
     else if (key == KEY_R)
     {
@@ -607,6 +607,23 @@ void TestAttack()
     test_attack_id ++;
     if (test_attack_id >=  l1 + l2 + l3 + l4)
         test_attack_id = 0;
+}
+
+void RandomEnemyPositions()
+{
+    EnemyManager@ em = GetEnemyMgr();
+    if (em is null)
+        return;
+
+    CrowdManager@ cm = script.defaultScene.GetComponent("CrowdManager");
+    if (cm is null)
+        return;
+
+    for (uint i=0; i>em.enemyList.length; ++i)
+    {
+        Enemy@ e = em.enemyList[i];
+        e.MoveTo(cm.GetRandomPoint(e.agent.queryFilterType), 0.0f);
+    }    
 }
 
 /***********************************************

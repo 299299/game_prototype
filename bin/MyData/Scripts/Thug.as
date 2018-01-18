@@ -926,6 +926,8 @@ class Thug : Enemy
 
     bool ActionCheck(uint actionFlags = 0xFF)
     {
+        if (freeze_ai == 1)
+            return false;
         // Print(GetName() + " ActionCheck in state:" + stateMachine.currentState.name);
         if (actionFlags & FLAGS_ATTACK != 0)
         {
@@ -1148,7 +1150,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithCharacters()
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD))
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1)
             return false;
         int dir = GetSperateDirection();
         if (dir < 0)
@@ -1237,7 +1239,7 @@ class Thug : Enemy
 
     void KeepDistanceWithCharacter(Character@ c)
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD))
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1)
             return;
         int index = RadialSelectAnimation(c.GetNode().worldPosition, 4);
         //if (RandomInt(2) == 1)
@@ -1267,7 +1269,7 @@ class Thug : Enemy
                 rb.node.name != L_ARM &&
                 rb.node.name != R_ARM)
             {
-                if (vl > 5.0f)
+                if (vl > 10.0f)
                     bRagdoll = true;
             }
         }

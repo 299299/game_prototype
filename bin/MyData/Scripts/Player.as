@@ -367,7 +367,17 @@ class Player : Character
     bool Attack()
     {
         LogPrint("Do--Attack--->");
-        Enemy@ e = CommonPickEnemy(75, MAX_ATTACK_DIST, FLAGS_ATTACK, true);
+        Enemy@ e = null; 
+        if (test_mode == 1)
+        {
+            EnemyManager@ em = GetEnemyMgr();
+            @e = em.enemyList[RandomInt(em.enemyList.length)];
+        }
+        else
+        {
+            @e = CommonPickEnemy(75, MAX_ATTACK_DIST, FLAGS_ATTACK, true);
+        }
+
         SetTarget(e);
         if (e !is null && e.HasFlag(FLAGS_STUN))
             ChangeState("BeatDownHitState");
