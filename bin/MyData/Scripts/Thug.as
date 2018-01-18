@@ -17,6 +17,7 @@ const Vector3 HIT_RAGDOLL_FORCE(25.0f, 10.0f, 0.0f);
 const float AI_FAR_DIST = 15.0f;
 const float AI_NEAR_DIST = 7.5f;
 const float AI_MAX_STATE_TIME = 10.0f;
+const float RAGDOLL_HIT_VEL = 15.0f;
 
 Array<Motion@> thug_counter_arm_front_motions;
 Array<Motion@> thug_counter_arm_back_motions;
@@ -1181,7 +1182,7 @@ class Thug : Enemy
 
             float vl = rb.linearVelocity.length;
             Vector3 vel = rb.linearVelocity;
-            if (vl > 5.0f)
+            if (vl > RAGDOLL_HIT_VEL)
             {
                 LogPrint(GetName() + " hit ragdoll bone " + rb.node.name + " vel=" + vel.ToString() + " vl=" + vl);
                 MakeMeRagdoll(vel * 1.5f, rb.node.worldPosition);
@@ -1269,13 +1270,13 @@ class Thug : Enemy
                 rb.node.name != L_ARM &&
                 rb.node.name != R_ARM)
             {
-                if (vl > 10.0f)
+                if (vl > RAGDOLL_HIT_VEL)
                     bRagdoll = true;
             }
         }
         else if (rb.collisionLayer == COLLISION_LAYER_PROP)
         {
-            if (vl > 10.0f)
+            if (vl > RAGDOLL_HIT_VEL)
                 bRagdoll = true;
         }
 

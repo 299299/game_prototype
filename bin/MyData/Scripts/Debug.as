@@ -134,6 +134,15 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 
     if (key == KEY_ESCAPE || key == KEY_Q)
          engine.Exit();
+    else if (key == KEY_QUOTE)
+    {
+        test_mode ++;
+        test_mode = test_mode % 2;
+    }
+    else if (key == KEY_0)
+    {
+        TestAnimations_Group_2("Counter_Arm_Front_09");
+    }
     else if (key == KEY_1)
     {
         ++drawDebug;
@@ -177,10 +186,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == KEY_9)
     {
         CameraShake();
-    }
-    else if (key == KEY_0)
-    {
-        TestAnimations_Group_2("Counter_Arm_Front_09");
     }
     else if (key == KEY_MINUS)
     {
