@@ -182,7 +182,7 @@ class BruceAttackState : PlayerAttackState
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_01", 14, ATTACK_PUNCH, R_HAND);
         AddAttackMotion(leftAttacks, "Attack_Close_Weak_Left_02", 13, ATTACK_PUNCH, L_HAND);
 
-        AddAttackMotion(leftAttacks, "Attack_Far_Left", 29, ATTACK_KICK, L_FOOT);
+        AddAttackMotion(leftAttacks, "Attack_Far_Left", 22, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_02", 22, ATTACK_PUNCH, R_ARM);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_03", 21, ATTACK_KICK, L_FOOT);
         AddAttackMotion(leftAttacks, "Attack_Far_Left_04", 30, ATTACK_KICK, L_FOOT);
