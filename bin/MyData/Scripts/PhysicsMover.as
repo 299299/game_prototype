@@ -28,6 +28,7 @@ class PhysicsMover
 
     void DetectGround()
     {
+        /*
         start = sceneNode.worldPosition;
         end = start;
         start.y += halfHeight;
@@ -62,6 +63,7 @@ class PhysicsMover
         {
             inAirFrames ++;
         }
+        */
     }
 
     void DebugDraw(DebugRenderer@ debug)
@@ -81,6 +83,7 @@ class PhysicsMover
 
     void MoveTo(const Vector3&in pos, float dt)
     {
+        /*
         Vector3 oldPos = sceneNode.worldPosition;
         oldPos.y += CHARACTER_HEIGHT / 2.0f;
         Vector3 newPos = pos;
@@ -95,6 +98,7 @@ class PhysicsMover
             newPos.y = 0.0f;
             sceneNode.worldPosition = newPos;
         }
-        //sceneNode.worldPosition = FilterPosition(position);
+        */
+        sceneNode.worldPosition = FilterPosition(pos);
     }
 };

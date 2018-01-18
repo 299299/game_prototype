@@ -94,11 +94,11 @@
 			</attribute>
 			<attribute name="Animation States">
 				<variant type="Int" value="1" />
-				<variant type="ResourceRef" value="Animation;Animations/BM_Combat_Movement/Cover_Idle_Take 001.ani" />
-				<variant type="String" value="RootNode" />
+				<variant type="ResourceRef" value="Animation;" />
+				<variant type="String" value="" />
 				<variant type="Bool" value="true" />
 				<variant type="Float" value="1" />
-				<variant type="Float" value="0.285386" />
+				<variant type="Float" value="0" />
 				<variant type="Int" value="0" />
 			</attribute>
 		</component>

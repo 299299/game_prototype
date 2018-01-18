@@ -31,7 +31,6 @@ enum RootMotionFlag
     kMotion_YZ  = kMotion_Y | kMotion_Z,
     kMotion_XYZ = kMotion_XZ | kMotion_Y,
     kMotion_ALL = kMotion_XZR | kMotion_Y,
-    kMotion_Turn = kMotion_XZR | kMotion_Ext_Translate_Ignore_Delta_Rotation,
 };
 
 bool d_log = false;

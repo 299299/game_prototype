@@ -430,16 +430,4 @@ class Player : Character
         debug.AddCircle(sceneNode.worldPosition, Vector3(0, 1, 0), MAX_ATTACK_DIST, BLUE, 32, false);
         debug.AddSkeleton(animModel.skeleton, WHITE, false);*/
     }
-
-    void Update(float dt)
-    {
-        Character::Update(dt);
-    }
-
-    void FixedUpdate(float dt)
-    {
-        if (mover !is null)
-            mover.DetectGround();
-        Character::FixedUpdate(dt);
-    }
 };

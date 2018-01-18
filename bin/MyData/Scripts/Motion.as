@@ -314,7 +314,7 @@ class Motion
         if (looped)
             return _node.worldRotation * Vector3(motionOut.x, motionOut.y, motionOut.z) + _node.worldPosition + object.motion_deltaPosition;
         else
-            return Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+            return Quaternion(0, object.motion_rotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
     }
 
     Vector3 GetKeyPosition(Character@ object, float t)
@@ -329,7 +329,7 @@ class Motion
         if (looped)
             return AngleDiff(object.GetNode().worldRotation.eulerAngles.y + object.motion_deltaRotation + GetKey(t).w);
         else
-            return AngleDiff(object.motion_startRotation + object.motion_deltaRotation + GetKey(t).w);
+            return AngleDiff(object.motion_rotation + object.motion_deltaRotation + GetKey(t).w);
     }
 
     void Start(Character@ object, float localTime = 0.0f, float blendTime = 0.1, float speed = 1.0f)
@@ -356,6 +356,7 @@ class Motion
     {
         object.motion_startPosition = object.GetNode().worldPosition;
         object.motion_startRotation = object.GetNode().worldRotation.eulerAngles.y;
+        object.motion_rotation = object.motion_startRotation;
         object.motion_deltaRotation = 0;
         object.motion_deltaPosition = Vector3(0, 0, 0);
         object.motion_velocity = Vector3(0, 0, 0);
@@ -395,14 +396,15 @@ class Motion
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
                 Vector3 tWorld = _node.worldRotation * tLocal;
 
-                 if (object.physicsType == 0)
+                /*if (object.physicsType == 0)
                 {
                     object.MoveTo(tWorld + _node.worldPosition + object.motion_velocity * dt, dt);
                 }
                 else
                 {
                     object.SetVelocity(tWorld / dt + object.motion_velocity);
-                }
+                }*/
+                object.MoveTo(tWorld + _node.worldPosition + object.motion_velocity * dt, dt);
             }
             else
             {
@@ -422,23 +424,24 @@ class Motion
 
             if (object.motion_translateEnabled)
             {
-                if (object.physicsType == 0)
+                /*if (object.physicsType == 0)
                 {
                     object.motion_deltaPosition += object.motion_velocity * dt;
-                    float yaw = object.motion_startRotation;
-                    if (motionFlag & kMotion_Ext_Translate_Ignore_Delta_Rotation == 0)
-                        yaw += object.motion_deltaRotation;
-                    Vector3 tWorld = Quaternion(0, yaw, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+                    Vector3 tWorld = Quaternion(0, object.motion_rotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
                     object.MoveTo(tWorld, dt);
                 }
                 else
                 {
-                    Vector3 tWorld1 = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
+                    Vector3 tWorld1 = Quaternion(0, object.motion_rotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
                     motionOut = GetKey(localTime + dt);
-                    Vector3 tWorld2 = Quaternion(0, object.motion_startRotation + object.motion_deltaRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
+                    Vector3 tWorld2 = Quaternion(0, object.motion_rotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z);
                     Vector3 vel = (tWorld2 - tWorld1) / dt;
                     object.SetVelocity(vel + object.motion_velocity);
-                }
+                }*/
+
+                object.motion_deltaPosition += object.motion_velocity * dt;
+                Vector3 tWorld = Quaternion(0, object.motion_rotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+                object.MoveTo(tWorld, dt);
             }
             else
             {
@@ -681,7 +684,7 @@ class MotionManager
             for (int i=processedAnimations; i<len; ++i)
             {
                 Animation@ anim = cache.GetResource("Animation", GetAnimationName(animations[i]));
-                FixAnimation(anim);
+                // FixAnimation(anim);
                 if (anim is null)
                     LogPrint("Animation load failed --> " + animations[i]);
 

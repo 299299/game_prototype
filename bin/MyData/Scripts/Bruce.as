@@ -294,15 +294,16 @@ void CreateBruceMotions()
     Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
     // Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 28);
 
-    Global_CreateMotion(preFix + "Turn_Right_90", kMotion_Turn, kMotion_R, 16);
-    Global_CreateMotion(preFix + "Turn_Right_180", kMotion_Turn, kMotion_R, 25);
-    Global_CreateMotion(preFix + "Turn_Left_90", kMotion_Turn, kMotion_R, 14);
+    int locomotionFlags = kMotion_XZR;
+    Global_CreateMotion(preFix + "Turn_Right_90", locomotionFlags, kMotion_R, 16);
+    Global_CreateMotion(preFix + "Turn_Right_180", locomotionFlags, kMotion_R, 25);
+    Global_CreateMotion(preFix + "Turn_Left_90", locomotionFlags, kMotion_R, 14);
     Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
 
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", kMotion_Turn, kMotion_ZR, 21);
-    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", kMotion_Turn, kMotion_ZR, 25);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", kMotion_Turn, kMotion_ZR, 18);
-    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 25);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", locomotionFlags, kMotion_ZR, 21);
+    Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", locomotionFlags, kMotion_ZR, 25);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_90", locomotionFlags, kMotion_ZR, 18);
+    Global_CreateMotion(preFix + "Stand_To_Run_Right_180", locomotionFlags, kMotion_ZR, 25);
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");
@@ -325,7 +326,7 @@ void CreateBruceCombatMotions()
     //========================================================================
     // FORWARD
     //========================================================================
-    int attackMotionFlags = kMotion_Turn | kMotion_Ext_DoNotRotateAnimation;
+    int attackMotionFlags = kMotion_XZR | kMotion_Ext_DoNotRotateAnimation;
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_02", attackMotionFlags).SetDockAlign(L_HAND, 14);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_03", attackMotionFlags).SetDockAlign(L_FOOT, 11);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_04", attackMotionFlags).SetDockAlign(R_FOOT, 20);

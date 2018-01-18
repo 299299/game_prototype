@@ -672,6 +672,8 @@ class CharacterCounterState : CharacterState
         float angleDiff = AngleDiff(targetRotation - ownner.GetCharacterAngle());
         yawPerSec = angleDiff / alignTime;
 
+        ownner.motion_rotation = targetRotation;
+
         LogPrint(ownner.GetName() + " start align " + currentMotion.animationName +
                  " diff=" + diff.ToString() + " angleDiff=" + angleDiff);
     }
@@ -712,7 +714,6 @@ class CharacterCounterState : CharacterState
             ownner.GetScene().updateEnabled = false;
             return;
         }
-
 
         ownner.motion_velocity = (state == COUNTER_ALIGN) ? movePerSec : Vector3(0, 0, 0);
         if (state == COUNTER_ALIGN)
@@ -909,13 +910,17 @@ class Character : GameObject
 
     String                  lastAnimation;
 
-    PhysicsMover@           mover;
+    
 
     // ==============================================
     // PHYSICS
     // ==============================================
     int                     physicsType;
+    PhysicsMover@           mover;
     RigidBody@              collisionBody;
+
+    Vector3                 targetPos;
+    bool                    targetPosSet = false;
 
     // ==============================================
     //   DYNAMIC VALUES For Motion
@@ -926,6 +931,8 @@ class Character : GameObject
     float                   motion_deltaRotation;
     Vector3                 motion_deltaPosition;
     Vector3                 motion_velocity;
+
+    float                   motion_rotation;
 
     bool                    motion_translateEnabled = true;
     bool                    motion_rotateEnabled = true;
@@ -984,7 +991,7 @@ class Character : GameObject
         }
         else
         {
-            body.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
+            body.collisionMask = COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
             body.gravityOverride = Vector3(0, -20, 0);
             physicsType = 1;
         }
@@ -1080,8 +1087,16 @@ class Character : GameObject
 
     void MoveTo(const Vector3& position, float dt)
     {
-        if (mover !is null)
-            mover.MoveTo(position, dt);
+        if (physicsType == 0)
+        {
+            if (mover !is null)
+                mover.MoveTo(position, dt);
+        }
+        else
+        {
+            targetPos = position;
+            targetPosSet = true;
+        }
     }
 
     bool Attack()
@@ -1486,6 +1501,26 @@ class Character : GameObject
         CharacterState@ cs = cast<CharacterState>(stateMachine.currentState);
         if (cs !is null)
             cs.OnLogicEvent(eventData);
+    }
+
+    void Update(float dt)
+    {
+        // Print("Update dt=" + dt);
+        GameObject::Update(dt);
+
+        if (targetPosSet)
+        {
+            targetPosSet = false;
+            SetVelocity((targetPos - sceneNode.worldPosition) / dt);
+        }
+    }
+
+    void FixedUpdate(float dt)
+    {
+        // Print("FixedUpdate dt=" + dt);
+        if (mover !is null)
+            mover.DetectGround();
+        GameObject::FixedUpdate(dt);
     }
 };
 

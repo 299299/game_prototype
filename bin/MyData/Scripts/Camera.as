@@ -491,6 +491,8 @@ class ThirdPersonCameraController : CameraController
 
     void ShakeCamera(float amount, float duration)
     {
+        if (!camera_shake)
+            return;
         LogPrint("ShakeCamera amount=" + amount + " duration=" + duration + " shaking=" + shaking);
         this.shakeAmount = amount;
         this.shakeDuration = duration;

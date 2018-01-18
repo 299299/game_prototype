@@ -1443,8 +1443,8 @@ void CreateThugMotions()
     Global_CreateMotion(preFix + "Step_Back_Long");
     Global_CreateMotion(preFix + "Step_Left_Long");
 
-    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_Turn, kMotion_R, 32);
-    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_Turn, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Left", kMotion_XZR, kMotion_R, 32);
+    Global_CreateMotion(preFix + "135_Turn_Right", kMotion_XZR, kMotion_R, 32);
 
     Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_XZR, kMotion_Z, -1, true);
     Global_CreateMotion(preFix + "Walk_Forward_Combat", kMotion_XZR, kMotion_Z, -1, true);
