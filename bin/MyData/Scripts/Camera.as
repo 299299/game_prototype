@@ -105,6 +105,8 @@ class CameraController
 
     bool IsCameraOccluded(const Vector3&in position, const Vector3& lookat, Vector3&out outPos)
     {
+        if (!camera_collison)
+            return false;
         Vector3 dir = position - lookat;
         float rayDistance = dir.length - 0.5f;
         dir.Normalize();
@@ -604,11 +606,13 @@ class CameraManager
 
     float GetCameraAngle()
     {
+        /*
         if (currentController !is null)
         {
             if (currentController.IsDebugCamera())
                 return 0;
         }
+        */
 
         Vector3 dir = GetCameraForwardDirection();
         return Atan2(dir.x, dir.z);

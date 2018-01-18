@@ -66,7 +66,7 @@ class PhysicsMover
 
     void DebugDraw(DebugRenderer@ debug)
     {
-        debug.AddLine(start, end, grounded ? GREEN : RED, false);
+        // debug.AddLine(start, end, grounded ? GREEN : RED, false);
     }
 
     Vector3 GetGround(const Vector3&in pos)
@@ -85,12 +85,15 @@ class PhysicsMover
         oldPos.y += CHARACTER_HEIGHT / 2.0f;
         Vector3 newPos = pos;
         newPos.y += CHARACTER_HEIGHT / 2.0f;
-        PhysicsRaycastResult result = PhysicsSphereCast(oldPos, newPos, 0.25f, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult result = PhysicsSphereCast(oldPos, newPos, 0.25f, COLLISION_LAYER_LANDSCAPE, 0.00001f);
+        // Print("oldPos=" + oldPos.ToString() + " newPos=" + newPos.ToString());
         if (result.body is null)
             sceneNode.worldPosition = pos;
         else
         {
-            sceneNode.worldPosition = result.normal * COLLISION_RADIUS + result.position;
+            newPos = result.normal * COLLISION_RADIUS + result.position;
+            newPos.y = 0.0f;
+            sceneNode.worldPosition = newPos;
         }
         //sceneNode.worldPosition = FilterPosition(position);
     }

@@ -60,7 +60,7 @@ int DEBUG_FONT_SIZE = 20;
 
 const String GAME_CAMEAR_NAME = "ThirdPerson";
 
-int freeze_ai = 0;
+int freeze_ai = 1;
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
@@ -76,6 +76,7 @@ bool counter_choose_closest_one = false;
 int game_state = 0;
 int debug_mode = 0;
 int collision_type = 0;
+bool camera_collison = false;
 
 const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
 const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);
@@ -388,29 +389,28 @@ PhysicsRaycastResult PhysicsRayCast(const Vector3&in start, const Vector3&in dir
     return result;
 }
 
-PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in dir, float radius, float range, uint mask)
+PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in dir, float radius, float range, uint mask, float t = 1.0f)
 {
     Scene@ scene_ = script.defaultScene;
     PhysicsWorld@ world = scene_.GetComponent("PhysicsWorld");
     PhysicsRaycastResult result = world.SphereCast(Ray(start, dir), radius, range, mask);
-    /*
+
     if (result.body !is null)
     {
         if (drawDebug > 0)
         {
-            gDebugMgr.AddSphere(result.position, radius, YELLOW);
-            gDebugMgr.AddLine(start, result.position, BLUE);
-            gDebugMgr.AddLine(start, dir * range + start, WHITE);
+            gDebugMgr.AddSphere(result.position, radius, YELLOW, t);
+            gDebugMgr.AddLine(start, result.position, BLUE, t);
+            gDebugMgr.AddLine(start, dir * range + start, WHITE, t);
         }
     }
     else
     {
         if (drawDebug > 0)
         {
-        //    gDebugMgr.AddLine(start, dir * range + start, RED);
+            gDebugMgr.AddLine(start, dir * range + start, RED, t);
         }
     }
-    */
     return result;
 }
 
