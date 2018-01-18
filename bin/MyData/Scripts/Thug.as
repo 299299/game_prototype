@@ -247,7 +247,8 @@ class ThugStepMoveState : MultiMotionState
         int index = PickIndex();
         Motion@ m = motions[index];
         Vector3 futurePos = m.GetFuturePosition(ownner, m.endTime);
-        if (IsOutOfWorld(futurePos))
+
+        if (!IsDestinationReachable(ownner.GetNode().worldPosition, futurePos))
         {
             int newIndex = index + 2;
             newIndex = newIndex % 8;

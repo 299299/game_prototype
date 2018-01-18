@@ -11,9 +11,12 @@ class PhysicsMover
 
     float       halfHeight = CHARACTER_HEIGHT / 2;
 
+    DynamicNavigationMesh@ navMesh;
+
     PhysicsMover(Node@ n)
     {
         sceneNode = n;
+        navMesh = sceneNode.scene.GetComponent("DynamicNavigationMesh");
     }
 
     ~PhysicsMover()
@@ -24,6 +27,7 @@ class PhysicsMover
     void Remove()
     {
         @sceneNode = null;
+        @navMesh = null;
     }
 
     void DetectGround()
@@ -84,7 +88,6 @@ class PhysicsMover
     void MoveTo(const Vector3&in pos, float dt)
     {
         // sceneNode.worldPosition = FilterPosition(pos);
-        DynamicNavigationMesh@ navMesh = sceneNode.scene.GetComponent("DynamicNavigationMesh");
         Vector3 v = navMesh.MoveAlongSurface(sceneNode.worldPosition, pos);
         sceneNode.worldPosition = v;
     }

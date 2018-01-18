@@ -63,6 +63,7 @@ const String GAME_CAMEAR_NAME = "ThirdPerson";
 Array<int> dirCache;
 Array<int> zoneDirCache;
 Array<int> gIntCache;
+Array<Vector3> v3Cache;
 
 bool mobile = false;
 bool one_shot_kill = false;

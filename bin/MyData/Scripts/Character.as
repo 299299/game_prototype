@@ -909,7 +909,6 @@ class Character : GameObject
     int                     attackDamage = 10;
 
     String                  lastAnimation;
-
     
 
     // ==============================================
@@ -918,9 +917,6 @@ class Character : GameObject
     int                     physicsType;
     PhysicsMover@           mover;
     RigidBody@              collisionBody;
-
-    Vector3                 targetPos;
-    bool                    targetPosSet = false;
 
     // ==============================================
     //   DYNAMIC VALUES For Motion
@@ -980,6 +976,7 @@ class Character : GameObject
         body.mass = 1.0f;
         body.angularFactor = Vector3::ZERO;
         body.collisionLayer = COLLISION_LAYER_CHARACTER;
+        body.gravityOverride = Vector3(0, -20, 0);
         if (collision_type == 0)
         {
             body.kinematic = true;
@@ -1093,8 +1090,7 @@ class Character : GameObject
         }
         else
         {
-            targetPos = position;
-            targetPosSet = true;
+            SetVelocity((position - sceneNode.worldPosition) / dt);
         }
     }
 
@@ -1460,8 +1456,12 @@ class Character : GameObject
         physicsType = type;
         if (collisionBody !is null)
         {
-            collisionBody.enabled = (physicsType == 1);
-            collisionBody.position = sceneNode.worldPosition;
+            collisionBody.kinematic = (physicsType == 0);
+            collisionBody.trigger = (physicsType == 0);
+            if (physicsType == 0)
+                collisionBody.collisionMask = COLLISION_LAYER_CHARACTER | COLLISION_LAYER_RAGDOLL | COLLISION_LAYER_PROP;
+            else
+                collisionBody.collisionMask = COLLISION_LAYER_PROP | COLLISION_LAYER_LANDSCAPE;
         }
     }
 
@@ -1506,12 +1506,6 @@ class Character : GameObject
     {
         // Print("Update dt=" + dt);
         GameObject::Update(dt);
-
-        if (targetPosSet)
-        {
-            targetPosSet = false;
-            SetVelocity((targetPos - sceneNode.worldPosition) / dt);
-        }
     }
 
     void FixedUpdate(float dt)
