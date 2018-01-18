@@ -393,9 +393,16 @@ class Motion
             if (object.motion_translateEnabled)
             {
                 Vector3 tLocal(motionOut.x, motionOut.y, motionOut.z);
-                // tLocal = tLocal * ctrl.GetWeight(animationName);
-                Vector3 tWorld = _node.worldRotation * tLocal + _node.worldPosition + object.motion_velocity * dt;
-                object.MoveTo(tWorld, dt);
+                Vector3 tWorld = _node.worldRotation * tLocal;
+
+                 if (object.physicsType == 0)
+                {
+                    object.MoveTo(tWorld + _node.worldPosition + object.motion_velocity * dt, dt);
+                }
+                else
+                {
+                    object.SetVelocity(tWorld / dt + object.motion_velocity);
+                }
             }
             else
             {
