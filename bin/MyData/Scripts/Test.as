@@ -75,7 +75,7 @@ bool counter_choose_closest_one = false;
 int freeze_ai = 0;
 int game_state = 0;
 int debug_mode = 0;
-int collision_type = 1;
+int collision_type = 0;
 int PROCESS_TIME_PER_FRAME = 60; // ms
 bool camera_collison = false;
 bool camera_shake = false;
@@ -278,6 +278,11 @@ EnemyManager@ GetEnemyMgr()
     return cast<EnemyManager>(scene_.GetScriptObject("EnemyManager"));
 }
 
+DebugRenderer@ GetDebugRenderer()
+{
+    return script.defaultScene.debugRenderer;
+}
+
 void SubscribeToEvents()
 {
     SubscribeToEvent("Update", "HandleUpdate");
@@ -371,60 +376,69 @@ void CameraShake()
     SendEvent("CameraEvent", data);
 }
 
-PhysicsRaycastResult PhysicsRayCast(const Vector3&in start, const Vector3&in dir, float range, uint mask)
+PhysicsRaycastResult PhysicsRayCast(const Vector3&in start, const Vector3&in dir, float range, uint mask, bool debug = true)
 {
     Scene@ scene_ = script.defaultScene;
     PhysicsWorld@ world = scene_.GetComponent("PhysicsWorld");
     PhysicsRaycastResult result = world.RaycastSingle(Ray(start, dir), range, mask);
-    /*if (result.body !is null)
+
+    if (debug)
     {
-        if (drawDebug > 0)
+        if (result.body !is null)
         {
-            gDebugMgr.AddCross(result.position, 0.25f, YELLOW);
-            gDebugMgr.AddLine(start, result.position, Color(0.1f, 0.25f, 0.7f));
+            if (drawDebug > 0)
+            {
+                gDebugMgr.AddCross(result.position, 0.25f, YELLOW);
+                gDebugMgr.AddLine(start, result.position, Color(0.1f, 0.25f, 0.7f));
+            }
+        }
+        else
+        {
+            if (drawDebug > 0)
+            {
+                gDebugMgr.AddLine(start, dir * range + start, RED);
+            }
         }
     }
-    else
-    {
-        if (drawDebug > 0)
-        {
-            gDebugMgr.AddLine(start, dir * range + start, RED);
-        }
-    }*/
+    
     return result;
 }
 
-PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in dir, float radius, float range, uint mask, float t = 1.0f)
+PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in dir, float radius, float range, uint mask, bool debug = true)
 {
     Scene@ scene_ = script.defaultScene;
     PhysicsWorld@ world = scene_.GetComponent("PhysicsWorld");
     PhysicsRaycastResult result = world.SphereCast(Ray(start, dir), radius, range, mask);
 
-    /*if (result.body !is null)
+    if (debug)
     {
-        if (drawDebug > 0)
+        if (result.body !is null)
         {
-            gDebugMgr.AddSphere(result.position, radius, YELLOW, t);
-            gDebugMgr.AddLine(start, result.position, BLUE, t);
-            gDebugMgr.AddLine(start, dir * range + start, WHITE, t);
+            if (drawDebug > 0)
+            {
+                gDebugMgr.AddSphere(result.position, radius, YELLOW);
+                gDebugMgr.AddLine(start, result.position, BLUE);
+                gDebugMgr.AddLine(start, dir * range + start, WHITE);
+            }
+        }
+        else
+        {
+            if (drawDebug > 0)
+            {
+                gDebugMgr.AddLine(start, dir * range + start, RED);
+            }
         }
     }
-    else
-    {
-        if (drawDebug > 0)
-        {
-            gDebugMgr.AddLine(start, dir * range + start, RED, t);
-        }
-    }*/
+    
     return result;
 }
 
-PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in end, float radius, uint mask)
+PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in end, float radius, uint mask, bool debug = true)
 {
     Vector3 dir = end - start;
     float range = dir.length;
     dir.Normalize();
-    return PhysicsSphereCast(start, dir, radius, range, mask);
+    return PhysicsSphereCast(start, dir, radius, range, mask, debug);
 }
 
 /************************************************

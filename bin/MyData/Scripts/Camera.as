@@ -111,7 +111,7 @@ class CameraController
         float rayDistance = dir.length - 0.5f;
         dir.Normalize();
         const float CAMERA_SPHERE_RADIUS = 0.25f;
-        PhysicsRaycastResult result = PhysicsSphereCast(lookat, dir, CAMERA_SPHERE_RADIUS, rayDistance, COLLISION_LAYER_LANDSCAPE);
+        PhysicsRaycastResult result = PhysicsSphereCast(lookat, dir, CAMERA_SPHERE_RADIUS, rayDistance, COLLISION_LAYER_LANDSCAPE, false);
         if (result.body !is null)
         {
             outPos = result.position + result.normal * CAMERA_SPHERE_RADIUS;

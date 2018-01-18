@@ -83,22 +83,9 @@ class PhysicsMover
 
     void MoveTo(const Vector3&in pos, float dt)
     {
-        /*
-        Vector3 oldPos = sceneNode.worldPosition;
-        oldPos.y += CHARACTER_HEIGHT / 2.0f;
-        Vector3 newPos = pos;
-        newPos.y += CHARACTER_HEIGHT / 2.0f;
-        PhysicsRaycastResult result = PhysicsSphereCast(oldPos, newPos, 0.25f, COLLISION_LAYER_LANDSCAPE, 0.00001f);
-        Print("vel=" + ((pos - sceneNode.worldPosition) / dt).ToString());
-        if (result.body is null)
-            sceneNode.worldPosition = pos;
-        else
-        {
-            newPos = result.normal * COLLISION_RADIUS + result.position;
-            newPos.y = 0.0f;
-            sceneNode.worldPosition = newPos;
-        }
-        */
-        sceneNode.worldPosition = FilterPosition(pos);
+        // sceneNode.worldPosition = FilterPosition(pos);
+        DynamicNavigationMesh@ navMesh = sceneNode.scene.GetComponent("DynamicNavigationMesh");
+        Vector3 v = navMesh.MoveAlongSurface(sceneNode.worldPosition, pos);
+        sceneNode.worldPosition = v;
     }
 };

@@ -113,13 +113,13 @@ void DrawDebug(float dt)
     {
         // gCameraMgr.DebugDraw(debug);
 
-        /*DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
+        DynamicNavigationMesh@ dnm = scene_.GetComponent("DynamicNavigationMesh");
         if (dnm !is null)
             dnm.DrawDebugGeometry(true);
 
         CrowdManager@ cm = scene_.GetComponent("CrowdManager");
         if (cm !is null)
-            cm.DrawDebugGeometry(true);*/
+            cm.DrawDebugGeometry(true);
 
         PhysicsWorld@ pw = scene_.physicsWorld;
         if (pw !is null)
