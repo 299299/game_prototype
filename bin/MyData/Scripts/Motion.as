@@ -348,7 +348,7 @@ class Motion
         Node@ _node = object.GetNode();
         Vector4 motionOut = GetKey(t);
         Vector3 motionPos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
-        
+
         // gDebugMgr.AddCross(motionPos, 5.0f, BLACK, 5.0f);
 
         Vector3 offsetPos = Quaternion(0, targetRotation + motionOut.w, 0) * dockAlignOffset;
@@ -383,7 +383,7 @@ class Motion
         if (absSpeed < 0.001)
             return 0;
 
-        dt *= absSpeed;
+        // dt *= absSpeed;
         if (looped || speed < 0)
         {
             Vector4 motionOut = Vector4(0, 0, 0, 0);
@@ -525,17 +525,30 @@ class AttackMotion
     int                     type;
     String                  boneName;
 
-    AttackMotion(const String&in name, int impactFrame, int _type, const String&in bName)
+    AttackMotion(const String&in name, int impactFrame = 0, int _type = 0, const String&in bName = "")
     {
         @motion = gMotionMgr.FindMotion(name);
         if (motion is null)
             return;
-        impactTime = impactFrame * SEC_PER_FRAME;
-        Vector4 k = motion.motionKeys[impactFrame];
-        impactPosition = Vector3(k.x, 0, k.z);
-        impactDist = impactPosition.length;
+
         type = _type;
-        boneName = bName;
+        if (!motion.dockAlignBoneName.empty)
+        {
+            impactTime = motion.dockAlignTime;
+            Vector4 k = motion.motionKeys[FRAME_PER_SEC * impactTime];
+            impactPosition = Vector3(k.x, 0, k.z);
+            impactDist = impactPosition.length;
+            boneName = motion.dockAlignBoneName;
+        }
+        else
+        {
+            impactTime = impactFrame * SEC_PER_FRAME;
+            Vector4 k = motion.motionKeys[impactFrame];
+            impactPosition = Vector3(k.x, 0, k.z);
+            impactDist = impactPosition.length;
+            boneName = bName;
+        }
+
     }
 
     int opCmp(const AttackMotion&in obj)

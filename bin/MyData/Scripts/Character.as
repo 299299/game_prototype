@@ -115,6 +115,11 @@ class CharacterState : State
         {
             combatReady = true;
         }
+        else if (name == TIME_SCALE)
+        {
+            float scale = eventData[VALUE].GetFloat();
+            ownner.SetTimeScale(scale);
+        }
     }
 
     // collision events
@@ -909,7 +914,7 @@ class Character : GameObject
     int                     attackDamage = 10;
 
     String                  lastAnimation;
-    
+
 
     // ==============================================
     // PHYSICS

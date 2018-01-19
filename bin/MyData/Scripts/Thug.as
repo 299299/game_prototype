@@ -602,13 +602,7 @@ class ThugAttackState : CharacterState
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
     {
         StringHash name = eventData[NAME].GetStringHash();
-        if (name == TIME_SCALE)
-        {
-            float scale = eventData[VALUE].GetFloat();
-            ownner.SetTimeScale(scale);
-            return;
-        }
-        else if (name == COUNTER_CHECK)
+        if (name == COUNTER_CHECK)
         {
             int value = eventData[VALUE].GetInt();
             ShowAttackIndicator(value == 1);
@@ -764,6 +758,7 @@ class ThugGetUpState : CharacterGetUpState
         String prefix = "TG_Getup/";
         AddMotion(prefix + "GetUp_Back");
         AddMotion(prefix + "GetUp_Front");
+        flags = FLAGS_ATTACK | FLAGS_HIT_RAGDOLL;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)
@@ -1160,7 +1155,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithCharacters()
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1)
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1 || test_mode == 3)
             return false;
         int dir = GetSperateDirection();
         if (dir < 0)
@@ -1249,7 +1244,7 @@ class Thug : Enemy
 
     void KeepDistanceWithCharacter(Character@ c)
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1)
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1 || test_mode == 3)
             return;
         int index = RadialSelectAnimation(c.GetNode().worldPosition, 4);
         //if (RandomInt(2) == 1)

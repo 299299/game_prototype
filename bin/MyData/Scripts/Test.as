@@ -80,7 +80,7 @@ int collision_type = 0;
 int PROCESS_TIME_PER_FRAME = 60; // ms
 bool camera_collison = false;
 bool camera_shake = false;
-int test_mode = 1;
+int test_mode = 3;
 
 const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
 const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);

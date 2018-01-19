@@ -44,6 +44,9 @@ class PlayerAttackState : CharacterState
         super(c);
         SetName("AttackState");
         flags = FLAGS_ATTACK;
+
+        if (test_mode == 3)
+            ownner.SetTimeScale(1.5f);
     }
 
     void DumpAttacks(Array<AttackMotion@>@ attacks)
@@ -102,7 +105,7 @@ class PlayerAttackState : CharacterState
         if (state == ATTACK_STATE_ALIGN)
         {
             ownner.motion_deltaRotation += yawPerSec * dt;
-            
+
             /*
             if (t >= alignTime)
             {
@@ -131,7 +134,7 @@ class PlayerAttackState : CharacterState
 
         if (state == ATTACK_STATE_AFTER_IMPACT)
             ownner.CheckTargetDistance(ownner.target);
-        
+
         int ret = motion.Move(ownner, dt);
         if (ret == 1) {
             OnMotionFinished();
@@ -183,7 +186,7 @@ class PlayerAttackState : CharacterState
         diff.y = 0;
         // float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST + 0.25f);
         float toEnenmyDistance = Max(0.0f, diff.length - 1.0f);
-        
+
         /*float angleDif = ownner.target.ComputeAngleDiff(ownner.GetNode());
         if (Abs(angleDif) > 90)
         {
@@ -486,17 +489,19 @@ class PlayerAttackState : CharacterState
                 return;
         }
 
-        ownner.SpawnParticleEffect(position, "Particle/SnowExplosionBig.xml", 3.0f, 1.0f);
+        ownner.SpawnParticleEffect(position, "Particle/SnowExplosionBig.xml", 15.0f, 1.0f);
         // ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 1.0f, 0.6f);
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
         ownner.OnAttackSuccess(e);
 
-        if (test_mode == 1)
+        if (test_mode == 1 || test_mode == 3)
         {
             ownner.GetScene().updateEnabled = false;
-            ownner.GetScene().timeScale = 0.1f;
+
+            if (test_mode == 1)
+                ownner.GetScene().timeScale = 0.1f;
         }
     }
 

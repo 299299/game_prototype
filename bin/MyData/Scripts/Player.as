@@ -15,8 +15,8 @@ const int   HIT_WAIT_FRAMES = 3;
 const float LAST_KILL_SPEED = 0.35f;
 const float COUNTER_ALIGN_MAX_DIST = 1.0f;
 const float GOOD_COUNTER_DIST = 4.0f;
-const float ATTACK_DIST_PICK_LONG_RANGE = 2.5f;
-const float ATTACK_DIST_PICK_SHORT_RANGE = 0.5f;
+const float ATTACK_DIST_PICK_LONG_RANGE = 3.0f;
+const float ATTACK_DIST_PICK_SHORT_RANGE = 1.0f;
 const float MAX_ATTACK_CHECK_DIST = 3.0f;
 float MAX_ATTACK_DIST = 15.0f;
 
@@ -152,7 +152,8 @@ class Player : Character
 
         if (combo < speed_up_combo)
         {
-            SetTimeScale(1.0f);
+            if (test_mode != 3)
+                SetTimeScale(1.0f);
         }
         else
         {
@@ -161,7 +162,8 @@ class Player : Character
             float a = float(c)/float(max_comb);
             const float max_time_scale = 1.35f;
             float time_scale = Lerp(1.0f, max_time_scale, a);
-            SetTimeScale(time_scale);
+            if (test_mode != 3)
+                SetTimeScale(time_scale);
             const float max_fov = 75;
             fov = Lerp(BASE_FOV, max_fov, a);
         }
@@ -368,7 +370,7 @@ class Player : Character
     {
         LogPrint("Do--Attack--->");
         Enemy@ e = null;
-        if (test_mode == 1)
+        if (test_mode == 1 || test_mode == 3)
         {
             EnemyManager@ em = GetEnemyMgr();
             @e = em.enemyList[RandomInt(em.enemyList.length)];

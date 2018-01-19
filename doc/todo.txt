@@ -1,8 +1,8 @@
 3. audio
 5. camera issue
-6. camera shake
 7. beat down -- fixed
 
+# camera shake
 # Attack Animation Debug Function
 # Attack Animation Update
 # Double Counter
@@ -22,10 +22,16 @@
 # Player Attack Impact Check
 # ? --> Camera Collision Better way
 # Counter Rotation issue
+# Thug Hit rotation fix
+# Moving collison detection （More Complex Environment)
+# Refactor AttackMotion with Motion Dock Alignment
+# Getup State attackable
 
-
- Thug Hit rotation fix
  Ragdoll out of world kill
  Player Attack Particle (Bigger ?)
- Moving collison detection （More Complex Environment)
 
+
+ Ragdoll Hit Direction Based on dock alignment bone position
+ Motion Player TimeScale test
+ New Character
+ Clean up audio ogg file

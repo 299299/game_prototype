@@ -122,11 +122,11 @@ class MotionRig
         AnimatedModel@ am2 = renderNode.CreateComponent("AnimatedModel");
         am2.model = am.model;
 
-        LogPrint(rigName + 
+        LogPrint(rigName +
             " pelvisRightAxis=" + pelvisRightAxis.ToString() +
             " pelvisOrign=" + pelvisOrign.ToString() +
             " numBones=" + skeleton.numBones +
-            " initialScale=" + originScale.ToString() + 
+            " initialScale=" + originScale.ToString() +
             " left_foot_to_ground_height=" + left_foot_to_ground_height +
             " right_foot_to_ground_height=" + right_foot_to_ground_height);
     }
@@ -463,10 +463,10 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
             lastRot = kf.rotation;
             outKeys[i].w = rotateFromStart;
             // outKeys[i].w = AngleDiff(outKeys[i].w);
-            if (outKeys[i].w > 360)
+            /*if (outKeys[i].w > 360)
                 outKeys[i].w -= 360;
             if (outKeys[i].w < -360)
-                outKeys[i].w += 360;
+                outKeys[i].w += 360;*/
             rotateFromStart += q.eulerAngles.y;
 
             if (dump)
@@ -595,7 +595,7 @@ void FixAnimation(Animation@ anim)
     if (anim is null)
         return;
     // return;
-    
+
     // Print("Fixing animation for " + anim.name);
     bool fixed = false;
     AnimationTrack@ scaleTrack = anim.tracks[ScaleBoneName];
