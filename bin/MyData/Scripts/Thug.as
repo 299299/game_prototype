@@ -712,24 +712,25 @@ class ThugHitState : MultiMotionState
     void Enter(State@ lastState)
     {
         float diff = ownner.ComputeAngleDiff(ownner.target.GetNode());
-        float targetAngle = ownner.GetTargetAngle();
-        // float targetDiff = 0;
+        //if (diff < 0)
+        //    diff += 360;
+
         int index = 0;
-        if (diff < 0)
+        if (Abs(diff) <= 90)
         {
-            // targetDiff = 0;
-            index = 1;
+            index = (diff > 0) ? 0 : 1;
         }
-        if (Abs(diff) > 135)
+        else
         {
-            // targetDiff = diff < 0 ? -180 : 180;
             index = 2 + RandomInt(2);
-            targetAngle = AngleDiff(targetAngle + 180);
         }
+
+        float targetAngle = ownner.GetTargetAngle();
+        if (index > 1)
+            targetAngle = AngleDiff(targetAngle + 180);
         ownner.sceneNode.vars[ANIMATION_INDEX] = index;
 
-        LogPrint(ownner.GetName() + " Hit motion=" + motions[index].name);
-        // LogPrint(ownner.GetName() + " HitState angle_diff=" + diff + " target_angle_diff=" + targetDiff);
+        LogPrint(ownner.GetName() + " HitState angle_diff=" + diff + " Hit motion=" + motions[index].name);
 
         // turnSpeed = AngleDiff(targetDiff - diff) / turnAlignTime;
         // ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);

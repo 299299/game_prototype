@@ -182,6 +182,14 @@ class PlayerAttackState : CharacterState
         diff.y = 0;
         // float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST + 0.25f);
         float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_RADIUS);
+        float angleDif = ownner.target.ComputeAngleDiff(ownner.GetNode());
+        if (Abs(angleDif) > 90)
+        {
+            // means thug is back face to us
+            toEnenmyDistance = Max(0.0f, diff.length - COLLISION_RADIUS + 0.6f);
+            LogPrint("Attack thug is back face player !!");
+        }
+
         int bestIndex = 0;
         diff.Normalize();
         int index_start = -1;
@@ -484,8 +492,10 @@ class PlayerAttackState : CharacterState
         ownner.OnAttackSuccess(e);
 
         if (test_mode == 1)
+        {
             ownner.GetScene().updateEnabled = false;
-        //ownner.GetScene().timeScale = 0.1f;
+            ownner.GetScene().timeScale = 0.1f;
+        }
     }
 
     void PostInit(float closeDist = 2.5f)
