@@ -186,7 +186,7 @@ class PlayerAttackState : CharacterState
         if (Abs(angleDif) > 90)
         {
             // means thug is back face to us
-            toEnenmyDistance = Max(0.0f, diff.length - COLLISION_RADIUS + 0.6f);
+            toEnenmyDistance = Max(0.0f, diff.length - COLLISION_RADIUS + 0.5f);
             LogPrint("Attack thug is back face player !!");
         }
 

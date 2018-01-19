@@ -462,7 +462,11 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
             Quaternion q = GetRotationInXZPlane(rig, lastRot, kf.rotation);
             lastRot = kf.rotation;
             outKeys[i].w = rotateFromStart;
-            outKeys[i].w = AngleDiff(outKeys[i].w);
+            // outKeys[i].w = AngleDiff(outKeys[i].w);
+            if (outKeys[i].w > 360)
+                outKeys[i].w -= 360;
+            if (outKeys[i].w < -360)
+                outKeys[i].w += 360;
             rotateFromStart += q.eulerAngles.y;
 
             if (dump)
