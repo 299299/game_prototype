@@ -1424,7 +1424,7 @@ class Character : GameObject
         float rayDistance = l - offset;
         if (rayDistance < 0)
             return null;
-        PhysicsRaycastResult result = PhysicsSphereCast(my_mid_pos, dir_normalized, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER);
+        PhysicsRaycastResult result = PhysicsSphereCast(my_mid_pos, dir_normalized, SPHERE_CAST_RADIUS, rayDistance, COLLISION_LAYER_CHARACTER, false);
         if (result.body is null)
             return null;
         Node@ node = result.body.node;

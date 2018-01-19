@@ -113,9 +113,7 @@ class PlayerAttackState : CharacterState
         {
             if (t > currentAttack.impactTime)
             {
-                ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
                 AttackImpact();
-                // ownner.GetScene().updateEnabled = false;
             }
         }
 
@@ -484,6 +482,8 @@ class PlayerAttackState : CharacterState
         if (test_mode == 1)
             ownner.GetScene().updateEnabled = false;
         //ownner.GetScene().timeScale = 0.1f;
+
+        ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
     }
 
     void PostInit(float closeDist = 2.5f)
@@ -539,9 +539,10 @@ class PlayerAttackState : CharacterState
         debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, GREEN, false);
         AddDebugMark(debug, targetPosition, TARGET_COLOR);
         AddDebugMark(debug, motionPosition,  SOURCE_COLOR);
-        Vector3 v = ownner.GetNode().worldPosition;
-        DebugDrawDirection(debug, v, motionRotation, SOURCE_COLOR, 5.0f);
-        DebugDrawDirection(debug, v, targetRotation, TARGET_COLOR, 5.0f);
+        //Vector3 v = ownner.GetNode().worldPosition;
+        //DebugDrawDirection(debug, v, motionRotation, SOURCE_COLOR, 5.0f);
+        //DebugDrawDirection(debug, v, targetRotation, TARGET_COLOR, 5.0f);
+        currentAttack.motion.DebugDraw(debug, ownner);
     }
 };
 
