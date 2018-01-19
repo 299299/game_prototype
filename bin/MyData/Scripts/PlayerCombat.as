@@ -129,8 +129,9 @@ class PlayerAttackState : CharacterState
                 ownner.SetSceneTimeScale(1.0f);
         }
 
-        // ownner.CheckTargetDistance(ownner.target);
-
+        if (state == ATTACK_STATE_AFTER_IMPACT)
+            ownner.CheckTargetDistance(ownner.target);
+        
         int ret = motion.Move(ownner, dt);
         if (ret == 1) {
             OnMotionFinished();
@@ -177,18 +178,19 @@ class PlayerAttackState : CharacterState
     void PickBestMotion(Array<AttackMotion@>@ attacks, int dir)
     {
         Vector3 myPos = ownner.GetNode().worldPosition;
-        Vector3 enemyPos = ownner.target.GetNode().worldPosition;
+        Vector3 enemyPos = ownner.target.GetNode().GetChild(PELVIS, true).worldPosition;
         Vector3 diff = enemyPos - myPos;
         diff.y = 0;
         // float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_SAFE_DIST + 0.25f);
-        float toEnenmyDistance = Max(0.0f, diff.length - COLLISION_RADIUS);
-        float angleDif = ownner.target.ComputeAngleDiff(ownner.GetNode());
+        float toEnenmyDistance = Max(0.0f, diff.length - 1.0f);
+        
+        /*float angleDif = ownner.target.ComputeAngleDiff(ownner.GetNode());
         if (Abs(angleDif) > 90)
         {
             // means thug is back face to us
             toEnenmyDistance = Max(0.0f, diff.length - COLLISION_RADIUS + 0.5f);
             LogPrint("Attack thug is back face player !!");
-        }
+        }*/
 
         int bestIndex = 0;
         diff.Normalize();
