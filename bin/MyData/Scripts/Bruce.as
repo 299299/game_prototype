@@ -327,7 +327,7 @@ void CreateBruceCombatMotions()
     // FORWARD
     //========================================================================
     int attackMotionFlags = kMotion_XZR | kMotion_Ext_DoNotRotateAnimation;
-    int fwdAttackMotionFlags = kMotion_XZ | kMotion_Ext_DoNotRotateAnimation;
+    int fwdAttackMotionFlags = kMotion_XZR | kMotion_Ext_DoNotRotateAnimation;
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_02", fwdAttackMotionFlags).SetDockAlign(L_HAND, 14);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_03", fwdAttackMotionFlags).SetDockAlign(L_FOOT, 12);
     Global_CreateMotion("BM_Attack/Attack_Close_Forward_04", fwdAttackMotionFlags).SetDockAlign(R_FOOT, 20);

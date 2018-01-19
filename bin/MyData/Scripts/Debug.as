@@ -134,14 +134,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
 
     if (key == KEY_ESCAPE || key == KEY_Q)
          engine.Exit();
-    else if (key == KEY_QUOTE)
+    else if (key == KEY_BACKQUOTE)
     {
         test_mode ++;
         test_mode = test_mode % 2;
-    }
-    else if (key == KEY_0)
-    {
-        TestAnimations_Group_2("Counter_Arm_Front_09");
     }
     else if (key == KEY_1)
     {
@@ -186,6 +182,10 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == KEY_9)
     {
         CameraShake();
+    }
+    else if (key == KEY_0)
+    {
+        TestAnimations_Group_2("Counter_Arm_Front_09");
     }
     else if (key == KEY_MINUS)
     {
@@ -308,6 +308,11 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
         CreateDrag(float(pos.x), float(pos.y));
         SubscribeToEvent("MouseMove", "HandleMouseMove");
         SubscribeToEvent("MouseButtonUp", "HandleMouseButtonUp");
+    }
+    else if(button == MOUSEB_LEFT)
+    {
+        if (test_mode == 1)
+            script.defaultScene.updateEnabled = true;
     }
 }
 

@@ -389,7 +389,8 @@ class PlayerAttackState : CharacterState
             slowMotion = false;
         }
 
-        // weakAttack = true;
+        if (test_mode == 2)
+            weakAttack = true;
 
         ownner.SetNodeEnabled("TailNode", true);
     }

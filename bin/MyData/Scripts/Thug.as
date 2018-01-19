@@ -727,10 +727,18 @@ class ThugHitState : MultiMotionState
             targetAngle = AngleDiff(targetAngle + 180);
         }
         ownner.sceneNode.vars[ANIMATION_INDEX] = index;
+
+        LogPrint(ownner.GetName() + " Hit motion=" + motions[index].name);
         // LogPrint(ownner.GetName() + " HitState angle_diff=" + diff + " target_angle_diff=" + targetDiff);
 
         // turnSpeed = AngleDiff(targetDiff - diff) / turnAlignTime;
-        ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
+        // ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
+
+        if (test_mode == 2)
+        {
+            ownner.GetScene().updateEnabled = false;
+            ownner.GetScene().timeScale = 0.1f;
+        }
 
         MultiMotionState::Enter(lastState);
     }
