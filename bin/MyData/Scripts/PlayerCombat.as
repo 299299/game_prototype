@@ -129,7 +129,7 @@ class PlayerAttackState : CharacterState
                 ownner.SetSceneTimeScale(1.0f);
         }
 
-        ownner.CheckTargetDistance(ownner.target);
+        // ownner.CheckTargetDistance(ownner.target);
 
         int ret = motion.Move(ownner, dt);
         if (ret == 1) {
