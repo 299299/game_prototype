@@ -26,12 +26,10 @@
 # Moving collison detection （More Complex Environment)
 # Refactor AttackMotion with Motion Dock Alignment
 # Getup State attackable
+# Motion Player TimeScale test
 
  Ragdoll out of world kill
- Player Attack Particle (Bigger ?)
-
-
+ Player Attack Particle (Bigger and Smoke)
  Ragdoll Hit Direction Based on dock alignment bone position
- Motion Player TimeScale test
  New Character
  Clean up audio ogg file
