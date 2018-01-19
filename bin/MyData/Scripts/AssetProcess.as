@@ -462,6 +462,7 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
             Quaternion q = GetRotationInXZPlane(rig, lastRot, kf.rotation);
             lastRot = kf.rotation;
             outKeys[i].w = rotateFromStart;
+            outKeys[i].w = AngleDiff(outKeys[i].w);
             rotateFromStart += q.eulerAngles.y;
 
             if (dump)
@@ -482,7 +483,7 @@ void ProcessAnimation(MotionRig@ rig, const String&in animationFile, int motionF
         (motionFlag & kMotion_Y) != 0 ||
         (motionFlag & kMotion_Z) != 0)
     {
-        Vector3 firstKeyPos = translateTrack.keyFrames[0].position;
+        Vector3 firstKeyPos = Vector3::ZERO; // translateTrack.keyFrames[0].position;
         for (uint i=0; i<translateTrack.numKeyFrames; ++i)
         {
             AnimationKeyFrame kf(translateTrack.keyFrames[i]);

@@ -216,7 +216,7 @@ class Motion
         if (!dockAlignBoneName.empty)
         {
             Vector3 v = GetBoneWorldPosition(curRig, animationName, dockAlignBoneName, dockAlignTime);
-            LogPrint(this.name + " bone " + dockAlignBoneName + " world-pos=" + v.ToString() + " at time:" + dockAlignTime);
+            // LogPrint(this.name + " bone " + dockAlignBoneName + " world-pos=" + v.ToString() + " at time:" + dockAlignTime);
             dockAlignOffset += v;
         }
 
@@ -348,7 +348,13 @@ class Motion
         Node@ _node = object.GetNode();
         Vector4 motionOut = GetKey(t);
         Vector3 motionPos = Quaternion(0, targetRotation, 0) * Vector3(motionOut.x, motionOut.y, motionOut.z) + object.motion_startPosition + object.motion_deltaPosition;
+        
+        // gDebugMgr.AddCross(motionPos, 5.0f, BLACK, 5.0f);
+
         Vector3 offsetPos = Quaternion(0, targetRotation + motionOut.w, 0) * dockAlignOffset;
+
+        // Print("GetDockAlignPositionAtTime t=" + t + " motion=" + motionOut.ToString());
+
         return motionPos + offsetPos;
     }
 

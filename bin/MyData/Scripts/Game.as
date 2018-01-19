@@ -520,7 +520,7 @@ class TestGameState : GameState
         {
             Node@ _node = scene_.children[i];
             String name = _node.name;
-            LogPrint("_node.name=" + name);
+            // LogPrint("_node.name=" + name);
             if (name.StartsWith("thug"))
             {
                 nodes_to_remove.Push(_node.id);

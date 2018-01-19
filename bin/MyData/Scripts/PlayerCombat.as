@@ -102,20 +102,23 @@ class PlayerAttackState : CharacterState
         if (state == ATTACK_STATE_ALIGN)
         {
             ownner.motion_deltaRotation += yawPerSec * dt;
+            
+            /*
             if (t >= alignTime)
             {
                 ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
                 ownner.target.RemoveFlag(FLAGS_NO_MOVE);
                 ownner.motion_velocity = Vector3::ZERO;
             }
+            */
         }
-        else if (state == ATTACK_STATE_BEFORE_IMPACT)
+        /*else if (state == ATTACK_STATE_BEFORE_IMPACT)
         {
-            if (t > currentAttack.impactTime)
+            if (t >= currentAttack.impactTime)
             {
                 AttackImpact();
             }
-        }
+        }*/
 
         if (slowMotion)
         {
@@ -150,8 +153,7 @@ class PlayerAttackState : CharacterState
 
     void OnDockAlignTimeOut()
     {
-        //if (drawDebug > 0)
-        //    ownner.GetScene().updateEnabled = false;
+        AttackImpact();
     }
 
     void CheckInput(float t)
@@ -432,10 +434,14 @@ class PlayerAttackState : CharacterState
 
     void AttackImpact()
     {
-        Character@ e = ownner.target;
+        ownner.motion_velocity = Vector3::ZERO;
+        ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
 
+        Character@ e = ownner.target;
         if (e is null)
             return;
+
+        e.RemoveFlag(FLAGS_NO_MOVE);
 
         Motion@ m = currentAttack.motion;
         Node@ _node = ownner.GetNode();
@@ -463,14 +469,12 @@ class PlayerAttackState : CharacterState
         else
             damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
 
-
         if (test_mode != 1)
         {
             bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
             if (!b)
                 return;
         }
-        
 
         ownner.SpawnParticleEffect(position, "Particle/SnowExplosionBig.xml", 3.0f, 1.0f);
         // ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 1.0f, 0.6f);
@@ -482,8 +486,6 @@ class PlayerAttackState : CharacterState
         if (test_mode == 1)
             ownner.GetScene().updateEnabled = false;
         //ownner.GetScene().timeScale = 0.1f;
-
-        ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
     }
 
     void PostInit(float closeDist = 2.5f)
@@ -537,8 +539,8 @@ class PlayerAttackState : CharacterState
             return;
 
         debug.AddLine(ownner.GetNode().worldPosition, ownner.target.GetNode().worldPosition, GREEN, false);
-        AddDebugMark(debug, targetPosition, TARGET_COLOR);
-        AddDebugMark(debug, motionPosition,  SOURCE_COLOR);
+        AddDebugMark(debug, targetPosition, TARGET_COLOR, 0.25f);
+        AddDebugMark(debug, motionPosition,  SOURCE_COLOR, 0.25f);
         //Vector3 v = ownner.GetNode().worldPosition;
         //DebugDrawDirection(debug, v, motionRotation, SOURCE_COLOR, 5.0f);
         //DebugDrawDirection(debug, v, targetRotation, TARGET_COLOR, 5.0f);

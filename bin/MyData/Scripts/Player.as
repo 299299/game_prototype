@@ -222,7 +222,7 @@ class Player : Character
         float targetAngle = GetTargetAngle();
         gIntCache.Clear();
 
-        LogPrint(gInput.GetDebugText());
+        // LogPrint(gInput.GetDebugText());
 
         Enemy@ attackEnemy = null;
         for (uint i=0; i<em.enemyList.length; ++i)
