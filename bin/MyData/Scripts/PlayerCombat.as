@@ -44,9 +44,6 @@ class PlayerAttackState : CharacterState
         super(c);
         SetName("AttackState");
         flags = FLAGS_ATTACK;
-
-        if (test_mode == 3)
-            ownner.SetTimeScale(1.5f);
     }
 
     void DumpAttacks(Array<AttackMotion@>@ attacks)

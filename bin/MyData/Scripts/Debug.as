@@ -138,6 +138,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         test_mode ++;
         test_mode = test_mode % 2;
+        OnTestModeChanged();
     }
     else if (key == KEY_1)
     {
@@ -1062,4 +1063,10 @@ void HandleButtonPressed(StringHash eventType, VariantMap& eventData)
         for (uint i = 0; i < elements.length; ++i)
             elements[i].visible = (debug_mode == 1);
     }
+}
+
+void OnTestModeChanged()
+{
+    Player@ p = GetPlayer();
+    p.SetTimeScale(test_mode == 3 ? 1.5f : 1.0f);
 }

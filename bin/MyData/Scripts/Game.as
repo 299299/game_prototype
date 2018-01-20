@@ -583,6 +583,8 @@ class TestGameState : GameState
             f.offset = Vector3(0, 10, 0);
         }
 
+        OnTestModeChanged();
+
         //DumpSkeletonNames(playerNode);
         LogPrint("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + (WORLD_HALF_SIZE * 2).ToString());
     }
