@@ -448,9 +448,24 @@ class PlayerAttackState : CharacterState
         dir = vPos - lastDockBonePosition;
         dir.Normalize();
 
+        Vector3 pelvisPos = _node.GetChild(PELVIS, true).worldPosition;
+
+        Vector3 dir2 = vPos - pelvisPos;
+        dir2.Normalize();
+
+        float hAngle = Atan2(dir.x, dir.z);
+        float tAngle = Atan2(dir2.x, dir2.z);
+
         if (debug_draw_flag > 0)
         {
-            gDebugMgr.AddDirection(vPos, Atan2(dir.x, dir.z), 5.0f, RED);
+            gDebugMgr.AddDirection(vPos, hAngle, 5.0f, RED);
+            gDebugMgr.AddDirection(vPos, tAngle, 5.0f, BLACK);
+        }
+
+        if (Abs(tAngle - hAngle) > 120)
+        {
+            LogPrint("Angle Diff too much, chooose pelvis angle.");
+            dir = dir2;
         }
 
         int damage = ownner.attackDamage;
