@@ -127,8 +127,8 @@ class PlayerAttackState : CharacterState
         if (currentAttack !is null)
         {
             Vector3 curPos = attackNode.worldPosition;
-            if (debug_draw_flag > 0)
-                gDebugMgr.AddLine(lastDockBonePosition, curPos, GREEN);
+            //if (debug_draw_flag > 0)
+            //    gDebugMgr.AddLine(lastDockBonePosition, curPos, GREEN);
             lastDockBonePosition = curPos;
         }
 
@@ -459,8 +459,14 @@ class PlayerAttackState : CharacterState
         if (n !is null)
             position = n.worldPosition;
 
-        dir = _node.GetChild(currentAttack.dockAlignBoneName, true).worldPosition - lastDockBonePosition;
+        Vector3 vPos = _node.GetChild(currentAttack.dockAlignBoneName, true).worldPosition;
+        dir = vPos - lastDockBonePosition;
         dir.Normalize();
+
+        if (debug_draw_flag > 0)
+        {
+            gDebugMgr.AddDirection(vPos, Atan2(dir.x, dir.z), 5.0f, RED);
+        }
 
         int damage = ownner.attackDamage;
         if (lastKill)

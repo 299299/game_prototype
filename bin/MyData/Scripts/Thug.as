@@ -12,7 +12,7 @@ const float MAX_THINK_TIME = 1.0f;
 const float PUNCH_DIST = 0.0f;
 const float KICK_DIST = 3.8f;
 const float MAX_ATTACK_RANGE = KICK_DIST;
-const float HIT_RAGDOLL_FORCE = 30.0f;
+const float HIT_RAGDOLL_FORCE = 25.0f;
 
 const float AI_FAR_DIST = 15.0f;
 const float AI_NEAR_DIST = 7.5f;
@@ -1255,10 +1255,7 @@ class Thug : Enemy
 
         if (rb.collisionLayer == COLLISION_LAYER_RAGDOLL)
         {
-            if (rb.node.name != L_CALF &&
-                rb.node.name != R_CALF &&
-                rb.node.name != L_ARM &&
-                rb.node.name != R_ARM)
+            if (rb.node.name == HEAD || rb.node.name == PELVIS)
             {
                 if (vl > RAGDOLL_HIT_VEL)
                     bRagdoll = true;

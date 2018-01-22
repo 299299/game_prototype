@@ -97,6 +97,9 @@ void Start()
     }
     nosound = !mobile;
 
+    if (mobile)
+        test_mode = 0;
+
     g_dir_cache.Resize(4);
 
     freeze_ai = (test_mode > 0) ? 1 : 0;
