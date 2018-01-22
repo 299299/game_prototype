@@ -220,8 +220,6 @@ class Ragdoll : ScriptObject
                 }
                 velocityRequest = Vector3(0, 0, 0);
                 hasVelRequest = false;
-
-                // rootNode.scene.timeScale = 0.0f;
             }
         }
         else if (newState == RAGDOLL_BLEND_TO_ANIMATION)

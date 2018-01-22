@@ -124,14 +124,16 @@ class PlayerAttackState : CharacterState
             OnDockAlignTimeOut();
         }
 
+        if (currentAttack !is null)
+        {
+            Vector3 curPos = attackNode.worldPosition;
+            if (debug_draw_flag > 0)
+                gDebugMgr.AddLine(lastDockBonePosition, curPos, GREEN);
+            lastDockBonePosition = curPos;
+        }
+
         CheckInput(t);
         CharacterState::Update(dt);
-
-        Vector3 curPos = ownner.GetNode().GetChild(currentAttack.dockAlignBoneName, true).worldPosition;
-        if (debug_draw_flag > 0)
-            gDebugMgr.AddLine(lastDockBonePosition, curPos, GREEN);
-        lastDockBonePosition = curPos;
-        
     }
 
     void OnMotionFinished()
@@ -430,8 +432,6 @@ class PlayerAttackState : CharacterState
 
     void AttackImpact()
     {
-        Print("AttackImpact");
-
         ownner.motion_velocity = Vector3::ZERO;
         ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
 
@@ -484,10 +484,10 @@ class PlayerAttackState : CharacterState
 
         if (test_mode == 1 || test_mode == 3 || test_mode == 4)
         {
-            ownner.GetScene().DebugPause(true);
+            DebugPause(true);
 
             if (test_mode == 1)
-                ownner.GetScene().timeScale = 0.1f;
+                DebugTimeScale(0.1f);
         }
     }
 
@@ -600,7 +600,7 @@ class PlayerCounterState : CharacterCounterState
         LogPrint("############# PlayerCounterState::Exit ##################");
         CharacterCounterState::Exit(nextState);
         counterEnemies.Clear();
-        ownner.GetScene().timeScale= 1.0f;
+        // ownner.GetScene().timeScale = 1.0f;
     }
 
     void OnAnimationTrigger(AnimationState@ animState, const VariantMap&in eventData)

@@ -12,7 +12,7 @@ const float MAX_THINK_TIME = 1.0f;
 const float PUNCH_DIST = 0.0f;
 const float KICK_DIST = 3.8f;
 const float MAX_ATTACK_RANGE = KICK_DIST;
-const Vector3 HIT_RAGDOLL_FORCE(25.0f, 10.0f, 0.0f);
+const float HIT_RAGDOLL_FORCE = 30.0f;
 
 const float AI_FAR_DIST = 15.0f;
 const float AI_NEAR_DIST = 7.5f;
@@ -721,8 +721,8 @@ class ThugHitState : MultiMotionState
 
         if (test_mode == 2)
         {
-            ownner.GetScene().DebugPause(true);
-            ownner.GetScene().timeScale = 0.1f;
+            DebugPause(true);
+            DebugTimeScale(0.1f);
         }
 
         MultiMotionState::Enter(lastState);
@@ -1005,14 +1005,8 @@ class Thug : Enemy
         }
 
         Node@ attackNode = attacker.GetNode();
-
-        /*
-        Vector3 v = direction * -1;
-        v.y = 1.0f;
-        v.Normalize();
-        */
-
-        Vector3 v = direction * GetRagdollForce();
+        float force = Random(HIT_RAGDOLL_FORCE * 0.5f, HIT_RAGDOLL_FORCE * 1.0f);
+        Vector3 v = direction * Vector3(force, force, force);
         if (health <= 0)
         {
             v *= 1.5f;
@@ -1255,9 +1249,6 @@ class Thug : Enemy
 
     void HitRagdoll(RigidBody@ rb)
     {
-        if (test_mode == 4)
-            GetScene().DebugPause(true);
-
         bool bRagdoll = false;
         float vl = rb.linearVelocity.length;
         Vector3 vel = rb.linearVelocity;
@@ -1281,18 +1272,16 @@ class Thug : Enemy
 
         if (bRagdoll)
         {
+            if (test_mode == 4)
+            {
+                DebugPause(true);
+            }
+
             LogPrint(GetName() + " hit ragdoll bone " + rb.node.name + " vel=" + vel.ToString() + " vl=" + vl);
             MakeMeRagdoll(vel * 1.5f, rb.node.worldPosition);
         }
     }
 };
-
-Vector3 GetRagdollForce()
-{
-    float x = Random(HIT_RAGDOLL_FORCE.x*0.75f, HIT_RAGDOLL_FORCE.x*1.25f);
-    float y = Random(HIT_RAGDOLL_FORCE.y*0.75f, HIT_RAGDOLL_FORCE.y*1.25f);
-    return Vector3(x, y, x);
-}
 
 void CreateThugCombatMotions()
 {

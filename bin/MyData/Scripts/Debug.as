@@ -199,18 +199,11 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_R)
     {
-        if (scene_ !is null)
-            scene_.updateEnabled = !scene_.updateEnabled;
+        DebugPause(scene_.updateEnabled);
     }
     else if (key == KEY_T)
     {
-        if (scene_ !is null)
-        {
-            if (scene_.timeScale >= 0.999f)
-                scene_.timeScale = 0.1f;
-            else
-                scene_.timeScale = 1.0f;
-        }
+        DebugTimeScale((scene_.timeScale >= 0.999f) ? 0.1f : 1.0f);
     }
     else if (key == KEY_J)
         TestAnimations_Group_2();
@@ -290,10 +283,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == KEY_U)
     {
         Player@ p = GetPlayer();
-        if (p.timeScale > 1.0f)
-            p.timeScale = 1.0f;
-        else
-            p.timeScale = 1.25f;
+        p.SetTimeScale((p.timeScale > 1.0f) ? 1.0f : 1.25f);
     }
 }
 
@@ -315,8 +305,8 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
     {
         if (test_mode > 0)
         {
-            script.defaultScene.DebugPause(false);
-            script.defaultScene.timeScale = 1.0f;
+            DebugPause(false);
+            DebugTimeScale(1.0f);
         }
     }
 }
@@ -1074,6 +1064,12 @@ void OnTestModeChanged()
 
 void DebugPause(bool bPause)
 {
-    LogPrint("DebugPause scene =" + bPause);
+    LogPrint("DebugPause =" + bPause);
     script.defaultScene.updateEnabled = !bPause;
+}
+
+void DebugTimeScale(float timeScale)
+{
+    LogPrint("DebugTimeScale =" + timeScale);
+    script.defaultScene.timeScale = timeScale;
 }

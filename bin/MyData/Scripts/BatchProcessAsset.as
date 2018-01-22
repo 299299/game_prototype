@@ -27,13 +27,14 @@ void PreProcess()
 
 String DoProcess(const String&in name, const String&in folderName, const Array<String>&in args, bool checkFolders)
 {
+    String fName = folderName + name;
     if (!exportFolder.empty && checkFolders)
     {
-        if (!name.Contains(exportFolder))
+        if (!fName.Contains(exportFolder))
             return "";
     }
 
-    String iname = "Asset/" + folderName + name;
+    String iname = "Asset/" + fName;
     uint pos = name.FindLast('.');
     String oname = OUT_DIR + folderName + name.Substring(0, pos) + ".mdl";
     pos = oname.FindLast('/');

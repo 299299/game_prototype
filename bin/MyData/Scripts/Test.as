@@ -83,7 +83,7 @@ bool camera_shake = true;
 // 2 --> test thug hit reaction
 // 3 --> test player 1.5 time scale
 // 4 --> test ragdoll
-int test_mode = 4;
+int test_mode = 0;
 
 GameInput@ gInput = GameInput();
 
@@ -98,6 +98,8 @@ void Start()
     nosound = !mobile;
 
     g_dir_cache.Resize(4);
+
+    freeze_ai = (test_mode > 0) ? 1 : 0;
 
     if (!mobile)
     {
