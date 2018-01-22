@@ -592,7 +592,7 @@ void TestAttack()
         return;
 
     player.GetScene().updateEnabled = true;
-    AttackMotion@ am;
+    Motion@ am;
     PlayerAttackState@ s = cast<PlayerAttackState>(player.stateMachine.FindState("AttackState"));
     int l1 = s.forwardAttacks.length;
     int l2 = s.leftAttacks.length;
@@ -618,7 +618,7 @@ void TestAttack()
         @am = s.forwardAttacks[test_attack_id];
     }
 
-    player.TestAnimation(am.motion.name);
+    player.TestAnimation(am.name);
     test_attack_id ++;
     if (test_attack_id >=  l1 + l2 + l3 + l4)
         test_attack_id = 0;

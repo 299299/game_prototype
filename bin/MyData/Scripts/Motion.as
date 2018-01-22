@@ -162,8 +162,12 @@ class Motion
     bool                    processed = false;
 
     float                   dockAlignTime;
+    int                     dockAlignFrame;
     Vector3                 dockAlignOffset;
     String                  dockAlignBoneName;
+
+    int                     type;
+    float                   dockDist;
 
     Motion()
     {
@@ -218,6 +222,10 @@ class Motion
             Vector3 v = GetBoneWorldPosition(curRig, animationName, dockAlignBoneName, dockAlignTime);
             // LogPrint(this.name + " bone " + dockAlignBoneName + " world-pos=" + v.ToString() + " at time:" + dockAlignTime);
             dockAlignOffset += v;
+
+            Vector4 k = motionKeys[dockAlignFrame];
+            Vector3 v3 = Vector3(k.x, 0, k.z);
+            dockDist = v3.length;
         }
 
         if (!motionKeys.empty)
@@ -243,16 +251,12 @@ class Motion
                  " timeCost=" + String(time.systemTime - startTime) + " ms");
     }
 
-    void SetDockAlign(const String&in boneName, float alignTime, const Vector3&in offset = Vector3::ZERO)
+    void SetDockAlign(const String&in boneName, int alignFrame, const Vector3&in offset = Vector3::ZERO)
     {
         dockAlignBoneName = boneName;
         dockAlignOffset = offset;
-        dockAlignTime = alignTime;
-    }
-
-    void SetDockAlign(const String&in boneName, int alignFrame, const Vector3&in offset = Vector3::ZERO)
-    {
-        SetDockAlign(boneName, float(alignFrame) * SEC_PER_FRAME, offset);
+        dockAlignTime = float(alignFrame) * SEC_PER_FRAME;
+        dockAlignFrame = alignFrame;
     }
 
     void SetEndFrame(int frame)
@@ -509,62 +513,15 @@ class Motion
         Vector4 v = motionKeys[motionKeys.length - 1];
         return  Vector3(v.x, v.y, v.z) / endTime;
     }
-};
 
-class AttackMotion
-{
-    Motion@                  motion;
-
-    // ==============================================
-    //   ATTACK VALUES
-    // ==============================================
-
-    float                   impactTime;
-    float                   impactDist;;
-    Vector3                 impactPosition;
-    int                     type;
-    String                  boneName;
-
-    AttackMotion(const String&in name, int impactFrame = 0, int _type = 0, const String&in bName = "")
+    int opCmp(const Motion&in obj)
     {
-        @motion = gMotionMgr.FindMotion(name);
-        if (motion is null)
-            return;
-
-        type = _type;
-        if (!motion.dockAlignBoneName.empty)
-        {
-            impactTime = motion.dockAlignTime;
-            Vector4 k = motion.motionKeys[FRAME_PER_SEC * impactTime];
-            impactPosition = Vector3(k.x, 0, k.z);
-            impactDist = impactPosition.length;
-            boneName = motion.dockAlignBoneName;
-        }
-        else
-        {
-            impactTime = impactFrame * SEC_PER_FRAME;
-            Vector4 k = motion.motionKeys[impactFrame];
-            impactPosition = Vector3(k.x, 0, k.z);
-            impactDist = impactPosition.length;
-            boneName = bName;
-        }
-
-    }
-
-    int opCmp(const AttackMotion&in obj)
-    {
-        if (impactDist > obj.impactDist)
+        if (dockDist > obj.dockDist)
             return 1;
-        else if (impactDist < obj.impactDist)
+        else if (dockDist < obj.dockDist)
             return -1;
         else
             return 0;
-    }
-
-    Vector3 GetImpactPosition(Character@ mover)
-    {
-        motion.InnerStart(mover);
-        return motion.GetFuturePosition(mover, impactTime);
     }
 };
 
@@ -738,6 +695,14 @@ Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, 
 {
     // LogPrint("Global_CreateMotion " + name);
     return gMotionMgr.CreateMotion(name, motionFlag, allowMotion, endFrame, loop);
+}
+
+Motion@ Global_CreateMotion(const String&in name, int motionFlag, const String& dockBoneName, int dockFrame, int type = -1)
+{
+    // LogPrint("Global_CreateMotion " + name);
+    Motion@ m = Global_CreateMotion(name, motionFlag);
+    m.SetDockAlign(dockBoneName, dockFrame);
+    return m;
 }
 
 void Global_AddAnimation(const String&in name)

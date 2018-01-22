@@ -448,6 +448,28 @@ PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in 
 
 class BM_Game_MotionManager : MotionManager
 {
+    Array<Motion@> thug_counter_arm_front_motions;
+    Array<Motion@> thug_counter_arm_back_motions;
+    Array<Motion@> thug_counter_leg_front_motions;
+    Array<Motion@> thug_counter_leg_back_motions;
+    Array<Motion@> thug_counter_double_motions;
+    Array<Motion@> thug_counter_triple_motions;
+    Array<Motion@> thug_counter_environment_motions;
+    Array<Motion@> thug_attack_motions;
+
+    Array<Motion@> bruce_counter_arm_front_motions;
+    Array<Motion@> bruce_counter_arm_back_motions;
+    Array<Motion@> bruce_counter_leg_front_motions;
+    Array<Motion@> bruce_counter_leg_back_motions;
+    Array<Motion@> bruce_counter_double_motions;
+    Array<Motion@> bruce_counter_triple_motions;
+    Array<Motion@> bruce_counter_environment_motions;
+
+    Array<Motion@> bruce_forward_attack_motions;
+    Array<Motion@> bruce_right_attack_motions;
+    Array<Motion@> bruce_back_attack_motions;
+    Array<Motion@> bruce_left_attack_motions;
+
     void AddMotions()
     {
         CreateBruceMotions();
@@ -470,6 +492,12 @@ class BM_Game_MotionManager : MotionManager
         bruce_counter_triple_motions.Clear();
         bruce_counter_environment_motions.Clear();
 
+        bruce_forward_attack_motions.Clear();
+        bruce_right_attack_motions.Clear();
+        bruce_back_attack_motions.Clear();
+        bruce_left_attack_motions.Clear();
+
+        thug_attack_motions.Clear();
         thug_counter_arm_front_motions.Clear();
         thug_counter_arm_back_motions.Clear();
         thug_counter_leg_front_motions.Clear();
