@@ -27,8 +27,8 @@
 # Refactor AttackMotion with Motion Dock Alignment
 # Getup State attackable
 # Motion Player TimeScale test
-
- Ragdoll out of world kill
+# Ragdoll out of world kill
+ 
  Player Attack Particle (Bigger and Smoke)
  Ragdoll Hit Direction Based on dock alignment bone position
  New Character

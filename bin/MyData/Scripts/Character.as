@@ -801,16 +801,25 @@ class CharacterRagdollState : CharacterState
             int ragdoll_state = ownner.GetNode().vars[RAGDOLL_STATE].GetInt();
             if (ragdoll_state == RAGDOLL_NONE)
             {
-                if (ownner.health > 0)
+                Vector3 vPos = ownner.GetNode().GetChild(PELVIS, true).worldPosition;
+                if (vPos.y < -2.0f)
                 {
-                    LogPrint(ownner.GetName() + " Finished Ragdoll PlayCurrentPose + getup.");
-                    ownner.PlayCurrentPose();
-                    ownner.ChangeState("GetUpState");
+                    LogPrint(ownner.GetName() + " fell out of world, kill me");
+                    ownner.duration = 0;
                 }
                 else
                 {
-                    LogPrint(ownner.GetName() + " Finished Ragdoll dead.");
-                    ownner.ChangeState("DeadState");
+                    if (ownner.health > 0)
+                    {
+                        LogPrint(ownner.GetName() + " Finished Ragdoll PlayCurrentPose + getup.");
+                        ownner.PlayCurrentPose();
+                        ownner.ChangeState("GetUpState");
+                    }
+                    else
+                    {
+                        LogPrint(ownner.GetName() + " Finished Ragdoll dead.");
+                        ownner.ChangeState("DeadState");
+                    }
                 }
             }
         }

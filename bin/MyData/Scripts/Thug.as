@@ -717,7 +717,7 @@ class ThugHitState : MultiMotionState
         LogPrint(ownner.GetName() + " HitState angle_diff=" + diff + " Hit motion=" + motions[index].name);
 
         // turnSpeed = AngleDiff(targetDiff - diff) / turnAlignTime;
-        // ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
+        ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
 
         if (test_mode == 2)
         {
