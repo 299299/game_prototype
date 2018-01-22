@@ -85,22 +85,15 @@ class PlayerAttackState : CharacterState
         {
             ownner.motion_deltaRotation += yawPerSec * dt;
 
-            /*
-            if (t >= alignTime)
+            float t1 = alignTime - 0.025f;
+            if (t < t1 && t + dt > t1)
             {
-                ChangeSubState(ATTACK_STATE_BEFORE_IMPACT);
-                ownner.target.RemoveFlag(FLAGS_NO_MOVE);
-                ownner.motion_velocity = Vector3::ZERO;
+                lastDockBonePosition = attackNode.worldPosition;
+                if (debug_draw_flag > 0)
+                    gDebugMgr.AddSphere(lastDockBonePosition, 0.25f, GREEN);
             }
-            */
         }
-        /*else if (state == ATTACK_STATE_BEFORE_IMPACT)
-        {
-            if (t >= currentAttack.impactTime)
-            {
-                AttackImpact();
-            }
-        }*/
+
 
         if (slowMotion)
         {
@@ -122,14 +115,6 @@ class PlayerAttackState : CharacterState
         else if (ret == 2)
         {
             OnDockAlignTimeOut();
-        }
-
-        if (currentAttack !is null)
-        {
-            Vector3 curPos = attackNode.worldPosition;
-            //if (debug_draw_flag > 0)
-            //    gDebugMgr.AddLine(lastDockBonePosition, curPos, GREEN);
-            lastDockBonePosition = curPos;
         }
 
         CheckInput(t);

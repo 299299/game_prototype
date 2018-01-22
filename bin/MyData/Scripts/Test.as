@@ -78,7 +78,7 @@ int collision_type = 0;
 int PROCESS_TIME_PER_FRAME = 60; // ms
 bool camera_collison = false;
 bool camera_shake = true;
-// test mode 
+// test mode
 // 1 --> test attack location pick
 // 2 --> test thug hit reaction
 // 3 --> test player 1.5 time scale
@@ -103,6 +103,9 @@ void Start()
     g_dir_cache.Resize(4);
 
     freeze_ai = (test_mode > 0) ? 1 : 0;
+    if (test_mode == 4)
+        freeze_ai = 0;
+
 
     if (!mobile)
     {
