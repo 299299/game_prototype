@@ -278,9 +278,6 @@ class PlayerAttackState : CharacterState
                 }
             }
         }
-
-        //ownner.GetScene().updateEnabled = false;
-        //ownner.SetSceneTimeScale(0.1f);
     }
 
     void StartAttack()
@@ -388,6 +385,8 @@ class PlayerAttackState : CharacterState
 
         if (test_mode == 2)
             weakAttack = true;
+        else if (test_mode == 4)
+            weakAttack = false;
 
         ownner.SetNodeEnabled("TailNode", true);
     }
@@ -431,6 +430,8 @@ class PlayerAttackState : CharacterState
 
     void AttackImpact()
     {
+        Print("AttackImpact");
+
         ownner.motion_velocity = Vector3::ZERO;
         ChangeSubState(ATTACK_STATE_AFTER_IMPACT);
 
@@ -446,18 +447,20 @@ class PlayerAttackState : CharacterState
         if (dir.length > MAX_ATTACK_CHECK_DIST)
         {
             if (debug_draw_flag > 0)
-                ownner.GetScene().updateEnabled = false;
+                DebugPause(true);
             LogPrint("PlayerAttack " + e.GetName() + " dist too far way !!");
             return;
         }
 
-        dir.Normalize();
         LogPrint("PlayerAttackState::" +  e.GetName() + " OnDamage!!!!");
 
         Node@ n = _node.GetChild(currentAttack.dockAlignBoneName, true);
         Vector3 position = _node.worldPosition;
         if (n !is null)
             position = n.worldPosition;
+
+        dir = _node.GetChild(currentAttack.dockAlignBoneName, true).worldPosition - lastDockBonePosition;
+        dir.Normalize();
 
         int damage = ownner.attackDamage;
         if (lastKill)
@@ -472,16 +475,16 @@ class PlayerAttackState : CharacterState
                 return;
         }
 
-        ownner.SpawnParticleEffect(position, "Particle/SnowExplosionBig.xml", 15.0f, 1.0f);
+        ownner.SpawnParticleEffect(position, "Particle/HitDust.xml", 1.0f, 1.0f);
         // ownner.SpawnParticleEffect(position, "Particle/HitSpark.xml", 1.0f, 0.6f);
 
         int sound_type = e.health == 0 ? 1 : 0;
         ownner.PlayRandomSound(sound_type);
         ownner.OnAttackSuccess(e);
 
-        if (test_mode == 1 || test_mode == 3)
+        if (test_mode == 1 || test_mode == 3 || test_mode == 4)
         {
-            ownner.GetScene().updateEnabled = false;
+            ownner.GetScene().DebugPause(true);
 
             if (test_mode == 1)
                 ownner.GetScene().timeScale = 0.1f;
@@ -1162,8 +1165,6 @@ class PlayerCounterState : CharacterCounterState
             s.SetTargetTransform(vt_enemey);
             StartAligning();
             s.StartAligning();
-            // ownner.GetScene().updateEnabled = false;
-            //ownner.GetScene().timeScale = 0.25f;
             return true;
         }
         return false;

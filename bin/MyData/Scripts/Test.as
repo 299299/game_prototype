@@ -78,7 +78,12 @@ int collision_type = 0;
 int PROCESS_TIME_PER_FRAME = 60; // ms
 bool camera_collison = false;
 bool camera_shake = true;
-int test_mode = 2;
+// test mode 
+// 1 --> test attack location pick
+// 2 --> test thug hit reaction
+// 3 --> test player 1.5 time scale
+// 4 --> test ragdoll
+int test_mode = 4;
 
 GameInput@ gInput = GameInput();
 

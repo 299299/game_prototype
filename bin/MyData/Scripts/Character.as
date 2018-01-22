@@ -607,7 +607,7 @@ class AnimationTestState : CharacterState
     void OnDockAlignTimeOut()
     {
         if (debug_draw_flag > 0)
-            ownner.GetScene().updateEnabled = false;
+            DebugPause(true);
     }
 };
 
@@ -715,7 +715,7 @@ class CharacterCounterState : CharacterState
         if (currentMotion is null)
         {
             LogPrint("Error !!! ");
-            ownner.GetScene().updateEnabled = false;
+            DebugPause(true);
             return;
         }
 
@@ -726,7 +726,6 @@ class CharacterCounterState : CharacterState
             if (timeInState >= alignTime)
             {
                 ChangeSubState(COUNTER_ANIMATING);
-                // ownner.GetScene().updateEnabled =false;
             }
         }
 

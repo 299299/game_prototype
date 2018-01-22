@@ -385,9 +385,6 @@ class Player : Character
             ChangeState("BeatDownHitState");
         else
             ChangeState("AttackState");
-
-        //if (debug_draw_flag > 0)
-        //    GetScene().updateEnabled = false;
         return true;
     }
 

@@ -721,7 +721,7 @@ class ThugHitState : MultiMotionState
 
         if (test_mode == 2)
         {
-            ownner.GetScene().updateEnabled = false;
+            ownner.GetScene().DebugPause(true);
             ownner.GetScene().timeScale = 0.1f;
         }
 
@@ -1006,11 +1006,13 @@ class Thug : Enemy
 
         Node@ attackNode = attacker.GetNode();
 
+        /*
         Vector3 v = direction * -1;
         v.y = 1.0f;
         v.Normalize();
-        v *= GetRagdollForce();
+        */
 
+        Vector3 v = direction * GetRagdollForce();
         if (health <= 0)
         {
             v *= 1.5f;
@@ -1253,6 +1255,9 @@ class Thug : Enemy
 
     void HitRagdoll(RigidBody@ rb)
     {
+        if (test_mode == 4)
+            GetScene().DebugPause(true);
+
         bool bRagdoll = false;
         float vl = rb.linearVelocity.length;
         Vector3 vel = rb.linearVelocity;
@@ -1277,7 +1282,6 @@ class Thug : Enemy
         if (bRagdoll)
         {
             LogPrint(GetName() + " hit ragdoll bone " + rb.node.name + " vel=" + vel.ToString() + " vl=" + vl);
-            // GetScene().updateEnabled = false;
             MakeMeRagdoll(vel * 1.5f, rb.node.worldPosition);
         }
     }

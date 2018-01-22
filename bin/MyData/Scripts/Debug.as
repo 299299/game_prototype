@@ -315,7 +315,7 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
     {
         if (test_mode > 0)
         {
-            script.defaultScene.updateEnabled = true;
+            script.defaultScene.DebugPause(false);
             script.defaultScene.timeScale = 1.0f;
         }
     }
@@ -592,7 +592,7 @@ void TestAttack()
     if (player is null)
         return;
 
-    player.GetScene().updateEnabled = true;
+    DebugPause(false);
     Motion@ am;
     PlayerAttackState@ s = cast<PlayerAttackState>(player.stateMachine.FindState("AttackState"));
     int l1 = s.forwardAttacks.length;
@@ -1070,4 +1070,10 @@ void OnTestModeChanged()
 {
     Player@ p = GetPlayer();
     p.SetTimeScale(test_mode == 3 ? 1.5f : 1.0f);
+}
+
+void DebugPause(bool bPause)
+{
+    LogPrint("DebugPause scene =" + bPause);
+    script.defaultScene.updateEnabled = !bPause;
 }
