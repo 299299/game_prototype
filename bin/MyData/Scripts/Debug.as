@@ -19,6 +19,7 @@ int test_double_counter_index = 0;
 int test_triple_counter_index = 0;
 int test_attack_id = 0;
 int test_environment_counter_index = 0;
+int debug_draw_flag = 2;
 
 void ShootBox(Scene@ _scene)
 {
@@ -92,24 +93,24 @@ void DrawDebug(float dt)
     // DrawDebugText();
 
     DebugRenderer@ debug = scene_.debugRenderer;
-    if (drawDebug == 0)
+    if (debug_draw_flag == 0)
         return;
 
     gDebugMgr.Update(debug, dt);
 
-    if (drawDebug > 0)
+    if (debug_draw_flag > 0)
     {
         debug.AddNode(scene_, 1.0f, false);
         if (p !is null)
             p.DebugDraw(debug);
     }
-    if (drawDebug > 1)
+    if (debug_draw_flag > 1)
     {
         if (em !is null)
             em.DebugDraw(debug);
     }
 
-    if (drawDebug > 2)
+    if (debug_draw_flag > 2)
     {
         // gCameraMgr.DebugDraw(debug);
 
@@ -142,9 +143,9 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_1)
     {
-        ++drawDebug;
-        if (drawDebug > 3)
-            drawDebug = 0;
+        ++debug_draw_flag;
+        if (debug_draw_flag > 3)
+            debug_draw_flag = 0;
     }
     else if (key == KEY_2)
         debugHud.ToggleAll();
@@ -671,7 +672,7 @@ void DrawDebugText()
     if (text is null)
         return;
 
-    if (drawDebug == 0)
+    if (debug_draw_flag == 0)
     {
         text.visible = false;
         return;
@@ -689,7 +690,7 @@ void DrawDebugText()
     if (player !is null)
         debugText += player.GetDebugText();
     debugText += seperator;
-    if (drawDebug > 1)
+    if (debug_draw_flag > 1)
     {
         EnemyManager@ em = GetEnemyMgr();
         if (em !is null && !em.enemyList.empty)
@@ -1051,12 +1052,12 @@ void HandleButtonPressed(StringHash eventType, VariantMap& eventData)
         if (debug_mode == 1)
         {
             freeze_ai = 1;
-            drawDebug = 1;
+            debug_draw_flag = 1;
         }
         else
         {
             freeze_ai = 0;
-            drawDebug = 0;
+            debug_draw_flag = 0;
         }
 
         Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(TAG_DEBUG);

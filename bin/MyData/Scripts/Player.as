@@ -222,7 +222,7 @@ class Player : Character
         // Find the best enemy
         Vector3 myPos = sceneNode.worldPosition;
         float targetAngle = GetTargetAngle();
-        gIntCache.Clear();
+        g_int_cache.Clear();
 
         // LogPrint(gInput.GetDebugText());
 
@@ -234,7 +234,7 @@ class Player : Character
             {
                 //if (d_log)
                     LogPrint(e.GetName() + " no flag: " + flags);
-                gIntCache.Push(-1);
+                g_int_cache.Push(-1);
                 continue;
             }
 
@@ -247,7 +247,7 @@ class Player : Character
             {
                 //if (d_log)
                     LogPrint(e.GetName() + " far way from player");
-                gIntCache.Push(-1);
+                g_int_cache.Push(-1);
                 continue;
             }
 
@@ -262,7 +262,7 @@ class Player : Character
             {
                 // if (d_log)
                     LogPrint(e.GetName() + " diffAngle=" + diffAngle + " too large");
-                gIntCache.Push(-1);
+                g_int_cache.Push(-1);
                 continue;
             }
 
@@ -278,10 +278,10 @@ class Player : Character
             score += angleScore;
             score += threatScore;
 
-            gIntCache.Push(score);
+            g_int_cache.Push(score);
 
             /*
-            if (drawDebug > 0)
+            if (debug_draw_flag > 0)
             {
                 gDebugMgr.AddLine(myPos, ePos, TARGET_COLOR);
             }
@@ -292,9 +292,9 @@ class Player : Character
         }
 
         int bestScore = 0;
-        for (uint i=0; i<gIntCache.length;++i)
+        for (uint i=0; i<g_int_cache.length;++i)
         {
-            int score = gIntCache[i];
+            int score = g_int_cache[i];
             if (score >= bestScore) {
                 bestScore = score;
                 @attackEnemy = em.enemyList[i];
@@ -316,7 +316,7 @@ class Player : Character
             }
         }
 
-        if (drawDebug > 0)
+        if (debug_draw_flag > 0)
         {
             gDebugMgr.AddDirection(myPos, targetAngle - maxDiffAngle/2.0f, maxDiffDist, YELLOW);
             gDebugMgr.AddDirection(myPos, targetAngle + maxDiffAngle/2.0f, maxDiffDist, YELLOW);
@@ -386,7 +386,7 @@ class Player : Character
         else
             ChangeState("AttackState");
 
-        //if (drawDebug > 0)
+        //if (debug_draw_flag > 0)
         //    GetScene().updateEnabled = false;
         return true;
     }

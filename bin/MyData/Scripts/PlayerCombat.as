@@ -39,6 +39,8 @@ class PlayerAttackState : CharacterState
     bool                    slowMotion = false;
     bool                    lastKill = false;
 
+    Vector3                 lastDockBonePosition;
+
     PlayerAttackState(Character@ c)
     {
         super(c);
@@ -124,6 +126,12 @@ class PlayerAttackState : CharacterState
 
         CheckInput(t);
         CharacterState::Update(dt);
+
+        Vector3 curPos = ownner.GetNode().GetChild(currentAttack.dockAlignBoneName, true).worldPosition;
+        if (debug_draw_flag > 0)
+            gDebugMgr.AddLine(lastDockBonePosition, curPos, GREEN);
+        lastDockBonePosition = curPos;
+        
     }
 
     void OnMotionFinished()
@@ -247,7 +255,7 @@ class PlayerAttackState : CharacterState
         LogPrint("PlayerAttack dir=" + lastAttackDirection + " index=" + lastAttackIndex +
                 " Pick attack motion=" + currentAttack.animationName);
 
-        if (drawDebug > 0)
+        if (debug_draw_flag > 0)
         {
             if (attack_choose_closest_one)
             {
@@ -394,7 +402,7 @@ class PlayerAttackState : CharacterState
         yawPerSec = 0;
         StartAttack();
         CharacterState::Enter(lastState);
-        // ownner.GetScene().updateEnabled = false;
+        lastDockBonePosition =  ownner.GetNode().GetChild(currentAttack.dockAlignBoneName, true).worldPosition;
     }
 
     void Exit(State@ nextState)
@@ -437,7 +445,7 @@ class PlayerAttackState : CharacterState
         dir.y = 0;
         if (dir.length > MAX_ATTACK_CHECK_DIST)
         {
-            if (drawDebug > 0)
+            if (debug_draw_flag > 0)
                 ownner.GetScene().updateEnabled = false;
             LogPrint("PlayerAttack " + e.GetName() + " dist too far way !!");
             return;
@@ -630,7 +638,7 @@ class PlayerCounterState : CharacterCounterState
         const float maxDistSQR = COUNTER_ALIGN_MAX_DIST * COUNTER_ALIGN_MAX_DIST;
         float bestDistSQR = 999999;
         int bestIndex = -1;
-        gIntCache.Clear();
+        g_int_cache.Clear();
 
         for (uint i=0; i<counterMotions.length; ++i)
         {
@@ -645,7 +653,7 @@ class PlayerCounterState : CharacterCounterState
             // Print("distSQR=" + distSQR + " maxDistSQR=" + maxDistSQR);
             if (distSQR > maxDistSQR)
                 continue;
-            gIntCache.Push(i);
+            g_int_cache.Push(i);
         }
 
         float bestDistSQR2 = 999999;
@@ -664,9 +672,9 @@ class PlayerCounterState : CharacterCounterState
 
         int cur_direction = GetCounterDirection(attackType, isBack);
         int idx;
-        LogPrint("COUNTER bestDistSQR=" + bestDistSQR + " bestDistSQR2=" + bestDistSQR2 + " gIntCache.length=" + gIntCache.length);
+        LogPrint("COUNTER bestDistSQR=" + bestDistSQR + " bestDistSQR2=" + bestDistSQR2 + " g_int_cache.length=" + g_int_cache.length);
 
-        if (counter_choose_closest_one || gIntCache.empty)
+        if (counter_choose_closest_one || g_int_cache.empty)
         {
             if (bestDistSQR > maxDistSQR && bestDistSQR2 <= bestDistSQR)
             {
@@ -678,12 +686,12 @@ class PlayerCounterState : CharacterCounterState
         }
         else
         {
-            int k = RandomInt(gIntCache.length);
-            idx = gIntCache[k];
+            int k = RandomInt(g_int_cache.length);
+            idx = g_int_cache[k];
             if (cur_direction == lastCounterDirection && idx == lastCounterIndex)
             {
-                k = (k + 1) % gIntCache.length;
-                idx = gIntCache[k];
+                k = (k + 1) % g_int_cache.length;
+                idx = g_int_cache[k];
             }
         }
 

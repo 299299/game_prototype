@@ -325,9 +325,9 @@ bool IsOutOfWorld(const Vector3&in position)
 
 bool IsDestinationReachable(const Vector3& start, const Vector3&in end)
 {
-    v3Cache.Clear();
+    g_v3_cache.Clear();
     DynamicNavigationMesh@ navMesh = script.defaultScene.GetComponent("DynamicNavigationMesh");
-    v3Cache = navMesh.FindPath(start, end);
-    return v3Cache.length > 0;
+    g_v3_cache = navMesh.FindPath(start, end);
+    return g_v3_cache.length > 0;
 }
 

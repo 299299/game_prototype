@@ -37,33 +37,31 @@ enum RenderFeature
     RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
 };
 
-int drawDebug = 2;
-bool bigHeadMode = false;
+bool big_head_mode = false;
 bool nobgm = true;
 bool nosound = true;
 
-Node@ musicNode;
+Node@ music_node;
 float BGM_BASE_FREQ = 44100;
 
-String CAMERA_NAME = "Camera";
-
-uint cameraId = M_MAX_UNSIGNED;
-uint playerId = M_MAX_UNSIGNED;
+uint camera_id = M_MAX_UNSIGNED;
+uint player_id = M_MAX_UNSIGNED;
 
 int test_enemy_num_override = 20;
 int render_features = RF_SHADOWS | RF_HDR;
 
+const String CAMERA_NAME = "Camera";
 const String UI_FONT = "Fonts/angrybirds-regular.ttf";
-int UI_FONT_SIZE = 40;
+const int UI_FONT_SIZE = 40;
 const String DEBUG_FONT = "Fonts/Anonymous Pro.ttf";
-int DEBUG_FONT_SIZE = 20;
-
+const int DEBUG_FONT_SIZE = 20;
 const String GAME_CAMEAR_NAME = "ThirdPerson";
+const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
+const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);
 
-Array<int> dirCache;
-Array<int> zoneDirCache;
-Array<int> gIntCache;
-Array<Vector3> v3Cache;
+Array<int> g_dir_cache;
+Array<int> g_int_cache;
+Array<Vector3> g_v3_cache;
 
 bool mobile = false;
 bool one_shot_kill = false;
@@ -79,11 +77,8 @@ int debug_mode = 0;
 int collision_type = 0;
 int PROCESS_TIME_PER_FRAME = 60; // ms
 bool camera_collison = false;
-bool camera_shake = false;
+bool camera_shake = true;
 int test_mode = 2;
-
-const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
-const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);
 
 GameInput@ gInput = GameInput();
 
@@ -93,12 +88,11 @@ void Start()
     mobile = (GetPlatform() == "Android" || GetPlatform() == "iOS");
     if (mobile)
     {
-        drawDebug = 0;
+        debug_draw_flag = 0;
     }
     nosound = !mobile;
 
-    dirCache.Resize(4);
-    zoneDirCache.Resize(NUM_ZONE_DIRECTIONS);
+    g_dir_cache.Resize(4);
 
     if (!mobile)
     {
@@ -116,7 +110,7 @@ void Start()
             if (argument == "bgm")
                 nobgm = !nobgm;
             else if (argument == "bighead")
-                bigHeadMode = !bigHeadMode;
+                big_head_mode = !big_head_mode;
             else if (argument == "lowend")
                 render_features = RF_NONE;
             else if (argument == "freezeai")
@@ -175,8 +169,8 @@ void InitAudio()
 
         // Note: the non-positional sound source component need to be attached to a node to become effective
         // Due to networked mode clearing the scene on connect, do not attach to the scene itself
-        musicNode = Node();
-        SoundSource@ musicSource = musicNode.CreateComponent("SoundSource");
+        music_node = Node();
+        SoundSource@ musicSource = music_node.CreateComponent("SoundSource");
         musicSource.soundType = SOUND_MUSIC;
         musicSource.gain = 0.5f;
         musicSource.Play(musicFile);
@@ -255,7 +249,7 @@ Player@ GetPlayer()
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
         return null;
-    Node@ characterNode = scene_.GetNode(playerId);
+    Node@ characterNode = scene_.GetNode(player_id);
     if (characterNode is null)
         return null;
     return cast<Player>(characterNode.scriptObject);
@@ -266,7 +260,7 @@ Camera@ GetCamera()
     Scene@ scene_ = script.defaultScene;
     if (scene_ is null)
         return null;
-    Node@ cameraNode = scene_.GetNode(cameraId);
+    Node@ cameraNode = scene_.GetNode(camera_id);
     if (cameraNode is null)
         return null;
     return cameraNode.GetComponent("Camera");
@@ -388,7 +382,7 @@ PhysicsRaycastResult PhysicsRayCast(const Vector3&in start, const Vector3&in dir
     {
         if (result.body !is null)
         {
-            if (drawDebug > 0)
+            if (debug_draw_flag > 0)
             {
                 gDebugMgr.AddCross(result.position, 0.25f, YELLOW);
                 gDebugMgr.AddLine(start, result.position, Color(0.1f, 0.25f, 0.7f));
@@ -396,7 +390,7 @@ PhysicsRaycastResult PhysicsRayCast(const Vector3&in start, const Vector3&in dir
         }
         else
         {
-            if (drawDebug > 0)
+            if (debug_draw_flag > 0)
             {
                 gDebugMgr.AddLine(start, dir * range + start, RED);
             }
@@ -416,7 +410,7 @@ PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in 
     {
         if (result.body !is null)
         {
-            if (drawDebug > 0)
+            if (debug_draw_flag > 0)
             {
                 gDebugMgr.AddSphere(result.position, radius, YELLOW);
                 gDebugMgr.AddLine(start, result.position, BLUE);
@@ -425,7 +419,7 @@ PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in 
         }
         else
         {
-            if (drawDebug > 0)
+            if (debug_draw_flag > 0)
             {
                 gDebugMgr.AddLine(start, dir * range + start, RED);
             }

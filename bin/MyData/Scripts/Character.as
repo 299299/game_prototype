@@ -16,7 +16,6 @@ const int MAX_NUM_OF_NEAR = 4;
 const int MAX_NUM_OF_RUN_ATTACK = 3;
 
 const int INITIAL_HEALTH = 100;
-const int NUM_ZONE_DIRECTIONS = 8;
 const float IN_AIR_FOOT_HEIGHT = 0.75f;
 const float KEEP_TARGET_DISTANCE = COLLISION_SAFE_DIST - 0.5f;
 const Vector3 COLLISION_OFFSET(0, CHARACTER_HEIGHT/2.0f, 0.3f);
@@ -607,7 +606,7 @@ class AnimationTestState : CharacterState
 
     void OnDockAlignTimeOut()
     {
-        if (drawDebug > 0)
+        if (debug_draw_flag > 0)
             ownner.GetScene().updateEnabled = false;
     }
 };
@@ -974,7 +973,7 @@ class Character : GameObject
             cache.AddManualResource(ragdollPoseAnim);
         }
 
-        if (bigHeadMode)
+        if (big_head_mode)
         {
             renderNode.position = Vector3(0, 0.3f, 0);
         }

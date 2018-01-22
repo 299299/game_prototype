@@ -480,7 +480,7 @@ class TestGameState : GameState
         Node@ cameraNode = scene_.CreateChild(CAMERA_NAME);
         Camera@ cam = cameraNode.CreateComponent("Camera");
         cam.fov = BASE_FOV;
-        cameraId = cameraNode.id;
+        camera_id = cameraNode.id;
 
         Node@ floor = scene_.GetChild("floor", true);
         StaticModel@ model = floor.GetComponent("StaticModel");
@@ -511,7 +511,7 @@ class TestGameState : GameState
         Node@ playerNode = CreateCharacter("player", "elm", "Bruce", playerPos, playerRot);
         playerNode.AddTag(PLAYER_TAG);
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
-        playerId = playerNode.id;
+        player_id = playerNode.id;
 
         // preprocess current scene
         Array<uint> nodes_to_remove;
@@ -579,7 +579,7 @@ class TestGameState : GameState
         if (lightNode !is null)
         {
             Follow@ f = cast<Follow>(lightNode.CreateScriptObject(scriptFile, "Follow"));
-            f.toFollow = playerId;
+            f.toFollow = player_id;
             f.offset = Vector3(0, 10, 0);
         }
 
@@ -646,10 +646,10 @@ class TestGameState : GameState
 
     void ApplyBGMScale(float scale)
     {
-        if (musicNode is null)
+        if (music_node is null)
             return;
         LogPrint("Game::ApplyBGMScale " + scale);
-        SoundSource@ s = musicNode.GetComponent("SoundSource");
+        SoundSource@ s = music_node.GetComponent("SoundSource");
         if (s is null)
             return;
         s.frequency = BGM_BASE_FREQ * scale;

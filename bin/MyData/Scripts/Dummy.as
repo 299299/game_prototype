@@ -877,7 +877,7 @@ void DoubleCounter()
     CharacterCounterState@ s2 = cast<CharacterCounterState>(e2.GetState());
     Motion@ eMotion1, eMotion2;
     int who_is_reference = -1;
-    gIntCache.Clear();
+    g_int_cache.Clear();
 
     for (uint i=0; i<doubleMotions.length; ++i)
     {
@@ -896,15 +896,15 @@ void DoubleCounter()
         {
             @eMotion1 = motion1;
             @eMotion2 = motion2;
-            gIntCache.Push(index1);
-            gIntCache.Push(index2);
+            g_int_cache.Push(index1);
+            g_int_cache.Push(index2);
         }
         else
         {
             @eMotion1 = motion2;
             @eMotion2 = motion1;
-            gIntCache.Push(index2);
-            gIntCache.Push(index1);
+            g_int_cache.Push(index2);
+            g_int_cache.Push(index1);
         }
 
         // e1 as reference
@@ -940,8 +940,8 @@ void DoubleCounter()
         CharacterCounterState@ alignState = (who_is_reference == 0) ? s2 : s1;
 
         @currentMotion = doubleMotions[bestIndex];
-        @s1.currentMotion = s1.doubleMotions[gIntCache[bestIndex*2 + 0]];
-        @s2.currentMotion = s1.doubleMotions[gIntCache[bestIndex*2 + 1]];
+        @s1.currentMotion = s1.doubleMotions[g_int_cache[bestIndex*2 + 0]];
+        @s2.currentMotion = s1.doubleMotions[g_int_cache[bestIndex*2 + 1]];
         SetTargetTransform(GetTargetTransform(referenceNode, currentMotion, referenceState.currentMotion));
         StartAligning();
         referenceState.StartCounterMotion();

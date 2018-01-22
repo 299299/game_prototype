@@ -1057,8 +1057,8 @@ class Thug : Enemy
         Vector3 myPos = sceneNode.worldPosition;
         float myAngle = GetCharacterAngle();
 
-        for (uint i=0; i<dirCache.length; ++i)
-            dirCache[i] = 0;
+        for (uint i=0; i<g_dir_cache.length; ++i)
+            g_dir_cache[i] = 0;
 
         bool need_to_sep = false;
         for (uint i=0; i<neighbors.length; ++i)
@@ -1076,20 +1076,20 @@ class Thug : Enemy
                 continue;
 
             int dir_map = GetDirectionZone(myPos, object.GetNode().worldPosition, 4, myAngle);
-            dirCache[dir_map] = dirCache[dir_map] + 1;
+            g_dir_cache[dir_map] = g_dir_cache[dir_map] + 1;
             need_to_sep = true;
         }
 
         if (!need_to_sep)
             return ret;
 
-        gIntCache.Clear();
+        g_int_cache.Clear();
         Vector3 targetPos = target.GetNode().worldPosition;
         MultiMotionState@ state = cast<MultiMotionState>(FindState("StepMoveState"));
 
-        for (uint i=0; i<dirCache.length; ++i)
+        for (uint i=0; i<g_dir_cache.length; ++i)
         {
-            if (dirCache[i] == 0)
+            if (g_dir_cache[i] == 0)
             {
                 int candidate1 = int(i); // close step move
                 int candidate2 = candidate1 + 4; // far step move
@@ -1100,19 +1100,19 @@ class Thug : Enemy
                 Vector3 diff = v1 - targetPos;
                 diff.y = 0;
                 if (diff.length >= COLLISION_SAFE_DIST)
-                    gIntCache.Push(candidate1);
+                    g_int_cache.Push(candidate1);
                 else
                 {
-                    //if (drawDebug > 0)
+                    //if (debug_draw_flag > 0)
                     //    gDebugMgr.AddSphere(v1, 0.25f, GREEN, 3.0f);
                 }
 
                 diff = v2 - targetPos;
                 diff.y = 0;
                 if (diff.length >= COLLISION_SAFE_DIST)
-                    gIntCache.Push(candidate2);
+                    g_int_cache.Push(candidate2);
                 {
-                    //if (drawDebug > 0)
+                    //if (debug_draw_flag > 0)
                     //    gDebugMgr.AddSphere(v2, 0.25f, GREEN, 3.0f);
                 }
             }
@@ -1120,10 +1120,10 @@ class Thug : Enemy
 
         if (d_log)
         {
-            LogPrint(GetName() + " GetSperateDirection, dir_0=" + dirCache[0] + " dir_1=" + dirCache[1] + " dir_2=" + dirCache[2] + " dir_3=" + dirCache[3]);
+            LogPrint(GetName() + " GetSperateDirection, dir_0=" + g_dir_cache[0] + " dir_1=" + g_dir_cache[1] + " dir_2=" + g_dir_cache[2] + " dir_3=" + g_dir_cache[3]);
         }
 
-        ret = gIntCache[RandomInt(gIntCache.length)];
+        ret = g_int_cache[RandomInt(g_int_cache.length)];
         return ret;
     }
 
