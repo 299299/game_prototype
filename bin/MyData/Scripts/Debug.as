@@ -646,6 +646,14 @@ void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, float angle,
 {
     Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
     debug.AddLine(start, end, color, false);
+    debug.AddCross(end, 0.5f, color, false);
+}
+
+void DebugDrawDirection(DebugRenderer@ debug, const Vector3& start, const Vector3&in dir, const Color&in color, float radius = 1.0)
+{
+    Vector3 end = start + dir * radius;
+    debug.AddLine(start, end, color, false);
+    debug.AddCross(end, 0.5f, color, false);
 }
 
 void AddDebugMark(DebugRenderer@ debug, const Vector3&in position, const Color&in color, float size=0.15f)
@@ -701,6 +709,7 @@ enum DebugDrawCommandType
     DEBUG_DRAW_CIRCLE,
     DEBUG_DRAW_TEXT,
     DEBUG_DRAW_HINT,
+    DEBUG_DRAW_DIRECTION,
 };
 
 
@@ -864,6 +873,13 @@ class DebugDrawMgr
 
                 break;
             }
+        case DEBUG_DRAW_DIRECTION:
+            {
+                if (cmd.data1 == 0)
+                    DebugDrawDirection(debug, cmd.v1, cmd.v2.x, cmd.color, cmd.data2);
+                else
+                    DebugDrawDirection(debug, cmd.v1, cmd.v2, cmd.color, cmd.data2);
+            }
         }
     }
 
@@ -903,10 +919,32 @@ class DebugDrawMgr
         AddCommand(cmd);
     }
 
-    void AddDirection(const Vector3& start, float angle, float radius, const Color&in color, float t = 1.0f)
+    void AddDirection(const Vector3& start, float angle, float radius, const Color&in c, float t = 1.0f)
     {
-        Vector3 end = start + Vector3(Sin(angle) * radius, 0, Cos(angle) * radius);
-        AddLine(start, end, color, t);
+        DebugDrawCommand@ cmd = DebugDrawCommand();
+        cmd.type = DEBUG_DRAW_DIRECTION;
+        cmd.v1 = start;
+        cmd.v2 = Vector3(angle, 0, 0);
+        cmd.data1 = 0;
+        cmd.data2 = radius;
+        cmd.depth = false;
+        cmd.color = c;
+        cmd.time = t;
+        AddCommand(cmd);
+    }
+
+    void AddDirection(const Vector3& start, const Vector3&in dir, float radius, const Color&in c, float t = 1.0f)
+    {
+        DebugDrawCommand@ cmd = DebugDrawCommand();
+        cmd.type = DEBUG_DRAW_DIRECTION;
+        cmd.v1 = start;
+        cmd.v2 = dir;
+        cmd.data1 = 1;
+        cmd.data2 = radius;
+        cmd.depth = false;
+        cmd.color = c;
+        cmd.time = t;
+        AddCommand(cmd);
     }
 
     void AddHintText(const String&in text, float t = 1.0f)

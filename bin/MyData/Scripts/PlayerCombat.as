@@ -40,6 +40,7 @@ class PlayerAttackState : CharacterState
     bool                    lastKill = false;
 
     Vector3                 lastDockBonePosition;
+    Vector3                 lastFrameDockBonePosition;
 
     PlayerAttackState(Character@ c)
     {
@@ -119,6 +120,13 @@ class PlayerAttackState : CharacterState
 
         CheckInput(t);
         CharacterState::Update(dt);
+
+        if (debug_draw_flag > 0)
+        {
+            Vector3 curPos = attackNode.worldPosition;
+            gDebugMgr.AddLine(lastFrameDockBonePosition, curPos, GREEN);
+            lastFrameDockBonePosition = curPos;
+        }
     }
 
     void OnMotionFinished()
@@ -389,6 +397,7 @@ class PlayerAttackState : CharacterState
         StartAttack();
         CharacterState::Enter(lastState);
         lastDockBonePosition =  ownner.GetNode().GetChild(currentAttack.dockAlignBoneName, true).worldPosition;
+        lastFrameDockBonePosition = lastDockBonePosition;
     }
 
     void Exit(State@ nextState)
@@ -458,8 +467,8 @@ class PlayerAttackState : CharacterState
 
         if (debug_draw_flag > 0)
         {
-            gDebugMgr.AddDirection(vPos, hAngle, 5.0f, RED);
-            gDebugMgr.AddDirection(vPos, tAngle, 5.0f, BLACK);
+            gDebugMgr.AddDirection(vPos, dir, 5.0f, RED);
+            gDebugMgr.AddDirection(vPos, dir2, 5.0f, BLACK);
         }
 
         if (Abs(tAngle - hAngle) > 100)
