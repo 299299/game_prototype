@@ -31,9 +31,9 @@
 # Ragdoll Hit Direction Based on dock alignment bone position, compare with position angle diff <----
 # Static ragdoll
 # Reload remember setting or camera info
-
+# Split crowd agent and animation node
 
  Player Attack Particle (Bigger and Smoke)
  New Character
  Clean up audio ogg file
- Split crowd agent and animation node
+

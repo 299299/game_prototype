@@ -341,7 +341,7 @@ class ThugRunToTargetState : SingleMotionState
 
         Vector3 distV = targetPosition - ownner.GetNode().worldPosition;
         distV.y = 0;
-        if (distV.length < 0.25f)
+        if (distV.length < 0.5f)
         {
             ownner.CommonStateFinishedOnGroud();
             return;
@@ -361,7 +361,15 @@ class ThugRunToTargetState : SingleMotionState
     {
         SingleMotionState::Enter(lastState);
         targetPosition = ownner.GetNode().vars[TARGET].GetVector3();
+        ownner.agent.targetPosition = targetPosition;
+        ownner.aiSyncMode = 1;
         ownner.ClearAvoidance();
+    }
+
+    void Exit(State@ nextState)
+    {
+        SingleMotionState::Exit(nextState);
+        ownner.aiSyncMode = 0;
     }
 
     void FixedUpdate(float dt)
@@ -916,7 +924,7 @@ class Thug : Enemy
 
     bool ActionCheck(uint actionFlags = 0xFF)
     {
-        if (freeze_ai == 1)
+        if (freeze_ai == 1 || test_mode == 6)
             return false;
         // Print(GetName() + " ActionCheck in state:" + stateMachine.currentState.name);
         if (actionFlags & FLAGS_ATTACK != 0)
@@ -1204,9 +1212,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithPlayer(float max_dist = COLLISION_SAFE_DIST)
     {
-        if (HasFlag(FLAGS_NO_MOVE))
-            return false;
-        if (!HasFlag(FLAGS_COLLISION_AVOIDENCE))
+        if (HasFlag(FLAGS_NO_MOVE) || !HasFlag(FLAGS_COLLISION_AVOIDENCE) || test_mode == 6)
             return false;
         float dist = GetTargetDistance();
         if (dist >= max_dist)
@@ -1225,13 +1231,9 @@ class Thug : Enemy
 
     void KeepDistanceWithCharacter(Character@ c)
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1 || test_mode == 3)
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1 || test_mode == 3 || test_mode == 6)
             return;
         int index = RadialSelectAnimation(c.GetNode().worldPosition, 4);
-        //if (RandomInt(2) == 1)
-        //    index += 3;
-        //else
-        //   index += 1;
         index += 2;
         index = index % 4;
         if (RandomInt(2) == 1)

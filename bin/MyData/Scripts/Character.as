@@ -902,26 +902,32 @@ class CharacterGetUpState : MultiMotionState
 
 class Character : GameObject
 {
-    Character@              target;
 
-    Node@                   renderNode;
-
-    AnimationController@    animCtrl;
-    AnimatedModel@          animModel;
+    // ==============================================
+    // AI
+    // ==============================================
     CrowdAgent@             agent;
+    Node@                   aiNode;
+    int                     aiSyncMode;
 
+    // ==============================================
+    // LOGIC
+    // ==============================================
+    Character@              target;
     Vector3                 startPosition;
     Quaternion              startRotation;
-
-    Animation@              ragdollPoseAnim;
-
     int                     health = INITIAL_HEALTH;
-
     float                   attackRadius = 0.15f;
     int                     attackDamage = 10;
 
+    // ==============================================
+    // ANIMATION
+    // ==============================================
+    Node@                   renderNode;
     String                  lastAnimation;
-
+    Animation@              ragdollPoseAnim;
+    AnimationController@    animCtrl;
+    AnimatedModel@          animModel;
 
     // ==============================================
     // PHYSICS
@@ -977,8 +983,6 @@ class Character : GameObject
             renderNode.position = Vector3(0, 0.3f, 0);
         }
 
-        SetHealth(INITIAL_HEALTH);
-
         if (one_shot_kill)
             attackDamage = 9999;
 
@@ -1006,7 +1010,8 @@ class Character : GameObject
         body.collisionEventMode = COLLISION_ALWAYS;
         collisionBody = body;
 
-        agent = sceneNode.CreateComponent("CrowdAgent");
+        aiNode = sceneNode.scene.CreateChild(sceneNode.name + "_AI");
+        agent = aiNode.CreateComponent("CrowdAgent");
         agent.height = CHARACTER_HEIGHT;
         agent.maxSpeed = 11.6f;
         agent.maxAccel = 6.0f;
@@ -1026,11 +1031,14 @@ class Character : GameObject
             agent.enabled = false;
             collisionBody.enabled = false;
         }
-    }
 
+        Reset();
+    }
 
     void Stop()
     {
+        aiNode.Remove();
+        @aiNode = null;
         animModel.RemoveAllAnimationStates();
         @animCtrl = null;
         @animModel = null;
@@ -1148,6 +1156,8 @@ class Character : GameObject
         flags = FLAGS_ATTACK;
         sceneNode.worldPosition = startPosition;
         sceneNode.worldRotation = startRotation;
+        aiNode.worldPosition = startPosition;
+        aiNode.worldRotation = startRotation;
         SetHealth(INITIAL_HEALTH);
         SetTimeScale(1.0f);
         ChangeState("StandState");
@@ -1524,6 +1534,11 @@ class Character : GameObject
     {
         // Print("Update dt=" + dt);
         GameObject::Update(dt);
+
+        if (aiSyncMode == 0)
+        {
+            aiNode.worldPosition = sceneNode.worldPosition;
+        }
     }
 
     void FixedUpdate(float dt)
