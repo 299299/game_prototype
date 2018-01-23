@@ -1287,11 +1287,7 @@ void CreateThugCombatMotions()
     mgr.thug_attack_motions.Push(Global_CreateMotion(preFix + "Attack_Punch_02", attackMotionFlag, "Bip01_L_Foot", 24));
     mgr.thug_attack_motions.Push(Global_CreateMotion(preFix + "Attack_Kick", attackMotionFlag, "Bip01_R_Hand", 23));
     mgr.thug_attack_motions.Push(Global_CreateMotion(preFix + "Attack_Kick_01", attackMotionFlag, "Bip01_R_Hand", 23));
-    mgr.thug_attack_motions.Push(Global_CreateMotion(preFix + "Attack_Kick_02", attackMotionFlag, "Bip01_R_Hand", 23));   
-    for (uint i=0; i<mgr.thug_attack_motions.length; ++i)
-    {
-        LogPrint(mgr.thug_attack_motions[i].name + " dist=" + mgr.thug_attack_motions[i].endDistance);
-    }
+    mgr.thug_attack_motions.Push(Global_CreateMotion(preFix + "Attack_Kick_02", attackMotionFlag, "Bip01_R_Hand", 23));
 
     preFix = "TG_HitReaction/";
     int hitMotionFlag = kMotion_XZR;

@@ -82,8 +82,9 @@ bool camera_shake = true;
 // 1 --> test attack location pick
 // 2 --> test thug hit reaction
 // 3 --> test player 1.5 time scale
-// 4 --> test ragdoll
-int test_mode = 4;
+// 4 --> test ragdoll hit
+// 5 --> test ragdoll creation
+int test_mode = 5;
 
 GameInput@ gInput = GameInput();
 
@@ -105,7 +106,6 @@ void Start()
     freeze_ai = (test_mode > 0) ? 1 : 0;
     //if (test_mode == 4)
     //    freeze_ai = 0;
-
 
     if (!mobile)
     {
@@ -156,12 +156,43 @@ void Start()
         audio.masterGain[SOUND_EFFECT] = 0.0f;
     }
 
+    if (test_mode == 5)
+    {
+        ragdoll_method = 1;
+    }
+
     LogPrint("Start Finished !!! ");
 }
 
 void Stop()
 {
     LogPrint("================================= Test Stop =================================");
+
+    globalVars["Reload"] = 1;
+    if (gCameraMgr.currentController !is null && gCameraMgr.currentController.IsDebugCamera())
+    {
+        globalVars["CameraPos"] = gCameraMgr.cameraNode.worldPosition;
+        globalVars["CameraRot"] = gCameraMgr.cameraNode.worldRotation;
+    }
+
+    globalVars["DebugDrawFlag"] = debug_draw_flag;
+    globalVars["TestMode"] = test_mode;
+
+    if (gCameraMgr.GetCamera() !is null)
+        globalVars["CameraFillMode"] = int(gCameraMgr.GetCamera().fillMode);
+
+    Player@ p = GetPlayer();
+    if (p !is null)
+    {
+        globalVars["PlayerPos"] = p.GetNode().worldPosition;
+        globalVars["PlayerRot"] = p.GetNode().worldRotation;
+    }
+
+    if (script.defaultScene !is null)
+    {
+        globalVars["SceneUpdate"] = script.defaultScene.updateEnabled;
+    }
+
     gMotionMgr.Stop();
     gDebugMgr.Stop();
     ui.Clear();
@@ -340,6 +371,62 @@ void HandleAsyncLoadProgress(StringHash eventType, VariantMap& eventData)
 void HandleCameraEvent(StringHash eventType, VariantMap& eventData)
 {
     gCameraMgr.OnCameraEvent(eventData);
+}
+
+void PostSceneLoad()
+{
+    LogPrint("PostSceneLoad");
+
+    if (globalVars.Contains("Reload"))
+    {
+        if (globalVars.Contains("CameraPos"))
+        {
+            gCameraMgr.cameraNode.worldPosition = globalVars["CameraPos"].GetVector3();
+            gCameraMgr.cameraNode.worldRotation = globalVars["CameraRot"].GetQuaternion();
+            gCameraMgr.SetCameraController("Debug");
+        }
+
+        if (globalVars.Contains("PlayerPos"))
+        {
+            Player@ p = GetPlayer();
+            if (p !is null)
+            {
+                p.GetNode().worldPosition = globalVars["PlayerPos"].GetVector3();
+                p.GetNode().worldRotation = globalVars["PlayerRot"].GetQuaternion();
+            }
+        }
+
+        if (globalVars.Contains("DebugDrawFlag"))
+        {
+            debug_draw_flag = globalVars["DebugDrawFlag"].GetInt();
+        }
+
+        if (globalVars.Contains("TestMode"))
+        {
+            test_mode = globalVars["DebugDrawFlag"].GetInt();
+        }
+
+        if (globalVars.Contains("CameraFillMode"))
+        {
+            gCameraMgr.GetCamera().fillMode = FillMode(globalVars["CameraFillMode"].GetInt());
+        }
+
+        if (globalVars.Contains("SceneUpdate"))
+        {
+            DebugPause(!globalVars["SceneUpdate"].GetBool());
+        }
+
+        globalVars.Clear();
+    }
+    else
+    {
+        if (test_mode == 5)
+        {
+            debug_draw_flag = 3;
+            gCameraMgr.GetCamera().fillMode = FILL_WIREFRAME;
+            gCameraMgr.SetCameraController("Debug");
+        }
+    }
 }
 
 

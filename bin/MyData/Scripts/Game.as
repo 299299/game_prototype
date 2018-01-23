@@ -379,8 +379,14 @@ class TestGameState : GameState
                     player.RemoveFlag(FLAGS_INVINCIBLE);
 
                 freezeInput = false;
-                gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
+
+                if (gCameraMgr.currentController is null || !gCameraMgr.currentController.IsDebugCamera())
+                {
+                    gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
+                }
+
                 gInput.ShowHideUI(true);
+                PostSceneLoad();
             }
             break;
 
@@ -563,16 +569,6 @@ class TestGameState : GameState
 
         LogPrint("Game maxKilled=" + maxKilled);
 
-        Vector3 v_pos = playerNode.worldPosition;
-        cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
-        cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
-
-        gCameraMgr.Start(cameraNode);
-        //gCameraMgr.SetCameraController("Debug");
-        gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
-
-        CreateDebugUI();
-
         gameScene = scene_;
 
         Node@ lightNode = scene_.GetChild("light");
@@ -583,7 +579,16 @@ class TestGameState : GameState
             f.offset = Vector3(0, 10, 0);
         }
 
+        Vector3 v_pos = playerNode.worldPosition;
+        cameraNode.position = Vector3(v_pos.x, 10.0f, -10);
+        cameraNode.LookAt(Vector3(v_pos.x, 4, 0));
+
+        gCameraMgr.Start(cameraNode);
+        //gCameraMgr.SetCameraController("Debug");
+        gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
+
         OnTestModeChanged();
+        CreateDebugUI();
 
         //DumpSkeletonNames(playerNode);
         LogPrint("CreateScene() --> total time-cost " + (time.systemTime - t) + " ms WORLD_SIZE=" + (WORLD_HALF_SIZE * 2).ToString());

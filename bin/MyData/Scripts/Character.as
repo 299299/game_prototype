@@ -1020,6 +1020,12 @@ class Character : GameObject
             SubscribeToEvent(sceneNode, "NodeCollision", "HandleNodeCollision");
 
         animModel.RemoveAllAnimationStates();
+
+        if (test_mode == 5)
+        {
+            agent.enabled = false;
+            collisionBody.enabled = false;
+        }
     }
 
 

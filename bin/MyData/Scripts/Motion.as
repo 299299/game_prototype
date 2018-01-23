@@ -195,7 +195,7 @@ class Motion
 
     ~Motion()
     {
-        Print("Release animation " + this.name);
+        // LogPrint("Release animation " + this.name);
         animation = null;
         cache.ReleaseResource("Animation", animationName);
     }

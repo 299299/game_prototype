@@ -29,8 +29,10 @@
 # Motion Player TimeScale test
 # Ragdoll out of world kill
 # Ragdoll Hit Direction Based on dock alignment bone position, compare with position angle diff <----
+# Static ragdoll
+# Reload remember setting or camera info
 
- Static ragdoll
+
  Player Attack Particle (Bigger and Smoke)
  New Character
  Clean up audio ogg file

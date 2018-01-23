@@ -342,7 +342,7 @@ class Ragdoll : ScriptObject
         Vector3 lower_arm_offset_right(0.125f, 0.0f, -0.01f);
 
         CreateRagdollBone(BONE_PELVIS, SHAPE_BOX, Vector3(0.3f, 0.2f, 0.25f), Vector3(0.0f, 0.0f, 0.0f), identityQ);
-        CreateRagdollBone(BONE_SPINE, SHAPE_BOX, Vector3(0.35f, 0.2f, 0.3f), Vector3(0.15f, 0.0f, 0.0f), identityQ);
+        CreateRagdollBone(BONE_SPINE, SHAPE_BOX, Vector3(0.55f, 0.3f, 0.4f), Vector3(0.2f, 0.0f, 0.0f), identityQ);
         CreateRagdollBone(BONE_HEAD, SHAPE_BOX, Vector3(0.3f, 0.2f, 0.25f), Vector3(0.1f, 0.0f, 0.0f), identityQ);
 
         CreateRagdollBone(BONE_L_THIGH, SHAPE_CAPSULE, upper_leg_size, uppper_leg_offset, common_rotation);

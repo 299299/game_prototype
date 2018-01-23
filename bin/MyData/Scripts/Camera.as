@@ -534,6 +534,7 @@ class CameraManager
 
     void SetCameraController(const String&in name)
     {
+        LogPrint("SetCameraController --> " + name);
         SetCameraController(StringHash(name));
     }
 
