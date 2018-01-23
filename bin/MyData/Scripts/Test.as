@@ -84,7 +84,7 @@ bool camera_shake = true;
 // 3 --> test player 1.5 time scale
 // 4 --> test ragdoll hit
 // 5 --> test ragdoll creation
-int test_mode = 5;
+int test_mode = 0;
 
 GameInput@ gInput = GameInput();
 
@@ -104,8 +104,8 @@ void Start()
     g_dir_cache.Resize(4);
 
     freeze_ai = (test_mode > 0) ? 1 : 0;
-    //if (test_mode == 4)
-    //    freeze_ai = 0;
+    if (test_mode == 4)
+       freeze_ai = 0;
 
     if (!mobile)
     {

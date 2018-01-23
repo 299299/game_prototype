@@ -462,7 +462,7 @@ class PlayerAttackState : CharacterState
             gDebugMgr.AddDirection(vPos, tAngle, 5.0f, BLACK);
         }
 
-        if (Abs(tAngle - hAngle) > 120)
+        if (Abs(tAngle - hAngle) > 100)
         {
             LogPrint("Angle Diff too much, chooose pelvis angle.");
             dir = dir2;
