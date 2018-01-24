@@ -5,6 +5,7 @@
                              ●   ●                        */
 
 // ------------------------------------------------
+#include "Scripts/Variables.as"
 #include "Scripts/Game.as"
 #include "Scripts/AssetProcess.as"
 #include "Scripts/Motion.as"
@@ -27,67 +28,6 @@
 #include "Scripts/Bruce.as"
 #include "Scripts/PlayerCombat.as"
 #include "Scripts/PlayerMovement.as"
-
-enum RenderFeature
-{
-    RF_NONE     = 0,
-    RF_SHADOWS  = (1 << 0),
-    RF_HDR      = (1 << 1),
-    RF_AA       = (1 << 2),
-    RF_FULL     = RF_SHADOWS | RF_HDR | RF_AA,
-};
-
-bool big_head_mode = false;
-bool nobgm = true;
-bool nosound = true;
-
-Node@ music_node;
-float BGM_BASE_FREQ = 44100;
-
-uint camera_id = M_MAX_UNSIGNED;
-uint player_id = M_MAX_UNSIGNED;
-
-int test_enemy_num_override = 20;
-int render_features = RF_SHADOWS | RF_HDR;
-
-const String CAMERA_NAME = "Camera";
-const String UI_FONT = "Fonts/angrybirds-regular.ttf";
-const int UI_FONT_SIZE = 40;
-const String DEBUG_FONT = "Fonts/Anonymous Pro.ttf";
-const int DEBUG_FONT_SIZE = 20;
-const String GAME_CAMEAR_NAME = "ThirdPerson";
-const Color TARGET_COLOR(0.25f, 0.28f, 0.7f);
-const Color SOURCE_COLOR(0.75f, 0.28f, 0.27f);
-
-Array<int> g_dir_cache;
-Array<int> g_int_cache;
-Array<Vector3> g_v3_cache;
-
-bool mobile = false;
-bool one_shot_kill = false;
-bool instant_collision = true;
-bool player_walk = true;
-bool locomotion_turn = true;
-bool attack_choose_closest_one = false;
-bool counter_choose_closest_one = false;
-
-int freeze_ai = 1;
-int game_state = 0;
-int debug_mode = 0;
-int collision_type = 0;
-int PROCESS_TIME_PER_FRAME = 60; // ms
-bool camera_collison = false;
-bool camera_shake = true;
-// test mode
-// 1 --> test attack location pick
-// 2 --> test thug hit reaction
-// 3 --> test player 1.5 time scale
-// 4 --> test ragdoll hit
-// 5 --> test ragdoll creation
-// 6 --> test ai move behavior
-int test_mode = 2;
-
-GameInput@ gInput = GameInput();
 
 void Start()
 {
@@ -137,7 +77,6 @@ void Start()
     script.defaultScriptFile = scriptFile;
 
     SetRandomSeed(time.systemTime);
-    @gMotionMgr = BM_Game_MotionManager();
 
     if (!mobile)
         gDebugMgr.Start();
@@ -464,8 +403,8 @@ bool Global_HasFlag(uint flags, uint flag)
 
 void CameraShake()
 {
-    float amount = Random(0.1f, 0.25f);
-    float duration = Random(1.0f);
+    float amount = Random(SHAKE_MIN_AMOUNT, SHAKE_MAX_AMOUNT);
+    float duration = Random(SHAKE_DURATION);
     VariantMap data;
     data[NAME] = StringHash("Shake");
     data[VALUE] = amount;

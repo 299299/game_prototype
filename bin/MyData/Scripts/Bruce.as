@@ -4,10 +4,6 @@
 //
 // ==============================================
 
-// -- non cost
-float BRUCE_TRANSITION_DIST = 0.0f;
-const String BRUCE_MOVEMENT_GROUP = "BM_Combat_Movement/";
-
 class BruceStandState : PlayerStandState
 {
     BruceStandState(Character@ c)
@@ -155,8 +151,7 @@ class BruceTransitionState : PlayerTransitionState
     {
         super(c);
         SetMotion("BM_Combat/Into_Takedown");
-        BRUCE_TRANSITION_DIST = motion.endDistance;
-        LogPrint("Bruce-Transition Dist=" + BRUCE_TRANSITION_DIST);
+        LogPrint("Bruce-Transition Dist=" + motion.endDistance);
     }
 };
 
@@ -222,14 +217,14 @@ void CreateBruceMotions()
 void CreateBruceCombatMotions()
 {
     BM_Game_MotionManager@ mgr = cast<BM_Game_MotionManager>(gMotionMgr);
-    
+
     String preFix = "BM_HitReaction/";
     Global_CreateMotion(preFix + "HitReaction_Back"); // back attacked
     Global_CreateMotion(preFix + "HitReaction_Face_Right"); // front punched
     Global_CreateMotion(preFix + "Hit_Reaction_SideLeft"); // left attacked
     Global_CreateMotion(preFix + "Hit_Reaction_SideRight"); // right attacked
 
-    
+
     int flags = kMotion_XZR | kMotion_Ext_DoNotRotateAnimation;
     //========================================================================
     // FORWARD

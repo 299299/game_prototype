@@ -4,16 +4,7 @@
 //
 // ==============================================
 
-const int LAYER_MOVE = 0;
-const int LAYER_ATTACK = 1;
-
-enum AttackType
-{
-    ATTACK_PUNCH,
-    ATTACK_KICK,
-};
-
-void PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
+void Global_PlayAnimation(AnimationController@ ctrl, const String&in name, uint layer = LAYER_MOVE, bool loop = false, float blendTime = 0.1f, float startTime = 0.0f, float speed = 1.0f)
 {
     //LogPrint("PlayAnimation " + name + " loop=" + loop + " blendTime=" + blendTime + " startTime=" + startTime + " speed=" + speed);
     ctrl.StopLayer(layer, blendTime);
@@ -687,9 +678,6 @@ class MotionManager
             motions[i].Process();
     }
 };
-
-
-MotionManager@ gMotionMgr;
 
 Motion@ Global_CreateMotion(const String&in name, int motionFlag = kMotion_XZR, int allowMotion = kMotion_ALL, int endFrame = -1, bool loop = false)
 {

@@ -8,22 +8,6 @@
 //
 // ==============================================
 
-bool  freezeInput = false;
-const float touch_scale_x = 0.15;
-const float button_scale_x = 0.1;
-const float border_offset = 10.0;
-const String tag_input = "tag_input";
-const String touch_btn_name = "touch_move";
-const String touch_icon_name = "touch_move_icon";
-
-enum InputAction
-{
-    kInputAttack = 0,
-    kInputCounter,
-    kInputDistract,
-    kInputEvade,
-};
-
 class GameInput
 {
     float m_leftStickX;
@@ -142,7 +126,7 @@ class GameInput
             UIElement@ e = ui.GetElementAt(touchedPositions[i]);
             if (e !is null)
             {
-                if (e.name == touch_btn_name)
+                if (e.name == TOUCH_BTN_NAME)
                 {
                     float w = float(e.size.x) / 2.0;
                     float cx = float(e.position.x) + w;
@@ -161,7 +145,7 @@ class GameInput
         // if last time we are touch moving
         if (touchMovingArea)
         {
-            UIElement@ e1 = ui.root.GetChild(touch_btn_name);
+            UIElement@ e1 = ui.root.GetChild(TOUCH_BTN_NAME);
             float w = float(e1.size.x) / 2.0;
             float cx = float(e1.position.x) + w;
             float cy = float(e1.position.y) + w;
@@ -214,7 +198,7 @@ class GameInput
 
     bool IsInputActioned(int action)
     {
-        if (freezeInput)
+        if (freeze_input)
             return false;
 
         bool ret = false;
@@ -232,7 +216,7 @@ class GameInput
                         ret = true;
                         break;
                     }
-                    else if (e.name == touch_btn_name)
+                    else if (e.name == TOUCH_BTN_NAME)
                     {
                         moving = true;
                     }
@@ -266,18 +250,18 @@ class GameInput
     {
         CreateHatButton();
         CreateHatIconButton();
-        float w = float(graphics.width) * button_scale_x;
-        float x = float(graphics.width) - (w + border_offset) * 4;
-        float y = graphics.height - w - border_offset;
+        float w = float(graphics.width) * BUTTON_SCALE_X;
+        float x = float(graphics.width) - (w + BORDER_OFFSET) * 4;
+        float y = graphics.height - w - BORDER_OFFSET;
         Button@ btn = CreateButton(x, y, "attack");
         actionNames.Push(btn.name);
-        x += (w + border_offset);
+        x += (w + BORDER_OFFSET);
         btn = CreateButton(x, y, "counter");
         actionNames.Push(btn.name);
-        x += (w + border_offset);
+        x += (w + BORDER_OFFSET);
         btn = CreateButton(x, y, "distract");
         actionNames.Push(btn.name);
-        x += (w + border_offset);
+        x += (w + BORDER_OFFSET);
         btn = CreateButton(x, y, "evade");
         actionNames.Push(btn.name);
     }
@@ -289,11 +273,11 @@ class GameInput
         button.texture = cache.GetResource("Texture2D", "Textures/touch.png");
         // button.imageRect = IntRect(96,0,192,96);
         button.blendMode = BLEND_ADDALPHA;
-        float w = float(graphics.width) * button_scale_x;
+        float w = float(graphics.width) * BUTTON_SCALE_X;
         button.SetFixedSize(int(w), int(w));
         button.SetPosition(int(x), int(y));
         button.visible = false;
-        button.AddTag(tag_input);
+        button.AddTag(TAG_INPUT);
         Text@ buttonText = button.CreateChild("Text");
         buttonText.SetAlignment(HA_CENTER, VA_CENTER);
         buttonText.SetFont(cache.GetResource("Font", UI_FONT), 25);
@@ -306,15 +290,15 @@ class GameInput
     Button@ CreateHatButton()
     {
         Button@ button = Button();
-        button.name = touch_btn_name;
+        button.name = TOUCH_BTN_NAME;
         button.texture = cache.GetResource("Texture2D", "Textures/touch.png");
         //button.imageRect = IntRect(0,0,96,96);
         button.blendMode = BLEND_ADDALPHA;
-        float w = float(graphics.width) * touch_scale_x;
+        float w = float(graphics.width) * TOUCH_SCALE_X;
         button.SetFixedSize(int(w), int(w));
-        button.SetPosition(int(border_offset), int(graphics.height - w - border_offset));
+        button.SetPosition(int(BORDER_OFFSET), int(graphics.height - w - BORDER_OFFSET));
         button.visible = false;
-        button.AddTag(tag_input);
+        button.AddTag(TAG_INPUT);
         ui.root.AddChild(button);
         return button;
     }
@@ -322,29 +306,29 @@ class GameInput
     Button@ CreateHatIconButton()
     {
         Button@ button = Button();
-        button.name = touch_icon_name;
+        button.name = TOUCH_ICON_NAME;
         button.texture = cache.GetResource("Texture2D", "Textures/touch.png");
         // button.imageRect = IntRect(0,0,96,96);
         button.blendMode = BLEND_ADDALPHA;
-        float w = float(graphics.width) * touch_scale_x / 4.0f;
+        float w = float(graphics.width) * TOUCH_SCALE_X / 4.0f;
         button.SetFixedSize(int(w), int(w));
         button.visible = false;
         button.enabled = false;
-        button.AddTag(tag_input);
+        button.AddTag(TAG_INPUT);
         ui.root.AddChild(button);
         return button;
     }
 
     void ShowHideUI(bool bShow)
     {
-        Array<UIElement@> elements = ui.root.GetChildrenWithTag(tag_input);
+        Array<UIElement@> elements = ui.root.GetChildrenWithTag(TAG_INPUT);
         for (uint i=0; i<elements.length; ++i)
             elements[i].visible = bShow;
     }
 
     void UpdateInputUI()
     {
-        Button@ icon_btn = ui.root.GetChild(touch_icon_name, false);
+        Button@ icon_btn = ui.root.GetChild(TOUCH_ICON_NAME, false);
         if (icon_btn !is null)
         {
             icon_btn.visible = touchMovingArea;

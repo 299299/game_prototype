@@ -4,29 +4,6 @@
 //
 // ==============================================
 
-const int CTRL_ATTACK = (1 << 0);
-const int CTRL_JUMP = (1 << 1);
-const int CTRL_ALL = (1 << 16);
-
-const uint FLAGS_ATTACK  = (1 << 0);
-const uint FLAGS_COUNTER = (1 << 1);
-const uint FLAGS_NO_MOVE = (1 << 2);
-const uint FLAGS_MOVING = (1 << 3);
-const uint FLAGS_INVINCIBLE = (1 << 4);
-const uint FLAGS_STUN = (1 << 5);
-const uint FLAGS_KEEP_DIST = (1 << 6);
-const uint FLAGS_RUN_TO_ATTACK = (1 << 7);
-const uint FLAGS_DEAD = (1 << 8);
-const uint FLAGS_COLLISION_AVOIDENCE = (1 << 9);
-const uint FLAGS_HIT_RAGDOLL = (1 << 10);
-const uint FLAGS_TAUNT = (1 << 11);
-
-const uint COLLISION_LAYER_LANDSCAPE = (1 << 0);
-const uint COLLISION_LAYER_CHARACTER = (1 << 1);
-const uint COLLISION_LAYER_PROP      = (1 << 2);
-const uint COLLISION_LAYER_RAGDOLL   = (1 << 3);
-// const uint COLLISION_LAYER_WALL      = (1 << 4);
-
 class GameObject : ScriptObject
 {
     FSM@    stateMachine = FSM();
@@ -270,7 +247,7 @@ class GameObject : ScriptObject
         {
             @otherObject = cast<GameObject>(otherNode.parent.scriptObject);
         }
-        
+
         ObjectCollision(otherObject, otherBody, eventData);
     }
 

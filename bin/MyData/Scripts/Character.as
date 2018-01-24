@@ -4,60 +4,6 @@
 //
 // ==============================================
 
-const float FULLTURN_THRESHOLD = 125;
-const float COLLISION_RADIUS = 1.45f;
-const float COLLISION_SAFE_DIST = COLLISION_RADIUS * 2.0f + 0.1f;
-const float CHARACTER_HEIGHT = 5.0f;
-const float SPHERE_CAST_RADIUS = 0.25f;
-
-const int MAX_NUM_OF_ATTACK = 3;
-const int MAX_NUM_OF_MOVING = 3;
-const int MAX_NUM_OF_NEAR = 4;
-const int MAX_NUM_OF_RUN_ATTACK = 3;
-
-const int INITIAL_HEALTH = 100;
-const float IN_AIR_FOOT_HEIGHT = 0.75f;
-const float KEEP_TARGET_DISTANCE = COLLISION_SAFE_DIST - 0.5f;
-const Vector3 COLLISION_OFFSET(0, CHARACTER_HEIGHT/2.0f, 0.3f);
-
-const StringHash ATTACK_STATE("AttackState");
-const StringHash HIT_STATE("HitState");
-const StringHash STAND_STATE("StandState");
-const StringHash ALIGN_STATE("AlignState");
-const StringHash RUN_TO_TARGET_STATE("RunToTargetState");
-
-const StringHash ANIMATION_INDEX("AnimationIndex");
-const StringHash ATTACK_TYPE("AttackType");
-const StringHash TIME_SCALE("TimeScale");
-const StringHash DATA("Data");
-const StringHash NAME("Name");
-const StringHash ANIMATION("Animation");
-const StringHash STATE("State");
-const StringHash VALUE("Value");
-const StringHash COUNTER_CHECK("CounterCheck");
-const StringHash ATTACK_CHECK("AttackCheck");
-const StringHash BONE("Bone");
-const StringHash NODE("Node");
-const StringHash COMBAT_SOUND("CombatSound");
-const StringHash COMBAT_SOUND_LARGE("CombatSoundLarge");
-const StringHash PARTICLE("Particle");
-const StringHash DURATION("Duration");
-const StringHash READY_TO_FIGHT("ReadyToFight");
-const StringHash FOOT_STEP("FootStep");
-const StringHash CHANGE_STATE("ChangeState");
-const StringHash IMPACT("Impact");
-const StringHash SOUND("Sound");
-const StringHash TARGET("Target");
-const StringHash FLAGS_UPDATED("FLAGS_UPDATED");
-
-const String PLAYER_TAG("Tag_Player");
-const String ENEMY_TAG("Tag_Enemy");
-
-Vector3 WORLD_HALF_SIZE(1000, 0, 1000);
-
-int num_of_sounds = 37;
-int num_of_big_sounds = 6;
-
 class CharacterState : State
 {
     Character@                  ownner;

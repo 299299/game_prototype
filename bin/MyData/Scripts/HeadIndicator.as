@@ -5,7 +5,6 @@ enum StateIndicator
     STATE_INDICATOR_ATTACK,
 };
 
-
 class HeadIndicator : ScriptObject
 {
     Vector3 offset = Vector3(0, 1.5f, 0);

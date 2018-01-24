@@ -4,22 +4,6 @@
 //
 // ==============================================
 
-const float MAX_COUNTER_DIST = 4.5f;
-const float DIST_SCORE = 40.0f;
-const float ANGLE_SCORE = 30.0f;
-const float THREAT_SCORE = 30.0f;
-const int   MAX_WEAK_ATTACK_COMBO = 3;
-const float MAX_DISTRACT_DIST = 4.0f;
-const float MAX_DISTRACT_DIR = 90.0f;
-const int   HIT_WAIT_FRAMES = 3;
-const float LAST_KILL_SPEED = 0.35f;
-const float COUNTER_ALIGN_MAX_DIST = 1.0f;
-const float GOOD_COUNTER_DIST = 4.0f;
-const float ATTACK_DIST_PICK_LONG_RANGE = 3.0f;
-const float ATTACK_DIST_PICK_SHORT_RANGE = 1.0f;
-const float MAX_ATTACK_CHECK_DIST = 3.0f;
-float MAX_ATTACK_DIST = 15.0f;
-
 class Player : Character
 {
     int             combo;

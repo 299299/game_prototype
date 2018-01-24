@@ -4,21 +4,6 @@
 //
 // ==============================================
 
-// --- CONST
-const String MOVEMENT_GROUP_THUG = "TG_Combat/";
-const float MIN_TURN_ANGLE = 20;
-const float MIN_THINK_TIME = 0.25f;
-const float MAX_THINK_TIME = 1.0f;
-const float PUNCH_DIST = 0.0f;
-const float KICK_DIST = 3.8f;
-const float MAX_ATTACK_RANGE = KICK_DIST;
-const float HIT_RAGDOLL_FORCE = 25.0f;
-
-const float AI_FAR_DIST = 15.0f;
-const float AI_NEAR_DIST = 7.5f;
-const float AI_MAX_STATE_TIME = 10.0f;
-const float RAGDOLL_HIT_VEL = 15.0f;
-
 class ThugStandState : MultiAnimationState
 {
     float           thinkTime;

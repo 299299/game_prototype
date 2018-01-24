@@ -3,14 +3,6 @@
 //    Camera Controller Logic Class
 //
 // ==============================================
-const StringHash TARGET_POSITION("TargetPosition");
-const StringHash TARGET_ROTATION("TargetRotation");
-const StringHash TARGET_CONTROLLER("TargetController");
-const StringHash TARGET_FOV("TargetFOV");
-
-const float BASE_FOV = 45.0f;
-const float SHAKE_MAX_ANGLE = 10.0f;
-
 float DampingCurve(float x, float dampingPercent)
 {
     x = Clamp(x, 0.0f, 1.0f);
@@ -357,7 +349,7 @@ class AnimationCameraController : CameraController
     {
         animation = animName;
         script.defaultScene.GetNode(nodeId).worldPosition = GetTarget();
-        PlayAnimation(CreateAnimationNode().GetComponent("AnimationController"), animName, LAYER_MOVE, false, 0.1f, 0.0f, 1.0f);
+        Global_PlayAnimation(CreateAnimationNode().GetComponent("AnimationController"), animName, LAYER_MOVE, false, 0.1f, 0.0f, 1.0f);
     }
 
     void OnCameraEvent(VariantMap& eventData)
@@ -672,5 +664,3 @@ class CameraManager
         return (currentController !is null) ? currentController.GetDebugText() : "";
     }
 };
-
-CameraManager@ gCameraMgr = CameraManager();

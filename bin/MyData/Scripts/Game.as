@@ -3,7 +3,6 @@
 //    GameState Class for Game Manager
 //
 // ==============================================
-const String TAG_LOADING = "TAG_LOADING";
 
 class GameState : State
 {
@@ -294,7 +293,7 @@ class TestGameState : GameState
                 if (fullscreenUI.opacity > 0.99f)
                 {
                     Player@ player = GetPlayer();
-                    freezeInput = true;
+                    freeze_input = true;
                     em.RemoveAll();
 
                     if (player !is null)
@@ -378,7 +377,7 @@ class TestGameState : GameState
                 if (player !is null)
                     player.RemoveFlag(FLAGS_INVINCIBLE);
 
-                freezeInput = false;
+                freeze_input = false;
 
                 if (gCameraMgr.currentController is null || !gCameraMgr.currentController.IsDebugCamera())
                 {
@@ -402,7 +401,7 @@ class TestGameState : GameState
                     fullscreenUI.SetAttributeAnimation("Opacity", alphaAnimation, WM_ONCE);
                 }
 
-                freezeInput = true;
+                freeze_input = true;
                 if (player !is null)
                     player.AddFlag(FLAGS_INVINCIBLE);
             }
@@ -730,6 +729,3 @@ class GameFSM : FSM
             gameState.OnSceneTimeScaleUpdated(scene, newScale);
     }
 };
-
-
-GameFSM@ gGame = GameFSM();

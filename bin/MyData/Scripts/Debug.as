@@ -11,16 +11,6 @@ DEBUG Features
 
 */
 
-
-int test_beat_index = 1;
-bool base_on_player = false;
-int test_counter_index = 0;
-int test_double_counter_index = 0;
-int test_triple_counter_index = 0;
-int test_attack_id = 0;
-int test_environment_counter_index = 0;
-int debug_draw_flag = 2;
-
 void ShootBox(Scene@ _scene)
 {
     Node@ cameraNode = gCameraMgr.GetCameraNode();
