@@ -122,7 +122,7 @@ const float GOOD_COUNTER_DIST = 4.0f;
 const float ATTACK_DIST_PICK_LONG_RANGE = 5.0f;
 const float ATTACK_DIST_PICK_SHORT_RANGE = 5.0f;
 const float MAX_ATTACK_CHECK_DIST = 3.0f;
-float MAX_ATTACK_DIST = 15.0f;
+float MAX_ATTACK_DIST = 20.0f;
 
 // ==============================================
 //
