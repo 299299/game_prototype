@@ -699,6 +699,8 @@ class ThugHitState : MultiMotionState
         }
 
         float targetAngle = ownner.GetTargetAngle();
+        // Vector3 dir = ownner.GetNode().vars[DIRECTION].GetVector3();
+        // float targetAngle = Atan2(dir.x, dir.z);
         if (index > 1)
             targetAngle = AngleDiff(targetAngle + 180);
         ownner.sceneNode.vars[ANIMATION_INDEX] = index;
@@ -969,6 +971,8 @@ class Thug : Enemy
         health -= damage;
         health = Max(0, health);
         SetHealth(health);
+
+        sceneNode.vars[DIRECTION] = direction;
 
         int r = RandomInt(4);
         // if (r > 1)

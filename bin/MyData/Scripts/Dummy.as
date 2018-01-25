@@ -4,6 +4,9 @@
 //
 // ==============================================
 
+const StringHash ALIGN_STATE("AlignState");
+const StringHash RUN_TO_TARGET_STATE("RunToTargetState");
+
 void SetComponentEnabled(const String&in boneName, const String&in componentName, bool bEnable)
 {
     Node@ _node = sceneNode.GetChild(boneName, true);

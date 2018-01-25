@@ -67,8 +67,6 @@ const Vector3 COLLISION_OFFSET(0, CHARACTER_HEIGHT/2.0f, 0.3f);
 const StringHash ATTACK_STATE("AttackState");
 const StringHash HIT_STATE("HitState");
 const StringHash STAND_STATE("StandState");
-const StringHash ALIGN_STATE("AlignState");
-const StringHash RUN_TO_TARGET_STATE("RunToTargetState");
 
 const StringHash ANIMATION_INDEX("AnimationIndex");
 const StringHash ATTACK_TYPE("AttackType");
@@ -92,7 +90,7 @@ const StringHash CHANGE_STATE("ChangeState");
 const StringHash IMPACT("Impact");
 const StringHash SOUND("Sound");
 const StringHash TARGET("Target");
-const StringHash FLAGS_UPDATED("FLAGS_UPDATED");
+const StringHash DIRECTION("Direction");
 
 const String PLAYER_TAG("Tag_Player");
 const String ENEMY_TAG("Tag_Enemy");
