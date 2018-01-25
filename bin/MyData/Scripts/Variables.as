@@ -255,7 +255,7 @@ bool camera_shake = true;
 // 4 --> test ragdoll hit
 // 5 --> test ragdoll creation
 // 6 --> test ai move behavior
-int test_mode = 0;
+int test_mode = 2;
 
 // ==============================================
 //

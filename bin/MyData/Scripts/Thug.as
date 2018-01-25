@@ -910,7 +910,7 @@ class Thug : Enemy
 
     bool ActionCheck(uint actionFlags = 0xFF)
     {
-        if (freeze_ai == 1 || test_mode == 6)
+        if (freeze_ai == 1 || test_mode == 6 || test_mode == 2)
             return false;
         // Print(GetName() + " ActionCheck in state:" + stateMachine.currentState.name);
         if (actionFlags & FLAGS_ATTACK != 0)

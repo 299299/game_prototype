@@ -45,7 +45,7 @@ void Start()
     g_dir_cache.Resize(4);
 
     freeze_ai = (test_mode > 0) ? 1 : 0;
-    if (test_mode == 4 || test_mode == 6)
+    if (test_mode == 2 || test_mode == 4 || test_mode == 6)
        freeze_ai = 0;
 
     if (!mobile)
