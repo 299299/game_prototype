@@ -23,6 +23,7 @@ class ThugStandState : MultiAnimationState
         thinkTime = Random(MIN_THINK_TIME, MAX_THINK_TIME);
         ownner.ClearAvoidance();
         ownner.SetVelocity(Vector3::ZERO);
+        ownner.SetTimeScale(1.0f);
         int r = 3;
         int rand_i = RandomInt(r);
         ownner.GetNode().vars[ATTACK_TYPE] = (rand_i == (r-1)) ? ATTACK_KICK : ATTACK_PUNCH;

@@ -37,7 +37,7 @@ class GameObject : ScriptObject
     void SetTimeScale(float scale)
     {
         timeScale = scale;
-        LogPrint(GetName() + " SetTimeScale:" + scale);
+        LogPrint(GetName() + " SetTimeScale:" + scale + " in state: " + stateMachine.GetCurrentStateName());
     }
 
     void CheckDuration(float timeStep)

@@ -180,4 +180,9 @@ class FSM
             ret += "null\n";
         return ret;
     }
+
+    String GetCurrentStateName()
+    {
+        return (currentState is null) ? "null" : currentState.name;
+    }
 };
