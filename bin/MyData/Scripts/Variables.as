@@ -15,6 +15,14 @@ int test_attack_id = 0;
 int test_environment_counter_index = 0;
 int debug_draw_flag = 2;
 
+const float sliderRange = 20.0f;
+const float cameraDistMin = 3.0f;
+const float cameraDistMax = 40.0f;
+const float cameraPitchMin = -60.0f;
+const float cameraPitchMax = 90.0f;
+const String TAG_DEBUG = "TAG_DEBUG";
+const String TAG_DEBUG_ANIM = "TAG_DEBUG_ANIM";
+
 // ==============================================
 //
 //    GANME OBJECT GLOBAL
@@ -251,8 +259,9 @@ bool camera_shake = true;
 // 4 --> test ragdoll hit
 // 5 --> test ragdoll creation
 // 6 --> test ai move behavior
-// 7 --> debug_mode debug ui parameter tweak
-int debug_mode = 2;
+// 7 --> debug ui parameter tweak
+// 8 --> debug animation
+int debug_mode = 8;
 
 // ==============================================
 //

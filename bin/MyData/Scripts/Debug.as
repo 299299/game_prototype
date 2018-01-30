@@ -129,7 +129,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         debug_mode ++;
         debug_mode = debug_mode % 8;
-        OnTestModeChanged();
+        OnDebugModeChanged();
     }
     else if (key == KEY_1)
     {
@@ -966,12 +966,6 @@ DebugDrawMgr@ gDebugMgr = DebugDrawMgr();
 //  Debug UI Slider Changed
 //
 // ======================================================================
-const float sliderRange = 20.0f;
-const float cameraDistMin = 3.0f;
-const float cameraDistMax = 40.0f;
-const float cameraPitchMin = -60.0f;
-const float cameraPitchMax = 90.0f;
-const String TAG_DEBUG = "TAG_DEBUG";
 
 Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
 {
@@ -1067,18 +1061,19 @@ void HandleButtonPressed(StringHash eventType, VariantMap& eventData)
     if (e.name == "Debug")
     {
         debug_mode = (debug_mode == 7) ? 0 : 7;
-        debug_draw_flag = (debug_mode == 0) ? 0 : 1;
-
-        Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(TAG_DEBUG);
-        for (uint i = 0; i < elements.length; ++i)
-            elements[i].visible = (debug_mode == 7);
     }
 }
 
-void OnTestModeChanged()
+void OnDebugModeChanged()
 {
     Player@ p = GetPlayer();
     p.SetTimeScale(debug_mode == 3 ? 1.5f : 1.0f);
+
+    debug_draw_flag = (debug_mode == 0) ? 0 : 1;
+
+    Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(TAG_DEBUG);
+    for (uint i = 0; i < elements.length; ++i)
+        elements[i].visible = (debug_mode == 7);
 }
 
 void DebugPause(bool bPause)
