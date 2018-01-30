@@ -136,7 +136,7 @@ class Player : Character
 
         if (combo < speed_up_combo)
         {
-            if (test_mode != 3)
+            if (debug_mode != 3)
                 SetTimeScale(1.0f);
         }
         else
@@ -146,7 +146,7 @@ class Player : Character
             float a = float(c)/float(max_comb);
             const float max_time_scale = 1.35f;
             float time_scale = Lerp(1.0f, max_time_scale, a);
-            if (test_mode != 3)
+            if (debug_mode != 3)
                 SetTimeScale(time_scale);
             const float max_fov = 75;
             fov = Lerp(BASE_FOV, max_fov, a);
@@ -354,7 +354,7 @@ class Player : Character
     {
         LogPrint("Do--Attack--->");
         Enemy@ e = null;
-        if (test_mode == 1 || test_mode == 3)
+        if (debug_mode == 1 || debug_mode == 3)
         {
             EnemyManager@ em = GetEnemyMgr();
             @e = em.enemyList[RandomInt(em.enemyList.length)];

@@ -127,8 +127,8 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
          engine.Exit();
     else if (key == KEY_BACKQUOTE)
     {
-        test_mode ++;
-        test_mode = test_mode % 2;
+        debug_mode ++;
+        debug_mode = debug_mode % 8;
         OnTestModeChanged();
     }
     else if (key == KEY_1)
@@ -293,7 +293,7 @@ void HandleMouseButtonDown(StringHash eventType, VariantMap& eventData)
     }
     else if(button == MOUSEB_LEFT)
     {
-        if (test_mode > 0)
+        if (debug_mode > 0)
         {
             DebugPause(false);
             DebugTimeScale(1.0f);
@@ -1066,28 +1066,19 @@ void HandleButtonPressed(StringHash eventType, VariantMap& eventData)
     UIElement@ e = eventData["Element"].GetPtr();
     if (e.name == "Debug")
     {
-        debug_mode = (debug_mode == 0) ? 1 : 0;
-        if (debug_mode == 1)
-        {
-            freeze_ai = 1;
-            debug_draw_flag = 1;
-        }
-        else
-        {
-            freeze_ai = 0;
-            debug_draw_flag = 0;
-        }
+        debug_mode = (debug_mode == 7) ? 0 : 7;
+        debug_draw_flag = (debug_mode == 0) ? 0 : 1;
 
         Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(TAG_DEBUG);
         for (uint i = 0; i < elements.length; ++i)
-            elements[i].visible = (debug_mode == 1);
+            elements[i].visible = (debug_mode == 7);
     }
 }
 
 void OnTestModeChanged()
 {
     Player@ p = GetPlayer();
-    p.SetTimeScale(test_mode == 3 ? 1.5f : 1.0f);
+    p.SetTimeScale(debug_mode == 3 ? 1.5f : 1.0f);
 }
 
 void DebugPause(bool bPause)

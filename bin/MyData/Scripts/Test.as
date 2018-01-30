@@ -40,13 +40,9 @@ void Start()
     nosound = !mobile;
 
     if (mobile)
-        test_mode = 0;
+        debug_mode = 0;
 
     g_dir_cache.Resize(4);
-
-    freeze_ai = (test_mode > 0) ? 1 : 0;
-    if (test_mode == 2 || test_mode == 4 || test_mode == 6)
-       freeze_ai = 0;
 
     if (!mobile)
     {
@@ -67,8 +63,8 @@ void Start()
                 big_head_mode = !big_head_mode;
             else if (argument == "lowend")
                 render_features = RF_NONE;
-            else if (argument == "freezeai")
-                freeze_ai = 1;
+            else if (debug_mode == "debug_mode")
+                debug_mode = 1;
         }
     }
 
@@ -96,7 +92,7 @@ void Start()
         audio.masterGain[SOUND_EFFECT] = 0.0f;
     }
 
-    if (test_mode == 5)
+    if (debug_mode == 5)
     {
         ragdoll_method = 1;
     }
@@ -116,7 +112,7 @@ void Stop()
     }
 
     globalVars["DebugDrawFlag"] = debug_draw_flag;
-    globalVars["TestMode"] = test_mode;
+    globalVars["TestMode"] = debug_mode;
 
     if (gCameraMgr.GetCamera() !is null)
         globalVars["CameraFillMode"] = int(gCameraMgr.GetCamera().fillMode);
@@ -343,7 +339,7 @@ void PostSceneLoad()
 
         if (globalVars.Contains("TestMode"))
         {
-            test_mode = globalVars["DebugDrawFlag"].GetInt();
+            debug_mode = globalVars["DebugDrawFlag"].GetInt();
         }
 
         if (globalVars.Contains("CameraFillMode"))
@@ -360,7 +356,7 @@ void PostSceneLoad()
     }
     else
     {
-        if (test_mode == 5)
+        if (debug_mode == 5)
         {
             debug_draw_flag = 3;
             gCameraMgr.GetCamera().fillMode = FILL_WIREFRAME;

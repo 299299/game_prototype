@@ -226,6 +226,10 @@ class GameInput
 
         if (!mobile && !moving)
         {
+            IntVector2 pos = ui.cursorPosition;
+            if (ui.GetElementAt(pos, true) !is null)
+                return false;
+
             if (action == kInputAttack)
                 ret = input.mouseButtonPress[MOUSEB_LEFT];
             else if (action == kInputCounter)

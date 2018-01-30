@@ -972,7 +972,7 @@ class Character : GameObject
 
         animModel.RemoveAllAnimationStates();
 
-        if (test_mode == 5)
+        if (debug_mode == 5)
         {
             agent.enabled = false;
             collisionBody.enabled = false;

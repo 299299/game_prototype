@@ -378,9 +378,9 @@ class PlayerAttackState : CharacterState
             slowMotion = false;
         }
 
-        if (test_mode == 2)
+        if (debug_mode == 2)
             weakAttack = true;
-        else if (test_mode == 4)
+        else if (debug_mode == 4)
             weakAttack = false;
 
         ownner.SetNodeEnabled("TailNode", true);
@@ -483,7 +483,7 @@ class PlayerAttackState : CharacterState
         else
             damage = RandomInt(ownner.attackDamage, ownner.attackDamage + 20);
 
-        if (test_mode != 1)
+        if (debug_mode != 1)
         {
             bool b = e.OnDamage(ownner, position, dir, damage, weakAttack);
             if (!b)
@@ -497,11 +497,11 @@ class PlayerAttackState : CharacterState
         ownner.PlayRandomSound(sound_type);
         ownner.OnAttackSuccess(e);
 
-        if (test_mode == 1 || test_mode == 3 || test_mode == 4)
+        if (debug_mode == 1 || debug_mode == 3 || debug_mode == 4)
         {
             DebugPause(true);
 
-            if (test_mode == 1)
+            if (debug_mode == 1)
                 DebugTimeScale(0.1f);
         }
     }

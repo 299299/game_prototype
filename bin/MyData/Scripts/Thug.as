@@ -40,8 +40,11 @@ class ThugStandState : MultiAnimationState
 
     void Update(float dt)
     {
-        if (freeze_ai != 0)
-           return;
+        if (debug_mode != 0)
+        {
+            if (debug_mode != 2 && debug_mode != 4 && debug_mode != 6)
+                return;
+        }
 
        if (game_state != GAME_RUNNING)
             return;
@@ -710,7 +713,7 @@ class ThugHitState : MultiMotionState
         // turnSpeed = AngleDiff(targetDiff - diff) / turnAlignTime;
         ownner.GetNode().worldRotation = Quaternion(0, targetAngle, 0);
 
-        if (test_mode == 2)
+        if (debug_mode == 2)
         {
             DebugPause(true);
             DebugTimeScale(0.1f);
@@ -912,7 +915,7 @@ class Thug : Enemy
 
     bool ActionCheck(uint actionFlags = 0xFF)
     {
-        if (freeze_ai == 1 || test_mode == 6 || test_mode == 2)
+        if (debug_mode == 6 || debug_mode == 2)
             return false;
         // Print(GetName() + " ActionCheck in state:" + stateMachine.currentState.name);
         if (actionFlags & FLAGS_ATTACK != 0)
@@ -1134,7 +1137,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithCharacters()
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1 || test_mode == 3)
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || debug_mode == 1 || debug_mode == 3)
             return false;
         int dir = GetSperateDirection();
         if (dir < 0)
@@ -1202,7 +1205,7 @@ class Thug : Enemy
 
     bool KeepDistanceWithPlayer(float max_dist = COLLISION_SAFE_DIST)
     {
-        if (HasFlag(FLAGS_NO_MOVE) || !HasFlag(FLAGS_COLLISION_AVOIDENCE) || test_mode == 6)
+        if (HasFlag(FLAGS_NO_MOVE) || !HasFlag(FLAGS_COLLISION_AVOIDENCE) || debug_mode == 6)
             return false;
         float dist = GetTargetDistance();
         if (dist >= max_dist)
@@ -1221,7 +1224,7 @@ class Thug : Enemy
 
     void KeepDistanceWithCharacter(Character@ c)
     {
-        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || test_mode == 1 || test_mode == 3 || test_mode == 6)
+        if (HasFlag(FLAGS_NO_MOVE) || HasFlag(FLAGS_DEAD) || debug_mode == 1 || debug_mode == 3 || debug_mode == 6)
             return;
         int index = RadialSelectAnimation(c.GetNode().worldPosition, 4);
         index += 2;
@@ -1256,7 +1259,7 @@ class Thug : Enemy
 
         if (bRagdoll)
         {
-            if (test_mode == 4)
+            if (debug_mode == 4)
             {
                 DebugPause(true);
             }
