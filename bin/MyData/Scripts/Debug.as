@@ -363,7 +363,7 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
     LogPrint("TestAnimation_Group " + playerAnim);
 
     Array<String> testAnims;
-    int index = RandomInt(em.enemyList.length);
+    int index = (debug_mode == 8) ? 0 : RandomInt(em.enemyList.length);
 
     for (uint i=0; i<thugAnims.length; ++i)
     {
@@ -390,7 +390,7 @@ void TestAnimation_Group_s(const String&in playerAnim, const String& thugAnim, b
 
     Motion@ m_player = gMotionMgr.FindMotion(playerAnim);
     Motion@ m = gMotionMgr.FindMotion(thugAnim);
-    Enemy@ e = em.enemyList[RandomInt(em.enemyList.length)];
+    Enemy@ e = em.enemyList[(debug_mode == 8) ? 0 : RandomInt(em.enemyList.length)];
 
     if (baseOnPlayer)
     {
@@ -434,7 +434,7 @@ void TestAnimations_Group_SingleCounter(const String& counterName = "")
     if (em.enemyList.empty)
         return;
 
-    Enemy@ e = em.enemyList[RandomInt(em.enemyList.length)];
+    Enemy@ e = em.enemyList[(debug_mode == 8) ? 0 : RandomInt(em.enemyList.length)];
     CharacterCounterState@ s1 = cast<CharacterCounterState>(player.FindState("CounterState"));
     CharacterCounterState@ s2 = cast<CharacterCounterState>(e.FindState("CounterState"));
     Motion@ m1, m2;
@@ -1119,12 +1119,29 @@ void CreateDebugUI()
     }
 
     // create debug animation ui
-    w = gw / 2;
+    w = gw * 3/ 4;
     h = gw / 20;
     x = gw / 2 - w / 2;
     y = gh - 3 * h;
     Slider@ s = CreateSlider(x, y, w, h, "Time_Slider", TAG_DEBUG_ANIM);
     s.visible = true;
+}
+
+void SetTestAnimationTime(Character@ c, float t)
+{
+    c.animCtrl.SetTime(c.lastAnimation, t);
+    AnimationTestState@ s = cast<AnimationTestState>(c.GetState());
+    if (s !is null)
+    {
+        Motion@ m = s.testMotions[s.currentIndex];
+        if (m !is null)
+        {
+            float rot = m.GetFutureRotation(c, t);
+            Vector3 pos = m.GetFuturePosition(c, t);
+            c.GetNode().worldPosition = pos;
+            c.GetNode().worldRotation = Quaternion(0, rot, 0);
+        }
+    }
 }
 
 void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
@@ -1153,27 +1170,26 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
         }
         else if (e.name == "Time_Slider")
         {
+            Slider@ s = cast<Slider>(e);
             int frame = int(newValue);
             Player@ p = GetPlayer();
             uint pos = p.lastAnimation.FindLast('/') + 1;
             String aniShortName = p.lastAnimation.Substring(pos, p.lastAnimation.length - pos);
             float t = float(frame) / FRAME_PER_SEC;
-            p.animCtrl.SetTime(p.lastAnimation, t);
+            Animation@ anim = cache.GetResource("Animation", p.lastAnimation);
 
+            SetTestAnimationTime(p, t);
             Text@ text = ui.root.GetChild(e.name + "_Text", true);
             if (text !is null)
             {
-                text.text = aniShortName + "\n" + "frame: " + frame + " time:" + t;
+                text.text = aniShortName + " frames: " + s.range + " time: " + anim.length + "\nframe: " + frame + " time:" + t;
             }
 
             EnemyManager@ em = GetEnemyMgr();
             for (uint i=0; i<em.enemyList.length; ++i)
             {
                 Enemy@ e = em.enemyList[i];
-                uint pos = e.lastAnimation.FindLast('/') + 1;
-                String aniShortName = e.lastAnimation.Substring(pos, e.lastAnimation.length - pos);
-                float t = float(frame) / FRAME_PER_SEC;
-                e.animCtrl.SetTime(e.lastAnimation, t);
+                SetTestAnimationTime(e, t);
             }
         }
     }
@@ -1232,6 +1248,7 @@ void UpdateTimeSlider()
     if (text is null)
         return;
 
+    s.value = 0;
     s.range = anim.length / SEC_PER_FRAME + 1;
 
     uint pos = p.lastAnimation.FindLast('/') + 1;
@@ -1239,7 +1256,7 @@ void UpdateTimeSlider()
 
     p.animCtrl.SetWeight(p.lastAnimation, 1.0f);
 
-    text.text = aniShortName + "\n" + "frame: 0 time: 0";
+    text.text = aniShortName + " frames: " + s.range + " time: " + anim.length + "\nframe: 0 time: 0";
 }
 
 void DebugPause(bool bPause)
