@@ -93,6 +93,20 @@ void DrawDebug(float dt)
         debug.AddNode(scene_, 1.0f, false);
         if (p !is null)
             p.DebugDraw(debug);
+
+        if (debug_mode == 8)
+        {
+            Color c(1.0f, 0.5f, 0.5f);
+            float s = 0.1f;
+            AddDebugMark(debug, p.GetNode().GetChild(L_HAND, true).worldPosition, c, s);
+            AddDebugMark(debug, p.GetNode().GetChild(R_HAND, true).worldPosition, c, s);
+            AddDebugMark(debug, p.GetNode().GetChild(L_FOOT, true).worldPosition, c, s);
+            AddDebugMark(debug, p.GetNode().GetChild(R_FOOT, true).worldPosition, c, s);
+            AddDebugMark(debug, p.GetNode().GetChild(L_ARM, true).worldPosition, c, s);
+            AddDebugMark(debug, p.GetNode().GetChild(R_ARM, true).worldPosition, c, s);
+            AddDebugMark(debug, p.GetNode().GetChild(L_CALF, true).worldPosition, c, s);
+            AddDebugMark(debug, p.GetNode().GetChild(R_CALF, true).worldPosition, c, s);
+        }
     }
     if (debug_draw_flag > 1)
     {
@@ -153,17 +167,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         CreateEnemy(scene_);
     else if (key == KEY_7)
     {
-        CameraController@ cc = gCameraMgr.currentController;
-        if (cc.nameHash == StringHash("Debug"))
-        {
-            ui.cursor.visible = false;
-            gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
-        }
-        else
-        {
-            ui.cursor.visible = true;
-            gCameraMgr.SetCameraController("Debug");
-        }
+        gCameraMgr.SetCameraController((gCameraMgr.GetCurrentNameHash() == StringHash("Debug")) ? GAME_CAMEAR_NAME : "Debug");
     }
     else if (key == KEY_8)
     {
@@ -196,20 +200,34 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             }
         }
     }
-    else if (key == KEY_MINUS)
-    {
-        Player@ p = GetPlayer();
-        if (p !is null)
-        {
-            if (p.HasFlag(FLAGS_INVINCIBLE))
-                p.RemoveFlag(FLAGS_INVINCIBLE);
-            else
-                p.AddFlag(FLAGS_INVINCIBLE);
-        }
-    }
     else if (key == KEY_EQUALS)
     {
+        Slider@ s = ui.root.GetChild("Time_Slider", true);
+        LogPrint("Animation current frame = " + s.value);
+        s.value = s.value + 1;
+    }
+    else if (key == KEY_MINUS)
+    {
+        Slider@ s = ui.root.GetChild("Time_Slider", true);
+        LogPrint("Animation current frame = " + s.value);
+        s.value = s.value - 1;
+    }
+    else if (key == KEY_Q)
+    {
         RandomEnemyPositions();
+    }
+    else if (key == KEY_U)
+    {
+        Player@ p = GetPlayer();
+        p.SetTimeScale((p.timeScale > 1.0f) ? 1.0f : 1.25f);
+    }
+    else if (key == KEY_E)
+    {
+        Text@ text = ui.root.GetChild("instruction", true);
+        if (text !is null)
+        {
+            text.visible = !text.visible;
+        }
     }
     else if (key == KEY_R)
     {
@@ -218,6 +236,23 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     else if (key == KEY_T)
     {
         DebugTimeScale((scene_.timeScale >= 0.999f) ? 0.1f : 1.0f);
+    }
+    else if (key == KEY_Y)
+    {
+        gCameraMgr.SetCameraController((gCameraMgr.GetCurrentNameHash() == StringHash("Debug")) ? "" : "Debug");
+    }
+    else if (key == KEY_O)
+    {
+        if (scene_ !is null)
+        {
+            Node@ n = scene_.GetChild("thug2");
+            if (n !is null)
+            {
+                n.vars[ANIMATION_INDEX] = RandomInt(4);
+                Thug@ thug = cast<Thug>(n.scriptObject);
+                thug.ChangeState("HitState");
+            }
+        }
     }
     else if (key == KEY_F)
     {
@@ -246,51 +281,25 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (player !is null)
             player.TestAnimation(testAnimations);
     }
-    else if (key == KEY_J)
-        TestAnimations_Group_SingleCounter();
-    else if (key == KEY_K)
-        TestAnimations_Group_DoubleCounter();
-    else if (key == KEY_L)
-        TestAnimations_Group_TripleCounter();
     else if (key == KEY_H)
-        TestAnimations_Group_Beat();
-    else if (key == KEY_SEMICOLON)
+        TestAnimations_Group_SingleCounter();
+    else if (key == KEY_J)
+        TestAnimations_Group_DoubleCounter();
+    else if (key == KEY_K)
+        TestAnimations_Group_TripleCounter();
+    else if (key == KEY_L)
     {
         TestAnimations_Group_EnvCounter();
     }
-    else if (key == KEY_QUOTE)
+    else if (key == KEY_SEMICOLON)
     {
         TestAnimations_Group_SingleCounter("Counter_Arm_Front_09");
     }
-    else if (key == KEY_O)
-    {
-        if (scene_ !is null)
-        {
-            Node@ n = scene_.GetChild("thug2");
-            if (n !is null)
-            {
-                n.vars[ANIMATION_INDEX] = RandomInt(4);
-                Thug@ thug = cast<Thug>(n.scriptObject);
-                thug.ChangeState("HitState");
-            }
-        }
-    }
+    else if (key == KEY_QUOTE)
+        TestAnimations_Group_Beat();
     else if (key == KEY_C)
     {
         TestCounter(6);
-    }
-    else if (key == KEY_U)
-    {
-        Player@ p = GetPlayer();
-        p.SetTimeScale((p.timeScale > 1.0f) ? 1.0f : 1.25f);
-    }
-    else if (key == KEY_E)
-    {
-        Text@ text = ui.root.GetChild("instruction", true);
-        if (text !is null)
-        {
-            text.visible = !text.visible;
-        }
     }
 }
 
@@ -368,7 +377,6 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
         e.TestAnimation(thugAnims[i]);
     }
     player.TestAnimation(playerAnim);
-    // player.SetSceneTimeScale(0.0f);
     UpdateTimeSlider();
 }
 
@@ -481,7 +489,7 @@ void TestAnimations_Group_SingleCounter(const String& counterName = "")
     LogPrint("TestAnimations_Group_SingleCounter -> " + m1.name);
 }
 
-void TestAnimations_Group_DoubleCounter()
+void TestAnimations_Group_DoubleCounter(const String&in counterName = "")
 {
     Array<String> tests =
     {
@@ -495,10 +503,13 @@ void TestAnimations_Group_DoubleCounter()
         "Double_Counter_2ThugsH"
     };
     String preFix = "BM";
-    String test = tests[test_double_counter_index];
-    test_double_counter_index ++;
-    if (test_double_counter_index >= int(tests.length))
-        test_double_counter_index = 0;
+    String test = counterName.empty ? tests[test_double_counter_index] : counterName;
+    if (counterName.empty)
+    {
+        test_double_counter_index ++;
+        if (test_double_counter_index >= int(tests.length))
+            test_double_counter_index = 0;
+    }
     String playerAnim = preFix + "_TG_Counter/" + test;
     Array<String> thugAnims;
     String thugAnim = "TG_" + preFix + "_Counter/" + test;
@@ -507,7 +518,7 @@ void TestAnimations_Group_DoubleCounter()
     TestAnimation_Group(playerAnim, thugAnims);
 }
 
-void TestAnimations_Group_TripleCounter()
+void TestAnimations_Group_TripleCounter(const String&in counterName = "")
 {
     String preFix = "BM";
     Array<String> tests =
@@ -516,10 +527,13 @@ void TestAnimations_Group_TripleCounter()
         "Double_Counter_3ThugsB",
         "Double_Counter_3ThugsC"
     };
-    String test = tests[test_triple_counter_index];
-    test_triple_counter_index ++;
-    if (test_triple_counter_index >= int(tests.length))
-        test_triple_counter_index = 0;
+    String test = counterName.empty ? tests[test_triple_counter_index] : counterName;
+    if (counterName.empty)
+    {
+        test_triple_counter_index ++;
+        if (test_triple_counter_index >= int(tests.length))
+            test_triple_counter_index = 0;
+    }
     String playerAnim = preFix + "_TG_Counter/" + test;
     Array<String> thugAnims;
     String thugAnim = "TG_" + preFix + "_Counter/" + test;
@@ -595,7 +609,6 @@ void TestAttack()
     if (player is null)
         return;
 
-    DebugPause(false);
     Motion@ am;
     PlayerAttackState@ s = cast<PlayerAttackState>(player.stateMachine.FindState("AttackState"));
     int l1 = s.forwardAttacks.length;
@@ -1066,19 +1079,21 @@ void CreateDebugUI()
                            "8 -> test camera fov \n"
                            "9 -> test camera shake \n"
                            "0 -> dump debug text\n"
-                           "- -> test player FLAGS_INVINCIBLE \n"
-                           "= -> random enemy positions \n"
+                           "+ -> debug animation increase frame \n"
+                           "- -> debug animation decrease frame \n"
                            "F -> test attack animation \n"
                            "G -> test single animation \n"
-                           "H -> test beat animation \n"
-                           "J -> test single counter animation \n"
-                           "K -> test double counter animation \n"
-                           "L -> test triple counter animation \n"
-                           "; -> test env counter animation \n"
-                           "'' -> test specific single counter animation \n"
+                           "H -> test single counter animation \n"
+                           "J -> test double counter animation \n"
+                           "K -> test triple counter animation \n"
+                           "L -> test env counter animation \n"
+                           "; -> test specific single counter animation \n"
+                           "'' -> test beat animation \n"
+                           "Q -> random enemy positions \n"
                            "O -> test thug hit animation \n";
                            "C -> test counter logic \n"
-                           "U -> test player time scale \n";
+                           "U -> test player time scale \n"
+                           "Y -> freeze/unfreeze camera control \n";
     instructionText.horizontalAlignment = HA_CENTER;
     instructionText.verticalAlignment = VA_CENTER;
 
@@ -1117,12 +1132,12 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
     UIElement@ e = eventData["Element"].GetPtr();
     float newValue = eventData["Value"].GetFloat();
     // LogPrint(e.name + " newValue=" + newValue);
-    newValue /= sliderRange;
     ThirdPersonCameraController@ tpc = cast<ThirdPersonCameraController>(gCameraMgr.FindCameraController(StringHash("ThirdPerson")));
     if (tpc !is null)
     {
         if (e.name == "Camera_Distance")
         {
+            newValue /= sliderRange;
             tpc.targetCameraDistance = Lerp(cameraDistMin, cameraDistMax, newValue);
             Text@ text = ui.root.GetChild(e.name + "_Text", true);
             if (text !is null)
@@ -1130,6 +1145,7 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
         }
         else if (e.name == "Camera_Pitch")
         {
+            newValue /= sliderRange;
             tpc.pitch = Lerp(cameraPitchMin, cameraPitchMax, newValue);
             Text@ text = ui.root.GetChild(e.name + "_Text", true);
             if (text !is null)
@@ -1137,7 +1153,28 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
         }
         else if (e.name == "Time_Slider")
         {
+            int frame = int(newValue);
+            Player@ p = GetPlayer();
+            uint pos = p.lastAnimation.FindLast('/') + 1;
+            String aniShortName = p.lastAnimation.Substring(pos, p.lastAnimation.length - pos);
+            float t = float(frame) / FRAME_PER_SEC;
+            p.animCtrl.SetTime(p.lastAnimation, t);
 
+            Text@ text = ui.root.GetChild(e.name + "_Text", true);
+            if (text !is null)
+            {
+                text.text = aniShortName + "\n" + "frame: " + frame + " time:" + t;
+            }
+
+            EnemyManager@ em = GetEnemyMgr();
+            for (uint i=0; i<em.enemyList.length; ++i)
+            {
+                Enemy@ e = em.enemyList[i];
+                uint pos = e.lastAnimation.FindLast('/') + 1;
+                String aniShortName = e.lastAnimation.Substring(pos, e.lastAnimation.length - pos);
+                float t = float(frame) / FRAME_PER_SEC;
+                e.animCtrl.SetTime(e.lastAnimation, t);
+            }
         }
     }
 }
@@ -1195,8 +1232,14 @@ void UpdateTimeSlider()
     if (text is null)
         return;
 
-    s.range = anim.length;
-    text.text = p.lastAnimation;
+    s.range = anim.length / SEC_PER_FRAME + 1;
+
+    uint pos = p.lastAnimation.FindLast('/') + 1;
+    String aniShortName = p.lastAnimation.Substring(pos, p.lastAnimation.length - pos);
+
+    p.animCtrl.SetWeight(p.lastAnimation, 1.0f);
+
+    text.text = aniShortName + "\n" + "frame: 0 time: 0";
 }
 
 void DebugPause(bool bPause)

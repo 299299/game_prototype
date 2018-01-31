@@ -663,4 +663,9 @@ class CameraManager
     {
         return (currentController !is null) ? currentController.GetDebugText() : "";
     }
+
+    StringHash GetCurrentNameHash()
+    {
+        return (currentController !is null) ? currentController.nameHash : StringHash();
+    }
 };

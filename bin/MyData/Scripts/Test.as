@@ -179,7 +179,7 @@ void CreateUI()
     Cursor@ cursor = Cursor();
     cursor.SetStyleAuto(style);
     ui.cursor = cursor;
-    cursor.visible = false;
+    cursor.visible = true;
 
     gInput.CreateGUI();
 }
