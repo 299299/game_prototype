@@ -181,15 +181,6 @@ void CreateUI()
     ui.cursor = cursor;
     cursor.visible = false;
 
-    // Set starting position of the cursor at the rendering window center
-    //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
-    Text@ text = ui.root.CreateChild("Text", "debug");
-    text.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
-    text.SetPosition(5, 50);
-    text.color = YELLOW;
-    text.priority = -99999;
-    text.visible = false;
-
     gInput.CreateGUI();
 }
 

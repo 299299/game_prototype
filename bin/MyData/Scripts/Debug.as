@@ -219,17 +219,11 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         DebugTimeScale((scene_.timeScale >= 0.999f) ? 0.1f : 1.0f);
     }
-    else if (key == KEY_J)
-        TestAnimations_Group_2();
-    else if (key == KEY_K)
-        TestAnimations_Group_3();
-    else if (key == KEY_L)
-        TestAnimations_Group_4();
-    else if (key == KEY_H)
-        TestAnimations_Group_Beat();
-    else if (key == KEY_V)
-        TestAnimations_Group_5();
-    else if (key == KEY_E)
+    else if (key == KEY_F)
+    {
+        TestAttack();
+    }
+    else if (key == KEY_G)
     {
         Array<String> testAnimations;
         //String testName = "TG_Getup/GetUp_Back";
@@ -252,9 +246,21 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
         if (player !is null)
             player.TestAnimation(testAnimations);
     }
-    else if (key == KEY_F)
+    else if (key == KEY_J)
+        TestAnimations_Group_SingleCounter();
+    else if (key == KEY_K)
+        TestAnimations_Group_DoubleCounter();
+    else if (key == KEY_L)
+        TestAnimations_Group_TripleCounter();
+    else if (key == KEY_H)
+        TestAnimations_Group_Beat();
+    else if (key == KEY_SEMICOLON)
     {
-        TestAttack();
+        TestAnimations_Group_EnvCounter();
+    }
+    else if (key == KEY_QUOTE)
+    {
+        TestAnimations_Group_SingleCounter("Counter_Arm_Front_09");
     }
     else if (key == KEY_O)
     {
@@ -269,10 +275,6 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
             }
         }
     }
-    else if (key == KEY_M)
-    {
-        TestAnimations_Group_2("Counter_Arm_Front_09");
-    }
     else if (key == KEY_C)
     {
         TestCounter(6);
@@ -281,6 +283,14 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     {
         Player@ p = GetPlayer();
         p.SetTimeScale((p.timeScale > 1.0f) ? 1.0f : 1.25f);
+    }
+    else if (key == KEY_E)
+    {
+        Text@ text = ui.root.GetChild("instruction", true);
+        if (text !is null)
+        {
+            text.visible = !text.visible;
+        }
     }
 }
 
@@ -359,6 +369,7 @@ void TestAnimation_Group(const String&in playerAnim, Array<String>@ thugAnims)
     }
     player.TestAnimation(playerAnim);
     // player.SetSceneTimeScale(0.0f);
+    UpdateTimeSlider();
 }
 
 void TestAnimation_Group_s(const String&in playerAnim, const String& thugAnim, bool baseOnPlayer = false)
@@ -389,6 +400,7 @@ void TestAnimation_Group_s(const String&in playerAnim, const String& thugAnim, b
 
     e.TestAnimation(thugAnim);
     player.TestAnimation(playerAnim);
+    UpdateTimeSlider();
 }
 
 void TestAnimations_Group_Beat()
@@ -404,7 +416,7 @@ void TestAnimations_Group_Beat()
     TestAnimation_Group_s(playerAnim, thugAnim, base_on_player);
 }
 
-void TestAnimations_Group_2(const String& counterName = "")
+void TestAnimations_Group_SingleCounter(const String& counterName = "")
 {
     Player@ player = GetPlayer();
     EnemyManager@ em = GetEnemyMgr();
@@ -464,11 +476,12 @@ void TestAnimations_Group_2(const String& counterName = "")
 
     e.TestAnimation(m2.name);
     player.TestAnimation(m1.name);
+    UpdateTimeSlider();
 
-    LogPrint("TestAnimations_Group_2 -> " + m1.name);
+    LogPrint("TestAnimations_Group_SingleCounter -> " + m1.name);
 }
 
-void TestAnimations_Group_3()
+void TestAnimations_Group_DoubleCounter()
 {
     Array<String> tests =
     {
@@ -494,7 +507,7 @@ void TestAnimations_Group_3()
     TestAnimation_Group(playerAnim, thugAnims);
 }
 
-void TestAnimations_Group_4()
+void TestAnimations_Group_TripleCounter()
 {
     String preFix = "BM";
     Array<String> tests =
@@ -516,15 +529,17 @@ void TestAnimations_Group_4()
     TestAnimation_Group(playerAnim, thugAnims);
 }
 
-void TestAnimations_Group_5()
+void TestAnimations_Group_EnvCounter()
 {
     String preFix = "BM";
     Array<String> tests =
     {
-        /*"Environment_Counter_128_Back_02",
+        /*
+        "Environment_Counter_128_Back_02",
         "Environment_Counter_128_Front_01",
         "Environment_Counter_128_Left_01",
-        "Environment_Counter_128_Right_01",*/
+        "Environment_Counter_128_Right_01",
+        */
         "Environment_Counter_Wall_Back_02",
         "Environment_Counter_Wall_Front_01",
         "Environment_Counter_Wall_Front_02",
@@ -571,6 +586,7 @@ void TestCounter(float range = MAX_COUNTER_DIST)
         return;
 
     player.ChangeState("CounterState");
+    UpdateTimeSlider();
 }
 
 void TestAttack()
@@ -610,6 +626,8 @@ void TestAttack()
     test_attack_id ++;
     if (test_attack_id >=  l1 + l2 + l3 + l4)
         test_attack_id = 0;
+
+    UpdateTimeSlider();
 }
 
 void RandomEnemyPositions()
@@ -978,19 +996,17 @@ Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text, con
 {
     Font@ font = cache.GetResource("Font", DEBUG_FONT);
     // Create text and slider below it
-    Text@ sliderText = ui.root.CreateChild("Text");
+    Text@ sliderText = ui.root.CreateChild("Text", text + "_Text");
     sliderText.SetPosition(x, y);
     sliderText.SetFont(font, 20);
     sliderText.text = text;
-    sliderText.name = text + "_Text";
     sliderText.AddTag(tag);
     sliderText.visible = false;
     sliderText.color = RED;
-    Slider@ slider = ui.root.CreateChild("Slider");
+    Slider@ slider = ui.root.CreateChild("Slider", text);
     slider.SetStyleAuto();
     slider.SetPosition(x, y + ySize);
     slider.SetSize(xSize, ySize);
-    slider.name = text;
     slider.range = sliderRange;
     if (!tag.empty)
         slider.AddTag(tag);
@@ -1002,15 +1018,14 @@ Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text, con
 Button@ CreateButton(int x, int y, int xSize, int ySize, const String& text, const String& tag = "")
 {
     Font@ font = cache.GetResource("Font", DEBUG_FONT);
-    Button@ button = ui.root.CreateChild("Button");
+    Button@ button = ui.root.CreateChild("Button", text);
     button.SetStyleAuto();
     button.SetPosition(x, y);
     button.SetSize(xSize, ySize);
     button.opacity = 0.8f;
     if (!tag.empty)
         button.AddTag(tag);
-    button.name = text;
-    Text@ buttonText = button.CreateChild("Text");
+    Text@ buttonText = button.CreateChild("Text", text + "_Text");
     buttonText.SetFont(font, 20);
     buttonText.text = text;
     buttonText.opacity = 0.8f;
@@ -1019,9 +1034,55 @@ Button@ CreateButton(int x, int y, int xSize, int ySize, const String& text, con
 
 void CreateDebugUI()
 {
-    // create debug parameter ui
     int gw = graphics.width;
     int gh = graphics.height;
+
+    // Set starting position of the cursor at the rendering window center
+    //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
+    Text@ debugText = ui.root.CreateChild("Text", "debug");
+    debugText.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
+    debugText.SetPosition(5, 50);
+    debugText.color = RED;
+    debugText.priority = -99999;
+    debugText.visible = false;
+
+    // create instruction text
+    // Set starting position of the cursor at the rendering window center
+    //cursor.SetPosition(graphics.width / 2, graphics.height / 2);
+    Text@ instructionText = ui.root.CreateChild("Text", "instruction");
+    instructionText.SetFont(cache.GetResource("Font", DEBUG_FONT), DEBUG_FONT_SIZE);
+    instructionText.color = RED;
+    instructionText.priority = -99999;
+    instructionText.visible = false;
+    instructionText.text = " ------------- DEBUG KEY INSTRUCTIONS ------------- \n"
+                           "` -> switch debug mode \n"
+                           "1 -> switch debug draw flag \n"
+                           "2 -> toggle debug hud \n"
+                           "3 -> switch camera fill mode \n"
+                           "4 -> shoot sphere \n"
+                           "5 -> shoot box \n"
+                           "6 -> create enemy \n"
+                           "7 -> switch camera controller mode \n"
+                           "8 -> test camera fov \n"
+                           "9 -> test camera shake \n"
+                           "0 -> dump debug text\n"
+                           "- -> test player FLAGS_INVINCIBLE \n"
+                           "= -> random enemy positions \n"
+                           "F -> test attack animation \n"
+                           "G -> test single animation \n"
+                           "H -> test beat animation \n"
+                           "J -> test single counter animation \n"
+                           "K -> test double counter animation \n"
+                           "L -> test triple counter animation \n"
+                           "; -> test env counter animation \n"
+                           "'' -> test specific single counter animation \n"
+                           "O -> test thug hit animation \n";
+                           "C -> test counter logic \n"
+                           "U -> test player time scale \n";
+    instructionText.horizontalAlignment = HA_CENTER;
+    instructionText.verticalAlignment = VA_CENTER;
+
+    // create debug parameter ui
     int buttonWidth = gw / 8;
     int buttonHeight = gw / 40;
     int y = 30;
@@ -1114,6 +1175,28 @@ void OnDebugModeChanged()
     ShowHideUIWithTag(TAG_DEBUG, (debug_mode == 7));
     ShowHideUIWithTag(TAG_DEBUG_ANIM, (debug_mode == 8));
     ShowHideUIWithTag(TAG_INPUT, (debug_mode != 8));
+}
+
+void UpdateTimeSlider()
+{
+    if (debug_mode != 8)
+        return;
+
+    Player@ p = GetPlayer();
+    Animation@ anim = cache.GetResource("Animation", p.lastAnimation);
+    if (anim is null)
+        return;
+
+    Slider@ s = ui.root.GetChild("Time_Slider", true);
+    if (s is null)
+        return;
+
+    Text@ text = ui.root.GetChild("Time_Slider_Text", true);
+    if (text is null)
+        return;
+
+    s.range = anim.length;
+    text.text = p.lastAnimation;
 }
 
 void DebugPause(bool bPause)
