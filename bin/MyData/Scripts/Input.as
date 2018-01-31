@@ -325,9 +325,7 @@ class GameInput
 
     void ShowHideUI(bool bShow)
     {
-        Array<UIElement@> elements = ui.root.GetChildrenWithTag(TAG_INPUT);
-        for (uint i=0; i<elements.length; ++i)
-            elements[i].visible = bShow;
+        ShowHideUIWithTag(TAG_INPUT, bShow);
     }
 
     void UpdateInputUI()

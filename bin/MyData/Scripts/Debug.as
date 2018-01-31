@@ -123,7 +123,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     Scene@ scene_ = script.defaultScene;
     int key = eventData["Key"].GetInt();
 
-    if (key == KEY_ESCAPE || key == KEY_Q)
+    if (key == KEY_ESCAPE)
          engine.Exit();
     else if (key == KEY_BACKQUOTE)
     {
@@ -177,11 +177,35 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_0)
     {
-        TestAnimations_Group_2("Counter_Arm_Front_09");
+        Player@ p = GetPlayer();
+        if (p !is null)
+        {
+            LogPrint("------------------------------------------------------------");
+            LogPrint(p.GetDebugText());
+            LogPrint("------------------------------------------------------------");
+        }
+
+        EnemyManager@ em = GetEnemyMgr();
+        if (em !is null)
+        {
+            for (uint i=0; i<em.enemyList.length; ++i)
+            {
+                LogPrint("------------------------------------------------------------");
+                LogPrint(em.enemyList[i].GetDebugText());
+                LogPrint("------------------------------------------------------------");
+            }
+        }
     }
     else if (key == KEY_MINUS)
     {
-        TestAttack();
+        Player@ p = GetPlayer();
+        if (p !is null)
+        {
+            if (p.HasFlag(FLAGS_INVINCIBLE))
+                p.RemoveFlag(FLAGS_INVINCIBLE);
+            else
+                p.AddFlag(FLAGS_INVINCIBLE);
+        }
     }
     else if (key == KEY_EQUALS)
     {
@@ -230,14 +254,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_F)
     {
-        Player@ p = GetPlayer();
-        if (p !is null)
-        {
-            if (p.HasFlag(FLAGS_INVINCIBLE))
-                p.RemoveFlag(FLAGS_INVINCIBLE);
-            else
-                p.AddFlag(FLAGS_INVINCIBLE);
-        }
+        TestAttack();
     }
     else if (key == KEY_O)
     {
@@ -254,17 +271,7 @@ void HandleKeyDown(StringHash eventType, VariantMap& eventData)
     }
     else if (key == KEY_M)
     {
-        Player@ p = GetPlayer();
-        if (p !is null)
-        {
-            LogPrint("------------------------------------------------------------");
-            for (uint i=0; i<p.stateMachine.states.length; ++i)
-            {
-                State@ s = p.stateMachine.states[i];
-                LogPrint("name=" + s.name + " nameHash=" + s.nameHash.ToString());
-            }
-            LogPrint("------------------------------------------------------------");
-        }
+        TestAnimations_Group_2("Counter_Arm_Front_09");
     }
     else if (key == KEY_C)
     {
@@ -967,7 +974,7 @@ DebugDrawMgr@ gDebugMgr = DebugDrawMgr();
 //
 // ======================================================================
 
-Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
+Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text, const String& tag = "")
 {
     Font@ font = cache.GetResource("Font", DEBUG_FONT);
     // Create text and slider below it
@@ -976,35 +983,43 @@ Slider@ CreateSlider(int x, int y, int xSize, int ySize, const String& text)
     sliderText.SetFont(font, 20);
     sliderText.text = text;
     sliderText.name = text + "_Text";
-    sliderText.AddTag(TAG_DEBUG);
+    sliderText.AddTag(tag);
     sliderText.visible = false;
+    sliderText.color = RED;
     Slider@ slider = ui.root.CreateChild("Slider");
     slider.SetStyleAuto();
     slider.SetPosition(x, y + ySize);
     slider.SetSize(xSize, ySize);
     slider.name = text;
     slider.range = sliderRange;
-    slider.AddTag(TAG_DEBUG);
+    if (!tag.empty)
+        slider.AddTag(tag);
     slider.visible = false;
+    slider.opacity = 0.8f;
     return slider;
 }
 
-Button@ CreateButton(int x, int y, int xSize, int ySize, const String& text)
+Button@ CreateButton(int x, int y, int xSize, int ySize, const String& text, const String& tag = "")
 {
     Font@ font = cache.GetResource("Font", DEBUG_FONT);
     Button@ button = ui.root.CreateChild("Button");
     button.SetStyleAuto();
     button.SetPosition(x, y);
     button.SetSize(xSize, ySize);
+    button.opacity = 0.8f;
+    if (!tag.empty)
+        button.AddTag(tag);
     button.name = text;
     Text@ buttonText = button.CreateChild("Text");
     buttonText.SetFont(font, 20);
     buttonText.text = text;
+    buttonText.opacity = 0.8f;
     return button;
 }
 
 void CreateDebugUI()
 {
+    // create debug parameter ui
     int gw = graphics.width;
     int gh = graphics.height;
     int buttonWidth = gw / 8;
@@ -1018,22 +1033,29 @@ void CreateDebugUI()
     ThirdPersonCameraController@ tpc = cast<ThirdPersonCameraController>(gCameraMgr.FindCameraController(StringHash("ThirdPerson")));
     if (tpc !is null)
     {
-        Slider@ s = CreateSlider(x, y, w, h, "Camera_Distance");
+        Slider@ s = CreateSlider(x, y, w, h, "Camera_Distance", TAG_DEBUG);
         y += (h*2 + gap);
         s.value = (tpc.targetCameraDistance - cameraDistMin) / (cameraDistMax - cameraDistMin) * sliderRange;
 
-        s = CreateSlider(x, y, w, h, "Camera_Pitch");
+        s = CreateSlider(x, y, w, h, "Camera_Pitch", TAG_DEBUG);
         y += (h*2 + gap);
         s.value = (tpc.pitch - cameraPitchMin) / (cameraPitchMax - cameraPitchMin) * sliderRange;
     }
 
+    // create debug animation ui
+    w = gw / 2;
+    h = gw / 20;
+    x = gw / 2 - w / 2;
+    y = gh - 3 * h;
+    Slider@ s = CreateSlider(x, y, w, h, "Time_Slider", TAG_DEBUG_ANIM);
+    s.visible = true;
 }
 
 void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
 {
     UIElement@ e = eventData["Element"].GetPtr();
     float newValue = eventData["Value"].GetFloat();
-    Print(e.name + " newValue=" + newValue);
+    // LogPrint(e.name + " newValue=" + newValue);
     newValue /= sliderRange;
     ThirdPersonCameraController@ tpc = cast<ThirdPersonCameraController>(gCameraMgr.FindCameraController(StringHash("ThirdPerson")));
     if (tpc !is null)
@@ -1052,6 +1074,10 @@ void HandleSliderChanged(StringHash eventType, VariantMap& eventData)
             if (text !is null)
                 text.text = "Camera Pitch: " + tpc.pitch;
         }
+        else if (e.name == "Time_Slider")
+        {
+
+        }
     }
 }
 
@@ -1061,19 +1087,33 @@ void HandleButtonPressed(StringHash eventType, VariantMap& eventData)
     if (e.name == "Debug")
     {
         debug_mode = (debug_mode == 7) ? 0 : 7;
+        OnDebugModeChanged();
     }
 }
 
 void OnDebugModeChanged()
 {
+    LogPrint("Debug Mode changed to " + debug_mode);
+
+    float timeScale = 1.0f;
+    if (debug_mode == 3)
+        timeScale = 1.5f;
+    else if (debug_mode == 8)
+        timeScale = 0.0f;
+
     Player@ p = GetPlayer();
-    p.SetTimeScale(debug_mode == 3 ? 1.5f : 1.0f);
+    p.SetTimeScale(timeScale);
+
+    EnemyManager@ em = GetEnemyMgr();
+    for (uint i=0; i<em.enemyList.length; ++i)
+        em.enemyList[i].SetTimeScale(timeScale);
 
     debug_draw_flag = (debug_mode == 0) ? 0 : 1;
+    freeze_input = (debug_mode == 8);
 
-    Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(TAG_DEBUG);
-    for (uint i = 0; i < elements.length; ++i)
-        elements[i].visible = (debug_mode == 7);
+    ShowHideUIWithTag(TAG_DEBUG, (debug_mode == 7));
+    ShowHideUIWithTag(TAG_DEBUG_ANIM, (debug_mode == 8));
+    ShowHideUIWithTag(TAG_INPUT, (debug_mode != 8));
 }
 
 void DebugPause(bool bPause)

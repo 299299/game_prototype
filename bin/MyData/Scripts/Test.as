@@ -363,6 +363,8 @@ void PostSceneLoad()
             gCameraMgr.SetCameraController("Debug");
         }
     }
+
+    OnDebugModeChanged();
 }
 
 
@@ -471,6 +473,18 @@ PhysicsRaycastResult PhysicsSphereCast(const Vector3&in start, const Vector3&in 
     float range = dir.length;
     dir.Normalize();
     return PhysicsSphereCast(start, dir, radius, range, mask, debug);
+}
+
+void ShowHideUIWithTag(const String&in tag, bool visible)
+{
+    Array<UIElement@>@ elements = ui.root.GetChildrenWithTag(tag);
+    for (uint i = 0; i < elements.length; ++i)
+        elements[i].visible = visible;
+}
+
+bool DebugPauseAI()
+{
+    return (debug_mode == 2 || debug_mode == 4 || debug_mode == 6 || debug_mode == 7);
 }
 
 /************************************************

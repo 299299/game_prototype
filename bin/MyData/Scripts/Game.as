@@ -586,7 +586,6 @@ class TestGameState : GameState
         //gCameraMgr.SetCameraController("Debug");
         gCameraMgr.SetCameraController(GAME_CAMEAR_NAME);
 
-        OnDebugModeChanged();
         CreateDebugUI();
 
         //DumpSkeletonNames(playerNode);

@@ -4,6 +4,8 @@
 //
 // ==============================================
 
+
+
 class ThugStandState : MultiAnimationState
 {
     float           thinkTime;
@@ -40,11 +42,8 @@ class ThugStandState : MultiAnimationState
 
     void Update(float dt)
     {
-        if (debug_mode != 0)
-        {
-            if (debug_mode != 2 && debug_mode != 4 && debug_mode != 6)
-                return;
-        }
+         if (DebugPauseAI())
+            return;
 
        if (game_state != GAME_RUNNING)
             return;
