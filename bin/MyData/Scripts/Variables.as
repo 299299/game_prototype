@@ -261,7 +261,7 @@ bool camera_shake = true;
 // 6 --> test ai move behavior
 // 7 --> debug ui parameter tweak
 // 8 --> debug animation
-int debug_mode = 8;
+int debug_mode = 2;
 
 // ==============================================
 //

@@ -9,9 +9,9 @@ class BruceStandState : PlayerStandState
     BruceStandState(Character@ c)
     {
         super(c);
-        //AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle");
         AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_01");
-        //AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_02");
+        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_02");
     }
 };
 
@@ -191,7 +191,6 @@ void CreateBruceMotions()
     Global_AddAnimation(preFix + "Stand_Idle_01");
     Global_AddAnimation(preFix + "Stand_Idle_02");
     Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
-    // Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 28);
 
     int locomotionFlags = kMotion_XZR;
     Global_CreateMotion(preFix + "Turn_Right_90", locomotionFlags, kMotion_R, 16);
@@ -318,25 +317,6 @@ void CreateBruceCombatMotions()
     mgr.bruce_left_attack_motions.Push(Global_CreateMotion("BM_Attack/Attack_Far_Left_03", flags, L_FOOT, 21));
     mgr.bruce_left_attack_motions.Push(Global_CreateMotion("BM_Attack/Attack_Far_Left_04", flags, L_FOOT, 30));
 
-    Global_CreateMotion("BM_Attack/Beatdown_Strike_Start_01");
-    Global_CreateMotion("BM_Attack/Beatdown_Test_01");
-    Global_CreateMotion("BM_Attack/Beatdown_Test_02");
-    Global_CreateMotion("BM_Attack/Beatdown_Test_03");
-    Global_CreateMotion("BM_Attack/Beatdown_Test_04");
-    Global_CreateMotion("BM_Attack/Beatdown_Test_05");
-    Global_CreateMotion("BM_Attack/Beatdown_Test_06");
-
-    /*
-    Global_CreateMotion("BM_Attack/Attack_StunPush");
-    Global_CreateMotion("BM_Attack/Block_Left");
-    Global_CreateMotion("BM_Attack/Block_Right");
-    Global_CreateMotion("BM_Attack/CapeDistract_Close_Forward");
-    Global_CreateMotion("BM_Attack/CapeDistract_Far_Forward");
-    Global_CreateMotion("BM_Attack/Redirect_push_back");
-    Global_CreateMotion("BM_Attack/Super_Stun_01");
-    Global_CreateMotion("BM_Attack/Super_Stun_02");
-    */
-
     // arm front
     mgr.bruce_counter_arm_front_motions.Push(Global_CreateMotion("BM_TG_Counter/Counter_Arm_Front_01"));
     mgr.bruce_counter_arm_front_motions.Push(Global_CreateMotion("BM_TG_Counter/Counter_Arm_Front_02"));
@@ -420,38 +400,17 @@ void CreateBruceCombatMotions()
     Global_CreateMotion(preFix + "Death_Back");
     Global_CreateMotion(preFix + "Death_Side_Left");
     Global_CreateMotion(preFix + "Death_Side_Right");
-
-    //preFix = "BM_Attack/";
-    //for (uint i=1; i<=6; ++i)
-    //    Global_CreateMotion(preFix + "Beatdown_Test_0" + i);
-
-    preFix = "BM_TG_Beatdown/";
-    for (uint i=1; i<=4; ++i)
-        Global_CreateMotion(preFix + "Beatdown_Strike_End_0" + i);
 }
 
 void AddBruceCombatAnimationTriggers()
 {
-    String preFix = "BM_Attack/";
-    int beat_impact_frame = 4;
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_01", beat_impact_frame, IMPACT, L_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_02", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_03", beat_impact_frame, IMPACT, L_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_04", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_05", beat_impact_frame, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Test_06", beat_impact_frame, IMPACT, R_HAND);
+    String preFix;
 
     // ===========================================================================
     //
     //   COUNTER TRIGGERS
     //
     // ===========================================================================
-    preFix = "BM_TG_Beatdown/";
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_01", 16, IMPACT, R_HAND);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_02", 30, IMPACT, HEAD);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_03", 24, IMPACT, R_FOOT);
-    AddStringAnimationTrigger(preFix + "Beatdown_Strike_End_04", 28, IMPACT, L_CALF);
-
     preFix = "BM_TG_Counter/";
     String animName = preFix + "Counter_Arm_Back_01";
     AddStringAnimationTrigger(animName, 9, COMBAT_SOUND, R_ARM);

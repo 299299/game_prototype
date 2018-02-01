@@ -26,6 +26,7 @@
 #include "Scripts/Thug.as"
 #include "Scripts/Player.as"
 #include "Scripts/Bruce.as"
+#include "Scripts/DeathStroke.as"
 #include "Scripts/PlayerCombat.as"
 #include "Scripts/PlayerMovement.as"
 
