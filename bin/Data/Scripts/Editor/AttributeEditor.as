@@ -1482,15 +1482,19 @@ void UpdateTestAnimation(float timeStep)
         if (model !is null)
         {
             Node@ node = model.node.parent;
-            Node@ sync_node = scene.GetChild(node.name + "_sync");
-            if (sync_node !is null)
+            Array<Node@>@ children = scene.GetChildren();
+            for (uint i=0; i<children.length; ++i)
             {
-                AnimatedModel@ am = sync_node.children[0].GetComponent("AnimatedModel");
-                AnimationState@ as = am.GetAnimationState(0);
-                if (am !is null && as !is null)
+                Node@ sync_node = children[i];
+                if (sync_node.name.StartsWith(node.name + "_sync"))
                 {
-                   as.time = animState.time;
-                   as.Apply();
+                    AnimatedModel@ am = sync_node.children[0].GetComponent("AnimatedModel");
+                    AnimationState@ as = am.GetAnimationState(0);
+                    if (am !is null && as !is null)
+                    {
+                       as.time = animState.time;
+                       as.Apply();
+                    }
                 }
             }
         }
@@ -1524,7 +1528,7 @@ void InitVectorStructs()
         "      Cost"
     };
     vectorStructs.Push(VectorStruct("CrowdManager", "   >AreaCost", crowdManagerAreaCostVariables, 1));
-    
+
     Array<String> categories = GetObjectCategories();
     for (uint categoryIndex = 0; categoryIndex < categories.length; categoryIndex++)
     {
