@@ -9,9 +9,8 @@ class DeathStrokeStandState : PlayerStandState
     DeathStrokeStandState(Character@ c)
     {
         super(c);
-        //AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_01");
-        //AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_Idle_02");
+        AddMotion(DK_MOVEMENT_GROUP + "Combat_Stand_Idle");
+        AddMotion(DK_MOVEMENT_GROUP + "Stand_Idle_After_Combat");
     }
 };
 
@@ -20,7 +19,7 @@ class DeathStrokeRunState : PlayerRunState
     DeathStrokeRunState(Character@ c)
     {
         super(c);
-        SetMotion(BRUCE_MOVEMENT_GROUP + "Run_Forward");
+        SetMotion(DK_MOVEMENT_GROUP + "Run_Forward");
     }
 };
 
@@ -29,9 +28,9 @@ class DeathStrokeTurnState : PlayerTurnState
     DeathStrokeTurnState(Character@ c)
     {
         super(c);
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_90");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_180");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Left_90");
+        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_90");
+        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_180");
+        AddMotion(DK_MOVEMENT_GROUP + "Turn_Left_90");
     }
 };
 
@@ -40,9 +39,9 @@ class DeathStrokeStandToWalkState : PlayerStandToWalkState
     DeathStrokeStandToWalkState(Character@ c)
     {
         super(c);
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_90");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Right_180");
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Turn_Left_90");
+        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_90");
+        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_180");
+        AddMotion(DK_MOVEMENT_GROUP + "Turn_Left_90");
     }
 };
 
@@ -51,30 +50,16 @@ class DeathStrokeStandToRunState : PlayerStandToRunState
     DeathStrokeStandToRunState(Character@ c)
     {
         super(c);
-        AddMotion(BRUCE_MOVEMENT_GROUP + "Stand_To_Run_Right_180");
+        AddMotion(DK_MOVEMENT_GROUP + "Stand_To_Run_Right_180");
     }
 };
-
 
 class DeathStrokeWalkState : PlayerWalkState
 {
     DeathStrokeWalkState(Character@ c)
     {
         super(c);
-        SetMotion(BRUCE_MOVEMENT_GROUP + "Walk_Forward");
-    }
-};
-
-class DeathStrokeEvadeState : PlayerEvadeState
-{
-    DeathStrokeEvadeState(Character@ c)
-    {
-        super(c);
-        String prefix = "BM_Combat/";
-        AddMotion(prefix + "Evade_Forward_01");
-        AddMotion(prefix + "Evade_Right_01");
-        AddMotion(prefix + "Evade_Back_01");
-        AddMotion(prefix + "Evade_Left_01");
+        SetMotion(DK_MOVEMENT_GROUP + "Walk_Forward");
     }
 };
 
@@ -86,7 +71,6 @@ class DeathStrokeAttackState : PlayerAttackState
         PostInit();
     }
 };
-
 
 class DeathStrokeCounterState : PlayerCounterState
 {
@@ -143,7 +127,6 @@ class DeathStroke : Player
     {
         stateMachine.AddState(DeathStrokeStandState(this));
         stateMachine.AddState(DeathStrokeRunState(this));
-        stateMachine.AddState(DeathStrokeEvadeState(this));
         stateMachine.AddState(AnimationTestState(this));
 
         stateMachine.AddState(DeathStrokeAttackState(this));

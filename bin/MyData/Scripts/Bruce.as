@@ -65,19 +65,6 @@ class BruceWalkState : PlayerWalkState
     }
 };
 
-class BruceEvadeState : PlayerEvadeState
-{
-    BruceEvadeState(Character@ c)
-    {
-        super(c);
-        String prefix = "BM_Combat/";
-        AddMotion(prefix + "Evade_Forward_01");
-        AddMotion(prefix + "Evade_Right_01");
-        AddMotion(prefix + "Evade_Back_01");
-        AddMotion(prefix + "Evade_Left_01");
-    }
-};
-
 class BruceAttackState : PlayerAttackState
 {
     BruceAttackState(Character@ c)
@@ -166,7 +153,6 @@ class Bruce : Player
     {
         stateMachine.AddState(BruceStandState(this));
         stateMachine.AddState(BruceRunState(this));
-        stateMachine.AddState(BruceEvadeState(this));
         stateMachine.AddState(AnimationTestState(this));
 
         stateMachine.AddState(BruceAttackState(this));
@@ -205,10 +191,6 @@ void CreateBruceMotions()
 
     preFix = "BM_Combat/";
     Global_CreateMotion(preFix + "Into_Takedown");
-    Global_CreateMotion(preFix + "Evade_Forward_01");
-    Global_CreateMotion(preFix + "Evade_Back_01");
-    Global_CreateMotion(preFix + "Evade_Left_01");
-    Global_CreateMotion(preFix + "Evade_Right_01");
 
     CreateBruceCombatMotions();
 }
@@ -725,11 +707,7 @@ void AddBruceCombatAnimationTriggers()
 
 void AddBruceAnimationTriggers()
 {
-    String preFix = "BM_Combat/";
-    AddAnimationTrigger(preFix + "Evade_Forward_01", 48, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Evade_Back_01", 48, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Evade_Left_01", 48, READY_TO_FIGHT);
-    AddAnimationTrigger(preFix + "Evade_Right_01", 48, READY_TO_FIGHT);
+    String preFix;
 
     preFix = BRUCE_MOVEMENT_GROUP;
     AddStringAnimationTrigger(preFix + "Walk_Forward", 11, FOOT_STEP, R_FOOT);

@@ -1415,3 +1415,17 @@ class PlayerBeatDownEndState : MultiMotionState
     }
 };
 
+class PlayerEvadeState : MultiMotionState
+{
+    PlayerEvadeState(Character@ c)
+    {
+        super(c);
+        SetName("EvadeState");
+    }
+
+    void Enter(State@ lastState)
+    {
+        ownner.GetNode().vars[ANIMATION_INDEX] = ownner.RadialSelectAnimation(4);
+        MultiMotionState::Enter(lastState);
+    }
+};
