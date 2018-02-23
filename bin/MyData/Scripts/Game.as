@@ -513,7 +513,7 @@ class TestGameState : GameState
             tmpPlayerNode.Remove();
         }
 
-        Node@ playerNode = CreateCharacter("player", "elm", "Bruce", playerPos, playerRot);
+        Node@ playerNode = CreateCharacter("player", "dk", "DeathStroke", playerPos, playerRot);
         playerNode.AddTag(PLAYER_TAG);
         audio.listener = playerNode.GetChild(HEAD, true).CreateComponent("SoundListener");
         player_id = playerNode.id;

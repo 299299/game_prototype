@@ -144,7 +144,7 @@ class DeathStroke : Player
 
 void CreateDeathStrokeMotions()
 {
-    AssignMotionRig("Models/elm2.mdl");
+    AssignMotionRig("Models/dk.mdl");
 
     String preFix = BRUCE_MOVEMENT_GROUP;
     Global_AddAnimation(preFix + "Stand_Idle");

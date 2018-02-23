@@ -510,8 +510,7 @@ class BM_Game_MotionManager : MotionManager
     {
         CreateBruceMotions();
         CreateThugMotions();
-
-        Global_CreateMotion("Test/Attack_Close_Back_01");
+        CreateDeathStrokeMotions();
     }
 
     void AddTriggers()

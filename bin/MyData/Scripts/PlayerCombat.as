@@ -508,6 +508,9 @@ class PlayerAttackState : CharacterState
 
     void PostInit(float closeDist = 2.5f)
     {
+        if (forwardAttacks is null)
+            return;
+
         forwardAttacks.Sort();
         leftAttacks.Sort();
         rightAttacks.Sort();
