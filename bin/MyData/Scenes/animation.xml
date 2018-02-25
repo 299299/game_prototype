@@ -8,7 +8,7 @@
 	<attribute name="Next Replicated Node ID" value="48" />
 	<attribute name="Next Replicated Component ID" value="64" />
 	<attribute name="Next Local Node ID" value="16781242" />
-	<attribute name="Next Local Component ID" value="16778292" />
+	<attribute name="Next Local Component ID" value="16778293" />
 	<attribute name="Variables" />
 	<attribute name="Variable Names" value="" />
 	<component type="Octree" id="1" />
@@ -2464,6 +2464,11 @@
 					<variant type="Bool" value="true" />
 				</attribute>
 				<attribute name="Animation States">
+					<variant type="Int" value="0" />
+				</attribute>
+			</component>
+			<component type="AnimationController" id="16778292">
+				<attribute name="Node Animation States">
 					<variant type="Int" value="0" />
 				</attribute>
 			</component>

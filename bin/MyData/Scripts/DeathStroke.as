@@ -19,7 +19,7 @@ class DeathStrokeRunState : PlayerRunState
     DeathStrokeRunState(Character@ c)
     {
         super(c);
-        SetMotion(DK_MOVEMENT_GROUP + "Run_Forward");
+        SetMotion(DK_MOVEMENT_GROUP + "Run_Forward_Combat");
     }
 };
 
@@ -28,9 +28,10 @@ class DeathStrokeTurnState : PlayerTurnState
     DeathStrokeTurnState(Character@ c)
     {
         super(c);
-        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_90");
-        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_180");
-        AddMotion(DK_MOVEMENT_GROUP + "Turn_Left_90");
+        String preFix = "DK_Movement/";
+        AddMotion(preFix + "Turn_Right_90");
+        AddMotion(preFix + "Turn_Right_180");
+        AddMotion(preFix + "Turn_Left_90");
     }
 };
 
@@ -39,9 +40,10 @@ class DeathStrokeStandToWalkState : PlayerStandToWalkState
     DeathStrokeStandToWalkState(Character@ c)
     {
         super(c);
-        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_90");
-        AddMotion(DK_MOVEMENT_GROUP + "Turn_Right_180");
-        AddMotion(DK_MOVEMENT_GROUP + "Turn_Left_90");
+        String preFix = "DK_Movement/";
+        AddMotion(preFix + "Turn_Right_90");
+        AddMotion(preFix + "Turn_Right_180");
+        AddMotion(preFix + "Turn_Left_90");
     }
 };
 
@@ -59,7 +61,7 @@ class DeathStrokeWalkState : PlayerWalkState
     DeathStrokeWalkState(Character@ c)
     {
         super(c);
-        SetMotion(DK_MOVEMENT_GROUP + "Walk_Forward");
+        SetMotion(DK_MOVEMENT_GROUP + "Walk_Forward_Combat");
     }
 };
 
@@ -146,30 +148,24 @@ void CreateDeathStrokeMotions()
 {
     AssignMotionRig("Models/dk.mdl");
 
-    String preFix = BRUCE_MOVEMENT_GROUP;
-    Global_AddAnimation(preFix + "Stand_Idle");
-    Global_AddAnimation(preFix + "Stand_Idle_01");
-    Global_AddAnimation(preFix + "Stand_Idle_02");
-    Global_CreateMotion(preFix + "Run_Forward", kMotion_Z, kMotion_Z, -1, true);
+    String preFix = DK_MOVEMENT_GROUP;
+    Global_AddAnimation(preFix + "Combat_Stand_Idle");
+    Global_AddAnimation(preFix + "Stand_Idle_After_Combat");
+    Global_CreateMotion(preFix + "Run_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
     // Global_CreateMotion(preFix + "Run_Right_Passing_To_Run_Right_180", kMotion_Turn, kMotion_ZR, 28);
 
     int locomotionFlags = kMotion_XZR;
+    preFix = "DK_Movement/";
     Global_CreateMotion(preFix + "Turn_Right_90", locomotionFlags, kMotion_R, 16);
     Global_CreateMotion(preFix + "Turn_Right_180", locomotionFlags, kMotion_R, 25);
     Global_CreateMotion(preFix + "Turn_Left_90", locomotionFlags, kMotion_R, 14);
-    Global_CreateMotion(preFix + "Walk_Forward", kMotion_Z, kMotion_Z, -1, true);
+    Global_CreateMotion(DK_MOVEMENT_GROUP + "Walk_Forward_Combat", kMotion_Z, kMotion_Z, -1, true);
 
+    preFix = DK_MOVEMENT_GROUP;
     Global_CreateMotion(preFix + "Stand_To_Walk_Right_90", locomotionFlags, kMotion_ZR, 21);
     Global_CreateMotion(preFix + "Stand_To_Walk_Right_180", locomotionFlags, kMotion_ZR, 25);
     Global_CreateMotion(preFix + "Stand_To_Run_Right_90", locomotionFlags, kMotion_ZR, 18);
     Global_CreateMotion(preFix + "Stand_To_Run_Right_180", locomotionFlags, kMotion_ZR, 25);
-
-    preFix = "BM_Combat/";
-    Global_CreateMotion(preFix + "Into_Takedown");
-    Global_CreateMotion(preFix + "Evade_Forward_01");
-    Global_CreateMotion(preFix + "Evade_Back_01");
-    Global_CreateMotion(preFix + "Evade_Left_01");
-    Global_CreateMotion(preFix + "Evade_Right_01");
 
     CreateBruceCombatMotions();
 }

@@ -517,6 +517,7 @@ class BM_Game_MotionManager : MotionManager
     {
         AddBruceAnimationTriggers();
         AddThugAnimationTriggers();
+        AddDeathStrokeAnimationTriggers();
     }
 
     void Stop()
